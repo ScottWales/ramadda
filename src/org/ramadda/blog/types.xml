@@ -1,0 +1,11 @@
+<types>
+  <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.blog.BlogEntryTypeHandler" category="Collaboration">
+     <property name="icon" value="/blog/blog_icon.png"/>
+     <property name="form.rows.desc" value="5"/>
+     <property name="form.show.area" value="false"/>
+     <property name="form.show.resource" value="false"/>
+     <column name="blogtext" type="clob" size="256000" label="Blog Text" cansearch="true" showinhtml="false" rows="20" columns="80"/>
+</type>
+
+
+</types>

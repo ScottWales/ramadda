@@ -1,0 +1,14 @@
+<types>
+
+  <type name="slideshow"  description="Slide Show" handler="org.ramadda.slideshow.SlideshowTypeHandler" category="Collaboration">
+     <property name="icon" value="/icons/slideshow.jpg"/>
+     <property name="form.show.date" value="false"/>
+     <property name="form.show.description" value="true"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.area" value="false"/>
+     <property name="form.show.resource" value="false"/>
+     <column name="properties" type="clob" size="512000" label="" cansearch="false" showinhtml="false"/>
+</type>
+
+
+</types>

@@ -1,0 +1,3 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.blog.WeblogOutputHandler" name="Weblog"/>
+</outputhandlers>

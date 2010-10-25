@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="../../../.." default="all" name="Ramadda">
+
+    <target name="initbasic">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property  name="version" value="1.2"/>
+        <property  name="_version" value="1_2"/>
+
+
+        <property name="srcdir" value="${basedir}/src"/>
+
+        <property name="distdir" value="${basedir}/dist"/>
+        <mkdir dir="${distdir}"/>
+
+        <property name="libdir" value="${basedir}/lib"/>
+        <property name="repositoryrelpath" value="ucar/unidata/repository" />
+        <property name="repositorydir" value="${srcdir}/${repositoryrelpath}" />
+
+        <property name="releasedir" value="${distdir}/repository" />
+        <property name="tmpjardir" value="${distdir}/tmpjardir" />
+        <property name="srcreleasedir" value="repositorysrc${_version}" />
+
+	<property name="docsdir" value="${distdir}/repositorydocs"/>
+        <mkdir dir="${docsdir}"/>
+
+        <property name="docs_javadoc_dest" value="${docsdir}/javadoc" />
+        <mkdir dir="${docs_javadoc_dest}"/>
+
+        <property name="compiledir" value="${srcdir}"/>
+        <property  name="build.sysclasspath" value="ignore"/>
+        <property name="failonerror" value="true"/>
+        <property name="srcversion" value="1.6"/>
+        <property name="javatarget" value="1.6"/>
+
+
+    </target>
+
+    <target name="init" depends="initbasic,initcore,initfull">
+    </target>
+
+
+    <target name="initcore" if="core">
+       <echo message="initcore"/>
+       <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+       <property name="manifestjars" value="repositorylib.jar  servlet-api.jar"/>
+       <property name="includesrc1" value=""/>
+       <property name="includesrc2" value=""/>
+
+       <property name="lib1" value="${libdir}/dummy.jar"/>
+       <property name="lib2" value="${libdir}/dummy.jar"/>
+    </target>
+
+    <target name="initfull">
+       <echo message="initfull"/>
+       <property name="classpath" value="${libdir}/idv.jar:${libdir}/repositorylib.jar:${libdir}/repositorytds.jar:${libdir}/servlet-api.jar"/>
+       <property name="manifestjars" value="idv.jar repositorylib.jar  repositorytds.jar servlet-api.jar"/>
+       <property name="includesrc1" value="${repositoryrelpath}/data/*.java"/>
+       <property name="includesrc2" value="${repositoryrelpath}/idv/*.java"/> 
+       <property name="lib1" value="${libdir}/visad.jar" />
+       <property name="lib2" value="${libdir}/local-visad.jar"/>
+    </target>
+
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compiledir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+    <target name="runserver" depends="init">
+      <java classname="ucar.unidata.repository.RepositoryServer" maxmemory="512mb">
+          <arg value="-port"/>
+          <arg value="8080"/>
+          <arg value="-Dramadda.db=mysql"/>
+          <arg value="-Dramadda.cacheresources=false"/>
+          <classpath>
+             <pathelement path="${classpath}"/>
+             <pathelement location=""/>
+         </classpath>
+     </java>
+   </target>
+
+    <target name="all" depends="repositoryjar,repositorywar">
+    </target>
+
+    <target name="release" depends="init,clean">
+        <antcall target="repositorylib"/>
+        <antcall target="clean"/>
+        <antcall target="repositorysrczip"/>
+        <antcall target="repositoryjar"/>
+        <antcall target="repositorytar"/>
+        <antcall target="repositorywar"/>
+        <antcall target="clientjar"/>
+        <antcall target="idvplugin"/>
+    </target>
+
+
+    <target name="download" depends="init">
+        <scp
+            todir="${user.name}@conan:/web/ftp/pub/ramadda/ramadda1.1"
+            keyfile="${user.home}/.ssh/id_dsa"
+            passphrase=""
+        >
+        <fileset  dir="${libdir}" includes="repository.war,repository_src.jar,repository.zip,repositoryclient.jar,repositoryclient.zip"/>
+        </scp>
+    </target>
+
+
+    <target name="idvplugin" depends="init,clean">
+        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <javac
+            verbose="false"
+            classpath="${pluginclasspath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            fork="true"
+            memoryMaximumSize="256m"
+            target="${javatarget}"
+        >
+        <include name="${repositorydir}/idv/RamaddaPublisher.java"/>
+        <include name="${repositorydir}/client/InteractiveRepositoryClient.java"/>
+        </javac>
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${distdir}/ramaddaplugin.jar">
+            <include name="${repositorydir}/**/*.class"/> 
+            <include name="${repositorydir}/idv/publishertypes.xml"/>
+            <include name="${repositorydir}/idv/publishers.xml"/>
+            <include name="${repositorydir}/htdocs/icons/folderopen.png"/>
+            <include name="${repositorydir}/htdocs/icons/folderclosed.png"/>
+	    </jar>
+
+        <copy overwrite="true"  todir="${user.home}/.unidata/idv/DefaultIdv/plugins">
+             <fileset file="${distdir}/ramaddaplugin.jar"/>
+        </copy>
+
+
+    </target>
+
+
+
+
+
+
+
+    <target name="workshopplugin" depends="init,clean">
+        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <javac
+            verbose="false"
+            classpath="${pluginclasspath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            fork="true"
+            memoryMaximumSize="256m"
+           target="${javatarget}"
+        >
+        <include name="${repositorydir}/idv/RamaddaPublisher.java"/>
+        </javac>
+        <jar 
+            update="false"
+            compress="true"
+            jarfile="${distdir}/usersworkshop.jar">
+            <include name="${repositorydir}/**/*.class"/> 
+            <include name="${repositorydir}/idv/workshop.properties"/>
+            <include name="${repositorydir}/idv/workshoplogo.jpg"/>
+            <include name="${repositorydir}/idv/publishertypes.xml"/>
+            <include name="${repositorydir}/idv/workshoppublishers.xml"/>
+            <include name="${repositorydir}/htdocs/icons/folderopen.png"/>
+            <include name="${repositorydir}/htdocs/icons/folderclosed.png"/>
+	    </jar>
+
+        <copy overwrite="true"  todir="${user.home}/.unidata/idv/DefaultIdv/plugins">
+             <fileset file="${distdir}/usersworkshop.jar"/>
+        </copy>
+
+
+    </target>
+
+
+
+    <target name="clientjar" depends="init,clean">
+        <property name="xclasspath" value="${libdir}/unidatacommon.jar:${libdir}/commons-httpclient-3.1.jar:${libdir}/extra.jar:${libdir}/idv.jar:${srcdir}"/>
+        <javac
+            verbose="false"
+            classpath="${xclasspath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            fork="true"
+            memoryMaximumSize="512m"
+           target="${javatarget}"
+        >
+        <include name="${repositorydir}/client/InteractiveRepositoryClient.java"/>
+        </javac>
+        <mkdir dir="${tmpjardir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${tmpjardir}" includes="**/*"/>
+        </delete>
+        <unjar src="${libdir}/extra.jar" dest="${tmpjardir}"/>
+
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${distdir}/repositoryclient.jar">
+           <manifest>
+              <attribute name="Implementation-Title" value="Unidata's Ramada Client"/>
+              <attribute name="Implementation-Version" value="1.0"/>
+              <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+              <attribute name="Main-class" value="ucar.unidata.repository.client.RepositoryClient"/>
+              <attribute name="Class-Path" value="unidatacommon.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.3.jar"/>
+            </manifest> 
+
+            <include name="lib/tmpjardir/org/apache/xerces/impl/dv/util/Base64.class"/>
+
+            <include name="ucar/**/*.class"/>
+            <include name="${repositorydir}/htdocs/icons/folderopen.png"/>
+            <include name="${repositorydir}/htdocs/icons/folderclosed.png"/>
+
+	    </jar>
+
+        <zip destfile="${distdir}/repositoryclient.zip">
+         <zipfileset dir="${distdir}" includes="repositoryclient.jar" fullpath="repositoryclient/repositoryclient.jar"/>
+         <zipfileset dir="${libdir}" includes="unidatacommon.jar" fullpath="repositoryclient/unidatacommon.jar"/>
+         <zipfileset dir="${libdir}" includes="commons-httpclient-3.1.jar" fullpath="repositoryclient/commons-httpclient-3.1.jar"/>
+         <zipfileset dir="${libdir}" includes="commons-logging-1.1.jar" fullpath="repositoryclient/commons-logging-1.1.jar"/>
+         <zipfileset dir="${libdir}" includes="commons-codec-1.3.jar" fullpath="repositoryclient/commons-codec-1.3.jar"/>
+         <zipfileset dir="${repositorydir}/release" includes="README.CLIENT" fullpath="repositoryclient/README"/>
+        </zip>
+
+    </target>
+
+
+    <target name="compile" depends="init,clean,jc"/>
+
+
+
+    <target name="jc" depends="init">
+        <echo message="${classpath}"/>
+        <javac
+            classpath="${classpath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+	    fork="true"
+            memoryMaximumSize="512m"
+            target="${javatarget}"
+        >
+        <include name="${repositoryrelpath}/*.java"/>
+        <include name="${repositoryrelpath}/auth/*.java"/>
+        <include name="${repositoryrelpath}/client/*.java"/>
+        <include name="${repositoryrelpath}/output/*.java"/>
+        <include name="${repositoryrelpath}/metadata/*.java"/>
+        <include name="${repositoryrelpath}/harvester/*.java"/>
+        <include name="${repositoryrelpath}/type/*.java"/>
+        <include name="${repositoryrelpath}/ftp/*.java"/>
+        <include name="${repositoryrelpath}/util/*.java"/>
+        <include name="${repositoryrelpath}/monitor/*.java"/>
+        <exclude name="${repositoryrelpath}/examples/*.java"/>
+<!--
+        <exclude name="${repositoryrelpath}/auth/ldap/*.java"/>
+-->
+
+        <include name="${includesrc1}"/>
+        <include name="${includesrc2}"/>
+
+<!--
+
+        <include name="${repositorydir}/idv/IdvWebstartOutputHandler.java"/>
+        <include name="${repositorydir}/idv/TdsOutputHandler.java"/>
+-->
+        </javac>
+    </target>
+
+    <target name="repositoryjar" depends="init,compile">
+        <copy overwrite="true" file="${repositorydir}/resources/version.properties" tofile="${repositorydir}/resources/build.properties">
+            <filterset>
+                <filter token="DATE" value="${date}"/>
+                <filter token="VERSION" value="${version}"/>
+            </filterset>
+        </copy>
+        <jar 
+            basedir="${srcdir}"
+            compress="true"
+            update="false"
+            jarfile="${distdir}/repository.jar">
+           <manifest>
+              <attribute name="Implementation-Title" value="Unidata's Ramada"/>
+              <attribute name="Implementation-Version" value="1.1"/>
+              <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+              <attribute name="Main-class" value="ucar.unidata.repository.RepositoryServer"/>
+              <attribute name="Class-Path" value="${manifestjars}"/>
+            </manifest> 
+            <include name="**/*.class"/>
+            <include name="**/*.xml"/>
+            <include name="${repositoryrelpath}/htdocs/**/*.*"/>
+            <include name="${repositoryrelpath}/docs/userguide/processed/**/*.*"/>
+            <include name="${repositoryrelpath}/resources/**/*.*"/>
+            <include name="${repositoryrelpath}/idv/template.jnlp"/>
+<!--TODO -->
+            <include name="auxdata/maps/*"/>
+            <include name="auxdata/ui/icons/*"/>
+        </jar>
+    </target>
+
+
+    <target name="zip" depends="init">
+        <zip destfile="${distdir}/repository.zip">
+          <zipfileset dir="${releasedir}" prefix="repository"/>
+        </zip>
+     </target>
+
+    <target name="repositorytar" depends="init,repositoryjar">
+        <mkdir dir="${releasedir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${releasedir}" includes="**/*"/>
+        </delete>
+        <copy  file="${distdir}/repository.jar" todir="${releasedir}"/>
+        <copy  file="${libdir}/idv.jar" todir="${releasedir}"/>
+        <copy  file="${libdir}/repositorylib.jar" todir="${releasedir}"/>
+        <copy  file="${repositorydir}/release/ramadda.sh" todir="${releasedir}"/>
+        <copy  file="${repositorydir}/release/ramadda.bat" todir="${releasedir}"/>
+        <copy  file="${repositorydir}/release/ramaddamysql.sh" todir="${releasedir}"/>
+        <copy  file="${repositorydir}/README" todir="${releasedir}"/>
+        <copy  file="${libdir}/repositorytds.jar" todir="${releasedir}"/>
+        <copy  file="${libdir}/servlet-api.jar" todir="${releasedir}"/>
+        <delete file="${libdir}/repository.tar"/>
+        <delete file="${distdir}/repository.zip"/>
+        <zip destfile="${distdir}/repository.zip">
+          <zipfileset dir="${releasedir}" prefix="repository"/>
+        </zip>
+
+<!--
+        <tar 
+            destfile="${libdir}/repository.tar">
+          <tarfileset dir="${releasedir}"
+              prefix="repository">
+              <include name="*"/>
+         </tarfileset>
+
+        </tar>
+
+-->
+
+
+<!--
+        <delete includeemptydirs="true">
+            <fileset dir="${releasedir}" includes="**/*"/>
+        </delete>
+-->
+    </target>
+
+
+    <target name="war" depends="repositorywar">
+    </target>
+
+
+    <target name="repositorywar" depends="init">
+      <delete>
+           <fileset file="${libdir}/repository.war"/>
+       </delete>
+      <war webxml="${repositorydir}/release/web.xml" destfile="${distdir}/repository.war">
+          <webinf file="${repositorydir}/release/repository.properties"/>
+          <lib file="${distdir}/repository.jar"/>
+          <lib file="${libdir}/idv.jar"/>
+          <lib file="${libdir}/repositorylib.jar"/>
+          <lib file="${libdir}/repositorytds.jar"/>
+      </war>
+
+
+    </target>
+
+
+    <target name="repositorylib" depends="init">
+        <mkdir dir="${tmpjardir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${tmpjardir}" includes="**/*"/>
+
+        </delete>
+        <unjar src="${lib1}" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/unidatacommon.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/extra.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/jython.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/external.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/twitter4j-1.1.4.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/jetty.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/jetty-util.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/mailapi.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/javadiff.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/smtp.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/postgres.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/mysql.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/derby.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/derbytools.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/commons-io-1.4.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/commons-dbcp-1.2.2.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/commons-pool-1.5.3.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/commons-fileupload-1.2.2.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/commons-httpclient-3.1.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/metadata-extractor-2.4.0-beta-1.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/jfreechart.jar" dest="${tmpjardir}"/>
+
+        <unjar src="${libdir}/ftplet-api-1.0.3.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/ftpserver-core-1.0.3.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/mina-core-2.0.0-M6.jar" dest="${tmpjardir}"/>
+
+        <unjar src="${libdir}/log4j-1.2.15.jar" dest="${tmpjardir}"/>
+<!--
+        <unjar src="${libdir}/slf4j-api-1.5.2.jar" dest="${tmpjardir}"/>
+-->
+        <unjar src="${libdir}/slf4j-api-1.5.10.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/slf4j-simple-1.5.10.jar" dest="${tmpjardir}"/>
+
+<!--
+        <unjar src="${libdir}/servlet-api.jar" dest="${tmpjardir}"/>
+-->
+
+
+        <jar 
+            basedir="${tmpjardir}"
+            update="false"
+            compress="true"
+            jarfile="${libdir}/repositorylib.jar">
+              <include name="**"/>
+<!--
+              <exclude name="ucar/netcdf/**"/>
+-->
+              <exclude name="ucar/multiarray/**"/>
+        </jar>
+
+        <delete dir="${tmpjardir}"/>
+    </target>
+
+
+    <target name="repositorysrczip" depends="init">
+        <zip  destfile="${distdir}/repository_src.zip"
+            update="false"
+            compress="true"
+            filesonly="true">
+          <zipfileset dir="" fullpath="${srcreleasedir}/README">
+            <include name="${repositorydir}/release/README.SRC"/>
+          </zipfileset>
+          <zipfileset dir="" prefix="${srcreleasedir}">
+            <include name="lib/repositorylib.jar"/>
+            <include name="lib/repositorytds.jar"/>
+            <include name="lib/idv.jar"/>
+            <include name="lib/servlet-api.jar"/>
+            <include name="${repositorydir}/**"/>
+            <exclude name="ucar/**/CVS/**"/>
+            <exclude name="ucar/**/.svn/**"/>
+            <exclude name="ucar/**/processed/**"/>
+            <exclude name="ucar/**/*.class"/>
+            <exclude name="ucar/**/*.map"/>
+            <exclude name="ucar/**/*.jar"/>            
+            <exclude name="ucar/**/*.dat"/>            
+            <exclude name="ucar/**/*.ascii"/>            
+            <exclude name="ucar/**/*.tml"/>            
+            <exclude name="ucar/**/*.bak"/>            
+            <exclude name="ucar/**/*.zip"/>            
+            <exclude name="ucar/**/*.shp"/>            
+            <exclude name="ucar/**/*.nc"/>            
+            <exclude name="ucar/**/*.xidv"/>
+            <exclude name="ucar/**/*.zidv"/>
+           </zipfileset>
+        </zip>
+    </target>
+
+
+    <target name="javadoc" depends="init">
+        <javadoc
+            Author="true"
+            Doctitle="Unidata RAMADDA"
+            Use="true"
+            Version="true"
+            Windowtitle="Unidata RAMADDA"
+            classpath="${classpath}:/upc/share/junit/junit.jar"
+            destdir="${docs_javadoc_dest}"
+            maxmemory="256m"
+            sourcepath="${srcdir}">
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api"/>
+            <package name="ucar.unidata.repository.*"/>
+            <package name="ucar.unidata.sql"/>
+        </javadoc>
+    </target>
+
+
+     <target name="userauthenticator" depends="init">
+        <javac
+            classpath="${classpath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+	    fork="true"
+            memoryMaximumSize="512m"
+            target="${javatarget}"
+        >
+        <include name="${repositorydir}/auth/TestUserAuthenticator.java"/>
+        </javac>
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${distdir}/userauthenticator.jar">
+              <include name="${repositorydir}/auth/TestUserAuthenticator.class"/>
+        </jar>
+        <echo message="The test user authenticator jar has been created: ${distdir}/userauthenticator.jar"/>
+        <echo message="Copy the jar to &lt;ramadda home&gt;/plugins"/>
+
+     </target>
+
+
+    <target name="ldapplugin" depends="init">
+        <javac
+            verbose="false"
+            classpath="${classpath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            fork="true"
+            memoryMaximumSize="256m"
+            target="${javatarget}"
+        >
+        <include name="${repositorydir}/auth/ldap/*.java"/>
+        </javac>
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${distdir}/ldapplugin.jar">
+            <include name="${repositorydir}/auth/ldap/*.class"/> 
+         </jar>
+    </target>
+
+
+    <target name="ldapplugininstall" depends="ldapplugin">
+        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+             <fileset file="${distdir}/ldapplugin.jar"/>
+        </copy>
+    </target>
+
+
+
+</project>
