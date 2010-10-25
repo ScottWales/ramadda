@@ -281,7 +281,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     public void intializeCopiedEntry(Entry newEntry, Entry oldEntry)
             throws Exception {
-        super.intializeCopiedEntry(newEntry, oldEntry);
+        super.initializeCopiedEntry(newEntry, oldEntry);
         List<String> colNames = tableHandler.getColumnNames();
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                                                      Misc.newList(tableHandler.getTableName()),

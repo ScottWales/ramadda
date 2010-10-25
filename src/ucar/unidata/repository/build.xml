@@ -2,6 +2,10 @@
 
 <project basedir="../../../.." default="all" name="Ramadda">
 
+    <target name="all" depends="repositoryjar,repositorywar,repositoryzip">
+    </target>
+
+
     <target name="initbasic">
        <tstamp>
          <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
@@ -83,15 +87,13 @@
      </java>
    </target>
 
-    <target name="all" depends="repositoryjar,repositorywar">
-    </target>
 
     <target name="release" depends="init,clean">
         <antcall target="repositorylib"/>
         <antcall target="clean"/>
         <antcall target="repositorysrczip"/>
         <antcall target="repositoryjar"/>
-        <antcall target="repositorytar"/>
+        <antcall target="repositoryzip"/>
         <antcall target="repositorywar"/>
         <antcall target="clientjar"/>
         <antcall target="idvplugin"/>
@@ -333,7 +335,7 @@
         </zip>
      </target>
 
-    <target name="repositorytar" depends="init,repositoryjar">
+    <target name="repositoryzip" depends="init,repositoryjar">
         <mkdir dir="${releasedir}"/>
         <delete includeemptydirs="true">
             <fileset dir="${releasedir}" includes="**/*"/>

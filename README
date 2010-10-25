@@ -1,0 +1,11 @@
+
+To build RAMADDA run:
+ant
+This build:
+dist/repository.war  - For Tomcat
+dist/repository.zip  - Stand-alone release
+
+To build the ramadda.org plugins run:
+ant plugins
+
+
