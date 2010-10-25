@@ -20,6 +20,32 @@ used by the javadoc target
 
     </target>
 
+
+
+   <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${srcdir}/org" includes="**/*.class"/>
+        </delete>
+    </target>
+
+
+   <target name="purge" depends="init,clean" >
+     <delete dir="${distdir}"/>
+    </target>
+
+
+    <target name="ramadda" depends="init">
+      <echo message="Building RAMADDA"/>
+      <ant antfile="${srcdir}/ucar/unidata/repository/build.xml" inheritAll="false"/>
+    </target>
+
+    <target name="plugins" depends="init">
+      <echo message="Building RAMADDA plugins"/>
+      <ant antfile="${srcdir}/org/ramadda/build.xml" inheritAll="false"/>
+    </target>
+
+
+
     <target name="javadoc" depends="init">
         <javadoc
             Author="true"
@@ -40,23 +66,6 @@ used by the javadoc target
         </javadoc>
     </target>
 
-
-   <target name="clean" depends="init" >
-        <delete>
-            <fileset dir="${srcdir}/org" includes="**/*.class"/>
-        </delete>
-    </target>
-
-
-   <target name="purge" depends="init,clean" >
-     <delete dir="${distdir}"/>
-    </target>
-
-
-    <target name="ramadda" depends="init">
-      <echo message="Building RAMADDA"/>
-      <ant antfile="${srcdir}/ucar/unidata/repository/build.xml" inheritAll="false"/>
-    </target>
 
 
 </project>

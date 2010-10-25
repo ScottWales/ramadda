@@ -13,6 +13,7 @@
         <property  name="version" value="1.2"/>
         <property  name="_version" value="1_2"/>
 
+        <property name="rname" value="ramadda${version}"/>
 
         <property name="srcdir" value="${basedir}/src"/>
 
@@ -23,11 +24,15 @@
         <property name="repositoryrelpath" value="ucar/unidata/repository" />
         <property name="repositorydir" value="${srcdir}/${repositoryrelpath}" />
 
-        <property name="releasedir" value="${distdir}/repository" />
+        <property name="releasedir" value="${distdir}/${rname}" />
         <property name="tmpjardir" value="${distdir}/tmpjardir" />
-        <property name="srcreleasedir" value="repositorysrc${_version}" />
+        <property name="srcreleasedir" value="${rname}src${_version}" />
 
-	<property name="docsdir" value="${distdir}/repositorydocs"/>
+        <property name="repositoryzip" value="${rname}.zip"/>
+        <property name="repositoryjar" value="${rname}.jar"/>
+
+
+	<property name="docsdir" value="${distdir}/${rname}docs"/>
         <mkdir dir="${docsdir}"/>
 
         <property name="docs_javadoc_dest" value="${docsdir}/javadoc" />
@@ -106,7 +111,7 @@
             keyfile="${user.home}/.ssh/id_dsa"
             passphrase=""
         >
-        <fileset  dir="${libdir}" includes="repository.war,repository_src.jar,repository.zip,repositoryclient.jar,repositoryclient.zip"/>
+        <fileset  dir="${libdir}" includes="repository.war,repository_src.jar,${repositoryzip},repositoryclient.jar,repositoryclient.zip"/>
         </scp>
     </target>
 
@@ -308,7 +313,7 @@
             basedir="${srcdir}"
             compress="true"
             update="false"
-            jarfile="${distdir}/repository.jar">
+            jarfile="${distdir}/${repositoryjar}">
            <manifest>
               <attribute name="Implementation-Title" value="Unidata's Ramada"/>
               <attribute name="Implementation-Version" value="1.1"/>
@@ -330,8 +335,8 @@
 
 
     <target name="zip" depends="init">
-        <zip destfile="${distdir}/repository.zip">
-          <zipfileset dir="${releasedir}" prefix="repository"/>
+        <zip destfile="${distdir}/${repositoryzip}">
+          <zipfileset dir="${releasedir}" prefix="${rname}"/>
         </zip>
      </target>
 
@@ -340,26 +345,42 @@
         <delete includeemptydirs="true">
             <fileset dir="${releasedir}" includes="**/*"/>
         </delete>
-        <copy  file="${distdir}/repository.jar" todir="${releasedir}"/>
-        <copy  file="${libdir}/idv.jar" todir="${releasedir}"/>
-        <copy  file="${libdir}/repositorylib.jar" todir="${releasedir}"/>
-        <copy  file="${repositorydir}/release/ramadda.sh" todir="${releasedir}"/>
-        <copy  file="${repositorydir}/release/ramadda.bat" todir="${releasedir}"/>
-        <copy  file="${repositorydir}/release/ramaddamysql.sh" todir="${releasedir}"/>
-        <copy  file="${repositorydir}/README" todir="${releasedir}"/>
-        <copy  file="${libdir}/repositorytds.jar" todir="${releasedir}"/>
-        <copy  file="${libdir}/servlet-api.jar" todir="${releasedir}"/>
+        <mkdir dir="${releasedir}/lib"/>
+        <copy  file="${distdir}/${repositoryjar}" todir="${releasedir}/lib" overwrite="true" />
+        <copy  file="${libdir}/idv.jar" todir="${releasedir}/lib" overwrite="true" />
+        <copy  file="${libdir}/repositorylib.jar" todir="${releasedir}/lib" overwrite="true" />
+        <copy  file="${repositorydir}/release/ramadda.sh" todir="${releasedir}" overwrite="true">
+            <filterset>
+                <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
+            </filterset>
+
+        </copy>
+        <copy  file="${repositorydir}/release/ramadda.bat" todir="${releasedir}" overwrite="true">
+            <filterset>
+                <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
+            </filterset>
+
+        </copy>
+        <copy  file="${repositorydir}/release/ramaddamysql.sh" todir="${releasedir}" overwrite="true" >
+            <filterset>
+                <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
+            </filterset>
+
+        </copy>
+        <copy  file="${repositorydir}/README" todir="${releasedir}" overwrite="true" />
+        <copy  file="${libdir}/repositorytds.jar" todir="${releasedir}/lib" overwrite="true" />
+        <copy  file="${libdir}/servlet-api.jar" todir="${releasedir}/lib" overwrite="true" />
         <delete file="${libdir}/repository.tar"/>
-        <delete file="${distdir}/repository.zip"/>
-        <zip destfile="${distdir}/repository.zip">
-          <zipfileset dir="${releasedir}" prefix="repository"/>
+        <delete file="${distdir}/${repositoryzip}"/>
+        <zip destfile="${distdir}/${repositoryzip}">
+          <zipfileset dir="${releasedir}" prefix="${rname}"/>
         </zip>
 
 <!--
         <tar 
             destfile="${libdir}/repository.tar">
           <tarfileset dir="${releasedir}"
-              prefix="repository">
+              prefix="${rname}">
               <include name="*"/>
          </tarfileset>
 
@@ -386,7 +407,7 @@
        </delete>
       <war webxml="${repositorydir}/release/web.xml" destfile="${distdir}/repository.war">
           <webinf file="${repositorydir}/release/repository.properties"/>
-          <lib file="${distdir}/repository.jar"/>
+          <lib file="${distdir}/${repositoryjar}"/>
           <lib file="${libdir}/idv.jar"/>
           <lib file="${libdir}/repositorylib.jar"/>
           <lib file="${libdir}/repositorytds.jar"/>
