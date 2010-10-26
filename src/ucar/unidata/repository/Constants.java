@@ -1713,5 +1713,11 @@ public interface Constants {
     public static long GIGA = MEGA * 1000;
 
 
+    public static final String PROP_PROXY_USER= "ramadda.proxy.user";
+    public static final String PROP_PROXY_PASSWORD= "ramadda.proxy.password";
+    public static final String PROP_PROXY_HOST= "ramadda.proxy.host";
+    public static final String PROP_PROXY_PORT= "ramadda.proxy.port";
+
+
 
 }

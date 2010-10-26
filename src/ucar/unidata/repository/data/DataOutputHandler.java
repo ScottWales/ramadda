@@ -61,6 +61,11 @@ import ucar.nc2.dt.GridDatatype;
 //import ucar.nc2.dt.PointObsDataset;
 //import ucar.nc2.dt.PointObsDatatype;
 
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.*;
+
+
+
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.TypedDatasetFactory;
@@ -502,10 +507,19 @@ public class DataOutputHandler extends OutputHandler {
             getRepository().getStorageManager().makeTemporaryDir("nj22");
         nj22Dir.setMaxFiles(500);
 
+        // Apply settings for the NetcdfDataset
+        ucar.nc2.dataset.NetcdfDataset.setHttpClient(getRepository().getHttpClient());
+     
+       
+        // Apply settings for the opendap.dap
+        opendap.dap.DConnect2.setHttpClient(getRepository().getHttpClient());
+
+
+
         //Set the temp file and the cache policy
         ucar.nc2.util.DiskCache.setRootDirectory(nj22Dir.getDir().toString());
         ucar.nc2.util.DiskCache.setCachePolicy(true);
-        ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache(true);
+        //        ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache(true);
         ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache(true);
 
         dataCacheDir = getRepository().getStorageManager().makeTemporaryDir(

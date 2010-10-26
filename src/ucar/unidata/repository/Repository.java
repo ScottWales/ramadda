@@ -22,13 +22,8 @@
 package ucar.unidata.repository;
 
 
-import org.w3c.dom.*;
-
-import ucar.unidata.repository.auth.*;
 
 import ucar.unidata.repository.database.*;
-
-
 
 import ucar.unidata.repository.ftp.FtpManager;
 import ucar.unidata.repository.harvester.*;
@@ -109,6 +104,13 @@ import java.util.jar.*;
 import java.util.regex.*;
 import java.util.zip.*;
 
+
+import org.w3c.dom.*;
+
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.*;
+
+import ucar.unidata.repository.auth.*;
 
 
 
@@ -493,6 +495,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
         new ArrayList<PageDecorator>();
 
 
+    private HttpClient httpClient;
+
     /**
      * _more_
      *
@@ -531,10 +535,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
         setHostname(localMachine.getHostName());
         setIpAddress(localMachine.getHostAddress());
         this.args = args;
-
     }
 
-
+    
     /**
      * _more_
      *
@@ -928,18 +931,55 @@ public class Repository extends RepositoryBase implements RequestHandler {
         defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(RepositoryUtil.TIMEZONE_DEFAULT);
 
-
-
         //This will end up being from the properties
         htdocRoots.addAll(
             StringUtil.split(
                 getProperty("ramadda.html.htdocroots", BLANK), ";", true,
                 true));
 
+        initProxy();
     }
 
 
 
+    private void initProxy() {
+        //First try the local ramadda properties
+        //The default value is the system property 
+        String proxyHost = getProperty(PROP_PROXY_HOST,getProperty("http.proxyHost",(String)null));
+        String proxyPort = getProperty(PROP_PROXY_PORT,getProperty("http.proxyPort","8080"));
+        final String proxyUser = getProperty(PROP_PROXY_USER,(String)null);
+        final String proxyPass = getProperty(PROP_PROXY_PASSWORD,(String)null);
+        httpClient = new HttpClient();
+        if(proxyHost!=null) {
+            getLogManager().logInfoAndPrint("Setting proxy server to:" + proxyHost+":" + proxyPort);
+            System.setProperty("http.proxyHost", proxyHost);
+            System.setProperty("http.proxyPort", proxyPort);
+            System.setProperty("ftp.proxyHost", proxyHost);
+            System.setProperty("ftp.proxyPort", proxyPort);
+            httpClient.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));    
+            // Just if proxy has authentication credentials
+            if (proxyUser != null) {
+                getLogManager().logInfoAndPrint("Setting proxy user to:" + proxyUser);
+                httpClient.getParams().setAuthenticationPreemptive(true);
+                Credentials defaultcreds = new UsernamePasswordCredentials(proxyUser, proxyPass);
+                httpClient.getState().setProxyCredentials(new AuthScope(proxyHost, Integer.parseInt(proxyPort), 
+                                                                        AuthScope.ANY_REALM),
+                                                          defaultcreds);  
+                Authenticator.setDefault(new Authenticator() {
+                        public PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(proxyUser,proxyPass.toCharArray());
+                        }
+                    });
+            }
+        }
+
+
+    }
+
+
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
 
 
     /**
