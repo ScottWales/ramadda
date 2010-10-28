@@ -3035,14 +3035,16 @@ public class Repository extends RepositoryBase implements RequestHandler {
         StringBuffer favorites = new StringBuffer();
         if (favoritesList.size() > 0) {
             List favoriteLinks = new ArrayList();
+            int favoriteCnt = 0;
             for (FavoriteEntry favorite : favoritesList) {
+                if(favoriteCnt++>100) break;
                 Entry entry = favorite.getEntry();
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, entry.getLabel(), null,
                                           false);
                 String link = favoritesWrapper.replace("${link}",
                                   entryLink.toString());
-                favoriteLinks.add("<nobr>" + link + "<nobr>");
+                favoriteLinks.add("<nobr>" + link + "</nobr>");
             }
             favorites.append(favoritesTemplate.replace("${entries}",
                     StringUtil.join(favoritesSeparator, favoriteLinks)));

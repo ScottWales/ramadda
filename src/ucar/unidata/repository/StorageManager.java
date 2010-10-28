@@ -1305,7 +1305,7 @@ public class StorageManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public String readUncheckedSystemResource(String path) throws Exception {
-        checkPath(path);
+        //        checkPath(path);
         return IOUtil.readContents(path, getClass());
     }
 
@@ -1348,7 +1348,7 @@ public class StorageManager extends RepositoryManager {
      */
     public String readUncheckedSystemResource(String path, String dflt)
             throws Exception {
-        checkPath(path);
+        //        checkPath(path);
         return IOUtil.readContents(path, getClass(), dflt);
     }
 
