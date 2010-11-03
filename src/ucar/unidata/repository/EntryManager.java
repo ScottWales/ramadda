@@ -948,7 +948,6 @@ return new Result(title, sb);
             }
 
 
-
             if (request.exists(ARG_DELETE_CONFIRM)) {
                 if (entry.isTopGroup()) {
                     return new Result(
@@ -2868,6 +2867,35 @@ return new Result(title, sb);
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
+    }
+
+
+
+    public void  entryBoundsChanged(Entry entry) throws Exception {
+        Connection connection = getDatabaseManager().getConnection();
+	try {
+	    Statement statement = connection.createStatement();
+	    String sql =
+		"UPDATE  " + Tables.ENTRIES.NAME + " SET "
+		+ columnSet(Tables.ENTRIES.COL_NORTH, entry.getNorth()) +"," 
+		+ columnSet(Tables.ENTRIES.COL_SOUTH, entry.getSouth()) +"," 
+		+ columnSet(Tables.ENTRIES.COL_EAST, entry.getEast()) +"," 
+		+ columnSet(Tables.ENTRIES.COL_WEST, entry.getWest()) +"," 
+		+ columnSet(Tables.ENTRIES.COL_ALTITUDEBOTTOM, entry.getAltitudeBottom()) +"," 
+		+ columnSet(Tables.ENTRIES.COL_ALTITUDETOP, entry.getAltitudeTop()) 
+		+ " WHERE "
+		+ SqlUtil.eq(Tables.ENTRIES.COL_ID,
+			     SqlUtil.quote(entry.getId()));
+	    statement.execute(sql);
+	    getDatabaseManager().closeStatement(statement);
+    
+	} finally {
+	    getDatabaseManager().closeConnection(connection);
+	}
+    }
+
+    private String columnSet(String col, double value) {
+	return  SqlUtil.unDot(col) + " = " + value;
     }
 
 
@@ -5284,6 +5312,11 @@ return new Result(title, sb);
             TypeHandler typeHandler = entry.getTypeHandler();
             typeHandler = typeHandler.getTypeHandlerForCopy(entry);
 
+	    Group parentGroup = entry.getParentGroup();
+	    if(parentGroup!=null) {
+		parentGroup.getTypeHandler().childEntryChanged(entry, isNew);
+	    }
+	    
             List<TypeInsertInfo> typeInserts =
                 new ArrayList<TypeInsertInfo>();
             //            String            sql           = typeHandler.getInsertSql(isNew);
@@ -5461,7 +5494,8 @@ return new Result(title, sb);
             for (Entry entry : entries) {
                 String path = getStorageManager().resourceToDB(
                                                                entry.getResource().getPath());
-                String key = entry.getParentGroup().getId() + "_" + path;
+		Group parentGroup = entry.getParentGroup();
+                String key = parentGroup.getId() + "_" + path;
                 if (seenResources.contains(key)) {
                     nonUniqueOnes.add(entry);
                     //                    System.out.println("seen resource:" + path);

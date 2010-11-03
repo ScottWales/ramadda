@@ -36,6 +36,8 @@ import ucar.unidata.xml.XmlEncoder;
 import java.io.File;
 
 import java.util.ArrayList;
+import java.awt.geom.Rectangle2D;
+
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -217,6 +219,19 @@ public class Entry extends Entity {
         setSouth(template.getSouth());
         setEast(template.getEast());
         setWest(template.getWest());
+    }
+
+    public Rectangle2D.Double getBounds() {
+	return  new Rectangle2D.Double(west, south,
+				       east - west, north - south);
+    }
+
+
+    public void setBounds(Rectangle2D.Double rect) {
+	west = rect.getX();
+	south = rect.getY();
+	east =  west+rect.getWidth();
+	north =  south+rect.getHeight();
     }
 
 

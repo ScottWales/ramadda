@@ -336,6 +336,9 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public void childEntryChanged( Entry entry, boolean isNew) {
+    }
+
     /**
      * _more_
      *
