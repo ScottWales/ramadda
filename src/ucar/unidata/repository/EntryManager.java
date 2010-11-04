@@ -2,6 +2,7 @@
  * Copyright 1997-2010 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
+ * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -56,8 +57,8 @@ import ucar.unidata.xml.XmlNodeList;
 import ucar.unidata.xml.XmlUtil;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
 
 
 import java.io.*;
@@ -992,9 +993,9 @@ return new Result(title, sb);
         }
 
         boolean isLocalFile   = false;
-        String localFileName = null;
+        String  localFileName = null;
         if (request.defined(ARG_LOCALFILE)) {
-            if (!user.getAdmin()) {
+            if ( !user.getAdmin()) {
                 fatalError(request,
                            "Only administrators can add a local file");
             }
@@ -1034,19 +1035,19 @@ return new Result(title, sb);
             }
 
 
-            List<String> resources     = new ArrayList<String>();
-            List<Group>  parents       = new ArrayList<Group>();
-            List<String> origNames     = new ArrayList<String>();
+            List<String> resources    = new ArrayList<String>();
+            List<Group>  parents      = new ArrayList<Group>();
+            List<String> origNames    = new ArrayList<String>();
 
-            String       resource      = "";
-            String       urlArgument   = request.getString(ARG_URL, BLANK);
-            String       filename      = request.getUploadedFile(ARG_FILE);
-            boolean      unzipArchive  = false;
+            String       resource     = "";
+            String       urlArgument  = request.getString(ARG_URL, BLANK);
+            String       filename     = request.getUploadedFile(ARG_FILE);
+            boolean      unzipArchive = false;
 
-            boolean      isFile        = false;
-            String       resourceName  = request.getString(ARG_FILE, BLANK);
+            boolean      isFile       = false;
+            String       resourceName = request.getString(ARG_FILE, BLANK);
 
-            if (isLocalFile && localFileName!=null) {
+            if (isLocalFile && (localFileName != null)) {
                 filename = localFileName;
             }
 
@@ -1310,32 +1311,32 @@ return new Result(title, sb);
                 entries.add(entry);
             }
         } else {
-            boolean fileUpload = false;
-            String newResourceName = request.getUploadedFile(ARG_FILE);
-            String newResourceType = null;
+            boolean fileUpload      = false;
+            String  newResourceName = request.getUploadedFile(ARG_FILE);
+            String  newResourceType = null;
 
             //TODO: If they select a URL to download we don't handle that now
 
             //Did they upload a new file???
             if (newResourceName != null) {
                 newResourceName = getStorageManager().moveToStorage(request,
-                                                             new File(newResourceName)).toString();
+                        new File(newResourceName)).toString();
                 newResourceType = Resource.TYPE_STOREDFILE;
-            } else if(isLocalFile) {
+            } else if (isLocalFile) {
                 newResourceName = localFileName;
                 newResourceType = Resource.TYPE_LOCAL_FILE;
-            } else  if (request.defined(ARG_URL)) {
-                newResourceName = request.getString(ARG_URL,null);
+            } else if (request.defined(ARG_URL)) {
+                newResourceName = request.getString(ARG_URL, null);
                 newResourceType = Resource.TYPE_URL;
             }
 
             if (newResourceName != null) {
                 //If it was a stored file then remove the old one
-                if(entry.getResource().isStoredFile()) {
+                if (entry.getResource().isStoredFile()) {
                     getStorageManager().removeFile(entry.getResource());
                 }
                 entry.setResource(new Resource(newResourceName,
-                                               newResourceType));
+                        newResourceType));
             }
 
             if (entry.isTopGroup()) {
@@ -1621,6 +1622,13 @@ return new Result(title, sb);
                                        entry.getNorth()));
             entry.setWest(request.get(ARG_AREA + "_west", entry.getWest()));
             entry.setEast(request.get(ARG_AREA + "_east", entry.getEast()));
+        }
+
+        if (request.get(ARG_SETBOUNDSFROMCHILDREN, false)) {
+            Rectangle2D.Double rect = getBounds(getChildren(request, entry));
+            if (rect != null) {
+                entry.setBounds(rect);
+            }
         }
 
         double altitudeTop    = Entry.NONGEO;
@@ -2871,32 +2879,93 @@ return new Result(title, sb);
 
 
 
-    public void  entryBoundsChanged(Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    public void setEntryBounds(Entry entry) throws Exception {
         Connection connection = getDatabaseManager().getConnection();
-	try {
-	    Statement statement = connection.createStatement();
-	    String sql =
-		"UPDATE  " + Tables.ENTRIES.NAME + " SET "
-		+ columnSet(Tables.ENTRIES.COL_NORTH, entry.getNorth()) +"," 
-		+ columnSet(Tables.ENTRIES.COL_SOUTH, entry.getSouth()) +"," 
-		+ columnSet(Tables.ENTRIES.COL_EAST, entry.getEast()) +"," 
-		+ columnSet(Tables.ENTRIES.COL_WEST, entry.getWest()) +"," 
-		+ columnSet(Tables.ENTRIES.COL_ALTITUDEBOTTOM, entry.getAltitudeBottom()) +"," 
-		+ columnSet(Tables.ENTRIES.COL_ALTITUDETOP, entry.getAltitudeTop()) 
-		+ " WHERE "
-		+ SqlUtil.eq(Tables.ENTRIES.COL_ID,
-			     SqlUtil.quote(entry.getId()));
-	    statement.execute(sql);
-	    getDatabaseManager().closeStatement(statement);
-    
-	} finally {
-	    getDatabaseManager().closeConnection(connection);
-	}
+        try {
+            Statement statement = connection.createStatement();
+            String sql =
+                "UPDATE  " + Tables.ENTRIES.NAME + " SET "
+                + columnSet(Tables.ENTRIES.COL_NORTH, entry.getNorth()) + ","
+                + columnSet(Tables.ENTRIES.COL_SOUTH, entry.getSouth()) + ","
+                + columnSet(Tables.ENTRIES.COL_EAST, entry.getEast()) + ","
+                + columnSet(Tables.ENTRIES.COL_WEST, entry.getWest()) + ","
+                + columnSet(
+                    Tables.ENTRIES.COL_ALTITUDEBOTTOM,
+                    entry.getAltitudeBottom()) + ","
+                        + columnSet(
+                            Tables.ENTRIES.COL_ALTITUDETOP,
+                            entry.getAltitudeTop()) + " WHERE "
+                                + SqlUtil.eq(
+                                    Tables.ENTRIES.COL_ID,
+                                    SqlUtil.quote(entry.getId()));
+            statement.execute(sql);
+            getDatabaseManager().closeStatement(statement);
+        } finally {
+            getDatabaseManager().closeConnection(connection);
+        }
     }
 
+    /**
+     * _more_
+     *
+     * @param col _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
     private String columnSet(String col, double value) {
-	return  SqlUtil.unDot(col) + " = " + value;
+        return SqlUtil.unDot(col) + " = " + value;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param children _more_
+     */
+    public void setBoundsOnEntry(final Entry parent, List<Entry> children) {
+        try {
+            Rectangle2D.Double rect = getBounds(children);
+            if ((rect != null) && !rect.equals(parent.getBounds())) {
+                parent.setBounds(rect);
+                setEntryBounds(parent);
+            }
+        } catch (Exception exc) {
+            logError("Updating parent's bounds", exc);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param children _more_
+     *
+     * @return _more_
+     */
+    public Rectangle2D.Double getBounds(List<Entry> children) {
+        Rectangle2D.Double rect = null;
+        for (Entry child : children) {
+            if ( !child.hasAreaDefined()) {
+                continue;
+            }
+            if (rect == null) {
+                rect = child.getBounds();
+            } else {
+                rect.add(child.getBounds());
+            }
+        }
+        return rect;
+    }
+
 
 
     /**
@@ -3828,6 +3897,31 @@ return new Result(title, sb);
                                  String linkText, String url,
                                  boolean forTreeNavigation)
             throws Exception {
+        return getAjaxLink(request, entry, linkText, url, forTreeNavigation,
+                           null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param linkText _more_
+     * @param url _more_
+     * @param forTreeNavigation _more_
+     * @param textBeforeEntryLink _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public EntryLink getAjaxLink(Request request, Entry entry,
+                                 String linkText, String url,
+                                 boolean forTreeNavigation,
+                                 String textBeforeEntryLink)
+            throws Exception {
+
+
 
         if (url == null) {
             url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
@@ -3958,7 +4052,11 @@ return new Result(title, sb);
         img = prefix + img;
 
         sb.append(img);
+
         sb.append(HtmlUtil.space(1));
+        if (textBeforeEntryLink != null) {
+            sb.append(textBeforeEntryLink);
+        }
         getMetadataManager().decorateEntry(request, entry, sb, true);
         if (showLink) {
             sb.append(getTooltipLink(request, entry, linkText, url));
@@ -5312,11 +5410,11 @@ return new Result(title, sb);
             TypeHandler typeHandler = entry.getTypeHandler();
             typeHandler = typeHandler.getTypeHandlerForCopy(entry);
 
-	    Group parentGroup = entry.getParentGroup();
-	    if(parentGroup!=null) {
-		parentGroup.getTypeHandler().childEntryChanged(entry, isNew);
-	    }
-	    
+            Group parentGroup = entry.getParentGroup();
+            if (parentGroup != null) {
+                parentGroup.getTypeHandler().childEntryChanged(entry, isNew);
+            }
+
             List<TypeInsertInfo> typeInserts =
                 new ArrayList<TypeInsertInfo>();
             //            String            sql           = typeHandler.getInsertSql(isNew);
@@ -5493,9 +5591,9 @@ return new Result(title, sb);
             long t1 = System.currentTimeMillis();
             for (Entry entry : entries) {
                 String path = getStorageManager().resourceToDB(
-                                                               entry.getResource().getPath());
-		Group parentGroup = entry.getParentGroup();
-                String key = parentGroup.getId() + "_" + path;
+                                  entry.getResource().getPath());
+                Group  parentGroup = entry.getParentGroup();
+                String key         = parentGroup.getId() + "_" + path;
                 if (seenResources.contains(key)) {
                     nonUniqueOnes.add(entry);
                     //                    System.out.println("seen resource:" + path);
@@ -6198,13 +6296,25 @@ return new Result(title, sb);
 
 
 
-    public List<Entry> findEntriesWithName(Request request, Group parent, String name)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param parent _more_
+     * @param name _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> findEntriesWithName(Request request, Group parent,
+                                           String name)
             throws Exception {
-        List<Entry> entries = new ArrayList<Entry>();
-        String groupName = ((parent == null)
-                            ? ""
-                            : parent.getFullName()) + Group.IDDELIMITER
-                                + name;
+        List<Entry> entries   = new ArrayList<Entry>();
+        String      groupName = ((parent == null)
+                                 ? ""
+                                 : parent.getFullName()) + Group.IDDELIMITER
+                                     + name;
         Group group = getGroupFromCache(groupName, false);
         if (group != null) {
             entries.add(group);
@@ -6214,7 +6324,7 @@ return new Result(title, sb);
         if (ids.length == 0) {
             return entries;
         }
-        for(String id: ids) {
+        for (String id : ids) {
             entries.add(getEntry(request, id, false));
         }
         return entries;
@@ -6251,8 +6361,19 @@ return new Result(title, sb);
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param parent _more_
+     * @param resource _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String[] findEntryIdsWithResource(Request request, Group parent,
-                                         String resource)
+                                             String resource)
             throws Exception {
         String[] ids =
             SqlUtil.readString(
@@ -6263,7 +6384,8 @@ return new Result(title, sb);
                             Clause.eq(
                                 Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                 parent.getId()), Clause.eq(
-                                    Tables.ENTRIES.COL_RESOURCE, resource)))));
+                                    Tables.ENTRIES.COL_RESOURCE,
+                                    resource)))));
 
         return ids;
     }
@@ -6282,8 +6404,28 @@ return new Result(title, sb);
     public Group findGroupFromName(String name, User user,
                                    boolean createIfNeeded)
             throws Exception {
-        Entry entry = findEntryFromName(name, user, createIfNeeded, true,
-                                        false);
+        return findGroupFromName(name, user, createIfNeeded,
+                                 TypeHandler.TYPE_GROUP);
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param user _more_
+     * @param createIfNeeded _more_
+     * @param lastGroupType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Group findGroupFromName(String name, User user,
+                                   boolean createIfNeeded,
+                                   String lastGroupType)
+            throws Exception {
+        Entry entry = findEntryFromName(name, user, createIfNeeded,
+                                        lastGroupType);
         if ((entry != null) && (entry instanceof Group)) {
             return (Group) entry;
         }
@@ -6305,7 +6447,7 @@ return new Result(title, sb);
     public Entry findEntryFromName(String name, User user,
                                    boolean createIfNeeded)
             throws Exception {
-        return findEntryFromName(name, user, createIfNeeded, false, false);
+        return findEntryFromName(name, user, createIfNeeded, null);
     }
 
 
@@ -6380,9 +6522,9 @@ return new Result(title, sb);
      *
      * @throws Exception _more_
      */
-    private Entry findEntryFromName(String name, User user,
-                                    boolean createIfNeeded, boolean isGroup,
-                                    boolean isTop)
+    private Entry xxxfindEntryFromName(String name, User user,
+                                       boolean createIfNeeded,
+                                       boolean isGroup, boolean isTop)
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
         String topGroupName = ((topGroup != null)
@@ -6396,6 +6538,7 @@ return new Result(title, sb);
 
         List<String> toks = (List<String>) StringUtil.split(name,
                                 Group.PATHDELIMITER, true, true);
+        System.err.println("toks:" + toks);
         Group  parent = null;
         String lastName;
         if ((toks.size() == 0) || (toks.size() == 1)) {
@@ -6426,8 +6569,6 @@ return new Result(title, sb);
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COLUMNS,
                                         Tables.ENTRIES.NAME, clauses);
-
-
         List<Entry> entries = readEntries(statement);
         getDatabaseManager().closeAndReleaseConnection(statement);
 
@@ -6441,6 +6582,75 @@ return new Result(title, sb);
         }
         return entry;
         //        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param user _more_
+     * @param createIfNeeded _more_
+     * @param lastGroupType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Entry findEntryFromName(String name, User user,
+                                    boolean createIfNeeded,
+                                    String lastGroupType)
+            throws Exception {
+        name = name.trim();
+        String topGroupName = getTopGroup().getName();
+        if (name.equals(topGroupName)) {
+            return getTopGroup();
+        }
+        //Tack on the top group name if its not there
+        if ( !name.startsWith(topGroupName + Group.PATHDELIMITER)) {
+            name = topGroupName + Group.PATHDELIMITER + name;
+        }
+        //split the list
+        List<String> toks = (List<String>) StringUtil.split(name,
+                                Group.PATHDELIMITER, true, true);
+        //        System.err.println("toks:" + toks);
+        //Now remove the top group
+        toks.remove(0);
+        Entry currentEntry = getTopGroup();
+
+        if (lastGroupType == null) {
+            lastGroupType = TypeHandler.TYPE_GROUP;
+        }
+        String groupType = TypeHandler.TYPE_GROUP;
+
+        for (int i = 0; i < toks.size(); i++) {
+            boolean lastOne   = (i == toks.size() - 1);
+            String  childName = toks.get(i);
+            //  System.err.println("   looking for:" + childName);
+            List<Clause> clauses = new ArrayList<Clause>();
+            clauses.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
+                                  currentEntry.getId()));
+            clauses.add(Clause.eq(Tables.ENTRIES.COL_NAME, childName));
+            List<Entry> entries = readEntries(
+                                      getDatabaseManager().select(
+                                          Tables.ENTRIES.COLUMNS,
+                                          Tables.ENTRIES.NAME, clauses));
+            if (entries.size() > 0) {
+                currentEntry = entries.get(0);
+            } else {
+                if ( !createIfNeeded) {
+                    return null;
+                }
+                if (lastOne) {
+                    currentEntry = makeNewGroup((Group) currentEntry,
+                            childName, user, null, lastGroupType);
+                } else {
+                    currentEntry = makeNewGroup((Group) currentEntry,
+                            childName, user, null, groupType);
+                }
+            }
+        }
+        return currentEntry;
     }
 
 
@@ -6480,6 +6690,7 @@ return new Result(title, sb);
         return makeNewGroup(parent, name, user, template,
                             TypeHandler.TYPE_GROUP);
     }
+
 
 
     /**

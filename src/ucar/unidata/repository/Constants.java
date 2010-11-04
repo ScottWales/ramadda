@@ -2,6 +2,7 @@
  * Copyright 1997-2010 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
+ * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package ucar.unidata.repository;
@@ -167,7 +169,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_HEADER = "ramadda.icon.header";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_HELP = "ramadda.icon.help";
 
     /** _more_ */
@@ -354,6 +356,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_DB_DESCRIPTION = "description";
 
+    /** _more_          */
     public static final String ATTR_FORUSER = "foruser";
 
     /** _more_ */
@@ -401,6 +404,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_PARENT = "parent";
 
+    /** _more_          */
     public static final String ATTR_SUPER = "super";
 
     /** _more_ */
@@ -436,6 +440,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_CREATEDATE = "createdate";
 
+    /** _more_          */
     public static final String ATTR_CHANGEDATE = "changedate";
 
     /** _more_ */
@@ -454,8 +459,13 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_WEST = "west";
 
+    /** _more_          */
     public static final String ATTR_ALTITUDE = "altitude";
+
+    /** _more_          */
     public static final String ATTR_ALTITUDE_TOP = "altitudetop";
+
+    /** _more_          */
     public static final String ATTR_ALTITUDE_BOTTOM = "altitudebottom";
 
 
@@ -519,12 +529,19 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_AREA = "area";
 
+    /** _more_          */
     public static final String ARG_LOCATION = "location";
+
+    /** _more_          */
     public static final String ARG_LOCATION_LATITUDE = "location.latitude";
+
+    /** _more_          */
     public static final String ARG_LOCATION_LONGITUDE = "location.longitude";
 
+    /** _more_          */
     public static final String ARG_BBOX = "bbox";
 
+    /** _more_          */
     public static final String ARG_DEFAULTBBOX = "defaultbbox";
 
     /** _more_ */
@@ -602,6 +619,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CREATEDATE = "createdate";
 
+    /** _more_          */
     public static final String ARG_CHANGEDATE = "changedate";
 
     /** _more_ */
@@ -619,16 +637,30 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_DATE = "date";
 
-    public static final String  ARG_DATE_OVERLAPS = "date.overlaps";
-    public static final String  ARG_DATE_SEARCHMODE = "date.searchmode";
-    public static final String  ARG_DATE_NODATAMODE = "date.nodatamode";
-    public static final String  VALUE_NODATAMODE_NONE = "none";
-    public static final String  VALUE_NODATAMODE_INCLUDE = "include";
+    /** _more_          */
+    public static final String ARG_DATE_OVERLAPS = "date.overlaps";
+
+    /** _more_          */
+    public static final String ARG_DATE_SEARCHMODE = "date.searchmode";
+
+    /** _more_          */
+    public static final String ARG_DATE_NODATAMODE = "date.nodatamode";
+
+    /** _more_          */
+    public static final String VALUE_NODATAMODE_NONE = "none";
+
+    /** _more_          */
+    public static final String VALUE_NODATAMODE_INCLUDE = "include";
 
 
-    public static final String  DATE_SEARCHMODE_OVERLAPS = "overlaps";
-    public static final String  DATE_SEARCHMODE_CONTAINEDBY = "containedby";
-    public static final String  DATE_SEARCHMODE_CONTAINS = "contains";
+    /** _more_          */
+    public static final String DATE_SEARCHMODE_OVERLAPS = "overlaps";
+
+    /** _more_          */
+    public static final String DATE_SEARCHMODE_CONTAINEDBY = "containedby";
+
+    /** _more_          */
+    public static final String DATE_SEARCHMODE_CONTAINS = "contains";
 
 
     /** _more_ */
@@ -901,10 +933,19 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_USER_HOME = "userhome";
 
-    public static final String ARG_ALTITUDE         = "altitude";
-    public static final String ARG_ALTITUDE_TOP     = "altitude.top";
-    public static final String ARG_ALTITUDE_BOTTOM  = "altitude.bottom";
+    /** _more_          */
+    public static final String ARG_ALTITUDE = "altitude";
 
+    /** _more_          */
+    public static final String ARG_ALTITUDE_TOP = "altitude.top";
+
+    /** _more_          */
+    public static final String ARG_ALTITUDE_BOTTOM = "altitude.bottom";
+
+
+    /** _more_          */
+    public static final String ARG_SETBOUNDSFROMCHILDREN =
+        "setboundsfromchildren";
 
     /** _more_ */
     public static final String ARG_NORTH = "north";
@@ -1063,10 +1104,13 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_URL = "url";
 
+    /** _more_          */
     public static final String ARG_MD5 = "md5";
 
+    /** _more_          */
     public static final String ATTR_MD5 = "md5";
 
+    /** _more_          */
     public static final String ARG_FILESIZE = "filesize";
 
     /** _more_ */
@@ -1713,10 +1757,17 @@ public interface Constants {
     public static long GIGA = MEGA * 1000;
 
 
-    public static final String PROP_PROXY_USER= "ramadda.proxy.user";
-    public static final String PROP_PROXY_PASSWORD= "ramadda.proxy.password";
-    public static final String PROP_PROXY_HOST= "ramadda.proxy.host";
-    public static final String PROP_PROXY_PORT= "ramadda.proxy.port";
+    /** _more_          */
+    public static final String PROP_PROXY_USER = "ramadda.proxy.user";
+
+    /** _more_          */
+    public static final String PROP_PROXY_PASSWORD = "ramadda.proxy.password";
+
+    /** _more_          */
+    public static final String PROP_PROXY_HOST = "ramadda.proxy.host";
+
+    /** _more_          */
+    public static final String PROP_PROXY_PORT = "ramadda.proxy.port";
 
 
 

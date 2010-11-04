@@ -2,6 +2,7 @@
  * Copyright 1997-2010 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
+ * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package ucar.unidata.repository.output;
@@ -1347,7 +1349,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                 cbxSB.append(HtmlUtil.span(cbx, HtmlUtil.id(cbxWrapperId)));
             }
 
-            if (showCrumbs) {
+            if (false && showCrumbs) {
                 String img =
                     HtmlUtil.img(getEntryManager().getIconUrl(request,
                         entry));
@@ -1369,8 +1371,22 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                 sb.append(cbxSB);
                 sb.append(HtmlUtil.br());
             } else {
+                String crumbs = "";
+                if (showCrumbs) {
+                    crumbs = getEntryManager().getBreadCrumbs(request,
+                            (hideParents
+                             ? entry.getParentGroup()
+                             : entry), null, 60);
+                    if (hideParents) {
+                        crumbs = HtmlUtil.makeToggleInline("",
+                                crumbs + HtmlUtil.pad("&gt;"), false);
+                    }
+
+                }
+
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, entry.getLabel());
+                                          entry, entry.getLabel(), null,
+                                          true, crumbs);
                 entryLink.setLink(cbxSB + entryLink.getLink());
                 decorateEntryRow(request, entry, sb, entryLink, rowId, "");
             }
@@ -1403,6 +1419,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             rowId = "entryrow_" + (HtmlUtil.blockCnt++);
         }
 
+
         sb.append(
             HtmlUtil.open(
                 HtmlUtil.TAG_DIV,
@@ -1425,7 +1442,9 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
 
         sb.append("<td>");
         sb.append(extra);
+        //        sb.append(crumbs);
         sb.append(link.getLink());
+
 
         /*
         String desc = entry.getDescription();
@@ -1607,10 +1626,10 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String PROP_REQUEST = "request";
 
-    /** _more_          */
+    /** _more_ */
     public static String TYPE_WIKIPAGE = "wikipage";
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
                                                      "wiki.view",
                                                      OutputType.TYPE_HTML,

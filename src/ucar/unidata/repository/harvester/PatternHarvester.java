@@ -2,6 +2,7 @@
  * Copyright 1997-2010 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
+ * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package ucar.unidata.repository.harvester;
@@ -60,8 +62,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -131,6 +133,7 @@ public class PatternHarvester extends Harvester {
     /** _more_ */
     private Hashtable dirMap = new Hashtable();
 
+    /** _more_          */
     private HashSet seenFiles = new HashSet();
 
     /** _more_ */
@@ -176,14 +179,28 @@ public class PatternHarvester extends Harvester {
         init();
     }
 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     *
+     * @return _more_
+     */
     private boolean haveProcessedFile(String f) {
-        if(seenFiles.contains(f)) return true;
+        if (seenFiles.contains(f)) {
+            return true;
+        }
         return false;
     }
 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     */
     private void putProcessedFile(String f) {
         //Limit the size to 10000
-        if(seenFiles.size()>10000) {
+        if (seenFiles.size() > 10000) {
             seenFiles = new HashSet();
         }
         seenFiles.add(f);
@@ -205,13 +222,13 @@ public class PatternHarvester extends Harvester {
                 filePatternString);
 
 
-        notfilePatternString = XmlUtil.getAttribute(element, ATTR_NOTFILEPATTERN,
-                                                    notfilePatternString);
+        notfilePatternString = XmlUtil.getAttribute(element,
+                ATTR_NOTFILEPATTERN, notfilePatternString);
 
 
-        filePattern = null;
+        filePattern    = null;
         notfilePattern = null;
-        sdf         = null;
+        sdf            = null;
         init();
         dateFormat = XmlUtil.getAttribute(element, ATTR_DATEFORMAT,
                                           dateFormat);
@@ -220,6 +237,11 @@ public class PatternHarvester extends Harvester {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDescription() {
         return "Local Files";
     }
@@ -251,7 +273,7 @@ public class PatternHarvester extends Harvester {
         super.applyEditForm(request);
 
         //Reset the seen files
-        seenFiles = new HashSet();
+        seenFiles   = new HashSet();
 
         lastRunTime = 0;
         filePatternString = request.getUnsafeString(ATTR_FILEPATTERN,
@@ -259,10 +281,10 @@ public class PatternHarvester extends Harvester {
         filePattern = null;
 
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,
-                                                       notfilePatternString).trim();
+                notfilePatternString).trim();
         notfilePattern = null;
 
-        sdf         = null;
+        sdf            = null;
         init();
         dateFormat = request.getUnsafeString(ATTR_DATEFORMAT, dateFormat);
         if (request.exists(ATTR_MOVETOSTORAGE)) {
@@ -333,10 +355,12 @@ public class PatternHarvester extends Harvester {
                                          filePatternString,
                                          HtmlUtil.SIZE_60)));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Exclude files that match pattern"),
-                                     HtmlUtil.input(ATTR_NOTFILEPATTERN,
-                                                    notfilePatternString,
-                                                    HtmlUtil.SIZE_60)));
+        sb.append(
+            HtmlUtil.formEntry(
+                msgLabel("Exclude files that match pattern"),
+                HtmlUtil.input(
+                    ATTR_NOTFILEPATTERN, notfilePatternString,
+                    HtmlUtil.SIZE_60)));
 
         sb.append(
             HtmlUtil.colspan(
@@ -364,7 +388,6 @@ public class PatternHarvester extends Harvester {
         sb.append(HtmlUtil.formEntry(msgLabel("Description template"),
                                      HtmlUtil.input(ATTR_DESCTEMPLATE,
                                          descTemplate, HtmlUtil.SIZE_60)));
-
 
         sb.append(HtmlUtil.formEntry(msgLabel("Entry type"),
                                      repository.makeTypeSelect(request,
@@ -418,7 +441,7 @@ public class PatternHarvester extends Harvester {
             if ((dateFormat != null) && (dateFormat.length() > 0)) {
                 for (String tok :
                         (List<String>) StringUtil.split(dateFormat, ",",
-                        true, true)) {
+                            true, true)) {
                     sdf.add(new SimpleDateFormat(tok));
                 }
             } else {
@@ -438,7 +461,7 @@ public class PatternHarvester extends Harvester {
      */
     private void init() {
 
-        if(notfilePattern==null && notfilePatternString.length()>0) {
+        if ((notfilePattern == null) && (notfilePatternString.length() > 0)) {
             notfilePattern = Pattern.compile(notfilePatternString);
         }
 
@@ -498,9 +521,9 @@ public class PatternHarvester extends Harvester {
                 dirMsg = "No directories found<br>";
             } else {
                 dirMsg = "Scanning:" + dirs.size() + " directories";
-                String dirBlock = HtmlUtil.insetDiv(StringUtil.join("<br>", dirs),0,10,0,0);
-                dirMsg = HtmlUtil.makeShowHideBlock(dirMsg,
-                                                    dirBlock, false);
+                String dirBlock = HtmlUtil.insetDiv(StringUtil.join("<br>",
+                                      dirs), 0, 10, 0, 0);
+                dirMsg = HtmlUtil.makeShowHideBlock(dirMsg, dirBlock, false);
             }
         }
 
@@ -575,13 +598,13 @@ public class PatternHarvester extends Harvester {
 
         logHarvesterInfo("******************* Starting *************");
         logHarvesterInfo("Looking for initial directory listing:" + rootDir);
-        if(!rootDir.exists()) {
+        if ( !rootDir.exists()) {
             logHarvesterInfo("Root directory does not exist:" + rootDir);
         }
         dirs.add(new FileInfo(rootDir));
         dirs.addAll(FileInfo.collectDirs(rootDir));
 
-        logHarvesterInfo("Found " + dirs.size() +" directories");
+        logHarvesterInfo("Found " + dirs.size() + " directories");
 
         long tt2 = System.currentTimeMillis();
         status = new StringBuffer("");
@@ -612,7 +635,8 @@ public class PatternHarvester extends Harvester {
 
             status.append("Done... sleeping for " + getSleepMinutes()
                           + " minutes<br>");
-            logHarvesterInfo("Sleeping for " + getSleepMinutes() + " minutes");
+            logHarvesterInfo("Sleeping for " + getSleepMinutes()
+                             + " minutes");
             doPause();
             status = new StringBuffer();
         }
@@ -631,6 +655,7 @@ public class PatternHarvester extends Harvester {
      */
     private void collectEntries(boolean firstTime, int timestamp)
             throws Exception {
+
         long           t1        = System.currentTimeMillis();
         List<Entry>    entries   = new ArrayList<Entry>();
         List<Entry>    needToAdd = new ArrayList<Entry>();
@@ -651,8 +676,8 @@ public class PatternHarvester extends Harvester {
                 removeDir(fileInfo);
                 continue;
             }
-            if(!alwaysLookAtDirs) {
-                if (!firstTime && !fileInfo.hasChanged()) {
+            if ( !alwaysLookAtDirs) {
+                if ( !firstTime && !fileInfo.hasChanged()) {
                     continue;
                 }
             }
@@ -668,7 +693,7 @@ public class PatternHarvester extends Harvester {
                 if (f.isDirectory()) {
                     //If this is a directory then check if we already have it 
                     //in the list. If not then add it to the main list and the local list
-                    if (!hasDir(f)) {
+                    if ( !hasDir(f)) {
                         logHarvesterInfo("Found new directory:" + f);
                         FileInfo newFileInfo = addDir(f);
                         tmpDirs.add(newFileInfo);
@@ -677,14 +702,15 @@ public class PatternHarvester extends Harvester {
                 }
                 long fileTime = f.lastModified();
                 if ((fileTime - lastRunTime) < 1000) {
-                    logHarvesterInfo("Skipping this file since its recently changed:" + f);
+                    logHarvesterInfo(
+                        "Skipping this file since its recently changed:" + f);
                     continue;
                 }
                 anyNewThingsToLookAt = true;
                 Entry entry = null;
                 try {
                     entry = processFile(fileInfo, f);
-                } catch(Exception exc) {
+                } catch (Exception exc) {
                     logHarvesterError("Error creating entry:" + f, exc);
                 }
                 if (entry == null) {
@@ -695,21 +721,24 @@ public class PatternHarvester extends Harvester {
                 if (getTestMode() && (entryCnt >= getTestCount())) {
                     return;
                 }
-                if (!getTestMode()) {
+                if ( !getTestMode()) {
                     //Check every time
                     //                    if (entries.size() > 1000) {
                     if (entries.size() > 0) {
-                        List<Entry> nonUniqueOnes  = new ArrayList<Entry>();
+                        List<Entry> nonUniqueOnes = new ArrayList<Entry>();
                         List<Entry> uniqueEntries =
-                            getEntryManager().getUniqueEntries(entries, nonUniqueOnes);
-                        for(Entry e: nonUniqueOnes) {
+                            getEntryManager().getUniqueEntries(entries,
+                                nonUniqueOnes);
+                        for (Entry e : nonUniqueOnes) {
                             logHarvesterInfo("Seen:" + e.getResource());
                         }
                         newEntryCnt += uniqueEntries.size();
                         needToAdd.addAll(uniqueEntries);
-                        for(Entry newEntry: uniqueEntries) { 
-                            logHarvesterInfo("**** New entry:" + newEntry.getResource());
-                            fileInfo.addFile(newEntry.getResource().getPath());
+                        for (Entry newEntry : uniqueEntries) {
+                            logHarvesterInfo("**** New entry:"
+                                             + newEntry.getResource());
+                            fileInfo.addFile(
+                                newEntry.getResource().getPath());
                         }
                         entries = new ArrayList();
                     }
@@ -725,14 +754,17 @@ public class PatternHarvester extends Harvester {
         }
 
         if ( !getTestMode()) {
-            if(entries.size()>0) {
-                List<Entry> nonUniqueOnes  = new ArrayList<Entry>();
-                List<Entry> uniqueEntries = getEntryManager().getUniqueEntries(entries,nonUniqueOnes);
-                for(Entry e: nonUniqueOnes) {
+            if (entries.size() > 0) {
+                List<Entry> nonUniqueOnes = new ArrayList<Entry>();
+                List<Entry> uniqueEntries =
+                    getEntryManager().getUniqueEntries(entries,
+                        nonUniqueOnes);
+                for (Entry e : nonUniqueOnes) {
                     logHarvesterInfo("Seen:" + e.getResource());
                 }
-                for(Entry newEntry: uniqueEntries) { 
-                    logHarvesterInfo("**** New entry:" + newEntry.getResource());
+                for (Entry newEntry : uniqueEntries) {
+                    logHarvesterInfo("**** New entry:"
+                                     + newEntry.getResource());
                 }
                 newEntryCnt += uniqueEntries.size();
                 needToAdd.addAll(uniqueEntries);
@@ -740,33 +772,40 @@ public class PatternHarvester extends Harvester {
             addEntries(needToAdd);
         }
 
-        if(!anyNewThingsToLookAt) {
+        if ( !anyNewThingsToLookAt) {
             logHarvesterInfo("Nothing on disk has changed since last time");
         }
+
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     *
+     * @throws Exception _more_
+     */
     private void addEntries(List<Entry> entries) throws Exception {
-        if (getTestMode() || entries.size()==0) {
+        if (getTestMode() || (entries.size() == 0)) {
             return;
         }
         List<Entry> entriesToAdd = new ArrayList<Entry>();
-        for(Entry newEntry:entries)  {
+        for (Entry newEntry : entries) {
             try {
                 newEntry.getTypeHandler().initializeNewEntry(newEntry);
                 entriesToAdd.add(newEntry);
-            } catch(Exception exc) {
-                logHarvesterError("Error initializing entry:" + newEntry, exc);
+            } catch (Exception exc) {
+                logHarvesterError("Error initializing entry:" + newEntry,
+                                  exc);
             }
         }
         if (getAddMetadata() || getAddShortMetadata()) {
-            getEntryManager().addInitialMetadata(null,
-                                                 entriesToAdd, true,
-                                                 getAddShortMetadata());
+            getEntryManager().addInitialMetadata(null, entriesToAdd, true,
+                    getAddShortMetadata());
         }
-        logHarvesterInfo("Adding "  + entriesToAdd.size() +" new entries");
-        getEntryManager().insertEntries(entriesToAdd, true,
-                                        true);
+        logHarvesterInfo("Adding " + entriesToAdd.size() + " new entries");
+        getEntryManager().insertEntries(entriesToAdd, true, true);
     }
 
     /**
@@ -850,6 +889,8 @@ public class PatternHarvester extends Harvester {
     /**
      * _more_
      *
+     *
+     * @param fileInfo _more_
      * @param f _more_
      *
      * @return _more_
@@ -857,6 +898,7 @@ public class PatternHarvester extends Harvester {
      * @throws Exception _more_
      */
     private Entry processFile(FileInfo fileInfo, File f) throws Exception {
+
         //check if its a hidden file
         if (f.getName().startsWith(".")) {
             logHarvesterInfo("File is hidden file:" + f);
@@ -875,7 +917,7 @@ public class PatternHarvester extends Harvester {
             logHarvesterInfo("file:" + fileName + " does not match pattern");
             return null;
         }
-        if(notfilePattern!=null) {
+        if (notfilePattern != null) {
             matcher = notfilePattern.matcher(fileName);
             if (matcher.find()) {
                 logHarvesterInfo("excluding file:" + fileName);
@@ -886,8 +928,8 @@ public class PatternHarvester extends Harvester {
 
         debug("file:<i>" + fileName + "</i> matches pattern");
 
-        if (!getTestMode()) {
-            if(haveProcessedFile(fileName)) {
+        if ( !getTestMode()) {
+            if (haveProcessedFile(fileName)) {
                 logHarvesterInfo("Already processed file:" + fileName);
                 debug("Already harvested file:" + fileName);
                 return null;
@@ -984,9 +1026,9 @@ public class PatternHarvester extends Harvester {
             return null;
         }
 
-
+        boolean createIfNeeded = !getTestMode();
         Group group = getEntryManager().findGroupFromName(groupName,
-                          getUser(), !getTestMode());
+                          getUser(), createIfNeeded, getLastGroupType());
         Entry    entry = typeHandler.createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
@@ -1001,8 +1043,8 @@ public class PatternHarvester extends Harvester {
             resource = new Resource(fileName, Resource.TYPE_FILE);
         }
         entry.initEntry(name, desc, group, getUser(), resource, "",
-                        createDate.getTime(), createDate.getTime(),fromDate.getTime(),
-                        toDate.getTime(), values);
+                        createDate.getTime(), createDate.getTime(),
+                        fromDate.getTime(), toDate.getTime(), values);
         /*
         if (tag.length() > 0) {
             List tags = StringUtil.split(tag, ",", true, true);
@@ -1016,6 +1058,7 @@ public class PatternHarvester extends Harvester {
         //        System.err.println("Initializing new entry:" + typeHandler.getClass().getName());
         //xxxxx        typeHandler.initializeNewEntry(entry);
         return entry;
+
     }
 
 
@@ -1048,6 +1091,13 @@ public class PatternHarvester extends Harvester {
     }
 
 
-
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getLastGroupType() {
+        return null;
+    }
 
 }
