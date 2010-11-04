@@ -1616,12 +1616,16 @@ return new Result(title, sb);
             entry.setEast(request.get(ARG_LOCATION_LONGITUDE,
                                       entry.getEast()));
         } else {
-            entry.setSouth(request.get(ARG_AREA + "_south",
-                                       entry.getSouth()));
-            entry.setNorth(request.get(ARG_AREA + "_north",
-                                       entry.getNorth()));
-            entry.setWest(request.get(ARG_AREA + "_west", entry.getWest()));
-            entry.setEast(request.get(ARG_AREA + "_east", entry.getEast()));
+	    if(request.exists(ARG_AREA +"_south")) {
+		entry.setSouth(request.get(ARG_AREA + "_south",
+					   Entry.NONGEO));
+		entry.setNorth(request.get(ARG_AREA + "_north",
+					   Entry.NONGEO));
+		entry.setWest(request.get(ARG_AREA + "_west", 
+					  Entry.NONGEO));
+		entry.setEast(request.get(ARG_AREA + "_east", 
+					  Entry.NONGEO));
+	    }
         }
 
         if (request.get(ARG_SETBOUNDSFROMCHILDREN, false)) {
@@ -2934,6 +2938,7 @@ return new Result(title, sb);
     public void setBoundsOnEntry(final Entry parent, List<Entry> children) {
         try {
             Rectangle2D.Double rect = getBounds(children);
+	    System.err.println("set bounds on entry:" + rect);
             if ((rect != null) && !rect.equals(parent.getBounds())) {
                 parent.setBounds(rect);
                 setEntryBounds(parent);
@@ -2953,8 +2958,11 @@ return new Result(title, sb);
      */
     public Rectangle2D.Double getBounds(List<Entry> children) {
         Rectangle2D.Double rect = null;
+	System.err.println("children:" + children);
+
         for (Entry child : children) {
             if ( !child.hasAreaDefined()) {
+		System.err.println("no bounds:" + child);
                 continue;
             }
             if (rect == null) {
@@ -2962,6 +2970,7 @@ return new Result(title, sb);
             } else {
                 rect.add(child.getBounds());
             }
+	    System.err.println(" rect:" + rect);
         }
         return rect;
     }
@@ -5410,11 +5419,6 @@ return new Result(title, sb);
             TypeHandler typeHandler = entry.getTypeHandler();
             typeHandler = typeHandler.getTypeHandlerForCopy(entry);
 
-            Group parentGroup = entry.getParentGroup();
-            if (parentGroup != null) {
-                parentGroup.getTypeHandler().childEntryChanged(entry, isNew);
-            }
-
             List<TypeInsertInfo> typeInserts =
                 new ArrayList<TypeInsertInfo>();
             //            String            sql           = typeHandler.getInsertSql(isNew);
@@ -5507,6 +5511,15 @@ return new Result(title, sb);
         long t2 = System.currentTimeMillis();
         totalTime    += (t2 - t1);
         totalEntries += entries.size();
+        for (Entry entry : entries) {
+            Group parentGroup = entry.getParentGroup();
+            if (parentGroup != null) {
+		parentGroup.getTypeHandler().childEntryChanged(entry, isNew);
+            }
+	}
+
+
+
         if (t2 > t1) {
             //System.err.println("added:" + entries.size() + " entries in " + (t2-t1) + " ms  Rate:" + (entries.size()/(t2-t1)));
             double seconds = totalTime / 1000.0;
