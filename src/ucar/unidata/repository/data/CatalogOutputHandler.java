@@ -96,6 +96,11 @@ public class CatalogOutputHandler extends OutputHandler {
                        OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
                        "", ICON_CATALOG);
 
+    public static final OutputType OUTPUT_CATALOG_EMBED =
+        new OutputType("Catalog", "thredds.catalog.embed",
+                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       "", ICON_CATALOG);
+
 
 
 
@@ -122,6 +127,7 @@ public class CatalogOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_CATALOG);
+        addType(OUTPUT_CATALOG_EMBED);
     }
 
 
@@ -254,7 +260,7 @@ public class CatalogOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_CATALOG)) {
+        if (output.equals(OUTPUT_CATALOG) || output.equals(OUTPUT_CATALOG_EMBED)) {
             return repository.getMimeTypeFromSuffix(".xml");
         } else {
             return super.getMimeType(output);
@@ -805,11 +811,12 @@ public class CatalogOutputHandler extends OutputHandler {
                                   Element parent, int depth)
             throws Exception {
 
+        boolean embedGroups = request.getString(ARG_OUTPUT,"").equals(OUTPUT_CATALOG_EMBED.getId());
         List<Entry> entries = new ArrayList();
         List<Group> groups  = new ArrayList();
         for (int i = 0; i < entryList.size(); i++) {
             Entry entry = (Entry) entryList.get(i);
-            if (entry.isGroup()) {
+            if (!embedGroups && entry.isGroup()) {
                 groups.add((Group) entry);
             } else {
                 entries.add(entry);
