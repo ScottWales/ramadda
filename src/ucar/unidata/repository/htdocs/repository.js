@@ -782,11 +782,13 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
         text = getChildText(xmlDoc);
         div = util.getDomObject("tooltipdiv");
         if(!div) return;
-
         util.setPosition(obj, util.getLeft(entryRow.row), util.getBottom(entryRow.row));
 
         div.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</table></div></div>";
+
+        checkTabs(text);
         showObject(div);
+
     }
 
 
@@ -800,6 +802,18 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
         //        mouseOutOnEntry(event, "", rowId);
         //        this.row.style.borderBottom =  "1px #fff  solid";
         this.row.style.border =  "1px #fff  solid";
+    }
+}
+
+
+function checkTabs(html) {
+    var re = new RegExp("(tabId[0-9]+)");
+    var m = re.exec(html);
+    if (m != null) {
+        var s =   m[m.length-1];
+        jQuery(function(){
+                jQuery('#'+ s).tabs();
+            });
     }
 }
 
@@ -985,6 +999,7 @@ function  handleFolderList(request, uid) {
         }
 	if(html) {
             block.obj.innerHTML = "<div>"+html+"</div>";
+            checkTabs(html);
 	}
 	if(script) {
             eval(script);
@@ -1176,6 +1191,7 @@ function handleAjaxPopup(request, srcId) {
     var srcObj = util.getDomObject(srcId);
     var obj = util.getDomObject("tooltipdiv");
     obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
+    checkTabs(text);
     showObject(obj);
 }
 

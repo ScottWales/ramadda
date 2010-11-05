@@ -1413,9 +1413,9 @@ public class UserManager extends RepositoryManager {
         tabContent.add(getUserActivities(request, null));
 
 
-        tabTitles.set(showTab, "selected:" + tabTitles.get(showTab));
+        tabTitles.set(showTab,  tabTitles.get(showTab));
         sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.makeTabs(tabTitles, tabContent, true));
+        sb.append(OutputHandler.makeTabs(tabTitles, tabContent, true));
 
         Result result = new Result(msg("Users"), sb);
         result.putProperty(PROP_NAVSUBLINKS,

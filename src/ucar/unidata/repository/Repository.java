@@ -3339,8 +3339,15 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @return _more_
      */
     private List<HtmlTemplate> getTemplates() {
-        List<HtmlTemplate> theTemplates = templates;
+                List<HtmlTemplate> theTemplates = templates;
         if (theTemplates == null) {
+            String imports = "";
+            try {
+                imports =  getStorageManager().readSystemResource("/ucar/unidata/repository/resources/imports.html");
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+            imports = imports.replace("${root}", getRepository().getUrlBase());
             theTemplates = new ArrayList<HtmlTemplate>();
             for (String path :
                     StringUtil.split(getProperty(PROP_HTML_TEMPLATES,
@@ -3349,6 +3356,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 try {
                     String resource =
                         getStorageManager().readSystemResource(path);
+
+                    resource = resource.replace("${html.imports}", imports);
                     HtmlTemplate template = new HtmlTemplate(this, path,
                                                 resource);
                     theTemplates.add(template);

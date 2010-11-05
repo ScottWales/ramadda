@@ -185,7 +185,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
-        String contents = HtmlUtil.makeTabs(Misc.newList(msg("Information"),
+        String contents = OutputHandler.makeTabs(Misc.newList(msg("Information"),
                               msg(LABEL_LINKS)), Misc.newList(sb.toString(),
                                   links), true, "tab_content");
 
@@ -756,7 +756,7 @@ public class HtmlOutputHandler extends OutputHandler {
         //                OutputType.TYPE_ALL));
 
 
-        return HtmlUtil.makeTabs(tabTitles, tabContents, true, (fixedHeight
+        return OutputHandler.makeTabs(tabTitles, tabContents, true, (fixedHeight
                 ? "tab_content_fixedheight"
                 : "tab_content"));
 

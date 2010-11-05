@@ -2707,6 +2707,166 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         }
     }
 
+    public static final String CLASS_TAB_CONTENT = "tab_content";
+    public static final String CLASS_TAB_CONTENTS = "tab_contents";
+    private static int tabCnt=0;
+
+    public static String makeTabs(List titles, List contents,
+                                  boolean skipEmpty) {
+        return makeTabs(titles, contents, skipEmpty, CLASS_TAB_CONTENT);
+    }
+
+    /**
+     * _more_
+     *
+     * @param titles _more_
+     * @param contents _more_
+     * @param skipEmpty _more_
+     * @param tabContentClass _more_
+     *
+     * @return _more_
+     */
+    public static String makeTabs(List titles, List contents,
+                                  boolean skipEmpty, String tabContentClass) {
+        return makeTabs(titles, contents, skipEmpty, tabContentClass,
+                        CLASS_TAB_CONTENTS);
+    }
+
+    public static String makeTabs(List titles, List tabs,
+                                  boolean skipEmpty, String tabContentClass,
+                                  String wrapperClass) {
+        StringBuffer tabHtml = new StringBuffer();
+        String       tabId   = "tabId" + (tabCnt++);
+        tabHtml.append("\n\n");
+        tabHtml.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                     HtmlUtil.id(tabId)));
+        tabHtml.append(HtmlUtil.open(HtmlUtil.TAG_UL));
+        int cnt = 1;
+        for(int i=0;i<titles.size();i++) {
+            String title = titles.get(i).toString();
+            String tabContents = tabs.get(i).toString();
+            if(skipEmpty && (tabContents==null || tabContents.length()==0)) continue;
+            tabHtml.append("<li><a href=\"#" + tabId + "-" + (cnt++)
+                           + "\">" + title + "</a></li>");
+        }
+        tabHtml.append(HtmlUtil.close(HtmlUtil.TAG_UL));
+        cnt = 1;
+        for(int i=0;i<titles.size();i++) {
+            String tabContents = tabs.get(i).toString();
+            if(skipEmpty && (tabContents==null || tabContents.length()==0)) continue;
+            tabHtml.append(HtmlUtil.div(tabContents,
+                                        HtmlUtil.id(tabId + "-" + (cnt++))));
+            tabHtml.append("\n");
+        }
+
+        tabHtml.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+        tabHtml.append("\n");
+        tabHtml.append(
+                       HtmlUtil.script(
+                        "\njQuery(function(){\njQuery('#" + tabId
+                        + "').tabs();\n});\n"));
+        tabHtml.append("\n\n");
+        return tabHtml.toString();
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param titles _more_
+     * @param contents _more_
+     * @param skipEmpty _more_
+     * @param tabContentClass _more_
+     * @param wrapperClass _more_
+     *
+     * @return _more_
+     */
+    public static String makeTabsx(List titles, List contents,
+                                  boolean skipEmpty, String tabContentClass,
+                                  String wrapperClass) {
+
+        String       id        = "tab_" + (tabCnt++);
+        String       ids       = "tab_" + (tabCnt++) + "_ids";
+        StringBuffer titleSB   = new StringBuffer("");
+        StringBuffer contentSB = new StringBuffer();
+        StringBuffer idArray   = new StringBuffer("new Array(");
+        int          cnt       = 0;
+        for (int i = 0; i < titles.size(); i++) {
+            String content = contents.get(i).toString();
+            if (skipEmpty && (content.length() == 0)) {
+                continue;
+            }
+
+            String tabId = id + "_" + i;
+            if (cnt > 0) {
+                idArray.append(",");
+            }
+            cnt++;
+            idArray.append(HtmlUtil.squote(tabId));
+        }
+        if ((cnt == 1) && skipEmpty) {
+            return contents.get(0).toString();
+        }
+
+        idArray.append(")");
+
+        String selectedOne = null;
+        for (int i = 0; i < titles.size(); i++) {
+            String content = contents.get(i).toString();
+            if (skipEmpty && (content.length() == 0)) {
+                continue;
+            }
+            String title = titles.get(i).toString();
+            if (title.startsWith("selected:")) {
+                selectedOne = title;
+                break;
+            }
+        }
+
+        boolean didone = false;
+        for (int i = 0; i < titles.size(); i++) {
+            String content = contents.get(i).toString();
+            if (skipEmpty && (content.length() == 0)) {
+                continue;
+            }
+            String title = titles.get(i).toString();
+            String tabId = id + "_" + i;
+            contentSB.append("\n");
+            boolean selected = ((selectedOne == null)
+                                ? !didone
+                                : Misc.equals(title, selectedOne));
+            if (selected && (selectedOne != null)) {
+                title = title.substring("selected:".length());
+            }
+            contentSB.append(HtmlUtil.div(content,
+                                          HtmlUtil.cssClass(tabContentClass
+                                              + (selected
+                    ? "_on"
+                    : "_off")) + HtmlUtil.id("content_" + tabId)
+                               + HtmlUtil.style("display:" + (selected
+                    ? "block"
+                    : "none") + ";visibility:" + (selected
+                    ? "visible"
+                    : "hidden"))));
+            String link = HtmlUtil.href("javascript:" + "tabPress("
+                                        + HtmlUtil.squote(id) + "," + idArray
+                                        + "," + HtmlUtil.squote(tabId)
+                                        + ")", title);
+            titleSB.append(HtmlUtil.span(link, (selected
+                    ? HtmlUtil.cssClass("tab_title_on")
+                    : HtmlUtil.cssClass("tab_title_off")) + HtmlUtil.id(
+                        "title_" + tabId)));
+            didone = true;
+        }
+
+        return HtmlUtil.div(
+            titleSB.toString(),
+            HtmlUtil.cssClass("tab_titles")) + HtmlUtil.div(
+                contentSB.toString(), HtmlUtil.cssClass(wrapperClass));
+    }
+
+
 
 
 

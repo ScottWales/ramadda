@@ -5518,8 +5518,6 @@ return new Result(title, sb);
             }
 	}
 
-
-
         if (t2 > t1) {
             //System.err.println("added:" + entries.size() + " entries in " + (t2-t1) + " ms  Rate:" + (entries.size()/(t2-t1)));
             double seconds = totalTime / 1000.0;

@@ -2032,7 +2032,7 @@ public class TypeHandler extends RepositoryManager {
             if (entry == null) {
                 if (tabTitles.size() > 1) {
                     sb.append(HtmlUtil.formEntryTop(msgLabel("Resource"),
-                            HtmlUtil.makeTabs(tabTitles, tabContent, true,
+                            OutputHandler.makeTabs(tabTitles, tabContent, true,
                                 "tab_content",
                                 "tab_contents_noborder") + extra));
                 } else if (tabTitles.size() == 1) {
@@ -2054,7 +2054,7 @@ public class TypeHandler extends RepositoryManager {
                     sb.append(HtmlUtil.formEntry("",
                             msg("Upload new resource")));
                     sb.append(HtmlUtil.formEntryTop(msgLabel("Resource"),
-                            HtmlUtil.makeTabs(tabTitles, tabContent, true,
+                            OutputHandler.makeTabs(tabTitles, tabContent, true,
                                 "tab_content",
                                 "tab_contents_noborder") + extra));
                 } else if (tabTitles.size() == 1) {
