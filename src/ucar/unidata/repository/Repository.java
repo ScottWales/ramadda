@@ -1080,7 +1080,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
         HtmlUtil.setBlockHideShowImage(iconUrl(ICON_MINUS),
                                        iconUrl(ICON_PLUS));
         HtmlUtil.setInlineHideShowImage(iconUrl(ICON_MINUS),
-                                        iconUrl(ICON_ELLIPSIS));
+                                        //iconUrl(ICON_ELLIPSIS));
+                                        iconUrl(ICON_PLUS));
+        //
         getLogManager().logInfo("RAMADDA started");
 
 
