@@ -83,7 +83,7 @@ public class HtmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_TIMELINE =
         new OutputType("Timeline", "default.timeline",
                        OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
-                       ICON_CLOCK);
+                       ICON_TIMELINE);
 
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH =

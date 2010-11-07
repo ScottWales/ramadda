@@ -77,6 +77,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_CLOCK = "ramadda.icon.clock";
+    public static final String ICON_TIMELINE = "ramadda.icon.timeline";
 
     /** _more_ */
     public static final String ICON_CLOSE = "ramadda.icon.close";

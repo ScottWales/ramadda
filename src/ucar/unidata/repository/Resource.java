@@ -188,10 +188,14 @@ public class Resource {
      * @return _more_
      */
     public long getFileSize() {
-        if (fileSize >= 0) {
+        if (fileSize > 0) {
             return fileSize;
         }
-        return fileSize = getTheFile().length();
+        File file = getTheFile();
+        if(file.exists()) {
+            fileSize = file.length();
+        }
+        return fileSize; 
     }
 
     /**
