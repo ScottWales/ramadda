@@ -2489,16 +2489,16 @@ public class TypeHandler extends RepositoryManager {
 
 
         String dateTypeValue = request.getString(ARG_DATE_SEARCHMODE,
-                                   DATE_SEARCHMODE_CONTAINEDBY);
+                                                 DATE_SEARCHMODE_DEFAULT);
         List dateTypes = new ArrayList();
-        dateTypes.add(new TwoFacedObject(msg("Contained by range"),
-                                         DATE_SEARCHMODE_CONTAINEDBY));
         dateTypes.add(new TwoFacedObject(msg("Overlaps range"),
                                          DATE_SEARCHMODE_OVERLAPS));
+        dateTypes.add(new TwoFacedObject(msg("Contained by range"),
+                                         DATE_SEARCHMODE_CONTAINEDBY));
         dateTypes.add(new TwoFacedObject(msg("Contains range"),
                                          DATE_SEARCHMODE_CONTAINS));
         String dateTypeInput = HtmlUtil.select(ARG_DATE_SEARCHMODE,
-                                   dateTypes, dateTypeValue);
+                                               dateTypes, dateTypeValue);
 
         String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
         String noDateInput = HtmlUtil.checkbox(ARG_DATE_NODATAMODE,
@@ -2842,7 +2842,7 @@ public class TypeHandler extends RepositoryManager {
             }
 
             String dateSearchMode = request.getString(ARG_DATE_SEARCHMODE,
-                                        DATE_SEARCHMODE_OVERLAPS);
+                                                      DATE_SEARCHMODE_DEFAULT);
             if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
                 addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
                             date1);

@@ -2058,10 +2058,12 @@ public class Repository extends RepositoryBase implements RequestHandler {
             } else if (handlerName.equals("repository")) {
                 handler = this;
             } else {
+                Class handlerClass = Misc.findClass(handlerName);
+                System.err.println("finding ctor");
                 Constructor ctor =
-                    Misc.findConstructor(Misc.findClass(handlerName),
+                    Misc.findConstructor(handlerClass,
                                          new Class[] { Repository.class,
-                        Element.class });
+                                                       Element.class });
                 handler = (RequestHandler) ctor.newInstance(new Object[] {
                     this,
                     node });

@@ -654,6 +654,8 @@ public interface Constants {
     public static final String VALUE_NODATAMODE_INCLUDE = "include";
 
 
+
+
     /** _more_          */
     public static final String DATE_SEARCHMODE_OVERLAPS = "overlaps";
 
@@ -662,6 +664,8 @@ public interface Constants {
 
     /** _more_          */
     public static final String DATE_SEARCHMODE_CONTAINS = "contains";
+
+    public static final String DATE_SEARCHMODE_DEFAULT = DATE_SEARCHMODE_OVERLAPS;
 
 
     /** _more_ */
