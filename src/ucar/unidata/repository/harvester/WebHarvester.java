@@ -66,7 +66,6 @@ import java.util.regex.*;
 
 
 /**
- * Class SqlUtil _more_
  *
  *
  * @author IDV Development Team
@@ -79,9 +78,6 @@ public class WebHarvester extends Harvester {
 
     /** _more_ */
     public static final String ATTR_URLS = "urls";
-
-    /** _more_ */
-    public static final String TAG_URLENTRY = "urlentry";
 
 
     /** _more_ */
@@ -103,7 +99,6 @@ public class WebHarvester extends Harvester {
 
     /** _more_ */
     private int newEntryCnt = 0;
-
 
 
     /**
@@ -144,8 +139,7 @@ public class WebHarvester extends Harvester {
     protected void init(Element element) throws Exception {
         super.init(element);
         rootDir = new File(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""));
-
-        List children = XmlUtil.findChildren(element, TAG_URLENTRY);
+        List children = XmlUtil.findChildren(element, HarvesterEntry.TAG_URLENTRY);
         urlEntries = new ArrayList<HarvesterEntry>();
         for (int i = 0; i < children.size(); i++) {
             Element node = (Element) children.get(i);
@@ -182,15 +176,8 @@ public class WebHarvester extends Harvester {
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         for (HarvesterEntry urlEntry : urlEntries) {
-            Element node = XmlUtil.create(element.getOwnerDocument(),
-                                          TAG_URLENTRY, element,
-                                          new String[] {
-                ATTR_URL, urlEntry.url, ATTR_NAME, urlEntry.name,
-                ATTR_DESCRIPTION, urlEntry.description, ATTR_GROUP,
-                urlEntry.group, ATTR_BASEGROUP, urlEntry.baseGroupId
-            });
+            urlEntry.toXml(element);
         }
-
     }
 
 
@@ -354,11 +341,11 @@ public class WebHarvester extends Harvester {
         "Use macros: ${filename}, ${fromdate}, ${todate}, etc.";
 
 
+
     protected void addEntryToForm(Request request, StringBuffer  entrySB, HarvesterEntry urlEntry, int cnt) throws Exception {
         entrySB.append(
                        RepositoryManager.tableSubHeader(
                                                         "Then create an entry with"));
-
 
         entrySB.append(HtmlUtil.formEntry(msgLabel("Name"),
                                           HtmlUtil.input(ATTR_NAME + cnt, urlEntry.name,
@@ -547,7 +534,7 @@ public class WebHarvester extends Harvester {
         String fileName = url;
         String tail     = IOUtil.getFileTail(url);
         File   tmpFile  = getStorageManager().getTmpFile(null, tail);
-        //        System.err.println ("WebHarvester: " + getName() +" fetching URL: " + url);
+        //System.err.println ("WebHarvester: " + getName() +" fetching URL: " + url);
 
         try {
             IOUtil.writeTo(new URL(url), tmpFile, null);

@@ -70,7 +70,6 @@ import java.util.regex.*;
 
 
 /**
- * Class SqlUtil _more_
  *
  *
  * @author IDV Development Team
@@ -1056,166 +1055,6 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * Class HarvesterEntry _more_
-     *
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
-     */
-    public static class HarvesterEntry {
-
-        /** _more_ */
-        String url;
-
-        /** _more_ */
-        String name;
-
-        /** _more_ */
-        String description;
-
-        /** _more_ */
-        String baseGroupId;
-
-        /** _more_ */
-        String group;
-
-        /**
-         * _more_
-         *
-         * @param url _more_
-         * @param name _more_
-         * @param description _more_
-         * @param group _more_
-         * @param baseGroupId _more_
-         */
-        public HarvesterEntry(String url, String name, String description,
-                              String group, String baseGroupId) {
-            this.url         = url;
-            this.name        = name;
-            this.description = description;
-            this.group       = group;
-            this.baseGroupId = baseGroupId;
-
-        }
-
-        /**
-         * _more_
-         *
-         * @param node _more_
-         */
-        public HarvesterEntry(Element node) {
-            this.url  = XmlUtil.getAttribute(node, ATTR_URL, "");
-            this.name = XmlUtil.getAttribute(node, ATTR_NAME, "");
-            this.description = XmlUtil.getAttribute(node, ATTR_DESCRIPTION,
-                    "");
-            this.group       = XmlUtil.getAttribute(node, ATTR_GROUP, "");
-            this.baseGroupId = XmlUtil.getAttribute(node, ATTR_BASEGROUP, "");
-        }
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
-        public String toString() {
-            return url;
-        }
-
-
-        
-        /**
-           Set the Url property.
-
-           @param value The new value for Url
-        **/
-        public void setUrl (String value) {
-            url = value;
-        }
-
-        /**
-           Get the Url property.
-
-           @return The Url
-        **/
-        public String getUrl () {
-            return url;
-        }
-
-        /**
-           Set the Name property.
-
-           @param value The new value for Name
-        **/
-        public void setName (String value) {
-            name = value;
-        }
-
-        /**
-           Get the Name property.
-
-           @return The Name
-        **/
-        public String getName () {
-            return name;
-        }
-
-        /**
-           Set the Description property.
-
-           @param value The new value for Description
-        **/
-        public void setDescription (String value) {
-            description = value;
-        }
-
-        /**
-           Get the Description property.
-
-           @return The Description
-        **/
-        public String getDescription () {
-            return description;
-        }
-
-        /**
-           Set the BaseGroupId property.
-
-           @param value The new value for BaseGroupId
-        **/
-        public void setBaseGroupId (String value) {
-            baseGroupId = value;
-        }
-
-        /**
-           Get the BaseGroupId property.
-
-           @return The BaseGroupId
-        **/
-        public String getBaseGroupId () {
-            return baseGroupId;
-        }
-
-        /**
-           Set the Group property.
-
-           @param value The new value for Group
-        **/
-        public void setGroup (String value) {
-            group = value;
-        }
-
-        /**
-           Get the Group property.
-
-           @return The Group
-        **/
-        public String getGroup () {
-            return group;
-        }
-
-
-    }
 
     /**
      * Set the ActiveOnStart property.
@@ -1288,6 +1127,7 @@ public abstract class Harvester extends RepositoryManager {
     public int getTestCount() {
         return testCount;
     }
+
 
 
 
