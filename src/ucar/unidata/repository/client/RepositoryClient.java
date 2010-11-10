@@ -174,7 +174,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     private void initCertificates() {
         if(System.getProperty("javax.net.ssl.trustStore")==null) {
-            ucar.unidata.util.NaiveTrustProvider.setAlwaysTrust(true);
+            ucar.unidata.repository.util.NaiveTrustProvider.setAlwaysTrust(true);
         }
     }
 
