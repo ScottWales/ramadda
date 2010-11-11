@@ -110,6 +110,7 @@ public class EntryManager extends RepositoryManager {
     public static final int ENTRY_CACHE_LIMIT = 10000;
 
 
+
     /** _more_ */
     private Object MUTEX_ENTRY = new Object();
 
@@ -4590,9 +4591,11 @@ return new Result(title, sb);
         //        breadcrumbs.add(HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
         //                entry), entry.getLabel()));
         String separator = getRepository().getTemplateProperty(request,
-                               "ramadda.template.breadcrumbs.separator", "");
-        return StringUtil.join(HtmlUtil.pad("&gt;"), breadcrumbs);
+                               "ramadda.template.breadcrumbs.separator", BREADCRUMB_SEPARATOR);
+        
+        return StringUtil.join(HtmlUtil.pad(BREADCRUMB_SEPARATOR), breadcrumbs);
     }
+
 
 
     /**
@@ -4680,7 +4683,7 @@ return new Result(title, sb);
         titleList.add(entry.getLabel());
         String nav;
         String separator = getRepository().getTemplateProperty(request,
-                               "ramadda.template.breadcrumbs.separator", "");
+                               "ramadda.template.breadcrumbs.separator", BREADCRUMB_SEPARATOR);
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
@@ -4713,7 +4716,7 @@ return new Result(title, sb);
                 + header, HtmlUtil.cssClass("entryheader"));
 
         }
-        String title = StringUtil.join(HtmlUtil.pad("&gt;"), titleList);
+        String title = StringUtil.join(HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), titleList);
         return new String[] { title, nav };
     }
 

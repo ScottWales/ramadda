@@ -1362,7 +1362,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                                      : entry), null, 60);
                 if (hideParents) {
                     cbxSB.append(HtmlUtil.makeToggleInline("",
-                            crumbs + HtmlUtil.pad("&gt;"), false));
+                            crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), false));
                     cbxSB.append(getEntryManager().getTooltipLink(request,
                             entry, entry.getLabel(), null));
                 } else {
@@ -1379,7 +1379,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                              : entry), null, 60);
                     if (hideParents) {
                         crumbs = HtmlUtil.makeToggleInline("",
-                                crumbs + HtmlUtil.pad("&gt;"), false);
+                                crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), false);
                     }
 
                 }

@@ -189,6 +189,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
     /** _more_ */
     public static final String MSG_SUFFIX = " msg>";
 
+
     /** _more_ */
     protected List<RequestUrl> entryEditUrls =
         RepositoryUtil.toList(new RequestUrl[] {

@@ -1775,5 +1775,6 @@ public interface Constants {
     public static final String PROP_PROXY_PORT = "ramadda.proxy.port";
 
 
+    public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
 }
