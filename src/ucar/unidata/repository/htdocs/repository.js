@@ -5,6 +5,7 @@ var icon_close = "${urlroot}/icons/close.gif";
 var icon_rightarrow = "${urlroot}/icons/grayrightarrow.gif";
 
 var icon_downdart ="${urlroot}/icons/downdart.gif";
+//var icon_downdart ="${urlroot}/icons/bullet_arrow_down.png";
 var icon_rightdart ="${urlroot}/icons/rightdart.gif";
 
 var icon_progress = "${urlroot}/icons/progress.gif";
