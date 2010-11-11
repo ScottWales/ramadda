@@ -531,6 +531,7 @@ function Tooltip () {
         var xmlDoc=request.responseXML.documentElement;
         text = getChildText(xmlDoc);
         obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table cellspacing=0 cellpadding=0><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
+        checkTabs(text);
         showObject(obj);
     }
 
@@ -808,6 +809,27 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
 
 
 function checkTabs(html) {
+    while(1) {
+        var re = new RegExp("id=\"(tabId[^\"]+)\"");
+        var m = re.exec(html);
+        if(!m) {
+            break;
+        }
+        var s =   m[1];
+        if(s.indexOf("-")<0) {
+            jQuery(function(){
+                    jQuery('#'+ s).tabs();
+                });
+        }
+        var idx = html.indexOf("id=\"tabId");
+        if(idx<0) {
+            break;
+        }
+        html = html.substring(idx+20);
+    }
+}
+
+function xxxcheckTabs(html) {
     var re = new RegExp("(tabId[0-9]+)");
     var m = re.exec(html);
     if (m != null) {
