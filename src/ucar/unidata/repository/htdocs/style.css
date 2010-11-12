@@ -623,11 +623,14 @@ a.header-left  {
 
 
 td {
-   font-size:12px;
+   font-size:14px;
    font-weight: normal;
 }
 
 
+.breadcrumbsseparator {
+   font-size: 11pt;
+}
 
 .separator {
    font-size: 9pt;
