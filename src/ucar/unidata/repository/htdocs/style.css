@@ -108,7 +108,7 @@ a:hover {
 
 .entryrowlabel {
     font-style:italic;
-    font-size:9px;
+//font-size:9px;
     white-space:nowrap;
 }
 
@@ -164,7 +164,7 @@ a.header  {
 
 
 .entrylistform {
-  font-size: 11px;
+//  font-size: 11px;
 }
 
 .stack {
@@ -751,9 +751,10 @@ ul {
    padding:2px;
    padding-bottom:0px;
    padding-right:0px;
-//   border : 1px dotted #ccc;
+   border : 1px dotted #ccc;
+   background-color : #fff;
 //   border-top : 0px dotted #ccc;
-   background-color : #f6f6f6;
+//   background-color : #f6f6f6;
 //   background-color : #edf5ff;
 
    margin:0px;
@@ -914,7 +915,9 @@ code.menu {
 .breadcrumbs a {
    text-decoration: none;
    color: #000;
+   //color: #cb6811;
 }
+
 
 .breadcrumbs a:hover {
    text-decoration: underline;
@@ -1092,7 +1095,7 @@ form {
 }
 
 .formlabel, .formlabeltop {
-  font-size: 11px;
+// font-size: 11px;
   font-weight: bold;
 }
 

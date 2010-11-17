@@ -3344,7 +3344,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @return _more_
      */
     private List<HtmlTemplate> getTemplates() {
-                List<HtmlTemplate> theTemplates = templates;
+        List<HtmlTemplate> theTemplates = templates;
         if (theTemplates == null) {
             String imports = "";
             try {
