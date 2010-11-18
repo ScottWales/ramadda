@@ -2703,7 +2703,7 @@ return new Result(title, sb);
             }
 
             if (entries.size() == 1) {
-                fb.append(HtmlUtil.submit("Associate it",
+                fb.append(HtmlUtil.submit("Link it",
                                           ARG_ACTION_ASSOCIATE));
                 fb.append(HtmlUtil.space(1));
             }

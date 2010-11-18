@@ -115,7 +115,6 @@ public class MapManager extends RepositoryManager {
         String mapProvider = MAP_ID_MICROSOFT;
         String mapJS       = MAP_JS_MICROSOFT;
         String googleKeys  = getProperty(PROP_GOOGLEAPIKEYS, "");
-        googleMapsKey = null;
         for (String line :
                 (List<String>) StringUtil.split(googleKeys, "\n", true,
                 true)) {
@@ -135,16 +134,13 @@ public class MapManager extends RepositoryManager {
             }
         }
 
-
         if (userAgent.indexOf("MSIE") >= 0) {
             mapProvider = MAP_ID_YAHOO;
             mapJS       = MAP_JS_YAHOO;
         }
 
         if (googleMapsKey != null) {
-            mapJS = "http://maps.google.com/maps?file=api&v=2&key="
-                    + googleMapsKey;
-            mapJS = "http://maps.google.com/maps?file=api&v=3";
+            mapJS = "http://maps.google.com/maps?file=api&v=2&key=" + googleMapsKey;
             mapProvider = "google";
         }
 

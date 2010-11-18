@@ -625,6 +625,8 @@ public class AssociationManager extends RepositoryManager {
             HtmlUtil.bold(msg("Name")), "&nbsp;", HtmlUtil.bold(msg("To"))
         });
 
+        Hashtable<String,StringBuffer> rowMap = new Hashtable<String,StringBuffer>();
+        List<String> rows = new ArrayList<String>();
         for (Association association : associations) {
             Entry fromEntry = null;
             Entry toEntry   = null;
@@ -674,6 +676,7 @@ public class AssociationManager extends RepositoryManager {
                     : getEntryManager().getEntryLink(request, toEntry,
                     args))));
         }
+
         return HtmlUtil.table(cols, 6,
                               HtmlUtil.attr(HtmlUtil.ATTR_CELLSPACING, "3"));
     }
