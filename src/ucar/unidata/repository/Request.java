@@ -325,32 +325,13 @@ public class Request implements Constants {
 
 
         String url = getEntryUrl(theUrl.toString(), entry);
-        if (entry.isTopGroup()) {
+        if (entry.isTopEntry()) {
             return checkUrl(HtmlUtil.url(url, arg, entry.getId()));
         }
         if (entry.getIsLocalFile()) {
             return checkUrl(HtmlUtil.url(url, arg, entry.getId()));
         }
-
-        //        Group collectionGroup = entry.getCollectionGroup();
-        //        if (repository.isSynthEntry(entry.getId())) {
-        //            return url(theUrl, arg, entry.getId());
-        //        }
-
-        //if (collectionGroup != null) {
-        //            return url(theUrl, arg, entry.getId());
-        //            String collectionPath =
-        //                repository.getPathFromEntry(collectionGroup);
-        //            return HtmlUtil.url(theUrl.getUrl(collectionPath), arg,
-        //            entry.getId());
-        //        }
-
-
-        //        return url(theUrl, arg, entry.getId());
         return checkUrl(HtmlUtil.url(url, arg, entry.getId()));
-
-
-        //        return url(theUrl, arg, entry.getId());
     }
 
     /**

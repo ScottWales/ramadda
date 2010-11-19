@@ -119,26 +119,26 @@ public class AccessManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param topGroup _more_
+     * @param mainEntry _more_
      *
      * @throws Exception _more_
      */
-    public void initTopGroup(Group topGroup) throws Exception {
-        topGroup.addPermission(new Permission(Permission.ACTION_VIEW,
+    public void initTopGroup(Entry mainEntry) throws Exception {
+        mainEntry.addPermission(new Permission(Permission.ACTION_VIEW,
                 getUserManager().ROLE_ANY));
-        topGroup.addPermission(new Permission(Permission.ACTION_VIEWCHILDREN,
+        mainEntry.addPermission(new Permission(Permission.ACTION_VIEWCHILDREN,
                 getUserManager().ROLE_ANY));
-        topGroup.addPermission(new Permission(Permission.ACTION_FILE,
+        mainEntry.addPermission(new Permission(Permission.ACTION_FILE,
                 getUserManager().ROLE_ANY));
-        topGroup.addPermission(new Permission(Permission.ACTION_EDIT,
+        mainEntry.addPermission(new Permission(Permission.ACTION_EDIT,
                 getUserManager().ROLE_NONE));
-        topGroup.addPermission(new Permission(Permission.ACTION_NEW,
+        mainEntry.addPermission(new Permission(Permission.ACTION_NEW,
                 getUserManager().ROLE_NONE));
-        topGroup.addPermission(new Permission(Permission.ACTION_DELETE,
+        mainEntry.addPermission(new Permission(Permission.ACTION_DELETE,
                 getUserManager().ROLE_NONE));
-        topGroup.addPermission(new Permission(Permission.ACTION_COMMENT,
+        mainEntry.addPermission(new Permission(Permission.ACTION_COMMENT,
                 getUserManager().ROLE_ANY));
-        insertPermissions(null, topGroup, topGroup.getPermissions());
+        insertPermissions(null, mainEntry, mainEntry.getPermissions());
     }
 
 
@@ -190,7 +190,7 @@ public class AccessManager extends RepositoryManager {
         }
 
         if (request.exists(ARG_GROUP)) {
-            Group group = getEntryManager().findGroup(request);
+            Entry group = getEntryManager().findGroup(request);
             if (group == null) {
                 throw new RepositoryUtil.MissingEntryException(
                     "Could not find folder:"
@@ -443,9 +443,9 @@ public class AccessManager extends RepositoryManager {
                 }
             }
             //LOOK: make sure we pass in false here which says do not check for access control
-            //            logInfo ("  Entry = " + entry.getName() +"  parent id:" + entry.getParentGroupId());
+            //            logInfo ("  Entry = " + entry.getName() +"  parent id:" + entry.getParentEntryId());
             entry = getEntryManager().getEntry(request,
-                    entry.getParentGroupId(), false);
+                    entry.getParentEntryId(), false);
             //            logInfo ("  new entry " + entry);
         }
 
@@ -560,7 +560,7 @@ public class AccessManager extends RepositoryManager {
         //        System.err.println ("time to filter:" + (t2-t1));
 
 
-        Group parent = entry.getParentGroup();
+        Entry parent = entry.getParentEntry();
         if ((parent != null)
                 && !canDoAction(request, parent,
                                 Permission.ACTION_VIEWCHILDREN)) {
@@ -660,7 +660,7 @@ public class AccessManager extends RepositoryManager {
         sb.append(HtmlUtil.rowTop(cols.toString()));
         listAccess(request,
                    getEntryManager().getEntry(request,
-                       entry.getParentGroupId()), sb);
+                       entry.getParentEntryId()), sb);
     }
 
 
@@ -725,7 +725,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Permission> getPermissions(Entry entry) throws Exception {
-        if (entry.isGroup() && ((Group) entry).isDummy()) {
+        if (entry.isGroup() &&  entry.isDummy()) {
             return new ArrayList<Permission>();
         }
         List<Permission> permissions = entry.getPermissions();

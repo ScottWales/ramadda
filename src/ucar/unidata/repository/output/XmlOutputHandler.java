@@ -226,7 +226,7 @@ public class XmlOutputHandler extends OutputHandler {
         Element node = XmlUtil.create(doc, TAG_ENTRY, parent, new String[] {
             ATTR_ID, entry.getId(), ATTR_NAME, entry.getName(), ATTR_PARENT,
             (includeParentId
-             ? entry.getParentGroupId()
+             ? entry.getParentEntryId()
              : ""), ATTR_TYPE, entry.getTypeHandler().getType(),
             ATTR_ISGROUP, "" + entry.isGroup(), ATTR_FROMDATE,
             getRepository().formatDate(new Date(entry.getStartDate())),

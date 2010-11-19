@@ -1200,7 +1200,7 @@ public class DataOutputHandler extends OutputHandler {
 
         boolean canAdd =
             getRepository().getAccessManager().canDoAction(request,
-                entry.getParentGroup(), Permission.ACTION_NEW);
+                entry.getParentEntry(), Permission.ACTION_NEW);
 
 
 

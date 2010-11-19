@@ -71,10 +71,10 @@ public class Entity implements Cloneable {
     private String description = "";
 
     /** _more_ */
-    private Group parentGroup;
+    private Group parentEntry;
 
     /** _more_ */
-    private String parentGroupId;
+    private String parentEntryId;
 
     /** _more_ */
     private String treeId;
@@ -107,16 +107,16 @@ public class Entity implements Cloneable {
      * @param id _more_
      * @param name _more_
      * @param description _more_
-     * @param parentGroup _more_
+     * @param parentEntry _more_
      * @param user _more_
      * @param createDate _more_
      */
     public Entity(String id, String name, String description,
-                  Group parentGroup, User user, long createDate, long changeDate) {
+                  Group parentEntry, User user, long createDate, long changeDate) {
         this.id          = id;
         this.name        = name;
         this.description = description;
-        this.parentGroup = parentGroup;
+        this.parentEntry = parentEntry;
         this.user        = user;
         this.createDate  = createDate;
         this.changeDate  = changeDate;
@@ -128,15 +128,15 @@ public class Entity implements Cloneable {
      *
      * @param name _more_
      * @param description _more_
-     * @param parentGroup _more_
+     * @param parentEntry _more_
      * @param user _more_
      * @param createDate _more_
      */
-    public void init(String name, String description, Group parentGroup,
+    public void init(String name, String description, Group parentEntry,
                      User user, long createDate, long changeDate) {
         this.name        = name;
         this.description = description;
-        this.parentGroup = parentGroup;
+        this.parentEntry = parentEntry;
         this.user        = user;
         this.createDate  = createDate;
         this.changeDate  = changeDate;
@@ -218,13 +218,18 @@ public class Entity implements Cloneable {
      * Set the Group property.
      *
      * @param value The new value for Group
+     * @deprecated use setParentEntry
      */
-    public void setParentGroup(Group value) {
-        parentGroup = value;
-        if (parentGroup != null) {
-            parentGroupId = parentGroup.getId();
+    public void xxxsetParentGroup(Group value) {
+        setParentEntry(value);
+    }
+
+    public void setParentEntry(Group value) {
+        parentEntry = value;
+        if (parentEntry != null) {
+            parentEntryId = parentEntry.getId();
         } else {
-            parentGroupId = null;
+            parentEntryId = null;
         }
     }
 
@@ -232,9 +237,15 @@ public class Entity implements Cloneable {
      * Get the Group property.
      *
      * @return The Group
+     * @deprecated use getParentEntry
      */
-    public Group getParentGroup() {
-        return parentGroup;
+    public Group xxxxgetParentGroup() {
+        return getParentEntry();
+    }
+
+
+    public Group getParentEntry() {
+        return parentEntry;
     }
 
 
@@ -245,18 +256,27 @@ public class Entity implements Cloneable {
      * @param value The new value for ParentId
      */
     public void setParentGroupId(String value) {
-        parentGroupId = value;
+        setParentEntryId(value);
+    }
+
+    public void setParentEntryId(String value) {
+        parentEntryId = value;
     }
 
     /**
      * Get the ParentId property.
      *
      * @return The ParentId
+     * @deprecated use getParentEntryId
      */
-    public String getParentGroupId() {
-        return ((parentGroup != null)
-                ? parentGroup.getId()
-                : parentGroupId);
+    public String xxxgetParentGroupId() {
+        return getParentEntryId();
+    }
+
+    public String getParentEntryId() {
+        return ((parentEntry != null)
+                ? parentEntry.getId()
+                : parentEntryId);
     }
 
 

@@ -119,7 +119,7 @@ public class EntryManager extends RepositoryManager {
     private static final String GROUP_TOP = "Top";
 
     /** _more_ */
-    private Group topGroup;
+    private Group topEntry;
 
 
     /** _more_ */
@@ -146,7 +146,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public Group getTopGroup() {
-        return topGroup;
+        return topEntry;
     }
 
     /**
@@ -161,11 +161,11 @@ public class EntryManager extends RepositoryManager {
         if (descendent != null) {
             topEntry = descendent;
             while (topEntry != null) {
-                Entry parent = topEntry.getParentGroup();
+                Entry parent = topEntry.getParentEntry();
                 if (parent == null) {
                     break;
                 }
-                if (parent.isTopGroup()) {
+                if (parent.isTopEntry()) {
                     break;
                 }
                 topEntry = parent;
@@ -477,7 +477,7 @@ return new Result(title, sb);
             boolean next = request.get(ARG_NEXT, false);
             List<String> ids =
                 getChildIds(request,
-                            findGroup(request, entry.getParentGroupId()),
+                            findGroup(request, entry.getParentEntryId()),
                             new ArrayList<Clause>());
             String nextId = null;
             int    index  = ids.indexOf(entry.getId());
@@ -698,11 +698,11 @@ return new Result(title, sb);
         if (request.defined(ARG_ENTRYID)) {
             entry = getEntry(request);
             type  = entry.getTypeHandler().getType();
-            if ( !entry.isTopGroup()) {
-                group = findGroup(request, entry.getParentGroupId());
+            if ( !entry.isTopEntry()) {
+                group = findGroup(request, entry.getParentEntryId());
             }
         }
-        boolean isEntryTop = ((entry != null) && entry.isTopGroup());
+        boolean isEntryTop = ((entry != null) && entry.isTopEntry());
 
 
         if ( !isEntryTop && (group == null)) {
@@ -758,7 +758,7 @@ return new Result(title, sb);
                                      ARG_SAVENEXT));
 
 
-            String deleteButton = (((entry != null) && entry.isTopGroup())
+            String deleteButton = (((entry != null) && entry.isTopEntry())
                                    ? ""
                                    : HtmlUtil.submit(msg("Delete"),
                                        ARG_DELETE));
@@ -951,7 +951,7 @@ return new Result(title, sb);
 
 
             if (request.exists(ARG_DELETE_CONFIRM)) {
-                if (entry.isTopGroup()) {
+                if (entry.isTopEntry()) {
                     return new Result(
                         request.entryUrl(
                             getRepository().URL_ENTRY_SHOW, entry,
@@ -963,7 +963,7 @@ return new Result(title, sb);
                 List<Entry> entries = new ArrayList<Entry>();
                 entries.add(entry);
                 deleteEntries(request, entries, null);
-                Group group = findGroup(request, entry.getParentGroupId());
+                Group group = findGroup(request, entry.getParentEntryId());
                 return new Result(
                     request.entryUrl(
                         getRepository().URL_ENTRY_SHOW, group, ARG_MESSAGE,
@@ -1014,7 +1014,7 @@ return new Result(title, sb);
             if (groupId == null) {
                 fatalError(request, "You must specify a parent folder");
             }
-            Group parentGroup = findGroup(request);
+            Group parentEntry = findGroup(request);
 
 
 
@@ -1022,7 +1022,7 @@ return new Result(title, sb);
                 logInfo("Upload:checking access");
             }
             boolean okToCreateNewEntry =
-                getAccessManager().canDoAction(request, parentGroup,
+                getAccessManager().canDoAction(request, parentEntry,
                     (forUpload
                      ? Permission.ACTION_UPLOAD
                      : Permission.ACTION_NEW), forUpload);
@@ -1117,7 +1117,7 @@ return new Result(title, sb);
                             return new Result(
                                 request.entryUrl(
                                     getRepository().URL_ENTRY_SHOW,
-                                    parentGroup));
+                                    parentEntry));
                         }
                     } finally {
                         IOUtil.close(toStream);
@@ -1134,7 +1134,7 @@ return new Result(title, sb);
             if ( !unzipArchive) {
                 resources.add(resource);
                 origNames.add(resourceName);
-                parents.add(parentGroup);
+                parents.add(parentEntry);
             } else {
                 isLocalFile = false;
                 Hashtable<String, Group> nameToGroup = new Hashtable<String,
@@ -1154,7 +1154,7 @@ return new Result(title, sb);
                         if (name.equals("MANIFEST.MF")) {
                             continue;
                         }
-                        Group parent = parentGroup;
+                        Group parent = parentEntry;
                         if (request.get(ARG_FILE_PRESERVEDIRECTORY, false)) {
                             List<String> toks = StringUtil.split(path, "/",
                                                     true, true);
@@ -1197,7 +1197,7 @@ return new Result(title, sb);
             if (request.exists(ARG_CANCEL)) {
                 return new Result(
                     request.entryUrl(
-                        getRepository().URL_ENTRY_SHOW, parentGroup));
+                        getRepository().URL_ENTRY_SHOW, parentEntry));
             }
 
 
@@ -1340,7 +1340,7 @@ return new Result(title, sb);
                         newResourceType));
             }
 
-            if (entry.isTopGroup()) {
+            if (entry.isTopEntry()) {
                 //fatalError(request,"Cannot edit top-level folder");
             }
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
@@ -1382,7 +1382,7 @@ return new Result(title, sb);
             if (dateRange[1] != null) {
                 entry.setEndDate(dateRange[1].getTime());
             }
-            setEntryState(request, entry, entry.getParentGroup(), newEntry);
+            setEntryState(request, entry, entry.getParentEntry(), newEntry);
             entries.add(entry);
         }
 
@@ -1419,7 +1419,7 @@ return new Result(title, sb);
             entry = (Entry) entries.get(0);
             return new Result(
                 request.entryUrl(
-                    getRepository().URL_ENTRY_SHOW, entry.getParentGroup(),
+                    getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
                     ARG_MESSAGE,
                     getRepository().translate(
                         request, "File has been uploaded")));
@@ -1438,7 +1438,7 @@ return new Result(title, sb);
             entry = (Entry) entries.get(0);
             return new Result(
                 request.entryUrl(
-                    getRepository().URL_ENTRY_SHOW, entry.getParentGroup(),
+                    getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
                     ARG_MESSAGE,
                     entries.size()
                     + HtmlUtil.pad(
@@ -1671,7 +1671,7 @@ return new Result(title, sb);
         Entry        entry = getEntry(request);
         StringBuffer sb    = new StringBuffer();
         //        sb.append(makeEntryHeader(request, entry));
-        if (entry.isTopGroup()) {
+        if (entry.isTopEntry()) {
             sb.append(
                 getRepository().showDialogNote(
                     "Cannot delete top-level folder"));
@@ -1687,7 +1687,7 @@ return new Result(title, sb);
         if (request.exists(ARG_DELETE_CONFIRM)) {
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
-            Group group = findGroup(request, entry.getParentGroupId());
+            Group group = findGroup(request, entry.getParentEntryId());
             if (entry.isGroup()) {
                 return asynchDeleteEntries(request, entries);
             } else {
@@ -1750,7 +1750,7 @@ return new Result(title, sb);
                 throw new RepositoryUtil.MissingEntryException(
                     "Could not find entry:" + id);
             }
-            if (entry.isTopGroup()) {
+            if (entry.isTopEntry()) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(
                     getRepository().showDialogNote(
@@ -1782,7 +1782,7 @@ return new Result(title, sb);
                 return new Result(
                     request.url(getRepository().URL_ENTRY_SHOW));
             }
-            String id = entries.get(0).getParentGroupId();
+            String id = entries.get(0).getParentEntryId();
             return new Result(request.url(getRepository().URL_ENTRY_SHOW,
                                           ARG_ENTRYID, id));
         }
@@ -1844,8 +1844,8 @@ return new Result(title, sb);
 //                request.setCollectionEntry(null);
 //            }
             }*/
-        Entry                group   = entries.get(0).getParentGroup();
-        final String         groupId = entries.get(0).getParentGroupId();
+        Entry                group   = entries.get(0).getParentEntry();
+        final String         groupId = entries.get(0).getParentEntryId();
 
         ActionManager.Action action  = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
@@ -2101,7 +2101,7 @@ return new Result(title, sb);
             if (newUser != null) {
                 entry.setUser(newUser);
             } else {
-                entry.setUser(entry.getParentGroup().getUser());
+                entry.setUser(entry.getParentEntry().getUser());
             }
             entry.setDataType(metadata.getAttr3());
         } else {
@@ -2135,12 +2135,12 @@ return new Result(title, sb);
      *
      * @param request _more_
      * @param entry _more_
-     * @param parentGroup _more_
+     * @param parentEntry _more_
      *
      * @throws Exception _more_
      */
     private void initUploadedEntry(Request request, Entry entry,
-                                   Group parentGroup)
+                                   Group parentEntry)
             throws Exception {
         String oldType = entry.getDataType();
         entry.setDataType(DATATYPE_UPLOAD);
@@ -2167,9 +2167,9 @@ return new Result(title, sb);
                 request.getIp(), ((oldType != null)
                                   ? oldType
                                   : ""), fromEmail, ""));
-        User parentUser = parentGroup.getUser();
+        User parentUser = parentEntry.getUser();
         logInfo("upload: setting user to: " + parentUser.getName()
-                + " from parent folder:" + parentGroup);
+                + " from parent folder:" + parentEntry);
         entry.setUser(parentUser);
 
         if (true || getAdmin().isEmailCapable()) {
@@ -2178,9 +2178,9 @@ return new Result(title, sb);
                     "A new entry has been uploaded to the RAMADDA server under the folder: ");
             String url1 =
                 HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
-                             ARG_ENTRYID, parentGroup.getId());
+                             ARG_ENTRYID, parentEntry.getId());
 
-            contents.append(HtmlUtil.href(url1, parentGroup.getFullName()));
+            contents.append(HtmlUtil.href(url1, parentEntry.getFullName()));
             contents.append("<p>\n\n");
             String url =
                 HtmlUtil.url(getRepository().URL_ENTRY_FORM.getFullUrl(),
@@ -2192,7 +2192,7 @@ return new Result(title, sb);
                                      contents.toString(), true);
 
                 List<Metadata> metadataList =
-                    getMetadataManager().findMetadata(parentGroup,
+                    getMetadataManager().findMetadata(parentEntry,
                         ContentMetadataHandler.TYPE_CONTACT, true);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
@@ -2492,7 +2492,7 @@ return new Result(title, sb);
                 throw new RepositoryUtil.MissingEntryException(
                     "Could not find entry:" + id);
             }
-            if (entry.isTopGroup()) {
+            if (entry.isTopEntry()) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(
                     getRepository().showDialogNote(
@@ -2785,7 +2785,7 @@ return new Result(title, sb);
                 //                          long createDate, long startDate, long endDate, Object[] values) {
                 //See if this new entry is somewhere down in the tree
                 Entry newParent =
-                    oldIdToNewEntry.get(oldEntry.getParentGroupId());
+                    oldIdToNewEntry.get(oldEntry.getParentEntryId());
                 if (newParent == null) {
                     newParent = toGroup;
                 }
@@ -2859,13 +2859,13 @@ return new Result(title, sb);
         Statement statement = connection.createStatement();
         try {
             for (Entry fromEntry : entries) {
-                fromEntry.setParentGroup(toGroup);
+                fromEntry.setParentEntry(toGroup);
                 String oldId = fromEntry.getId();
                 String newId = oldId;
                 String sql =
                     "UPDATE  " + Tables.ENTRIES.NAME + " SET "
                     + SqlUtil.unDot(Tables.ENTRIES.COL_PARENT_GROUP_ID)
-                    + " = " + SqlUtil.quote(fromEntry.getParentGroupId())
+                    + " = " + SqlUtil.quote(fromEntry.getParentEntryId())
                     + " WHERE "
                     + SqlUtil.eq(Tables.ENTRIES.COL_ID,
                                  SqlUtil.quote(fromEntry.getId()));
@@ -2982,19 +2982,19 @@ return new Result(title, sb);
      * _more_
      *
      * @param request _more_
-     * @param parentGroup _more_
+     * @param parentEntry _more_
      * @param name _more_
      *
      * @return _more_
      */
-    protected String makeNewGroupForm(Request request, Group parentGroup,
+    protected String makeNewGroupForm(Request request, Group parentEntry,
                                       String name) {
         StringBuffer sb = new StringBuffer();
-        if ((parentGroup != null) && request.getUser().getAdmin()) {
+        if ((parentEntry != null) && request.getUser().getAdmin()) {
             sb.append(
                 request.form(
                     getHarvesterManager().URL_HARVESTERS_IMPORTCATALOG));
-            sb.append(HtmlUtil.hidden(ARG_GROUP, parentGroup.getId()));
+            sb.append(HtmlUtil.hidden(ARG_GROUP, parentEntry.getId()));
         }
         return sb.toString();
     }
@@ -3017,10 +3017,10 @@ return new Result(title, sb);
         if (toEntry.getId().equals(fromEntry.getId())) {
             return false;
         }
-        if (toEntry.getParentGroup() == null) {
+        if (toEntry.getParentEntry() == null) {
             return true;
         }
-        return okToMove(fromEntry, toEntry.getParentGroup());
+        return okToMove(fromEntry, toEntry.getParentEntry());
     }
 
 
@@ -3265,20 +3265,20 @@ return new Result(title, sb);
             throws Exception {
         String parentId = XmlUtil.getAttribute(node, ATTR_PARENT,
                               getTopGroup().getId());
-        Group parentGroup = (Group) entries.get(parentId);
-        if (parentGroup == null) {
-            parentGroup = (Group) getEntry(request, parentId);
-            if (parentGroup == null) {
-                parentGroup = (Group) findEntryFromName(parentId,
+        Group parentEntry = (Group) entries.get(parentId);
+        if (parentEntry == null) {
+            parentEntry = (Group) getEntry(request, parentId);
+            if (parentEntry == null) {
+                parentEntry = (Group) findEntryFromName(parentId,
                         request.getUser(), false);
             }
 
-            if (parentGroup == null) {
+            if (parentEntry == null) {
                 throw new RepositoryUtil.MissingEntryException(
                     "Could not find parent:" + parentId);
             }
         }
-        Entry entry = processEntryXml(request, node, parentGroup, files,
+        Entry entry = processEntryXml(request, node, parentEntry, files,
                                       checkAccess, internal);
 
         String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
@@ -3296,7 +3296,7 @@ return new Result(title, sb);
      *
      * @param request _more_
      * @param node _more_
-     * @param parentGroup _more_
+     * @param parentEntry _more_
      * @param files _more_
      * @param checkAccess _more_
      * @param internal _more_
@@ -3306,7 +3306,7 @@ return new Result(title, sb);
      * @throws Exception _more_
      */
     protected Entry processEntryXml(Request request, Element node,
-                                    Group parentGroup, Hashtable files,
+                                    Group parentEntry, Hashtable files,
                                     boolean checkAccess, boolean internal)
             throws Exception {
 
@@ -3326,9 +3326,9 @@ return new Result(title, sb);
 
 
         if (checkAccess) {
-            if ( !getAccessManager().canDoAction(request, parentGroup,
+            if ( !getAccessManager().canDoAction(request, parentEntry,
                     Permission.ACTION_NEW)) {
-                if (getAccessManager().canDoAction(request, parentGroup,
+                if (getAccessManager().canDoAction(request, parentEntry,
                         Permission.ACTION_UPLOAD)) {
                     doAnonymousUpload = true;
                 } else {
@@ -3375,7 +3375,7 @@ return new Result(title, sb);
                 "Could not find type:" + type);
         }
         String   id = (typeHandler.isType(TypeHandler.TYPE_GROUP)
-                       ? getGroupId(parentGroup)
+                       ? getGroupId(parentEntry)
                        : getRepository().getGUID());
 
         Resource resource;
@@ -3428,13 +3428,13 @@ return new Result(title, sb);
                 + typeHandler.getDescription());
         }
         Entry entry = typeHandler.createEntry(id);
-        entry.initEntry(name, description, parentGroup, request.getUser(),
+        entry.initEntry(name, description, parentEntry, request.getUser(),
                         resource, dataType, createDate.getTime(),
                         new Date().getTime(), fromDate.getTime(),
                         toDate.getTime(), null);
 
         if (doAnonymousUpload) {
-            initUploadedEntry(request, entry, parentGroup);
+            initUploadedEntry(request, entry, parentEntry);
         }
         entry.setNorth(Misc.decodeLatLon(XmlUtil.getAttribute(node,
                 ATTR_NORTH, entry.getNorth() + "")));
@@ -4169,7 +4169,7 @@ return new Result(title, sb);
         links.addAll(getRepository().getOutputLinks(request, state));
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
-        if ( !entry.isTopGroup()) {
+        if ( !entry.isTopEntry()) {
             links.addAll(outputHandler.getNextPrevLinks(request, entry,
                     request.getOutput()));
         }
@@ -4528,7 +4528,7 @@ return new Result(title, sb);
         }
 
         List        breadcrumbs     = new ArrayList();
-        Group       parent = findGroup(request, entry.getParentGroupId());
+        Group       parent = findGroup(request, entry.getParentEntryId());
         int         length          = 0;
         List<Group> parents         = new ArrayList<Group>();
         int         totalNameLength = 0;
@@ -4536,7 +4536,7 @@ return new Result(title, sb);
             parents.add(parent);
             String name = parent.getName();
             totalNameLength += name.length();
-            parent          = findGroup(request, parent.getParentGroupId());
+            parent          = findGroup(request, parent.getParentEntryId());
         }
 
         boolean needToClip = totalNameLength > lengthLimit;
@@ -4646,7 +4646,7 @@ return new Result(title, sb);
         if (entry == null) {
             return new String[] { BLANK, BLANK };
         }
-        Entry       parent = findGroup(request, entry.getParentGroupId());
+        Entry       parent = findGroup(request, entry.getParentEntryId());
         OutputType  output          = OutputHandler.OUTPUT_HTML;
         int         length          = 0;
 
@@ -4660,7 +4660,7 @@ return new Result(title, sb);
             parents.add(parent);
             String name = parent.getName();
             totalNameLength += name.length();
-            parent          = findGroup(request, parent.getParentGroupId());
+            parent          = findGroup(request, parent.getParentEntryId());
         }
 
         boolean needToClip = totalNameLength > 80;
@@ -4678,7 +4678,7 @@ return new Result(title, sb);
             titleList.add(0, name);
             String link = getTooltipLink(request, ancestor, name, null);
             breadcrumbs.add(0, link);
-            ancestor = findGroup(request, ancestor.getParentGroupId());
+            ancestor = findGroup(request, ancestor.getParentEntryId());
         }
         titleList.add(entry.getLabel());
         String nav;
@@ -4733,7 +4733,7 @@ return new Result(title, sb);
      * @throws Exception _more_
      */
     public Group getParent(Request request, Entry entry) throws Exception {
-        return (Group) getEntry(request, entry.getParentGroupId());
+        return (Group) getEntry(request, entry.getParentEntryId());
     }
 
 
@@ -5263,7 +5263,7 @@ return new Result(title, sb);
         statement.setString(col++, typeHandler.getType());
         statement.setString(col++, entry.getName());
         statement.setString(col++, entry.getDescription());
-        statement.setString(col++, entry.getParentGroupId());
+        statement.setString(col++, entry.getParentEntryId());
         //        statement.setString(col++, entry.getCollectionGroupId());
         statement.setString(col++, entry.getUser().getId());
         if (entry.getResource() == null) {
@@ -5515,9 +5515,9 @@ return new Result(title, sb);
         totalTime    += (t2 - t1);
         totalEntries += entries.size();
         for (Entry entry : entries) {
-            Group parentGroup = entry.getParentGroup();
-            if (parentGroup != null) {
-		parentGroup.getTypeHandler().childEntryChanged(entry, isNew);
+            Group parentEntry = entry.getParentEntry();
+            if (parentEntry != null) {
+		parentEntry.getTypeHandler().childEntryChanged(entry, isNew);
             }
 	}
 
@@ -5606,8 +5606,8 @@ return new Result(title, sb);
             for (Entry entry : entries) {
                 String path = getStorageManager().resourceToDB(
                                   entry.getResource().getPath());
-                Group  parentGroup = entry.getParentGroup();
-                String key         = parentGroup.getId() + "_" + path;
+                Group  parentEntry = entry.getParentEntry();
+                String key         = parentEntry.getId() + "_" + path;
                 if (seenResources.contains(key)) {
                     nonUniqueOnes.add(entry);
                     //                    System.out.println("seen resource:" + path);
@@ -5616,7 +5616,7 @@ return new Result(title, sb);
                 seenResources.add(key);
 
                 select.setString(1, path);
-                select.setString(2, entry.getParentGroup().getId());
+                select.setString(2, entry.getParentEntry().getId());
                 //                select.addBatch();
                 ResultSet results = select.executeQuery();
                 if (results.next()) {
@@ -6064,7 +6064,7 @@ return new Result(title, sb);
             return new Result(
                 request.entryUrl(
                     getRepository().URL_ENTRY_SHOW,
-                    entries.get(0).getParentGroup(), ARG_MESSAGE,
+                    entries.get(0).getParentEntry(), ARG_MESSAGE,
                     sb.toString()));
         }
         return new Result("Metadata", sb);
@@ -6293,11 +6293,11 @@ return new Result(title, sb);
      */
     public Entry findEntryWithName(Request request, Group parent, String name)
             throws Exception {
-        String groupName = ((parent == null)
+        String fullPath = ((parent == null)
                             ? ""
                             : parent.getFullName()) + Group.IDDELIMITER
                                 + name;
-        Group group = getGroupFromCache(groupName, false);
+        Group group = getGroupFromCache(fullPath, false);
         if (group != null) {
             return group;
         }
@@ -6325,11 +6325,11 @@ return new Result(title, sb);
                                            String name)
             throws Exception {
         List<Entry> entries   = new ArrayList<Entry>();
-        String      groupName = ((parent == null)
+        String      fullPath = ((parent == null)
                                  ? ""
                                  : parent.getFullName()) + Group.IDDELIMITER
                                      + name;
-        Group group = getGroupFromCache(groupName, false);
+        Group group = getGroupFromCache(fullPath, false);
         if (group != null) {
             entries.add(group);
             return entries;
@@ -6541,12 +6541,12 @@ return new Result(title, sb);
                                        boolean isGroup, boolean isTop)
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
-        String topGroupName = ((topGroup != null)
-                               ? topGroup.getName()
+        String topEntryName = ((topEntry != null)
+                               ? topEntry.getName()
                                : GROUP_TOP);
-        if ( !name.equals(topGroupName)
-                && !name.startsWith(topGroupName + Group.PATHDELIMITER)) {
-            name = topGroupName + Group.PATHDELIMITER + name;
+        if ( !name.equals(topEntryName)
+                && !name.startsWith(topEntryName + Group.PATHDELIMITER)) {
+            name = topEntryName + Group.PATHDELIMITER + name;
         }
         Entry entry = null;
 
@@ -6617,13 +6617,13 @@ return new Result(title, sb);
             throws Exception {
         if(name == null) return null;
         name = name.trim();
-        String topGroupName = getTopGroup().getName();
-        if (name.equals(topGroupName)) {
+        String topEntryName = getTopGroup().getName();
+        if (name.equals(topEntryName)) {
             return getTopGroup();
         }
         //Tack on the top group name if its not there
-        if ( !name.startsWith(topGroupName + Group.PATHDELIMITER)) {
-            name = topGroupName + Group.PATHDELIMITER + name;
+        if ( !name.startsWith(topEntryName + Group.PATHDELIMITER)) {
+            name = topEntryName + Group.PATHDELIMITER + name;
         }
         //split the list
         List<String> toks = (List<String>) StringUtil.split(name,
@@ -6734,7 +6734,7 @@ return new Result(title, sb);
             group.setName(name);
             group.setDate(new Date().getTime());
         }
-        group.setParentGroup(parent);
+        group.setParentEntry(parent);
         group.setUser(user);
         addNewEntry(group);
         cacheEntry(group);
@@ -6880,7 +6880,7 @@ return new Result(title, sb);
      * @throws Exception _more_
      */
     public List<Group> getTopGroups(Request request) throws Exception {
-        List<Group> topGroups = null;
+        List<Group> topEntries = null;
 
         Statement statement = getDatabaseManager().select(
                                   Tables.ENTRIES.COL_ID, Tables.ENTRIES.NAME,
@@ -6908,7 +6908,7 @@ return new Result(title, sb);
             }
         }
         //For now don't check for access control
-        //        return topGroups = new ArrayList<Group>(
+        //        return topEntries = new ArrayList<Group>(
         //            toGroupList(getAccessManager().filterEntries(request, groups)));
         return new ArrayList<Group>(groups);
     }
@@ -6959,10 +6959,10 @@ return new Result(title, sb);
         }
 
         for (Entry entry : entries) {
-            if (entry.getParentGroupId() != null) {
-                Group parentGroup = (Group) findGroup(null,
-                                        entry.getParentGroupId());
-                entry.setParentGroup(parentGroup);
+            if (entry.getParentEntryId() != null) {
+                Group parentEntry = (Group) findGroup(null,
+                                        entry.getParentEntryId());
+                entry.setParentEntry(parentEntry);
             }
         }
 
@@ -7147,14 +7147,14 @@ return new Result(title, sb);
 
         List<Entry> entries = readEntries(statement);
         if (entries.size() > 0) {
-            topGroup = (Group) entries.get(0);
+            topEntry = (Group) entries.get(0);
         }
 
         //Make the top group if needed
-        if (topGroup == null) {
-            topGroup = makeNewGroup(null, GROUP_TOP,
+        if (topEntry == null) {
+            topEntry = makeNewGroup(null, GROUP_TOP,
                                     getUserManager().getDefaultUser());
-            getAccessManager().initTopGroup(topGroup);
+            getAccessManager().initTopGroup(topEntry);
         }
     }
 

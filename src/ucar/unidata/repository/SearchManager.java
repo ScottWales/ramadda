@@ -528,13 +528,6 @@ public class SearchManager extends RepositoryManager {
             }
         }
 
-
-
-
-
-
-
-
         List<Group> groups  = new ArrayList<Group>();
         List<Entry> entries = new ArrayList<Entry>();
 
@@ -589,10 +582,8 @@ public class SearchManager extends RepositoryManager {
                 return new Result("Remote Search Results", sb);
             }
 
-
             Group tmpGroup = getEntryManager().getDummyGroup();
             doDistributedSearch(request, servers, tmpGroup, groups, entries);
-
             Result result = getRepository().getOutputHandler(
                                 request).outputGroup(
                                 request, request.getOutput(), tmpGroup,
@@ -600,9 +591,6 @@ public class SearchManager extends RepositoryManager {
             return result;
 
         }
-
-
-
 
         Group theGroup = null;
 
@@ -647,7 +635,7 @@ public class SearchManager extends RepositoryManager {
      *
      * @param request _more_
      * @param servers _more_
-     * @param tmpGroup _more_
+     * @param tmpEntry _more_
      * @param groups _more_
      * @param entries _more_
      *
@@ -655,7 +643,7 @@ public class SearchManager extends RepositoryManager {
      */
     private void doDistributedSearch(final Request request,
                                      List<ServerInfo> servers,
-                                     Group tmpGroup,
+                                     Group tmpEntry,
                                      final List<Group> groups,
                                      final List<Entry> entries)
             throws Exception {
@@ -672,16 +660,16 @@ public class SearchManager extends RepositoryManager {
             if (server.equals(thisServer)) {
                 continue;
             }
-            final Group parentGroup =
+            final Group parentEntry =
                 new Group(getRepository().getGroupTypeHandler(), true);
-            parentGroup.setId(
+            parentEntry.setId(
                 getEntryManager().getRemoteEntryId(server.getUrl(), ""));
-            getEntryManager().cacheEntry(parentGroup);
-            parentGroup.setRemoteServer(server.getUrl());
-            parentGroup.setIsRemoteEntry(true);
-            parentGroup.setUser(getUserManager().getAnonymousUser());
-            parentGroup.setParentGroup(tmpGroup);
-            parentGroup.setName(server.getUrl());
+            getEntryManager().cacheEntry(parentEntry);
+            parentEntry.setRemoteServer(server.getUrl());
+            parentEntry.setIsRemoteEntry(true);
+            parentEntry.setUser(getUserManager().getAnonymousUser());
+            parentEntry.setParentEntry(tmpEntry);
+            parentEntry.setName(server.getUrl());
             final ServerInfo theServer = server;
             Runnable         runnable  = new Runnable() {
                 public void run() {
@@ -707,7 +695,7 @@ public class SearchManager extends RepositoryManager {
                                 //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
                                 Entry entry =
                                     getEntryManager().processEntryXml(
-                                        request, node, parentGroup,
+                                        request, node, parentEntry,
                                         new Hashtable(), false, false);
 
                                 entry.setResource(

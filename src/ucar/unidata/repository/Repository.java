@@ -889,7 +889,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
         //create the log dir
         getStorageManager().getLogDir();
 
-        System.err.println("calling initPlugins");
         initPlugins();
         makePluginHelp();
 

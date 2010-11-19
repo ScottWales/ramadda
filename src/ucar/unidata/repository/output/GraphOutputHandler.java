@@ -402,7 +402,7 @@ public class GraphOutputHandler extends OutputHandler {
 
 
         Group parent = getEntryManager().findGroup(request,
-                           group.getParentGroupId());
+                           group.getParentEntryId());
         if (parent != null) {
             sb.append(XmlUtil.tag(TAG_NODE,
                                   XmlUtil.attrs(ATTR_TYPE, NODETYPE_GROUP,

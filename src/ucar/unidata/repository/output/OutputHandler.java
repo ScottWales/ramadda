@@ -1358,7 +1358,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
 
                 String crumbs = getEntryManager().getBreadCrumbs(request,
                                     (hideParents
-                                     ? entry.getParentGroup()
+                                     ? entry.getParentEntry()
                                      : entry), null, 60);
                 if (hideParents) {
                     cbxSB.append(HtmlUtil.makeToggleInline("",
@@ -1375,7 +1375,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                 if (showCrumbs) {
                     crumbs = getEntryManager().getBreadCrumbs(request,
                             (hideParents
-                             ? entry.getParentGroup()
+                             ? entry.getParentEntry()
                              : entry), null, 60);
                     if (hideParents) {
                         crumbs = HtmlUtil.makeToggleInline("",
@@ -2481,7 +2481,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         try {
             Entry   entry   = (Entry) wikiUtil.getProperty(PROP_ENTRY);
             Request request = (Request) wikiUtil.getProperty(PROP_REQUEST);
-            Group   parent  = entry.getParentGroup();
+            Group   parent  = entry.getParentEntry();
 
 
             name = name.trim();

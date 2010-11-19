@@ -174,7 +174,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
         }
 
-        if ((state.group != null) && !state.group.isTopGroup()
+        if ((state.group != null) && !state.group.isTopEntry()
                 && (hasFile || hasGroup)) {
             links.add(makeLink(request, state.group, OUTPUT_ZIPTREE,
                                "/"

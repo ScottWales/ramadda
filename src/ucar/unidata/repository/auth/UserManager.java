@@ -1110,7 +1110,7 @@ public class UserManager extends RepositoryManager {
             if (homeGroupId.length() > 0) {
                 Group parent = getEntryManager().findGroup(request,
                                    homeGroupId);
-                Group home = getEntryManager().makeNewGroup(parent,
+                Entry home = getEntryManager().makeNewGroup(parent,
                                  newUser.getName(), newUser, null,
                                  TypeHandler.TYPE_HOMEPAGE);
                 msg.append("A home folder has been created for you: ");

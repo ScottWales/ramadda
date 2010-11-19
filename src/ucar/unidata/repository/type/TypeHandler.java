@@ -541,7 +541,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param mainEntry _more_
-     * @param group _more_
+     * @param ancestor _more_
      * @param synthId _more_
      *
      * @return _more_
@@ -549,10 +549,10 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<String> getSynthIds(Request request, Group mainEntry,
-                                    Group group, String synthId)
+                                    Group ancestor, String synthId)
             throws Exception {
         if (parent != null) {
-            return parent.getSynthIds(request, mainEntry, group, synthId);
+            return parent.getSynthIds(request, mainEntry, ancestor, synthId);
         }
         throw new IllegalArgumentException(
             "getSynthIds  not implemented in class:" + getClass().getName());
@@ -896,8 +896,9 @@ public class TypeHandler extends RepositoryManager {
         Date            createDate = null;
 
         entry.initEntry(results.getString(col++), results
-            .getString(col++), getEntryManager()
-            .findGroup(null, results.getString(col++)), getUserManager()
+            .getString(col++), 
+                        getEntryManager().findGroup(null, results.getString(col++)), 
+                        getUserManager()
             .findUser(results
                 .getString(col++), true), new Resource(getStorageManager()
                 .resourceFromDB(results.getString(col++)), results
@@ -1120,7 +1121,6 @@ public class TypeHandler extends RepositoryManager {
             parent.getEntryLinks(request, entry, links);
             return;
         }
-
 
         boolean isGroup = entry.isGroup();
         boolean canDoNew = isGroup
@@ -1420,7 +1420,7 @@ public class TypeHandler extends RepositoryManager {
                 sb.append(HtmlUtil.formEntry(msgLabel("Name"), nameString));
 
                 String desc = entry.getDescription();
-                if ((desc != null) && (desc.length() > 0)) {
+                if ((desc != null) && (desc.length() > 0) && (!isWikiText(desc))) {
                     sb.append(HtmlUtil.formEntry(msgLabel("Description"),
                             getEntryManager().getEntryText(request, entry,
                                 desc)));
@@ -1576,6 +1576,11 @@ public class TypeHandler extends RepositoryManager {
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
         return sb;
 
+    }
+
+    public static boolean isWikiText(String desc) {
+        if(desc == null) return false;
+        return  (desc.trim().startsWith("<wiki>"));
     }
 
 
@@ -1930,7 +1935,7 @@ public class TypeHandler extends RepositoryManager {
                 if (desc.length() > 100) {
                     rows = rows * 2;
                 }
-                if (desc.startsWith("<wiki>")) {
+                if (isWikiText(desc)) {
                     rows = 20;
                     buttons =
                         getRepository().getHtmlOutputHandler()
@@ -2538,7 +2543,7 @@ public class TypeHandler extends RepositoryManager {
                                                 + ")";
             if (groupArg.length() > 0) {
                 advancedSB.append(HtmlUtil.hidden(ARG_GROUP, groupArg));
-                Group group = getEntryManager().findGroup(request, groupArg);
+                Entry group = getEntryManager().findGroup(request, groupArg);
                 if (group != null) {
                     advancedSB.append(HtmlUtil.formEntry(msgLabel("Folder"),
                             group.getFullName() + "&nbsp;" + searchChildren));
@@ -2773,8 +2778,8 @@ public class TypeHandler extends RepositoryManager {
                 groupId = groupId.substring(1);
             }
             if (groupId.endsWith("%")) {
-                Group group = getEntryManager().findGroup(request,
-                                  groupId.substring(0, groupId.length() - 1));
+                Entry group = getEntryManager().findGroup(request,
+                                                          groupId.substring(0, groupId.length() - 1));
                 if (group != null) {
                     addCriteria(request, searchCriteria, "Folder=",
                                 group.getName());
@@ -2782,7 +2787,7 @@ public class TypeHandler extends RepositoryManager {
                 where.add(Clause.like(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                       groupId));
             } else {
-                Group group = getEntryManager().findGroup(request);
+                Entry group = getEntryManager().findGroup(request);
                 if (group == null) {
                     throw new IllegalArgumentException(
                         msgLabel("Could not find folder") + groupId);
@@ -2797,10 +2802,10 @@ public class TypeHandler extends RepositoryManager {
                     Clause sub = (doNot
                                   ? Clause.notLike(
                                       Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                      group.getId() + Group.IDDELIMITER + "%")
+                                      group.getId() + Entry.IDDELIMITER + "%")
                                   : Clause.like(
                                       Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                      group.getId() + Group.IDDELIMITER
+                                      group.getId() + Entry.IDDELIMITER
                                       + "%"));
                     Clause equals = (doNot
                                      ? Clause.neq(

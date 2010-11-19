@@ -415,7 +415,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                         connection.setAutoCommit(false);
                         createDatabase(getRepository().getTmpRequest(),
                                        entry, dataFile,
-                                       entry.getParentGroup(), connection);
+                                       entry.getParentEntry(), connection);
 
                         connection.commit();
                         connection.setAutoCommit(true);
@@ -952,7 +952,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      */
     private void loadData(Entry entry, File file) throws Exception {
 
-        FeatureDatasetPoint fdp = getDataset(entry, entry.getParentGroup(),
+        FeatureDatasetPoint fdp = getDataset(entry, entry.getParentEntry(),
                                              file);
         List<PointDataMetadata> metadata = getMetadata(getTableName(entry));
         Connection connection = getDatabaseManager().getConnection();

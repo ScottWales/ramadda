@@ -786,13 +786,13 @@ public class EntryMonitor implements Constants {
         } else if (field.equals(ARG_ANCESTOR)) {
             Group ancestor = getGroup(filter);
             if (ancestor != null) {
-                Group parent = entry.getParentGroup();
+                Group parent = entry.getParentEntry();
                 while (parent != null) {
                     if (ancestor.equals(parent)) {
                         ok = true;
                         break;
                     }
-                    parent = parent.getParentGroup();
+                    parent = parent.getParentEntry();
                 }
             }
 

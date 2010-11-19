@@ -1093,22 +1093,22 @@ public class Admin extends RepositoryManager {
 
         StringBuffer     outputSB      = new StringBuffer();
         List<OutputType> types         = getRepository().getOutputTypes();
-        String           lastGroupName = null;
+        String           lastCategoryName = null;
         for (OutputType type : types) {
             if ( !type.getForUser()) {
                 continue;
             }
             boolean ok = getRepository().isOutputTypeOK(type);
-            if ( !Misc.equals(lastGroupName, type.getGroupName())) {
-                if (lastGroupName != null) {
+            if ( !Misc.equals(lastCategoryName, type.getGroupName())) {
+                if (lastCategoryName != null) {
                     outputSB.append("</div>\n");
                     outputSB.append(HtmlUtil.p());
                 }
-                lastGroupName = type.getGroupName();
+                lastCategoryName = type.getGroupName();
                 outputSB
                     .append(
                         HtmlUtil
-                            .div(lastGroupName, HtmlUtil
+                            .div(lastCategoryName, HtmlUtil
                                 .cssClass(
                                     "pagesubheading")) + "\n<div style=\"margin-left:20px\">");
             }
@@ -1756,8 +1756,8 @@ public class Admin extends RepositoryManager {
             String parentId = results.getString(2);
             cnt++;
             if (parentId != null) {
-                Group group = getEntryManager().findGroup(request, parentId);
-                if (group == null) {
+                Entry parent = getEntryManager().findGroup(request, parentId);
+                if (parent == null) {
                     Entry entry = getEntryManager().getEntry(request, id);
                     sb.append("bad parent:" + entry.getName() + " parent id="
                               + parentId + "<br>");

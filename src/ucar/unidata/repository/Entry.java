@@ -54,6 +54,12 @@ import java.util.List;
 public class Entry extends Entity {
 
     /** _more_ */
+    public static final String IDDELIMITER = ":";
+
+    /** _more_ */
+    public static final String PATHDELIMITER = "/";
+
+    /** _more_ */
     public static final double NONGEO = -999999;
 
     /** _more_ */
@@ -176,8 +182,8 @@ public class Entry extends Entity {
      * @return _more_
      */
     public String getFullName() {
-        if (getParentGroup() != null) {
-            return getParentGroup().getFullName() + "/" + getName();
+        if (getParentEntry() != null) {
+            return getParentEntry().getFullName() + "/" + getName();
         }
         return getName();
     }
@@ -251,12 +257,11 @@ public class Entry extends Entity {
      * @param endDate _more_
      * @param values _more_
      */
-    public void initEntry(String name, String description, Group group,
+    public void initEntry(String name, String description, Group parentEntry,
                           User user, Resource resource, String dataType,
                           long createDate, long changeDate, long startDate, long endDate,
                           Object[] values) {
-        super.init(name, description, group, user, createDate,changeDate);
-        //topGroup id is a noop
+        super.init(name, description, parentEntry, user, createDate,changeDate);
         this.resource = resource;
         this.dataType = dataType;
         if ((dataType == null) || (dataType.length() == 0)) {
@@ -363,13 +368,19 @@ public class Entry extends Entity {
     }
 
 
+    public boolean isTopEntry() {
+        return isGroup() && (getParentEntryId() == null);
+    }
+
+
     /**
      * _more_
      *
      * @return _more_
+     * @deprecated use isTopEntry
      */
     public boolean isTopGroup() {
-        return isGroup() && (getParentGroupId() == null);
+        return isTopEntry();
     }
 
 

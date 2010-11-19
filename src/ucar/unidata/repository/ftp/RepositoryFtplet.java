@@ -431,7 +431,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                                   FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         StringBuffer result = new StringBuffer();
-        if (group.isTopGroup()) {
+        if (group.isTopEntry()) {
             result.append("\"" + "/" + "\"");
         } else {
             String fullName = group.getFullName();
@@ -948,10 +948,10 @@ public class RepositoryFtplet extends DefaultFtplet {
             return result;
         } else {
             while (name.startsWith("..")) {
-                if (parent.getParentGroup() == null) {
+                if (parent.getParentEntry() == null) {
                     break;
                 }
-                parent = parent.getParentGroup();
+                parent = parent.getParentEntry();
                 name   = name.substring(2);
                 if (name.startsWith("/")) {
                     name = name.substring(1);

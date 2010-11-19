@@ -43,18 +43,6 @@ import java.util.List;
  */
 public class Group extends Entry {
 
-
-    /** _more_ */
-    public static final String IDDELIMITER = ":";
-
-    /** _more_ */
-    public static final String PATHDELIMITER = "/";
-
-
-    /** _more_ */
-    private List<Group> children = new ArrayList<Group>();
-
-
     /** _more_ */
     List<Group> subGroups;
 
@@ -73,6 +61,18 @@ public class Group extends Entry {
         setName("Search Results");
         setDescription("");
     }
+
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param typeHandler _more_
+     */
+    public Group(String id, TypeHandler typeHandler) {
+        super(id, typeHandler);
+    }
+
+
 
     /**
      *  Set the SubGroups property.
@@ -110,8 +110,6 @@ public class Group extends Entry {
         return subEntries;
     }
 
-
-
     /**
      * _more_
      *
@@ -121,20 +119,10 @@ public class Group extends Entry {
      */
     public Object clone() throws CloneNotSupportedException {
         Group that = (Group) super.clone();
-        that.children = new ArrayList<Group>();
         return that;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param typeHandler _more_
-     */
-    public Group(String id, TypeHandler typeHandler) {
-        super(id, typeHandler);
-    }
 
 
     /**

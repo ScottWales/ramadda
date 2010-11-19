@@ -689,8 +689,8 @@ public class HtmlOutputHandler extends OutputHandler {
     private void addDescription(Request request, Entry entry,
                                 StringBuffer sb, boolean open) {
         String desc = entry.getDescription().trim();
-        if ((desc.length() > 0) && !desc.startsWith("<wiki>")
-                && !desc.equals("<nolinks>")) {
+        if ((desc.length() > 0) && !TypeHandler.isWikiText(desc)
+            && !desc.equals("<nolinks>")) {
             desc = getEntryManager().processText(request, entry, desc);
             StringBuffer descSB =
                 new StringBuffer("\n<div class=\"description\">\n");
@@ -942,7 +942,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 getRepository().getResource(RESOURCE_GROUPTEMPLATE, true);
             checkedTemplates = true;
         }
-        if (entry.getDescription().trim().startsWith("<wiki>")) {
+        if (TypeHandler.isWikiText(entry.getDescription())) {
             return entry.getDescription();
         }
         if (entry.isGroup()) {
