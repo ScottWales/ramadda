@@ -437,7 +437,6 @@ public abstract class Harvester extends RepositoryManager {
             baseGroupId = baseGroup.getId();
         }
 
-
         nameTemplate = XmlUtil.getAttribute(element, ATTR_NAMETEMPLATE,
                                             nameTemplate);
         descTemplate = XmlUtil.getAttribute(element, ATTR_DESCTEMPLATE, "");

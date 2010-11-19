@@ -889,6 +889,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         //create the log dir
         getStorageManager().getLogDir();
 
+        System.err.println("calling initPlugins");
         initPlugins();
         makePluginHelp();
 
@@ -1066,11 +1067,14 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
         }
 
+
         getUserManager().initUsers(cmdLineUsers);
-        getHarvesterManager().initHarvesters();
+
+        //This finds or creates the top-level group
+        getEntryManager().initTopGroup();
+
         initLanguages();
         setLocalFilePaths();
-        getEntryManager().initGroups();
 
         if (dumpFile != null) {
             FileOutputStream fos = new FileOutputStream(dumpFile);
@@ -1083,7 +1087,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         HtmlUtil.setInlineHideShowImage(iconUrl(ICON_MINUS),
                                         //iconUrl(ICON_ELLIPSIS));
                                         iconUrl(ICON_PLUS));
-        //
+        
         getLogManager().logInfo("RAMADDA started");
 
 
@@ -1092,8 +1096,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
             getRegistryManager().doFinalInitialization();
         }
 
-
-
         getAdmin().doFinalInitialization();
 
 
@@ -1101,6 +1103,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             getDatabaseManager().finishRdbLoad();
         }
 
+        getHarvesterManager().initHarvesters();
 
         //Do this in a thread because (on macs) it hangs sometimes)
         Misc.run(this, "getFtpManager");
@@ -2060,7 +2063,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 handler = this;
             } else {
                 Class handlerClass = Misc.findClass(handlerName);
-                System.err.println("finding ctor");
                 Constructor ctor =
                     Misc.findConstructor(handlerClass,
                                          new Class[] { Repository.class,

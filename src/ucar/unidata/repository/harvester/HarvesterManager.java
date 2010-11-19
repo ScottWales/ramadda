@@ -173,11 +173,15 @@ public class HarvesterManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * This starts up the harvesters in a thread
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void initHarvesters() throws Exception {
+        Misc.run(this,"initHarvestersInThread");
+    }
+
+    public void initHarvestersInThread() throws Exception {
         List<String> harvesterFiles =
             getRepository().getResourcePaths(PROP_HARVESTERS);
         boolean okToStart =

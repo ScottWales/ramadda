@@ -6615,6 +6615,7 @@ return new Result(title, sb);
                                     boolean createIfNeeded,
                                     String lastGroupType)
             throws Exception {
+        if(name == null) return null;
         name = name.trim();
         String topGroupName = getTopGroup().getName();
         if (name.equals(topGroupName)) {
@@ -7137,14 +7138,12 @@ return new Result(title, sb);
      *
      * @throws Exception _more_
      */
-    protected void initGroups() throws Exception {
+    protected void initTopGroup() throws Exception {
         Statement statement = getDatabaseManager().select(
                                   Tables.ENTRIES.COLUMNS,
                                   Tables.ENTRIES.NAME,
                                   Clause.isNull(
                                       Tables.ENTRIES.COL_PARENT_GROUP_ID));
-
-
 
         List<Entry> entries = readEntries(statement);
         if (entries.size() > 0) {
