@@ -164,8 +164,17 @@ public class SearchManager extends RepositoryManager {
     public Result makeSearchForm(Request request, boolean justText,
                                  boolean typeSpecific)
             throws Exception {
-
         StringBuffer sb          = new StringBuffer();
+        makeSearchForm(request, justText, typeSpecific, sb);
+        return getRepository().makeResult(request, msg("Search Form"), sb,
+                                          getSearchUrls());
+
+    }
+
+    private void makeSearchForm(Request request, boolean justText,
+                                boolean typeSpecific, StringBuffer sb)
+            throws Exception {
+
         TypeHandler  typeHandler = getRepository().getTypeHandler(request);
 
         sb.append(
@@ -326,8 +335,6 @@ public class SearchManager extends RepositoryManager {
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.formClose());
 
-        return getRepository().makeResult(request, msg("Search Form"), sb,
-                                          getSearchUrls());
 
 
     }
@@ -606,17 +613,24 @@ public class SearchManager extends RepositoryManager {
             s = "";
         }
 
-        if (s.length() > 0) {
+        //        if (s.length() > 0) {
+            StringBuffer searchForm          = new StringBuffer();
             request.remove(ARG_SEARCH_SUBMIT);
             String url = request.getUrl(getRepository().URL_SEARCH_FORM);
-            s = "<table>" + s + "</table>";
-            String header = HtmlUtil.href(
+            String searchLink = HtmlUtil.href(
                                 url,
                                 HtmlUtil.img(
                                     iconUrl(ICON_SEARCH),
-                                    "Search Again")) + "Search Criteria";
-            request.setLeftMessage(HtmlUtil.br(header) + s);
-        }
+                                    "Search Again"));
+            //            searchForm.append(searchLink);
+            if (s.length() > 0) {
+                searchForm.append(msg("Search Criteria") +"<br><table>" + s + "</table>");
+            }
+            makeSearchForm(request, false, true, searchForm);
+            String form = HtmlUtil.makeShowHideBlock(searchLink +msg("Search Again"), RepositoryUtil.inset(searchForm.toString(), 0 , 20, 0 ,0), false);
+            String heading =   msgHeader("Search Results") + form;
+            request.setLeftMessage(heading);
+            //        }
         if (theGroup == null) {
             theGroup = getEntryManager().getDummyGroup();
         }

@@ -261,7 +261,7 @@ public class AssociationManager extends RepositoryManager {
             }
         }
         return addAssociation(request, fromEntry, toEntry,
-                              XmlUtil.getAttribute(node, ATTR_NAME),
+                              XmlUtil.getAttribute(node, ATTR_NAME,""),
                               XmlUtil.getAttribute(node, ATTR_TYPE, ""));
     }
 
@@ -622,7 +622,7 @@ public class AssociationManager extends RepositoryManager {
 
         List cols = Misc.toList(new Object[] {
             "&nbsp;", HtmlUtil.bold(msg("From")), HtmlUtil.bold(msg("Type")),
-            HtmlUtil.bold(msg("Name")), "&nbsp;", HtmlUtil.bold(msg("To"))
+            /*HtmlUtil.bold(msg("Name")),*/ "&nbsp;", HtmlUtil.bold(msg("To"))
         });
 
         Hashtable<String,StringBuffer> rowMap = new Hashtable<String,StringBuffer>();
@@ -668,7 +668,7 @@ public class AssociationManager extends RepositoryManager {
                     args))));
 
             cols.add(association.getType());
-            cols.add(association.getLabel());
+            //            cols.add(association.getLabel());
             cols.add(HtmlUtil.img(getRepository().iconUrl(ICON_ARROW)));
             cols.add(HtmlUtil.img(getEntryManager().getIconUrl(request,
                     toEntry)) + HtmlUtil.pad((Misc.equals(toEntry, entry)
@@ -677,7 +677,7 @@ public class AssociationManager extends RepositoryManager {
                     args))));
         }
 
-        return HtmlUtil.table(cols, 6,
+        return HtmlUtil.table(cols, 5,
                               HtmlUtil.attr(HtmlUtil.ATTR_CELLSPACING, "3"));
     }
 

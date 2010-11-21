@@ -1,0 +1,173 @@
+<b>Note: This is incomplete for now</b>
+
+
+<h3>DisplayCanvas, EditCanvas, WhiteBoardCanvas, AvatarCanvas</h3>
+Graphics are displayed using  a set of canvas classes and a set of Glyph
+classes.
+<p>
+The canvas  class hierarchy looks like:
+<pre>
+   java.awt.Canvas
+     |
+   com.infocetera.common.ScrollCanvas (manages scrolling and scaling)
+     |
+   com.infocetera.chat.DisplayCanvas (holds and draws a set of glyph objects)
+     |
+   EditCanvas (cut/copy/paste, move, resize)
+     |
+     +-------------------+
+     |                   |
+     |                 AvatarCanvas (manages a set of graphical avatars
+     |                                representing users in a chat session)
+     |
+   WhiteBoardCanvas (part of the chat/whiteboard -manages a set of basic glyph
+                      types (e.g., rectangle, polygon, line, text, image) and
+		      manages communication with the whiteboard server.)
+
+    Glyph  (A mark on the screen, holds display state)		      
+     |
+     |
+     +----------------------+-----------------+
+     |                      |                 |
+     |                   LineGlyph           PolyGlyph 
+     |                       (straight line)      (polygon)
+  RectangleGlyph 
+     | (draws rectangles, ovals, round-rects)
+     |
+     +-------------------+------------------+
+     |                   |                  |
+     |                   |                  |
+   ImageGlyph         TextGlyph          UserGlyph 
+                                             (Used in the avatar canvas)
+
+
+  com.infocetera.util.SocketApplet					     
+        |   (Communicates to a server either via a socket or through
+	|     http based  polling.)
+        |
+   ChatApplet
+           (Creates the user interface and handles the text chat
+	    functions. Routes messages to the ChatCanvas)
+
+</pre>
+
+
+The base class, DisplayCanvas,  manages a set of Glyph-s. A Glyph
+represents some mark on the canvas (e.g., rectangle, image, text).
+The DisplayCanvas knows how to paint the Glyph-s, search for Glyph-s,
+highlight the nearest one and maintain a selection set of Glyph-s.
+<p>
+The EditCanvas supports  a basic Command pattern
+for manipulating the set of Glyphs drawn in the DisplayCanvas class.
+The EditCanvas knows how to do cut/copy/paste and how to move
+and resize Glyph-s.
+It contains a CanvasCommand object that, when non-null, it routes
+events  (e.g., mouse clicks, key strokes, etc.) to.
+<p>
+The AvatarCanvas shows a set of UserGlpyhs.
+<p>
+The WhiteBoardCanvas routes canvas commands through the ChatApplet
+and parses incoming commands.
+
+
+
+
+<h3> Client/Server protocol</h3>
+<b> Note: The description of the protocol is not up to date </b>
+
+The chat applet uses a simple message based protocol based on xml.
+<p>
+The form of a message is:<pre>
+&lt;message type="message type" (attributes)*&gt;body&lt;/message&gt;
+</pre>
+
+When first starting up the chat applet sends a SESSION message:<pre>
+&lt;message type="SESSION"
+         channel="the channel specified in the applet param tag"
+         userid="the user id"
+	 sessionid="the sessionid specified in the applet param tag"&gt;&lt;/message&gt;
+</pre>
+
+The channel can be considered the "room" id of this applet.
+
+The server responds to the new applet with the STATE, USERLIST (list of
+current users including the current user). There can also be a
+ROOMS message that lists the available rooms. The STATE message contains
+the userid of this user,  and (optionally) an EDIT message to tell the applet if
+the user has edit privileges (though, this is somewhat an Infocetera
+specific thing):
+
+<pre>
+&lt;message type="STATE" userid="jeffm" edit="true" /&gt;
+&lt;message type="USERLIST"&gt;
+	&lt;user name="wilma"/&gt;
+	&lt;user name="barney"/&gt;	
+	&lt;user name="fred"/&gt;
+&lt;/message&gt;
+&lt;message type="ROOMS"&gt;
+	&lt;room name="Room name" id="room id"/&gt;
+	&lt;room name="..." id="..."/&gt;	
+&lt;/message&gt;
+</pre>
+
+The STATE message allow the server to set certain aspects of the client:
+<pre>&lt;message type="STATE" (state attributes) /&gt;</pre>
+Where state attributes are:<pre>
+userid="some user id"       //The id of the current user
+interval="newpollinterval"  //Change the polling interval (in milliseconds)
+</pre>
+
+Once a new user sends a SESSION message the 
+server then sends a USERADD message to all other users:<pre>
+&lt;message type="USERADD"&gt;&lt;username="fred"/&gt;&lt;/message&gt;
+</pre>
+
+The browser can tell the servere that they are leaving the current
+room with the LEAVEROOM message:
+<pre>&lt;message  type="LEAVEROOM"/&gt;</pre>
+
+
+
+When the browser goes to some other page or is shutdown  
+the applet sends the CLOSE message to the server: 
+<pre>&lt;message  type="CLOSE"/&gt;</pre>
+
+The server then sends the USERREMOVE message to all other applets:
+<pre>&lt;message type="USERREMOVE"&gt;&lt;user name="fred"/&gt;&lt;/message&gt;</pre>
+
+
+During the chat session a text message is sent as:
+<pre>&lt;message  type="TEXT" &gt;Hello there&lt;/message&gt;</pre>
+
+A graphics message is sent as:
+<pre>&lt;message  type="GFX" &gt;Some graphics specification&lt;/message&gt;</pre>
+
+When receiving the above incoming content messages the server should
+send them to each of the other chat clients (don't send them to the
+original sender). The original sender should be included in a "from"
+attribute:
+<pre>&lt;message  from="jeffm" type="GFX" &gt;Some graphics specification&lt;/message&gt;</pre>
+
+Optionally an id attribute can be included:
+<pre>&lt;message  from="jeff" id="some  id" type="TEXT" &gt;
+Hellothere
+&lt;/message&gt;
+</pre>
+
+The chat applet will keep track of the last message id it receives.
+It uses this last message id when sending in the poll request. This would
+allow, for example, the server to store each message on a channel,
+bumping up some id counter. When a client makes a request sending to
+the server the last mesage it has seen the server can simply run
+through its list of sent messages and send the ones the client
+has not seen.
+
+
+
+
+
+
+
+
+	 
+

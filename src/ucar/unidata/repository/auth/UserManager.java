@@ -2540,12 +2540,12 @@ public class UserManager extends RepositoryManager {
                     List<Entry> cart = getCart(request);
                     Link link = makeLink(request, state.getEntry(),
                                          OUTPUT_CART_ADD);
-                    link.setLinkType(OutputType.TYPE_ACTION);
+                    link.setLinkType(OutputType.TYPE_FILE);
                     links.add(link);
 
                     link = makeLink(request, state.getEntry(),
                                     OUTPUT_CART_REMOVE);
-                    link.setLinkType(OutputType.TYPE_ACTION);
+                    link.setLinkType(OutputType.TYPE_FILE);
                     links.add(link);
 
                     if ( !request.getUser().getAnonymous()) {

@@ -62,6 +62,10 @@ public class Entry extends Entity {
     /** _more_ */
     public static final double NONGEO = -999999;
 
+    /** _more_          */
+    private static XmlEncoder xmlEncoder = new XmlEncoder();
+
+
     /** _more_ */
     Object[] values;
 
@@ -117,10 +121,12 @@ public class Entry extends Entity {
     private Hashtable transientProperties = new Hashtable();
 
 
-    /** _more_          */
-    private static XmlEncoder xmlEncoder = new XmlEncoder();
 
+    /** _more_ */
+    List<Group> subGroups;
 
+    /** _more_ */
+    List<Entry> subEntries;
 
 
     /**
@@ -136,6 +142,14 @@ public class Entry extends Entity {
      */
     public Entry(String id) {
         setId(id);
+    }
+
+
+    public Entry(TypeHandler handler, boolean isDummy) {
+        this("", handler);
+        this.isDummy = isDummy;
+        setName("Search Results");
+        setDescription("");
     }
 
 
@@ -908,6 +922,42 @@ public class Entry extends Entity {
         return null;
     }
 
+
+    /**
+     *  Set the SubGroups property.
+     *
+     *  @param value The new value for SubGroups
+     */
+    public void setSubGroups(List<Group> value) {
+        subGroups = value;
+    }
+
+    /**
+     *  Get the SubGroups property.
+     *
+     *  @return The SubGroups
+     */
+    public List<Group> getSubGroups() {
+        return subGroups;
+    }
+
+    /**
+     * Set the SubEntries property.
+     *
+     * @param value The new value for SubEntries
+     */
+    public void setSubEntries(List<Entry> value) {
+        subEntries = value;
+    }
+
+    /**
+     * Get the SubEntries property.
+     *
+     * @return The SubEntries
+     */
+    public List<Entry> getSubEntries() {
+        return subEntries;
+    }
 
 
 }

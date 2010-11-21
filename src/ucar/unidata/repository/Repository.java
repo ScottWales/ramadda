@@ -133,15 +133,11 @@ public class Repository extends RepositoryBase implements RequestHandler {
     /** _more_ */
     public static final String MACRO_LOGO_IMAGE = "logo.image";
 
-
-
     /** _more_ */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
     /** _more_ */
     public static final String MACRO_ENTRY_BREADCRUMBS = "entry.breadcrumbs";
-
-
 
 
     /** _more_ */
@@ -3792,31 +3788,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_HTML)) {
-                okLinks.add(link);
-            }
-        }
-        return okLinks;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Link> getLinksForToolbar(Request request,
-                                         OutputHandler.State state)
-            throws Exception {
-        List<Link> links   = getOutputLinks(request, state);
-        List<Link> okLinks = new ArrayList<Link>();
-        for (Link link : links) {
-            if (link.isType(OutputType.TYPE_ACTION)
-                    || link.isType(OutputType.TYPE_NONHTML)) {
                 okLinks.add(link);
             }
         }

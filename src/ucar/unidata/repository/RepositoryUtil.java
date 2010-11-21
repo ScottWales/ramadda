@@ -203,5 +203,26 @@ public class RepositoryUtil {
         return l;
     }
 
+    public static String leftIndset(String html, int left) {
+        return inset(html, 0,left,0,0);
+    }
+
+    public static String inset(String html, int top, int left, int bottom,
+                               int right) {
+        return HtmlUtil.div(html, HtmlUtil.style(((top == 0)
+                                 ? ""
+                                 : "margin-top:" + top + "px;") + ((left == 0)
+                ? ""
+                                                                   : "margin-left:" + left + "px;") + ((bottom == 0)
+                ? ""
+                                                                                                       : "margin-bottom:" + bottom + "px;") + ((right == 0)
+                ? ""
+                                                                                                                                               : "margin-right:" + top + "px;")));
+    }
+
+
+
+
+
 
 }

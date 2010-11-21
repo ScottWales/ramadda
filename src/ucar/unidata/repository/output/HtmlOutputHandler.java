@@ -189,6 +189,7 @@ public class HtmlOutputHandler extends OutputHandler {
                               msg(LABEL_LINKS)), Misc.newList(sb.toString(),
                                   links), true, "tab_content");
 
+        contents =  getInformationTabs(request, entry, true);
         //        String       contents = sb.toString();
 
         StringBuffer xml = new StringBuffer("<content>\n");
@@ -743,8 +744,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         tabTitles.add(msg("Comments"));
         tabContents.add(getCommentBlock(request, entry, true));
+
         if (request.get(ARG_SHOW_ASSOCIATIONS, false)) {
-            tabTitles.add("selected:" + msg("Links"));
+            tabTitles.add(msg("Links"));
         } else {
             tabTitles.add(msg("Links"));
         }
@@ -828,13 +830,21 @@ public class HtmlOutputHandler extends OutputHandler {
 
         StringBuffer sb         = new StringBuffer();
         request.appendMessage(sb);
+
+        String messageLeft = request.getLeftMessage();
+        if (messageLeft != null) {
+            sb.append(messageLeft);
+        }
+
+
         showNext(request, subGroups, entries, sb);
 
 
         boolean hasChildren = ((subGroups.size() != 0)
                                || (entries.size() != 0));
 
-        if (group.isDummy()) {
+        boolean isSearchResults = group.isDummy();
+        if (isSearchResults) {
             if ( !hasChildren) {
                 sb.append(
                     getRepository().showDialogNote(msg("No entries found")));
@@ -900,13 +910,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        String messageLeft = request.getLeftMessage();
-        if (messageLeft != null) {
-            sb = new StringBuffer(
-                "<table width=\"100%\" border=0><tr valign=\"top\"><td width=\"200\"><nobr>"
-                + messageLeft + "</nobr></td><td>" + sb
-                + "</td></tr></table>");
-        }
 
         return makeLinksResult(request, msg("Folder"), sb,
                                new State(group, subGroups, entries));

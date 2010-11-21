@@ -22,32 +22,11 @@ package ucar.unidata.repository;
 
 
 import ucar.unidata.repository.type.*;
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-import java.util.ArrayList;
-
-import java.util.Date;
-import java.util.List;
-
-
 
 
 /**
- * Class RadarInfo _more_
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public class Group extends Entry {
-
-    /** _more_ */
-    List<Group> subGroups;
-
-    /** _more_ */
-    List<Entry> subEntries;
 
     /**
      * _more_
@@ -56,10 +35,7 @@ public class Group extends Entry {
      * @param isDummy _more_
      */
     public Group(TypeHandler handler, boolean isDummy) {
-        super("", handler);
-        this.isDummy = isDummy;
-        setName("Search Results");
-        setDescription("");
+        super(handler,isDummy);
     }
 
     /**
@@ -71,67 +47,6 @@ public class Group extends Entry {
     public Group(String id, TypeHandler typeHandler) {
         super(id, typeHandler);
     }
-
-
-
-    /**
-     *  Set the SubGroups property.
-     *
-     *  @param value The new value for SubGroups
-     */
-    public void setSubGroups(List<Group> value) {
-        subGroups = value;
-    }
-
-    /**
-     *  Get the SubGroups property.
-     *
-     *  @return The SubGroups
-     */
-    public List<Group> getSubGroups() {
-        return subGroups;
-    }
-
-    /**
-     * Set the SubEntries property.
-     *
-     * @param value The new value for SubEntries
-     */
-    public void setSubEntries(List<Entry> value) {
-        subEntries = value;
-    }
-
-    /**
-     * Get the SubEntries property.
-     *
-     * @return The SubEntries
-     */
-    public List<Entry> getSubEntries() {
-        return subEntries;
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws CloneNotSupportedException _more_
-     */
-    public Object clone() throws CloneNotSupportedException {
-        Group that = (Group) super.clone();
-        return that;
-    }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param ids _more_
-     */
-    protected void addChildrenIds(List<String> ids) {}
-
 
 
 

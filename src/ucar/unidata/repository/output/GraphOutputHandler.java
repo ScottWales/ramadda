@@ -214,8 +214,9 @@ public class GraphOutputHandler extends OutputHandler {
                                            ? NODETYPE_GROUP
                                            : other.getTypeHandler()
                                            .getNodeType()), ATTR_ID,
-                                               other.getId(), ATTR_TITLE,
-                                                   other.getName())));
+                                                    other.getId(), ATTR_TOOLTIP, other.getName(),
+                                                    ATTR_TITLE,
+                                                    getGraphNodeTitle(other.getName()))));
                 sb.append(XmlUtil.tag(TAG_EDGE,
                                       XmlUtil.attrs(ATTR_TYPE, "association",
                                           ATTR_FROM, (isTail
@@ -269,7 +270,8 @@ public class GraphOutputHandler extends OutputHandler {
             nodeType = "imageentry";
         }
         String attrs = XmlUtil.attrs(ATTR_TYPE, nodeType, ATTR_ID, entryId,
-                                     ATTR_TITLE, name);
+                                     ATTR_TOOLTIP, name,
+                                     ATTR_TITLE, getGraphNodeTitle(name));
         Entry entry = getEntryManager().getEntry(request, entryId);
         if (entry != null) {
             attrs += " "

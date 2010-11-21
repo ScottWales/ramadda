@@ -349,7 +349,7 @@ public class ChatOutputHandler extends OutputHandler {
                 StringBuffer sb      = new StringBuffer();
                 Group        parent  = (entry.isGroup()
                                         ? (Group) entry
-                                        : entry.getParentGroup());
+                                        : entry.getParentEntry());
                 for (Entry entry : getEntryManager().getChildren(request,
                         parent)) {
                     if (entry.isGroup()) {

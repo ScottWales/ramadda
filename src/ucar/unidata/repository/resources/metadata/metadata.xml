@@ -18,8 +18,6 @@
   </handler>
 
 
-
-
   <handler class="ucar.unidata.repository.metadata.ContentMetadataHandler"        category="Attachments, Contact, Etc.">
     <type
        name="Thumbnail Image"
@@ -110,6 +108,16 @@
       <element name="Direction" datatype="double" suffix="Degrees"/>
     </type>
   </handler>
+
+
+  <handler class="ucar.unidata.repository.metadata.MetadataHandler"        category="Miscellaneous">
+    <type
+       name="Contact Information"
+       id="misc.contact">
+      <element name="type"/>
+      <element name="value"/>
+    </type>
+</handler>
 
 
 

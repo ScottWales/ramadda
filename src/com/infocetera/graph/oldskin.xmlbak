@@ -1,0 +1,194 @@
+
+<skin>
+<ui>
+<border type="matte" margin-top="1" margin="0" margin-left="1" color="black">
+<border type="raised" margin="2">
+<panel layout="border">
+  <panel fontsize="12" xfontstyle="bold" layout="gridbag" cols="2" colwidths="0,1"  rowheights="1" place="Center">
+
+    <panel layout="border">
+      <component idref="navbuttons" place="North"/>
+      <panel place="Center" layout="border">
+        <label label="Items:" align="left" place="North"/>
+        <border>
+	<component id="nodepanel" place="Center"/>
+        </border>
+      </panel>
+      <panel place="South" layout="border">
+        <label label="Connections:" align="left" place="North"/>
+        <component id="edgepanel" place="Center"/>
+      </panel>
+    </panel>
+  
+
+    <panel layout="border">
+    <panel layout="border" place="North">
+      <component idref="menubar" place="West"/>
+      <component idref="movebuttons" place="Center"/>
+    </panel>
+    <border margin="2" place="Center">
+      <border margin="2" color="black"  type="sunken" >
+        <component id="canvas"  bgcolor="white" xbgcolor="51,204,255"/>
+      </border>
+    </border>
+    </panel>
+  </panel>
+
+  <panel place="South" layout="gridbag" cols="2" colwidths="1" rowheights="0">
+    <border margin="2" type="sunken">
+      <label id="message" label="" fontstyle="plain" align="left"/>
+    </border>
+    <border margin="2" type="sunken">
+      <label id="message2" label="" fontstyle="plain" align="left"/>
+    </border>    
+ </panel>
+</panel>
+
+</border>
+</border>
+</ui>
+
+<components>
+
+<panel id="menubar" layout="grid" rows="1">
+  <menu label="File"  id="filemenu">
+    <menuitem label="New window" id="floatbutton" action="new()" />
+    <menuitem label="Float window" id="floatbutton" action="float()" key="Ctrl+f" />
+    <separator/>
+    <menuitem   label="Reload"            action="reload()" />     
+  </menu>
+
+  <menu label="View"  id="viewmenu">
+    <menu label="Change visibility" id="menu.shape">
+    </menu>
+    <cbmenuitem  label="Show mouse over"   action="setFlag(showMouseOver,%value%)" value="true"/>
+    <cbmenuitem  label="Pause on mouse over"   action="setFlag(pauseMouseOver,%value%)" value="true"/>     
+    <cbmenuitem  label="Animate"           action="setFlag(animateMoves,%value%)" value="true"/> 
+    <cbmenuitem  label="Show all edges"    action="setFlag(showAllEdges,%value%)" value="true" /> 
+    <cbmenuitem label="Show all labels"    value="false" action="setFlag(showAllLabels,%value%)" /> 
+  </menu>
+
+
+  <menu label="Layout"  id="layoutmenu">
+    <menu label="Type      (Ctrl+l)" >
+      <cbmenuitem key="group:Ctrl+l" value="true"  group="layout.type" label="Radial"       action="setLayout(radial)" /> 
+      <cbmenuitem value="false" group="layout.type" label="Relax-1"      action="setLayout(relax1)" /> 
+      <cbmenuitem value="false" group="layout.type" label="Relax-2"      action="setLayout(relax2)" /> 
+      <cbmenuitem value="false" group="layout.type" label="Tree"         action="setLayout(vtree)" />
+      <cbmenuitem value="false" group="layout.type" label="Hierarchy"   action="setLayout(vhier)" />
+      <cbmenuitem value="false" group="layout.type" label="Hor. Hierarchy"   action="setLayout(hhier)" />      
+      <cbmenuitem value="false" group="layout.type" label="Circular-1"   action="setLayout(circular1)" /> 
+      <cbmenuitem value="false" group="layout.type" label="Circular-2"   action="setLayout(circular2)" /> 
+      <cbmenuitem value="false" group="layout.type" label="Rectilinear"  action="setLayout(rectilinear)" />
+      <cbmenuitem value="false" group="layout.type" label="Visited"      action="setLayout(history)" />       
+      <cbmenuitem value="false" group="layout.type" label="None"         action="setLayout(none)" /> 
+    </menu>
+    <menu  label="Direction    (Ctrl+d)">
+      <cbmenuitem  key="group:Ctrl+d" label="Both"      value="true"  action="setDirection(both)" group="layout.direction"/>
+      <cbmenuitem  label="Outgoing"  value="false" action="setDirection(out)"  group="layout.direction"/> 
+      <cbmenuitem  label="Incoming"  value="false" action="setDirection(in)"   group="layout.direction"/>       
+    </menu>
+    <menu  label="Level">
+      <cbmenuitem label="Scale levels" value="false" action="setFlag(scaleWithLevel,%value%)"/> 
+      <separator/>
+      <cbmenuitem key="Ctrl+1" label="Level 1" value="false" action="setLevel(1)" group="layout.level"/> 
+      <cbmenuitem key="Ctrl+2" label="Level 2" value="true"  action="setLevel(2)" group="layout.level"/> 
+      <cbmenuitem key="Ctrl+3" label="Level 3" value="false" action="setLevel(3)" group="layout.level"/> 
+      <cbmenuitem key="Ctrl+4" label="Level 4" value="false" action="setLevel(4)" group="layout.level"/> 
+      <cbmenuitem key="Ctrl+5" label="Level 5" value="false" action="setLevel(5)" group="layout.level"/> 
+      <cbmenuitem key="Ctrl+6" label="Level 6" value="false" action="setLevel(6)" group="layout.level"/> 
+      <cbmenuitem label="All"     value="false" action="setLevel(10000)" group="layout.level"/> 
+    </menu>
+    <menu label="Tightness  (Ctrl-t)">
+      <cbmenuitem key="group:Ctrl+t" label="Loosest" value="false" action="setTightness(1.2)"  group="layout.tightness" /> 
+      <cbmenuitem label="....." value="false" action="setTightness(1.0)"  group="layout.tightness" /> 
+      <cbmenuitem label="...." value="true" action="setTightness(0.8)"  group="layout.tightness" /> 
+      <cbmenuitem label="..." value="false" action="setTightness(0.6)"  group="layout.tightness" /> 
+      <cbmenuitem label=".." value="false" action="setTightness(0.4)"  group="layout.tightness" />
+      <cbmenuitem label="Tightest" value="false" action="setTightness(0.2)"  group="layout.tightness" />       
+    </menu>
+    <menu label="Max connections   (Ctrl+c)">
+        <cbmenuitem  label="Relative to level"  value="false" action="setFlag(relativeToLevel,%value%)" /> 
+      <separator/>
+      <cbmenuitem key="group:Ctrl+c" label="All"   value="true" action="setMaxConnections(1000)"  group="layout.maxconnections" /> 
+      <cbmenuitem label="2"     value="false" action="setMaxConnections(2)"  group="layout.maxconnections" /> 
+      <cbmenuitem label="3"     value="false" action="setMaxConnections(3)"  group="layout.maxconnections" />
+      <cbmenuitem label="4"     value="false" action="setMaxConnections(4)"  group="layout.maxconnections" />
+      <cbmenuitem label="5"     value="false" action="setMaxConnections(5)"  group="layout.maxconnections" />      
+
+      <cbmenuitem label="10"     value="false" action="setMaxConnections(10)"  group="layout.maxconnections" />
+      <cbmenuitem label="15"     value="false" action="setMaxConnections(15)"  group="layout.maxconnections" />       
+      <cbmenuitem label="20"     value="false" action="setMaxConnections(20)"  group="layout.maxconnections" />       
+
+    </menu>
+
+
+      </menu>
+</panel>
+
+
+<panel id="movebuttons" layout="gridbag" cols="2" colwidths="0,0" rowheights="0" vspace="0" hspace="6">
+  <component idref="zoombuttons"/>
+  <component idref="scrollbuttons"/>
+</panel>
+
+
+<panel id="navbuttons" layout="gridbag" cols="4" colwidths="0" rowheights="0">
+  <image id="nav.backback" image="resource:/com/infocetera/graph/images/Rewind16.gif" action="navBackBack"
+    mouseenter="ui.message(Click to view first node in history)"
+    mouseexit="ui.message()"  />
+  <image id="nav.back"  key="Ctrl+p"   image="resource:/com/infocetera/graph/images/StepBack16.gif" action="navBack"
+    mouseenter="ui.message(Click to view previous node in history)"
+    mouseexit="ui.message()"/>    
+  <image id="nav.fwd"      key="Ctrl+n" image="resource:/com/infocetera/graph/images/StepForward16.gif" action="navFwd"
+    mouseenter="ui.message(Click to view next node in history)"
+    mouseexit="ui.message()"/>
+  <image id="nav.fwdfwd"   image="resource:/com/infocetera/graph/images/FastForward16.gif" action="navFwdFwd"
+    mouseenter="ui.message(Click to view last node in history)"
+    mouseexit="ui.message()"/>    
+</panel>
+
+
+<panel id="zoombuttons" layout="grid" rows="1" colwidths="0" rowheights="0">
+  <image image="resource:/com/infocetera/graph/images/ZoomOut16.gif"  action="zoomOut"
+  mouseenter="ui.message(Click to zoom out)"
+  mouseexit="ui.message()"  
+  />
+  <image image="resource:/com/infocetera/graph/images/Zoom16.gif"     action="zoomReset"
+  mouseenter="ui.message(Click to reset zoom)"
+  mouseexit="ui.message()"  
+/>    
+  <image image="resource:/com/infocetera/graph/images/ZoomIn16.gif"   action="zoomIn"
+  mouseenter="ui.message(Click to zoom in)"
+  mouseexit="ui.message()"  
+  />
+</panel>
+
+
+<panel id="scrollbuttons" layout="grid" rows="1" colwidths="0" rowheights="0">
+  <image image="resource:/com/infocetera/graph/images/Back16.gif" action="scrollLeft"
+    mouseenter="ui.message(Click to scroll left)"
+    mouseexit="ui.message()"      
+/>
+  <image image="resource:/com/infocetera/graph/images/Forward16.gif" action="scrollRight"
+    mouseenter="ui.message(Click to scroll right)"
+    mouseexit="ui.message()"      
+  />
+  <image image="resource:/com/infocetera/graph/images/Home16.gif" action="scrollReset"
+    mouseenter="ui.message(Click to reset scroll)"
+    mouseexit="ui.message()"        
+/>        
+  <image image="resource:/com/infocetera/graph/images/Up16.gif" action="scrollUp"
+    mouseenter="ui.message(Click to scroll up)"
+    mouseexit="ui.message()"        
+/>
+  <image image="resource:/com/infocetera/graph/images/Down16.gif" action="scrollDown"
+    mouseenter="ui.message(Click to scroll down)"
+    mouseexit="ui.message()"        
+/>            
+</panel>
+
+
+</components>
+
+</skin>

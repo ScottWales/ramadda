@@ -525,14 +525,20 @@ return new Result(title, sb);
             //            String output = request.getString(ARG_OUTPUT, (String) "");
             //            request.put(ARG_OUTPUT, output);
             StringBuffer sb = new StringBuffer();
-            if ( !entry.isGroup() || !((Group) entry).isDummy()) {
-                String[] crumbs = getBreadCrumbs(request, entry, false);
+            Entry entryForHeader = entry;
+
+            //If its a search result then use the top-level group for the header
+            if(entry.isDummy()) {
+                entryForHeader = getTopGroup();
+            }
+            //            if (!entry.isGroup()) {
+                String[] crumbs = getBreadCrumbs(request, entryForHeader, false);
                 sb.append(crumbs[1]);
                 //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
                 //                result.setTitle(result.getTitle());
                 result.putProperty(PROP_ENTRY_HEADER, sb.toString());
                 result.putProperty(PROP_ENTRY_BREADCRUMBS, crumbs[0]);
-            }
+                //            }
 
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(entry,
@@ -3177,7 +3183,6 @@ return new Result(title, sb);
         for (int i = 0; i < children.getLength(); i++) {
             Element node = (Element) children.item(i);
             if (node.getTagName().equals(TAG_ENTRY)) {
-
                 Entry entry = processEntryXml(request, node, entries,
                                   origFileToStorage, true, false);
                 //                System.err.println("entry:" + entry.getFullName() + " " + entry.getId());
@@ -3197,7 +3202,6 @@ return new Result(title, sb);
                         (List<Entry>) Misc.newList(entry);
                     addInitialMetadata(request, tmpEntries, true, true);
                 }
-
             } else if (node.getTagName().equals(TAG_ASSOCIATION)) {
                 String id =
                     getAssociationManager().processAssociationXml(request,
@@ -3262,9 +3266,10 @@ return new Result(title, sb);
                                     Hashtable<String, Entry> entries,
                                     Hashtable files, boolean checkAccess,
                                     boolean internal)
-            throws Exception {
+        throws Exception {
         String parentId = XmlUtil.getAttribute(node, ATTR_PARENT,
-                              getTopGroup().getId());
+                                               "");
+
         Group parentEntry = (Group) entries.get(parentId);
         if (parentEntry == null) {
             parentEntry = (Group) getEntry(request, parentId);
@@ -3312,6 +3317,9 @@ return new Result(title, sb);
 
         boolean doAnonymousUpload = false;
         String  name              = XmlUtil.getAttribute(node, ATTR_NAME);
+        if(name.length()>200) {
+            name = name.substring(0,195)+"...";
+        }
         String type = XmlUtil.getAttribute(node, ATTR_TYPE,
                                            TypeHandler.TYPE_FILE);
         String dataType = XmlUtil.getAttribute(node, ATTR_DATATYPE, "");
@@ -5839,7 +5847,6 @@ return new Result(title, sb);
             }
             ids.add(id);
         }
-        group.addChildrenIds(ids);
         return ids;
     }
 

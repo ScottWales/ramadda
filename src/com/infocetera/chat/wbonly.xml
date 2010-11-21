@@ -1,0 +1,64 @@
+<!--
+This is the default skin xml for the Infocetera chat/whiteboard applet.
+See the documentation in /com/infocetera/util/XmlUi.java
+-->
+
+<skin>
+  <ui>
+    <panel  hspace="4" vspace="4" layout="border" fontsize="12" fontface="Dialog">
+      <component idref="verytop" place="North"/>
+      <panel layout="grid" cols="1" place="Center">
+        <panel layout="border" id="bottompanel">
+          <panel layout="border" place="East">
+            <panel layout="grid" cols="1">
+	      <panel layout="border" >
+                 <label place="North" label="Users:         " align="LEFT" />
+                 <component id="userlist"  place="Center"/>
+	      </panel>
+	      <label label=" "/>
+	    </panel>
+          </panel>
+          <component id="whiteboard" place="Center"/>
+          <panel layout="gridbag" cols="5" place="South" colwidths="0,0,0,1,0" >
+	    <checkbox label="Share cursor"   action="wb.cursor.share" />
+	    <checkbox label="Accept shared cursor"  action="wb.cursor.accept" value="true" />
+	    <checkbox label="Send changes live"  action="wb.sendlive" />
+	    <label label=" "  />	    	    
+	    <button label="Update others"  action="wb.sendstate" />	    	    
+          </panel>
+	</panel>
+      </panel>
+    </panel>
+  </ui>
+
+<!-- 
+All top level tags under comonents can be referred to by other xml (either in the ui section above
+or by other components) using the idref="..." attribute.
+-->
+  <components>
+     <menu  label="Commands" id="commandmenu">
+        <menuitem label="Float/embed" action="ui.float" />
+        <menuitem label="Save session" action="chat.savesession" />
+        <menuitem label="Change room" action="chat.changeroom" />
+    </menu>
+
+      <panel id="verytop" layout="border" >
+        <panel   place="West" layout="gridbag" cols="2">
+          <panel layout="gridbag" colwidths="0,1" cols="2" hspace="2" vspace="2">
+            <panel layout="gridbag" cols="1" colheights="0">
+              <button   label="Commands" action="popup(commandmenu)"/>
+	    </panel>
+	    <component id="roomlabel" fontsize="18" />
+          </panel>
+        </panel>
+      </panel>
+  </components>
+
+
+  <properties>
+      <property name="whiteboard.bgcolor" value="white" />                  
+  </properties>
+
+
+
+</skin>
