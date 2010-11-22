@@ -71,6 +71,11 @@ public class GraphGlyph {
     /** _more_          */
     double levelScale = 1.0;
 
+    /** _more_          */
+    private String title;
+
+
+
     /**
      * _more_
      *
@@ -82,6 +87,9 @@ public class GraphGlyph {
         xmlNode   = nodeNode;
     }
 
+    public String getLabel() {
+        return graphView.getTitle(this);
+    }
 
     /**
      * _more_

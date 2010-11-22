@@ -27,6 +27,7 @@ import com.infocetera.util.IfcApplet;
 import java.applet.*;
 
 import java.awt.*;
+import javax.swing.*;
 
 import java.util.Hashtable;
 import java.util.Vector;

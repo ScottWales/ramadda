@@ -1,9 +1,5 @@
 /*
- * 
- * 
- * 
- * 
- * 
+
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -397,6 +393,7 @@ public class GraphEdge extends GraphGlyph {
 
         int   slw = gv.scale(getLineWidth());
 
+        String label = getLabel();
 
         if (points != null) {
             for (int i = 1; i < points.length; i++) {
@@ -443,6 +440,7 @@ public class GraphEdge extends GraphGlyph {
             Point p3 = GuiUtils.rotatePoint(new Point(ap.x - offset,
                            ap.y + offset), tp, angle);
 
+            
             if (arrow < 0) {
                 int[] xs = { p1.x, p2.x, p3.x, p1.x };
                 int[] ys = { p1.y, p2.y, p3.y, p1.y };
@@ -450,6 +448,10 @@ public class GraphEdge extends GraphGlyph {
             } else {
                 GuiUtils.drawLine(g, p1.x, p1.y, p2.x, p2.y, 1);
                 GuiUtils.drawLine(g, p2.x, p2.y, p3.x, p3.y, 1);
+            }
+            if (isHighlight) {
+                g.setColor(Color.BLACK);
+                g.drawString(graphView.getTitle(this), p1.x, p1.y);
             }
         }
 

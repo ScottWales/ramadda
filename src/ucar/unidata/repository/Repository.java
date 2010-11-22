@@ -2836,6 +2836,12 @@ public class Repository extends RepositoryBase implements RequestHandler {
         }
 
 
+        if(path.indexOf("/graph")>=0 && path.endsWith(".jar")) {
+            path = "/repository/applets/graph.jar";
+        System.err.println (path);
+
+        }
+
         if ( !path.startsWith(getUrlBase())) {
             getLogManager().log(request,
                                 "Unknown request" + " \"" + path + "\"");

@@ -59,7 +59,7 @@ public class IfcApplet extends Applet {
 
 
     /** _more_ */
-    public static boolean debug;
+    public static boolean debug=false;
 
     /** _more_ */
     static Image errorImage;
@@ -101,6 +101,7 @@ public class IfcApplet extends Applet {
             httpPort = 80;
         }
         debug = getParameter("debug", false);
+        //        debug = true;
         debug("IfcApplet.init: base url=" + baseUrl);
         initInner();
     }
@@ -140,6 +141,8 @@ public class IfcApplet extends Applet {
                 : v);
     }
 
+    static JTextArea debugText;
+
     /**
      * _more_
      *
@@ -147,6 +150,17 @@ public class IfcApplet extends Applet {
      */
     public static void debug(String msg) {
         if (debug) {
+            if(debugText==null && false) {
+                debugText = new JTextArea("",100,50);
+                JFrame f = new JFrame("debug");
+                f.getContentPane().add(new JScrollPane(debugText));
+                f.pack();
+                f.show();
+            }
+
+            if(debugText!=null) {
+                debugText.setText(debugText.getText()+"\n" + msg);
+            }
             System.err.println(msg);
         }
     }

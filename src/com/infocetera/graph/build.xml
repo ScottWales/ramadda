@@ -42,8 +42,7 @@
             destdir="${compiledir}"
             failonerror="${failonerror}" 
             srcdir="${srcdir}"
-            memoryMaximumSize="${maxmemory}"
-        >
+            fork="false">
             <include name="com/infocetera/graph/**"/>
         </javac>
     </target>

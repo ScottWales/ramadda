@@ -126,9 +126,6 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
     public boolean haveOthersNotLoaded = false;
 
     /** _more_          */
-    public String title;
-
-    /** _more_          */
     public String nodeTypeName;
 
     /** _more_          */

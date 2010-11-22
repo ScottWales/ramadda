@@ -161,6 +161,10 @@ public class MetadataHandler extends RepositoryManager {
                                              ATTR_ATTR4, ""), extra);
 
         MetadataType metadataType = findType(type);
+        if(metadataType == null) {
+            //            System.err.println("Unknown metadata type:" + type);
+            throw new IllegalStateException("Unknown metadata type:" + type);
+        }
         if ( !metadataType.processMetadataXml(entry, node, metadata, fileMap,
                 internal)) {
             return;

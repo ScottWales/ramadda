@@ -134,11 +134,14 @@ public class GraphOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
+    static long cnt=System.currentTimeMillis();
+
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
         String graphAppletTemplate =
             getRepository().getResource(PROP_HTML_GRAPHAPPLET);
+        graphAppletTemplate = graphAppletTemplate.replace("${counter}",""+(cnt++));
         String type = request.getString(ARG_NODETYPE, (String) null);
         if (type == null) {
             type = entry.isGroup()
@@ -208,8 +211,12 @@ public class GraphOutputHandler extends OutputHandler {
             }
 
             if (other != null) {
+                String imageAttr= XmlUtil.attrs("imagepath",
+                                                getEntryManager().getIconUrl(request,
+                                                                             other));
+
                 sb.append(XmlUtil.tag(TAG_NODE,
-                                      XmlUtil.attrs(ATTR_TYPE,
+                                      imageAttr + XmlUtil.attrs(ATTR_TYPE,
                                           (other.isGroup()
                                            ? NODETYPE_GROUP
                                            : other.getTypeHandler()
@@ -217,15 +224,19 @@ public class GraphOutputHandler extends OutputHandler {
                                                     other.getId(), ATTR_TOOLTIP, other.getName(),
                                                     ATTR_TITLE,
                                                     getGraphNodeTitle(other.getName()))));
+                String fromId = association.getFromId();
+                String toId = association.getToId();
+
                 sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TYPE, "association",
-                                          ATTR_FROM, (isTail
-                        ? id
-                        : other.getId()), ATTR_TO, (isTail
-                        ? other.getId()
-                        : id))));
+                                      XmlUtil.attrs(ATTR_TITLE, association.getType(),
+                                                    ATTR_TYPE, "link",
+                                                    ATTR_FROM, fromId, ATTR_TO, toId)));
+
             }
         }
+
+        //        System.err.println(sb);
+
     }
 
 
@@ -274,10 +285,9 @@ public class GraphOutputHandler extends OutputHandler {
                                      ATTR_TITLE, getGraphNodeTitle(name));
         Entry entry = getEntryManager().getEntry(request, entryId);
         if (entry != null) {
-            attrs += " "
-                     + XmlUtil.attrs("imagepath",
-                                     getEntryManager().getIconUrl(request,
-                                         entry));
+            attrs += XmlUtil.attrs("imagepath",
+                                   getEntryManager().getIconUrl(request,
+                                                                entry));
         }
         if (imageUrl!=null) {
             attrs = attrs + " " + XmlUtil.attr("image", imageUrl);

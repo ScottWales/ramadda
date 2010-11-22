@@ -1,9 +1,5 @@
 /*
  * 
- * 
- * 
- * 
- * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -123,9 +119,6 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
 
     /** _more_          */
     public static final String CMD_NAV_FWDFWD = "navFwdFwd";
-
-
-
 
 
     /** _more_          */
@@ -749,7 +742,11 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             Hashtable components = new Hashtable();
             components.put("edgepanel", edgePanel);
             components.put("nodepanel", nodePanel);
+            JScrollPane scroller = new JScrollPane(this);
             components.put("canvas", this);
+            //            setSize(new Dimension(5000,5000));
+            //            setPreferredSize(new Dimension(5000,5000));
+            //            components.put("canvas", scroller);
 
             xmlUi = new XmlUi(graphApplet, uiRoot, components, this, this);
 
@@ -883,8 +880,11 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         GraphEdge oldEdge = (GraphEdge) idToEdge.get(edgeId);
         //Do we already have this edge?
         if (oldEdge == null) {
+            IfcApplet.debug("new edge:" + edgeId);
             idToEdge.put(edgeId, edge);
             allEdges.addElement(edge);
+        } else {
+            IfcApplet.debug("old edge:" + edgeId);
         }
     }
 
@@ -1173,7 +1173,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      *
      * @return _more_
      */
-    protected String getTitle(GraphNode node) {
+    protected String getTitle(GraphGlyph node) {
         String title = node.getAttr("title");
         if (title == null) {
             title = node.getAttr(GraphNode.ATTR_TOOLTIP);
@@ -1182,8 +1182,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             title = node.getAttr(GraphNode.ATTR_ID);
         }
         if (title == null) {
-            System.err.println("no title found in:" + node.xmlNode);
-            title = "no title";
+            title = "";
         }
         int idx = title.indexOf("\n");
         if (idx >= 0) {
@@ -3442,6 +3441,8 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         }
         handleCommands(cmd, node, null, e);
     }
+
+
 
     /**
      * _more_

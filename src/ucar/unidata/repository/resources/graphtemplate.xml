@@ -1,12 +1,10 @@
-<canvas bgimage="${root}/images/logo.gif">
+<canvas xxxbgimage="${root}/images/logo.png">
 <graph>
-
     <edgetype name="groupedby" arrow="-6" />       
-    <edgetype name="association" arrow="6" width="3" color="#449944" />       
+    <edgetype name="link" arrow="6" width="1" color="#449944" />       
     <edgetype name="taggedby" arrow="-6" color="blue"/>       
     <edgetype name="etc" arrow="-6" color="red"/>       
-
-<nodetype    name="Node"  />
+    <nodetype    name="Node"  />
 
 <nodetype    name="tag" parent="Node" fillcolor="0,153,153">
   <command label="Search tag" command="url(,${root}/entry/searchform?tag=%id%)"/>

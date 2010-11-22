@@ -1,9 +1,5 @@
 /*
  *
- * 
- * 
- * 
- *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -909,7 +905,6 @@ public class ScrollCanvas extends JPanel implements KeyListener,
         if (g instanceof Graphics2D) {
             ((Graphics2D) g).scale(scale, scale);
             ((Graphics2D) g).translate(-hTrans, -vTrans);
-
         }
         Color bgColor = getBackground();
         if (bgColor == null) {
