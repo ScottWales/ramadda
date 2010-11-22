@@ -9,9 +9,9 @@
 
    <panel place="West">
       <panel layout="gridbag" cols="1" xbgcolor="lightGray">
-        <component idref="navbuttons"/>
-        <label  label=" " />
         <component idref="zoombuttons"/>
+        <label  label=" " />
+        <component idref="navbuttons"/>
         <label  label=" " />
         <component idref="scrollbuttons"/>
      </panel>
@@ -113,31 +113,31 @@
 
 
 <panel  id="navbuttons" layout="gridbag" cols="1" colwidths="0" rowheights="0" color="gray">
-  <image id="nav.backback" image="resource:/com/infocetera/graph/images/Rewind16.gif" action="navBackBack"
+  <image id="nav.backback" image="resource:/com/infocetera/graph/images/resultset_first.png" action="navBackBack"
     mouseenter="ui.message(Click to view first node in history)"
     mouseexit="ui.message()"  />
-  <image id="nav.back"  key="Ctrl+p"   image="resource:/com/infocetera/graph/images/StepBack16.gif" action="navBack"
+  <image id="nav.back"  key="Ctrl+p"   image="resource:/com/infocetera/graph/images/resultset_previous.png" action="navBack"
     mouseenter="ui.message(Click to view previous node in history)"
     mouseexit="ui.message()"/>
-  <image id="nav.fwd"      key="Ctrl+n" image="resource:/com/infocetera/graph/images/StepForward16.gif" action="navFwd"
+  <image id="nav.fwd"      key="Ctrl+n" image="resource:/com/infocetera/graph/images/resultset_next.png" action="navFwd"
     mouseenter="ui.message(Click to view next node in history)"
     mouseexit="ui.message()"/>
-  <image id="nav.fwdfwd"   image="resource:/com/infocetera/graph/images/FastForward16.gif" action="navFwdFwd"
+  <image id="nav.fwdfwd"   image="resource:/com/infocetera/graph/images/resultset_last.png" action="navFwdFwd"
     mouseenter="ui.message(Click to view last node in history)"
     mouseexit="ui.message()"/>   
 </panel>
 
 
 <panel id="zoombuttons" layout="gridbag" cols="1"  colwidths="0" rowheights="0">
-  <image image="resource:/com/infocetera/graph/images/ZoomOut16.gif"  action="zoomOut"
+  <image image="resource:/com/infocetera/graph/images/magnifier_zoom_out.png"  action="zoomOut"
   mouseenter="ui.message(Click to zoom out)"
   mouseexit="ui.message()"  
   />
-  <image image="resource:/com/infocetera/graph/images/Zoom16.gif"     action="zoomReset"
+  <image image="resource:/com/infocetera/graph/images/magnifier.png"     action="zoomReset"
   mouseenter="ui.message(Click to reset zoom)"
   mouseexit="ui.message()"  
 />
-  <image image="resource:/com/infocetera/graph/images/ZoomIn16.gif"   action="zoomIn"
+  <image image="resource:/com/infocetera/graph/images/magnifier_zoom_in.png"   action="zoomIn"
   mouseenter="ui.message(Click to zoom in)"
   mouseexit="ui.message()"  
   />

@@ -64,6 +64,31 @@
 -->
 
 
+  <type name="ontology.collection"  description="Collection" category="Ontology">  
+     <property name="icon" value="/icons/collection.png"/>
+     <property name="form.show.file" value="false"/>
+     <property name="form.show.resource.download" value="false"/>
+   </type>
+
+  <type name="ontology.party"  description="Party" category="Ontology">
+     <property name="icon" value="/icons/group.png"/>
+     <property name="form.show.file" value="false"/>
+     <property name="form.show.resource.download" value="false"/>
+   </type>
+
+  <type name="ontology.activity"  description="Activity" category="Ontology">
+     <property name="icon" value="/icons/cog.png"/>
+     <property name="form.show.file" value="false"/>
+     <property name="form.show.resource.download" value="false"/>
+   </type>
+
+  <type name="ontology.service"  description="Service" category="Ontology">
+     <property name="icon" value="/icons/wrench.png"/>
+     <property name="form.show.file" value="false"/>
+     <property name="form.show.resource.download" value="false"/>
+   </type>
+
+
 
 
 

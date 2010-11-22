@@ -4945,7 +4945,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
         }
         if (cacheResources() && (resource != null)) {
-            resources.put(id, resource);
+            //            resources.put(id, resource);
         }
         return resource;
     }

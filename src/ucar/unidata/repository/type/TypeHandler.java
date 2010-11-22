@@ -1966,9 +1966,9 @@ public class TypeHandler extends RepositoryManager {
                                  ? false
                                  : okToShowInForm(ARG_URL));
         if (okToShowInForm(ARG_RESOURCE)) {
+            boolean showDownload  =okToShowInForm(ARG_RESOURCE_DOWNLOAD);
             List<String> tabTitles  = new ArrayList<String>();
             List<String> tabContent = new ArrayList<String>();
-            //xxxxx
             String urlLabel  = getFormLabel(ARG_URL, "URL");
             String fileLabel = getFormLabel(ARG_FILE, "File");
             if (showFile) {
@@ -1977,7 +1977,7 @@ public class TypeHandler extends RepositoryManager {
                 tabContent.add(HtmlUtil.inset(formContent, 8));
             }
             if (showUrl) {
-                String download = !okToShowInForm(ARG_RESOURCE_DOWNLOAD)
+                String download = !showDownload
                                   ? ""
                                   : HtmlUtil.space(1)
                                     + HtmlUtil
@@ -2027,7 +2027,7 @@ public class TypeHandler extends RepositoryManager {
             String extra = HtmlUtil.makeShowHideBlock("More...",
                                addMetadata + HtmlUtil.br() + unzipWidget
                                + HtmlUtil.br() + datePatternWidget, false);
-            if (forUpload) {
+            if (forUpload || !showDownload) {
                 extra = "";
             }
             if ( !okToShowInForm("resource.extra")) {

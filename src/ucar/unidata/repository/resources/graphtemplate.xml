@@ -23,10 +23,12 @@
 <nodetype    name="group" parent="Node" fillcolor="#37FDFC">
   <command label="View group" command="url(,${root}/entry/show?entryid=%id%)"/>
   <command label="Search group" command="url(,${root}/entry/searchform?group=%id%)"/>
-  <shape>
-    <image id="image" url="${root}/icons/folder.png" from="c" to="c" alt="Tag"/>
-    <text src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
-  </shape>
+
+<shape>
+   <image id="image" url="${root}/icons/folder.png" from="c" to="c" alt="Tag"/>
+   <text src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
+</shape>
+
 
 </nodetype>
 
