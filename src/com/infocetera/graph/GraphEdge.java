@@ -35,6 +35,8 @@ import java.util.*;
  */
 public class GraphEdge extends GraphGlyph {
 
+    private static Font labelFont;
+
     /** _more_          */
     public static final Point TAILPOINT = new Point(0, 0);
 
@@ -450,13 +452,16 @@ public class GraphEdge extends GraphGlyph {
                 GuiUtils.drawLine(g, p2.x, p2.y, p3.x, p3.y, 1);
             }
             if (isHighlight) {
+                if(labelFont == null) {
+                    labelFont =  GraphGlyph.getFont("Dialog", Font.PLAIN, 12);
+                }
+                g.setFont(labelFont);
                 g.setColor(Color.BLACK);
                 g.drawString(graphView.getTitle(this), p1.x, p1.y);
             }
         }
-
-
     }
+
 
 
 

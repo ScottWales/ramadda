@@ -1536,7 +1536,6 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         }
 
 
-
         if (selectable instanceof Checkbox) {
             action = GuiUtils.replace(action, "%value%",
                                       ((Checkbox) selectable).getState()
@@ -1544,6 +1543,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         } else if (selectable instanceof JCheckBoxMenuItem) {
             boolean value = ((JCheckBoxMenuItem) selectable).getState();
             action = GuiUtils.replace(action, "%value%", "" + value);
+            //            IfcApplet.debug("action: " + action);
             //      System.err.println ("action 2" + action);
             checkGroup(selectable);
         } else if (event.getItemSelectable() instanceof Choice) {

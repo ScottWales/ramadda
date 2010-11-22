@@ -1,9 +1,5 @@
 /*
  * 
- * 
- * 
- * 
- * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -823,7 +819,7 @@ public class GraphShape {
         }
         if ((shapeType == SHAPE_TEXT)
                 || ((shapeType == SHAPE_IMAGE) && (image != null))
-                || ((fillColor != null) && !isParent())) {
+            || (!isParent())) {
             if (searchBounds.contains(x, y)) {
                 return this;
             }
@@ -853,7 +849,6 @@ public class GraphShape {
         if ((image != null) || (imageUrl == null)) {
             return;
         }
-
         image = glyph.graphView.graphApplet.getImage(imageUrl);
     }
 
@@ -914,7 +909,6 @@ public class GraphShape {
      * @param g _more_
      */
     private void setDimensions(Rectangle base, Graphics g) {
-
         bounds = new Rectangle(EMPTY_RECTANGLE);
         if (isParent()) {
             int cnt = 0;
@@ -933,103 +927,109 @@ public class GraphShape {
         }
 
         switch (shapeType) {
-
           case SHAPE_IMAGE :
               if (image == null) {
                   makeImage();
               }
               if (image != null) {
-                  bounds = new Rectangle(0, 0, image.getWidth(glyph),
-                                         image.getHeight(glyph));
+                  //bounds = new Rectangle(base);
+                  bounds.width = image.getWidth(glyph);
+                  bounds.height = image.getHeight(glyph);
+                  //                  bounds = new Rectangle(0, 0, image.getWidth(glyph),
+                  //                                         image.getHeight(glyph));
               }
               break;
 
           case SHAPE_TEXT :
-              g.setFont(getFont(g));
-              Vector lines = new Vector();
-              if (textWidth > 0) {
-                  String       tmpText = text;
-                  char[]       chars   = text.toCharArray();
-                  StringBuffer sb      = null;
-                  int          cnt     = 0;
+              if(true) {
+                  g.setFont(getFont(g));
+                  Vector lines = new Vector();
+                  if (textWidth > 0) {
+                      String       tmpText = text;
+                      char[]       chars   = text.toCharArray();
+                      StringBuffer sb      = null;
+                      int          cnt     = 0;
+                      for (int i = 0; i < chars.length; i++) {
+                          if (sb == null) {
+                              cnt = 0;
+                              sb  = new StringBuffer();
+                          }
+                          if (chars[i] == '\n') {
+                              lines.addElement(sb.toString());
+                              sb = null;
+                              continue;
+                          }
+                          sb.append(chars[i]);
+                          if (i == chars.length - 1) {
+                              lines.addElement(sb.toString());
+                              continue;
+                          }
 
-                  for (int i = 0; i < chars.length; i++) {
-                      if (sb == null) {
-                          cnt = 0;
-                          sb  = new StringBuffer();
-                      }
-                      if (chars[i] == '\n') {
-                          lines.addElement(sb.toString());
-                          sb = null;
-                          continue;
-                      }
-                      sb.append(chars[i]);
-                      if (i == chars.length - 1) {
-                          lines.addElement(sb.toString());
-                          continue;
-                      }
-
-                      cnt++;
-                      if (cnt > textWidth) {
-                          if ((chars[i] != ' ') && (chars[i + 1] != ' ')
+                          cnt++;
+                          if (cnt > textWidth) {
+                              if ((chars[i] != ' ') && (chars[i + 1] != ' ')
                                   && (chars[i + 1] != '\n')) {
-                              if ((i < chars.length - 2)
+                                  if ((i < chars.length - 2)
                                       && ((chars[i + 2] == ' ')
                                           || (chars[i + 2] == '\n'))) {
-                                  sb.append(chars[i + 1]);
-                                  i++;
-                              } else {
-                                  sb.append("-");
+                                      sb.append(chars[i + 1]);
+                                      i++;
+                                  } else {
+                                      sb.append("-");
+                                  }
                               }
+                              lines.addElement(sb.toString());
+                              sb = null;
                           }
-                          lines.addElement(sb.toString());
-                          sb = null;
+                      }
+                      if (lines.size() == 0) {
+                          lines.addElement(" ");
+                      }
+                  } else {
+                      StringTokenizer tok = new StringTokenizer(text, "\n");
+                      while (tok.hasMoreTokens()) {
+                          lines.addElement(tok.nextToken());
                       }
                   }
-                  if (lines.size() == 0) {
-                      lines.addElement(" ");
+                  int    max  = ( !gv.getDrawAllLines()
+                                  ? Math.min(textMaxLines, lines.size())
+                                  : lines.size());
+
+                  Vector tmpV = new Vector();
+                  for (int i = 0; i < max; i++) {
+                      String line = ((String) lines.elementAt(i)).trim();
+                      if (line.length() == 0) {
+                          line = " ";
+                      }
+                      tmpV.addElement(line);
                   }
+                  lines          = tmpV;
+
+                  this.textLines = new String[lines.size()];
+                  FontMetrics fm = g.getFontMetrics();
+                  maxTextWidth = 0;
+                  for (int i = 0; i < textLines.length; i++) {
+                      textLines[i] = (String) lines.elementAt(i);
+                      maxTextWidth = Math.max(maxTextWidth,
+                                              fm.stringWidth(textLines[i]));
+                  }
+                  bounds.width = maxTextWidth;
+                  bounds.height = textLines.length
+                      * (fm.getMaxDescent() + fm.getMaxAscent());
               } else {
-                  StringTokenizer tok = new StringTokenizer(text, "\n");
-                  while (tok.hasMoreTokens()) {
-                      lines.addElement(tok.nextToken());
-                  }
+                  bounds.width = 40;
+                  bounds.height = 40;
               }
-              int    max  = ( !gv.getDrawAllLines()
-                              ? Math.min(textMaxLines, lines.size())
-                              : lines.size());
-
-              Vector tmpV = new Vector();
-              for (int i = 0; i < max; i++) {
-                  String line = ((String) lines.elementAt(i)).trim();
-                  if (line.length() == 0) {
-                      line = " ";
-                  }
-                  tmpV.addElement(line);
-              }
-              lines          = tmpV;
-
-              this.textLines = new String[lines.size()];
-              FontMetrics fm = g.getFontMetrics();
-              maxTextWidth = 0;
-              for (int i = 0; i < textLines.length; i++) {
-                  textLines[i] = (String) lines.elementAt(i);
-                  maxTextWidth = Math.max(maxTextWidth,
-                                          fm.stringWidth(textLines[i]));
-              }
-              bounds.width = maxTextWidth;
-              bounds.height = textLines.length
-                              * (fm.getMaxDescent() + fm.getMaxAscent());
               break;
-
           default :
-              bounds = new Rectangle(base);
+              //              bounds = new Rectangle(base);
               if (width != -1) {
                   bounds.width = width;
               }
               if (height != -1) {
                   bounds.height = height;
               }
+              gv.graphApplet.debug(shapeType +" bounds:" + bounds);
               break;
         }
 
@@ -1064,7 +1064,6 @@ public class GraphShape {
 
         Rectangle base = null;
         switch (boundsSrc) {
-
           case SRC_ID :
               base = (Rectangle) boundsMap.get(boundsSrcId);
               break;
@@ -1259,9 +1258,6 @@ public class GraphShape {
             return;
         }
 
-
-
-
         Rectangle sb = gv.scaleRect(bounds);
         if (isParent()) {
             if (fillColor != null) {
@@ -1291,8 +1287,6 @@ public class GraphShape {
         int baseW = gv.scale(bounds.width - insets.left - insets.right);
         int baseH = gv.scale(bounds.height - insets.top - insets.bottom);
 
-
-
         switch (shapeType) {
 
           case SHAPE_IMAGE :
@@ -1307,7 +1301,7 @@ public class GraphShape {
               int         textX      = posX;
               int         textY      = posY + lineHeight;
 
-              if (okToDrawText) {
+              if (okToDrawText && gv.okToDrawText(this, isHighlight)) {
                   if (href != null) {
                       g.setColor(Color.blue);
                   }

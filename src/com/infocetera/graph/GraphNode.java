@@ -860,6 +860,9 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
                 tmpBounds = bounds.union(shape.getBounds());
             }
         }
+
+        //graphView.graphApplet.debug(
+
         bounds = new Rectangle(tmpBounds);
     }
 

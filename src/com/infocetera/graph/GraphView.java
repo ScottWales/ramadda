@@ -385,6 +385,8 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     /** _more_          */
     private boolean pauseMouseOver = true;
 
+    private boolean showText = true;
+
     /** _more_          */
     private boolean relativeToLevel = false;
 
@@ -880,11 +882,8 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         GraphEdge oldEdge = (GraphEdge) idToEdge.get(edgeId);
         //Do we already have this edge?
         if (oldEdge == null) {
-            IfcApplet.debug("new edge:" + edgeId);
             idToEdge.put(edgeId, edge);
             allEdges.addElement(edge);
-        } else {
-            IfcApplet.debug("old edge:" + edgeId);
         }
     }
 
@@ -3265,13 +3264,16 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             String[] args  = XmlUi.extractTwoArgs(params);
             String   flag  = args[0];
             boolean  value = new Boolean(args[1]).booleanValue();
-
-            //      System.err.println ("setting flag: " + flag +" to:" + value);
-
+            //            graphApplet.debug ("setting flag: " + flag +" to:" + value);
+            //            graphApplet.debug
             if (flag.equals("showMouseOver")) {
                 showMouseOver = value;
             } else if (flag.equals("pauseMouseOver")) {
                 pauseMouseOver = value;
+            } else if (flag.equals("showText")) {
+                showText = value;
+                setNodesDirty();
+                repaint();
             } else if (flag.equals("scaleWithLevel")) {
                 scaleWithLevel = value;
                 setNodesDirty();
@@ -3805,6 +3807,13 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         }
 
 
+    }
+
+    public boolean okToDrawText(GraphShape shape,boolean isHighlight) {
+        if(isHighlight) return true;
+        //        if(displayNodes.size()>75) return false;
+        return showText;
+        //        return false;
     }
 
     /**
