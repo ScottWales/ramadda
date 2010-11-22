@@ -1,0 +1,20 @@
+<types>
+
+
+  <type name="ontology.collection"  description="Collection">
+     <property name="icon" value="/icons/collection.png"/>
+   </type>
+
+  <type name="ontology.party"  description="Party">
+     <property name="icon" value="/icons/group.png"/>
+   </type>
+
+  <type name="ontology.activity"  description="Activity">
+     <property name="icon" value="/icons/cog.png"/>
+   </type>
+
+  <type name="ontology.service"  description="Service">
+     <property name="icon" value="/icons/wrench.png"/>
+   </type>
+
+</types>
