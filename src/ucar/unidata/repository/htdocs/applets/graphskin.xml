@@ -47,6 +47,7 @@
       <menuitem label="Zoom out" action="zoomOut"/>
       <menuitem label="Zoom reset" action="zoomReset"/>
     </menu>
+    <cbmenuitem  label="Show labels"   action="setFlag(showText,%value%)" value="true"/>
     <cbmenuitem  label="Show mouse over"   action="setFlag(showMouseOver,%value%)" value="true"/>
     <cbmenuitem  label="Pause on mouse over"   action="setFlag(pauseMouseOver,%value%)" value="true"/>     
     <cbmenuitem  label="Animate"           action="setFlag(animateMoves,%value%)" value="true"/> 

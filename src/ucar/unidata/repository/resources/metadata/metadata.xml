@@ -117,6 +117,19 @@
       <element name="type"/>
       <element name="value"/>
     </type>
+
+    <type
+       name="Named Spatial Region"
+       id="spatial.region">
+      <element name="value"/>
+    </type>
+
+    <type
+       name="Spatial KML Polygon Coordinates"
+       id="spatial.kmlpolycoords">
+      <element name="value"/>
+    </type>
+
 </handler>
 
 

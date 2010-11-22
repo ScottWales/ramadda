@@ -745,13 +745,16 @@ public class HtmlOutputHandler extends OutputHandler {
         tabTitles.add(msg("Comments"));
         tabContents.add(getCommentBlock(request, entry, true));
 
+        StringBuffer associationBlock = getAssociationManager().getAssociationBlock(request,
+                                                                              entry);
         if (request.get(ARG_SHOW_ASSOCIATIONS, false)) {
-            tabTitles.add(msg("Links"));
+            tabTitles.add(0,msg("Links"));
+            tabContents.add(0,associationBlock);
         } else {
             tabTitles.add(msg("Links"));
+            tabContents.add(associationBlock);
         }
-        tabContents.add(getAssociationManager().getAssociationBlock(request,
-                entry));
+
 
         //        tabTitles.add(msg(LABEL_LINKS));
         //        tabContents.add(getEntryManager().getEntryActionsTable(request, entry,
