@@ -19,6 +19,7 @@ package com.infocetera.graph;
 
 
 import com.infocetera.util.GuiUtils;
+import com.infocetera.util.IfcApplet;
 import com.infocetera.util.XmlNode;
 import com.infocetera.util.XmlUi;
 
@@ -1022,14 +1023,16 @@ public class GraphShape {
               }
               break;
           default :
-              //              bounds = new Rectangle(base);
+              bounds = new Rectangle(base);
+              //              IfcApplet.debug("     calculateBounds: base=" +  base);
               if (width != -1) {
+                  bounds.x-=width/2;
                   bounds.width = width;
               }
               if (height != -1) {
+                  bounds.y-=height/2;
                   bounds.height = height;
               }
-              gv.graphApplet.debug(shapeType +" bounds:" + bounds);
               break;
         }
 
@@ -1042,10 +1045,11 @@ public class GraphShape {
      * @param boundsMap _more_
      * @param siblingBounds _more_
      */
-    public void calculateBounds(Graphics g, Hashtable boundsMap,
+    public void calculateBounds(Graphics g, Hashtable<String,Rectangle> boundsMap,
                                 Rectangle siblingBounds) {
         int maxWidth  = 0;
         int maxHeight = 0;
+
 
         for (int i = 0; i < childShapes.size(); i++) {
             Rectangle  prevBounds = siblingBounds;
@@ -1065,7 +1069,7 @@ public class GraphShape {
         Rectangle base = null;
         switch (boundsSrc) {
           case SRC_ID :
-              base = (Rectangle) boundsMap.get(boundsSrcId);
+              base =  boundsMap.get(boundsSrcId);
               break;
 
           case SRC_SIBLING :

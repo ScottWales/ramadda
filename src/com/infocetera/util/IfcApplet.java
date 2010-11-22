@@ -101,7 +101,6 @@ public class IfcApplet extends Applet {
             httpPort = 80;
         }
         debug = getParameter("debug", false);
-        debug = true;
         debug("IfcApplet.init: base url=" + baseUrl);
         initInner();
     }
@@ -150,8 +149,9 @@ public class IfcApplet extends Applet {
      */
     public static void debug(String msg) {
         if (debug) {
-            if(false && debugText==null) {
-                debugText = new JTextArea("",100,50);
+            if(debugText==null) {
+                debugText = new JTextArea("",25,50);
+                debugText.setEditable(false);
                 JFrame f = new JFrame("debug");
                 f.getContentPane().add(new JScrollPane(debugText));
                 f.pack();

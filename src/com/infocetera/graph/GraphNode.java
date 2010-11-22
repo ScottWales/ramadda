@@ -26,6 +26,7 @@ package com.infocetera.graph;
 
 import com.infocetera.util.GuiUtils;
 import com.infocetera.util.XmlNode;
+import com.infocetera.util.IfcApplet;
 
 import java.awt.*;
 
@@ -247,6 +248,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
      * @return _more_
      */
     public Point getOutEdgeAnchor() {
+        if(true) return new Point(currentX, currentY);
         for (int i = 0; i < shapes.size(); i++) {
             GraphShape shape = (GraphShape) shapes.elementAt(i);
             if (shape.getVisible() && shape.getConnectable()) {
@@ -846,8 +848,9 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
         bounds = new Rectangle(currentX, currentY, 1, 1);
         Rectangle tmpBounds = new Rectangle(currentX, currentY, 1, 1);
         int       cnt       = 0;
-        Hashtable boundsMap = new Hashtable();
+        Hashtable<String,Rectangle> boundsMap = new Hashtable<String,Rectangle>();
 
+        //        IfcApplet.debug("graphNode: x=" +  currentX +" y=" + currentY);
         for (int i = 0; i < shapes.size(); i++) {
             GraphShape shape = (GraphShape) shapes.elementAt(i);
             if ( !shape.getVisible()) {
@@ -860,9 +863,6 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
                 tmpBounds = bounds.union(shape.getBounds());
             }
         }
-
-        //graphView.graphApplet.debug(
-
         bounds = new Rectangle(tmpBounds);
     }
 

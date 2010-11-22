@@ -26,7 +26,7 @@
             basedir="${srcdir}"
             compress="true"
             update="false"
-            jarfile="${distdir}/graph.jar">
+            jarfile="${srcdir}/ucar/unidata/repository/htdocs/applets/graph.jar">
             <include name="com/**/*.class"/>
             <include name="com/infocetera/graph/defaultskin.xml"/>
             <include name="com/infocetera/graph/images/*"/>
