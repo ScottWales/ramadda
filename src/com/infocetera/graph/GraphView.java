@@ -1511,9 +1511,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         } catch (Exception exc) {
             haveInited = true;
             System.err.println("Error loading url:" + realUrl);
+            IfcApplet.debug("Error loading url:" + realUrl);
             exc.printStackTrace();
             System.err.println(xml);
-            message = "Error loading data";
+            message = "Error loading data: " + exc;
         }
         amLoading = false;
     }
@@ -2747,6 +2748,39 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     public void mouseClicked(MouseEvent e) {
         //Right click?
+
+        if (e.getClickCount()>1) {
+            int        x             = translateInputX(e.getX());
+            int        y             = translateInputY(e.getY());
+            GraphShape containsShape = find(x, y);
+            GraphNode  closest       = hilite;
+
+            if(closest == null)
+                closest       = ((containsShape != null)
+                                 ? containsShape.glyph
+                                 : null);
+            if(closest!=null) {
+                Vector types = closest.getTypeList();
+                for (int j = 0; j < types.size(); j++) {
+                    XmlNode tmpType = (XmlNode) types.elementAt(j);
+                    Vector nodes =  tmpType.getChildren();
+                    for (int i = 0; i < nodes.size(); i++) {
+                        XmlNode child = (XmlNode) nodes.elementAt(i);
+                        if ( !child.getTag().equals(TAG_COMMAND)) {
+                            continue;
+                        }
+                        String doubleClick   = child.getAttribute("doubleclick");
+                        if(doubleClick!=null && doubleClick.equals("true")) {
+                            String command = child.getAttribute(ATTR_COMMAND);
+                            handleCommands(command, closest, null, null);
+                            return;
+                        }
+                    }
+                }
+            }                    
+        }
+
+
         if ((e.getModifiers() & e.BUTTON1_MASK) == 0) {
             if (hilite == null) {
                 JPopupMenu popup = new JPopupMenu();
@@ -2766,6 +2800,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 popupNode = hilite;
                 showNodeMenu(hilite, this, e.getX(), e.getY());
             }
+            return;
         }
     }
 
@@ -3441,6 +3476,9 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             cmd  = cmd.substring(5);
             node = popupNode;
         }
+
+
+
         handleCommands(cmd, node, null, e);
     }
 

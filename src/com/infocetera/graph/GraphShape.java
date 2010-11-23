@@ -1306,6 +1306,13 @@ public class GraphShape {
               int         textY      = posY + lineHeight;
 
               if (okToDrawText && gv.okToDrawText(this, isHighlight)) {
+                  if (fillColor != null) {
+                      //todo: handle multiple lines
+                      g.setColor(fillColor);
+                      g.fillRect(textX-3,posY, sb.width+6, lineHeight+2);
+                      g.setColor(getColor());
+                  }
+
                   if (href != null) {
                       g.setColor(Color.blue);
                   }
