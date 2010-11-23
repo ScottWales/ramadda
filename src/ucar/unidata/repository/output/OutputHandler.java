@@ -1349,47 +1349,26 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                 cbxSB.append(HtmlUtil.span(cbx, HtmlUtil.id(cbxWrapperId)));
             }
 
-            if (false && showCrumbs) {
-                String img =
-                    HtmlUtil.img(getEntryManager().getIconUrl(request,
-                        entry));
-                cbxSB.append(img);
-                cbxSB.append(HtmlUtil.space(1));
-
-                String crumbs = getEntryManager().getBreadCrumbs(request,
-                                    (hideParents
-                                     ? entry.getParentEntry()
-                                     : entry), null, 60);
+            String crumbs = "";
+            if (showCrumbs) {
+                crumbs = getEntryManager().getBreadCrumbs(request,
+                                                          (hideParents||true
+                                                           ? entry.getParentEntry()
+                                                           : entry), null, 60);
                 if (hideParents) {
-                    cbxSB.append(HtmlUtil.makeToggleInline("",
-                            crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), false));
-                    cbxSB.append(getEntryManager().getTooltipLink(request,
-                            entry, entry.getLabel(), null));
+                    crumbs = HtmlUtil.makeToggleInline("",
+                                                       crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), false);
                 } else {
-                    cbxSB.append(crumbs);
+                    crumbs = crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR);
                 }
-                sb.append(cbxSB);
-                sb.append(HtmlUtil.br());
-            } else {
-                String crumbs = "";
-                if (showCrumbs) {
-                    crumbs = getEntryManager().getBreadCrumbs(request,
-                            (hideParents
-                             ? entry.getParentEntry()
-                             : entry), null, 60);
-                    if (hideParents) {
-                        crumbs = HtmlUtil.makeToggleInline("",
-                                crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), false);
-                    }
-
-                }
-
-                EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, entry.getLabel(), null,
-                                          true, crumbs);
-                entryLink.setLink(cbxSB + entryLink.getLink());
-                decorateEntryRow(request, entry, sb, entryLink, rowId, "");
+                
             }
+
+            EntryLink entryLink = getEntryManager().getAjaxLink(request,
+                                                                entry, entry.getLabel(), null,
+                                                                true, crumbs);
+            entryLink.setLink(cbxSB + entryLink.getLink());
+            decorateEntryRow(request, entry, sb, entryLink, rowId, "");
         }
         sb.append(HtmlUtil.close(HtmlUtil.TAG_UL));
         sb.append("\n\n");

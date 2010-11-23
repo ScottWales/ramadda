@@ -620,22 +620,23 @@ public class AssociationManager extends RepositoryManager {
                                            Entry entry, boolean canEdit)
             throws Exception {
 
-        List cols = Misc.toList(new Object[] {
-            "&nbsp;", HtmlUtil.bold(msg("From")), HtmlUtil.bold(msg("Type")),
-            /*HtmlUtil.bold(msg("Name")),*/ "&nbsp;", HtmlUtil.bold(msg("To"))
-        });
+        List cols1 = new ArrayList();
+        List cols2 = new ArrayList();
 
         Hashtable<String,StringBuffer> rowMap = new Hashtable<String,StringBuffer>();
         List<String> rows = new ArrayList<String>();
         for (Association association : associations) {
             Entry fromEntry = null;
             Entry toEntry   = null;
+            List cols;
             if ((entry != null)
                     && association.getFromId().equals(entry.getId())) {
+                cols = cols1;
                 fromEntry = entry;
             } else {
                 fromEntry = getEntryManager().getEntry(request,
                         association.getFromId());
+                cols = cols2;
             }
             if ((entry != null)
                     && association.getToId().equals(entry.getId())) {
@@ -676,6 +677,14 @@ public class AssociationManager extends RepositoryManager {
                     : getEntryManager().getEntryLink(request, toEntry,
                     args))));
         }
+
+        List cols = Misc.toList(new Object[] {
+            "&nbsp;", HtmlUtil.bold(msg("From")), HtmlUtil.bold(msg("Type")),
+            /*HtmlUtil.bold(msg("Name")),*/ "&nbsp;", HtmlUtil.bold(msg("To"))
+        });
+
+        cols.addAll(cols1);
+        cols.addAll(cols2);
 
         return HtmlUtil.table(cols, 5,
                               HtmlUtil.attr(HtmlUtil.ATTR_CELLSPACING, "3"));

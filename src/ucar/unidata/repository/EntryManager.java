@@ -1703,8 +1703,6 @@ return new Result(title, sb);
             }
         }
 
-
-
         StringBuffer inner = new StringBuffer();
         if (entry.isGroup()) {
             inner.append(
@@ -1727,9 +1725,8 @@ return new Result(title, sb);
         fb.append(HtmlUtil.formClose());
         sb.append(getRepository().showDialogQuestion(inner.toString(),
                 fb.toString()));
-        sb.append(getBreadCrumbs(request, entry));
-
-
+        String bc =  getBreadCrumbs(request, entry);
+        sb.append(bc);
         return makeEntryEditResult(request, entry,
                                    msg("Entry delete confirm"), sb);
     }
@@ -4547,6 +4544,7 @@ return new Result(title, sb);
             parent          = findGroup(request, parent.getParentEntryId());
         }
 
+
         boolean needToClip = totalNameLength > lengthLimit;
         String  target     = (request.defined(ARG_TARGET)
                               ? request.getString(ARG_TARGET, "")
@@ -4598,6 +4596,9 @@ return new Result(title, sb);
         //                entry), entry.getLabel()));
         //        breadcrumbs.add(HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
         //                entry), entry.getLabel()));
+
+        //        System.err.println("BC:" + breadcrumbs);
+
         String separator = getRepository().getTemplateProperty(request,
                                "ramadda.template.breadcrumbs.separator", BREADCRUMB_SEPARATOR);
         
