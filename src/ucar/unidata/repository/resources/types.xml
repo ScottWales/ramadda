@@ -64,6 +64,17 @@
 -->
 
 
+  <type name="ontology.owl.group"  description="OWL Group" category="Ontology" handler="ucar.unidata.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/rdfgroup.gif"/>
+     <property name="form.show.resource" value="false"/>
+   </type>
+
+  <type name="ontology.owl.class"  description="OWL Class" category="Ontology">  
+     <property name="icon" value="/icons/rdf.gif"/>
+     <property name="form.show.resource" value="false"/>
+   </type>
+
+
   <type name="ontology.collection"  description="Collection" category="Ontology">  
      <property name="icon" value="/icons/collection.png"/>
      <property name="form.show.file" value="false"/>
