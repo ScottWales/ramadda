@@ -211,6 +211,15 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    public void getThumbnailUrls(Request request, Entry entry,List<String> urls) 
+            throws Exception {
+        for (Metadata metadata : getMetadata(entry)) {
+            MetadataHandler handler = findMetadataHandler(metadata.getType());
+            handler.getThumbnailUrls(request, entry, urls, metadata);
+        }
+    }
+
+
     /**
      * _more_
      *

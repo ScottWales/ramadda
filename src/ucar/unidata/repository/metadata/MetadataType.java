@@ -464,6 +464,25 @@ public class MetadataType extends MetadataTypeBase {
     }
 
 
+    public void getThumbnailUrls(Request request, Entry entry,List<String> urls, Metadata metadata) 
+            throws Exception {
+        for (MetadataElement element : getChildren()) {
+            if ( !element.getDataType().equals(element.TYPE_FILE)) {
+                continue;
+            }
+            if (!element.showAsAttachment()) {
+                continue;
+            }
+            if (element.getThumbnail()) {
+                String url = getImageUrl(request,  entry,
+                                        metadata, null);
+                if (url != null) {
+                    urls.add(url);
+                }
+            }
+        }
+    }
+
 
 
     /**
