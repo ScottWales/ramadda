@@ -123,6 +123,8 @@ public class GraphOutputHandler extends OutputHandler {
 
 
 
+    static long cnt = System.currentTimeMillis();
+
     /**
      * _more_
      *
@@ -134,19 +136,18 @@ public class GraphOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    static long cnt=System.currentTimeMillis();
-
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
         String graphAppletTemplate =
             getRepository().getResource(PROP_HTML_GRAPHAPPLET);
-        graphAppletTemplate = graphAppletTemplate.replace("${counter}",""+(cnt++));
+
+        String counter = "" + (cnt++);
+        counter = "_newjar";
+        graphAppletTemplate = graphAppletTemplate.replace("${counter}",counter);
         String type = request.getString(ARG_NODETYPE, (String) null);
         if (type == null) {
-            type = entry.isGroup()
-                   ? NODETYPE_GROUP
-                   : NODETYPE_ENTRY;
+            type = entry.getTypeHandler().getNodeType();
         }
         String html = StringUtil.replace(graphAppletTemplate, "${id}",
                                          HtmlUtil.urlEncode(entry.getId()));
@@ -211,26 +212,27 @@ public class GraphOutputHandler extends OutputHandler {
             }
 
             if (other != null) {
-                String imageAttr= XmlUtil.attrs("imagepath",
-                                                getEntryManager().getIconUrl(request,
-                                                                             other));
+                String imageAttr = XmlUtil.attrs("imagepath",
+                                                 getEntryManager().getIconUrl(request,
+                                                                              other));
 
-                sb.append(XmlUtil.tag(TAG_NODE,
-                                      imageAttr + XmlUtil.attrs(ATTR_TYPE,
-                                          (other.isGroup()
-                                           ? NODETYPE_GROUP
-                                           : other.getTypeHandler()
-                                           .getNodeType()), ATTR_ID,
-                                                    other.getId(), ATTR_TOOLTIP, other.getName(),
-                                                    ATTR_TITLE,
-                                                    getGraphNodeTitle(other.getName()))));
+                sb.append(
+                    XmlUtil.tag(
+                        TAG_NODE,
+                        imageAttr
+                        + XmlUtil.attrs(
+                            ATTR_TYPE, other.getTypeHandler().getNodeType(),
+                            ATTR_ID, other.getId(), ATTR_TOOLTIP,
+                            other.getName(), ATTR_TITLE,
+                            getGraphNodeTitle(other.getName()))));
                 String fromId = association.getFromId();
-                String toId = association.getToId();
+                String toId   = association.getToId();
 
                 sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TITLE, association.getType(),
-                                                    ATTR_TYPE, "link",
-                                                    ATTR_FROM, fromId, ATTR_TO, toId)));
+                                      XmlUtil.attrs(ATTR_TITLE,
+                                          association.getType(), ATTR_TYPE,
+                                          "link", ATTR_FROM, fromId, ATTR_TO,
+                                          toId)));
 
             }
         }
@@ -262,13 +264,12 @@ public class GraphOutputHandler extends OutputHandler {
             getStorageManager().resourceFromDB(results.getString(col++));
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         String      nodeType    = typeHandler.getNodeType();
-        String imageUrl=null;
-        if(ImageUtils.isImage(resource)) {
+        String      imageUrl    = null;
+        if (ImageUtils.isImage(resource)) {
             imageUrl = HtmlUtil.url(
-                                    getRepository().URL_ENTRY_GET + entryId
-                                    + IOUtil.getFileExtension(
-                                                              resource), ARG_ENTRYID, entryId,
-                                    ARG_IMAGEWIDTH, "75");
+                getRepository().URL_ENTRY_GET + entryId
+                + IOUtil.getFileExtension(resource), ARG_ENTRYID, entryId,
+                    ARG_IMAGEWIDTH, "75");
         } else {
             /*            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
             for(Metadata metadata: metadataList) {
@@ -277,19 +278,19 @@ public class GraphOutputHandler extends OutputHandler {
                 }*/
         }
 
-        if (imageUrl!=null) {
+        if (imageUrl != null) {
             nodeType = "imageentry";
         }
         String attrs = XmlUtil.attrs(ATTR_TYPE, nodeType, ATTR_ID, entryId,
-                                     ATTR_TOOLTIP, name,
-                                     ATTR_TITLE, getGraphNodeTitle(name));
+                                     ATTR_TOOLTIP, name, ATTR_TITLE,
+                                     getGraphNodeTitle(name));
         Entry entry = getEntryManager().getEntry(request, entryId);
         if (entry != null) {
             attrs += XmlUtil.attrs("imagepath",
                                    getEntryManager().getIconUrl(request,
-                                                                entry));
+                                       entry));
         }
-        if (imageUrl!=null) {
+        if (imageUrl != null) {
             attrs = attrs + " " + XmlUtil.attr("image", imageUrl);
         }
         //        System.err.println (XmlUtil.tag(TAG_NODE,attrs));
@@ -297,7 +298,55 @@ public class GraphOutputHandler extends OutputHandler {
     }
 
 
+    private void addNodeTag(Request request, StringBuffer sb, Entry entry) throws Exception {
+        String imageUrl = null;
+        if (ImageUtils.isImage(entry.getResource().getPath())) {
+            imageUrl = HtmlUtil.url(
+                                    getRepository().URL_ENTRY_GET + entry.getId()
+                                    + IOUtil.getFileExtension(entry.getResource().getPath()), ARG_ENTRYID, entry.getId(),
+                                    ARG_IMAGEWIDTH, "75");                                    
+        } else {
+            List<String>urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request,  entry,urls);
+            if(urls.size()>0) {
+                imageUrl = urls.get(0) +"&thumbnail=true";
+            }
+        }
 
+        String imageAttr = XmlUtil.attrs("imagepath",
+                                         getEntryManager().getIconUrl(request,
+                                                                      entry));
+
+        String nodeType = entry.getTypeHandler().getNodeType();
+        if(imageUrl!=null) {
+            nodeType = "imageentry";
+        }
+        String attrs = imageAttr  + XmlUtil.attrs(ATTR_TYPE, nodeType,
+                                     ATTR_ID, entry.getId(), ATTR_TOOLTIP,
+                                     entry.getName(), ATTR_TITLE,
+                                     getGraphNodeTitle(entry.getName()));
+
+        if (imageUrl != null) {
+            attrs = attrs + " " + XmlUtil.attr("image", imageUrl);
+        }
+        sb.append(XmlUtil.tag(TAG_NODE, attrs));
+
+        sb.append("\n");
+    }
+
+
+    private void addEdgeTag(StringBuffer sb, Entry from, Entry to, String type) {
+        addEdgeTag(sb, from.getId(), to.getId(), type);
+    }
+
+    private void addEdgeTag(StringBuffer sb, String  from, String to, String type) {
+        sb.append(XmlUtil.tag(TAG_EDGE,
+                              XmlUtil.attrs(ATTR_TYPE, type,
+                                            ATTR_FROM, from, ATTR_TO,
+                                            to)));
+        sb.append("\n");
+
+    }
 
     /**
      * _more_
@@ -339,173 +388,89 @@ public class GraphOutputHandler extends OutputHandler {
             throw new IllegalArgumentException("Could not find id:"
                     + request);
         }
-        if (type == null) {
-            type = NODETYPE_GROUP;
+
+        Entry entry = getEntryManager().getEntry(request, id);
+        if (entry == null) {
+            throw new IllegalArgumentException("Could not find entry:" + id);
+
         }
-        TypeHandler  typeHandler = getRepository().getTypeHandler(request);
-        StringBuffer sb          = new StringBuffer();
-        if ( !type.equals(TypeHandler.TYPE_GROUP)) {
-            Statement stmt = typeHandler.select(
-                                 request,
-                                 SqlUtil.comma(
-                                     Tables.ENTRIES.COL_ID,
-                                     Tables.ENTRIES.COL_NAME,
-                                     Tables.ENTRIES.COL_TYPE,
-                                     Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                     Tables.ENTRIES.COL_RESOURCE), Clause.eq(
-                                         Tables.ENTRIES.COL_ID, id), "");
 
-            try {
-                ResultSet results = stmt.getResultSet();
-                if ( !results.next()) {
-                    getDatabaseManager().closeAndReleaseConnection(stmt);
-                    throw new IllegalArgumentException("Unknown entry id:"
-                            + id);
+        TypeHandler typeHandler = entry.getTypeHandler();
+        if (type == null) {
+            type = typeHandler.getNodeType();
+        }
+        StringBuffer sb = new StringBuffer();
+        addNodeTag(request,sb, entry);
+        getAssociationsGraph(request, entry.getId(), sb);
+        Entry parent = entry.getParentEntry();
+        if (parent != null) {
+            addNodeTag(request,sb, parent);
+            addEdgeTag(sb, parent, entry, "groupedby");
+        }
+
+        if (entry.isGroup()) {
+            List<Group> subGroups =
+                getEntryManager().getGroups(
+                    request,
+                    Clause.eq(
+                        Tables.ENTRIES.COL_PARENT_GROUP_ID, entry.getId()));
+
+            cnt       = 0;
+            actualCnt = 0;
+            for (Group subGroup : subGroups) {
+                if (++cnt <= skip) {
+                    continue;
                 }
-                String parentId = results.getString(4);
-                sb.append(getEntryNodeXml(request, results));
-                getAssociationsGraph(request, id, sb);
+                actualCnt++;
 
-                Group group = getEntryManager().findGroup(request, parentId);
                 sb.append(
                     XmlUtil.tag(
                         TAG_NODE,
                         XmlUtil.attrs(
                             ATTR_TYPE, NODETYPE_GROUP, ATTR_ID,
-                            group.getId(), ATTR_TOOLTIP, group.getName(),
-                            ATTR_TITLE, getGraphNodeTitle(group.getName()))));
-                sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TYPE, "groupedby",
-                                          ATTR_FROM, group.getId(), ATTR_TO,
-                                          results.getString(1))));
+                            subGroup.getId(), ATTR_TOOLTIP,
+                            subGroup.getName(), ATTR_TITLE,
+                            getGraphNodeTitle(subGroup.getName()))));
 
-            } finally {
-                getDatabaseManager().closeAndReleaseConnection(stmt);
+                addEdgeTag(sb, (haveSkip ? originalId : entry.getId()), subGroup.getId(), "groupedby");
+                if (actualCnt >= MAX_EDGES) {
+                    String skipId = "skip_" + type + "_" + (actualCnt + skip)
+                                    + "_" + id;
+                    sb.append(XmlUtil.tag(TAG_NODE,
+                                          XmlUtil.attrs(ATTR_TYPE, "skip",
+                                              ATTR_ID, skipId, ATTR_TITLE,
+                                                  "...")));
+                    addEdgeTag(sb, "etc", originalId, skipId);
+                    break;
+                }
             }
-            String xml = StringUtil.replace(graphXmlTemplate, "${content}",
-                                            sb.toString());
-
-            xml = StringUtil.replace(xml, "${root}",
-                                     getRepository().getUrlBase());
-
-            //            System.err.println(xml);
-            return new Result(BLANK, new StringBuffer(xml),
-                              getRepository().getMimeTypeFromSuffix(".xml"));
-        }
-
-        Group group = getEntryManager().findGroup(request, id);
-        if (group == null) {
-            throw new RepositoryUtil.MissingEntryException(
-                "Could not find folder:" + id);
-        }
-        sb.append(
-            XmlUtil.tag(
-                TAG_NODE,
-                XmlUtil.attrs(
-                    ATTR_TYPE, NODETYPE_GROUP, ATTR_ID, group.getId(),
-                    ATTR_TOOLTIP, group.getName(), ATTR_TITLE,
-                    getGraphNodeTitle(group.getName()))));
-        getAssociationsGraph(request, id, sb);
-        List<Group> subGroups = getEntryManager().getGroups(
-                                    request,
-                                    Clause.eq(
-                                        Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                        group.getId()));
 
 
-        Group parent = getEntryManager().findGroup(request,
-                           group.getParentEntryId());
-        if (parent != null) {
-            sb.append(XmlUtil.tag(TAG_NODE,
-                                  XmlUtil.attrs(ATTR_TYPE, NODETYPE_GROUP,
-                                      ATTR_ID, parent.getId(), ATTR_TOOLTIP,
-                                      parent.getName(), ATTR_TITLE,
-                                      getGraphNodeTitle(parent.getName()))));
-            sb.append(XmlUtil.tag(TAG_EDGE,
-                                  XmlUtil.attrs(ATTR_TYPE, "groupedby",
-                                      ATTR_FROM, parent.getId(), ATTR_TO,
-                                      group.getId())));
-        }
-
-
-        cnt       = 0;
-        actualCnt = 0;
-        for (Group subGroup : subGroups) {
-            if (++cnt <= skip) {
-                continue;
-            }
-            actualCnt++;
-
-            sb.append(
-                XmlUtil.tag(
-                    TAG_NODE,
-                    XmlUtil.attrs(
-                        ATTR_TYPE, NODETYPE_GROUP, ATTR_ID, subGroup.getId(),
-                        ATTR_TOOLTIP, subGroup.getName(), ATTR_TITLE,
-                        getGraphNodeTitle(subGroup.getName()))));
-
-            sb.append(XmlUtil.tag(TAG_EDGE,
-                                  XmlUtil.attrs(ATTR_TYPE, "groupedby",
-                                      ATTR_FROM, (haveSkip
-                    ? originalId
-                    : group.getId()), ATTR_TO, subGroup.getId())));
-
-            if (actualCnt >= MAX_EDGES) {
-                String skipId = "skip_" + type + "_" + (actualCnt + skip)
-                                + "_" + id;
-                sb.append(XmlUtil.tag(TAG_NODE,
-                                      XmlUtil.attrs(ATTR_TYPE, "skip",
-                                          ATTR_ID, skipId, ATTR_TITLE,
-                                          "...")));
-                sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TYPE, "etc",
-                                          ATTR_FROM, originalId, ATTR_TO,
-                                          skipId)));
-                break;
+            List<Entry> children  = getEntryManager().getChildren(request, entry);
+            cnt       = 0;
+            actualCnt = 0;
+            for(Entry child: children) {
+                cnt++;
+                if (cnt <= skip) {
+                    continue;
+                }
+                actualCnt++;
+                addNodeTag(request,sb, child);
+                addEdgeTag(sb, (haveSkip
+                                ? originalId
+                                : entry.getId()), child.getId(),"groupedby");
+                if (actualCnt >= MAX_EDGES) {
+                    String skipId = "skip_" + type + "_" + (actualCnt + skip)
+                                    + "_" + id;
+                    sb.append(XmlUtil.tag(TAG_NODE,
+                                          XmlUtil.attrs(ATTR_TYPE, "skip",
+                                              ATTR_ID, skipId, ATTR_TITLE,
+                                                  "...")));
+                    addEdgeTag(sb, originalId, skipId,"etc");
+                    break;
+                }
             }
         }
-
-
-        Statement stmt =
-            getDatabaseManager().select(SqlUtil.comma(Tables.ENTRIES.COL_ID,
-                Tables.ENTRIES.COL_NAME, Tables.ENTRIES.COL_TYPE,
-                Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                Tables.ENTRIES.COL_RESOURCE), Tables.ENTRIES.NAME,
-                    Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                              group.getId()));
-        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
-        ResultSet        results;
-        cnt       = 0;
-        actualCnt = 0;
-        while ((results = iter.getNext()) != null) {
-            cnt++;
-            if (cnt <= skip) {
-                continue;
-            }
-            actualCnt++;
-            sb.append(getEntryNodeXml(request, results));
-            String entryId = results.getString(1);
-            sb.append(XmlUtil.tag(TAG_EDGE,
-                                  XmlUtil.attrs(ATTR_TYPE, "groupedby",
-                                      ATTR_FROM, (haveSkip
-                    ? originalId
-                    : group.getId()), ATTR_TO, entryId)));
-            sb.append("\n");
-            if (actualCnt >= MAX_EDGES) {
-                String skipId = "skip_" + type + "_" + (actualCnt + skip)
-                                + "_" + id;
-                sb.append(XmlUtil.tag(TAG_NODE,
-                                      XmlUtil.attrs(ATTR_TYPE, "skip",
-                                          ATTR_ID, skipId, ATTR_TITLE,
-                                          "...")));
-                sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TYPE, "etc",
-                                          ATTR_FROM, originalId, ATTR_TO,
-                                          skipId)));
-                break;
-            }
-        }
-
 
         String xml = StringUtil.replace(graphXmlTemplate, "${content}",
                                         sb.toString());
