@@ -77,6 +77,17 @@ public class ExtensibleGroupTypeHandler extends GenericTypeHandler {
     }
 
 
+    public boolean isGroup() {
+        return true;
+    }
+
+    public String getNodeType() {
+        if (getParent() != null) {
+            return getParent().getNodeType();
+        }
+        return NODETYPE_GROUP;
+    }
+
 
 
     /**

@@ -800,6 +800,8 @@ public class TypeHandler extends RepositoryManager {
         return NODETYPE_ENTRY;
     }
 
+
+
     /**
      * _more_
      *
@@ -1101,7 +1103,9 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-
+    public boolean isGroup() {
+        return false;
+    }
 
 
     /**

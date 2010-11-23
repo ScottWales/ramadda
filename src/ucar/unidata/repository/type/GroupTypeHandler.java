@@ -74,7 +74,16 @@ public class GroupTypeHandler extends TypeHandler {
     }
 
 
+    public boolean isGroup() {
+        return true;
+    }
 
+    public String getNodeType() {
+        if (getParent() != null) {
+            return getParent().getNodeType();
+        }
+        return NODETYPE_GROUP;
+    }
 
     /**
      * _more_

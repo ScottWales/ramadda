@@ -7,11 +7,11 @@
     <nodetype    name="Node"  />
 
 <nodetype    name="tag" parent="Node" fillcolor="0,153,153">
-  <command label="Search tag" command="url(,${root}/entry/searchform?tag=%id%)"/>
+  <command doubleclick="true" label="Search tag" command="url(,${root}/entry/searchform?tag=%id%)"/>
   <shape>
   <shape>
     <text  fontstyle="bold" id="label"   text="%title%" from="c" to="c" color="black"  dy="2"/>
-    <circle src="label" id="rect" fillcolor="%fillcolor%" from="c" to="c" color="black"/>
+    <circle src="label" id="rect"  fillcolor="%fillcolor%" from="c" to="c" color="black"/>
   </shape>
   <shape  layout="h" src="rect" from="n" to="s" >
     <image url="${root}/icons/tag.gif" alt="Tag"/>
@@ -21,22 +21,24 @@
 
 
 <nodetype    name="group" parent="Node" fillcolor="#37FDFC">
-  <command label="View group" command="url(,${root}/entry/show?entryid=%id%)"/>
+  <command doubleclick="true" label="View group" command="url(,${root}/entry/show?entryid=%id%)"/>
   <command label="Search group" command="url(,${root}/entry/searchform?group=%id%)"/>
 
 <shape>
-   <image id="image" url="${root}/icons/folder.png" from="c" to="c" alt="Tag"/>
-   <text src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
+  <shape>
+     <image id="image" url="${root}/icons/folder.png" from="c" to="c" alt="Tag"/>
+     <text fillcolor="#dedede" src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
+   </shape>
 </shape>
 
 
 </nodetype>
 
 <nodetype    name="entry" parent="Node" fillcolor="255,255,153" imagepath="${root}/icons/file.gif">
-  <command label="View entry" command="url(,${root}/entry/show?entryid=%id%)"/>
+  <command doubleclick="true"  label="View entry" command="url(,${root}/entry/show?entryid=%id%)"/>
   <shape>
     <image id="image" url="%imagepath%" from="c" to="c" alt="Tag"/>
-    <text src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
+    <text fillcolor="#ffffff" src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
   </shape>
 </nodetype>
 
@@ -52,12 +54,10 @@
 
 
 <nodetype    name="imageentry" parent="Node" fillcolor="255,255,153" >
-  <command label="View entry" command="url(,${root}/entry/show?entryid=%id%)"/>
+  <command doubleclick="true" label="View entry" command="url(,${root}/entry/show?entryid=%id%)"/>
   <shape>
-  <shape>
-    <text  fontstyle="bold" id="label"   text="%title%" from="c" to="c" color="black"  dy="2"/>
-    <image   flags="beencenter" xvisible="false" src="label"   url="%image%" from="n" to="s" dy="2"/>
-  </shape>
+    <image id="image" flags="beencenter" xvisible="false" xsrc="label"   url="%image%" from="c" to="c" dy="2"/>
+    <text  fontstyle="bold" src="image" id="label"   text="%title%" from="n" to="s" color="black"  dy="2"/>
   </shape>
 </nodetype>
 
