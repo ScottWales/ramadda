@@ -140,11 +140,11 @@ public class ProcessSweet  {
             for (int i = 0; i < children.getLength(); i++) {
                 Element node = (Element) children.item(i);
                 String  tag  = node.getTagName();
-                if (tag.equals(TAG_OWL_CLASS)) {
-                    if ( !XmlUtil.hasAttribute(node, ATTR_RDF_ABOUT)) {
+                if (tag.equals(RdfUtil.TAG_OWL_CLASS)) {
+                    if ( !XmlUtil.hasAttribute(node, RdfUtil.ATTR_RDF_ABOUT)) {
                         continue;
                     }
-                    String about = XmlUtil.getAttribute(node, ATTR_RDF_ABOUT,
+                    String about = XmlUtil.getAttribute(node, RdfUtil.ATTR_RDF_ABOUT,
                                        "");
                     about = about.replace("#", "");
                     String desc = null;
@@ -153,25 +153,25 @@ public class ProcessSweet  {
                     for (int j = 0; j < children2.getLength(); j++) {
                         Element child     = (Element) children2.item(j);
                         String  childName = child.getTagName();
-                        if (childName.equals(TAG_RDFS_SUBCLASSOF)
-                                || childName.equals(TAG_OWL_DISJOINTWITH)
+                        if (childName.equals(RdfUtil.TAG_RDFS_SUBCLASSOF)
+                                || childName.equals(RdfUtil.TAG_OWL_DISJOINTWITH)
                                 || childName.equals(
-                                    TAG_OWL_EQUIVALENTCLASS)) {
+                                    RdfUtil.TAG_OWL_EQUIVALENTCLASS)) {
                             if ( !XmlUtil.hasAttribute(child,
-                                    ATTR_RDF_RESOURCE)) {
+                                    RdfUtil.ATTR_RDF_RESOURCE)) {
                                 continue;
                             }
                             String resource = XmlUtil.getAttribute(child,
-                                                  ATTR_RDF_RESOURCE);
+                                                  RdfUtil.ATTR_RDF_RESOURCE);
                             int idx = resource.indexOf("#");
                             if (idx >= 0) {
                                 resource = resource.substring(idx + 1);
                             }
                             links.add(new String[] { about, resource,
                                     childName });
-                        } else if (childName.equals(TAG_RDFS_COMMENT)) {
+                        } else if (childName.equals(RdfUtil.TAG_RDFS_COMMENT)) {
                             desc = XmlUtil.getChildText(child);
-                        } else if (childName.equals(TAG_RDFS_LABEL)) {}
+                        } else if (childName.equals(RdfUtil.TAG_RDFS_LABEL)) {}
                         else {
                             System.err.println("n/a:" + childName);
                         }

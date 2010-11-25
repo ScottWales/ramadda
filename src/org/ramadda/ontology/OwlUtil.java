@@ -31,12 +31,6 @@ package org.ramadda.ontology;
  */
 public class OwlUtil {
 
-    public static final String TYPE_CLASS = "owl.class";
-    public static final String TYPE_GROUP = "owl.group";
-    public static final String TYPE_CLASS_COLLECTION = "owl.class.collection";
-    public static final String TYPE_CLASS_PARTY = "owl.class.party";
-    public static final String TYPE_CLASS_ACTIVITY = "owl.class.activity";
-    public static final String TYPE_CLASS_SERVICE = "owl.class.service";
 
 
 }
