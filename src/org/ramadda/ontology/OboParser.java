@@ -43,77 +43,6 @@ import java.util.List;
  */
 public class OboParser {
 
-    /** _more_          */
-    public static final String TAG_FORMAT_VERSION = "format-version";
-
-    /** _more_          */
-    public static final String TAG_DATA_VERSION = "data-version";
-
-    /** _more_          */
-    public static final String TAG_DATE = "date";
-
-    /** _more_          */
-    public static final String TAG_SUBSETDEF = "subsetdef";
-
-    /** _more_          */
-    public static final String TAG_SYNONYMTYPEDEF = "synonymtypedef";
-
-    /** _more_          */
-    public static final String TAG_DEFAULT_NAMESPACE = "default-namespace";
-
-    /** _more_          */
-    public static final String TAG_REMARK = "remark";
-
-    /** _more_          */
-    public static final String TAG_ID = "id";
-
-    /** _more_          */
-    public static final String TAG_NAME = "name";
-
-    /** _more_          */
-    public static final String TAG_NAMESPACE = "namespace";
-
-    /** _more_          */
-    public static final String TAG_DEF = "def";
-
-    /** _more_          */
-    public static final String TAG_SYNONYM = "synonym";
-
-    /** _more_          */
-    public static final String TAG_IS_A = "is_a";
-
-    /** _more_          */
-    public static final String TAG_ALT_ID = "alt_id";
-
-    /** _more_          */
-    public static final String TAG_SUBSET = "subset";
-
-    /** _more_          */
-    public static final String TAG_XREF = "xref";
-
-    /** _more_          */
-    public static final String TAG_COMMENT = "comment";
-
-    /** _more_          */
-    public static final String TAG_IS_OBSOLETE = "is_obsolete";
-
-    /** _more_          */
-    public static final String TAG_CONSIDER = "consider";
-
-    /** _more_          */
-    public static final String TAG_RELATIONSHIP = "relationship";
-
-    /** _more_          */
-    public static final String TAG_REPLACED_BY = "replaced_by";
-
-    /** _more_          */
-    public static final String TAG_DISJOINT_FROM = "disjoint_from";
-
-    /** _more_          */
-    public static final String TAG_IS_TRANSITIVE = "is_transitive";
-
-    /** _more_          */
-    public static final String TAG_TRANSITIVE_OVER = "transitive_over";
 
 
     /** _more_          */
@@ -146,7 +75,7 @@ public class OboParser {
             String var = tag.toUpperCase();
             var = var.replaceAll("-", "_");
             if (var.indexOf(":") < 0) {
-                //                System.out.println("public static final String TAG_" + var +"  = \"" + tag +"\";"); 
+                //                System.out.println("public static final String OboUtil.TAG_" + var +"  = \"" + tag +"\";"); 
             }
         }
         if (toks.size() == 1) {
@@ -186,7 +115,7 @@ public class OboParser {
                 continue;
             }
             String[] pair = getPair(line);
-            if (pair[0].equals(TAG_DEFAULT_NAMESPACE)) {
+            if (pair[0].equals(OboUtil.TAG_DEFAULT_NAMESPACE)) {
                 defaultNamespace = pair[1];
                 System.err.println("Namespace:" + defaultNamespace);
                 continue;
@@ -198,11 +127,11 @@ public class OboParser {
         }
 
         for (Term term : terms) {
-            String namespace = term.getValue(TAG_NAMESPACE, defaultNamespace);
+            String namespace = term.getValue(OboUtil.TAG_NAMESPACE, defaultNamespace);
             System.out.println("term:" + term.getId() + " " + term.getName()
                                + " ns:" + namespace);
             System.out.println("DEF:" + term.getDef());
-            for (String tuple : term.getValues(TAG_IS_A)) {
+            for (String tuple : term.getValues(OboUtil.TAG_IS_A)) {
                 String id        = getPair(tuple, "!")[0];
                 Term   otherTerm = map.get(id);
                 if (otherTerm == null) {
@@ -261,7 +190,7 @@ public class OboParser {
          * @return _more_
          */
         public String getName() {
-            return getValue(TAG_NAME, getId());
+            return getValue(OboUtil.TAG_NAME, getId());
         }
 
         /**
@@ -280,7 +209,7 @@ public class OboParser {
          * @return _more_
          */
         public String getDef() {
-            return unquote(getValue(TAG_DEF, ""));
+            return unquote(getValue(OboUtil.TAG_DEF, ""));
         }
 
         /**

@@ -155,8 +155,8 @@ public class ProcessAnds {
                              TAG_SERVICE };
         String[] subTagNames = { "Parties", "Activities", "Collections",
                                  "Services" };
-        String[] entryTypes = { "ontology.party", "ontology.activity",
-                                "ontology.collection", "ontology.service" };
+        String[] entryTypes = { OwlUtil.TYPE_CLASS_PARTY, OwlUtil.TYPE_CLASS_ACTIVITY,
+                                OwlUtil.TYPE_CLASS_COLLECTION, OwlUtil.TYPE_CLASS_SERVICE };
         List<Object>              registryObjects = new ArrayList<Object>();
         Hashtable<String, Object> keyMap = new Hashtable<String, Object>();
         Hashtable<String, Group>  groups = new Hashtable<String, Group>();
