@@ -143,7 +143,7 @@ public class GraphOutputHandler extends OutputHandler {
             getRepository().getResource(PROP_HTML_GRAPHAPPLET);
 
         String counter = "" + (cnt++);
-        counter = "_newjar";
+        //        counter = "_newjar";
         graphAppletTemplate = graphAppletTemplate.replace("${counter}",counter);
         String type = request.getString(ARG_NODETYPE, (String) null);
         if (type == null) {
@@ -223,7 +223,7 @@ public class GraphOutputHandler extends OutputHandler {
                         + XmlUtil.attrs(
                             ATTR_TYPE, other.getTypeHandler().getNodeType(),
                             ATTR_ID, other.getId(), ATTR_TOOLTIP,
-                            other.getName(), ATTR_TITLE,
+                            getTooltip(other), ATTR_TITLE,
                             getGraphNodeTitle(other.getName()))));
                 String fromId = association.getFromId();
                 String toId   = association.getToId();
@@ -241,61 +241,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param results _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    protected String getEntryNodeXml(Request request, ResultSet results)
-            throws Exception {
-        int    col      = 1;
-        String entryId  = results.getString(col++);
-        String name     = results.getString(col++);
-        String fileType = results.getString(col++);
-        String groupId  = results.getString(col++);
-        String resource =
-            getStorageManager().resourceFromDB(results.getString(col++));
-        TypeHandler typeHandler = getRepository().getTypeHandler(request);
-        String      nodeType    = typeHandler.getNodeType();
-        String      imageUrl    = null;
-        if (ImageUtils.isImage(resource)) {
-            imageUrl = HtmlUtil.url(
-                getRepository().URL_ENTRY_GET + entryId
-                + IOUtil.getFileExtension(resource), ARG_ENTRYID, entryId,
-                    ARG_IMAGEWIDTH, "75");
-        } else {
-            /*            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
-            for(Metadata metadata: metadataList) {
-                MetadataHandler handler = findMetadataHandler(metadata.getType());
-                handler.decorateEntry(request, entry, sb, metadata, forLink);
-                }*/
-        }
-
-        if (imageUrl != null) {
-            nodeType = "imageentry";
-        }
-        String attrs = XmlUtil.attrs(ATTR_TYPE, nodeType, ATTR_ID, entryId,
-                                     ATTR_TOOLTIP, name, ATTR_TITLE,
-                                     getGraphNodeTitle(name));
-        Entry entry = getEntryManager().getEntry(request, entryId);
-        if (entry != null) {
-            attrs += XmlUtil.attrs("imagepath",
-                                   getEntryManager().getIconUrl(request,
-                                       entry));
-        }
-        if (imageUrl != null) {
-            attrs = attrs + " " + XmlUtil.attr("image", imageUrl);
-        }
-        //        System.err.println (XmlUtil.tag(TAG_NODE,attrs));
-        return XmlUtil.tag(TAG_NODE, attrs);
-    }
 
 
     private void addNodeTag(Request request, StringBuffer sb, Entry entry) throws Exception {
@@ -323,7 +268,7 @@ public class GraphOutputHandler extends OutputHandler {
         }
         String attrs = imageAttr  + XmlUtil.attrs(ATTR_TYPE, nodeType,
                                      ATTR_ID, entry.getId(), ATTR_TOOLTIP,
-                                     entry.getName(), ATTR_TITLE,
+                                                  getTooltip(entry), ATTR_TITLE,
                                      getGraphNodeTitle(entry.getName()));
 
         if (imageUrl != null) {
@@ -429,7 +374,7 @@ public class GraphOutputHandler extends OutputHandler {
                         XmlUtil.attrs(
                             ATTR_TYPE, NODETYPE_GROUP, ATTR_ID,
                             subGroup.getId(), ATTR_TOOLTIP,
-                            subGroup.getName(), ATTR_TITLE,
+                            getTooltip(subGroup), ATTR_TITLE,
                             getGraphNodeTitle(subGroup.getName()))));
 
                 addEdgeTag(sb, (haveSkip ? originalId : entry.getId()), subGroup.getId(), "groupedby");
@@ -498,6 +443,15 @@ public class GraphOutputHandler extends OutputHandler {
         return s;
     }
 
+
+    private String getTooltip(Entry entry) {
+        if(true) return entry.getName();
+        String desc = entry.getDescription();
+        if(desc==null || desc.length()==0) {
+            desc = entry.getName();
+        }
+        return desc;
+    }
 
 
 
