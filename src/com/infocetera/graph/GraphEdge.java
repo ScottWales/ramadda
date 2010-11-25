@@ -1,5 +1,4 @@
 /*
-
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -362,6 +361,9 @@ public class GraphEdge extends GraphGlyph {
      */
     public void paint(GraphView gv, Graphics g, GraphNode centerNode,
                       GraphNode highlightNode, boolean onlyHighlight) {
+        if(labelFont == null) {
+            labelFont =  GraphGlyph.getFont("Dialog", Font.PLAIN, 12);
+        }
         if ((level < 0) && !gv.getShowAllEdges()) {
             return;
         }
@@ -397,13 +399,20 @@ public class GraphEdge extends GraphGlyph {
 
         String label = getLabel();
 
+        /*                g.setFont(labelFont);
+                g.setColor(Color.BLACK);
+                g.drawString(graphView.getTitle(this), p1.x, p1.y);
+        */
+
         if (points != null) {
+            //            IfcApplet.debug("draw1");
             for (int i = 1; i < points.length; i++) {
                 tp = gv.scalePoint(points[i - 1]);
                 hp = gv.scalePoint(points[i]);
                 GuiUtils.drawLine(g, tp.x, tp.y, hp.x, hp.y, slw);
             }
         } else if (joint != null) {
+            //        IfcApplet.debug("draw2");
             tp = gv.scalePoint(tail.getOutEdgeAnchor());
             int jx = gv.scale(getCoord(joint.x));
             int jy = gv.scale(getCoord(joint.y));
@@ -412,6 +421,7 @@ public class GraphEdge extends GraphGlyph {
             tp.x = jx;
             tp.y = jy;
         } else if ( !graphView.getLayoutRectilinear()) {
+            //        IfcApplet.debug("draw3");
             Rectangle hb = gv.scaleRect(head.bounds);
             tp = gv.scalePoint(tail.getOutEdgeAnchor());
             GuiUtils.drawLine(g, tp.x, tp.y, hp.x, hp.y, slw);
@@ -452,9 +462,6 @@ public class GraphEdge extends GraphGlyph {
                 GuiUtils.drawLine(g, p2.x, p2.y, p3.x, p3.y, 1);
             }
             if (isHighlight) {
-                if(labelFont == null) {
-                    labelFont =  GraphGlyph.getFont("Dialog", Font.PLAIN, 12);
-                }
                 g.setFont(labelFont);
                 g.setColor(Color.BLACK);
                 g.drawString(graphView.getTitle(this), p1.x, p1.y);

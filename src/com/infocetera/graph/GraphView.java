@@ -23,6 +23,7 @@ import com.infocetera.glyph.HtmlGlyph;
 import com.infocetera.util.*;
 
 import com.infocetera.util.XmlNode;
+import org.w3c.dom.*;
 
 //import com.infocetera.chart.GIFEncoder;
 
@@ -714,7 +715,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             }
             if (skin == null) {
                 uiXml =
-                    "<panel><label label=\"Failed to user interface read skin\"/></panel>";
+                    "<panel><label label=\"Failed to read user interface skin\"/></panel>";
             } else {
                 uiXml = new String(skin);
             }
@@ -865,7 +866,6 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                                + " toId:" + toId);
             return;
         }
-
 
         XmlNode edgeType     = null;
         String  edgeTypeName = edgeNode.getAttribute(ATTR_TYPE);
