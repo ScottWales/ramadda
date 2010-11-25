@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../" default="ontologyjar" name="Ontology Ramadda">
+
+    <target name="init">
+        <property name="distdir" value="${basedir}/dist"/>
+        <mkdir dir="${distdir}"/>
+
+        <property name="jars_dest" value="${distdir}"/>
+        <property name="jarfile" value="ontology.jar"/>
+
+        <property name="srcdir" value="${basedir}/src"/>
+        <property name="libdir" value="${basedir}/lib"/>
+
+        <property name="classpath" value="${libdir}/repository.jar:${libdir}/repositorylib.jar:${libdir}/idv.jar:${libdir}/unidatacommon.jar:${libdir}/servlet-api.jar"/>
+
+        <property name="build.sysclasspath"    value="ignore" />
+
+        <!-- javac flags -->
+        <property name="javac.failonerror" value="true"/>
+        <property name="javac.fork" value="true"/>
+        <property name="javac.maxmemory" value="512m"/>
+
+
+    </target>
+
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${srcdir}/org" includes="**/*.class"/>
+        </delete>
+    </target>
+
+
+
+
+
+    <target name="ontologyjar" depends="init,clean">
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+           target="1.5"
+        >
+        <include name="org/ramadda/ontology/**/*.java"/>
+        </javac>
+
+        <echo message="Making jar ${jars_dest}/${jarfile}"/>
+        <jar 
+            basedir="${srcdir}"
+            update="false"
+            compress="true"
+            jarfile="${jars_dest}/${jarfile}">
+            <include name="org/**/*.class"/>
+            <include name="org/ramadda/ontology/htdocs/**/*"/>
+            <include name="org/ramadda/ontology/*.xml"/>
+            <include name="org/ramadda/ontology/ramadda/*.properties"/>
+	    </jar>
+    </target>
+
+
+
+    <target name="install" depends="ontologyjar">
+        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+             <fileset file="${jars_dest}/ontology.jar"/>
+        </copy>
+    </target>
+
+</project>
