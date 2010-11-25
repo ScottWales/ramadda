@@ -47,7 +47,7 @@ import java.util.Properties;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...    
  */
-public class ProcessSweet implements SweetTags {
+public class ProcessSweet  {
 
     /** _more_          */
     static Properties names = new Properties();
