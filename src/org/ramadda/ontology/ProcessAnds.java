@@ -1,7 +1,4 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
  * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
@@ -19,6 +16,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
  */
+
 package org.ramadda.ontology;
 
 
@@ -42,104 +40,104 @@ import java.util.List;
  *
  *
  * @version        $version$, Thu, Nov 25, '10
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class ProcessAnds {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_REGISTRYOBJECTS = "registryObjects";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_REGISTRYOBJECT = "registryObject";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_KEY = "key";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ORIGINATINGSOURCE = "originatingSource";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_PARTY = "party";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_NAMEPART = "namePart";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_LOCATION = "location";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ADDRESS = "address";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ELECTRONIC = "electronic";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_VALUE = "value";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_PHYSICAL = "physical";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ADDRESSPART = "addressPart";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_RELATEDOBJECT = "relatedObject";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_RELATION = "relation";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_DESCRIPTION = "description";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_RELATEDINFO = "relatedInfo";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ACTIVITY = "activity";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SUBJECT = "subject";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_COLLECTION = "collection";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_IDENTIFIER = "identifier";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SPATIAL = "spatial";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SERVICE = "service";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_XMLNS = "xmlns";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_GROUP = "group";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DATEFROM = "dateFrom";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DATETO = "dateTo";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DATEACCESSIONED = "dateAccessioned";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DATEMODIFIED = "dateModified";
 
-    /** _more_          */
+    /** _more_ */
     static int idcnt = 0;
 
     /**
@@ -155,8 +153,10 @@ public class ProcessAnds {
                              TAG_SERVICE };
         String[] subTagNames = { "Parties", "Activities", "Collections",
                                  "Services" };
-        String[] entryTypes = { RdfUtil.TYPE_CLASS_PARTY, RdfUtil.TYPE_CLASS_ACTIVITY,
-                                RdfUtil.TYPE_CLASS_COLLECTION, RdfUtil.TYPE_CLASS_SERVICE };
+        String[] entryTypes = { RdfUtil.TYPE_CLASS_PARTY,
+                                RdfUtil.TYPE_CLASS_ACTIVITY,
+                                RdfUtil.TYPE_CLASS_COLLECTION,
+                                RdfUtil.TYPE_CLASS_SERVICE };
         List<Object>              registryObjects = new ArrayList<Object>();
         Hashtable<String, Object> keyMap = new Hashtable<String, Object>();
         Hashtable<String, Group>  groups = new Hashtable<String, Group>();
@@ -397,10 +397,10 @@ public class ProcessAnds {
                                         StringBuffer childTags,
                                         StringBuffer entryAttrs) {
 
-        List      locations = XmlUtil.findChildren(mainElement, TAG_LOCATION);
-        boolean[] didUrl    = { false };
-        boolean[] didBounds = { false };
-        HashSet   seenLoc   = new HashSet();
+        List locations = XmlUtil.findChildren(mainElement, TAG_LOCATION);
+        boolean[]       didUrl    = { false };
+        boolean[]       didBounds = { false };
+        HashSet<String> seenLoc   = new HashSet<String>();
         for (int i = 0; i < locations.size(); i++) {
             Element location = (Element) locations.get(i);
             processAddress((Element) XmlUtil.findChild(location,
@@ -467,17 +467,17 @@ public class ProcessAnds {
      *
      *
      * @version        $version$, Thu, Nov 25, '10
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Group {
 
-        /** _more_          */
+        /** _more_ */
         String name;
 
-        /** _more_          */
+        /** _more_ */
         String id;
 
-        /** _more_          */
+        /** _more_ */
         Hashtable<String, String> parts = new Hashtable<String, String>();
 
         /**
@@ -529,20 +529,20 @@ public class ProcessAnds {
      *
      *
      * @version        $version$, Thu, Nov 25, '10
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Object {
 
-        /** _more_          */
+        /** _more_ */
         Element element;
 
-        /** _more_          */
+        /** _more_ */
         String name;
 
-        /** _more_          */
+        /** _more_ */
         Group group;
 
-        /** _more_          */
+        /** _more_ */
         String key;
 
         /**

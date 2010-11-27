@@ -1,7 +1,4 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
  * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
@@ -19,6 +16,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
  */
+
 package org.ramadda.ontology;
 
 
@@ -39,14 +37,17 @@ import java.util.List;
  *
  *
  * @version        $version$, Thu, Nov 25, '10
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class OboParser {
 
+    /** _more_ */
+    private HashSet<String> tagMap = new HashSet<String>();
 
+    private String                  defaultNamespace = "";
 
-    /** _more_          */
-    static HashSet<String> tagMap = new HashSet<String>();
+    public OboParser() {
+    }
 
     /**
      * _more_
@@ -55,7 +56,7 @@ public class OboParser {
      *
      * @return _more_
      */
-    public static String[] getPair(String line) {
+    public  String[] getPair(String line) {
         return getPair(line, ":");
     }
 
@@ -67,7 +68,7 @@ public class OboParser {
      *
      * @return _more_
      */
-    public static String[] getPair(String line, String token) {
+    public  String[] getPair(String line, String token) {
         List<String> toks = StringUtil.splitUpTo(line, token, 2);
         if ( !tagMap.contains(toks.get(0))) {
             String tag = toks.get(0);
@@ -75,7 +76,7 @@ public class OboParser {
             String var = tag.toUpperCase();
             var = var.replaceAll("-", "_");
             if (var.indexOf(":") < 0) {
-                //                System.out.println("public static final String OboUtil.TAG_" + var +"  = \"" + tag +"\";"); 
+                //                System.out.println("public  final String OboUtil.TAG_" + var +"  = \"" + tag +"\";"); 
             }
         }
         if (toks.size() == 1) {
@@ -84,6 +85,7 @@ public class OboParser {
         return new String[] { toks.get(0).trim(), toks.get(1).trim() };
     }
 
+
     /**
      * _more_
      *
@@ -91,14 +93,13 @@ public class OboParser {
      *
      * @throws Exception _more_
      */
-    public static void processFile(String file) throws Exception {
+    public  void processFile(String file) throws Exception {
         List<String> lines = StringUtil.split(IOUtil.readContents(file,
                                  OboParser.class), "\n", true, true);
 
         Term                    currentTerm      = null;
         List<Term>              terms            = new ArrayList<Term>();
         Hashtable<String, Term> map = new Hashtable<String, Term>();
-        String                  defaultNamespace = "";
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             if (line.startsWith("[Term]")) {
@@ -117,7 +118,6 @@ public class OboParser {
             String[] pair = getPair(line);
             if (pair[0].equals(OboUtil.TAG_DEFAULT_NAMESPACE)) {
                 defaultNamespace = pair[1];
-                System.err.println("Namespace:" + defaultNamespace);
                 continue;
             }
 
@@ -126,25 +126,136 @@ public class OboParser {
             }
         }
 
-        for (Term term : terms) {
-            String namespace = term.getValue(OboUtil.TAG_NAMESPACE, defaultNamespace);
-            System.out.println("term:" + term.getId() + " " + term.getName()
-                               + " ns:" + namespace);
-            System.out.println("DEF:" + term.getDef());
-            for (String tuple : term.getValues(OboUtil.TAG_IS_A)) {
-                String id        = getPair(tuple, "!")[0];
-                Term   otherTerm = map.get(id);
-                if (otherTerm == null) {
-                    System.out.println(term.id + "  isa =  NULL " + id);
-                    //                    System.exit(0);
-                } else {
-                    System.out.println("  isa:" + otherTerm.getName());
-                }
-            }
+        HashSet<String> processed = new HashSet<String>();
+        StringBuffer    xml          = new StringBuffer(XmlUtil.XML_HEADER);
+        StringBuffer    associations          = new StringBuffer();
+        xml.append("<entries>\n");
 
+        for (Term term : terms) {
+            process(term, xml, associations, processed, map);
         }
         System.err.println("# terms:" + terms.size());
+        xml.append(associations);
+        xml.append("</entries>\n");
+        String entriesFile = IOUtil.stripExtension(IOUtil.getFileTail(file)) +"entries.xml";
+
+
+        IOUtil.writeFile(entriesFile, xml.toString());
     }
+
+    private void process(Term term, Appendable xml, Appendable associations, HashSet<String> processed, Hashtable<String,Term> map) throws Exception {
+
+        if(processed.contains(term.id)) return;
+        processed.add(term.id);
+        String namespace = term.getValue(OboUtil.TAG_NAMESPACE,
+                                         defaultNamespace);
+        String parentId=null;
+        StringBuffer childTags = new StringBuffer();
+        childTags.append(XmlUtil.tag("description", "",
+                                     XmlUtil.getCdata(term.getDef())));
+
+        //relationship: part_of TADS:0000501 ! adult male accessory gland
+
+        for (String tuple : term.getValues(OboUtil.TAG_IS_A)) {
+            String id        = getPair(tuple, "!")[0];
+            Term   otherTerm = map.get(id);
+            if (otherTerm == null) {
+                System.out.println("    isa =  NULL " + id);
+                continue;
+            }
+            process(otherTerm, xml, associations,processed, map);
+            if(parentId==null) {
+                parentId = otherTerm.id;
+            }   else {
+                associations.append(XmlUtil.tag("association",
+                                   XmlUtil.attrs("from", term.id, "to", otherTerm.id,
+                                                 "type", "is_a")));
+
+                System.err.println ("Multiple isa:" + term.id);
+            }
+        }
+
+
+        //relationship: part_of TADS:0000501 ! adult male accessory gland
+
+        for (String tuple : term.getValues(OboUtil.TAG_RELATIONSHIP)) {
+            tuple    = getPair(tuple, "!")[0];
+            List<String> toks = StringUtil.split(tuple," ", true, true);
+            String type =  toks.get(0);
+            String id = toks.get(1);
+            Term   otherTerm = map.get(id);
+            if (otherTerm == null) {
+                System.out.println("    relationship =  NULL " + id);
+                continue;
+            }
+            process(otherTerm, xml, associations,processed, map);
+            if(parentId==null) {
+                parentId = otherTerm.id;
+            }   else {
+                associations.append(XmlUtil.tag("association",
+                                   XmlUtil.attrs("from", term.id, "to", otherTerm.id,
+                                                 "type", "part_of")));
+
+            }
+        }
+
+        //synonym: "Nucleus of the Solitary Tract principle cell" EXACT []
+        HashSet<String> synonyms =  new HashSet<String>();
+        for (String tuple : term.getValues(OboUtil.TAG_SYNONYM)) {
+            int idx1= tuple.indexOf("\"");
+            int idx2= tuple.lastIndexOf("\"");
+            String value = tuple;
+            if(idx1>=0 && idx2>idx1) {
+                value = tuple.substring(idx1+1,idx2);
+            }
+
+            synonyms.add(value);
+            childTags.append(XmlUtil.tag("metadata",
+                                         XmlUtil.attrs("type", "synonym","attr1", value)));
+            childTags.append("\n");
+        }
+
+        //        property_value: nif_obo_annot:createdDate "2007-09-05" xsd:string
+        for (String tuple : term.getValues(OboUtil.TAG_PROPERTY_VALUE)) {
+            String[] pair = getPair(tuple, " ");
+            String type = pair[0];
+            int idx = type.lastIndexOf(":");
+            if(idx>=0) {
+                type = type.substring(idx+1);
+            }
+
+            tuple = pair[1];
+            int idx1= tuple.indexOf("\"");
+            int idx2= tuple.lastIndexOf("\"");
+            if(idx1<0 || idx2<0) {
+                continue;
+            }
+
+            String value = tuple.substring(idx1+1,idx2);
+            if(type.equals("synonym")) {
+                if(synonyms.contains(value)) continue;
+                synonyms.add(value);
+            }
+            childTags.append(XmlUtil.tag("metadata",
+                                         XmlUtil.attrs("type",
+                                                       "property", "attr1",
+                                                       type,"attr2", value)));
+            childTags.append("\n");
+
+        }
+
+        if(parentId==null) parentId = "";
+        xml.append(XmlUtil.tag("entry",
+                               XmlUtil.attrs("type",
+                                             RdfUtil.TYPE_CLASS, "name",
+                                             term.getName(), "id",
+                                             term.id,
+                                             "parent", parentId), childTags.toString()));
+
+        xml.append("\n");
+    }
+
+
 
     /**
      * _more_
@@ -153,9 +264,10 @@ public class OboParser {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {
+    public static  void main(String[] args) throws Exception {
+        OboParser oboParser = new OboParser();
         for (String file : args) {
-            processFile(file);
+            oboParser.processFile(file);
         }
     }
 
@@ -165,14 +277,14 @@ public class OboParser {
      *
      *
      * @version        $version$, Thu, Nov 25, '10
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Term {
 
-        /** _more_          */
+        /** _more_ */
         String id;
 
-        /** _more_          */
+        /** _more_ */
         List<String[]> values = new ArrayList<String[]>();
 
         /**

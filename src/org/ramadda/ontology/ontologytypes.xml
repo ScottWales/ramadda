@@ -5,7 +5,8 @@
      <property name="form.show.resource" value="false"/>
    </type>
 
-  <type name="owl.class"  description="OWL Class" category="Ontology">  
+
+  <type name="owl.class"  description="OWL Class" category="Ontology" handler="ucar.unidata.repository.type.ExtensibleGroupTypeHandler">  
      <property name="icon" value="/icons/rdf.gif"/>
      <property name="form.show.resource" value="false"/>
    </type>

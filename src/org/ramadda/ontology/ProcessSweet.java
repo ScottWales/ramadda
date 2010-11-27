@@ -1,7 +1,4 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
  * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
@@ -19,6 +16,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
  */
+
 package org.ramadda.ontology;
 
 
@@ -45,11 +43,13 @@ import java.util.Properties;
  *
  *
  * @version        $version$, Thu, Nov 25, '10
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
-public class ProcessSweet  {
+public class ProcessSweet {
 
-    /** _more_          */
+
+
+    /** _more_ */
     static Properties names = new Properties();
 
     /**
@@ -60,6 +60,12 @@ public class ProcessSweet  {
      * @return _more_
      */
     public static String getName(String name) {
+        int idx = name.indexOf("#");
+        if (idx > 0) {
+            name = name.substring(idx + 1);
+        }
+
+
         String newName = (String) names.get(name);
         if (newName != null) {
             return newName;
@@ -86,8 +92,13 @@ public class ProcessSweet  {
 
         Properties topLevelMap = new Properties();
         topLevelMap.load(
-            new FileInputStream(new File("toplevel.properties")));
-        names.load(new FileInputStream(new File("names.properties")));
+            IOUtil.getInputStream(
+                "/org/ramadda/ontology/toplevel.properties",
+                ProcessSweet.class));
+        names.load(
+            IOUtil.getInputStream(
+                "/org/ramadda/ontology/names.properties",
+                ProcessSweet.class));
 
         File            f            = new File("owl");
         StringBuffer    xml          = new StringBuffer(XmlUtil.XML_HEADER);
@@ -96,14 +107,27 @@ public class ProcessSweet  {
         HashSet<String> seen         = new HashSet<String>();
         xml.append("<entries>\n");
 
-        int    cnt             = 0;
-        String currentTopLevel = null;
-        for (File file : f.listFiles()) {
-            if ( !file.toString().endsWith(".owl")) {
-                continue;
-            }
+        List<String> files = StringUtil.split(
+                                 IOUtil.readContents(
+                                     "/org/ramadda/ontology/sweetfiles.txt",
+                                     ProcessSweet.class), "\n", true, true);
+
+
+        int             cnt             = 0;
+        String          currentTopLevel = null;
+        List<EntryInfo> entries         = new ArrayList<EntryInfo>();
+        Hashtable<String, EntryInfo> entryMap = new Hashtable<String,
+                                                    EntryInfo>();
+        HashSet<String> processed = new HashSet<String>();
+
+        for (String file : files) {
+            file = "owl/" + IOUtil.getFileTail(file);
+
+            System.err.println("file:" + file);
+            String filePrefix = IOUtil.getFileTail(file.toString());
+            //            xml.append("<!-- entries from " + filePrefix +" -->\n");
             cnt++;
-            //            if(cnt>20) break;
+            //            if(cnt>10) break;
             String group =
                 IOUtil.stripExtension(IOUtil.getFileTail(file.toString()));
             //currentTopLevelGroup
@@ -111,9 +135,11 @@ public class ProcessSweet  {
             if (topLevelLabel != null) {
                 xml.append(XmlUtil.tag("entry",
                                        XmlUtil.attrs("type",
-                                           "ontology.owl.group", "name",
+                                           RdfUtil.TYPE_GROUP, "name",
                                            getName(topLevelLabel), "id",
                                            group)));
+                xml.append("\n");
+                processed.add(group);
                 currentTopLevel = group;
             } else {
                 if ( !group.startsWith(currentTopLevel)) {
@@ -123,80 +149,157 @@ public class ProcessSweet  {
                 //                System.out.println(name+"="+name2.trim());
                 xml.append(XmlUtil.tag("entry",
                                        XmlUtil.attrs("type",
-                                           "ontology.owl.group", "name",
-                                           name, "id", group, "parent",
+                                           RdfUtil.TYPE_GROUP, "name", name,
+                                           "id", group, "parent",
                                            currentTopLevel)));
+                xml.append("\n");
+                processed.add(group);
             }
-            xml.append("\n");
-            //            if(true)continue;
-            //            System.err.println ("processing:" + file);
             Element root = XmlUtil.getRoot(file.toString(),
                                            ProcessSweet.class);
             if (root == null) {
                 System.err.println("failed to read:" + file);
                 continue;
             }
-            NodeList children = XmlUtil.getElements(root);
+            NodeList        children = XmlUtil.getElements(root);
+            HashSet<String> cats     = new HashSet<String>();
+
             for (int i = 0; i < children.getLength(); i++) {
-                Element node = (Element) children.item(i);
-                String  tag  = node.getTagName();
+                String  parent      = group;
+                Element node        = (Element) children.item(i);
+                String  tag         = node.getTagName();
+                boolean okToProcess = false;
+                if (tag.equals(RdfUtil.TAG_OWL_ONTOLOGY)) {
+                    continue;
+                }
+                if (tag.equals(RdfUtil.TAG_OWL_OBJECTPROPERTY)) {
+                    continue;
+                }
+
                 if (tag.equals(RdfUtil.TAG_OWL_CLASS)) {
-                    if ( !XmlUtil.hasAttribute(node, RdfUtil.ATTR_RDF_ABOUT)) {
+                    okToProcess = true;
+                } else {
+                    int idx = tag.indexOf(":");
+                    if (idx >= 0) {
+                        String[] toks = tag.split(":");
+                        if (XmlUtil.hasAttribute(root, "xmlns:" + toks[0])) {
+                            okToProcess = true;
+                            parent = XmlUtil.getAttribute(root,
+                                    "xmlns:" + toks[0]) + "" + toks[1];
+                            parent = parent.replace(
+                                "http://sweet.jpl.nasa.gov/2.1/", "");
+                        }
+                    }
+                }
+
+                if ( !okToProcess) {
+                    System.err.println(" unknown:" + filePrefix + "::" + tag);
+                }
+
+                if (okToProcess) {
+                    String id;
+                    if (XmlUtil.hasAttribute(node, RdfUtil.ATTR_RDF_ABOUT)) {
+                        id = XmlUtil.getAttribute(node,
+                                RdfUtil.ATTR_RDF_ABOUT, "").trim();
+                        id = id.replace("http://sweet.jpl.nasa.gov/2.1/", "");
+                        if (id.startsWith("#")) {
+                            id = filePrefix + id;
+                        }
+                    } else if (XmlUtil.hasAttribute(node,
+                            RdfUtil.ATTR_RDF_ID)) {
+                        id = XmlUtil.getAttribute(node, RdfUtil.ATTR_RDF_ID,
+                                "").trim();
+                        if (id.startsWith("#")) {
+                            id = filePrefix + id;
+                        } else {
+                            id = filePrefix + "#" + id;
+                        }
+                    } else {
                         continue;
                     }
-                    String about = XmlUtil.getAttribute(node, RdfUtil.ATTR_RDF_ABOUT,
-                                       "");
-                    about = about.replace("#", "");
+
                     String desc = null;
-                    seen.add(about);
+                    seen.add(id);
                     NodeList children2 = XmlUtil.getElements(node);
+                    int      linkCnt   = 0;
                     for (int j = 0; j < children2.getLength(); j++) {
                         Element child     = (Element) children2.item(j);
                         String  childName = child.getTagName();
-                        if (childName.equals(RdfUtil.TAG_RDFS_SUBCLASSOF)
-                                || childName.equals(RdfUtil.TAG_OWL_DISJOINTWITH)
-                                || childName.equals(
-                                    RdfUtil.TAG_OWL_EQUIVALENTCLASS)) {
+                        if (childName
+                                .equals(RdfUtil
+                                    .TAG_RDFS_SUBCLASSOF) || childName
+                                        .equals(RdfUtil
+                                            .TAG_OWL_DISJOINTWITH) || childName
+                                                .equals(RdfUtil
+                                                    .TAG_OWL_EQUIVALENTCLASS)) {
                             if ( !XmlUtil.hasAttribute(child,
                                     RdfUtil.ATTR_RDF_RESOURCE)) {
                                 continue;
                             }
                             String resource = XmlUtil.getAttribute(child,
                                                   RdfUtil.ATTR_RDF_RESOURCE);
-                            int idx = resource.indexOf("#");
-                            if (idx >= 0) {
-                                resource = resource.substring(idx + 1);
+                            resource = resource.replace(
+                                "http://sweet.jpl.nasa.gov/2.1/", "");
+                            if (resource.startsWith("#")) {
+                                resource = filePrefix + resource;
                             }
-                            links.add(new String[] { about, resource,
+                            linkCnt++;
+                            links.add(new String[] { id, resource,
                                     childName });
-                        } else if (childName.equals(RdfUtil.TAG_RDFS_COMMENT)) {
+                        } else if (childName.equals(
+                                RdfUtil.TAG_RDFS_COMMENT)) {
                             desc = XmlUtil.getChildText(child);
-                        } else if (childName.equals(RdfUtil.TAG_RDFS_LABEL)) {}
+                        } else if (childName.equals(
+                                RdfUtil.TAG_RDFS_LABEL)) {}
                         else {
-                            System.err.println("n/a:" + childName);
+                            //                            System.err.println("   ??:" + childName);
                         }
+                    }
+                    if ((linkCnt == 0) || (linkCnt > 1)) {
+                        System.err.println(id + " link Cnt:" + linkCnt);
                     }
                     StringBuffer childTags = new StringBuffer();
                     if (desc != null) {
                         childTags.append(XmlUtil.tag("description", "",
                                 XmlUtil.getCdata(desc.toString())));
                     }
-                    xml.append(
-                        XmlUtil.tag(
-                            "entry",
-                            XmlUtil.attrs(
-                                "type", "ontology.owl.class", "name",
-                                getName(about), "id", about, "parent",
-                                group), childTags.toString()));
-                    xml.append("\n");
+                    EntryInfo entryInfo = new EntryInfo(id, getName(id),
+                                              parent, childTags.toString());
+                    entries.add(entryInfo);
+                    entryMap.put(id, entryInfo);
                 }
             }
         }
+
+
+        List<EntryInfo> tmp = new ArrayList<EntryInfo>(entries);
+        entries = new ArrayList<EntryInfo>();
+        for (int i = 0; i < tmp.size(); i++) {
+            EntryInfo entryInfo = tmp.get(i);
+            EntryInfo parent    = entryMap.get(entryInfo.parentId);
+            if (parent == null) {
+                if ( !processed.contains(entryInfo.parentId)) {
+                    System.err.println("No parent for entry:"
+                                       + entryInfo.name + " parent="
+                                       + entryInfo.parentId);
+                    continue;
+                }
+            }
+            entries.add(entryInfo);
+        }
+
+
+        for (EntryInfo entryInfo : entries) {
+            process(xml, entryInfo, processed, entryMap);
+        }
+
+
         for (String[] tuple : links) {
             String from = tuple[0];
             String to   = tuple[1];
             String type = tuple[2];
             if ( !seen.contains(to)) {
+                System.err.println("Unknown to link:" + from + " " + to);
                 continue;
             }
             xml.append(XmlUtil.tag("association",
@@ -207,6 +310,72 @@ public class ProcessSweet  {
         xml.append("</entries>\n");
         IOUtil.writeFile("entries.xml", xml.toString());
 
+    }
+
+    /**
+     * _more_
+     *
+     * @param xml _more_
+     * @param entryInfo _more_
+     * @param processed _more_
+     * @param entryMap _more_
+     */
+    private static void process(StringBuffer xml, EntryInfo entryInfo,
+                                HashSet<String> processed,
+                                Hashtable<String, EntryInfo> entryMap) {
+        if (processed.contains(entryInfo.id)) {
+            return;
+        }
+        if ( !processed.contains(entryInfo.parentId)) {
+            EntryInfo parent = entryMap.get(entryInfo.parentId);
+            process(xml, parent, processed, entryMap);
+        }
+        processed.add(entryInfo.id);
+        xml.append(
+            XmlUtil.tag(
+                "entry",
+                XmlUtil.attrs(
+                    "type", RdfUtil.TYPE_CLASS, "name", entryInfo.name, "id",
+                    entryInfo.id, "parent",
+                    entryInfo.parentId), entryInfo.childXml));
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Nov 27, '10
+     * @author         Enter your name here...    
+     */
+    public static class EntryInfo {
+
+        /** _more_          */
+        String id;
+
+        /** _more_          */
+        String parentId;
+
+        /** _more_          */
+        String name;
+
+        /** _more_          */
+        String childXml;
+
+        /**
+         * _more_
+         *
+         * @param id _more_
+         * @param name _more_
+         * @param parentId _more_
+         * @param childXml _more_
+         */
+        public EntryInfo(String id, String name, String parentId,
+                         String childXml) {
+            this.id       = id;
+            this.name     = name;
+            this.parentId = parentId;
+            this.childXml = childXml;
+        }
     }
 
 }
