@@ -1,9 +1,6 @@
 /*
  * 
  * 
- * 
- * 
- * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -58,6 +55,7 @@ public class GanttApplet extends IfcApplet {
      * _more_
      */
     public void initInner() {
+        IfcApplet.debug = true;
         setLayout(new BorderLayout());
         ganttView = new GanttView(this);
         add("Center", ganttView.getContents());

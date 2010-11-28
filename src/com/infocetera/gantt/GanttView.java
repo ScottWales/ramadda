@@ -1,9 +1,5 @@
 /*
  * 
- * 
- * 
- * 
- * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -774,15 +770,21 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         actualMaxDate += DAY_FACTOR;
     }
 
+
+
     /**
      * _more_
      */
     private void processXml() {
         String xml = "";
+        long start = (System.currentTimeMillis()-1000*60*60)/1000;
+        long end = System.currentTimeMillis()/1000;
+        String tmpxml = "<root><task name=\"foo\" start=\"" + start +"\" end=\"" + end +"\"></task></root>";
         try {
             xml = GuiUtils.readUrl(
                 ganttApplet.getFullUrl(
                     ganttApplet.getParameter(PARAM_DATAURL)));
+            xml = tmpxml;
             //      System.err.println ("xml:" + xml);
             processXml(xml);
             if (topTasks.size() == 0) {
@@ -791,10 +793,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             //      setAllTasks ();
             //      setDisplayType (displayType);
         } catch (Exception e) {
-            e.printStackTrace();
-            error = "Error reading data: " + e;
-            System.err.println(error);
-            System.err.println(xml);
+            print("error " + e +"\n" + IfcApplet.getStackTrace(e));
         }
     }
 
@@ -805,6 +804,16 @@ public class GanttView extends ScrollCanvas implements MouseListener,
      * @param xml _more_
      */
     private void processXml(String xml) {
+        try {
+            processXmlInner(xml);
+            print("Processed xml");
+        } catch(Exception exc) {
+            print("Error:" + IfcApplet.getStackTrace(exc));
+            print(xml);
+        }
+    }
+
+    private void processXmlInner(String xml) {
         XmlNode root = XmlNode.parse(xml);
         Vector  top  = root.getChildren();
         if (top.size() != 1) {
@@ -984,8 +993,6 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         double complete = taskNode.getAttribute(ATTR_COMPLETE, 0.0);
         boolean childrenVisible = taskNode.getAttribute(ATTR_CHILDRENVISIBLE,
                                       true);
-
-
 
 
         GanttResource resource = findResource(resourceName, resourceName,
@@ -2164,6 +2171,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                 floatFrame.show();
                 floating = true;
             } catch (Exception exc) {
+                print("error:" + exc);
                 System.err.println("err:" + exc);
             }
         }
@@ -2463,6 +2471,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                 text = text + message.getAttribute("message", "") + "\n";
             }
         } catch (Exception exc) {
+            print("error:" + exc);
             text = xml;
         }
         showMessage(text);
@@ -3206,6 +3215,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
      * @param s _more_
      */
     public void print(String s) {
+        ganttApplet.debug(s);
         System.err.println(s);
     }
 

@@ -110,6 +110,13 @@ public class IfcApplet extends Applet {
      */
     public void initInner() {}
 
+    public static String getStackTrace(Exception exc) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        exc.printStackTrace(new PrintStream(baos));
+        return baos.toString();
+    }
+
+
     /**
      * _more_
      *
