@@ -29,22 +29,22 @@ package org.ramadda.ontology;
  */
 public class RdfUtil {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_CLASS = "owl.class";
 
-    /** _more_          */
-    public static final String TYPE_GROUP = "owl.group";
+    /** _more_ */
+    public static final String TYPE_ONTOLOGY = "owl.ontology";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_CLASS_COLLECTION = "owl.class.collection";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_CLASS_PARTY = "owl.class.party";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_CLASS_ACTIVITY = "owl.class.activity";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_CLASS_SERVICE = "owl.class.service";
 
 
@@ -121,7 +121,7 @@ public class RdfUtil {
     /** _more_ */
     public static final String ATTR_RDF_ABOUT = "rdf:about";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RDF_ID = "rdf:ID";
 
     /** _more_ */

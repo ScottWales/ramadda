@@ -44,10 +44,13 @@ public class OboParser {
     /** _more_ */
     private HashSet<String> tagMap = new HashSet<String>();
 
-    private String                  defaultNamespace = "";
+    /** _more_          */
+    private String defaultNamespace = "";
 
-    public OboParser() {
-    }
+    /**
+     * ctor
+     */
+    public OboParser() {}
 
     /**
      * _more_
@@ -56,7 +59,7 @@ public class OboParser {
      *
      * @return _more_
      */
-    public  String[] getPair(String line) {
+    public String[] getPair(String line) {
         return getPair(line, ":");
     }
 
@@ -68,7 +71,7 @@ public class OboParser {
      *
      * @return _more_
      */
-    public  String[] getPair(String line, String token) {
+    public String[] getPair(String line, String token) {
         List<String> toks = StringUtil.splitUpTo(line, token, 2);
         if ( !tagMap.contains(toks.get(0))) {
             String tag = toks.get(0);
@@ -93,13 +96,13 @@ public class OboParser {
      *
      * @throws Exception _more_
      */
-    public  void processFile(String file) throws Exception {
+    public void processFile(String file) throws Exception {
         List<String> lines = StringUtil.split(IOUtil.readContents(file,
                                  OboParser.class), "\n", true, true);
 
-        Term                    currentTerm      = null;
-        List<Term>              terms            = new ArrayList<Term>();
-        Hashtable<String, Term> map = new Hashtable<String, Term>();
+        Term                    currentTerm = null;
+        List<Term>              terms       = new ArrayList<Term>();
+        Hashtable<String, Term> map         = new Hashtable<String, Term>();
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             if (line.startsWith("[Term]")) {
@@ -126,9 +129,9 @@ public class OboParser {
             }
         }
 
-        HashSet<String> processed = new HashSet<String>();
+        HashSet<String> processed    = new HashSet<String>();
         StringBuffer    xml          = new StringBuffer(XmlUtil.XML_HEADER);
-        StringBuffer    associations          = new StringBuffer();
+        StringBuffer    associations = new StringBuffer();
         xml.append("<entries>\n");
 
         for (Term term : terms) {
@@ -137,19 +140,36 @@ public class OboParser {
         System.err.println("# terms:" + terms.size());
         xml.append(associations);
         xml.append("</entries>\n");
-        String entriesFile = IOUtil.stripExtension(IOUtil.getFileTail(file)) +"entries.xml";
+        String entriesFile = IOUtil.stripExtension(IOUtil.getFileTail(file))
+                             + "entries.xml";
 
 
         IOUtil.writeFile(entriesFile, xml.toString());
     }
 
-    private void process(Term term, Appendable xml, Appendable associations, HashSet<String> processed, Hashtable<String,Term> map) throws Exception {
+    /**
+     * _more_
+     *
+     * @param term _more_
+     * @param xml _more_
+     * @param associations _more_
+     * @param processed _more_
+     * @param map _more_
+     *
+     * @throws Exception _more_
+     */
+    private void process(Term term, Appendable xml, Appendable associations,
+                         HashSet<String> processed,
+                         Hashtable<String, Term> map)
+            throws Exception {
 
-        if(processed.contains(term.id)) return;
+        if (processed.contains(term.id)) {
+            return;
+        }
         processed.add(term.id);
         String namespace = term.getValue(OboUtil.TAG_NAMESPACE,
                                          defaultNamespace);
-        String parentId=null;
+        String       parentId  = null;
         StringBuffer childTags = new StringBuffer();
         childTags.append(XmlUtil.tag("description", "",
                                      XmlUtil.getCdata(term.getDef())));
@@ -163,15 +183,15 @@ public class OboParser {
                 System.out.println("    isa =  NULL " + id);
                 continue;
             }
-            process(otherTerm, xml, associations,processed, map);
-            if(parentId==null) {
+            process(otherTerm, xml, associations, processed, map);
+            if (parentId == null) {
                 parentId = otherTerm.id;
-            }   else {
+            } else {
                 associations.append(XmlUtil.tag("association",
-                                   XmlUtil.attrs("from", term.id, "to", otherTerm.id,
-                                                 "type", "is_a")));
+                        XmlUtil.attrs("from", term.id, "to", otherTerm.id,
+                                      "type", "is_a")));
 
-                System.err.println ("Multiple isa:" + term.id);
+                System.err.println("Multiple isa:" + term.id);
             }
         }
 
@@ -179,78 +199,82 @@ public class OboParser {
         //relationship: part_of TADS:0000501 ! adult male accessory gland
 
         for (String tuple : term.getValues(OboUtil.TAG_RELATIONSHIP)) {
-            tuple    = getPair(tuple, "!")[0];
-            List<String> toks = StringUtil.split(tuple," ", true, true);
-            String type =  toks.get(0);
-            String id = toks.get(1);
-            Term   otherTerm = map.get(id);
+            tuple = getPair(tuple, "!")[0];
+            List<String> toks      = StringUtil.split(tuple, " ", true, true);
+            String       type      = toks.get(0);
+            String       id        = toks.get(1);
+            Term         otherTerm = map.get(id);
             if (otherTerm == null) {
                 System.out.println("    relationship =  NULL " + id);
                 continue;
             }
-            process(otherTerm, xml, associations,processed, map);
-            if(parentId==null) {
+            process(otherTerm, xml, associations, processed, map);
+            if (parentId == null) {
                 parentId = otherTerm.id;
-            }   else {
+            } else {
                 associations.append(XmlUtil.tag("association",
-                                   XmlUtil.attrs("from", term.id, "to", otherTerm.id,
-                                                 "type", "part_of")));
+                        XmlUtil.attrs("from", term.id, "to", otherTerm.id,
+                                      "type", "part_of")));
 
             }
         }
 
         //synonym: "Nucleus of the Solitary Tract principle cell" EXACT []
-        HashSet<String> synonyms =  new HashSet<String>();
+        HashSet<String> synonyms = new HashSet<String>();
         for (String tuple : term.getValues(OboUtil.TAG_SYNONYM)) {
-            int idx1= tuple.indexOf("\"");
-            int idx2= tuple.lastIndexOf("\"");
+            int    idx1  = tuple.indexOf("\"");
+            int    idx2  = tuple.lastIndexOf("\"");
             String value = tuple;
-            if(idx1>=0 && idx2>idx1) {
-                value = tuple.substring(idx1+1,idx2);
+            if ((idx1 >= 0) && (idx2 > idx1)) {
+                value = tuple.substring(idx1 + 1, idx2);
             }
 
             synonyms.add(value);
             childTags.append(XmlUtil.tag("metadata",
-                                         XmlUtil.attrs("type", "synonym","attr1", value)));
+                                         XmlUtil.attrs("type", "synonym",
+                                             "attr1", value)));
             childTags.append("\n");
         }
 
         //        property_value: nif_obo_annot:createdDate "2007-09-05" xsd:string
         for (String tuple : term.getValues(OboUtil.TAG_PROPERTY_VALUE)) {
             String[] pair = getPair(tuple, " ");
-            String type = pair[0];
-            int idx = type.lastIndexOf(":");
-            if(idx>=0) {
-                type = type.substring(idx+1);
+            String   type = pair[0];
+            int      idx  = type.lastIndexOf(":");
+            if (idx >= 0) {
+                type = type.substring(idx + 1);
             }
 
             tuple = pair[1];
-            int idx1= tuple.indexOf("\"");
-            int idx2= tuple.lastIndexOf("\"");
-            if(idx1<0 || idx2<0) {
+            int idx1 = tuple.indexOf("\"");
+            int idx2 = tuple.lastIndexOf("\"");
+            if ((idx1 < 0) || (idx2 < 0)) {
                 continue;
             }
 
-            String value = tuple.substring(idx1+1,idx2);
-            if(type.equals("synonym")) {
-                if(synonyms.contains(value)) continue;
+            String value = tuple.substring(idx1 + 1, idx2);
+            if (type.equals("synonym")) {
+                if (synonyms.contains(value)) {
+                    continue;
+                }
                 synonyms.add(value);
             }
             childTags.append(XmlUtil.tag("metadata",
-                                         XmlUtil.attrs("type",
-                                                       "property", "attr1",
-                                                       type,"attr2", value)));
+                                         XmlUtil.attrs("type", "property",
+                                             "attr1", type, "attr2", value)));
             childTags.append("\n");
 
         }
 
-        if(parentId==null) parentId = "";
-        xml.append(XmlUtil.tag("entry",
-                               XmlUtil.attrs("type",
-                                             RdfUtil.TYPE_CLASS, "name",
-                                             term.getName(), "id",
-                                             term.id,
-                                             "parent", parentId), childTags.toString()));
+        if (parentId == null) {
+            parentId = "";
+        }
+        xml.append(
+            XmlUtil.tag(
+                "entry",
+                XmlUtil.attrs(
+                    "type", RdfUtil.TYPE_CLASS, "name", term.getName(), "id",
+                    term.id, "parent", parentId), childTags.toString()));
 
         xml.append("\n");
     }
@@ -264,7 +288,7 @@ public class OboParser {
      *
      * @throws Exception _more_
      */
-    public static  void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         OboParser oboParser = new OboParser();
         for (String file : args) {
             oboParser.processFile(file);

@@ -101,6 +101,7 @@ public class OboUtil {
     /** _more_ */
     public static final String TAG_RELATIONSHIP = "relationship";
 
+    /** _more_          */
     public static final String TAG_PROPERTY_VALUE = "property_value";
 
     /** _more_ */
