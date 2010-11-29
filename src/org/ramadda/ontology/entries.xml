@@ -1,0 +1,1409 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><entries>
+<!-- entries from human.owl -->
+<entry  type="owl.group"  name="Human"  id="human" />
+<entry  type="owl.class"  name="Behavior"  id="human.owl#Behavior"  parent="human" ></entry>
+<entry  type="owl.class"  name="Census"  id="human.owl#Census"  parent="human" ></entry>
+<entry  type="owl.class"  name="Civil Disturbance"  id="human.owl#CivilDisturbance"  parent="human" ></entry>
+<entry  type="owl.class"  name="Human Activity"  id="human.owl#HumanActivity"  parent="human" ></entry>
+<entry  type="owl.class"  name="Human Capital"  id="human.owl#HumanCapital"  parent="human" ></entry>
+<entry  type="owl.class"  name="Human Need"  id="human.owl#HumanNeed"  parent="human" ></entry>
+<entry  type="owl.class"  name="Profession"  id="human.owl#Profession"  parent="human" ></entry>
+<entry  type="owl.class"  name="Psychological Parameter"  id="human.owl#PsychologicalParameter"  parent="human" ></entry>
+<entry  type="owl.class"  name="Recreation"  id="human.owl#Recreation"  parent="human" ></entry>
+<entry  type="owl.class"  name="Service"  id="human.owl#Service"  parent="human" ></entry>
+<entry  type="owl.class"  name="Social Activity"  id="human.owl#SocialActivity"  parent="human" ></entry>
+<entry  type="owl.class"  name="Social Behavior"  id="human.owl#SocialBehavior"  parent="human" ></entry>
+<entry  type="owl.class"  name="Work"  id="human.owl#Work"  parent="human" ></entry>
+<entry  type="owl.class"  name="Manned"  id="human.owl#Manned"  parent="human" ></entry>
+<entry  type="owl.class"  name="Unmanned"  id="human.owl#Unmanned"  parent="human" ></entry>
+<entry  type="owl.class"  name="Colonization"  id="human.owl#Colonization"  parent="human" ></entry>
+<entry  type="owl.class"  name="Consumptive Use"  id="human.owl#ConsumptiveUse"  parent="human" ></entry>
+<entry  type="owl.class"  name="Mapping"  id="human.owl#Mapping"  parent="human" ></entry>
+<entry  type="owl.class"  name="Energy End Use"  id="human.owl#EnergyEndUse"  parent="human" ></entry>
+<entry  type="owl.class"  name="Space Cooling"  id="human.owl#SpaceCooling"  parent="human" ></entry>
+<entry  type="owl.class"  name="Space Heating"  id="human.owl#SpaceHeating"  parent="human" ></entry>
+<entry  type="owl.class"  name="Water Heating"  id="human.owl#WaterHeating"  parent="human" ></entry>
+<!-- entries from humanCommerce.owl -->
+<entry  type="owl.group"  name="Commerce"  id="humanCommerce"  parent="human" />
+<entry  type="owl.class"  name="Assembly"  id="humanCommerce.owl#Assembly"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Construction"  id="humanCommerce.owl#Construction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Development"  id="humanCommerce.owl#Development"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Grading"  id="humanCommerce.owl#Grading"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Industrialization"  id="humanCommerce.owl#Industrialization"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Land Use"  id="humanCommerce.owl#LandUse"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Logging"  id="humanCommerce.owl#Logging"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Manafacturing"  id="humanCommerce.owl#Manafacturing"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Management"  id="humanCommerce.owl#Management"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Management System"  id="humanCommerce.owl#ManagementSystem"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Processing"  id="humanCommerce.owl#Processing"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Production"  id="humanCommerce.owl#Production"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Packaging"  id="humanCommerce.owl#Packaging"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Engineering Activity"  id="humanCommerce.owl#EngineeringActivity"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Productivity"  id="humanCommerce.owl#Productivity"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Capacity Buliding"  id="humanCommerce.owl#CapacityBuliding"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="In Situ"  id="humanCommerce.owl#InSitu"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="On Site"  id="humanCommerce.owl#OnSite"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Consumptive Use"  id="humanCommerce.owl#ConsumptiveUse"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Demand"  id="humanCommerce.owl#Demand"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Sustainable Development"  id="humanCommerce.owl#SustainableDevelopment"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Agriculture"  id="humanCommerce.owl#Agriculture"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Animal Production"  id="humanCommerce.owl#AnimalProduction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Apiculture"  id="humanCommerce.owl#Apiculture"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Aquaculture"  id="humanCommerce.owl#Aquaculture"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Beekeeping"  id="humanCommerce.owl#Beekeeping"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Breeding"  id="humanCommerce.owl#Breeding"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Crop Production"  id="humanCommerce.owl#CropProduction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Cultivation"  id="humanCommerce.owl#Cultivation"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Drip Irrigation"  id="humanCommerce.owl#DripIrrigation"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Fish Production"  id="humanCommerce.owl#FishProduction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Fishing"  id="humanCommerce.owl#Fishing"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Harvesting"  id="humanCommerce.owl#Harvesting"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Horticulture"  id="humanCommerce.owl#Horticulture"  parent="humanCommerce" ><description><![CDATA[Horticulture is the art and science of the cultivation of plants]]></description>
+</entry>
+<entry  type="owl.class"  name="Irrigation"  id="humanCommerce.owl#Irrigation"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Plant Production"  id="humanCommerce.owl#PlantProduction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Sericulture"  id="humanCommerce.owl#Sericulture"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Shellfish Production"  id="humanCommerce.owl#ShellfishProduction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Soil Cultivation"  id="humanCommerce.owl#SoilCultivation"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Forest Product"  id="humanCommerce.owl#ForestProduct"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Industrial Product"  id="humanCommerce.owl#IndustrialProduct"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Supply"  id="humanCommerce.owl#Supply"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Yield"  id="humanCommerce.owl#Yield"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Product"  id="humanCommerce.owl#Product"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Urbanization"  id="humanCommerce.owl#Urbanization"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Dig"  id="humanCommerce.owl#Dig"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Drill"  id="humanCommerce.owl#Drill"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Exploration"  id="humanCommerce.owl#Exploration"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Extraction"  id="humanCommerce.owl#Extraction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Resource Extraction"  id="humanCommerce.owl#ResourceExtraction"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Mining"  id="humanCommerce.owl#Mining"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Prospecting"  id="humanCommerce.owl#Prospecting"  parent="humanCommerce" ></entry>
+<entry  type="owl.class"  name="Strip Mining"  id="humanCommerce.owl#StripMining"  parent="humanCommerce" ></entry>
+<!-- entries from humanDecision.owl -->
+<entry  type="owl.group"  name="Decision"  id="humanDecision"  parent="human" />
+<entry  type="owl.class"  name="Allocation"  id="humanDecision.owl#Allocation"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Attribute"  id="humanDecision.owl#Attribute"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Belief Network"  id="humanDecision.owl#BeliefNetwork"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Choice"  id="humanDecision.owl#Choice"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Control Strategy"  id="humanDecision.owl#ControlStrategy"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Consumer Behavior"  id="humanDecision.owl#ConsumerBehavior"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Criteria"  id="humanDecision.owl#Criteria"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Decision"  id="humanDecision.owl#Decision"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Decision Activity"  id="humanDecision.owl#DecisionActivity"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Decision Maker"  id="humanDecision.owl#DecisionMaker"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Decision Support System"  id="humanDecision.owl#DecisionSupportSystem"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="D S S"  id="humanDecision.owl#DSS"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Decision Tree"  id="humanDecision.owl#DecisionTree"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Environmental Control Objective"  id="humanDecision.owl#EnvironmentalControlObjective"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Evaluation"  id="humanDecision.owl#Evaluation"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Group Consensus"  id="humanDecision.owl#GroupConsensus"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Location Allocation"  id="humanDecision.owl#LocationAllocation"  parent="humanDecision" ><description><![CDATA[Spatial allocation is primarily concerned with designating what kinds of activities can or will be done where on the landscape. Land-use zoning is a typical example of a spatial allocation problem in which the landscape is divided up into a set of multiple alternative uses such as industrial, commercial, residential, etc. Allocation to a particular use usually depends on intrinsic properties of the individual parcels as well as adjacency constraints.]]></description>
+</entry>
+<entry  type="owl.class"  name="Multiple Decision Maker"  id="humanDecision.owl#MultipleDecisionMaker"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Multiattribute"  id="humanDecision.owl#Multiattribute"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Multiobjective"  id="humanDecision.owl#Multiobjective"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Objective"  id="humanDecision.owl#Objective"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Optimize"  id="humanDecision.owl#Optimize"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Optimization"  id="humanDecision.owl#Optimization"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Preference"  id="humanDecision.owl#Preference"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Ranking"  id="humanDecision.owl#Ranking"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Resource Allocation"  id="humanDecision.owl#ResourceAllocation"  parent="humanDecision" ><description><![CDATA[Resource allocation has two meanings. One meaning refers to allocating a resource such as forest land to two or more designated uses. For example, forest land units could be allocated to timber production, recreation, etc. The second meaning is in the sense of allocating management resources. This second meaning is concerned with allocating time, materials, personnel, budget to landscape elements to accomplish meanegement objectives such as protection, restoration, timber production, etc.]]></description>
+</entry>
+<entry  type="owl.class"  name="Scenario"  id="humanDecision.owl#Scenario"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Screening"  id="humanDecision.owl#Screening"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Solution Strategy"  id="humanDecision.owl#SolutionStrategy"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Valuation"  id="humanDecision.owl#Valuation"  parent="humanDecision" ></entry>
+<entry  type="owl.class"  name="Weighting"  id="humanDecision.owl#Weighting"  parent="humanDecision" ></entry>
+<!-- entries from humanEnvirControl.owl -->
+<entry  type="owl.group"  name="Environmental Control"  id="humanEnvirControl"  parent="human" />
+<entry  type="owl.class"  name="Abatement"  id="humanEnvirControl.owl#Abatement"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Air Treatment Process"  id="humanEnvirControl.owl#AirTreatmentProcess"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Best Availabl Control Technology"  id="humanEnvirControl.owl#BestAvailablControlTechnology"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="B A C T"  id="humanEnvirControl.owl#BACT"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Biosequestration"  id="humanEnvirControl.owl#Biosequestration"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Cap And Trade"  id="humanEnvirControl.owl#CapAndTrade"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Carbon Sequestration"  id="humanEnvirControl.owl#CarbonSequestration"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Carbon Offset"  id="humanEnvirControl.owl#CarbonOffset"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Cloud Seeding"  id="humanEnvirControl.owl#CloudSeeding"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Compliance"  id="humanEnvirControl.owl#Compliance"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Distillation"  id="humanEnvirControl.owl#Distillation"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Dry Scrubbing"  id="humanEnvirControl.owl#DryScrubbing"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Environmental Control Strategy"  id="humanEnvirControl.owl#EnvironmentalControlStrategy"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Flocculation"  id="humanEnvirControl.owl#Flocculation"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Maximum Achievable Control Technology"  id="humanEnvirControl.owl#MaximumAchievableControlTechnology"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="M A C T"  id="humanEnvirControl.owl#MACT"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Pretreatment"  id="humanEnvirControl.owl#Pretreatment"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Primary Treatment"  id="humanEnvirControl.owl#PrimaryTreatment"  parent="humanEnvirControl" ><description><![CDATA[In wastewater treatment, a combination of step processes, usually physical in nature, that are designed to remove floating and settleable solids. Examples of process steps are screening and sedimentation.]]></description>
+</entry>
+<entry  type="owl.class"  name="Remediation"  id="humanEnvirControl.owl#Remediation"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Scrubbing"  id="humanEnvirControl.owl#Scrubbing"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Secondary Treatment"  id="humanEnvirControl.owl#SecondaryTreatment"  parent="humanEnvirControl" ><description><![CDATA[In wastewater treatment, a combination of step processes, usually biochemical in nature, that are designed to remove primarily organic material. Examples of process steps are aeration and trickling filters.]]></description>
+</entry>
+<entry  type="owl.class"  name="State Implementation Plan"  id="humanEnvirControl.owl#StateImplementationPlan"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Tertiary Treatment"  id="humanEnvirControl.owl#TertiaryTreatment"  parent="humanEnvirControl" ><description><![CDATA[Post-secondary treatment of wastewater designed to improve the quality of the water to the point where it can be put to a particular beneficial use. Generally, tertiary treatment steps remove nutrients (e.g., nitrogen and phosphorus) which are poorly removed by secondary treatment. Commonly used steps include coagulation and clarification.]]></description>
+</entry>
+<entry  type="owl.class"  name="Treatment"  id="humanEnvirControl.owl#Treatment"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Water Management"  id="humanEnvirControl.owl#WaterManagement"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Wastewater Treatment"  id="humanEnvirControl.owl#WastewaterTreatment"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Water Treatment Process"  id="humanEnvirControl.owl#WaterTreatmentProcess"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Wet Scrubbing"  id="humanEnvirControl.owl#WetScrubbing"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Afforestation"  id="humanEnvirControl.owl#Afforestation"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Reforestation"  id="humanEnvirControl.owl#Reforestation"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Restoration"  id="humanEnvirControl.owl#Restoration"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Revegetation"  id="humanEnvirControl.owl#Revegetation"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Reclamation"  id="humanEnvirControl.owl#Reclamation"  parent="humanEnvirControl" ></entry>
+<entry  type="owl.class"  name="Well Injection"  id="humanEnvirControl.owl#WellInjection"  parent="humanEnvirControl" ><description><![CDATA[The subsurface emplacement of "fluids" through a bored, drilled, or driven "well", or through a dug well, where the depth of the dug well is greater than the largest surface dimension.]]></description>
+</entry>
+<!-- entries from humanEnvirConservation.owl -->
+<entry  type="owl.group"  name="Environmental Conservation"  id="humanEnvirConservation"  parent="human" />
+<entry  type="owl.class"  name="Land Reserve"  id="humanEnvirConservation.owl#LandReserve"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Marine Protected Area"  id="humanEnvirConservation.owl#MarineProtectedArea"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="M P A"  id="humanEnvirConservation.owl#MPA"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="National Forest"  id="humanEnvirConservation.owl#NationalForest"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="National Monument"  id="humanEnvirConservation.owl#NationalMonument"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="National Park"  id="humanEnvirConservation.owl#NationalPark"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Park"  id="humanEnvirConservation.owl#Park"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Parkland"  id="humanEnvirConservation.owl#Parkland"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="State Forest"  id="humanEnvirConservation.owl#StateForest"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="State Park"  id="humanEnvirConservation.owl#StatePark"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Water Reserve"  id="humanEnvirConservation.owl#WaterReserve"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Wildlife Refuge"  id="humanEnvirConservation.owl#WildlifeRefuge"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Land Preservation"  id="humanEnvirConservation.owl#LandPreservation"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Land Resource"  id="humanEnvirConservation.owl#LandResource"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Protection"  id="humanEnvirConservation.owl#Protection"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Water Resource"  id="humanEnvirConservation.owl#WaterResource"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Renewable Resource"  id="humanEnvirConservation.owl#RenewableResource"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Conservation"  id="humanEnvirConservation.owl#Conservation"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Land Management"  id="humanEnvirConservation.owl#LandManagement"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Land Tenure"  id="humanEnvirConservation.owl#LandTenure"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Sustainable"  id="humanEnvirConservation.owl#Sustainable"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Sustainability"  id="humanEnvirConservation.owl#Sustainability"  parent="humanEnvirConservation" ></entry>
+<entry  type="owl.class"  name="Forestry"  id="humanEnvirConservation.owl#Forestry"  parent="humanEnvirConservation" ></entry>
+<!-- entries from humanEnvirStandards.owl -->
+<entry  type="owl.group"  name="Environmental Standards"  id="humanEnvirStandards"  parent="human" />
+<entry  type="owl.class"  name="Acceptable Daily Intake"  id="humanEnvirStandards.owl#AcceptableDailyIntake"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="A D I"  id="humanEnvirStandards.owl#ADI"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Acceptable Level"  id="humanEnvirStandards.owl#AcceptableLevel"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Airborne Toxic Control Measure"  id="humanEnvirStandards.owl#AirborneToxicControlMeasure"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="A T C M"  id="humanEnvirStandards.owl#ATCM"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Air Quality Standard"  id="humanEnvirStandards.owl#AirQualityStandard"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Ambient Air Quality Standard"  id="humanEnvirStandards.owl#AmbientAirQualityStandard"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="A A Q S"  id="humanEnvirStandards.owl#AAQS"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Environmental Law"  id="humanEnvirStandards.owl#EnvironmentalLaw"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Environmental Standard"  id="humanEnvirStandards.owl#EnvironmentalStandard"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Environmental Standards Body"  id="humanEnvirStandards.owl#EnvironmentalStandardsBody"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Non Attainment Area"  id="humanEnvirStandards.owl#NonAttainmentArea"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Reference Dose"  id="humanEnvirStandards.owl#ReferenceDose"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Rf D"  id="humanEnvirStandards.owl#RfD"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Reference Exposure Concentration"  id="humanEnvirStandards.owl#ReferenceExposureConcentration"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="R E C"  id="humanEnvirStandards.owl#REC"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Reference Exposure Level"  id="humanEnvirStandards.owl#ReferenceExposureLevel"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="R E L"  id="humanEnvirStandards.owl#REL"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="Water Quality Standard"  id="humanEnvirStandards.owl#WaterQualityStandard"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="E P A"  id="humanEnvirStandards.owl#EPA"  parent="humanEnvirStandards.owl#EnvironmentalStandardsBody" ></entry>
+<entry  type="owl.class"  name="Environmental Protection Agency"  id="humanEnvirStandards.owl#EnvironmentalProtectionAgency"  parent="humanEnvirStandards.owl#EnvironmentalStandardsBody" ></entry>
+<entry  type="owl.class"  name="F W S"  id="humanEnvirStandards.owl#FWS"  parent="humanEnvirStandards.owl#EnvironmentalStandardsBody" ></entry>
+<entry  type="owl.class"  name="Fish And Wildlife Service"  id="humanEnvirStandards.owl#FishAndWildlifeService"  parent="humanEnvirStandards.owl#EnvironmentalStandardsBody" ></entry>
+<entry  type="owl.class"  name="N F S"  id="humanEnvirStandards.owl#NFS"  parent="humanEnvirStandards.owl#EnvironmentalStandardsBody" ></entry>
+<entry  type="owl.class"  name="National Forest Service"  id="humanEnvirStandards.owl#NationalForestService"  parent="humanEnvirStandards.owl#EnvironmentalStandardsBody" ></entry>
+<entry  type="owl.class"  name="Montreal Protocol"  id="humanEnvirStandards.owl#MontrealProtocol"  parent="humanJurisdiction.owl#Treaty" ></entry>
+<entry  type="owl.class"  name="National Emission Standards For Hazardous Air Pollutant"  id="humanEnvirStandards.owl#NationalEmissionStandardsForHazardousAirPollutant"  parent="humanEnvirStandards.owl#EnvironmentalStandard" ></entry>
+<entry  type="owl.class"  name="N E S H A P"  id="humanEnvirStandards.owl#NESHAP"  parent="humanEnvirStandards.owl#EnvironmentalStandard" ></entry>
+<entry  type="owl.class"  name="National Environmental Protection Act"  id="humanEnvirStandards.owl#NationalEnvironmentalProtectionAct"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="N E P A"  id="humanEnvirStandards.owl#NEPA"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="Pollutant Standards Index"  id="humanEnvirStandards.owl#PollutantStandardsIndex"  parent="humanEnvirStandards.owl#EnvironmentalStandard" ></entry>
+<entry  type="owl.class"  name="P S I"  id="humanEnvirStandards.owl#PSI"  parent="humanEnvirStandards.owl#EnvironmentalStandard" ></entry>
+<entry  type="owl.class"  name="Prevention Of Significant Deteriorization"  id="humanEnvirStandards.owl#PreventionOfSignificantDeteriorization"  parent="humanEnvirStandards.owl#EnvironmentalStandard" ></entry>
+<entry  type="owl.class"  name="P S D"  id="humanEnvirStandards.owl#PSD"  parent="humanEnvirStandards.owl#EnvironmentalStandard" ></entry>
+<entry  type="owl.class"  name="National Forest Management Act"  id="humanEnvirStandards.owl#NationalForestManagementAct"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="N F M A"  id="humanEnvirStandards.owl#NFMA"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="Endangered Species Act"  id="humanEnvirStandards.owl#EndangeredSpeciesAct"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="Federal Clean Air Act"  id="humanEnvirStandards.owl#FederalCleanAirAct"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="F C A A"  id="humanEnvirStandards.owl#FCAA"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="Marine Life Management Act"  id="humanEnvirStandards.owl#MarineLifeManagementAct"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="M L M A"  id="humanEnvirStandards.owl#MLMA"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="Resource Conservation And Recovery Act"  id="humanEnvirStandards.owl#ResourceConservationAndRecoveryAct"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="R C R A"  id="humanEnvirStandards.owl#RCRA"  parent="humanEnvirStandards.owl#EnvironmentalLaw" ></entry>
+<entry  type="owl.class"  name="National Ambient Air Quality Standard"  id="humanEnvirStandards.owl#NationalAmbientAirQualityStandard"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="New Source Performance Standard"  id="humanEnvirStandards.owl#NewSourcePerformanceStandard"  parent="humanEnvirStandards" ></entry>
+<entry  type="owl.class"  name="N S P S"  id="humanEnvirStandards.owl#NSPS"  parent="humanEnvirStandards" ></entry>
+<!-- entries from humanEnvirAssessment.owl -->
+<entry  type="owl.group"  name="Environmental Assessment"  id="humanEnvirAssessment"  parent="human" />
+<entry  type="owl.class"  name="Continous Emission Monitoring System"  id="humanEnvirAssessment.owl#ContinousEmissionMonitoringSystem"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="C E M S"  id="humanEnvirAssessment.owl#CEMS"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Cost Benefit Analysis"  id="humanEnvirAssessment.owl#CostBenefitAnalysis"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Emission Inventory"  id="humanEnvirAssessment.owl#EmissionInventory"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Environmental Impact Statement"  id="humanEnvirAssessment.owl#EnvironmentalImpactStatement"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Environmental Monitoring"  id="humanEnvirAssessment.owl#EnvironmentalMonitoring"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Health Risk Assessment"  id="humanEnvirAssessment.owl#HealthRiskAssessment"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="H R A"  id="humanEnvirAssessment.owl#HRA"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="National Toxics Inventory"  id="humanEnvirAssessment.owl#NationalToxicsInventory"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Natural Capital"  id="humanEnvirAssessment.owl#NaturalCapital"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="New Source Review"  id="humanEnvirAssessment.owl#NewSourceReview"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="N S R"  id="humanEnvirAssessment.owl#NSR"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="No Observed Adverse Effect Level"  id="humanEnvirAssessment.owl#NoObservedAdverseEffectLevel"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="N O A E L"  id="humanEnvirAssessment.owl#NOAEL"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="No Observed Effect Level"  id="humanEnvirAssessment.owl#NoObservedEffectLevel"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="N O E L"  id="humanEnvirAssessment.owl#NOEL"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Unit Risk Factor"  id="humanEnvirAssessment.owl#UnitRiskFactor"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="U R F"  id="humanEnvirAssessment.owl#URF"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Environmental Assessment"  id="humanEnvirAssessment.owl#EnvironmentalAssessment"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Impact Assessment"  id="humanEnvirAssessment.owl#ImpactAssessment"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Status Assessment"  id="humanEnvirAssessment.owl#StatusAssessment"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Suitability Assessment"  id="humanEnvirAssessment.owl#SuitabilityAssessment"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Carbon Neutral"  id="humanEnvirAssessment.owl#CarbonNeutral"  parent="humanEnvirAssessment" ></entry>
+<entry  type="owl.class"  name="Carbon Neutrality"  id="humanEnvirAssessment.owl#CarbonNeutrality"  parent="humanEnvirAssessment" ></entry>
+<!-- entries from humanJurisdiction.owl -->
+<entry  type="owl.group"  name="Jurisdiction"  id="humanJurisdiction"  parent="human" />
+<entry  type="owl.class"  name="Administrative Region"  id="humanJurisdiction.owl#AdministrativeRegion"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="City"  id="humanJurisdiction.owl#City"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Civil"  id="humanJurisdiction.owl#Civil"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Civilian"  id="humanJurisdiction.owl#Civilian"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Combined Statistical Area"  id="humanJurisdiction.owl#CombinedStatisticalArea"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="C S A"  id="humanJurisdiction.owl#CSA"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Continent"  id="humanJurisdiction.owl#Continent"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Country"  id="humanJurisdiction.owl#Country"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="County"  id="humanJurisdiction.owl#County"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Government"  id="humanJurisdiction.owl#Government"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Governing Body"  id="humanJurisdiction.owl#GoverningBody"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Federal Governing Body"  id="humanJurisdiction.owl#FederalGoverningBody"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Federal"  id="humanJurisdiction.owl#Federal"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Jurisdiction"  id="humanJurisdiction.owl#Jurisdiction"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Metropolitan Area"  id="humanJurisdiction.owl#MetropolitanArea"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Metropolitan Statistical Area"  id="humanJurisdiction.owl#MetropolitanStatisticalArea"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="M S A"  id="humanJurisdiction.owl#MSA"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Military"  id="humanJurisdiction.owl#Military"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Province"  id="humanJurisdiction.owl#Province"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Standards Body"  id="humanJurisdiction.owl#StandardsBody"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="State"  id="humanJurisdiction.owl#State"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Special Administration Region"  id="humanJurisdiction.owl#SpecialAdministrationRegion"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="S A R"  id="humanJurisdiction.owl#SAR"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Standard Metropolitan Statistical Area"  id="humanJurisdiction.owl#StandardMetropolitanStatisticalArea"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="S M S A"  id="humanJurisdiction.owl#SMSA"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Urban Area"  id="humanJurisdiction.owl#UrbanArea"  parent="humanJurisdiction" ><description><![CDATA[An urban area is an area with an increased density of human-created structures in comparison to the areas surrounding it. This term is at one end of the spectrum of suburban and rural areas. An urban area is more frequently called a city or town. ]]></description>
+</entry>
+<entry  type="owl.class"  name="Penalty"  id="humanJurisdiction.owl#Penalty"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Permit"  id="humanJurisdiction.owl#Permit"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Policy"  id="humanJurisdiction.owl#Policy"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Regulation"  id="humanJurisdiction.owl#Regulation"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Standard"  id="humanJurisdiction.owl#Standard"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Treaty"  id="humanJurisdiction.owl#Treaty"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Human Law"  id="humanJurisdiction.owl#HumanLaw"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Enforcement"  id="humanJurisdiction.owl#Enforcement"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Govt Activity"  id="humanJurisdiction.owl#GovtActivity"  parent="humanJurisdiction" ></entry>
+<entry  type="owl.class"  name="Governing Body Product"  id="humanJurisdiction.owl#GoverningBodyProduct"  parent="humanJurisdiction" ></entry>
+<!-- entries from humanKnowledgeDomain.owl -->
+<entry  type="owl.group"  name="Knowledge Domain"  id="humanKnowledgeDomain"  parent="human" />
+<entry  type="owl.class"  name="Atmospheric Science"  id="humanKnowledgeDomain.owl#AtmosphericScience"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Meteorology"  id="humanKnowledgeDomain.owl#Meteorology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Climatology"  id="humanKnowledgeDomain.owl#Climatology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Paleoclimatology"  id="humanKnowledgeDomain.owl#Paleoclimatology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Phenology"  id="humanKnowledgeDomain.owl#Phenology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Anatomy"  id="humanKnowledgeDomain.owl#Anatomy"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Biochemistry"  id="humanKnowledgeDomain.owl#Biochemistry"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Biology"  id="humanKnowledgeDomain.owl#Biology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Genetics"  id="humanKnowledgeDomain.owl#Genetics"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Physiology"  id="humanKnowledgeDomain.owl#Physiology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Paleontology"  id="humanKnowledgeDomain.owl#Paleontology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Ecology"  id="humanKnowledgeDomain.owl#Ecology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Landscape Ecology"  id="humanKnowledgeDomain.owl#LandscapeEcology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Geology"  id="humanKnowledgeDomain.owl#Geology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Biogeochemistry"  id="humanKnowledgeDomain.owl#Biogeochemistry"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Geochemistry"  id="humanKnowledgeDomain.owl#Geochemistry"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Geophysics"  id="humanKnowledgeDomain.owl#Geophysics"  parent="humanKnowledgeDomain" ><description><![CDATA[Geophysics, a branch of Earth sciences, is the study of the Earth by quantitative physical methods, especially by seismic, electromagnetic, and radioactivity methods. The theories and techniques of geophysics are employed extensively in the planetary sciences in general.]]></description>
+</entry>
+<entry  type="owl.class"  name="Petrology"  id="humanKnowledgeDomain.owl#Petrology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Lithology"  id="humanKnowledgeDomain.owl#Lithology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Petrography"  id="humanKnowledgeDomain.owl#Petrography"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Stratigraphy"  id="humanKnowledgeDomain.owl#Stratigraphy"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Seismology"  id="humanKnowledgeDomain.owl#Seismology"  parent="humanKnowledgeDomain" ><description><![CDATA[Seismology (from the Greek seismos = earthquake and ?????,logos = knowledge ) is the scientific study of earthquakes and the propagation of elastic waves through the Earth. The field also includes studies of earthquake effects, such as tsunamis as well as diverse seismic sources such as volcanic, tectonic, oceanic, atmospheric, and artificial processes (such as explosions).
+    ]]></description>
+</entry>
+<entry  type="owl.class"  name="Tectonics"  id="humanKnowledgeDomain.owl#Tectonics"  parent="humanKnowledgeDomain" ><description><![CDATA[Tectonics is a field of study within geology concerned generally with the structures within the crust of the Earth (or other planets) and particularly with the forces and movements that have operated in a region to create these structures. Tectonics is concerned with the orogenies and tectonic development of cratons and tectonic terranes as well as the earthquake and volcanic belts which directly affect much of the global population. Tectonic studies are also important for understanding erosion patterns in geomorphology and as guides for the economic geologist searching for petroleum and metallic ores. A subfield of tectonics that deals with tectonic phenomena in the geologically recent period is called neotectonics. ]]></description>
+</entry>
+<entry  type="owl.class"  name="Neotectonics"  id="humanKnowledgeDomain.owl#Neotectonics"  parent="humanKnowledgeDomain" ><description><![CDATA[Neotectonics is a subdiscipline of tectonics. It is the study of the motions and deformations of the Earth's crust (geological and geomorphological processes) which are current or recent in geologic time.[1] The term may also refer to the motions/deformations in question themselves. The corresponding time frame is referred to as the neotectonic period.]]></description>
+</entry>
+<entry  type="owl.class"  name="Plate Tectonics"  id="humanKnowledgeDomain.owl#PlateTectonics"  parent="humanKnowledgeDomain" ><description><![CDATA[In plate tectonic theory earth history, at its simplest, is one of plates rifting into pieces diverging apart and new ocean basins being born, followed by motion reversal, convergence back together, subduction of the oceanic crust, plate collision, and mountain building. This cycle of opening and closing ocean basins is the Wilson Cycle . [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Engineering"  id="humanKnowledgeDomain.owl#Engineering"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Behavioral Science"  id="humanKnowledgeDomain.owl#BehavioralScience"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Economics"  id="humanKnowledgeDomain.owl#Economics"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Sociology"  id="humanKnowledgeDomain.owl#Sociology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Psychology"  id="humanKnowledgeDomain.owl#Psychology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Hydrology"  id="humanKnowledgeDomain.owl#Hydrology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Limnology"  id="humanKnowledgeDomain.owl#Limnology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Oceanography"  id="humanKnowledgeDomain.owl#Oceanography"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Marine Science"  id="humanKnowledgeDomain.owl#MarineScience"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Oceanology"  id="humanKnowledgeDomain.owl#Oceanology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Rheology"  id="humanKnowledgeDomain.owl#Rheology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Physics"  id="humanKnowledgeDomain.owl#Physics"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Mechanics"  id="humanKnowledgeDomain.owl#Mechanics"  parent="humanKnowledgeDomain" ><description><![CDATA[Mechanics is the branch of physics concerned with the behaviour of physical bodies when subjected to forces or displacements, and the subsequent effect of the bodies on their environment.]]></description>
+</entry>
+<entry  type="owl.class"  name="Thermodynamics"  id="humanKnowledgeDomain.owl#Thermodynamics"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Dynamics"  id="humanKnowledgeDomain.owl#Dynamics"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Science"  id="humanKnowledgeDomain.owl#Science"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Knowledge Domain"  id="humanKnowledgeDomain.owl#KnowledgeDomain"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Nutrition Science"  id="humanKnowledgeDomain.owl#NutritionScience"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Toxicology"  id="humanKnowledgeDomain.owl#Toxicology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Epidemiology"  id="humanKnowledgeDomain.owl#Epidemiology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Photochemistry"  id="humanKnowledgeDomain.owl#Photochemistry"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Chemistry"  id="humanKnowledgeDomain.owl#Chemistry"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Mineralogy"  id="humanKnowledgeDomain.owl#Mineralogy"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Planetary Science"  id="humanKnowledgeDomain.owl#PlanetaryScience"  parent="humanKnowledgeDomain" ><description><![CDATA[Planetary science, also known as planetology and closely related to planetary astronomy, is the science of planets, or planetary systems, and the solar system. [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Planetology"  id="humanKnowledgeDomain.owl#Planetology"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Geodesy"  id="humanKnowledgeDomain.owl#Geodesy"  parent="humanKnowledgeDomain" ><description><![CDATA[Geodesy is the scientific discipline that deals with the measurement and representation of a planet, including its gravity field, in a three-dimensional time varying space. Besides the gravity field, geodesists study also geodynamical phenomena such as crustal motion, tides, and polar motion. For this they design global and national Control networks, using Space and terrestrial techniques while relying on datums and coordinate systems]]></description>
+</entry>
+<entry  type="owl.class"  name="Geodetics"  id="humanKnowledgeDomain.owl#Geodetics"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Geodetic Science"  id="humanKnowledgeDomain.owl#GeodeticScience"  parent="humanKnowledgeDomain" ></entry>
+<entry  type="owl.class"  name="Human Dimension"  id="humanKnowledgeDomain.owl#HumanDimension"  parent="humanKnowledgeDomain" ></entry>
+<!-- entries from humanResearch.owl -->
+<entry  type="owl.group"  name="Research"  id="humanResearch"  parent="human" />
+<entry  type="owl.class"  name="Analysis"  id="humanResearch.owl#Analysis"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Applied Research"  id="humanResearch.owl#AppliedResearch"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Assessment"  id="humanResearch.owl#Assessment"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Campaign"  id="humanResearch.owl#Campaign"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Correction"  id="humanResearch.owl#Correction"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Difference"  id="humanResearch.owl#Difference"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Evidence"  id="humanResearch.owl#Evidence"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Experiment"  id="humanResearch.owl#Experiment"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Experiment Activity"  id="humanResearch.owl#ExperimentActivity"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Hypothesis Test"  id="humanResearch.owl#HypothesisTest"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Investigation"  id="humanResearch.owl#Investigation"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Investigate"  id="humanResearch.owl#Investigate"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Monitor"  id="humanResearch.owl#Monitor"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Monitoring"  id="humanResearch.owl#Monitoring"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Observation"  id="humanResearch.owl#Observation"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Observe"  id="humanResearch.owl#Observe"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Project"  id="humanResearch.owl#Project"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Proof"  id="humanResearch.owl#Proof"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Publication"  id="humanResearch.owl#Publication"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Realization"  id="humanResearch.owl#Realization"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Research"  id="humanResearch.owl#Research"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Research Exploration"  id="humanResearch.owl#ResearchExploration"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Residual"  id="humanResearch.owl#Residual"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Result"  id="humanResearch.owl#Result"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Sample"  id="humanResearch.owl#Sample"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Validation"  id="humanResearch.owl#Validation"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Variable"  id="humanResearch.owl#Variable"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Weight Of Evidence"  id="humanResearch.owl#WeightOfEvidence"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Research Setting"  id="humanResearch.owl#ResearchSetting"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Proof Of Concept"  id="humanResearch.owl#ProofOfConcept"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="End To End Environment"  id="humanResearch.owl#EndToEndEnvironment"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Laboratory Environment"  id="humanResearch.owl#LaboratoryEnvironment"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Mission Tested Environment"  id="humanResearch.owl#MissionTestedEnvironment"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Operational Environment"  id="humanResearch.owl#OperationalEnvironment"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Representative Environment"  id="humanResearch.owl#RepresentativeEnvironment"  parent="humanResearch" ></entry>
+<entry  type="owl.class"  name="Verified Validated Environment"  id="humanResearch.owl#VerifiedValidatedEnvironment"  parent="humanResearch" ></entry>
+<!-- entries from humanTechReadiness.owl -->
+<entry  type="owl.group"  name="Technical Readiness"  id="humanTechReadiness"  parent="human" />
+<entry  type="owl.class"  name="Technology"  id="humanTechReadiness.owl#Technology"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="Technology Readiness"  id="humanTechReadiness.owl#TechnologyReadiness"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="Technology Readiness Level"  id="humanTechReadiness.owl#TechnologyReadinessLevel"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L"  id="humanTechReadiness.owl#TRL"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="has T R L"  id="humanTechReadiness.owl#hasTRL"  parent="http://www.w3.org/2002/07/owl#DatatypeProperty" ></entry>
+<entry  type="owl.class"  name="T R L1"  id="humanTechReadiness.owl#TRL1"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L2"  id="humanTechReadiness.owl#TRL2"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L3"  id="humanTechReadiness.owl#TRL3"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L4"  id="humanTechReadiness.owl#TRL4"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L5"  id="humanTechReadiness.owl#TRL5"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L6"  id="humanTechReadiness.owl#TRL6"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L7"  id="humanTechReadiness.owl#TRL7"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L8"  id="humanTechReadiness.owl#TRL8"  parent="humanTechReadiness" ></entry>
+<entry  type="owl.class"  name="T R L9"  id="humanTechReadiness.owl#TRL9"  parent="humanTechReadiness" ></entry>
+<!-- entries from humanTransportation.owl -->
+<entry  type="owl.group"  name="Transportation"  id="humanTransportation"  parent="human" />
+<entry  type="owl.class"  name="Evacuation"  id="humanTransportation.owl#Evacuation"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Transit"  id="humanTransportation.owl#Transit"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Transport"  id="humanTransportation.owl#Transport"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Transportation"  id="humanTransportation.owl#Transportation"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Ground Transportation"  id="humanTransportation.owl#GroundTransportation"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Air Transportation"  id="humanTransportation.owl#AirTransportation"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Arrival"  id="humanTransportation.owl#Arrival"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Departure"  id="humanTransportation.owl#Departure"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Aviation"  id="humanTransportation.owl#Aviation"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Civil Aviation"  id="humanTransportation.owl#CivilAviation"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Military Aviation"  id="humanTransportation.owl#MilitaryAviation"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Air Traffic"  id="humanTransportation.owl#AirTraffic"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Air Traffic Control"  id="humanTransportation.owl#AirTrafficControl"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Flight"  id="humanTransportation.owl#Flight"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Landing"  id="humanTransportation.owl#Landing"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Takeoff"  id="humanTransportation.owl#Takeoff"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Liftoff"  id="humanTransportation.owl#Liftoff"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Ascent"  id="humanTransportation.owl#Ascent"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Descent"  id="humanTransportation.owl#Descent"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Space Program"  id="humanTransportation.owl#SpaceProgram"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="Space Travel"  id="humanTransportation.owl#SpaceTravel"  parent="humanTransportation" ></entry>
+<entry  type="owl.class"  name="F A A"  id="humanTransportation.owl#FAA"  parent="humanJurisdiction.owl#FederalGoverningBody" ></entry>
+<entry  type="owl.class"  name="Federal Aviation Administration"  id="humanTransportation.owl#FederalAviationAdministration"  parent="humanJurisdiction.owl#FederalGoverningBody" ></entry>
+<!-- entries from matr.owl -->
+<entry  type="owl.group"  name="Materials"  id="matr" />
+<entry  type="owl.class"  name="Alloy"  id="matr.owl#Alloy"  parent="matr" ><description><![CDATA[An alloy is a partial or complete solid solution of one or more elements in a metallic matrix. Complete solid solution alloys give single solid phase microstructure, while partial solutions give two or more phases that may be homogeneous in distribution depending on thermal (heat treatment) history. Alloys usually have different properties from those of the component elements. [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Chemical"  id="matr.owl#Chemical"  parent="matr" ><description><![CDATA[Chemical substance, in chemistry, are material objects that can undergo various transformations related to artificial or natural phenomena [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Chemical Substance"  id="matr.owl#ChemicalSubstance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Colloid"  id="matr.owl#Colloid"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Inorganic"  id="matr.owl#Inorganic"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Inorganic Substance"  id="matr.owl#InorganicSubstance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Medium"  id="matr.owl#Medium"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Mixture"  id="matr.owl#Mixture"  parent="matr" ><description><![CDATA[In chemistry, a mixture is when two or more different substances are mixed together but not combined chemically. The molecules of two or more different substances are mixed in the form of solutions, suspensions, and colloids. [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Mixed Chemical Substance"  id="matr.owl#MixedChemicalSubstance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Solution"  id="matr.owl#Solution"  parent="matr" ><description><![CDATA[In chemistry, a solution is a homogeneous mixture composed of two or more substances. In such a mixture, a solute is dissolved in another substance, known as a solvent. All solutions are characterized by interactions between the solvent phase and solute molecules or ions that result in a net decrease in free energy. [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Cement"  id="matr.owl#Cement"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Substance"  id="matr.owl#Substance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Solid Substance"  id="matr.owl#SolidSubstance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Trace Substance"  id="matr.owl#TraceSubstance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="has Atoms"  id="matr.owl#hasAtoms"  parent="http://www.w3.org/2002/07/owl#DatatypeProperty" ></entry>
+<entry  type="owl.class"  name="has Neutrons"  id="matr.owl#hasNeutrons"  parent="http://www.w3.org/2002/07/owl#DatatypeProperty" ></entry>
+<entry  type="owl.class"  name="has Base Neutrons"  id="matr.owl#hasBaseNeutrons"  parent="http://www.w3.org/2002/07/owl#DatatypeProperty" ></entry>
+<entry  type="owl.class"  name="Trace Gas"  id="matr.owl#TraceGas"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Suspended Substance"  id="matr.owl#SuspendedSubstance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Neutral Gas"  id="matr.owl#NeutralGas"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Suspended Gas"  id="matr.owl#SuspendedGas"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Suspended Solid"  id="matr.owl#SuspendedSolid"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Dissolved Solid"  id="matr.owl#DissolvedSolid"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Air"  id="matr.owl#Air"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Greenhouse Gas"  id="matr.owl#GreenhouseGas"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Biodegradable Dissolved Organic Carbon"  id="matr.owl#BiodegradableDissolvedOrganicCarbon"  parent="matr" ></entry>
+<entry  type="owl.class"  name="B D O C"  id="matr.owl#BDOC"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Dissolved Gas"  id="matr.owl#DissolvedGas"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Dissolved Substance"  id="matr.owl#DissolvedSubstance"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Dissolved Oxygen"  id="matr.owl#DissolvedOxygen"  parent="matr" ></entry>
+<entry  type="owl.class"  name="D O"  id="matr.owl#DO"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Dissolved Organic Carbon"  id="matr.owl#DissolvedOrganicCarbon"  parent="matr" ></entry>
+<entry  type="owl.class"  name="D O C"  id="matr.owl#DOC"  parent="matr" ></entry>
+<entry  type="owl.class"  name="Organic Loading"  id="matr.owl#OrganicLoading"  parent="matr" ></entry>
+<!-- entries from matrAerosol.owl -->
+<entry  type="owl.group"  name="Aerosol"  id="matrAerosol"  parent="matr" />
+<entry  type="owl.class"  name="Aerosol"  id="matrAerosol.owl#Aerosol"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Carbonaceous Aerosol"  id="matrAerosol.owl#CarbonaceousAerosol"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Continental Aerosol"  id="matrAerosol.owl#ContinentalAerosol"  parent="matrAerosol" ><description><![CDATA[Aerosol having its origin over the continents with industrial, urban, agricultural, forest, and desert sources, with potential for high concentrations of hygroscopic aerosol.]]></description>
+</entry>
+<entry  type="owl.class"  name="Fugitive Dust"  id="matrAerosol.owl#FugitiveDust"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="P M1"  id="matrAerosol.owl#PM1"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="max1micron"  id="matrAerosol.owl#max1micron"  parent="propSpaceDistance.owl#SizeRange" ></entry>
+<entry  type="owl.class"  name="P M2point5"  id="matrAerosol.owl#PM2point5"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="max2dot5micron"  id="matrAerosol.owl#max2dot5micron"  parent="propSpaceDistance.owl#SizeRange" ></entry>
+<entry  type="owl.class"  name="P M10"  id="matrAerosol.owl#PM10"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="max10micron"  id="matrAerosol.owl#max10micron"  parent="propSpaceDistance.owl#SizeRange" ></entry>
+<entry  type="owl.class"  name="Particulate"  id="matrAerosol.owl#Particulate"  parent="matrAerosol" ><description><![CDATA[The term for solid or liquid particles found in a gas.   Some particles are large or dark enough to be seen as soot or smoke.]]></description>
+</entry>
+<entry  type="owl.class"  name="Pollen"  id="matrAerosol.owl#Pollen"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Smoke"  id="matrAerosol.owl#Smoke"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Spray"  id="matrAerosol.owl#Spray"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Soot"  id="matrAerosol.owl#Soot"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Black Carbon"  id="matrAerosol.owl#BlackCarbon"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Ash"  id="matrAerosol.owl#Ash"  parent="matrAerosol" ><description><![CDATA[Fine particles of pulverized rock.]]></description>
+</entry>
+<entry  type="owl.class"  name="Dust"  id="matrAerosol.owl#Dust"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Condensation Nuclei"  id="matrAerosol.owl#CondensationNuclei"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Cloud Condensation Nuclei"  id="matrAerosol.owl#CloudCondensationNuclei"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="C C N"  id="matrAerosol.owl#CCN"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Grain"  id="matrAerosol.owl#Grain"  parent="matrAerosol" ></entry>
+<entry  type="owl.class"  name="Powder"  id="matrAerosol.owl#Powder"  parent="matrAerosol" ></entry>
+<!-- entries from matrAnimal.owl -->
+<entry  type="owl.group"  name="Animal"  id="matrAnimal"  parent="matr" />
+<entry  type="owl.class"  name="Acorn Worm"  id="matrAnimal.owl#AcornWorm"  parent="matrAnimal" ><description><![CDATA[The Acorn worms or Enteropneusta are a hemichordate class of invertebrates. Acorn worms are classified in the phylum Hemichordata, closely related to the chordates. There are about 70 species of acorn worm in the world, the main species for research being Saccoglossus kowaleski. All species are infaunal benthos that either may be deposit feeders or suspension feeders. Some of these worms may grow to be very long; one particular species may reach a length of 2.5 meters (almost eight feet), although most acorn worms are much, much smaller.]]></description>
+</entry>
+<entry  type="owl.class"  name="Amphibian"  id="matrAnimal.owl#Amphibian"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Anemone"  id="matrAnimal.owl#Anemone"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Animal"  id="matrAnimal.owl#Animal"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Arachnid"  id="matrAnimal.owl#Arachnid"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Arthropod"  id="matrAnimal.owl#Arthropod"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Bee"  id="matrAnimal.owl#Bee"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Bird"  id="matrAnimal.owl#Bird"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Centipede"  id="matrAnimal.owl#Centipede"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Coral"  id="matrAnimal.owl#Coral"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Cow"  id="matrAnimal.owl#Cow"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Crustacean"  id="matrAnimal.owl#Crustacean"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Dairy"  id="matrAnimal.owl#Dairy"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Echinoderm"  id="matrAnimal.owl#Echinoderm"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Exotic Species"  id="matrAnimal.owl#ExoticSpecies"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Fauna"  id="matrAnimal.owl#Fauna"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Fish"  id="matrAnimal.owl#Fish"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Flatworm"  id="matrAnimal.owl#Flatworm"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Human"  id="matrAnimal.owl#Human"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Indigenous Species"  id="matrAnimal.owl#IndigenousSpecies"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Invertebrate"  id="matrAnimal.owl#Invertebrate"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Insect"  id="matrAnimal.owl#Insect"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Jellyfish"  id="matrAnimal.owl#Jellyfish"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Mammal"  id="matrAnimal.owl#Mammal"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Marine Animal"  id="matrAnimal.owl#MarineAnimal"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Marine Bird"  id="matrAnimal.owl#MarineBird"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Marine Invertebrate"  id="matrAnimal.owl#MarineInvertebrate"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Marine Mammal"  id="matrAnimal.owl#MarineMammal"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Millipede"  id="matrAnimal.owl#Millipede"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Mollusk"  id="matrAnimal.owl#Mollusk"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Poultry"  id="matrAnimal.owl#Poultry"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Reptile"  id="matrAnimal.owl#Reptile"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Roundworm"  id="matrAnimal.owl#Roundworm"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Segmented Worm"  id="matrAnimal.owl#SegmentedWorm"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Silkworm"  id="matrAnimal.owl#Silkworm"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Sponge"  id="matrAnimal.owl#Sponge"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Vertebrate"  id="matrAnimal.owl#Vertebrate"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Zooplankton"  id="matrAnimal.owl#Zooplankton"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Mesozooplankton"  id="matrAnimal.owl#Mesozooplankton"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Microzooplankton"  id="matrAnimal.owl#Microzooplankton"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Livestock"  id="matrAnimal.owl#Livestock"  parent="matrAnimal" ></entry>
+<entry  type="owl.class"  name="Poultry"  id="matrAnimal.owl#Poultry"  parent="matrAnimal" ></entry>
+<!-- entries from matrBiomass.owl -->
+<entry  type="owl.group"  name="Biomass"  id="matrBiomass"  parent="matr" />
+<entry  type="owl.class"  name="Aquatic Organism"  id="matrBiomass.owl#AquaticOrganism"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Biomass"  id="matrBiomass.owl#Biomass"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Honey"  id="matrBiomass.owl#Honey"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Food"  id="matrBiomass.owl#Food"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Feed"  id="matrBiomass.owl#Feed"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Fertilizer"  id="matrBiomass.owl#Fertilizer"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Litter"  id="matrBiomass.owl#Litter"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Humus"  id="matrBiomass.owl#Humus"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Detritus"  id="matrBiomass.owl#Detritus"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Organism"  id="matrBiomass.owl#Organism"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Living Entity"  id="matrBiomass.owl#LivingEntity"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Species"  id="matrBiomass.owl#Species"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Indicator Species"  id="matrBiomass.owl#IndicatorSpecies"  parent="matrBiomass" ><description><![CDATA[An indicator species is any biological species that defines a trait or characteristic of the environment. For example, a species may delineate an ecoregion or indicate an environmental condition such as a disease outbreak, pollution, species competition or climate change. Indicator species can be among the most sensitive species in a region, acting as an early warning to monitoring biologists.]]></description>
+</entry>
+<entry  type="owl.class"  name="Bioindicator"  id="matrBiomass.owl#Bioindicator"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Manure"  id="matrBiomass.owl#Manure"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Animal Waste"  id="matrBiomass.owl#AnimalWaste"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Gelbstoff"  id="matrBiomass.owl#Gelbstoff"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Wood"  id="matrBiomass.owl#Wood"  parent="matrBiomass" ></entry>
+<entry  type="owl.class"  name="Wood Debris"  id="matrBiomass.owl#WoodDebris"  parent="matrBiomass" ></entry>
+<!-- entries from matrCompound.owl -->
+<entry  type="owl.group"  name="Compound"  id="matrCompound"  parent="matr" />
+<entry  type="owl.class"  name="Compound"  id="matrCompound.owl#Compound"  parent="matrCompound" ><description><![CDATA[A chemical compound is a pure chemical substance consisting of two or more different chemical elements[1][2][3] that can be separated into simpler substances by chemical reactions[4] and that have a unique and defined chemical structure. Chemical compounds consist of a fixed ratio of atoms[3] that are hold together in a defined spatial arrangement by chemical bonds. [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Chemical Compound"  id="matrCompound.owl#ChemicalCompound"  parent="matrCompound" ></entry>
+<entry  type="owl.class"  name="Inorganic Compound"  id="matrCompound.owl#InorganicCompound"  parent="matrCompound" ></entry>
+<entry  type="owl.class"  name="Clathrate"  id="matrCompound.owl#Clathrate"  parent="matrCompound" ></entry>
+<entry  type="owl.class"  name="Peroxide"  id="matrCompound.owl#Peroxide"  parent="matrCompound" ></entry>
+<entry  type="owl.class"  name="Inorganic Acid"  id="matrCompound.owl#InorganicAcid"  parent="matrCompound" ></entry>
+<entry  type="owl.class"  name="Perchlorate"  id="matrCompound.owl#Perchlorate"  parent="matrCompound" ></entry>
+<entry  type="owl.class"  name="Br Cl"  id="matrCompound.owl#BrCl"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Bromine Chloride"  id="matrCompound.owl#BromineChloride"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Br N O3"  id="matrCompound.owl#BrNO3"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Bromine Nitrate"  id="matrCompound.owl#BromineNitrate"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Br O"  id="matrCompound.owl#BrO"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Bromine Monoxide"  id="matrCompound.owl#BromineMonoxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Br Ox"  id="matrCompound.owl#BrOx"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="C O S"  id="matrCompound.owl#COS"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Carbonyl Sulfide"  id="matrCompound.owl#CarbonylSulfide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Carbonate"  id="matrCompound.owl#Carbonate"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="C O"  id="matrCompound.owl#CO"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Carbon Monoxide"  id="matrCompound.owl#CarbonMonoxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="C O2"  id="matrCompound.owl#CO2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Carbon Dioxide"  id="matrCompound.owl#CarbonDioxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Dry Ice"  id="matrCompound.owl#DryIce"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Cl O"  id="matrCompound.owl#ClO"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Chlorine Monoxide"  id="matrCompound.owl#ChlorineMonoxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Cl O2"  id="matrCompound.owl#ClO2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Chlorine Dioxide"  id="matrCompound.owl#ChlorineDioxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Cl Ox"  id="matrCompound.owl#ClOx"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Cl O N O2"  id="matrCompound.owl#ClONO2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Chlorine Nitrate"  id="matrCompound.owl#ChlorineNitrate"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Cl2 O2"  id="matrCompound.owl#Cl2O2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Dichlorine Peroxide"  id="matrCompound.owl#DichlorinePeroxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Fe2 O3"  id="matrCompound.owl#Fe2O3"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hematite"  id="matrCompound.owl#Hematite"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Iron Oxide"  id="matrCompound.owl#IronOxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Rust"  id="matrCompound.owl#Rust"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Fe3 O4"  id="matrCompound.owl#Fe3O4"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Magnetite"  id="matrCompound.owl#Magnetite"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H2 O"  id="matrCompound.owl#H2O"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Water"  id="matrCompound.owl#Water"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H Br"  id="matrCompound.owl#HBr"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hydrogen Bromide"  id="matrCompound.owl#HydrogenBromide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H Cl"  id="matrCompound.owl#HCl"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hydrogen Chloride"  id="matrCompound.owl#HydrogenChloride"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H F"  id="matrCompound.owl#HF"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hydrogen Fluoride"  id="matrCompound.owl#HydrogenFluoride"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H O2"  id="matrCompound.owl#HO2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hydroperoxyl"  id="matrCompound.owl#Hydroperoxyl"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Peroxy Radical"  id="matrCompound.owl#PeroxyRadical"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H Ox"  id="matrCompound.owl#HOx"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hydrogen Oxides"  id="matrCompound.owl#HydrogenOxides"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H2 O2"  id="matrCompound.owl#H2O2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hydrogen Peroxide"  id="matrCompound.owl#HydrogenPeroxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N2 O"  id="matrCompound.owl#N2O"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Nitrous Oxide"  id="matrCompound.owl#NitrousOxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N2 O5"  id="matrCompound.owl#N2O5"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Dinitrogen Pentoxide"  id="matrCompound.owl#DinitrogenPentoxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N H3"  id="matrCompound.owl#NH3"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Ammonia"  id="matrCompound.owl#Ammonia"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N O"  id="matrCompound.owl#NO"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Nitric Oxide"  id="matrCompound.owl#NitricOxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Nitrogen Monoxide"  id="matrCompound.owl#NitrogenMonoxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N O2"  id="matrCompound.owl#NO2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Nitrogen Dioxide"  id="matrCompound.owl#NitrogenDioxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N O3"  id="matrCompound.owl#NO3"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Nitrate Radical"  id="matrCompound.owl#NitrateRadical"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N Ox"  id="matrCompound.owl#NOx"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Nitrogen Oxide"  id="matrCompound.owl#NitrogenOxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="N Oy"  id="matrCompound.owl#NOy"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Na Cl"  id="matrCompound.owl#NaCl"  parent="matrCompound.owl#InorganicCompound" ><description><![CDATA[A salt is defined as the product formed from the neutralization reaction of acids and bases. Salts are ionic compounds composed of cations (positively charged ions) and anions (negative ions) so that the product is electrically neutral (without a net charge). [Wikipedia]]]></description>
+</entry>
+<entry  type="owl.class"  name="Salt"  id="matrCompound.owl#Salt"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="O H"  id="matrCompound.owl#OH"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hydroxyl"  id="matrCompound.owl#Hydroxyl"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="P O"  id="matrCompound.owl#PO"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Phosphate"  id="matrCompound.owl#Phosphate"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="S O2"  id="matrCompound.owl#SO2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Sulfur Dioxide"  id="matrCompound.owl#SulfurDioxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="S O4"  id="matrCompound.owl#SO4"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Sulfate"  id="matrCompound.owl#Sulfate"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="S Ox"  id="matrCompound.owl#SOx"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Sulfur Oxide"  id="matrCompound.owl#SulfurOxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Si O2"  id="matrCompound.owl#SiO2"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Silica"  id="matrCompound.owl#Silica"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Silicon Dioxide"  id="matrCompound.owl#SiliconDioxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Silicate"  id="matrCompound.owl#Silicate"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="Hypochlorous Monoxide"  id="matrCompound.owl#HypochlorousMonoxide"  parent="matrCompound.owl#InorganicCompound" ></entry>
+<entry  type="owl.class"  name="H2 C O3"  id="matrCompound.owl#H2CO3"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Carbonic Acid"  id="matrCompound.owl#CarbonicAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H2 S O4"  id="matrCompound.owl#H2SO4"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Sulfuric Acid"  id="matrCompound.owl#SulfuricAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H N O2"  id="matrCompound.owl#HNO2"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Nitrous Acid"  id="matrCompound.owl#NitrousAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H N O3"  id="matrCompound.owl#HNO3"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Nitric Acid"  id="matrCompound.owl#NitricAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H N O4"  id="matrCompound.owl#HNO4"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Peroxynitric Acid"  id="matrCompound.owl#PeroxynitricAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Nitric Acid Trihydrate"  id="matrCompound.owl#NitricAcidTrihydrate"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="N A T"  id="matrCompound.owl#NAT"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H O Cl"  id="matrCompound.owl#HOCl"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Hydrochlorous Acid"  id="matrCompound.owl#HydrochlorousAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H Br O"  id="matrCompound.owl#HBrO"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Hydrobromous Acid"  id="matrCompound.owl#HydrobromousAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H Cl O"  id="matrCompound.owl#HClO"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Hypochlorous Acid"  id="matrCompound.owl#HypochlorousAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="H Cl O4"  id="matrCompound.owl#HClO4"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<entry  type="owl.class"  name="Perchloric Acid"  id="matrCompound.owl#PerchloricAcid"  parent="matrCompound.owl#InorganicAcid" ></entry>
+<!-- entries from matrEnergy.owl -->
+<entry  type="owl.group"  name="Energy"  id="matrEnergy"  parent="matr" />
+<entry  type="owl.class"  name="Battery"  id="matrEnergy.owl#Battery"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Biodiesel"  id="matrEnergy.owl#Biodiesel"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Biofuel"  id="matrEnergy.owl#Biofuel"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Biomass"  id="matrEnergy.owl#Biomass"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Compund Parabolic Concentrator"  id="matrEnergy.owl#CompundParabolicConcentrator"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Energy Collector"  id="matrEnergy.owl#EnergyCollector"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Energy Conversion Device"  id="matrEnergy.owl#EnergyConversionDevice"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Energy Distribution System"  id="matrEnergy.owl#EnergyDistributionSystem"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Energy Storage"  id="matrEnergy.owl#EnergyStorage"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Ethanol"  id="matrEnergy.owl#Ethanol"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Flat Plate Collector"  id="matrEnergy.owl#FlatPlateCollector"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Fuel"  id="matrEnergy.owl#Fuel"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Fuel Cell"  id="matrEnergy.owl#FuelCell"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Geothermal Power Plant"  id="matrEnergy.owl#GeothermalPowerPlant"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Heater"  id="matrEnergy.owl#Heater"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Heat Exchanger"  id="matrEnergy.owl#HeatExchanger"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Heat Pump"  id="matrEnergy.owl#HeatPump"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Hydrogen Energy"  id="matrEnergy.owl#HydrogenEnergy"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Parabolic Trough"  id="matrEnergy.owl#ParabolicTrough"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Photovoltaic Cell"  id="matrEnergy.owl#PhotovoltaicCell"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Power Grid"  id="matrEnergy.owl#PowerGrid"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Power Plant"  id="matrEnergy.owl#PowerPlant"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Power Transmission Facility"  id="matrEnergy.owl#PowerTransmissionFacility"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Refrigerator"  id="matrEnergy.owl#Refrigerator"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Smart Grid"  id="matrEnergy.owl#SmartGrid"  parent="matrEnergy" ></entry>
+<entry  type="owl.class"  name="Tubular Collector"  id="matrEnergy.owl#TubularCollector"  parent="matrEnergy" ></entry>
+<!-- entries from matrEquipment.owl -->
+<entry  type="owl.group"  name="Equipment"  id="matrEquipment"  parent="matr" />
+<entry  type="owl.class"  name="Aircraft"  id="matrEquipment.owl#Aircraft"  parent="matrEquipment" ><description><![CDATA[An aircraft is a vehicle which is able to fly through the air (or through any other atmosphere). All the human activity which surrounds aircraft is called aviation. (Most rocket vehicles are not aircraft because they are not supported by the surrounding air).]]></description>
+</entry>
+<entry  type="owl.class"  name="Airplane"  id="matrEquipment.owl#Airplane"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Helicopter"  id="matrEquipment.owl#Helicopter"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Jet"  id="matrEquipment.owl#Jet"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Navigation Equipment"  id="matrEquipment.owl#NavigationEquipment"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Navigation"  id="matrEquipment.owl#Navigation"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Transportation Equipment"  id="matrEquipment.owl#TransportationEquipment"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Rocket"  id="matrEquipment.owl#Rocket"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Satellite"  id="matrEquipment.owl#Satellite"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Spacecraft"  id="matrEquipment.owl#Spacecraft"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Space Shuttle"  id="matrEquipment.owl#SpaceShuttle"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Car"  id="matrEquipment.owl#Car"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Rover"  id="matrEquipment.owl#Rover"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Trailer"  id="matrEquipment.owl#Trailer"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Train"  id="matrEquipment.owl#Train"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Truck"  id="matrEquipment.owl#Truck"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Emergency Vehicle"  id="matrEquipment.owl#EmergencyVehicle"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Vehicle"  id="matrEquipment.owl#Vehicle"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Ship"  id="matrEquipment.owl#Ship"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Pipeline"  id="matrEquipment.owl#Pipeline"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Antenna"  id="matrEquipment.owl#Antenna"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Communication"  id="matrEquipment.owl#Communication"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Communications"  id="matrEquipment.owl#Communications"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Communication Equipment"  id="matrEquipment.owl#CommunicationEquipment"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Communication Method"  id="matrEquipment.owl#CommunicationMethod"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Distortion"  id="matrEquipment.owl#Distortion"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Internet"  id="matrEquipment.owl#Internet"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Land Line"  id="matrEquipment.owl#LandLine"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Noisy"  id="matrEquipment.owl#Noisy"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Phone"  id="matrEquipment.owl#Phone"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Mobile Phone"  id="matrEquipment.owl#MobilePhone"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Radio"  id="matrEquipment.owl#Radio"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Receive"  id="matrEquipment.owl#Receive"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Reception"  id="matrEquipment.owl#Reception"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Signal"  id="matrEquipment.owl#Signal"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Transmit"  id="matrEquipment.owl#Transmit"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Transmission"  id="matrEquipment.owl#Transmission"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Wireless"  id="matrEquipment.owl#Wireless"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Material Thing"  id="matrEquipment.owl#MaterialThing"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Computer Hardware"  id="matrEquipment.owl#ComputerHardware"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Equipment"  id="matrEquipment.owl#Equipment"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Sink"  id="matrEquipment.owl#Sink"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Infrastructure"  id="matrEquipment.owl#Infrastructure"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Artesian Well"  id="matrEquipment.owl#ArtesianWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Borehole"  id="matrEquipment.owl#Borehole"  parent="matrEquipment" ><description><![CDATA[A borehole is the generalised term for any narrow shaft drilled in the ground, either vertically or horizontally. A borehole may be constructed for many different purposes including the extraction of water or fluid (such as oil) or gases (such as natural gas or methane), as part of a geotechnical investigation or environmental site assessment, for mineral exploration, or as a pilot hole for installing piers or underground utilities. ]]></description>
+</entry>
+<entry  type="owl.class"  name="Confined Well"  id="matrEquipment.owl#ConfinedWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Disposal Well"  id="matrEquipment.owl#DisposalWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Drainage Well"  id="matrEquipment.owl#DrainageWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Injection Well"  id="matrEquipment.owl#InjectionWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Monitoring Well"  id="matrEquipment.owl#MonitoringWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Pumping Well"  id="matrEquipment.owl#PumpingWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Recharge Well"  id="matrEquipment.owl#RechargeWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Unconfined Well"  id="matrEquipment.owl#UnconfinedWell"  parent="matrEquipment" ></entry>
+<entry  type="owl.class"  name="Well"  id="matrEquipment.owl#Well"  parent="matrEquipment" ><description><![CDATA[A bored, drilled or driven shaft, or a dug hole, whose depth is greater than the largest surface dimension.  ]]></description>
+</entry>
+<!-- entries from matrFacility.owl -->
+<entry  type="owl.group"  name="Facility"  id="matrFacility"  parent="matr" />
+<entry  type="owl.class"  name="Base"  id="matrFacility.owl#Base"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Building"  id="matrFacility.owl#Building"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Cultural Feature"  id="matrFacility.owl#CulturalFeature"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Dome"  id="matrFacility.owl#Dome"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Facility"  id="matrFacility.owl#Facility"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Habitat"  id="matrFacility.owl#Habitat"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Platform"  id="matrFacility.owl#Platform"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Station"  id="matrFacility.owl#Station"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Structure"  id="matrFacility.owl#Structure"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Meteorological Facility"  id="matrFacility.owl#MeteorologicalFacility"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Meteostation"  id="matrFacility.owl#Meteostation"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Communication Facility"  id="matrFacility.owl#CommunicationFacility"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Transportation Facility"  id="matrFacility.owl#TransportationFacility"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Agricultural Production Facility"  id="matrFacility.owl#AgriculturalProductionFacility"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Farm"  id="matrFacility.owl#Farm"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Fishery"  id="matrFacility.owl#Fishery"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Plantation"  id="matrFacility.owl#Plantation"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Airport"  id="matrFacility.owl#Airport"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Airport Facility"  id="matrFacility.owl#AirportFacility"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Air Traffic Control Center"  id="matrFacility.owl#AirTrafficControlCenter"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Air Traffic Control En Route Center"  id="matrFacility.owl#AirTrafficControlEnRouteCenter"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Air Traffic Control Radar Room"  id="matrFacility.owl#AirTrafficControlRadarRoom"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Air Traffic Control Tower"  id="matrFacility.owl#AirTrafficControlTower"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Air Transitway"  id="matrFacility.owl#AirTransitway"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Runway"  id="matrFacility.owl#Runway"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Mine"  id="matrFacility.owl#Mine"  parent="matrFacility" ></entry>
+<entry  type="owl.class"  name="Mining Facility"  id="matrFacility.owl#MiningFacility"  parent="matrFacility" ></entry>
+<!-- entries from matrElement.owl -->
+<association  from="human.owl#Behavior"  to="human.owl#PsychologicalParameter"  type="rdfs:subClassOf" />
+<association  from="human.owl#Census"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#CivilDisturbance"  to="human.owl#SocialActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#HumanCapital"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#HumanNeed"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Profession"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#PsychologicalParameter"  to="human.owl#SocialActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Recreation"  to="human.owl#SocialActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Service"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#SocialActivity"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#SocialBehavior"  to="human.owl#SocialActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Work"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Manned"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Unmanned"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Unmanned"  to="human.owl#Manned"  type="owl:disjointWith" />
+<association  from="human.owl#Colonization"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#ConsumptiveUse"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#Mapping"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#EnergyEndUse"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="human.owl#SpaceCooling"  to="human.owl#EnergyEndUse"  type="rdfs:subClassOf" />
+<association  from="human.owl#SpaceHeating"  to="human.owl#EnergyEndUse"  type="rdfs:subClassOf" />
+<association  from="human.owl#WaterHeating"  to="human.owl#EnergyEndUse"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Assembly"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Construction"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Development"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Grading"  to="humanCommerce.owl#Processing"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Industrialization"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#LandUse"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Logging"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Manafacturing"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Management"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#ManagementSystem"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Processing"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Production"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Packaging"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#EngineeringActivity"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Productivity"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#CapacityBuliding"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#InSitu"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#InSitu"  to="humanCommerce.owl#OnSite"  type="owl:equivalentClass" />
+<association  from="humanCommerce.owl#ConsumptiveUse"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Demand"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#SustainableDevelopment"  to="humanCommerce.owl#Development"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Agriculture"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#AnimalProduction"  to="humanCommerce.owl#Agriculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Apiculture"  to="humanCommerce.owl#AnimalProduction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Aquaculture"  to="humanCommerce.owl#Agriculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Beekeeping"  to="humanCommerce.owl#Apiculture"  type="owl:equivalentClass" />
+<association  from="humanCommerce.owl#Breeding"  to="humanCommerce.owl#AnimalProduction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#CropProduction"  to="humanCommerce.owl#PlantProduction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Cultivation"  to="humanCommerce.owl#Agriculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#DripIrrigation"  to="humanCommerce.owl#Agriculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#FishProduction"  to="humanCommerce.owl#AnimalProduction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#FishProduction"  to="humanCommerce.owl#Aquaculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Fishing"  to="humanCommerce.owl#Production"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Harvesting"  to="humanCommerce.owl#PlantProduction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Horticulture"  to="humanCommerce.owl#Agriculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Irrigation"  to="humanCommerce.owl#SoilCultivation"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#PlantProduction"  to="humanCommerce.owl#Agriculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Sericulture"  to="humanCommerce.owl#AnimalProduction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#ShellfishProduction"  to="humanCommerce.owl#AnimalProduction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#ShellfishProduction"  to="humanCommerce.owl#Aquaculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#SoilCultivation"  to="humanCommerce.owl#Agriculture"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#ForestProduct"  to="humanCommerce.owl#Product"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#IndustrialProduct"  to="humanCommerce.owl#Product"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Supply"  to="humanCommerce.owl#Product"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Yield"  to="humanCommerce.owl#Product"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Product"  to="matrEquipment.owl#MaterialThing"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Urbanization"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Dig"  to="humanCommerce.owl#Extraction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Drill"  to="humanCommerce.owl#Extraction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Exploration"  to="humanCommerce.owl#EngineeringActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Extraction"  to="humanCommerce.owl#EngineeringActivity"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Extraction"  to="humanCommerce.owl#ResourceExtraction"  type="owl:equivalentClass" />
+<association  from="humanCommerce.owl#Mining"  to="humanCommerce.owl#Extraction"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#Prospecting"  to="humanCommerce.owl#Exploration"  type="rdfs:subClassOf" />
+<association  from="humanCommerce.owl#StripMining"  to="humanCommerce.owl#Mining"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Allocation"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Attribute"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#BeliefNetwork"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Choice"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#ControlStrategy"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#ConsumerBehavior"  to="human.owl#SocialBehavior"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Criteria"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Decision"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#DecisionActivity"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#DecisionMaker"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#DecisionSupportSystem"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#DecisionSupportSystem"  to="humanDecision.owl#DSS"  type="owl:equivalentClass" />
+<association  from="humanDecision.owl#DecisionTree"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#EnvironmentalControlObjective"  to="humanDecision.owl#ControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#EnvironmentalControlObjective"  to="humanDecision.owl#Objective"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Evaluation"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#GroupConsensus"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#LocationAllocation"  to="humanDecision.owl#Allocation"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#MultipleDecisionMaker"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Multiattribute"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Multiobjective"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Objective"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Optimize"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Optimize"  to="humanDecision.owl#Optimization"  type="owl:equivalentClass" />
+<association  from="humanDecision.owl#Preference"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Ranking"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#ResourceAllocation"  to="humanDecision.owl#Allocation"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Scenario"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Screening"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#SolutionStrategy"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Valuation"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanDecision.owl#Weighting"  to="humanDecision.owl#DecisionActivity"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Abatement"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#AirTreatmentProcess"  to="humanEnvirControl.owl#Treatment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#AirTreatmentProcess"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#BestAvailablControlTechnology"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#BestAvailablControlTechnology"  to="humanEnvirControl.owl#BACT"  type="owl:equivalentClass" />
+<association  from="humanEnvirControl.owl#Biosequestration"  to="humanEnvirControl.owl#CarbonSequestration"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#CapAndTrade"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#CarbonSequestration"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#CarbonOffset"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#CloudSeeding"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Compliance"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Distillation"  to="humanEnvirControl.owl#WaterTreatmentProcess"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#DryScrubbing"  to="humanEnvirControl.owl#Scrubbing"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#EnvironmentalControlStrategy"  to="humanDecision.owl#ControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Flocculation"  to="humanEnvirControl.owl#WaterTreatmentProcess"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#MaximumAchievableControlTechnology"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#MaximumAchievableControlTechnology"  to="humanEnvirControl.owl#MACT"  type="owl:equivalentClass" />
+<association  from="humanEnvirControl.owl#Pretreatment"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#PrimaryTreatment"  to="humanEnvirControl.owl#WaterTreatmentProcess"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Remediation"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Scrubbing"  to="humanEnvirControl.owl#AirTreatmentProcess"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#SecondaryTreatment"  to="humanEnvirControl.owl#WaterTreatmentProcess"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#StateImplementationPlan"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#TertiaryTreatment"  to="humanEnvirControl.owl#WaterTreatmentProcess"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Treatment"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#WaterManagement"  to="humanCommerce.owl#Management"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#WastewaterTreatment"  to="humanEnvirControl.owl#Treatment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#WaterTreatmentProcess"  to="humanEnvirControl.owl#Treatment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#WaterTreatmentProcess"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#WetScrubbing"  to="humanEnvirControl.owl#Scrubbing"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Afforestation"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Reforestation"  to="humanEnvirControl.owl#Revegetation"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Restoration"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Revegetation"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#Reclamation"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirControl.owl#WellInjection"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#LandReserve"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#LandReserve"  to="humanEnvirConservation.owl#LandResource"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#MarineProtectedArea"  to="humanEnvirConservation.owl#WaterReserve"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#MarineProtectedArea"  to="humanEnvirConservation.owl#MPA"  type="owl:equivalentClass" />
+<association  from="humanEnvirConservation.owl#NationalForest"  to="humanEnvirConservation.owl#LandReserve"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#NationalMonument"  to="humanEnvirConservation.owl#LandReserve"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#NationalPark"  to="humanEnvirConservation.owl#LandReserve"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#Park"  to="humanEnvirConservation.owl#LandReserve"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#Park"  to="humanEnvirConservation.owl#Parkland"  type="owl:equivalentClass" />
+<association  from="humanEnvirConservation.owl#StateForest"  to="humanEnvirConservation.owl#LandReserve"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#StatePark"  to="humanEnvirConservation.owl#Park"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#WaterReserve"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#WaterReserve"  to="humanEnvirConservation.owl#WaterResource"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#WildlifeRefuge"  to="humanEnvirConservation.owl#LandReserve"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#LandPreservation"  to="humanEnvirConservation.owl#LandManagement"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#LandResource"  to="humanEnvirConservation.owl#RenewableResource"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#Protection"  to="humanEnvirConservation.owl#Sustainability"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#WaterResource"  to="humanEnvirConservation.owl#RenewableResource"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#Conservation"  to="humanCommerce.owl#Management"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#LandManagement"  to="humanCommerce.owl#Management"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#LandTenure"  to="humanEnvirConservation.owl#LandManagement"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#Sustainable"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#Sustainable"  to="humanEnvirConservation.owl#Sustainability"  type="owl:equivalentClass" />
+<association  from="humanEnvirConservation.owl#Forestry"  to="humanEnvirConservation.owl#Sustainability"  type="rdfs:subClassOf" />
+<association  from="humanEnvirConservation.owl#Forestry"  to="humanCommerce.owl#Management"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#AcceptableDailyIntake"  to="humanEnvirStandards.owl#AcceptableLevel"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#AcceptableDailyIntake"  to="humanEnvirStandards.owl#ADI"  type="owl:equivalentClass" />
+<association  from="humanEnvirStandards.owl#AcceptableLevel"  to="humanEnvirStandards.owl#EnvironmentalStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#AirborneToxicControlMeasure"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#AirborneToxicControlMeasure"  to="humanEnvirStandards.owl#ATCM"  type="owl:equivalentClass" />
+<association  from="humanEnvirStandards.owl#AirQualityStandard"  to="humanEnvirStandards.owl#EnvironmentalStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#AmbientAirQualityStandard"  to="humanEnvirStandards.owl#EnvironmentalStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#AmbientAirQualityStandard"  to="humanEnvirStandards.owl#AAQS"  type="owl:equivalentClass" />
+<association  from="humanEnvirStandards.owl#EnvironmentalLaw"  to="humanJurisdiction.owl#HumanLaw"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#EnvironmentalStandard"  to="humanEnvirControl.owl#EnvironmentalControlStrategy"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#EnvironmentalStandard"  to="humanJurisdiction.owl#Standard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#EnvironmentalStandardsBody"  to="humanJurisdiction.owl#StandardsBody"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#ReferenceDose"  to="humanEnvirStandards.owl#RfD"  type="owl:equivalentClass" />
+<association  from="humanEnvirStandards.owl#ReferenceExposureConcentration"  to="humanEnvirStandards.owl#EnvironmentalStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#ReferenceExposureConcentration"  to="humanEnvirStandards.owl#REC"  type="owl:equivalentClass" />
+<association  from="humanEnvirStandards.owl#ReferenceExposureLevel"  to="humanEnvirStandards.owl#EnvironmentalStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#ReferenceExposureLevel"  to="humanEnvirStandards.owl#REL"  type="owl:equivalentClass" />
+<association  from="humanEnvirStandards.owl#WaterQualityStandard"  to="humanEnvirStandards.owl#EnvironmentalStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#NationalAmbientAirQualityStandard"  to="humanEnvirStandards.owl#AmbientAirQualityStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#NewSourcePerformanceStandard"  to="humanEnvirStandards.owl#EnvironmentalStandard"  type="rdfs:subClassOf" />
+<association  from="humanEnvirStandards.owl#NewSourcePerformanceStandard"  to="humanEnvirStandards.owl#NSPS"  type="owl:equivalentClass" />
+<association  from="humanEnvirAssessment.owl#ContinousEmissionMonitoringSystem"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#ContinousEmissionMonitoringSystem"  to="humanEnvirAssessment.owl#CEMS"  type="owl:equivalentClass" />
+<association  from="humanEnvirAssessment.owl#CostBenefitAnalysis"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#EmissionInventory"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#EnvironmentalImpactStatement"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#EnvironmentalMonitoring"  to="humanResearch.owl#Monitoring"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#HealthRiskAssessment"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#HealthRiskAssessment"  to="humanEnvirAssessment.owl#HRA"  type="owl:equivalentClass" />
+<association  from="humanEnvirAssessment.owl#NationalToxicsInventory"  to="humanEnvirAssessment.owl#EmissionInventory"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#NaturalCapital"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#NewSourceReview"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#NewSourceReview"  to="humanEnvirAssessment.owl#NSR"  type="owl:equivalentClass" />
+<association  from="humanEnvirAssessment.owl#NoObservedAdverseEffectLevel"  to="humanEnvirAssessment.owl#HealthRiskAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#NoObservedAdverseEffectLevel"  to="humanEnvirAssessment.owl#NOAEL"  type="owl:equivalentClass" />
+<association  from="humanEnvirAssessment.owl#NoObservedEffectLevel"  to="humanEnvirAssessment.owl#HealthRiskAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#NoObservedEffectLevel"  to="humanEnvirAssessment.owl#NOEL"  type="owl:equivalentClass" />
+<association  from="humanEnvirAssessment.owl#UnitRiskFactor"  to="humanEnvirAssessment.owl#HealthRiskAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#UnitRiskFactor"  to="humanEnvirAssessment.owl#URF"  type="owl:equivalentClass" />
+<association  from="humanEnvirAssessment.owl#EnvironmentalAssessment"  to="humanResearch.owl#Assessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#ImpactAssessment"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#StatusAssessment"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#SuitabilityAssessment"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#CarbonNeutral"  to="humanEnvirAssessment.owl#EnvironmentalAssessment"  type="rdfs:subClassOf" />
+<association  from="humanEnvirAssessment.owl#CarbonNeutral"  to="humanEnvirAssessment.owl#CarbonNeutrality"  type="owl:equivalentClass" />
+<association  from="humanJurisdiction.owl#AdministrativeRegion"  to="humanJurisdiction.owl#Jurisdiction"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#City"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Civil"  to="humanJurisdiction.owl#Jurisdiction"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Civil"  to="humanJurisdiction.owl#Civilian"  type="owl:equivalentClass" />
+<association  from="humanJurisdiction.owl#CombinedStatisticalArea"  to="humanJurisdiction.owl#MetropolitanArea"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#CombinedStatisticalArea"  to="humanJurisdiction.owl#CSA"  type="owl:equivalentClass" />
+<association  from="humanJurisdiction.owl#Continent"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Country"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#County"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Government"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#GoverningBody"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#FederalGoverningBody"  to="humanJurisdiction.owl#GoverningBody"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#FederalGoverningBody"  to="humanJurisdiction.owl#Federal"  type="owl:equivalentClass" />
+<association  from="humanJurisdiction.owl#Jurisdiction"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#MetropolitanArea"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#MetropolitanStatisticalArea"  to="humanJurisdiction.owl#MetropolitanArea"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#MetropolitanStatisticalArea"  to="humanJurisdiction.owl#MSA"  type="owl:equivalentClass" />
+<association  from="humanJurisdiction.owl#Military"  to="humanJurisdiction.owl#Jurisdiction"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Military"  to="humanJurisdiction.owl#Civil"  type="owl:disjointWith" />
+<association  from="humanJurisdiction.owl#Province"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#StandardsBody"  to="humanJurisdiction.owl#GoverningBody"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#State"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#SpecialAdministrationRegion"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#SpecialAdministrationRegion"  to="humanJurisdiction.owl#SAR"  type="owl:equivalentClass" />
+<association  from="humanJurisdiction.owl#StandardMetropolitanStatisticalArea"  to="humanJurisdiction.owl#MetropolitanArea"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#StandardMetropolitanStatisticalArea"  to="humanJurisdiction.owl#SMSA"  type="owl:equivalentClass" />
+<association  from="humanJurisdiction.owl#UrbanArea"  to="humanJurisdiction.owl#AdministrativeRegion"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Penalty"  to="humanJurisdiction.owl#Enforcement"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Permit"  to="humanJurisdiction.owl#GovtActivity"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Policy"  to="humanJurisdiction.owl#GoverningBodyProduct"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Regulation"  to="humanJurisdiction.owl#HumanLaw"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Standard"  to="humanJurisdiction.owl#GoverningBodyProduct"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Treaty"  to="humanJurisdiction.owl#HumanLaw"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#HumanLaw"  to="humanJurisdiction.owl#GoverningBodyProduct"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#Enforcement"  to="humanJurisdiction.owl#GovtActivity"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#GovtActivity"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanJurisdiction.owl#GoverningBodyProduct"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#AtmosphericScience"  to="humanKnowledgeDomain.owl#PlanetaryScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Meteorology"  to="humanKnowledgeDomain.owl#AtmosphericScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Climatology"  to="humanKnowledgeDomain.owl#PlanetaryScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Paleoclimatology"  to="humanKnowledgeDomain.owl#Climatology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Phenology"  to="humanKnowledgeDomain.owl#Climatology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Anatomy"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Biochemistry"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Biology"  to="humanKnowledgeDomain.owl#Science"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Genetics"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Physiology"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Paleontology"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Ecology"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#LandscapeEcology"  to="humanKnowledgeDomain.owl#Ecology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Geology"  to="humanKnowledgeDomain.owl#Science"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Biogeochemistry"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Biogeochemistry"  to="humanKnowledgeDomain.owl#Geochemistry"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Geochemistry"  to="humanKnowledgeDomain.owl#Chemistry"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Geochemistry"  to="humanKnowledgeDomain.owl#Geology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Geophysics"  to="humanKnowledgeDomain.owl#Geology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Geophysics"  to="humanKnowledgeDomain.owl#Physics"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Petrology"  to="humanKnowledgeDomain.owl#Geology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Lithology"  to="humanKnowledgeDomain.owl#Petrology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Petrography"  to="humanKnowledgeDomain.owl#Petrology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Stratigraphy"  to="humanKnowledgeDomain.owl#Petrology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Seismology"  to="humanKnowledgeDomain.owl#Geology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Tectonics"  to="humanKnowledgeDomain.owl#Geology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Neotectonics"  to="humanKnowledgeDomain.owl#Tectonics"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#PlateTectonics"  to="humanKnowledgeDomain.owl#Tectonics"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Engineering"  to="humanKnowledgeDomain.owl#KnowledgeDomain"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#BehavioralScience"  to="humanKnowledgeDomain.owl#KnowledgeDomain"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Economics"  to="humanKnowledgeDomain.owl#BehavioralScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Sociology"  to="humanKnowledgeDomain.owl#BehavioralScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Psychology"  to="humanKnowledgeDomain.owl#BehavioralScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Hydrology"  to="humanKnowledgeDomain.owl#PlanetaryScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Limnology"  to="humanKnowledgeDomain.owl#Hydrology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Oceanography"  to="humanKnowledgeDomain.owl#PlanetaryScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Oceanography"  to="humanKnowledgeDomain.owl#MarineScience"  type="owl:equivalentClass" />
+<association  from="humanKnowledgeDomain.owl#Oceanology"  to="humanKnowledgeDomain.owl#Oceanography"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Rheology"  to="humanKnowledgeDomain.owl#Physics"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Physics"  to="humanKnowledgeDomain.owl#Science"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Mechanics"  to="humanKnowledgeDomain.owl#Physics"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Thermodynamics"  to="humanKnowledgeDomain.owl#Physics"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Dynamics"  to="humanKnowledgeDomain.owl#Physics"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Science"  to="humanKnowledgeDomain.owl#KnowledgeDomain"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#NutritionScience"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Toxicology"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Epidemiology"  to="humanKnowledgeDomain.owl#Biology"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Photochemistry"  to="humanKnowledgeDomain.owl#Chemistry"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Chemistry"  to="humanKnowledgeDomain.owl#Science"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Mineralogy"  to="humanKnowledgeDomain.owl#Science"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#PlanetaryScience"  to="humanKnowledgeDomain.owl#Science"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#PlanetaryScience"  to="humanKnowledgeDomain.owl#Planetology"  type="owl:equivalentClass" />
+<association  from="humanKnowledgeDomain.owl#Geodesy"  to="humanKnowledgeDomain.owl#PlanetaryScience"  type="rdfs:subClassOf" />
+<association  from="humanKnowledgeDomain.owl#Geodesy"  to="humanKnowledgeDomain.owl#Geodetics"  type="owl:equivalentClass" />
+<association  from="humanKnowledgeDomain.owl#Geodesy"  to="humanKnowledgeDomain.owl#GeodeticScience"  type="owl:equivalentClass" />
+<association  from="humanKnowledgeDomain.owl#HumanDimension"  to="humanKnowledgeDomain.owl#KnowledgeDomain"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Analysis"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#AppliedResearch"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Assessment"  to="humanResearch.owl#Investigation"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Campaign"  to="humanResearch.owl#ExperimentActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Correction"  to="humanResearch.owl#ExperimentActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Difference"  to="humanResearch.owl#ExperimentActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Evidence"  to="humanResearch.owl#Assessment"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Experiment"  to="humanResearch.owl#Investigation"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#ExperimentActivity"  to="humanResearch.owl#Experiment"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#HypothesisTest"  to="humanResearch.owl#ExperimentActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Investigation"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Investigation"  to="humanResearch.owl#Investigate"  type="owl:equivalentClass" />
+<association  from="humanResearch.owl#Monitor"  to="humanResearch.owl#ResearchExploration"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Monitor"  to="humanResearch.owl#Monitoring"  type="owl:equivalentClass" />
+<association  from="humanResearch.owl#Observation"  to="humanResearch.owl#Investigation"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Observation"  to="humanResearch.owl#Observe"  type="owl:equivalentClass" />
+<association  from="humanResearch.owl#Project"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Proof"  to="humanResearch.owl#Validation"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Publication"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Realization"  to="humanResearch.owl#ExperimentActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Research"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#ResearchExploration"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Residual"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Result"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Sample"  to="humanResearch.owl#ExperimentActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#Validation"  to="humanResearch.owl#ExperimentActivity"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#WeightOfEvidence"  to="humanResearch.owl#Assessment"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#ResearchSetting"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#ProofOfConcept"  to="humanResearch.owl#Proof"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#ProofOfConcept"  to="humanResearch.owl#Research"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#EndToEndEnvironment"  to="humanResearch.owl#ResearchSetting"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#EndToEndEnvironment"  to="humanResearch.owl#LaboratoryEnvironment"  type="owl:disjointWith" />
+<association  from="humanResearch.owl#LaboratoryEnvironment"  to="humanResearch.owl#ResearchSetting"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#MissionTestedEnvironment"  to="humanResearch.owl#ResearchSetting"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#MissionTestedEnvironment"  to="humanResearch.owl#LaboratoryEnvironment"  type="owl:disjointWith" />
+<association  from="humanResearch.owl#OperationalEnvironment"  to="humanResearch.owl#ResearchSetting"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#OperationalEnvironment"  to="humanResearch.owl#LaboratoryEnvironment"  type="owl:disjointWith" />
+<association  from="humanResearch.owl#RepresentativeEnvironment"  to="humanResearch.owl#ResearchSetting"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#RepresentativeEnvironment"  to="humanResearch.owl#LaboratoryEnvironment"  type="owl:disjointWith" />
+<association  from="humanResearch.owl#VerifiedValidatedEnvironment"  to="humanResearch.owl#ResearchSetting"  type="rdfs:subClassOf" />
+<association  from="humanResearch.owl#VerifiedValidatedEnvironment"  to="humanResearch.owl#LaboratoryEnvironment"  type="owl:disjointWith" />
+<association  from="humanTechReadiness.owl#Technology"  to="matrEquipment.owl#Infrastructure"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TechnologyReadinessLevel"  to="humanTechReadiness.owl#TRL"  type="owl:equivalentClass" />
+<association  from="humanTechReadiness.owl#TRL1"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL2"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL3"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL4"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL5"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL6"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL7"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL8"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTechReadiness.owl#TRL9"  to="humanTechReadiness.owl#TRL"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Evacuation"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Transit"  to="humanTransportation.owl#Transportation"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Transport"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Transportation"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#GroundTransportation"  to="humanTransportation.owl#Transportation"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#AirTransportation"  to="humanTransportation.owl#Transportation"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Arrival"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Departure"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Aviation"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#CivilAviation"  to="humanTransportation.owl#Aviation"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#MilitaryAviation"  to="humanTransportation.owl#Aviation"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#AirTraffic"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#AirTrafficControl"  to="humanCommerce.owl#Management"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Flight"  to="humanTransportation.owl#AirTransportation"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Landing"  to="humanTransportation.owl#Arrival"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Takeoff"  to="humanTransportation.owl#Departure"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Liftoff"  to="humanTransportation.owl#Departure"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Ascent"  to="humanTransportation.owl#Departure"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#Descent"  to="humanTransportation.owl#Arrival"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#SpaceProgram"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="humanTransportation.owl#SpaceTravel"  to="humanTransportation.owl#SpaceProgram"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Alloy"  to="matr.owl#Solution"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Chemical"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Chemical"  to="matr.owl#ChemicalSubstance"  type="owl:equivalentClass" />
+<association  from="matr.owl#Colloid"  to="matr.owl#Mixture"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Inorganic"  to="matr.owl#ChemicalSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Inorganic"  to="matr.owl#InorganicSubstance"  type="owl:equivalentClass" />
+<association  from="matr.owl#Medium"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Mixture"  to="matr.owl#ChemicalSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Mixture"  to="matr.owl#MixedChemicalSubstance"  type="owl:equivalentClass" />
+<association  from="matr.owl#Solution"  to="matr.owl#Mixture"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Cement"  to="matr.owl#Mixture"  type="rdfs:subClassOf" />
+<association  from="matr.owl#SolidSubstance"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#TraceSubstance"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#TraceGas"  to="matr.owl#TraceSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#SuspendedSubstance"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#NeutralGas"  to="matr.owl#ChemicalSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#SuspendedGas"  to="matr.owl#SuspendedSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#SuspendedSolid"  to="matr.owl#SolidSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#SuspendedSolid"  to="matr.owl#SuspendedSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#DissolvedSolid"  to="matr.owl#DissolvedSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#DissolvedSolid"  to="matr.owl#SolidSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#Air"  to="matr.owl#Mixture"  type="rdfs:subClassOf" />
+<association  from="matr.owl#GreenhouseGas"  to="matr.owl#ChemicalSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#BiodegradableDissolvedOrganicCarbon"  to="matr.owl#DissolvedOrganicCarbon"  type="rdfs:subClassOf" />
+<association  from="matr.owl#BiodegradableDissolvedOrganicCarbon"  to="matr.owl#BDOC"  type="owl:equivalentClass" />
+<association  from="matr.owl#DissolvedGas"  to="matr.owl#DissolvedSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#DissolvedSubstance"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#DissolvedOxygen"  to="matr.owl#DissolvedSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#DissolvedOxygen"  to="matr.owl#DO"  type="owl:equivalentClass" />
+<association  from="matr.owl#DissolvedOrganicCarbon"  to="matr.owl#DissolvedSubstance"  type="rdfs:subClassOf" />
+<association  from="matr.owl#DissolvedOrganicCarbon"  to="matr.owl#DOC"  type="owl:equivalentClass" />
+<association  from="matr.owl#OrganicLoading"  to="matr.owl#DissolvedSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Aerosol"  to="matr.owl#SuspendedSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#CarbonaceousAerosol"  to="matrAerosol.owl#Aerosol"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#ContinentalAerosol"  to="matrAerosol.owl#Aerosol"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#FugitiveDust"  to="matrAerosol.owl#Dust"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#PM1"  to="matrAerosol.owl#Particulate"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#PM2point5"  to="matrAerosol.owl#Particulate"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#PM10"  to="matrAerosol.owl#Particulate"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Particulate"  to="matr.owl#SuspendedSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Pollen"  to="matrAerosol.owl#Particulate"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Smoke"  to="matr.owl#SuspendedSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Spray"  to="matrAerosol.owl#Aerosol"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Soot"  to="matrAerosol.owl#Particulate"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Soot"  to="matrAerosol.owl#BlackCarbon"  type="owl:equivalentClass" />
+<association  from="matrAerosol.owl#Ash"  to="matr.owl#SolidSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Dust"  to="matr.owl#SolidSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#CondensationNuclei"  to="matr.owl#SolidSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#CloudCondensationNuclei"  to="matrAerosol.owl#CondensationNuclei"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#CloudCondensationNuclei"  to="matrAerosol.owl#CCN"  type="owl:equivalentClass" />
+<association  from="matrAerosol.owl#Grain"  to="matr.owl#SolidSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAerosol.owl#Powder"  to="matr.owl#SolidSubstance"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#AcornWorm"  to="matrAnimal.owl#Invertebrate"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Amphibian"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Anemone"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Animal"  to="matrBiomass.owl#Organism"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Arachnid"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Arthropod"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Bee"  to="matrAnimal.owl#Insect"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Bird"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Centipede"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Coral"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Cow"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Crustacean"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Dairy"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Echinoderm"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#ExoticSpecies"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Fauna"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Fish"  to="matrAnimal.owl#MarineAnimal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Flatworm"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Human"  to="matrAnimal.owl#Mammal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#IndigenousSpecies"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Invertebrate"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Insect"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Jellyfish"  to="matrAnimal.owl#MarineAnimal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Mammal"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#MarineAnimal"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#MarineBird"  to="matrAnimal.owl#MarineAnimal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#MarineInvertebrate"  to="matrAnimal.owl#MarineAnimal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#MarineMammal"  to="matrAnimal.owl#MarineAnimal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Millipede"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Mollusk"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Poultry"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Reptile"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Roundworm"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#SegmentedWorm"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Silkworm"  to="matrAnimal.owl#Invertebrate"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Sponge"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Vertebrate"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Zooplankton"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Mesozooplankton"  to="matrAnimal.owl#Zooplankton"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Microzooplankton"  to="matrAnimal.owl#Zooplankton"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Livestock"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrAnimal.owl#Poultry"  to="matrAnimal.owl#Animal"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#AquaticOrganism"  to="matrBiomass.owl#Organism"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Biomass"  to="matrBiomass.owl#LivingEntity"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Honey"  to="matrBiomass.owl#Food"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Food"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Feed"  to="matrBiomass.owl#Food"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Fertilizer"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Litter"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Humus"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Detritus"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Organism"  to="matrBiomass.owl#LivingEntity"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#LivingEntity"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Species"  to="matrBiomass.owl#Organism"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#IndicatorSpecies"  to="matrBiomass.owl#Species"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#IndicatorSpecies"  to="matrBiomass.owl#Bioindicator"  type="owl:equivalentClass" />
+<association  from="matrBiomass.owl#Manure"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#AnimalWaste"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Gelbstoff"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#Wood"  to="matrBiomass.owl#Biomass"  type="rdfs:subClassOf" />
+<association  from="matrBiomass.owl#WoodDebris"  to="matrBiomass.owl#Wood"  type="rdfs:subClassOf" />
+<association  from="matrCompound.owl#Compound"  to="matr.owl#Chemical"  type="rdfs:subClassOf" />
+<association  from="matrCompound.owl#Compound"  to="matrCompound.owl#ChemicalCompound"  type="owl:equivalentClass" />
+<association  from="matrCompound.owl#InorganicCompound"  to="matrCompound.owl#Compound"  type="rdfs:subClassOf" />
+<association  from="matrCompound.owl#Clathrate"  to="matrCompound.owl#InorganicCompound"  type="rdfs:subClassOf" />
+<association  from="matrCompound.owl#Peroxide"  to="matrCompound.owl#InorganicCompound"  type="rdfs:subClassOf" />
+<association  from="matrCompound.owl#InorganicAcid"  to="matrCompound.owl#InorganicCompound"  type="rdfs:subClassOf" />
+<association  from="matrCompound.owl#Perchlorate"  to="matrCompound.owl#InorganicAcid"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Battery"  to="matrEnergy.owl#EnergyStorage"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Biodiesel"  to="matrEnergy.owl#Biofuel"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Biofuel"  to="matrEnergy.owl#Fuel"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Biomass"  to="matrEnergy.owl#EnergyStorage"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#CompundParabolicConcentrator"  to="matrEnergy.owl#EnergyCollector"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#EnergyCollector"  to="matrEquipment.owl#Infrastructure"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#EnergyConversionDevice"  to="matrEquipment.owl#Infrastructure"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#EnergyDistributionSystem"  to="matrEquipment.owl#Infrastructure"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Ethanol"  to="matrEnergy.owl#Biofuel"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#FlatPlateCollector"  to="matrEnergy.owl#EnergyCollector"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Fuel"  to="matrEnergy.owl#EnergyStorage"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#FuelCell"  to="matrEnergy.owl#EnergyStorage"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#GeothermalPowerPlant"  to="matrEnergy.owl#PowerPlant"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Heater"  to="matrEnergy.owl#EnergyConversionDevice"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#HeatExchanger"  to="matrEnergy.owl#EnergyDistributionSystem"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#HeatPump"  to="matrEnergy.owl#EnergyDistributionSystem"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#HydrogenEnergy"  to="matrEnergy.owl#EnergyStorage"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#ParabolicTrough"  to="matrEnergy.owl#EnergyCollector"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#PhotovoltaicCell"  to="matrEnergy.owl#EnergyCollector"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#PowerGrid"  to="matrEnergy.owl#EnergyDistributionSystem"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#PowerPlant"  to="matrEnergy.owl#EnergyConversionDevice"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#PowerTransmissionFacility"  to="matrEquipment.owl#Infrastructure"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#Refrigerator"  to="matrEnergy.owl#EnergyConversionDevice"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#SmartGrid"  to="matrEnergy.owl#PowerGrid"  type="rdfs:subClassOf" />
+<association  from="matrEnergy.owl#TubularCollector"  to="matrEnergy.owl#EnergyCollector"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Aircraft"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Airplane"  to="matrEquipment.owl#Aircraft"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Helicopter"  to="matrEquipment.owl#Aircraft"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Jet"  to="matrEquipment.owl#Aircraft"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#NavigationEquipment"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Navigation"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#TransportationEquipment"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Rocket"  to="matrEquipment.owl#Spacecraft"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Satellite"  to="matrEquipment.owl#Spacecraft"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Spacecraft"  to="matrEquipment.owl#TransportationEquipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#SpaceShuttle"  to="matrEquipment.owl#Spacecraft"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Car"  to="matrEquipment.owl#Vehicle"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Rover"  to="matrEquipment.owl#Vehicle"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Trailer"  to="matrEquipment.owl#Vehicle"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Train"  to="matrEquipment.owl#Vehicle"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Truck"  to="matrEquipment.owl#Vehicle"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#EmergencyVehicle"  to="matrEquipment.owl#Vehicle"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Vehicle"  to="matrEquipment.owl#TransportationEquipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Ship"  to="matrEquipment.owl#Vehicle"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Pipeline"  to="matrEquipment.owl#TransportationEquipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Antenna"  to="matrEquipment.owl#CommunicationEquipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Communication"  to="human.owl#HumanActivity"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Communication"  to="matrEquipment.owl#Communications"  type="owl:equivalentClass" />
+<association  from="matrEquipment.owl#CommunicationEquipment"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#CommunicationMethod"  to="matrEquipment.owl#Communication"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Distortion"  to="matrEquipment.owl#Signal"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Internet"  to="matrEquipment.owl#CommunicationMethod"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#LandLine"  to="matrEquipment.owl#Phone"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Noisy"  to="matrEquipment.owl#Reception"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Phone"  to="matrEquipment.owl#CommunicationEquipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Phone"  to="matrEquipment.owl#CommunicationMethod"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#MobilePhone"  to="matrEquipment.owl#Phone"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Radio"  to="matrEquipment.owl#CommunicationEquipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Radio"  to="matrEquipment.owl#CommunicationMethod"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Receive"  to="matrEquipment.owl#Communication"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Receive"  to="matrEquipment.owl#Reception"  type="owl:equivalentClass" />
+<association  from="matrEquipment.owl#Signal"  to="matrEquipment.owl#Communication"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Transmit"  to="matrEquipment.owl#Communication"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Transmit"  to="matrEquipment.owl#Transmission"  type="owl:equivalentClass" />
+<association  from="matrEquipment.owl#Wireless"  to="matrEquipment.owl#CommunicationMethod"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#MaterialThing"  to="matr.owl#Substance"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#ComputerHardware"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Equipment"  to="matrEquipment.owl#Infrastructure"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Sink"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Infrastructure"  to="matrEquipment.owl#MaterialThing"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#ArtesianWell"  to="matrEquipment.owl#ConfinedWell"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Borehole"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#ConfinedWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#DisposalWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#DrainageWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#InjectionWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#MonitoringWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#PumpingWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#RechargeWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#UnconfinedWell"  to="matrEquipment.owl#Well"  type="rdfs:subClassOf" />
+<association  from="matrEquipment.owl#Well"  to="matrEquipment.owl#Equipment"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Base"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Building"  to="matrFacility.owl#Structure"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#CulturalFeature"  to="matrFacility.owl#Structure"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Dome"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Facility"  to="matrFacility.owl#Structure"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Habitat"  to="matrFacility.owl#Building"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Platform"  to="matrFacility.owl#Structure"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Station"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Structure"  to="matrEquipment.owl#Infrastructure"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#MeteorologicalFacility"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Meteostation"  to="matrFacility.owl#MeteorologicalFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#CommunicationFacility"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#TransportationFacility"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#AgriculturalProductionFacility"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Farm"  to="matrFacility.owl#AgriculturalProductionFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Fishery"  to="matrFacility.owl#AgriculturalProductionFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Plantation"  to="matrFacility.owl#Farm"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Airport"  to="matrFacility.owl#AirportFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#AirportFacility"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#AirTrafficControlCenter"  to="matrFacility.owl#AirportFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#AirTrafficControlEnRouteCenter"  to="matrFacility.owl#AirTrafficControlCenter"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#AirTrafficControlRadarRoom"  to="matrFacility.owl#AirportFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#AirTrafficControlTower"  to="matrFacility.owl#AirportFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#AirTransitway"  to="matrFacility.owl#AirportFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Runway"  to="matrFacility.owl#AirportFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#Mine"  to="matrFacility.owl#MiningFacility"  type="rdfs:subClassOf" />
+<association  from="matrFacility.owl#MiningFacility"  to="matrFacility.owl#Facility"  type="rdfs:subClassOf" />
+</entries>
