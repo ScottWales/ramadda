@@ -189,7 +189,7 @@ public class HtmlOutputHandler extends OutputHandler {
                               msg(LABEL_LINKS)), Misc.newList(sb.toString(),
                                   links), true, "tab_content");
 
-        contents =  getInformationTabs(request, entry, true);
+        contents =  getInformationTabs(request, entry, true, true);
         //        String       contents = sb.toString();
 
         StringBuffer xml = new StringBuffer("<content>\n");
@@ -290,7 +290,8 @@ public class HtmlOutputHandler extends OutputHandler {
         } else {
             addDescription(request, entry, sb, true);
             String informationBlock = getInformationTabs(request, entry,
-                                          false);
+                                                         false,
+                                                         false);
             sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
                     informationBlock, true));
 
@@ -552,6 +553,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
+        //            sb.append(getInformationTabs(request, parent, true, true));
         if (cnt == 0) {
             sb.append(HtmlUtil.tag(HtmlUtil.TAG_I, "",
                                    msg("No entries in this folder")));
@@ -566,7 +568,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
         }
-
 
         StringBuffer xml = new StringBuffer("<response><content>\n");
         XmlUtil.appendCdata(xml,
@@ -720,15 +721,16 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getInformationTabs(Request request, Entry entry,
+                                     boolean includeDescription,
                                      boolean fixedHeight)
             throws Exception {
         String desc        = entry.getDescription();
         List   tabTitles   = new ArrayList<String>();
         List   tabContents = new ArrayList<String>();
-        if (desc.length() > 0) {
-            //            tabTitles.add("Description");
-            //            desc = getEntryManager().processText(request, entry, desc);
-            //            tabContents.add(desc);
+        if (includeDescription && desc.length() > 0) {
+            tabTitles.add("Description");
+            desc = getEntryManager().processText(request, entry, desc);
+            tabContents.add(desc);
         }
 
         tabTitles.add("Basic");
@@ -864,7 +866,8 @@ public class HtmlOutputHandler extends OutputHandler {
         } else if ((wikiTemplate == null) && !group.isDummy()) {
             addDescription(request, group, sb, !hasChildren);
             String informationBlock = getInformationTabs(request, group,
-                                          false);
+                                                         false,
+                                                         false);
             sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
                     informationBlock,
                     request.get(ARG_SHOW_ASSOCIATIONS, !hasChildren)));

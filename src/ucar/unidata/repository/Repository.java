@@ -491,8 +491,12 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private List<PageDecorator> pageDecorators =
         new ArrayList<PageDecorator>();
 
+    private List<ImportHandler> importHandlers = new ArrayList<ImportHandler>();
+
 
     private HttpClient httpClient;
+
+
 
     /**
      * _more_
@@ -1625,6 +1629,12 @@ public class Repository extends RepositoryBase implements RequestHandler {
         }
     }
 
+    public List<ImportHandler> getImportHandlers() {
+        return importHandlers;
+    }
+
+
+
     /**
      * _more_
      *
@@ -1709,6 +1719,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
             super(path, parent);
         }
 
+
+
+                                   
+
         /**
          * _more_
          *
@@ -1717,6 +1731,19 @@ public class Repository extends RepositoryBase implements RequestHandler {
          * @throws Exception _more_
          */
         protected void checkClass(Class c) throws Exception {
+            if (ImportHandler.class.isAssignableFrom(c)) {
+                getLogManager().logInfo("Adding import handler:"
+                                        + c.getName());
+                Constructor ctor = Misc.findConstructor(c, new Class[]{Repository.class});
+                if(ctor!=null) {
+                    importHandlers.add((ImportHandler) ctor.newInstance(new Object[]{Repository.this}));
+                } else {
+                    importHandlers.add((ImportHandler) ctor.newInstance());
+                }
+                return;
+            }
+
+
             if (UserAuthenticator.class.isAssignableFrom(c)) {
                 getLogManager().logInfo("Adding authenticator:"
                                         + c.getName());
@@ -2837,6 +2864,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
         if(path.indexOf("/graph")>=0 && path.endsWith(".jar")) {
             path = "/repository/applets/graph.jar";
+        }
+
+        if(path.indexOf("/gantt")>=0 && path.endsWith(".jar")) {
+            path = "/repository/applets/gantt/gantt.jar";
         }
 
         if (!path.startsWith(getUrlBase())) {

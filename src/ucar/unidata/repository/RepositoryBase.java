@@ -385,7 +385,9 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String formatYYYYMMDD(Date date) {
-        return dateSdf.format(date);
+        synchronized(dateSdf) {
+            return dateSdf.format(date);
+        }
     }
 
     /**
@@ -495,7 +497,9 @@ public class RepositoryBase implements Constants, RepositorySource {
         if (d == null) {
             return BLANK;
         }
-        return dateFormat.format(d);
+        synchronized(dateFormat) {
+            return dateFormat.format(d);
+        }
     }
 
 
@@ -522,7 +526,9 @@ public class RepositoryBase implements Constants, RepositorySource {
 
         for (SimpleDateFormat fmt : formats) {
             try {
-                return fmt.parse(dttm);
+                synchronized(fmt) {
+                    return fmt.parse(dttm);
+                }
             } catch (Exception noop) {}
         }
         throw new IllegalArgumentException("Unable to parse date:" + dttm);

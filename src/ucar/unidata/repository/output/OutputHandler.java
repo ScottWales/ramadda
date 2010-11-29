@@ -1995,7 +1995,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         if (include.equals(WIKIPROP_INFORMATION)) {
             blockContent =
                 getRepository().getHtmlOutputHandler().getInformationTabs(
-                    request, entry, true);
+                                                                          request, entry, false, true);
             blockTitle = Misc.getProperty(props, "title", msg("Information"));
         } else if (include.equals(WIKIPROP_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);

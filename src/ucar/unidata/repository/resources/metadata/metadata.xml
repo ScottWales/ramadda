@@ -14,6 +14,18 @@
       <element name="Wiki Category" />
     </type>
 
+    <type name="Property" id="property"  searchable="true" browsable="true">
+      <element name="Name"  searchable="true"/>
+      <element name="Value"  searchable="true"/>
+      <template type="thredds"><![CDATA[<property name="${Name}" value="${Value}"/>]]></template>
+      <template type="html"><![CDATA[ ${Name}=${Value}]]></template>
+    </type>
+
+    <type name="Synonym" id="synonym"  searchable="true" browsable="true">
+      <element name="Value"  searchable="true"/>
+      <template type="thredds"><![CDATA[<property name="synonym" value="${Value}"/>]]></template>
+      <template type="html"><![CDATA[ ${Value}]]></template>
+    </type>
 
   </handler>
 

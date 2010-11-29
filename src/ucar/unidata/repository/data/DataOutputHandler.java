@@ -1053,7 +1053,7 @@ public class DataOutputHandler extends OutputHandler {
                 sb.append(getRepository().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
-                        request, entry, false));
+                                                                              request, entry, false, false));
 
             } else {
                 sb.append("You cannot add properties");

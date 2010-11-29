@@ -897,8 +897,7 @@ public class TypeHandler extends RepositoryManager {
         DatabaseManager dbm        = getDatabaseManager();
         Date            createDate = null;
 
-        entry.initEntry(results.getString(col++), results
-            .getString(col++), 
+        entry.initEntry(results.getString(col++), results.getString(col++), 
                         getEntryManager().findGroup(null, results.getString(col++)), 
                         getUserManager()
             .findUser(results
