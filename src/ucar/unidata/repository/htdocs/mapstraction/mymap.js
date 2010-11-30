@@ -109,18 +109,19 @@ function hiliteEntry(map,id) {
 
 var mapSelector;
 
+
 function MapSelector (argBase, absolute) {
     mapSelector = this;
     this.doFirst = 1;
     this.argBase = argBase;
     this.absolute = absolute;
 
-    this.fldNorth= util.getDomObject(argBase+"_north");
-    this.fldSouth= util.getDomObject(argBase+"_south");
-    this.fldEast= util.getDomObject(argBase+"_east");
-    this.fldWest= util.getDomObject(argBase+"_west");
-    this.fldLat= util.getDomObject(argBase+"_lat");
-    this.fldLon= util.getDomObject(argBase+"_lon");
+    this.fldNorth= util.getDomObject(argBase+".north");
+    this.fldSouth= util.getDomObject(argBase+".south");
+    this.fldEast= util.getDomObject(argBase+".east");
+    this.fldWest= util.getDomObject(argBase+".west");
+    this.fldLat= util.getDomObject(argBase+".lat");
+    this.fldLon= util.getDomObject(argBase+".lon");
 
     this.selectorPolyline = null;
 
