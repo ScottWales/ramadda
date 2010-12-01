@@ -132,6 +132,7 @@
       <api request="/admin/access"       method="adminAccess"         />
       <api request="/admin/cleanup"      method="adminCleanup"       />
       <api request="/admin/scan"         method="adminScanForBadParents" />
+      <api request="/admin/stack"        method="adminPrintStack" />
   </group>
 
   <group handler="harvestermanager">

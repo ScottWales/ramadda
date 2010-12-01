@@ -1774,6 +1774,12 @@ public class Admin extends RepositoryManager {
         return makeResult(request, msg("Scan"), sb);
     }
 
+    public Result adminPrintStack(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<pre>" +LogUtil.getStackDump(true)+"</pre>");
+        return makeResult(request, msg("Stack Trace"), sb);
+    }
+
 
     /**
      * _more_
