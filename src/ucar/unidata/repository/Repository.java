@@ -497,6 +497,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private HttpClient httpClient;
 
 
+    private boolean active = true;
+
 
     /**
      * _more_
@@ -717,12 +719,19 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
 
 
+    public boolean getActive() {
+        return active;
+    }
+
+
     /**
      * _more_
      *
      * @throws Exception _more_
      */
     public void close() throws Exception {
+        System.err.println ("RAMADDA: close");
+        active = false;
         getDatabaseManager().shutdown();
         getFtpManager().shutdown();
     }

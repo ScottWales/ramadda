@@ -57,8 +57,9 @@ import java.util.List;
 public class LogManager extends RepositoryManager {
 
     /** _more_ */
-    private final Logger LOG = Logger.getLogger(LogManager.class);
+    private  Logger LOGGER;
 
+    private  boolean LOGGER_OK = true;
 
     /** _more_ */
     public static boolean debug = true;
@@ -103,13 +104,38 @@ public class LogManager extends RepositoryManager {
     }
 
 
+
+    /**
+     * Create if needed and return the logger
+     */
+    private Logger getLogger() {
+        //Check if we've already had an error
+        if(!LOGGER_OK) return null;
+        if(LOGGER == null) {
+            try {
+                LOGGER = Logger.getLogger(LogManager.class);
+            } catch(Exception exc) {
+                LOGGER_OK = false;
+                System.err.println ("Error getting logger: " + exc);
+                exc.printStackTrace();
+            }
+        }
+        return LOGGER;
+    }
+
+
     /**
      * _more_
      *
      * @param message _more_
      */
     public void debug(String message) {
-        LOG.debug(message);
+        Logger logger = getLogger();
+        if(logger!=null)  {
+            logger.debug(message);
+        } else {
+            System.err.println ("RAMADDA DEBUG:" + message);
+        }
     }
 
 
@@ -163,7 +189,12 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logInfo(String message) {
-        LOG.info(message);
+        Logger logger = getLogger();
+        if(logger!=null) {
+            logger.info(message);
+        } else {
+            System.err.println ("RAMADDA INFO:" + message);
+        }
     }
 
 
@@ -173,7 +204,12 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logError(String message) {
-        LOG.error(message);
+        Logger logger = getLogger();
+        if(logger!=null) {
+            logger.error(message);
+        } else {
+            System.err.println ("RAMADDA ERROR:" + message);
+        }
     }
 
 
@@ -183,7 +219,12 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logWarning(String message) {
-        LOG.warn(message);
+        Logger logger = getLogger();        
+        if(logger!=null) {
+            logger.warn(message);
+        } else {
+            System.err.println ("RAMADDA WARNING:" + message);
+        }
     }
 
 
@@ -208,7 +249,7 @@ public class LogManager extends RepositoryManager {
      * @param exc _more_
      */
     public void logError(String message, Throwable exc) {
-        logError(LOG, message, exc);
+        logError(getLogger(), message, exc);
     }
 
     /**
@@ -223,6 +264,11 @@ public class LogManager extends RepositoryManager {
         Throwable thr = null;
         if (exc != null) {
             thr = LogUtil.getInnerException(exc);
+        }
+
+
+        if(log==null) {
+            System.err.println ("RAMADDA ERROR:" + message + " " + thr);
         }
 
 

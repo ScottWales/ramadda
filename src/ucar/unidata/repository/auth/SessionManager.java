@@ -162,7 +162,6 @@ public class SessionManager extends RepositoryManager {
 
 
 
-
     /**
      * _more_
      */
@@ -177,11 +176,17 @@ public class SessionManager extends RepositoryManager {
                 logException("Culling sessions", exc);
                 return;
             }
-            //            cull every hour
-            Misc.sleepSeconds(60 * 60);
-            //            Misc.sleepSeconds(5);
+            //Wake up every minute to see if we're shutdown
+            //but do the cull every hour
+            for(int minuteIdx= 0;minuteIdx<60;minuteIdx++) {
+                Misc.sleepSeconds(60);
+                if(!getActive()) {
+                    return;
+                }
+            }
         }
     }
+
 
 
     /**

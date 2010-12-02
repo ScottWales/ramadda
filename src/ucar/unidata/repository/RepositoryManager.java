@@ -122,6 +122,11 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    public boolean getActive() {
+        if(repository == null || !repository.getActive()) return false;
+        return true;
+    }
+
 
     /**
      * _more_

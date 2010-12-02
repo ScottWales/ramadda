@@ -1132,9 +1132,15 @@ return new Result(title, sb);
                 }
             }
 
-
+            boolean isGzip = resource.endsWith(".gz");
             if (unzipArchive && !IOUtil.isZipFile(resource)) {
-                unzipArchive = false;
+                if(!isGzip) {
+                    unzipArchive = false;
+                }
+            }
+
+            if(isGzip && unzipArchive) {
+                //TODO: use GZIPInputStream to unzip the file
             }
 
             if ( !unzipArchive) {

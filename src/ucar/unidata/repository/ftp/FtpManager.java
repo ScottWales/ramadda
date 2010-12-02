@@ -69,7 +69,8 @@ public class FtpManager extends RepositoryManager {
     public static final String DFLT_PASSIVE_PORTS = "44001-44099";
 
     /** _more_ */
-    private final Logger LOG = Logger.getLogger("org.apache.ftpserver");
+    private Logger LOG;
+
 
     /** _more_ */
     private FtpServer server;
@@ -96,6 +97,13 @@ public class FtpManager extends RepositoryManager {
     }
 
 
+    private Logger getLogger() {
+        if(LOG == null) {
+            LOG = Logger.getLogger("org.apache.ftpserver");
+        }
+        return LOG;
+    }
+
     /**
      * _more_
      *
@@ -103,7 +111,7 @@ public class FtpManager extends RepositoryManager {
      * @param exc _more_
      */
     public void logError(String message, Exception exc) {
-        getRepository().getLogManager().logError(LOG, "RAMADDA:" + message,
+        getRepository().getLogManager().logError(getLogger(), "RAMADDA:" + message,
                 exc);
     }
 
@@ -114,7 +122,7 @@ public class FtpManager extends RepositoryManager {
      * @param message _more_
      */
     public void logInfo(String message) {
-        LOG.info("RAMADDA:" + message);
+        getLogger().info("RAMADDA:" + message);
     }
 
 

@@ -539,7 +539,6 @@ public class IdvOutputHandler extends OutputHandler {
             addType(OUTPUT_IDV_POINT);
         } catch (java.awt.HeadlessException jahe) {
             getRepository().getLogManager().logWarning("To run the IdvOutputHandler a graphics environment is needed");
-
         } catch (Throwable exc) {
             logError(
                 "Creating IdvOutputHandler",

@@ -620,7 +620,7 @@ public class StorageManager extends RepositoryManager {
                 org.apache.log4j.PropertyConfigurator.configure(
                                                                 log4JFile.toString());
             } catch(Exception exc) {
-                System.err.println ("Error configuring log4j:" + exc);
+                System.err.println ("RAMADDA: Error configuring log4j:" + exc);
             }
         }
         return logDir;
