@@ -858,6 +858,28 @@ public class Repository extends RepositoryBase implements RequestHandler {
         }
 
 
+        //Now look around the tomcat environment                                          
+        String catalinaBase = null;
+        for(String arg: new String[]{"CATALINA_BASE","catalina.base","CATALINA_HOME","catalina.home"}) {
+            catalinaBase = getProperty(arg);
+            if(catalinaBase!=null) break;
+        }
+        if(catalinaBase!=null) {
+            File catalinaConfFile = new File(catalinaBase+"/conf/repository.properties");
+            System.err.println ("RAMADDA: looking for:" + catalinaConfFile);
+            if(catalinaConfFile.exists()) {
+                System.err.println ("RAMADDA:  loading " + catalinaConfFile);
+                load(properties, catalinaConfFile.toString());
+            } else {
+                //A hack to run on unavco facility server
+                if(new File("/export/home/jeffmc/ramaddadev").exists()) {
+                    System.err.println ("RAMADDA:  Using /export/home/jeffmc/ramaddadev");
+                    properties.put(PROP_REPOSITORY_HOME,"/export/home/jeffmc/ramaddadev");
+                }
+            }
+        }
+
+
         //Call the storage manager so it can figure out the home dir
         getStorageManager();
 
@@ -884,7 +906,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
 
         } catch (Exception exc) {}
-
 
         //create the log dir
         getStorageManager().getLogDir();
@@ -3512,13 +3533,13 @@ public class Repository extends RepositoryBase implements RequestHandler {
         }
 
 
-        //Then the  database properties  first
+        //Then the  database properties  
         if (checkDb && (prop == null)) {
             prop = (String) dbProperties.get(name);
         }
 
 
-        //then the  repository.properties first
+        //then the  repository.properties 
         if (prop == null) {
             prop = (String) properties.get(name);
         }

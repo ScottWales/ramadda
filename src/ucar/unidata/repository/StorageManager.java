@@ -603,7 +603,6 @@ public class StorageManager extends RepositoryManager {
             File f = new File(logDir);
             IOUtil.makeDirRecursive(f);
             File log4JFile = new File(f + "/" + "log4j.properties");
-
             //For now always write out the log from the jar
             if (true || !log4JFile.exists()) {
                 try {
@@ -617,8 +616,12 @@ public class StorageManager extends RepositoryManager {
                     throw new RuntimeException(exc);
                 }
             }
-            org.apache.log4j.PropertyConfigurator.configure(
-                log4JFile.toString());
+            try {
+                org.apache.log4j.PropertyConfigurator.configure(
+                                                                log4JFile.toString());
+            } catch(Exception exc) {
+                System.err.println ("Error configuring log4j:" + exc);
+            }
         }
         return logDir;
     }

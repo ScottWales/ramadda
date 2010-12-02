@@ -234,6 +234,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      */
     public void destroy() {
         super.destroy();
+        System.err.println("RepositoryServlet.destroy");
         if (repository != null) {
             try {
                 repository.close();

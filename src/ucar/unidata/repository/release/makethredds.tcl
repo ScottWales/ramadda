@@ -1,5 +1,4 @@
 
-
 file delete -force thredds
 file mkdir thredds
 cd thredds

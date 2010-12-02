@@ -143,7 +143,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     private static final String DB_ORACLE = "oracle";
 
     /** _more_ */
-    private DataSource dataSource;
+    private BasicDataSource dataSource;
 
     /** Keeps track of active connections */
     //    private Hashtable<Connection, ConnectionInfo> connectionMap =
@@ -263,7 +263,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
-    private DataSource doMakeDataSource() throws Exception {
+    private BasicDataSource doMakeDataSource() throws Exception {
         scourMessages = new ArrayList<String>();
         totalScours   = 0;
 
@@ -651,15 +651,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
     }
 
-
-
     /**
      * _more_
      *
      * @throws Exception _more_
      */
     public void shutdown() throws Exception {
-        //TODO: Close the datasource
+        if(dataSource!=null) {
+            dataSource.close();
+            dataSource = null;
+        }
     }
 
     /**
