@@ -508,13 +508,17 @@ public class ChatOutputHandler extends OutputHandler {
     }
 
 
+    public boolean getActive() {
+        return getRepository()!=null && getRepository().getActive();
+    }
+
     /**
      * _more_
      */
     public void run() {
         try {
             ServerSocket serverSocket = new ServerSocket(getChatPort());
-            while (true) {
+            while (getActive()) {
                 Socket         socket     = serverSocket.accept();
                 ChatConnection connection = new ChatConnection(socket);
                 synchronized (connections) {

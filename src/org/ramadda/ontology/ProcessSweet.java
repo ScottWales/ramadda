@@ -122,7 +122,6 @@ public class ProcessSweet {
 
         for (String file : files) {
             file = "owl/" + IOUtil.getFileTail(file);
-
             System.err.println("file:" + file);
             String filePrefix = IOUtil.getFileTail(file.toString());
             //if(cnt++>10) break;
