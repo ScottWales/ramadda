@@ -133,7 +133,7 @@ public class HtmlTemplate {
                 name = IOUtil.stripExtension(IOUtil.getFileTail(path));
             }
             if (id == null) {
-                id = IOUtil.stripExtension(IOUtil.getFileTail(path));
+                //                id = IOUtil.stripExtension(IOUtil.getFileTail(path));
             }
         } catch (Exception exc) {
             repository.getLogManager().logError("Error processing template: "

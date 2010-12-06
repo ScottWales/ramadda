@@ -1473,12 +1473,17 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_HTML_TEMPLATES = "ramadda.html.templates";
 
+    public static final String PROP_HTML_TEMPLATE_DEFAULT = "ramadda.html.template.default";
+
+
     /** _more_ */
     public static final String PROP_HTML_TIMELINEAPPLET =
         "ramadda.html.timelineapplet";
 
     /** _more_ */
     public static final String PROP_HTML_URLBASE = "ramadda.html.urlbase";
+
+
 
     /** _more_ */
     public static final String PROP_LANGUAGE = "ramadda.language";

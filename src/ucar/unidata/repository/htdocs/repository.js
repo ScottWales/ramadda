@@ -131,7 +131,6 @@ function Util () {
     }
 
 
-
     this.setPosition = function(obj,x,y) {
         obj.style.top = y;
         obj.style.left = x;

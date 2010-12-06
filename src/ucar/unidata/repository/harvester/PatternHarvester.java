@@ -1054,13 +1054,13 @@ public class PatternHarvester extends Harvester {
                         DFLT_INHERITED, (String) tags.get(i), "", "", ""));
             }
             }*/
-
-        //        System.err.println("Initializing new entry:" + typeHandler.getClass().getName());
-        //xxxxx        typeHandler.initializeNewEntry(entry);
-        return entry;
-
+        return initializeNewEntry(fileInfo, f, entry);
+        //        return entry;
     }
 
+    public Entry initializeNewEntry(FileInfo fileInfo, File originalFile, Entry entry) {
+        return entry;
+    }
 
     /**
      * _more_

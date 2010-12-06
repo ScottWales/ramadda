@@ -1308,6 +1308,7 @@ return new Result(title, sb);
                                + typeHandler.getDescription());
                 }
 
+
                 entry = typeHandler.createEntry(id);
 
                 entry.initEntry(name, description, parent, request.getUser(),
@@ -4985,6 +4986,8 @@ return new Result(title, sb);
                     String entryType = results.getString(2);
                     TypeHandler typeHandler =
                         getRepository().getTypeHandler(entryType);
+
+
                     entry = typeHandler.createEntryFromDatabase(results,
                             abbreviated);
                     checkEntryFileTime(entry);
@@ -5621,6 +5624,7 @@ return new Result(title, sb);
                 String path = getStorageManager().resourceToDB(
                                   entry.getResource().getPath());
                 Group  parentEntry = entry.getParentEntry();
+                if(parentEntry==null) continue;
                 String key         = parentEntry.getId() + "_" + path;
                 if (seenResources.contains(key)) {
                     nonUniqueOnes.add(entry);

@@ -291,7 +291,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         ds.setPassword(password);
         ds.setUrl(connectionURL);
 
-
         ds.setLogWriter(new Log4jPrintWriter(LOG));
 
         return ds;

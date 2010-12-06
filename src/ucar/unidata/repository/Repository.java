@@ -35,12 +35,6 @@ import ucar.unidata.repository.type.*;
 
 import ucar.unidata.repository.util.*;
 
-
-
-
-
-
-
 import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
@@ -339,6 +333,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private Hashtable namesHolder = new Hashtable();
 
 
+
+
+
     /** _more_ */
     private List<String> typeDefFiles = new ArrayList<String>();
 
@@ -360,6 +357,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
     /** _more_ */
     private List<String> pluginPropertyFiles = new ArrayList<String>();
+
+    /** _more_ */
+    private List<String> pluginTemplateFiles = new ArrayList<String>();
 
     /** _more_ */
     private List<String> pluginSqlFiles = new ArrayList<String>();
@@ -450,6 +450,11 @@ public class Repository extends RepositoryBase implements RequestHandler {
     /** _more_ */
     private List<String> htdocRoots = new ArrayList<String>();
 
+
+    /** _more_ */
+    private List<HtmlTemplate> templates;
+
+    private HtmlTemplate defaultTemplate;
 
     /** _more_ */
     private List<File> localFilePaths = new ArrayList<File>();
@@ -1021,6 +1026,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private void createTypeHandlers() throws Exception {
         for (String file : typeDefFiles) {
             file = getStorageManager().localizePath(file);
+            if(file.indexOf("ontology")<0) continue;
             Element entriesRoot = XmlUtil.getRoot(file, getClass());
             if (entriesRoot == null) {
                 continue;
@@ -1033,6 +1039,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
                     Misc.findClass(XmlUtil.getAttribute(entryNode,
                         TypeHandler.TAG_HANDLER,
                         "ucar.unidata.repository.type.GenericTypeHandler"));
+
+
                 Constructor ctor = Misc.findConstructor(handlerClass,
                                        new Class[] { Repository.class,
                         Element.class });
@@ -1897,6 +1905,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
             pythonLibs.add(file);
         } else if (file.endsWith(".sql")) {
             pluginSqlFiles.add(file);
+        } else if (file.endsWith("template.html")) {
+            pluginTemplateFiles.add(file);
         } else if (file.endsWith(".properties")) {
             if (fromPlugin) {
                 pluginPropertyFiles.add(file);
@@ -3415,18 +3425,38 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
             imports = imports.replace("${root}", getRepository().getUrlBase());
             theTemplates = new ArrayList<HtmlTemplate>();
+            String defaultId = getProperty(PROP_HTML_TEMPLATE_DEFAULT,(String)null);
+            List<String> templatePaths = new ArrayList<String>(pluginTemplateFiles);
             for (String path :
                     StringUtil.split(getProperty(PROP_HTML_TEMPLATES,
                         "%resourcedir%/template.html"), ";", true, true)) {
                 path = getStorageManager().localizePath(path);
+                templatePaths.add(path);
+            }
+            for(String path: templatePaths) {
                 try {
                     String resource =
                         getStorageManager().readSystemResource(path);
-
                     resource = resource.replace("${html.imports}", imports);
                     HtmlTemplate template = new HtmlTemplate(this, path,
                                                 resource);
+                    //Check if we got some other ...template.html file from a plugin
+                    if(template.getId()==null) {
+                        continue;
+                    }
                     theTemplates.add(template);
+
+                    if(defaultTemplate==null) {
+                        if(defaultId==null) {
+                            defaultTemplate = template;
+                        } else {
+                            if(Misc.equals(defaultId, template.getId())) {
+                                defaultTemplate = template;                                
+                            }
+                        }
+
+                    }
+
                 } catch (Exception exc) {
                     //noop
                 }
@@ -3435,11 +3465,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 templates = theTemplates;
             }
         }
+
         return theTemplates;
     }
 
-    /** _more_ */
-    private List<HtmlTemplate> templates;
 
     /**
      * _more_
@@ -3467,6 +3496,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
      */
     public HtmlTemplate getTemplate(Request request) {
         List<HtmlTemplate> theTemplates = getTemplates();
+        if(request == null && defaultTemplate!=null) {
+            return defaultTemplate;
+        }
         for (HtmlTemplate template : theTemplates) {
             if (request == null) {
                 return template;
@@ -3474,6 +3506,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
             if (template.isTemplateFor(request)) {
                 return template;
             }
+        }
+        if(defaultTemplate!=null) {
+            return defaultTemplate;
         }
         return theTemplates.get(0);
     }
