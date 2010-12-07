@@ -660,6 +660,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             dataSource.close();
             dataSource = null;
         }
+        if(isDatabaseDerby()) {
+            System.err.println ("RAMADDA: Shutting down derby");
+            try {
+                DriverManager.getConnection("jdbc:derby:;shutdown=true");
+            } catch(Exception ignoreThis) {}
+        }
     }
 
     /**
