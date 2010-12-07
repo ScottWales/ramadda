@@ -735,10 +735,17 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @throws Exception _more_
      */
     public void close() throws Exception {
-        System.err.println ("RAMADDA: close");
-        active = false;
-        getDatabaseManager().shutdown();
-        getFtpManager().shutdown();
+        shutdown();
+    }
+
+    public void shutdown()  {
+        try {
+            active = false;
+            getDatabaseManager().shutdown();
+            getFtpManager().shutdown();
+        } catch(Exception exc) {
+            exc.printStackTrace();
+        }
     }
 
 
@@ -805,7 +812,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
      */
     protected void initProperties(Properties contextProperties)
             throws Exception {
-
         /*
           order in which we load properties files
           system
@@ -931,7 +937,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
             load(properties, f);
         }
 
-
         apiDefFiles.addAll(0, getResourcePaths(PROP_API));
         typeDefFiles.addAll(0, getResourcePaths(PROP_TYPES));
         outputDefFiles.addAll(0, getResourcePaths(PROP_OUTPUTHANDLERS));
@@ -1026,7 +1031,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private void createTypeHandlers() throws Exception {
         for (String file : typeDefFiles) {
             file = getStorageManager().localizePath(file);
-            if(file.indexOf("ontology")<0) continue;
             Element entriesRoot = XmlUtil.getRoot(file, getClass());
             if (entriesRoot == null) {
                 continue;

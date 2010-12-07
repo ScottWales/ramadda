@@ -323,7 +323,9 @@
               <attribute name="Class-Path" value="${manifestjars}"/>
             </manifest> 
             <include name="**/*.class"/>
+<!--
             <include name="**/*.xml"/>
+-->
             <include name="${repositoryrelpath}/htdocs/**/*.*"/>
             <include name="${repositoryrelpath}/docs/userguide/processed/**/*.*"/>
             <include name="${repositoryrelpath}/resources/**/*.*"/>

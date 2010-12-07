@@ -123,6 +123,7 @@
   <group handler="admin" needs_ssl="true" admin="true">
       <api request="/admin/sql"          method="adminSql"           />
       <api request="/admin/startstop"    method="adminDbStartStop"   />
+      <api request="/admin/shutdown"    method="adminShutdown"   />
       <api request="/admin/settings"     method="adminSettings"       name="Admin" toplevel="true"/>
       <api request="/admin/settings/do"  method="adminSettingsDo"    />
       <api request="/admin/tables"       method="adminDbTables"      />

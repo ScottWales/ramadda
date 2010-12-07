@@ -609,6 +609,17 @@ public class Admin extends RepositoryManager {
 
 
 
+    public Result adminShutdown(Request request) throws Exception {
+        
+        Misc.runInABit(1000, new Runnable() {
+                public void run() {
+                    getRepository().shutdown();
+                }
+            });
+        
+        return makeResult(request, "Administration", new StringBuffer("Shutting down"));
+    }
+
 
     /**
      * _more_
