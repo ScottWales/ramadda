@@ -239,6 +239,20 @@ public class CatalogHarvester extends Harvester {
                                          download) + " "
                                              + msg("Download Files")));
 
+        sb.append(HtmlUtil.formEntry(msgLabel("Metadata"),
+                HtmlUtil.checkbox(ATTR_ADDMETADATA, "true", getAddMetadata())
+                + HtmlUtil.space(1) + msg("Add full metadata")
+                + HtmlUtil.space(4)
+                + HtmlUtil.checkbox(ATTR_ADDSHORTMETADATA, "true",
+                    getAddShortMetadata()) + HtmlUtil.space(1)
+                        + msg("Just add spatial/temporal metadata")));
+
+        sb.append(HtmlUtil.formEntry(msgLabel("User"),
+                                     HtmlUtil.input(ATTR_USER,
+                                         (getUserName() != null)
+                                         ? getUserName().trim()
+                                         : "", HtmlUtil.SIZE_30)));
+
     }
 
 

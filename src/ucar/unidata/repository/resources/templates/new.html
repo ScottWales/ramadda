@@ -1,0 +1,219 @@
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
+<head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<properties>
+name=New one
+id=new
+
+ramadda.template.link.wrapper =<a href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<a href="${url}">${label}</a>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
+ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
+ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+
+${html.imports}
+
+<style type="text/css">
+
+body {
+   font-size: 12pt;
+   font-family:  Arial, Helvetica, sans-serif;
+   color: black;
+   margin: 0px;
+}
+
+.breadcrumbs {
+   margin-left:4px;
+}
+
+
+
+.header {
+   background-color:#ffffea;
+   padding-top: 6px;
+   margin: 5px;
+   font-weight: bold;
+   color:black;
+   border-bottom : 1px #000 solid;
+}
+
+##background-color:#efefde;
+
+
+a.header  {
+	color:white;
+}
+
+.header a:hover  {
+	color:red;
+}
+
+.header a {
+	color:black;
+}
+
+
+.header_label {
+   font-size:24px;
+   font-weight: bold;
+}
+
+
+.subnav {
+   margin:10;
+   margin-left:0;
+   padding:0;
+   color: black;
+   min-height: 500px;
+}
+.subnavoncomp  {
+   background-color:#ffffff;
+   border: 1px #999999 solid; 
+   border-bottom: 2px white solid; 
+   margin-left:5px;
+   margin-right:5px;
+   padding-left:5;   
+   padding-right:5;   
+   padding-top:2px;   
+   padding-bottom:0px;   
+   font-size: 12pt;
+   font-weight: normal;
+}
+
+.subnavoffcomp  {
+   font-weight: bold;
+   background-color:#f1f0f3;
+   background-color:#e0e0e0;
+   border: 1px #999999 solid; 
+   border-bottom: 1px 000000 solid; 
+   margin-left:5px;
+   margin-right:5px;
+   padding-left:5;   
+   padding-right:5;   
+   padding-top:2px;   
+   padding-bottom:1px; 
+   font-size: 12pt;
+   font-weight: normal;  
+}
+
+.topbox {
+   padding:0px;
+   margin-top: 5px;
+}
+
+.outercontents {
+   padding-top: 0px;
+}
+
+.innercontent {
+   padding-top: 5px;
+   padding-left: 5px;
+}
+
+.entrymenubar {
+   margin-top:5px;
+   background-repeat: repeat-x;
+   background-image:none;
+   padding-top:0px;
+}
+
+.content {
+  border: 0px #aaa solid;
+}
+
+
+.upperleft {
+  min-width: 3px;
+  background-color:#cdcdcd;
+  border-right: 1px #444 solid;
+  border-bottom: 1px #000 solid;
+}
+
+.upperright {
+  min-width: 3px;
+  background-color:#cdcdcd;
+  border-left: 1px #444 solid;
+  border-bottom: 1px #000 solid;
+}
+
+.lowerleft {
+  background-color:#cdcdcd;
+  border-right: 1px #444 solid;
+}
+
+.lowerright {
+  background-color:#cdcdcd;
+  border-left: 1px #444 solid;
+}
+
+
+
+
+.entrymenulink {
+    font-size: 12pt;
+    color: #000000;
+    font-weight: normal;
+}
+
+
+
+.navlinks {
+  margin-top:10px;
+  border-bottom: 1px #444 solid;
+}
+
+
+
+</style>
+${headfinal}
+</head>
+
+<body>
+<table border="0" cellpadding="0" cellspacing=0 width=100%>
+<tr>
+<td class="upperleft"><img src="${root}/icons/blank.gif"></td>
+<td class="header">
+<table border="0" cellpadding="2" cellspacing=0 width=100%>
+<tr valign="bottom">
+<td  width=10%><a href="${logo.url}" target="external"><img border="0"  src="${logo.image}" align="center"></a></td>
+<td>
+<span class="header_label">${header.title} - ${title}</span>
+<p>&nbsp;<br>
+${links}
+</td>
+<td align="right">${userlink}</td>
+</tr>
+</table>
+</td>
+<td class="upperright"><img src="${root}/icons/blank.gif"></td>
+</tr>
+<tr>
+<td class="lowerleft"><img src="${root}/icons/blank.gif"></td>
+<td>
+<div class="outercontents">
+<div class="content">
+${header}
+<div class="innercontent">${content}</div>
+</div>
+</div>
+</td>
+<td class="lowerright"><img src="${root}/icons/blank.gif"></td>
+</tr>
+</table>
+
+
+<div class="footer">${footer}</div>
+${bottom}
+</body>
+</html>

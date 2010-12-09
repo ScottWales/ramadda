@@ -130,6 +130,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
     /** _more_ */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
+    public static final String MACRO_HEADER = "header";
+
     /** _more_ */
     public static final String MACRO_ENTRY_BREADCRUMBS = "entry.breadcrumbs";
 
@@ -3098,6 +3100,12 @@ public class Repository extends RepositoryBase implements RequestHandler {
                     sublinksHtml);
         }
 
+        String header;
+        if(entryHeader.length()>0) {
+            header = entryHeader;
+        } else {
+            header = sublinksHtml;
+        }
 
         String favoritesWrapper = getTemplateProperty(request,
                                       "ramadda.template.favorites.wrapper",
@@ -3192,7 +3200,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
             result.getTitle(), MACRO_BOTTOM, result.getBottomHtml(),
             MACRO_LINKS, linksHtml, MACRO_CONTENT, content + jsContent,
             MACRO_FAVORITES, favorites.toString(), MACRO_ENTRY_HEADER,
-            entryHeader, MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs,
+            entryHeader, MACRO_HEADER, header,
+            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs,
             MACRO_HEADFINAL, head, MACRO_ROOT, getUrlBase(),
         };
 
@@ -3466,7 +3475,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 }
             }
             if (cacheResources()) {
-                templates = theTemplates;
+                //TODO: uncomment this
+                //                templates = theTemplates;
             }
         }
 
