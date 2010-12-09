@@ -1,8 +1,13 @@
+
 body {
    font-size: 12pt;
-   font-family: Arial, Helvetica, sans-serif;       
+   font-family:  Arial, Helvetica, sans-serif;
    color: black;
    margin: 0px;
+}
+
+a {
+   font-size: 12pt;
 }
 
 .input, .password, .fileinput,.textarea,.select {
@@ -108,7 +113,6 @@ a:hover {
 
 .entryrowlabel {
     font-style:italic;
-//font-size:9px;
     white-space:nowrap;
 }
 
@@ -142,29 +146,14 @@ a:hover {
 
 
 .header {
-  border-bottom : 1px black solid;
-  background-repeat: no-repeat;
-  background-color:#006699;
-  color: white;
-  padding-top:12px;
-  padding-left:5px;
-  padding-right:5px;
-}
-
-
-
-
-a.header  {
-	color:white;
 }
 
 .header a:hover  {
-	color:red;
+   color:red;
 }
 
 
 .entrylistform {
-//  font-size: 11px;
 }
 
 .stack {
@@ -269,12 +258,14 @@ a.header  {
 }
 
 .subnavoncomp  {
+   font-size: 12pt;
    background-color : #ffffff;
    border-bottom : 1px #FFFFff solid;
    color:#000000;
 }
 
 .subnavoffcomp  {
+   font-size: 12pt;
    color:#000000;
    padding-left:7;   
    padding-right:7;   
@@ -423,7 +414,7 @@ a.header-left  {
 }
 
 .pagetitle {
-    font-size: 18pt;
+    font-size: 130%;
     font-weight: bold;
     color: #8080C0;
     margin-top: 15;
@@ -431,7 +422,7 @@ a.header-left  {
 }
 
 .pagesubtitle {
-    font-size: 14pt;
+    font-size: 120%;
     font-weight: bold;
     color: #8080C0;
     margin-top: 10;
@@ -440,7 +431,6 @@ a.header-left  {
 
 .childlist-level {
     font-weigt:bold;
-    font-size: 14pt;
     color: #8080C0;
     margin-top: 10;
     margin-bottom: 5;
@@ -454,7 +444,7 @@ a.header-left  {
 
 
 .pagesubsubtitle {
-    font-size: 12pt;
+    xxxfont-size: 12pt;
     font-weight: bold;
     color: #8080C0;
     margin-top: 5;
@@ -623,8 +613,7 @@ a.header-left  {
 
 
 td {
-   font-size:14px;
-   font-weight: normal;
+   font-size:12pt;
 }
 
 
@@ -947,16 +936,13 @@ code.menu {
 
 
 .entryheader {
-//   font-weight: bold;
-   font-size: 12pt;
    border-bottom : 1px #ddd solid;
    margin-bottom:5px;
 }
 
 .entrymenulink {
-    font-size: 12pt;
     color: #000000;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 

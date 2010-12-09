@@ -828,6 +828,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         properties = new Properties();
         load(properties,
              "/ucar/unidata/repository/resources/repository.properties");
+
         try {
             load(properties,
                  "/ucar/unidata/repository/resources/georepository.properties");
@@ -3430,6 +3431,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private List<HtmlTemplate> getTemplates() {
         List<HtmlTemplate> theTemplates = templates;
         if (theTemplates == null) {
+            //TODO: comment this out
+            defaultTemplate=null;
+
             String imports = "";
             try {
                 imports =  getStorageManager().readSystemResource("/ucar/unidata/repository/resources/imports.html");
@@ -3438,6 +3442,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
             imports = imports.replace("${root}", getRepository().getUrlBase());
             theTemplates = new ArrayList<HtmlTemplate>();
+
             String defaultId = getProperty(PROP_HTML_TEMPLATE_DEFAULT,(String)null);
             List<String> templatePaths = new ArrayList<String>(pluginTemplateFiles);
             for (String path :
@@ -3467,9 +3472,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                 defaultTemplate = template;                                
                             }
                         }
-
                     }
-
                 } catch (Exception exc) {
                     //noop
                 }
@@ -3513,6 +3516,14 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if(request == null && defaultTemplate!=null) {
             return defaultTemplate;
         }
+        User user = request.getUser();
+        if(user.getAnonymous()) {
+            if(defaultTemplate!=null) {
+                return defaultTemplate;
+            }
+            return theTemplates.get(0);
+        }
+
         for (HtmlTemplate template : theTemplates) {
             if (request == null) {
                 return template;

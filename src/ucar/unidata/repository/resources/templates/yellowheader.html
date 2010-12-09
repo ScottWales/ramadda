@@ -3,8 +3,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <properties>
-name=Yellow Header
-id=yellowheader
+name=Map Header
+id=mapheader
 
 ramadda.template.link.wrapper =<a href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
@@ -21,14 +21,11 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 
 </properties>
 
-
 ${html.imports}
 
 <style type="text/css">
 
 body {
-   font-size: 12pt;
-   font-family:  Arial, Helvetica, sans-serif;
    color: black;
    margin: 0px;
 }
@@ -37,10 +34,9 @@ body {
    margin-left:4px;
 }
 
-
-
 .header {
-   background-color:#ffffea;
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
    padding-top: 6px;
    margin: 5px;
    font-weight: bold;
@@ -48,19 +44,23 @@ body {
    border-bottom : 1px #000 solid;
 }
 
-##background-color:#efefde;
 
-
-a.header  {
-	color:white;
+.footer {
+   margin:0px;
+   align:center;
+   text-align:center;
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
+   border-top: 1px #000 solid;
 }
 
+
 .header a:hover  {
-	color:red;
+    color:red;
 }
 
 .header a {
-	color:black;
+    color:black;
 }
 
 
@@ -79,7 +79,7 @@ a.header  {
 }
 .subnavoncomp  {
    background-color:#ffffff;
-   border: 1px #999999 solid; 
+   border: 1px #000 solid; 
    border-bottom: 2px white solid; 
    margin-left:5px;
    margin-right:5px;
@@ -87,12 +87,12 @@ a.header  {
    padding-right:5;   
    padding-top:2px;   
    padding-bottom:0px;   
-   font-size: 12pt;
    font-weight: normal;
 }
 
 .subnavoffcomp  {
    font-weight: bold;
+   font-weight: normal;  
    background-color:#f1f0f3;
    background-color:#e0e0e0;
    border: 1px #999999 solid; 
@@ -102,9 +102,8 @@ a.header  {
    padding-left:5;   
    padding-right:5;   
    padding-top:2px;   
-   padding-bottom:1px; 
-   font-size: 12pt;
-   font-weight: normal;  
+   padding-bottom:0px; 
+
 }
 
 .topbox {
@@ -127,6 +126,14 @@ a.header  {
    background-image:none;
    padding-top:0px;
 }
+
+.entrymenulink {
+    font-size: 12pt;
+    color: #000000;
+    font-weight: normal;
+}
+
+
 
 .content {
   border: 0px #aaa solid;
@@ -162,13 +169,6 @@ a.header  {
 
 
 
-.entrymenulink {
-    font-size: 12pt;
-    color: #000000;
-    font-weight: normal;
-}
-
-
 
 .navlinks {
   margin-top:10px;
@@ -182,7 +182,7 @@ ${headfinal}
 </head>
 
 <body>
-<table border="0" cellpadding="0" cellspacing=0 width=100%>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td class="upperleft"><img src="${root}/icons/blank.gif"></td>
 <td class="header">
@@ -212,14 +212,13 @@ ${header}
 <div class="innercontent">${content}</div>
 </div>
 </div>
+<div class="footer">${footer}</div>
 </td>
 <!--
 <td class="lowerright"><img src="${root}/icons/blank.gif"></td>
 --></tr>
 </table>
 
-
-<div class="footer">${footer}</div>
 ${bottom}
 </body>
 </html>
