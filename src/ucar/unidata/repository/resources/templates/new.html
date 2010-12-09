@@ -3,8 +3,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <properties>
-name=New one
-id=new
+name=Yellow Header
+id=yellowheader
 
 ramadda.template.link.wrapper =<a href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
@@ -134,17 +134,18 @@ a.header  {
 
 
 .upperleft {
-  min-width: 3px;
+  min-width: 4px;
   background-color:#cdcdcd;
   border-right: 1px #444 solid;
   border-bottom: 1px #000 solid;
 }
 
 .upperright {
-  min-width: 3px;
+  min-width: 0x;
   background-color:#cdcdcd;
-  border-left: 1px #444 solid;
-  border-bottom: 1px #000 solid;
+  background-color:#ffffea;
+  xborder-left: 1px #444 solid;
+  xborder-bottom: 1px #000 solid;
 }
 
 .lowerleft {
@@ -154,6 +155,7 @@ a.header  {
 
 .lowerright {
   background-color:#cdcdcd;
+  background-color:#ffffea;
   border-left: 1px #444 solid;
 }
 
@@ -196,7 +198,10 @@ ${links}
 </tr>
 </table>
 </td>
+
+<!--
 <td class="upperright"><img src="${root}/icons/blank.gif"></td>
+-->
 </tr>
 <tr>
 <td class="lowerleft"><img src="${root}/icons/blank.gif"></td>
@@ -208,8 +213,9 @@ ${header}
 </div>
 </div>
 </td>
+<!--
 <td class="lowerright"><img src="${root}/icons/blank.gif"></td>
-</tr>
+--></tr>
 </table>
 
 
