@@ -71,15 +71,14 @@
             compress="true"
             jarfile="${pluginjar}">
             <include name="org/ramadda/**/*.class"/> 
+            <exclude name="org/ramadda/**/*.java"/> 
             <exclude name="org/ramadda/spreadsheet/*"/> 
             <exclude name="org/ramadda/spreadsheet/**/*"/> 
-            <include name="org/ramadda/**/*.java"/> 
-
-            <include name="org/ramadda/blog/*"/>
-            <include name="org/ramadda/collab/*"/>
-            <include name="org/ramadda/db/*"/>
-            <include name="org/ramadda/slideshow/*"/>
-            <include name="org/ramadda/wiki/*"/>
+            <include name="org/ramadda/blog/**/*"/>
+            <include name="org/ramadda/collab/**/*"/>
+            <include name="org/ramadda/db/**/*"/>
+            <include name="org/ramadda/slideshow/**/*"/>
+            <include name="org/ramadda/wiki/**/*"/>
 	    </jar>
         <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
              <fileset file="${pluginjar}"/>
