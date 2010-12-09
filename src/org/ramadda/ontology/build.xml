@@ -47,7 +47,7 @@
             failonerror="${javac.failonerror}"
             fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
-           target="1.5"
+            target="1.5"
         >
         <include name="org/ramadda/ontology/**/*.java"/>
         </javac>
