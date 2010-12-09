@@ -39,20 +39,11 @@ body {
    background-image:url(${root}/images/background.png);
    padding-top: 6px;
    margin: 5px;
-   font-weight: bold;
    color:black;
-   border-bottom : 1px #000 solid;
+   border-bottom : 2px #444 solid;
 }
 
 
-.footer {
-   margin:0px;
-   align:center;
-   text-align:center;
-   background-repeat: repeat; 
-   background-image:url(${root}/images/background.png);
-   border-top: 1px #000 solid;
-}
 
 
 .header a:hover  {
@@ -63,48 +54,48 @@ body {
     color:black;
 }
 
-
 .header_label {
    font-size:24px;
-   font-weight: bold;
 }
 
 
-.subnav {
-   margin:10;
-   margin-left:0;
-   padding:0;
-   color: black;
-   min-height: 500px;
-}
-.subnavoncomp  {
-   background-color:#ffffff;
-   border: 1px #000 solid; 
-   border-bottom: 2px white solid; 
-   margin-left:5px;
-   margin-right:5px;
-   padding-left:5;   
-   padding-right:5;   
-   padding-top:2px;   
-   padding-bottom:0px;   
-   font-weight: normal;
+.upperleft {
+  min-width: 4px;
+  background-color:#cdcdcd;
+  border-right: 1px #444 solid;
+  border-bottom: 2px #444 solid;
 }
 
-.subnavoffcomp  {
-   font-weight: bold;
-   font-weight: normal;  
-   background-color:#f1f0f3;
-   background-color:#e0e0e0;
-   border: 1px #999999 solid; 
-   border-bottom: 1px 000000 solid; 
-   margin-left:5px;
-   margin-right:5px;
-   padding-left:5;   
-   padding-right:5;   
-   padding-top:2px;   
-   padding-bottom:0px; 
-
+.upperright {
+  min-width: 0x;
+  background-color:#cdcdcd;
+  background-color:#ffffea;
+  xborder-left: 1px #444 solid;
+  xborder-bottom: 1px #000 solid;
 }
+
+.lowerleft {
+  background-color:#cdcdcd;
+  border-right: 1px #444 solid;
+}
+
+.lowerright {
+  background-color:#cdcdcd;
+  background-color:#ffffea;
+  border-left: 1px #444 solid;
+}
+
+
+.footer {
+   margin:0px;
+   padding:20px;
+   align:center;
+   text-align:center;
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
+   border-top: 1px #000 solid;
+}
+
 
 .topbox {
    padding:0px;
@@ -128,7 +119,6 @@ body {
 }
 
 .entrymenulink {
-    font-size: 12pt;
     color: #000000;
     font-weight: normal;
 }
@@ -140,31 +130,6 @@ body {
 }
 
 
-.upperleft {
-  min-width: 4px;
-  background-color:#cdcdcd;
-  border-right: 1px #444 solid;
-  border-bottom: 1px #000 solid;
-}
-
-.upperright {
-  min-width: 0x;
-  background-color:#cdcdcd;
-  background-color:#ffffea;
-  xborder-left: 1px #444 solid;
-  xborder-bottom: 1px #000 solid;
-}
-
-.lowerleft {
-  background-color:#cdcdcd;
-  border-right: 1px #444 solid;
-}
-
-.lowerright {
-  background-color:#cdcdcd;
-  background-color:#ffffea;
-  border-left: 1px #444 solid;
-}
 
 
 
@@ -186,12 +151,16 @@ ${headfinal}
 <tr>
 <td class="upperleft"><img src="${root}/icons/blank.gif"></td>
 <td class="header">
-<table border="0" cellpadding="2" cellspacing=0 width=100%>
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
 <tr valign="bottom">
-<td  width=10%><a href="${logo.url}" target="external"><img border="0"  src="${logo.image}" align="center"></a></td>
-<td>
+<td rowspan="2"  width="5%"><a href="${logo.url}" target="external"><img border="0"  src="${logo.image}" align="center"></a></td>
+<td valign="top">
 <span class="header_label">${header.title} - ${title}</span>
-<p>&nbsp;<br>
+</td>
+</tr>
+<tr valign="bottom">
+<td>
 ${links}
 </td>
 <td align="right">${userlink}</td>

@@ -391,7 +391,7 @@ public class PatternHarvester extends Harvester {
 
         sb.append(HtmlUtil.formEntry(msgLabel("Entry type"),
                                      repository.makeTypeSelect(request,
-                                         false, typeHandler.getType(), false,
+                                                               false, getTypeHandler().getType(), false,
                                          null)));
 
 
@@ -970,7 +970,7 @@ public class PatternHarvester extends Harvester {
             } else if (dataName.equals("todate")) {
                 value = toDate = parseDate((String) value);
             } else {
-                value = typeHandler.convert(dataName, (String) value);
+                value = getTypeHandler().convert(dataName, (String) value);
                 groupName = groupName.replace("${" + dataName + "}",
                         value.toString());
                 name = name.replace("${" + dataName + "}", value.toString());
@@ -982,7 +982,7 @@ public class PatternHarvester extends Harvester {
 
         //        System.err.println("values:");
         //        System.err.println("map:" + map);
-        Object[] values = typeHandler.makeValues(map);
+        Object[] values = getTypeHandler().makeValues(map);
         //        Date     createDate = new Date();
         Date createDate = new Date(f.lastModified());
         if (fromDate == null) {
@@ -1029,7 +1029,7 @@ public class PatternHarvester extends Harvester {
         boolean createIfNeeded = !getTestMode();
         Group group = getEntryManager().findGroupFromName(groupName,
                           getUser(), createIfNeeded, getLastGroupType());
-        Entry    entry = typeHandler.createEntry(getRepository().getGUID());
+        Entry    entry = getTypeHandler().createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
             File fromFile = new File(fileName);
@@ -1083,7 +1083,7 @@ public class PatternHarvester extends Harvester {
      */
     public Entry processFile(TypeHandler type, String filepath)
             throws Exception {
-        if ( !this.typeHandler.equals(type)) {
+        if ( !this.getTypeHandler().equals(type)) {
             return null;
         }
         File f = new File(filepath);

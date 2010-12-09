@@ -250,7 +250,7 @@ public class WebHarvester extends Harvester {
         super.createEditForm(request, superSB);
         superSB.append(HtmlUtil.formEntry(msgLabel("Entry type"),
                                           repository.makeTypeSelect(request,
-                                              false, typeHandler.getType(),
+                                              false, getTypeHandler().getType(),
                                                   false, null)));
 
 
@@ -569,7 +569,7 @@ public class WebHarvester extends Harvester {
                        : getEntryManager().findGroupFromName(groupName,
                            getUser(), true));
         //        System.err.println("Group:" + group.getFullName());
-        Entry entry = typeHandler.createEntry(repository.getGUID());
+        Entry entry = getTypeHandler().createEntry(repository.getGUID());
         Resource resource = new Resource(newFile.toString(),
                                          Resource.TYPE_STOREDFILE);
 
@@ -589,7 +589,7 @@ public class WebHarvester extends Harvester {
             }
 
         }
-        typeHandler.initializeNewEntry(entry);
+        getTypeHandler().initializeNewEntry(entry);
         return entry;
 
     }

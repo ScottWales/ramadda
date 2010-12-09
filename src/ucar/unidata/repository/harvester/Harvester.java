@@ -217,7 +217,7 @@ public abstract class Harvester extends RepositoryManager {
     private boolean isEditable = false;
 
     /** _more_ */
-    protected TypeHandler typeHandler;
+    private TypeHandler typeHandler;
 
     /** _more_ */
     private String error;
@@ -260,7 +260,13 @@ public abstract class Harvester extends RepositoryManager {
         super(repository);
         this.id          = id;
         this.isEditable  = true;
-        this.typeHandler = repository.getTypeHandler(TypeHandler.TYPE_FILE);
+    }
+
+    public TypeHandler getTypeHandler() throws Exception {
+        if(typeHandler == null) {
+            this.typeHandler = repository.getTypeHandler(TypeHandler.TYPE_FILE);
+        }
+        return typeHandler;
     }
 
 
@@ -640,7 +646,7 @@ public abstract class Harvester extends RepositoryManager {
         element.setAttribute(ATTR_USER, userName);
         element.setAttribute(ATTR_ADDMETADATA, addMetadata + "");
         element.setAttribute(ATTR_ADDSHORTMETADATA, addShortMetadata + "");
-        element.setAttribute(ATTR_TYPE, typeHandler.getType());
+        element.setAttribute(ATTR_TYPE, getTypeHandler().getType());
 
         element.setAttribute(ATTR_SLEEP, sleepMinutes + "");
         element.setAttribute(ATTR_SLEEPUNIT, sleepUnit);

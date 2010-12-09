@@ -4188,6 +4188,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                       boolean makeNewOneIfNeeded,
                                       boolean useDefaultIfNotFound)
             throws Exception {
+        if(type.trim().length()==0) {
+            type = TypeHandler.TYPE_FILE;
+        }
         TypeHandler typeHandler = (TypeHandler) theTypeHandlersMap.get(type);
         if (typeHandler == null) {
             if ( !useDefaultIfNotFound) {

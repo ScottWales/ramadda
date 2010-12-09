@@ -73,10 +73,6 @@ import java.util.regex.*;
  */
 public class TestGenerator extends Harvester {
 
-    /** _more_ */
-    private TypeHandler typeHandler;
-
-
     /**
      * _more_
      *
@@ -88,15 +84,14 @@ public class TestGenerator extends Harvester {
     public TestGenerator(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        this.typeHandler = repository.getTypeHandler(TypeHandler.TYPE_FILE);
     }
 
 
     public TestGenerator(Repository repository, String id)
             throws Exception {
         super(repository, id);
-        this.typeHandler = repository.getTypeHandler(TypeHandler.TYPE_FILE);
     }
+
 
 
     public String getDescription() {
@@ -148,7 +143,7 @@ public class TestGenerator extends Harvester {
                 for (int k = 0; k < 10; k++) {
                     Date createDate = new Date();
                     Entry entry =
-                        typeHandler.createEntry(repository.getGUID());
+                        getTypeHandler().createEntry(repository.getGUID());
                     entry.initEntry("test_" + i + "_" + j + "_" + k, "",
                                     group, user,
                                     new Resource("", Resource.TYPE_UNKNOWN),
@@ -157,7 +152,7 @@ public class TestGenerator extends Harvester {
                                     createDate.getTime(),
                                     createDate.getTime(), null);
                     entries.add(entry);
-                    typeHandler.initializeNewEntry(entry);
+                    getTypeHandler().initializeNewEntry(entry);
                     cnt++;
                     if ( !canContinueRunning(timestamp)) {
                         return;

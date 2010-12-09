@@ -1,24 +1,17 @@
 
 body {
-   font-size: 12pt;
    font-family:  Arial, Helvetica, sans-serif;
    color: black;
    margin: 0px;
 }
 
-a {
+body, a, td {
    font-size: 12pt;
 }
 
 .input, .password, .fileinput,.textarea,.select {
   border : 1px #888888 solid;
 }
-
-
-
-//.input, .password, .fileinput,.textarea {
-//  background: #eff8ff;
-//}
 
 
 .required {
@@ -56,7 +49,7 @@ a {
 
 
 .plain {
-    font-size:12px;
+    font-size:12pt;
     font-weight: normal;
 }
 
@@ -205,9 +198,7 @@ a:hover {
 
 .header-title {
   font-size: 200%;
-  color: white;
 }
-
 
 .arrow {
       margin-right: 2px;
@@ -240,54 +231,53 @@ a:hover {
 	color:red;
 }
 
+
+
 .subnav {
-   padding-top:4;   
-   padding-left:4;   
-   background-color : #c3d9ff;
-   font-weight: bold;
-   color: black;
-   border-bottom : 1px #666666 solid;
-}
-
-
-
-
-
-.curve {
-   vertical-align: top;
+   margin:10;
+   margin-left:0;
+   padding:1;
+   min-height: 500px;
+   font-weight: normal;  
 }
 
 .subnavoncomp  {
-   font-size: 12pt;
-   background-color : #ffffff;
-   border-bottom : 1px #FFFFff solid;
-   color:#000000;
+   background-color:#ffffff;
+   border: 1px #000 solid; 
+   border-bottom: 2px white solid; 
+   padding-left:5;   
+   padding-right:5;   
+   padding-top:2px;   
+   padding-bottom:0px;   
 }
 
 .subnavoffcomp  {
-   font-size: 12pt;
-   color:#000000;
-   padding-left:7;   
-   padding-right:7;   
+   background-color:#efefef;
+   border: 1px #000 solid; 
+   border-top: 1px #999 solid; 
+   border-left: 1px #999 solid; 
+   border-right: 1px #999 solid; 
+   padding-left:5;   
+   padding-right:5;   
+   padding-top:2px;   
+   padding-bottom:1px; 
 }
 
-
-
-
-
-
-
-.subnavoffcomp  a {
-   color:#000000;
+.subnavoffcomp, .subnavoncomp    {
+   border-top-left-radius: 6px;
+   border-top-right-radius: 6px;
+   -moz-border-radius-topleft: 6px;
+   -moz-border-radius-topright: 6px;
+   -webkit-border-top-left-radius: 6px;
+   -webkit-border-top-right-radius: 6px;
+   margin-left:3px;
+   margin-right:3px;
 }
 
-a.subnavoffcomp  {
-   color:#000000;
+.subnavoffcomp  a, a.subnavoffcomp, .subnavoffcomp a:visited {
+   color:#444;
 }
 
-.subnavoffcomp a:visited {
-   color:#000000;
-}
 
 
 .subnavoffcomp a:hover {
@@ -611,12 +601,6 @@ a.header-left  {
 
 }
 
-
-td {
-   font-size:12pt;
-}
-
-
 .breadcrumbsseparator {
    font-size: 11pt;
 }
@@ -653,7 +637,7 @@ ul {
    border-top : 1px #000000 solid;
 }
 
-.tab_content_fixedheight_off {
+<.tab_content_fixedheight_off {
    min-height: 100px;
    max-height: 200px; 
    overflow-y: auto;

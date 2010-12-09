@@ -13,7 +13,7 @@ ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label
 ramadda.template.userlink.separator=
 
 
-ramadda.template.sublink.wrapper=${sublinks}
+ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
 ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
 ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
 
@@ -33,6 +33,14 @@ ${html.imports}
    margin-left:5px;
 }
 
+
+.subnavoncomp  {
+   padding-bottom:0px; 
+}
+
+.subnavoffcomp  {
+   padding-bottom:0px; 
+}
 
 
 .linkslabel {
@@ -87,39 +95,6 @@ a.header-leftcolumn  {
    font-weight: bold;
    color: black;
 }
-.subnav {
-   margin:10;
-   margin-left:0;
-   padding:0;
-   color: black;
-   min-height: 500px;
-}
-.subnavoncomp  {
-   background-color:#ffffff;
-   border: 1px #999999 solid; 
-   border-bottom: 2px white solid; 
-   margin-left:5px;
-   margin-right:5px;
-   padding-left:5;   
-   padding-right:5;   
-   padding-top:2px;   
-   padding-bottom:0px;   
-   font-weight: bold;
-}
-
-.subnavoffcomp  {
-   font-weight: bold;
-   background-color:#f1f0f3;
-   border: 1px #999999 solid; 
-   border-bottom: 1px 000000 solid; 
-   margin-left:5px;
-   margin-right:5px;
-   padding-left:5;   
-   padding-right:5;   
-   padding-top:2px;   
-   padding-bottom:0px;   
-}
-
 
 .leftcolumn {
    border-top: 1px #aaaaaa solid; 
