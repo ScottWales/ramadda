@@ -3431,9 +3431,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private List<HtmlTemplate> getTemplates() {
         List<HtmlTemplate> theTemplates = templates;
         if (theTemplates == null) {
-            //TODO: comment this out
-            defaultTemplate=null;
-
             String imports = "";
             try {
                 imports =  getStorageManager().readSystemResource("/ucar/unidata/repository/resources/imports.html");
@@ -3478,11 +3475,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 }
             }
             if (cacheResources()) {
-                //TODO: uncomment this
-                //                templates = theTemplates;
+		templates = theTemplates;
             }
         }
-
         return theTemplates;
     }
 

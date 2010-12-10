@@ -618,15 +618,14 @@ public class StorageManager extends RepositoryManager {
             }
             try {
 
+		//		System.err.println("RAMADDA: Configuring log4j. Note: this may print out a stack trace. If");
 
                 org.apache.log4j.PropertyConfigurator.configure(
                                                                 log4JFile.toString());
 
-
             } catch(Exception exc) {
-
                 System.err.println ("RAMADDA: Error configuring log4j:" + exc);
-
+		exc.printStackTrace();
             }
         }
         return logDir;
