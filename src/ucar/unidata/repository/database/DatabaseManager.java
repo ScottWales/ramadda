@@ -201,7 +201,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         haveInitialized = true;
         SqlUtil.setConnectionManager(this);
 
-        System.err.println("DatabaseManager.init");
+        System.err.println("RAMADDA: DatabaseManager init");
         dataSource = doMakeDataSource();
         Statement statement = getConnection().createStatement();
         if (db.equals(DB_MYSQL)) {
@@ -209,7 +209,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
         closeAndReleaseConnection(statement);
         Misc.run(this, "checkConnections", null);
-        System.err.println("DatabaseManager.init done");
+        System.err.println("RAMADDA: DatabaseManager init done");
     }
 
 
@@ -284,7 +284,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                      PROP_DB_DRIVER.replace("${db}", db));
         Misc.findClass(driverClassName);
 
-        System.err.println("DatabaseManager.doMakeDataSource connection url:"  + connectionURL+" user name:" + userName);
+        System.err.println("RAMADDA: DatabaseManager connection url:"  + connectionURL+" user name:" + userName);
 
         ds.setDriverClassName(driverClassName);
         ds.setUsername(userName);

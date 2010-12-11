@@ -1,0 +1,208 @@
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
+<head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+
+<properties>
+name=Earth
+id=earth
+
+ramadda.template.link.wrapper =<a class="link" href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<a class="link" href="${url}">${label}</a>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
+ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
+ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+
+
+
+${html.imports}
+
+<style type="text/css">
+    body {
+       background-color: #eee;
+    }
+    body>div {
+	max-width: 64em;
+	min-width: 48em;
+    }
+
+
+/* the major site navigation elements, currently styled in a horizontal bar  */
+#major_nav {
+	clear: both;
+        padding:2px;
+	background-color: #ccddff;
+	color: #000066;
+	border-top: solid 1px #000066; 
+}
+
+
+    #container {
+           border: solid 1px #bbb;
+           margin: 0px;
+    }          
+
+#container {
+   margin: auto;
+}
+
+* html #container {
+   width: 56em;
+   margin: auto;
+}
+
+
+#major_nav {
+    text-align:center;
+    border-bottom: solid 1px #006699;
+}
+
+.breadcrumbs {
+   margin-left:4px;
+}
+.link {
+font-size:90%;
+font-weight:bold;
+color:black
+}
+
+
+
+.header a:hover  {color:red;}
+.header a {color:white;}
+.header_label {
+    font-size:24px;
+    color:white;
+    }
+
+.header {
+   background-repeat: repeat; 
+   background-image:url(${root}/images/globe_top.png);
+   padding: 5px;
+   padding-top: 25px;
+   padding-bottom: 0px;
+   color:white;
+}
+
+.outercontents {
+   padding-top: 0px;
+}
+
+.entrymenubar {
+   margin-top:5px;
+   background-repeat: repeat-x;
+   background-image:none;
+   padding-top:0px;
+}
+
+.entrymenulink {
+    color: #000000;
+    font-weight: normal;
+}
+
+.content {
+  border: 0px #aaa solid;
+  min-height:800px;
+  margin:0;
+}
+
+.navlinks {
+  margin-top:3px;
+  border-bottom: 1px #444 solid;
+}
+
+.subnavoncomp  {
+   background-color:#ffffff;
+   border: 1px #000 solid; 
+   border-bottom: 2px white solid; 
+   padding-left:5;   
+   padding-right:5;   
+   padding-bottom:2px;   
+}
+
+.subnavoffcomp  {
+   background-color:#efefef;
+
+   border-bottom: 0px #999 solid; 
+   border-top: 1px #999 solid; 
+   border-left: 1px #999 solid; 
+   border-right: 1px #999 solid; 
+   padding-left:5;   
+   padding-right:5;   
+   padding-top:2px;   
+   padding-bottom:2px;   
+}
+
+.subnavoffcomp, .subnavoncomp    {
+   border-top-left-radius: 6px;
+   border-top-right-radius: 6px;
+   -moz-border-radius-topleft: 6px;
+   -moz-border-radius-topright: 6px;
+   -webkit-border-top-left-radius: 6px;
+   -webkit-border-top-right-radius: 6px;
+   margin-left:3px;
+   margin-right:3px;
+}
+
+/* the page footer */
+#footer {
+	clear: both;
+    font-size: 80%;
+	background: #000066 url(${root}/images/earth_gradient.gif) top left repeat-y;
+	color: white;
+	padding: 1.0em 0.7em 0.6em 0.7em;
+	margin: 0em;
+	line-height: 1.3em;
+	width: auto;
+	height: 4em;
+	border: none;
+}
+
+#footer a {
+	color: white;
+}
+
+</style>
+
+
+${headfinal}
+</head>
+
+<body>
+<div id="container">
+<div class="header">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr valign="bottom">
+<td><span class="header_label">${header.title} - ${title}</span></td>
+<td align="right" style="color:white;">${userlink}</td>
+</tr></table>
+</div> 
+
+
+<div id="major_nav">${links}</div>
+
+<div>
+<div class="content">
+${header}
+<div class="innercontent">${content}</div>
+</div>
+</div>
+
+<div id="footer">
+${footer}
+</div>
+
+
+${bottom}
+</body>
+</html>

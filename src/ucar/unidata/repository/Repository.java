@@ -182,6 +182,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
     public static final String MSG_SUFFIX = " msg>";
 
 
+    public static final String PROP_CACHERESOURCES = "ramadda.cacheresources";
+
     /** _more_ */
     protected List<RequestUrl> entryEditUrls =
         RepositoryUtil.toList(new RequestUrl[] {
@@ -788,7 +790,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         CacheManager.setDoCache(false);
         initProperties(properties);
         initServer();
-        getLogManager().logInfoAndPrint("RAMADDA started");
+        getLogManager().logInfoAndPrint("RAMADDA: repository started");
     }
 
     /**
@@ -800,6 +802,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @throws Exception _more_
      */
     private void load(Properties properties, String path) throws Exception {
+        //        System.err.println ("RAMADDA:  loading " + path);
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
         properties.load(inputStream);
         IOUtil.close(inputStream);
@@ -891,7 +894,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
             File catalinaConfFile = new File(catalinaBase+"/conf/repository.properties");
             System.err.println ("RAMADDA: looking for:" + catalinaConfFile);
             if(catalinaConfFile.exists()) {
-                System.err.println ("RAMADDA:  loading " + catalinaConfFile);
                 load(properties, catalinaConfFile.toString());
             } else {
                 //A hack to run on unavco facility server
@@ -3409,10 +3411,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
     public boolean cacheResources() {
         if (cacheResources == null) {
             String test =
-                (String) cmdLineProperties.get("ramadda.cacheresources");
+                (String) cmdLineProperties.get(PROP_CACHERESOURCES);
 
             if (test == null) {
-                test = (String) properties.get("ramadda.cacheresources");
+                test = (String) properties.get(PROP_CACHERESOURCES);
             }
 
             if (test == null) {
@@ -3578,12 +3580,13 @@ public class Repository extends RepositoryBase implements RequestHandler {
             systemEnv = System.getenv();
         }
         String prop = null;
+        /*
         if ( !cacheResources()) {
             try {
-                load(properties,
-                     "/ucar/unidata/repository/resources/repository.properties");
+            load(properties,
+            "/ucar/unidata/repository/resources/repository.properties");
             } catch (Exception exc) {}
-        }
+            }*/
 
         String override = "override." + name;
         //Check if there is an override 
@@ -3771,11 +3774,11 @@ public class Repository extends RepositoryBase implements RequestHandler {
                          getProperty(PROP_DB_SCRIPT));
         sql = getDatabaseManager().convertSql(sql);
 
-        System.err.println("Repository.initSchema: loading schema");
+        System.err.println("RAMADDA: loading schema");
         //        SqlUtil.showLoadingSql = true;
         getDatabaseManager().loadSql(sql, true, false);
         //        SqlUtil.showLoadingSql = false;
-        System.err.println("Repository.initSchema: done loading schema");
+        System.err.println("RAMADDA: done loading schema");
 
         for (String sqlFile : pluginSqlFiles) {
             sql = getStorageManager().readUncheckedSystemResource(sqlFile);
