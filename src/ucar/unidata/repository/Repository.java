@@ -3076,9 +3076,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             //            template = getResource(PROP_HTML_TEMPLATE);
         }
 
-
         String jsContent = getTemplateJavascriptContent();
-
 
         List   links     = (List) result.getProperty(PROP_NAVLINKS);
         String linksHtml = HtmlUtil.space(1);

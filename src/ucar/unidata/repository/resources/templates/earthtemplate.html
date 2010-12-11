@@ -37,10 +37,10 @@ ${html.imports}
     }
 
 
-/* the major site navigation elements, currently styled in a horizontal bar  */
+
 #major_nav {
 	clear: both;
-        padding:2px;
+        padding:3px;
 	background-color: #ccddff;
 	color: #000066;
 	border-top: solid 1px #000066; 
@@ -107,16 +107,16 @@ color:black
 
 
 .content {
+  background:white;
   border: 0px #aaa solid;
   min-height:800px;
   margin:0;
 }
 
 .navlinks {
-  margin-top:0px;
-  padding-top:5px;
+  background:white;
+  padding-top:10px;
   border-bottom: 1px #444 solid;
-
 }
 
 
@@ -154,11 +154,10 @@ ${headfinal}
 </div> 
 
 
-<div id="major_nav">${links}</div>
 
+<div id="major_nav">${links}</div>
 <div>
-<div class="content">
-${header}
+<div class="content">${header}
 <div class="innercontent">${content}</div>
 </div>
 </div>

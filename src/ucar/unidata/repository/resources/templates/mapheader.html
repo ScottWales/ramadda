@@ -2,6 +2,7 @@
 <head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
+
 <properties>
 name=Map Header
 id=mapheader
@@ -24,50 +25,21 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 ${html.imports}
 
 <style type="text/css">
-
-
-
+body {
+   color: black;
+   margin: 0px;
+}
+.breadcrumbs {
+   margin-left:4px;
+}
 .header {
    background-repeat: repeat; 
    background-image:url(${root}/images/background.png);
    padding-top: 6px;
    margin: 5px;
-   color:black;
    border-bottom : 2px #444 solid;
 }
-
-.header_label {
-   font-size:24px;
-}
-
-
-.upperleft {
-  min-width: 4px;
-  background-color:#cdcdcd;
-  border-right: 1px #444 solid;
-  border-bottom: 2px #444 solid;
-}
-
-.upperright {
-  min-width: 0x;
-  background-color:#cdcdcd;
-  background-color:#ffffea;
-  xborder-left: 1px #444 solid;
-  xborder-bottom: 1px #000 solid;
-}
-
-.lowerleft {
-  background-color:#cdcdcd;
-  border-right: 1px #444 solid;
-}
-
-.lowerright {
-  background-color:#cdcdcd;
-  background-color:#ffffea;
-  border-left: 1px #444 solid;
-}
-
-
+.header_label {font-size:24px;}
 .footer {
    margin:0px;
    padding:20px;
@@ -76,12 +48,6 @@ ${html.imports}
    background-repeat: repeat; 
    background-image:url(${root}/images/background.png);
    border-top: 1px #000 solid;
-}
-
-
-.topbox {
-   padding:0px;
-   margin-top: 5px;
 }
 
 .outercontents {
@@ -93,13 +59,8 @@ ${html.imports}
    padding-left: 5px;
 }
 
-.breadcrumbs {
-   margin-left:4px;
-}
-
 .entrymenubar {
    margin-top:5px;
-   background-repeat: repeat-x;
    background-image:none;
    padding-top:0px;
 }
@@ -108,19 +69,10 @@ ${html.imports}
   border: 0px #aaa solid;
 }
 
-
-
-
-
-
-
 .navlinks {
   margin-top:10px;
   border-bottom: 1px #444 solid;
 }
-
-
-
 </style>
 ${headfinal}
 </head>
@@ -128,9 +80,7 @@ ${headfinal}
 <body>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-<td class="upperleft"><img src="${root}/icons/blank.gif"></td>
 <td class="header">
-
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
 <tr valign="bottom">
 <td rowspan="2"  width="5%"><a href="${logo.url}" target="external"><img border="0"  src="${logo.image}" align="center"></a></td>
@@ -146,13 +96,8 @@ ${links}
 </tr>
 </table>
 </td>
-
-<!--
-<td class="upperright"><img src="${root}/icons/blank.gif"></td>
--->
 </tr>
 <tr>
-<td class="lowerleft"><img src="${root}/icons/blank.gif"></td>
 <td>
 <div class="outercontents">
 <div class="content">
@@ -162,11 +107,8 @@ ${header}
 </div>
 <div class="footer">${footer}</div>
 </td>
-<!--
-<td class="lowerright"><img src="${root}/icons/blank.gif"></td>
---></tr>
+</tr>
 </table>
-
 ${bottom}
 </body>
 </html>
