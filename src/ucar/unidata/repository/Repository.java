@@ -301,7 +301,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private List<TwoFacedObject> languages = new ArrayList<TwoFacedObject>();
 
 
-
+    private Date startTime = new Date();
 
     /** _more_ */
     private Hashtable theTypeHandlersMap = new Hashtable();
@@ -1672,6 +1672,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 }
             }
         }
+    }
+
+    public Date getStartTime() {
+        return startTime;
     }
 
     public List<ImportHandler> getImportHandlers() {
