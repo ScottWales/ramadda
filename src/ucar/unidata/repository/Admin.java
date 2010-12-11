@@ -145,6 +145,10 @@ public class Admin extends RepositoryManager {
     public RequestUrl URL_ADMIN_LOG = new RequestUrl(this, "/admin/log",
                                           "Logs");
 
+    /** _more_ */
+    public RequestUrl URL_ADMIN_STACK = new RequestUrl(this, "/admin/stack",
+                                          "Stack");
+
 
     /** _more_ */
     public List<RequestUrl> adminUrls =
@@ -155,7 +159,7 @@ public class Admin extends RepositoryManager {
         getRegistryManager().URL_REGISTRY_REMOTESERVERS,
         /*URL_ADMIN_STARTSTOP,*/
         /*URL_ADMIN_TABLES, */
-        URL_ADMIN_LOG, URL_ADMIN_CLEANUP
+        URL_ADMIN_LOG, URL_ADMIN_STACK, URL_ADMIN_CLEANUP
     });
 
 
@@ -1787,7 +1791,33 @@ public class Admin extends RepositoryManager {
 
     public Result adminPrintStack(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("<pre>" +LogUtil.getStackDump(true)+"</pre>");
+        sb.append(HtmlUtil.formTable());
+        DecimalFormat fmt         = new DecimalFormat("#0");
+        double        totalMemory = (double) Runtime.getRuntime().maxMemory();
+        double        freeMemory  =
+            (double) Runtime.getRuntime().freeMemory();
+        double highWaterMark = (double) Runtime.getRuntime().totalMemory();
+        double        usedMemory  = (highWaterMark - freeMemory);
+        totalMemory = totalMemory / 1000000.0;
+        usedMemory  = usedMemory / 1000000.0;
+        sb.append(HtmlUtil.formEntry("Total Memory Available:",
+                                     fmt.format(totalMemory) + " (MB)"));
+        sb.append(HtmlUtil.formEntry("Used Memory:",
+                                     fmt.format(usedMemory) + " (MB)"));
+
+        sb.append(HtmlUtil.formEntry("# Requests:", "" + getRepository().getNumberOfCurrentRequests()));
+        sb.append(HtmlUtil.formEntry("Start Time:", "" + getRepository().getStartTime()));
+
+
+        long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
+        sb.append(HtmlUtil.formEntry("Up Time:",
+                                     fmt.format((double) (uptime / 1000
+                                                          / 60)) + " " + msg("minutes"))); 
+
+        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtil.makeShowHideBlock(msg("Stack"),
+
+                                             "<pre>" +LogUtil.getStackDump(true)+"</pre>", false));
         return makeResult(request, msg("Stack Trace"), sb);
     }
 
