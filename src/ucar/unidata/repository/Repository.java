@@ -1976,6 +1976,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
         while (results.next()) {
             String name  = results.getString(1);
             String value = results.getString(2);
+            if(name.equals(PROP_PROPERTIES)) {
+                dbProperties.load(new ByteArrayInputStream(value.getBytes()));
+            } 
             dbProperties.put(name, value);
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
@@ -3444,7 +3447,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
             imports = imports.replace("${root}", getRepository().getUrlBase());
             theTemplates = new ArrayList<HtmlTemplate>();
 
-            String defaultId = getProperty(PROP_HTML_TEMPLATE_DEFAULT,(String)null);
+            String defaultId = getProperty(PROP_HTML_TEMPLATE_DEFAULT,"mapheader");
+
             List<String> templatePaths = new ArrayList<String>(pluginTemplateFiles);
             for (String path :
                     StringUtil.split(getProperty(PROP_HTML_TEMPLATES,
@@ -3856,12 +3860,21 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                     Clause.eq(Tables.GLOBALS.COL_NAME, name));
         getDatabaseManager().executeInsert(Tables.GLOBALS.INSERT,
                                            new Object[] { name,
-                value });
+                                                          value });
+
+        if(name.equals(PROP_PROPERTIES)) {
+            dbProperties.load(new ByteArrayInputStream(value.getBytes()));
+            clearTemplates();
+        } 
         dbProperties.put(name, value);
         phraseMap = null;
     }
 
 
+    private void  clearTemplates() {
+        templates = null;
+        defaultTemplate = null;
+    }
 
     /**
      *  _more_

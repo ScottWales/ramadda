@@ -376,27 +376,25 @@ public class Admin extends RepositoryManager {
                     didIt(ARG_ADMIN_ADMINCREATED);
                     didIt(ARG_ADMIN_INSTALLCOMPLETE);
 
-                    if (request.defined(PROP_HOSTNAME)) {
-                        getRepository().writeGlobal(PROP_HOSTNAME,
-                                request.getString(PROP_HOSTNAME, "").trim());
-                    }
-
-                    if (request.defined(PROP_PORT)) {
-                        getRepository().writeGlobal(PROP_PORT,
-                                request.getString(PROP_PORT, "").trim());
-                    }
+                    String [] propArgs = new String[]{
+                        PROP_REPOSITORY_NAME,
+                        PROP_HOSTNAME,
+                        PROP_PORT,
+                        PROP_REPOSITORY_NAME,
+                        PROP_REPOSITORY_DESCRIPTION
+                    };
 
 
-                    if (request.defined(PROP_REPOSITORY_NAME)) {
-                        getRepository().writeGlobal(PROP_REPOSITORY_NAME,
-                                request.getString(PROP_REPOSITORY_NAME, ""));
+                    for(String propArg: propArgs) {
+                        if (request.defined(propArg)) {
+                            getRepository().writeGlobal(propArg,
+                                                        request.getString(propArg, "").trim());
+                        }
                     }
-                    if (request.defined(PROP_REPOSITORY_DESCRIPTION)) {
-                        getRepository().writeGlobal(
-                            PROP_REPOSITORY_DESCRIPTION,
-                            request.getString(
-                                PROP_REPOSITORY_DESCRIPTION, ""));
-                    }
+
+
+
+
 
                     if (request.defined(UserManager.ARG_USER_EMAIL)) {
                         getRepository().writeGlobal(PROP_ADMIN_EMAIL,
@@ -487,12 +485,7 @@ public class Admin extends RepositoryManager {
                                              HtmlUtil.SIZE_10)));
 
 
-
-
             getRegistryManager().addToInstallForm(request, sb);
-
-
-
 
             sb.append(HtmlUtil.formTableClose());
             sb.append(HtmlUtil.p());
@@ -838,6 +831,7 @@ public class Admin extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         sb.append(request.form(URL_ADMIN_SETTINGS_DO));
         String size = HtmlUtil.SIZE_60;
+        sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Change Settings")));
         sb.append(HtmlUtil.br());
         StringBuffer csb = new StringBuffer();
@@ -909,12 +903,11 @@ public class Admin extends RepositoryManager {
 
 
 
-
+        csb.append(HtmlUtil.row(HtmlUtil.colspan(msgHeader("Extra Properties"), 2)));
+        csb.append(HtmlUtil.formEntryTop(msgLabel("Properties"),
+                                        HtmlUtil.textArea(PROP_PROPERTIES, getProperty(PROP_PROPERTIES,"#add extra properties\n#name=value\n"), 5,60)));
 
         getRepository().getRegistryManager().addAdminConfig(request, csb);
-
-
-
 
 
         StringBuffer dsb = new StringBuffer();
@@ -1304,8 +1297,7 @@ public class Admin extends RepositoryManager {
         getRepository().getRegistryManager().applyAdminConfig(request);
 
 
-
-
+        getRepository().writeGlobal(request, PROP_PROPERTIES, true);
         getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);
         getRepository().writeGlobal(request, PROP_ADMIN_SMTP, true);
         getRepository().writeGlobal(request, PROP_LOGO_URL, true);
@@ -1524,11 +1516,12 @@ public class Admin extends RepositoryManager {
 
         long    uptime  = ManagementFactory.getRuntimeMXBean().getUptime();
         Counter counter = getRepository().getNumberOfCurrentRequests();
+        /*
         statusSB.append(HtmlUtil.formEntry(msgLabel("Up Time"),
                                            fmt.format((double) (uptime / 1000
                                                / 60)) + " "
                                                    + msg("minutes")));
-
+        */
         statusSB.append(HtmlUtil.formEntry(msgLabel("Total # Requests"),
                                            getLogManager().getRequestCount()
                                            + ""));
