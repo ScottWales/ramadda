@@ -2,7 +2,7 @@
      <!-- JNLP File for Integrated Data Viewer --> 
      <jnlp 
         spec="1.0+" 
-        codebase = "${codebase}" href="${href}"> 
+        codebase = "${codebase}"> 
        <information> 
          <title>${title}</title> 
          <vendor>Unidata</vendor> 
@@ -24,7 +24,7 @@
            <argument>-oneinstanceport</argument>
            <argument>14445</argument>
            ${args}
-        </application>
+        </application-desc>
        <security>
            <all-permissions/>
        </security>
