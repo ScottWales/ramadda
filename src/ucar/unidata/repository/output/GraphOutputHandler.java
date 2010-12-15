@@ -269,14 +269,15 @@ public class GraphOutputHandler extends OutputHandler {
         String attrs = imageAttr  + XmlUtil.attrs(ATTR_TYPE, nodeType,
                                      ATTR_ID, entry.getId(), ATTR_TOOLTIP,
                                                   getTooltip(entry), ATTR_TITLE,
-                                     getGraphNodeTitle(entry.getName()));
+                                                  getGraphNodeTitle(entry.getName()));
 
         if (imageUrl != null) {
             attrs = attrs + " " + XmlUtil.attr("image", imageUrl);
         }
+        //        System.err.println(entry.getName() + " " + attrs);
         sb.append(XmlUtil.tag(TAG_NODE, attrs));
-
         sb.append("\n");
+
     }
 
 
@@ -368,10 +369,14 @@ public class GraphOutputHandler extends OutputHandler {
                 }
                 actualCnt++;
 
+                String imageAttr = XmlUtil.attrs("imagepath",
+                                                 getEntryManager().getIconUrl(request,
+                                                                              subGroup));
+
                 sb.append(
                     XmlUtil.tag(
                         TAG_NODE,
-                        XmlUtil.attrs(
+                        imageAttr+XmlUtil.attrs(
                             ATTR_TYPE, NODETYPE_GROUP, ATTR_ID,
                             subGroup.getId(), ATTR_TOOLTIP,
                             getTooltip(subGroup), ATTR_TITLE,

@@ -144,7 +144,7 @@ public class XmlOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document     doc = XmlUtil.makeDocument();
+        Document  doc = XmlUtil.makeDocument();
         Element root     = getEntryTag(request, entry, doc, null, false,
                                        true);
         StringBuffer sb  = new StringBuffer(XmlUtil.toString(root));

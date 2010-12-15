@@ -455,6 +455,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
 
+    //TODO: Handle the initialize entry from xml
+
     /**
      * _more_
      *
@@ -465,7 +467,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeEntry(Request request, Entry entry, Group parent,
+    public void initializeEntryFromForm(Request request, Entry entry, Group parent,
                                 boolean newEntry)
             throws Exception {
         if ( !newEntry) {
@@ -589,6 +591,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                            metadata.size(), "",
                                            PointDataMetadata.TYPE_INT));
 
+        System.err.println("get dataset:" + dataFile);
 
         FeatureDatasetPoint fdp = getDataset(entry, parent, dataFile);
         if (fdp == null) {
@@ -3164,7 +3167,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                              File file)
             throws Exception {
         Formatter buf = new Formatter();
-
         getStorageManager().checkFile(file);
         if (file.toString().toLowerCase().endsWith(".csv")) {
             TextPointDataSource dataSource =

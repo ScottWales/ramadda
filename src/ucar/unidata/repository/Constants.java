@@ -1294,6 +1294,8 @@ public interface Constants {
     public static final String PROP_FTP_PASSIVEPORTS =
         "ramadda.ftp.passiveports";
 
+    public static final String PROP_SHOWMAP = "ramadda.showmap";
+
     public static final String PROP_PROPERTIES = "ramadda.properties";
 
 

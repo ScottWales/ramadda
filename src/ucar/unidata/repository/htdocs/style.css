@@ -539,7 +539,7 @@ ul {
    border-top : 1px #000000 solid;
 }
 
-<.tab_content_fixedheight_off {
+.tab_content_fixedheight_off {
    min-height: 100px;
    max-height: 200px; 
    overflow-y: auto;
@@ -798,6 +798,9 @@ code.menu {
    text-decoration: underline;
    color: red;
 }
+
+
+
 
 
 .content {

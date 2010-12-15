@@ -127,6 +127,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
     /** _more_ */
     public static final String MACRO_LOGO_IMAGE = "logo.image";
 
+    public static final String MACRO_SEARCH_URL = "search.url";
+
+
     /** _more_ */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
@@ -248,7 +251,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_COPY =
-        new OutputType("Copy/Move Entry", "repository.copy",
+        new OutputType("Copy/Move/Link", "repository.copymovelink",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_MOVE);
 
@@ -3206,6 +3209,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             getProperty(PROP_REPOSITORY_NAME, "Repository"), MACRO_FOOTER,
             getProperty(PROP_HTML_FOOTER, BLANK), MACRO_TITLE,
             result.getTitle(), MACRO_BOTTOM, result.getBottomHtml(),
+            MACRO_SEARCH_URL,  getSearchManager().getSearchUrl(request),
             MACRO_LINKS, linksHtml, MACRO_CONTENT, content + jsContent,
             MACRO_FAVORITES, favorites.toString(), MACRO_ENTRY_HEADER,
             entryHeader, MACRO_HEADER, header,

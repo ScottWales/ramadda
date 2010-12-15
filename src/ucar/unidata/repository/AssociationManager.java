@@ -88,11 +88,11 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processAssociationAdd(Request request) throws Exception {
         Entry fromEntry = getEntryManager().getEntry(request,
@@ -169,11 +169,11 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processAssociationDelete(Request request) throws Exception {
         String associationId = request.getString(ARG_ASSOCIATION, "");
@@ -229,14 +229,14 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param node _more_
      * @param entries _more_
      * @param files _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String processAssociationXml(Request request, Element node,
                                         Hashtable entries, Hashtable files)
@@ -268,9 +268,9 @@ public class AssociationManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Add an association between the two entries
      *
-     * @param request _more_
+     * @param request request
      * @param fromEntry _more_
      * @param toEntry _more_
      * @param name _more_
@@ -278,7 +278,7 @@ public class AssociationManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String addAssociation(Request request, Entry fromEntry,
                                  Entry toEntry, String name, String type)
@@ -294,23 +294,25 @@ public class AssociationManager extends RepositoryManager {
                     + toEntry);
         }
         //Clear the cached associations
-        return addAssociation(request,
+        String result = addAssociation(request,
                               new Association(getRepository().getGUID(),
                                   name, type, fromEntry.getId(),
                                   toEntry.getId()));
-
+        fromEntry.clearAssociations();
+        toEntry.clearAssociations();
+        return result;
     }
 
 
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param association _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String addAssociation(Request request, Association association)
             throws Exception {
@@ -330,7 +332,7 @@ public class AssociationManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<String> getTypes() throws Exception {
         if (types == null) {
@@ -352,10 +354,10 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param association _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void associationChanged(Request request, Association association)
             throws Exception {
@@ -377,10 +379,10 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param association _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void deleteAssociation(Request request, Association association)
             throws Exception {
@@ -393,12 +395,12 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param association _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String getAssociationLinks(Request request, String association)
             throws Exception {
@@ -422,12 +424,12 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entryId _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Association> getAssociations(Request request, String entryId)
             throws Exception {
@@ -443,12 +445,12 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Association> getAssociations(Request request, Entry entry)
             throws Exception {
@@ -476,12 +478,12 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param clause _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Association> getAssociations(Request request, Clause clause)
             throws Exception {
@@ -522,11 +524,11 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String[] getAssociations(Request request) throws Exception {
         TypeHandler  typeHandler = getRepository().getTypeHandler(request);
@@ -550,7 +552,7 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param text _more_
      *
@@ -582,12 +584,12 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      *
      * @return _more_
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public StringBuffer getAssociationBlock(Request request, Entry entry)
             throws Exception {
@@ -606,14 +608,14 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param associations _more_
      * @param entry _more_
      * @param canEdit _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public StringBuffer getAssociationList(Request request,
                                            List<Association> associations,
@@ -694,11 +696,11 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processSearchAssociations(Request request)
             throws Exception {
@@ -750,11 +752,11 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processSearchAssociationsForm(Request request)
             throws Exception {
@@ -771,10 +773,10 @@ public class AssociationManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
-     * @param sb _more_
+     * @param request The request
+     * @param sb buffer to append to
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private void getAssociationsSearchForm(Request request, StringBuffer sb)
             throws Exception {

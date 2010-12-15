@@ -531,15 +531,18 @@ public class IdvOutputHandler extends OutputHandler {
             java.awt.GraphicsEnvironment e =
                 java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
             e.getDefaultScreenDevice();
+            idvOk = true;
             idvServer =
                 new IdvServer(new File(getStorageManager().getDir("idv")));
-            idvOk = true;
             //Only add the output types after we create the server
             addType(OUTPUT_IDV_GRID);
             addType(OUTPUT_IDV_POINT);
         } catch (java.awt.HeadlessException jahe) {
+            idvOk = false;
+            jahe.printStackTrace();
             getRepository().getLogManager().logWarning("To run the IdvOutputHandler a graphics environment is needed");
         } catch (Throwable exc) {
+            idvOk = false;
             logError(
                 "Creating IdvOutputHandler",
                 exc);

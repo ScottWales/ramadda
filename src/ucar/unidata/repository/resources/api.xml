@@ -39,17 +39,15 @@
       <api request="/association/delete"     method="processAssociationDelete"   actions="edit"/>
       <api request="/search/associations/form"    method="processSearchAssociationsForm"      name="Search Associations"/>
       <api request="/search/associations/do"    method="processSearchAssociations"      name="Search Associations"/>
-
   </group>
-
-
 
   <group handler="searchmanager">
       <api request="/search/textform"        method="processEntryTextSearchForm"     name="Search" toplevel="true"/>
       <api request="/search/form"            method="processEntrySearchForm"         name="Search"/>
       <api request="/search/browse"          method="processEntryBrowseSearchForm"   name="Browse"/>
       <api request="/search/do"              method="processEntrySearch"/>
-      <api request="/search/remote/do"     method="processRemoteSearch"         name="Remote Search" />
+      <api request="/search/remote/do"       method="processRemoteSearch"            name="Remote Search" />
+      <api request="/search/opensearch.xml"  method="processOpenSearch"              name="Open Search Descriptor"/>
    </group>
 
   <group handler="graphmanager">

@@ -7121,7 +7121,6 @@ return new Result(title, sb);
             throws Exception {
 
 
-
         if (entry.getIcon() != null) {
             return iconUrl(entry.getIcon());
         }

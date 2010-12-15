@@ -118,6 +118,18 @@ public class SearchManager extends RepositoryManager {
 
 
 
+    public Result processOpenSearch(Request request) throws Exception {
+        Document doc   = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc, "tag", null,
+                                      new String[] {
+           "xmlns",
+           "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
+           "xmlns:xlink", "http://www.w3.org/1999/xlink"
+        });
+        return new Result(XmlUtil.toString(root), getRepository().getMimeTypeFromSuffix(".xml"));
+    }
+
+
     /**
      * _more_
      *
@@ -171,18 +183,20 @@ public class SearchManager extends RepositoryManager {
 
     }
 
+    public String getSearchUrl(Request request) {
+        return request.url(
+                           getRepository().URL_ENTRY_SEARCH, ARG_NAME,
+                           WHAT_ENTRIES);
+    } 
+
     private void makeSearchForm(Request request, boolean justText,
                                 boolean typeSpecific, StringBuffer sb)
             throws Exception {
 
         TypeHandler  typeHandler = getRepository().getTypeHandler(request);
-
         sb.append(
             HtmlUtil.form(
-                request.url(
-                    getRepository().URL_ENTRY_SEARCH, ARG_NAME,
-                    WHAT_ENTRIES), " name=\"searchform\" "));
-
+                          getSearchUrl(request), " name=\"searchform\" "));
 
         //Put in an empty submit button so when the user presses return 
         //it acts like a regular submit (not a submit to change the type)

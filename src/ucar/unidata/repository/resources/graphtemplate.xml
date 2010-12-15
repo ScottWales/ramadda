@@ -20,13 +20,13 @@
 </nodetype>
 
 
-<nodetype    name="group" parent="Node" fillcolor="#37FDFC">
+<nodetype    name="group" parent="Node" fillcolor="#37FDFC" imagepath="${root}/icons/folder.png">
   <command doubleclick="true" label="View group" command="url(,${root}/entry/show?entryid=%id%)"/>
   <command label="Search group" command="url(,${root}/entry/searchform?group=%id%)"/>
 
 <shape>
   <shape>
-     <image id="image" url="${root}/icons/folder.png" from="c" to="c" alt="Tag"/>
+     <image id="image" url="%imagepath%" from="c" to="c" alt="Tag"/>
      <text fillcolor="#dedede" src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
    </shape>
 </shape>

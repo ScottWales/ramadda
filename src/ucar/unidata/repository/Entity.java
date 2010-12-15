@@ -447,6 +447,11 @@ public class Entity implements Cloneable {
 
 
 
+    public void clearAssociations() {
+        associations = null;
+    }
+
+
     /**
      * Set the Associations property.
      *

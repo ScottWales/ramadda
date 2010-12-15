@@ -172,7 +172,7 @@ public class TypeHandler extends RepositoryManager {
     private Hashtable dontShowInForm = new Hashtable();
 
     /** _more_ */
-    private Hashtable properties = new Hashtable();
+    public Hashtable properties = new Hashtable();
 
     /** _more_ */
     private String defaultDataType;

@@ -83,7 +83,9 @@ public class MapManager extends RepositoryManager {
 
 
 
-
+    public boolean shouldShowMaps() {
+        return !getRepository().getProperty(PROP_SHOWMAP, true);
+    }
 
 
     /**
@@ -101,6 +103,11 @@ public class MapManager extends RepositoryManager {
     public void initMap(Request request, String mapVarName,
                           StringBuffer sb, int width, int height,
                           boolean normalControls) {
+        if(!shouldShowMaps()) {
+            return;
+        }
+
+
         String userAgent = request.getHeaderArg("User-Agent");
         String host      = request.getHeaderArg("Host");
         if (host == null) {
@@ -239,6 +246,9 @@ public class MapManager extends RepositoryManager {
                                   String extraLeft, String extraTop,
                                   String[]snew,
                                   double[][]markerLatLons) {
+        
+
+
         StringBuffer sb = new StringBuffer();
         String msg = HtmlUtil.italics(msg("Shift-click to select point"));
         sb.append(msg);
@@ -260,6 +270,12 @@ public class MapManager extends RepositoryManager {
                                                       + HtmlUtil.id(arg
                                                           + "_lon"));
         }
+        if(!shouldShowMaps()) {
+            return widget;
+        }
+
+
+
         if ((extraLeft != null) && (extraLeft.length() > 0)) {
             widget = widget + HtmlUtil.br() + extraLeft;
         }
