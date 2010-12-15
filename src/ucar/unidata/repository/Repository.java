@@ -3180,13 +3180,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if (head == null) {
             head = "";
         }
-        String logoImage = (String) result.getProperty(PROP_LOGO_IMAGE);
-        if (logoImage == null) {
-            logoImage = getProperty(PROP_LOGO_IMAGE, "").trim();
-        }
-        if (logoImage.length() == 0) {
-            logoImage = "${root}/images/logo.png";
-        }
+        String logoImage = getLogoImage(result);
+
+
         String logoUrl = (String) result.getProperty(PROP_LOGO_URL);
         if ((logoUrl == null) || (logoUrl.trim().length() == 0)) {
             logoUrl = getProperty(PROP_LOGO_URL, "");
@@ -3296,15 +3292,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
     /** _more_ */
     private boolean trackMsg = false;
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getRepositoryName() {
-        return getProperty(PROP_REPOSITORY_NAME, "Repository");
-    }
 
 
     /**
@@ -4293,8 +4280,31 @@ public class Repository extends RepositoryBase implements RequestHandler {
      *
      * @return _more_
      */
-    public String getDescription() {
+    public String getRepositoryDescription() {
         return getProperty(PROP_REPOSITORY_DESCRIPTION, "");
+    }
+
+
+    public String getRepositoryName() {
+        return getProperty(PROP_REPOSITORY_NAME, "");
+    }
+
+    public String getRepositoryEmail() {
+        return getProperty(PROP_ADMIN_EMAIL, "");
+    }
+
+    public String getLogoImage(Result result) {
+        String logoImage = null;
+        if(result!=null) {
+            logoImage = (String) result.getProperty(PROP_LOGO_IMAGE);
+        }
+        if (logoImage == null) {
+            logoImage = getProperty(PROP_LOGO_IMAGE, "").trim();
+        }
+        if (logoImage.length() == 0) {
+            logoImage = "${root}/images/logo.png";
+        }
+        return logoImage;
     }
 
 
@@ -4307,8 +4317,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
         int sslPort = getHttpsPort();
         return new ServerInfo(
             getHostname(), getPort(), sslPort, getUrlBase(),
-            getProperty(PROP_REPOSITORY_NAME, "Repository"),
-            getDescription(), getProperty(PROP_ADMIN_EMAIL, ""),
+            getRepositoryName(),
+            getRepositoryDescription(), 
+            getRepositoryEmail(), 
             getRegistryManager().isEnabledAsServer(), false);
     }
 

@@ -30,6 +30,7 @@ import ucar.unidata.repository.auth.*;
 import ucar.unidata.repository.metadata.*;
 
 import ucar.unidata.repository.output.*;
+import ucar.unidata.repository.util.OpenSearchUtil;
 import ucar.unidata.repository.type.*;
 
 import ucar.unidata.sql.Clause;
@@ -120,13 +121,32 @@ public class SearchManager extends RepositoryManager {
 
     public Result processOpenSearch(Request request) throws Exception {
         Document doc   = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, "tag", null,
-                                      new String[] {
-           "xmlns",
-           "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
-           "xmlns:xlink", "http://www.w3.org/1999/xlink"
-        });
-        return new Result(XmlUtil.toString(root), getRepository().getMimeTypeFromSuffix(".xml"));
+        Element root = OpenSearchUtil.getRoot();
+        /*
+   <ShortName>Web Search</ShortName>
+   <Description>Use Example.com to search the Web.</Description>
+   <Tags>example web</Tags>
+   <Contact>admin@example.com</Contact>
+        */
+        OpenSearchUtil.addBasicTags(root, getRepository().getRepositoryName(),
+                                    getRepository().getRepositoryDescription(),
+                                    getRepository().getRepositoryEmail());
+        ((Element)XmlUtil.create(OpenSearchUtil.TAG_IMAGE, root)).appendChild(XmlUtil.makeCDataNode(root.getOwnerDocument(),
+                                                                                                    getRepository().getLogoImage(null), false));
+        
+
+        String url = getRepository().absoluteUrl(getRepository().URL_ENTRY_SEARCH.toString());
+        url = HtmlUtil.url(url, new String[]{
+                ARG_OUTPUT, RssOutputHandler.OUTPUT_RSS_FULL.getId(),
+                ARG_TEXT,"{searchTerms}"
+            }, false);
+
+        XmlUtil.create( OpenSearchUtil.TAG_URL,root,"",
+                        new String[]{
+                            OpenSearchUtil.ATTR_TYPE,
+                                  "application/rss+xml",
+                            OpenSearchUtil.ATTR_TEMPLATE,url});
+        return new Result(XmlUtil.toString(root), OpenSearchUtil.MIMETYPE);
     }
 
 
