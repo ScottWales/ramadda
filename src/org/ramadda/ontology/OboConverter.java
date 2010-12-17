@@ -42,7 +42,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class OboProcessor implements ImportHandler {
+public class OboConverter implements ImportHandler {
 
     /** _more_ */
     private HashSet<String> tagMap = new HashSet<String>();
@@ -53,7 +53,7 @@ public class OboProcessor implements ImportHandler {
     /**
      * ctor
      */
-    public OboProcessor() {
+    public OboConverter() {
     }
 
 
@@ -65,9 +65,9 @@ public class OboProcessor implements ImportHandler {
         String ext = IOUtil.getFileExtension(fileName);
         System.err.println("obo ext:" + ext);
         if(!ext.equals(".obo"))  {
-            return stream;
+            return null;
         }
-        System.err.println ("OboProcessor converting file");
+        System.err.println ("OboConverter converting file");
         String xml = processFile(fileName);
         return new ByteArrayInputStream(xml.getBytes());
     }
@@ -120,7 +120,7 @@ public class OboProcessor implements ImportHandler {
      */
     public String processFile(String file) throws Exception {
         List<String> lines = StringUtil.split(IOUtil.readContents(file,
-                                 OboProcessor.class), "\n", true, true);
+                                 OboConverter.class), "\n", true, true);
         Term                    currentTerm = null;
         List<Term>              terms       = new ArrayList<Term>();
         Hashtable<String, Term> map         = new Hashtable<String, Term>();
@@ -306,11 +306,11 @@ public class OboProcessor implements ImportHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        OboProcessor oboProcessor = new OboProcessor();
+        OboConverter oboConverter = new OboConverter();
         for (String file : args) {
             String entriesFile = IOUtil.stripExtension(IOUtil.getFileTail(file))
                 + "entries.xml";
-            String xml = oboProcessor.processFile(file);
+            String xml = oboConverter.processFile(file);
             IOUtil.writeFile(entriesFile, xml);
         }
     }

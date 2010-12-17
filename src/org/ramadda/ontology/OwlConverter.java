@@ -50,12 +50,12 @@ import java.util.Properties;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class SweetProcessor implements ImportHandler {
+public class OwlConverter implements ImportHandler {
 
     /** _more_ */
     static Properties names = new Properties();
 
-    public SweetProcessor() {
+    public OwlConverter() {
     }
 
 
@@ -65,20 +65,14 @@ public class SweetProcessor implements ImportHandler {
 
     public InputStream getStream(String fileName, InputStream stream) throws Exception {
         String ext = IOUtil.getFileExtension(fileName);
-        System.err.println("owl ext:" + ext);
         boolean isOwl = ext.equals(".rdf") || ext.equals(".owl");
 
         if(!isOwl) {
-            return stream;
+            return null;
         }
-        System.err.println ("OwlProcessor converting file");
-
-
-
+        System.err.println ("OwlConverter converting file");
         StringBuffer    xml          = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("<entries>\n");
-
-
         List<AssociationInfo>  links = new ArrayList<AssociationInfo>();
         StringBuffer    associations = new StringBuffer(XmlUtil.XML_HEADER);
         HashSet<String> seen         = new HashSet<String>();
@@ -86,7 +80,6 @@ public class SweetProcessor implements ImportHandler {
         Hashtable<String, EntryInfo> entryMap = new Hashtable<String,
             EntryInfo>();
         HashSet<String> processed = new HashSet<String>();
-
         processFile(fileName, "", entries, entryMap, links,seen);
         EntryInfo.appendEntries(xml,entries, entryMap, processed);
         AssociationInfo.appendAssociations(xml, links, seen);
@@ -134,11 +127,11 @@ public class SweetProcessor implements ImportHandler {
         topLevelMap.load(
                          IOUtil.getInputStream(
                                                "/org/ramadda/ontology/toplevel.properties",
-                                               SweetProcessor.class));
+                                               OwlConverter.class));
         names.load(
                    IOUtil.getInputStream(
                                          "/org/ramadda/ontology/names.properties",
-                                         SweetProcessor.class));
+                                         OwlConverter.class));
 
         File            f            = new File("owl");
         StringBuffer    xml          = new StringBuffer(XmlUtil.XML_HEADER);
@@ -157,7 +150,7 @@ public class SweetProcessor implements ImportHandler {
         List<String> files = StringUtil.split(
                                               IOUtil.readContents(
                                                                   "/org/ramadda/ontology/sweetfiles.txt",
-                                                                  SweetProcessor.class), "\n", true, true);
+                                                                  OwlConverter.class), "\n", true, true);
         int             cnt             = 0;
         String          currentTopLevel = null;
         HashSet<String> processed = new HashSet<String>();
@@ -210,7 +203,7 @@ public class SweetProcessor implements ImportHandler {
 
         String filePrefix = IOUtil.getFileTail(file.toString());
         Element root = XmlUtil.getRoot(file.toString(),
-                                       SweetProcessor.class);
+                                       OwlConverter.class);
         if (root == null) {
             System.err.println("failed to read:" + file);
             return;
@@ -333,7 +326,18 @@ public class SweetProcessor implements ImportHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        SweetProcessor processor = new SweetProcessor();
+        OwlConverter processor = new OwlConverter();
+        if(args.length>0) {
+            for(String file: args) {
+                InputStream newStream = processor.getStream(file, new FileInputStream(file));
+                IOUtil.writeFile(IOUtil.stripExtension(file)+"entries.xml", 
+                                 IOUtil.readInputStream(newStream));
+            }
+            return;
+        }
+
+
+
         processor.convertSweetAll();
     }
 
