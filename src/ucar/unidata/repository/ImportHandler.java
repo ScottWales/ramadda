@@ -22,10 +22,12 @@ package ucar.unidata.repository;
 
 import java.io.InputStream;
 
+import org.w3c.dom.*;
+
 
 /**
  */
-public interface ImportHandler {
+public abstract class ImportHandler {
 
     /**
      * _more_
@@ -41,7 +43,9 @@ public interface ImportHandler {
      */
     public Result handleRequest(Request request, Repository repository,
                                 String uploadedFile, Entry parentEntry)
-     throws Exception;
+        throws Exception {
+        return null;
+    }
 
     /**
      * _more_
@@ -54,6 +58,12 @@ public interface ImportHandler {
      * @throws Exception _more_
      */
     public InputStream getStream(String fileName, InputStream stream)
-     throws Exception;
+        throws Exception {
+        return null;
+    }
+
+    public Element getDOM(Element root) throws Exception {
+        return null;
+    }
 
 }

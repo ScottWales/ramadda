@@ -3201,6 +3201,19 @@ return new Result(title, sb);
 
 
         Element  root = XmlUtil.getRoot(entriesXml);
+
+        for(ImportHandler importHandler: getRepository().getImportHandlers()) {
+            Element newRoot  = importHandler.getDOM(root);
+            if(newRoot!=null && newRoot!=root) {
+                root = newRoot;
+                break;
+            }
+        }
+
+
+
+
+
         List<Element> entryNodes = new ArrayList<Element>();
         List<Element> associationNodes = new ArrayList<Element>();
 
