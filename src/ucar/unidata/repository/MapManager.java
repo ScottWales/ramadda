@@ -84,7 +84,7 @@ public class MapManager extends RepositoryManager {
 
 
     public boolean shouldShowMaps() {
-        return !getRepository().getProperty(PROP_SHOWMAP, true);
+        return  getRepository().getProperty(PROP_SHOWMAP, true);
     }
 
 
