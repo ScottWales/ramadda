@@ -26,6 +26,7 @@ import ucar.unidata.repository.util.EntryInfo;
 import ucar.unidata.repository.util.AssociationInfo;
 
 import ucar.unidata.repository.*;
+import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
@@ -50,7 +51,7 @@ import java.util.Properties;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class OwlConverter implements ImportHandler {
+public class OwlConverter extends ImportHandler {
 
     /** _more_ */
     static Properties names = new Properties();
@@ -58,10 +59,6 @@ public class OwlConverter implements ImportHandler {
     public OwlConverter() {
     }
 
-
-    public Result handleRequest(Request request, Repository repository, String uploadedFile, Entry parentEntry) throws Exception {
-        return null;
-    }
 
     public InputStream getStream(String fileName, InputStream stream) throws Exception {
         String ext = IOUtil.getFileExtension(fileName);

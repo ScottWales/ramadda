@@ -47,7 +47,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class OrcaConverter  implements ImportHandler {
+public class OrcaConverter  extends ImportHandler {
 
     /** _more_ */
     public static final String TAG_REGISTRYOBJECTS = "registryObjects";
@@ -148,21 +148,10 @@ public class OrcaConverter  implements ImportHandler {
     public OrcaConverter() {
     }
 
-
-    public Result handleRequest(Request request, Repository repository, String uploadedFile, Entry parentEntry) throws Exception {
-        return null;
-    }
-
-    public InputStream getStream(String fileName, InputStream stream) throws Exception {
-        String ext = IOUtil.getFileExtension(fileName);
-        if(!ext.equals(".xml"))  {
-            return null;
-        }
-        if(fileName.indexOf("orca")<0) {
-            return null;
-        }
-        String xml = processFile(fileName);
-        return new ByteArrayInputStream(xml.getBytes());
+    public Element getDOM( Element root) throws Exception {
+        if(!root.getTagName().equals(TAG_REGISTRYOBJECTS)) return null;
+        String xml = processFile(root);
+        return XmlUtil.getRoot(xml);
     }
 
 
@@ -174,7 +163,11 @@ public class OrcaConverter  implements ImportHandler {
      * @throws Exception _more_
      */
     public String processFile(String file) throws Exception {
+        Element root = XmlUtil.getRoot(file, OrcaConverter.class);
+        return processFile(root);
+    }
 
+    public String processFile(Element root) throws Exception {
         String[] subTags = { TAG_PARTY, TAG_ACTIVITY, TAG_COLLECTION,
                              TAG_SERVICE };
         String[] subTagNames = { "Parties", "Activities", "Collections",
@@ -187,7 +180,6 @@ public class OrcaConverter  implements ImportHandler {
         Hashtable<String, Object> keyMap = new Hashtable<String, Object>();
         Hashtable<String, Group>  groups = new Hashtable<String, Group>();
 
-        Element root = XmlUtil.getRoot(file, OrcaConverter.class);
         NodeList     children = XmlUtil.getElements(root);
         StringBuffer xml      = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("<entries>\n");

@@ -34,6 +34,8 @@ import java.util.Hashtable;
 
 import java.util.List;
 
+import org.w3c.dom.*;
+
 
 /**
  * Class description
@@ -42,7 +44,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class OboConverter implements ImportHandler {
+public class OboConverter extends ImportHandler {
 
     /** _more_ */
     private HashSet<String> tagMap = new HashSet<String>();
@@ -57,9 +59,6 @@ public class OboConverter implements ImportHandler {
     }
 
 
-    public Result handleRequest(Request request, Repository repository, String uploadedFile, Entry parentEntry) throws Exception {
-        return null;
-    }
 
     public InputStream getStream(String fileName, InputStream stream) throws Exception {
         String ext = IOUtil.getFileExtension(fileName);
