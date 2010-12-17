@@ -20,12 +20,17 @@
 package org.ramadda.ontology;
 
 
+import ucar.unidata.repository.*;
+import java.io.*;
+
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
+
+
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +47,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class AndsConverter {
+public class OrcaConverter  implements ImportHandler {
 
     /** _more_ */
     public static final String TAG_REGISTRYOBJECTS = "registryObjects";
@@ -140,6 +145,27 @@ public class AndsConverter {
     /** _more_ */
     static int idcnt = 0;
 
+    public OrcaConverter() {
+    }
+
+
+    public Result handleRequest(Request request, Repository repository, String uploadedFile, Entry parentEntry) throws Exception {
+        return null;
+    }
+
+    public InputStream getStream(String fileName, InputStream stream) throws Exception {
+        String ext = IOUtil.getFileExtension(fileName);
+        if(!ext.equals(".xml"))  {
+            return null;
+        }
+        if(fileName.indexOf("orca")<0) {
+            return null;
+        }
+        String xml = processFile(fileName);
+        return new ByteArrayInputStream(xml.getBytes());
+    }
+
+
     /**
      * _more_
      *
@@ -147,7 +173,7 @@ public class AndsConverter {
      *
      * @throws Exception _more_
      */
-    public static void processFile(String file) throws Exception {
+    public String processFile(String file) throws Exception {
 
         String[] subTags = { TAG_PARTY, TAG_ACTIVITY, TAG_COLLECTION,
                              TAG_SERVICE };
@@ -161,11 +187,8 @@ public class AndsConverter {
         Hashtable<String, Object> keyMap = new Hashtable<String, Object>();
         Hashtable<String, Group>  groups = new Hashtable<String, Group>();
 
-        System.err.println("parsing:" + file);
-        Element root = XmlUtil.getRoot(file, AndsConverter.class);
-        System.err.println("done parsing");
+        Element root = XmlUtil.getRoot(file, OrcaConverter.class);
         NodeList     children = XmlUtil.getElements(root);
-
         StringBuffer xml      = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("<entries>\n");
         for (int i = 0; i < children.getLength(); i++) {
@@ -332,11 +355,7 @@ public class AndsConverter {
             }
         }
         xml.append("</entries>\n");
-        IOUtil.writeFile("entries.xml", xml.toString());
-        System.err.println("#objects:" + registryObjects.size());
-
-
-
+        return xml.toString();
     }
 
 
@@ -570,8 +589,10 @@ public class AndsConverter {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        OrcaConverter converter = new OrcaConverter();
         for (String arg : args) {
-            processFile(arg);
+            String xml = converter.processFile(arg);
+            IOUtil.writeFile(IOUtil.stripExtension(arg)+"entries.xml", xml);
         }
 
 

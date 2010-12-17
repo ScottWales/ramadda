@@ -70,7 +70,6 @@ public class OwlConverter implements ImportHandler {
         if(!isOwl) {
             return null;
         }
-        System.err.println ("OwlConverter converting file");
         StringBuffer    xml          = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("<entries>\n");
         List<AssociationInfo>  links = new ArrayList<AssociationInfo>();

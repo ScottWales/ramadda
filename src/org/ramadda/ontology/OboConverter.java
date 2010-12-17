@@ -63,11 +63,9 @@ public class OboConverter implements ImportHandler {
 
     public InputStream getStream(String fileName, InputStream stream) throws Exception {
         String ext = IOUtil.getFileExtension(fileName);
-        System.err.println("obo ext:" + ext);
         if(!ext.equals(".obo"))  {
             return null;
         }
-        System.err.println ("OboConverter converting file");
         String xml = processFile(fileName);
         return new ByteArrayInputStream(xml.getBytes());
     }
