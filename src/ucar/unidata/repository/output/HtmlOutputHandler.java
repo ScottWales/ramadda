@@ -273,7 +273,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 xml.append("\n</content>");
                 return new Result("", xml, "text/xml");
             }
-
             return getMetadataXml(request, entry);
         }
 
@@ -528,6 +527,7 @@ public class HtmlOutputHandler extends OutputHandler {
         String       cbxId;
         String       cbxWrapperId;
 
+        String tabs  =  getInformationTabs(request, parent, true, true);
         if ( !showingAll(request, subGroups, entries)) {
             sb.append(msgLabel("Showing") + " 1.."
                       + (subGroups.size() + entries.size()));
@@ -541,6 +541,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         for (Group subGroup : subGroups) {
+            if(cnt==0) {
+                //                sb.append(HtmlUtil.makeToggleInline("...", tabs, false));
+            }
             cnt++;
             addEntryCheckbox(request, subGroup, sb, jsSB);
         }
@@ -548,15 +551,20 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if ( !onlyGroups) {
             for (Entry entry : entries) {
+                if(cnt==0) {
+                    //                    sb.append(HtmlUtil.makeToggleInline("...", tabs, false));
+                }
                 cnt++;
                 addEntryCheckbox(request, entry, sb, jsSB);
             }
         }
 
+
         //            sb.append(getInformationTabs(request, parent, true, true));
         if (cnt == 0) {
             sb.append(HtmlUtil.tag(HtmlUtil.TAG_I, "",
                                    msg("No entries in this folder")));
+            sb.append(tabs);
             //            sb.append(entry.getDescription());
             if (getAccessManager().hasPermissionSet(parent,
                     Permission.ACTION_VIEWCHILDREN)) {

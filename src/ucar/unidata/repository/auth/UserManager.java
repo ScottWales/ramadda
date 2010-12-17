@@ -202,6 +202,16 @@ public class UserManager extends RepositoryManager {
     }
 
 
+    private Result addHeader(Request request, Result result)  {
+        //        if(true) return result;
+        try {
+            return getEntryManager().addEntryHeader(request, null,  result);
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
     /**
      * initial the list of users from the command line
      *
@@ -850,7 +860,7 @@ public class UserManager extends RepositoryManager {
         result.putProperty(PROP_NAVSUBLINKS,
                            getRepository().getSubNavLinks(request,
                                getAdmin().adminUrls));
-        return result;
+        return addHeader(request, result); 
     }
 
 
@@ -1013,7 +1023,7 @@ public class UserManager extends RepositoryManager {
                                getRepository().getSubNavLinks(request,
                                    getAdmin().adminUrls));
 
-            return result;
+            return addHeader(request, result); 
         }
 
         String  id        = "";
@@ -1141,9 +1151,8 @@ public class UserManager extends RepositoryManager {
 
 
         if (users.size() > 0) {
-            return new Result("", sb);
+            return addHeader(request,  new Result("", sb));
         }
-
 
         if (errorBuffer.toString().length() > 0) {
             sb.append(
@@ -1758,11 +1767,21 @@ public class UserManager extends RepositoryManager {
      * @return _more_
      */
     public Result makeResult(Request request, String title, StringBuffer sb) {
+        List<RequestUrl> links  =  !request.getUser().canEditSettings()
+            ? anonUserUrls
+            : userUrls;
+        if(true) {
+            return getRepository().makeResult(request, title, sb, links);
+        }
+
         User user = request.getUser();
-        return getRepository().makeResult(request, title, sb,
-                                          !request.getUser().canEditSettings()
-                                          ? anonUserUrls
-                                          : userUrls);
+        List list = getRepository().getSubNavLinks(request, links);
+        sb.append(StringUtil.join("",list));
+
+        //      Result result = getRepository().makeResult(request, title, sb,
+        Result result = new Result(title, sb);
+        //        if(true) return result;
+        return addHeader(request,result);
     }
 
 
@@ -1864,23 +1883,23 @@ public class UserManager extends RepositoryManager {
         User   user    = request.getUser();
 
         if ( !request.getUser().canEditSettings()) {
-            return new Result(
-                msg("Favorites"),
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "Favorites not allowed")));
+            return addHeader(request,new Result(
+                                        msg("Favorites"),
+                                        new StringBuffer(
+                                                         getRepository().showDialogError(
+                                                                                         "Favorites not allowed"))));
         }
         String entryId = request.getString(ARG_ENTRYID, BLANK);
 
         if (request.get(ARG_FAVORITE_ADD, false)) {
             Entry entry = getEntryManager().getEntry(request, entryId);
             if (entry == null) {
-                return new Result(
+                return addHeader(request,new Result(
                     msg("Favorites"),
                     new StringBuffer(
                         getRepository().showDialogError(
                             getRepository().translate(
-                                request, "Cannot find or access entry"))));
+                                                      request, "Cannot find or access entry")))));
             }
 
             addFavorites(request, user, (List<Entry>) Misc.newList(entry));
@@ -1971,7 +1990,7 @@ public class UserManager extends RepositoryManager {
             }
             sb.append(getRepository().showDialogWarning(msg));
             sb.append(makeLoginForm(request));
-            return new Result(msg("User Home"), sb);
+            return addHeader(request,new Result(msg("User Home"), sb));
             //        } else  if (user.getIsGuest()) {
         } else {
             request.appendMessage(sb);
@@ -2435,23 +2454,20 @@ public class UserManager extends RepositoryManager {
                 }
                 String destUrl;
                 String destMsg;
+                StringBuffer response = new StringBuffer();
+                response.append(
+                    getRepository().showDialogNote(msg("You are logged in")));
                 if (request.exists(ARG_REDIRECT)) {
                     destUrl = new String(
                         XmlUtil.decodeBase64(
                             request.getUnsafeString(ARG_REDIRECT, "")));
-                    destMsg = msg("Continue");
+                    response.append(HtmlUtil.href(destUrl, msg("Continue")));
                 } else if ( !user.canEditSettings()) {
-                    destUrl = getRepository().getUrlBase();
-                    destMsg = msg("Continue");
+                    response.append(HtmlUtil.href(getRepository().getUrlBase(), msg("Continue")));
                 } else {
-                    destUrl = getRepositoryBase().URL_USER_HOME.toString();
-                    destMsg = msg("Continue to user home");
+                    response.append(HtmlUtil.href(getRepositoryBase().URL_USER_HOME.toString(), msg("Continue to user home")));
                 }
-                StringBuffer response = new StringBuffer();
-                response.append(
-                    getRepository().showDialogNote(msg("You are logged in")));
-                response.append(HtmlUtil.href(destUrl, destMsg));
-                return new Result("Login", response);
+                return addHeader(request, new Result("Login", response));
             } else {
                 if (responseAsXml) {
                     return new Result(XmlUtil.tag(TAG_RESPONSE,
@@ -2478,7 +2494,7 @@ public class UserManager extends RepositoryManager {
                             addPasswordResetForm(request, sb, name);
                             getDatabaseManager().closeAndReleaseConnection(
                                 statement);
-                            return new Result(msg("Login"), sb);
+                            return addHeader(request, new Result(msg("Login"), sb));
                         }
                     }
                     getDatabaseManager().closeAndReleaseConnection(statement);
@@ -2497,7 +2513,7 @@ public class UserManager extends RepositoryManager {
         if (user == null) {
             sb.append(makeLoginForm(request, loginFormExtra.toString()));
         }
-        return new Result(msg("Login"), sb);
+        return addHeader(request, new Result(msg("Login"), sb));
 
     }
 
@@ -2520,7 +2536,7 @@ public class UserManager extends RepositoryManager {
         sb.append(getRepository().showDialogNote(msg("You are logged out")));
         sb.append(makeLoginForm(request));
         Result result = new Result(msg("Logout"), sb);
-        return result;
+        return addHeader(request, result);
     }
 
 
@@ -2600,9 +2616,9 @@ public class UserManager extends RepositoryManager {
                     String redirect =
                         getRepositoryBase().URL_USER_HOME.toString();
                     //                    System.err.println("zzz redirecting to:" + redirect);
-                    return new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
-                            getRepository().translate(request,
-                                "Favorites Added")));
+                    return  new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
+                                                                                                   getRepository().translate(request,
+                                                                                                                             "Favorites Added")));
 
                 }
 
@@ -2688,7 +2704,8 @@ public class UserManager extends RepositoryManager {
         result.putProperty(PROP_NAVSUBLINKS,
                            getRepository().getSubNavLinks(request,
                                getAdmin().adminUrls));
-        return result;
+
+        return addHeader(request, result);
     }
 
 
@@ -2796,14 +2813,14 @@ public class UserManager extends RepositoryManager {
                 getRepository().showDialogWarning(
                     msg("You need to be logged in to change user settings")));
             sb.append(makeLoginForm(request));
-            return new Result(msg("User Settings"), sb);
+            return addHeader(request, new Result(msg("User Settings"), sb));
         }
 
         if ( !request.getUser().canEditSettings()) {
             sb.append(
                 getRepository().showDialogWarning(
                     msg("You cannot edit your settings")));
-            return new Result(msg("User Settings"), sb);
+            return addHeader(request, new Result(msg("User Settings"), sb));
         }
 
         if (request.exists(ARG_USER_CHANGE)) {
@@ -2833,8 +2850,8 @@ public class UserManager extends RepositoryManager {
                     redirect =
                         getRepositoryBase().URL_USER_SETTINGS.toString();
                 }
-                return new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
-                        getRepository().translate(request, message)));
+                    return  new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
+                                                    getRepository().translate(request, message)));
             }
         }
 

@@ -1143,6 +1143,8 @@ public class Request implements Constants {
             String message = getUnsafeString(ARG_MESSAGE, "");
             //            message = HtmlUtil.entityEncode(getUnsafeString(ARG_MESSAGE, "");
             message = RepositoryBase.getDialogString(message);
+            //Encode this to keep from a spoof attack
+            message  =HtmlUtil.entityEncode(message);
             sb.append(repository.showDialogNote(message));
             remove(ARG_MESSAGE);
         }

@@ -4402,7 +4402,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                     + helpText;
             }
 
-            result = new Result(BLANK, new StringBuffer(helpText));
+            result = getEntryManager().addEntryHeader(request, null, new Result(BLANK, new StringBuffer(helpText)));
         } else {
             InputStream inputStream =
                 getStorageManager().getInputStream(path);

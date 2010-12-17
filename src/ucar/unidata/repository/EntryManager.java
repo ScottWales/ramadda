@@ -520,6 +520,7 @@ return new Result(title, sb);
      */
     public Result addEntryHeader(Request request, Entry entry, Result result)
             throws Exception {
+        if(entry == null) entry = getTopGroup();
         if (result.getShouldDecorate()) {
             //            if(entry.getDescription().indexOf("<noentryheader>")>=0) return result;
             //            String output = request.getString(ARG_OUTPUT, (String) "");

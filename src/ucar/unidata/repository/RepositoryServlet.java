@@ -379,6 +379,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         OutputStream output = response.getOutputStream();
                         try {
                             output.write(repositoryResult.getContent());
+                        } catch (java.net.SocketException se) {
+                            //ignore
                         } finally {
                             IOUtil.close(output);
                         }
