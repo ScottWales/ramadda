@@ -6119,13 +6119,16 @@ return new Result(title, sb);
             boolean changed =
                 getMetadataManager().addInitialMetadata(request, theEntry,
                     extra, shortForm);
+            //            System.err.println("extra:" + extra);
             if ( !theEntry.hasAreaDefined()
                     && (extra.get(ARG_MINLAT) != null)) {
+                //                System.err.println("adding bounds");
                 theEntry.setSouth(Misc.getProperty(extra, ARG_MINLAT, 0.0));
                 theEntry.setNorth(Misc.getProperty(extra, ARG_MAXLAT, 0.0));
                 theEntry.setWest(Misc.getProperty(extra, ARG_MINLON, 0.0));
                 theEntry.setEast(Misc.getProperty(extra, ARG_MAXLON, 0.0));
                 theEntry.trimAreaResolution();
+
                 changed = true;
             }
             if (extra.get(ARG_FROMDATE) != null) {
@@ -7246,9 +7249,16 @@ return new Result(title, sb);
                 String resourceType = results.getString(col++);
                 children.add(new String[] { childId, childType, resource,
                                             resourceType });
+                Entry childEntry = getEntry(request, childId);
+
+                if(childEntry==null) {
+                    //This happened when a previous delete tree went bad and a parent has a record of
+                    //a child that does not exist
+                    continue;
+                }
+
                 children.addAll(getDescendents(request,
-                                               (List<Entry>) Misc.newList(getEntry(request,
-                                                                                   childId)), connection, false));
+                                               (List<Entry>) Misc.newList(childEntry), connection, false));
             }
             getDatabaseManager().closeStatement(stmt);
         }
