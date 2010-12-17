@@ -42,7 +42,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class ProcessAnds {
+public class AndsProcessor {
 
     /** _more_ */
     public static final String TAG_REGISTRYOBJECTS = "registryObjects";
@@ -162,7 +162,7 @@ public class ProcessAnds {
         Hashtable<String, Group>  groups = new Hashtable<String, Group>();
 
         System.err.println("parsing:" + file);
-        Element root = XmlUtil.getRoot(file, ProcessAnds.class);
+        Element root = XmlUtil.getRoot(file, AndsProcessor.class);
         System.err.println("done parsing");
         NodeList     children = XmlUtil.getElements(root);
 

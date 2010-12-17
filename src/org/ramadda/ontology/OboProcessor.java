@@ -20,7 +20,10 @@
 package org.ramadda.ontology;
 
 
+import ucar.unidata.repository.*;
+
 import ucar.unidata.util.IOUtil;
+import java.io.*;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -39,7 +42,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class OboParser {
+public class OboProcessor implements ImportHandler {
 
     /** _more_ */
     private HashSet<String> tagMap = new HashSet<String>();
@@ -50,7 +53,26 @@ public class OboParser {
     /**
      * ctor
      */
-    public OboParser() {}
+    public OboProcessor() {
+    }
+
+
+    public Result handleRequest(Request request, Repository repository, String uploadedFile, Entry parentEntry) throws Exception {
+        return null;
+    }
+
+    public InputStream getStream(String fileName, InputStream stream) throws Exception {
+        String ext = IOUtil.getFileExtension(fileName);
+        System.err.println("obo ext:" + ext);
+        if(!ext.equals(".obo"))  {
+            return stream;
+        }
+        System.err.println ("OboProcessor converting file");
+        String xml = processFile(fileName);
+        return new ByteArrayInputStream(xml.getBytes());
+    }
+
+
 
     /**
      * _more_
@@ -96,10 +118,9 @@ public class OboParser {
      *
      * @throws Exception _more_
      */
-    public void processFile(String file) throws Exception {
+    public String processFile(String file) throws Exception {
         List<String> lines = StringUtil.split(IOUtil.readContents(file,
-                                 OboParser.class), "\n", true, true);
-
+                                 OboProcessor.class), "\n", true, true);
         Term                    currentTerm = null;
         List<Term>              terms       = new ArrayList<Term>();
         Hashtable<String, Term> map         = new Hashtable<String, Term>();
@@ -140,11 +161,7 @@ public class OboParser {
         System.err.println("# terms:" + terms.size());
         xml.append(associations);
         xml.append("</entries>\n");
-        String entriesFile = IOUtil.stripExtension(IOUtil.getFileTail(file))
-                             + "entries.xml";
-
-
-        IOUtil.writeFile(entriesFile, xml.toString());
+        return xml.toString();
     }
 
     /**
@@ -289,9 +306,12 @@ public class OboParser {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        OboParser oboParser = new OboParser();
+        OboProcessor oboProcessor = new OboProcessor();
         for (String file : args) {
-            oboParser.processFile(file);
+            String entriesFile = IOUtil.stripExtension(IOUtil.getFileTail(file))
+                + "entries.xml";
+            String xml = oboProcessor.processFile(file);
+            IOUtil.writeFile(entriesFile, xml);
         }
     }
 

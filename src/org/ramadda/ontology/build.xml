@@ -13,7 +13,7 @@
         <property name="srcdir" value="${basedir}/src"/>
         <property name="libdir" value="${basedir}/lib"/>
 
-        <property name="classpath" value="${libdir}/repository.jar:${libdir}/repositorylib.jar:${libdir}/idv.jar:${libdir}/unidatacommon.jar:${libdir}/servlet-api.jar"/>
+        <property name="classpath" value="${libdir}/idv.jar:${libdir}/repositorylib.jar:${libdir}/repositorytds.jar:${libdir}/servlet-api.jar"/>
 
         <property name="build.sysclasspath"    value="ignore" />
 
