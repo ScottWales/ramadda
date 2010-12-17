@@ -42,7 +42,7 @@ public class EntryInfo {
     /** _more_ */
     private String name;
 
-    /** _more_          */
+    /** _more_ */
     private String type;
 
     /** _more_ */
@@ -85,13 +85,18 @@ public class EntryInfo {
             EntryInfo entryInfo = tmp.get(i);
             EntryInfo parent    = entryMap.get(entryInfo.getParentId());
             if (parent == null) {
-                if ( !processed.contains(entryInfo.getParentId())) {
+                if ( !processed.contains(entryInfo.getParentId())
+                        && (entryInfo.getParentId().length() > 0)) {
                     System.err.println("No parent for entry:"
                                        + entryInfo.getName() + " parent="
                                        + entryInfo.getParentId());
                     continue;
                 }
             }
+
+            /*            System.err.println("Entry:" + entryInfo.getName() + " parentId:"
+                               + entryInfo.getParentId() +" found:" + parent);
+            */
             entries.add(entryInfo);
         }
 
@@ -118,9 +123,16 @@ public class EntryInfo {
         }
         if ( !processed.contains(entryInfo.getParentId())) {
             EntryInfo parent = entryMap.get(entryInfo.getParentId());
-            appendEntries(xml, parent, processed, entryMap);
+            if (parent == null) {
+                if (entryInfo.getParentId().length() > 0) {
+                    return;
+                }
+            } else {
+                appendEntries(xml, parent, processed, entryMap);
+            }
         }
         processed.add(entryInfo.getId());
+
         xml.append(
             XmlUtil.tag(
                 "entry",

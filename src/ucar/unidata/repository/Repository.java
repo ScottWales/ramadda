@@ -1786,13 +1786,13 @@ public class Repository extends RepositoryBase implements RequestHandler {
          */
         protected void checkClass(Class c) throws Exception {
             if (ImportHandler.class.isAssignableFrom(c)) {
-                getLogManager().logInfo("Adding import handler:"
-                                        + c.getName());
+                getLogManager().logInfoAndPrint("Adding import handler:"
+                                                + c.getName());
                 Constructor ctor = Misc.findConstructor(c, new Class[]{Repository.class});
                 if(ctor!=null) {
                     importHandlers.add((ImportHandler) ctor.newInstance(new Object[]{Repository.this}));
                 } else {
-                    importHandlers.add((ImportHandler) ctor.newInstance());
+                    importHandlers.add((ImportHandler) c.newInstance());
                 }
                 return;
             }

@@ -3139,8 +3139,19 @@ return new Result(title, sb);
                     //                System.err.println ("ZIP: " + ze.getName());
                     if (entryName.equals("entries.xml")) {
                         xmlFile = "entries.xml";
-                        entriesXml = new String(IOUtil.readBytes(zin, null,
-                                false));
+
+                        InputStream entriesStream = zin;
+                        //Check the import handlers
+                        for(ImportHandler importHandler: getRepository().getImportHandlers()) {
+                            InputStream newStream = importHandler.getStream(entryName, entriesStream);
+                            if(newStream!=null) {
+                                entriesStream = newStream;
+                                break;
+                            }
+                        }
+
+                        entriesXml = new String(IOUtil.readBytes(entriesStream, null,
+                                                                 false));
                     } else {
                         String name = IOUtil.getFileTail(ze.getName());
                         File f = getStorageManager().getTmpFile(request,
@@ -3158,14 +3169,24 @@ return new Result(title, sb);
                 }
             }
             if (entriesXml == null) {
-                entriesXml = IOUtil.readInputStream(fis);
+                System.err.println("Checking import handlers");
+                InputStream entriesStream = fis;
+                //Check the import handlers
+                for(ImportHandler importHandler: getRepository().getImportHandlers()) 
+{                    System.err.println("    " + importHandler.getClass().getName());
+                    InputStream newStream = importHandler.getStream(file, entriesStream);
+                    if(newStream!=null && newStream!=entriesStream) {
+                        entriesStream = newStream;
+                        break;
+                    }
+                }
+                entriesXml = IOUtil.readInputStream(entriesStream);
             }
         } finally {
             IOUtil.close(fis);
             getStorageManager().deleteFile(new File(file));
         }
 
-        //        System.err.println ("xml:" + entriesXml);
         List<Entry>     newEntries = new ArrayList<Entry>();
         Hashtable<String, Entry> entries    = new Hashtable<String, Entry>();
         if (parent != null) {

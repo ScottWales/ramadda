@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -22,12 +20,40 @@
 package ucar.unidata.repository;
 
 
+import java.io.InputStream;
+
+
 /**
  */
-public abstract class ImportHandler {
+public interface ImportHandler {
 
-    public Result handleRequest(Request request, Repository repository, String uploadedFile, Entry parentEntry) {
-        return null;
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param repository _more_
+     * @param uploadedFile _more_
+     * @param parentEntry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result handleRequest(Request request, Repository repository,
+                                String uploadedFile, Entry parentEntry)
+     throws Exception;
+
+    /**
+     * _more_
+     *
+     * @param fileName _more_
+     * @param stream _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public InputStream getStream(String fileName, InputStream stream)
+     throws Exception;
 
 }
