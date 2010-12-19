@@ -142,6 +142,10 @@ public class WmsOutputHandler extends OutputHandler {
         //For now we just have one output - the wms viewer
 
         StringBuffer sb   = new StringBuffer();
+
+        //Include the javascript library
+        sb.append(HtmlUtil.importJS(fileUrl("/wms/wms.js")));
+
         
         //Get the DOM
         Element      root = getWmsRoot(entry);

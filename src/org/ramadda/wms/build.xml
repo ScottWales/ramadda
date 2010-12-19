@@ -55,7 +55,7 @@
             update="false"
             compress="true"
             jarfile="${distdir}/${jarfile}">
-            <include name="org/**/*.class"/>
+            <include name="org/ramadda/wms/**/*.class"/>
             <include name="org/ramadda/wms/htdocs/**/*"/>
             <include name="org/ramadda/wms/*.xml"/>
             <include name="org/ramadda/wms/*.properties"/>
