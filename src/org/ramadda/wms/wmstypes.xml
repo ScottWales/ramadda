@@ -1,0 +1,10 @@
+<types>
+
+  <type name="wms.capabilities"  description="WMS Capabilities URL" category="Geo Data" handler="org.ramadda.wms.WmsTypeHandler">  
+     <property name="icon" value="/icons/globe.jpg"/>
+     <property name="form.show.date" value="false"/>
+     <property name="form.show.file" value="false"/>
+     <property name="form.show.datatype" value="false"/>
+   </type>
+
+</types>
