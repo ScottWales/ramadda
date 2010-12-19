@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geo;
@@ -23,16 +22,16 @@ package org.ramadda.geo;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.output.*;
 import ucar.unidata.data.GeoLocationInfo;
 import ucar.unidata.data.gis.WmsSelection;
-import ucar.unidata.xml.XmlUtil;
 
-import ucar.unidata.util.WmsUtil;
+
+import ucar.unidata.repository.*;
+import ucar.unidata.repository.output.*;
+
 import ucar.unidata.util.HtmlUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.WmsUtil;
+import ucar.unidata.xml.XmlUtil;
 
 
 import java.util.ArrayList;
@@ -47,18 +46,18 @@ import java.util.List;
  */
 public class WmsOutputHandler extends OutputHandler {
 
-    /** example1 */
+    /** output type for viewing map */
     public static final OutputType OUTPUT_WMS_VIEWER =
-        new OutputType("WMS Map View", "wms.viewer", OutputType.TYPE_HTML);
+        new OutputType("WMS Map View", "wms.viewer", OutputType.TYPE_HTML,
+                       "", "/icons/globe.jpg");
 
 
-
-    /** 
-        Caches the DOMS from the url
-        TODO: Expire the cache after some time so we would pick up any changes to the wms xml
+    /**
+     *   Caches the DOMS from the url
+     *   TODO: Expire the cache after some time so we would pick up any changes to the wms xml
      */
     private Hashtable<String, Element> wmsCache = new Hashtable<String,
-                                                    Element>();
+                                                      Element>();
 
 
 
@@ -78,14 +77,10 @@ public class WmsOutputHandler extends OutputHandler {
 
 
 
-
-
     /**
-     * This method gets called to add in to the types list the OutputTypes that are applicable
+     * This method gets called to add to the types list the OutputTypes that are applicable
      * to the given State.  The State can be viewing a single Entry (state.entry non-null),
-     * viewing a Group (state.group non-null). These would show up along the top navigation bar.
-     *
-     * The Request holds all information about the request
+     * viewing a Group (state.group non-null). 
      *
      * @param request The request
      * @param state The state
@@ -96,13 +91,13 @@ public class WmsOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+        //If it is a single entry whose type is wms.capabilities then add the viewer link 
         if (state.entry != null) {
-            if(state.entry.getType().equals("wms.capabilities")) {
+            if (state.entry.getType().equals("wms.capabilities")) {
                 links.add(makeLink(request, state.entry, OUTPUT_WMS_VIEWER));
             }
         }
     }
-
 
 
     /**
@@ -130,25 +125,32 @@ public class WmsOutputHandler extends OutputHandler {
 
 
 
-
     /**
-     * _more_
+     * Output the html for the given entry
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request the request
+     * @param outputType type of output
+     * @param entry the entry
      *
-     * @return _more_
+     * @return the result
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+        //For now we just have one output - the wms viewer
+
         StringBuffer sb   = new StringBuffer();
+        
+        //Get the DOM
         Element      root = getWmsRoot(entry);
+
+        //Find the capability node
         Element capabilityNode = XmlUtil.findDescendant(root,
                                      WmsUtil.TAG_CAPABILITY);
+
+        //Get the top level layer node
         Element topLevelLayer = XmlUtil.findDescendant(capabilityNode,
                                     WmsUtil.TAG_LAYER);
         if (topLevelLayer == null) {
@@ -158,22 +160,33 @@ public class WmsOutputHandler extends OutputHandler {
         String title = XmlUtil.getGrandChildText(topLevelLayer,
                            WmsUtil.TAG_TITLE);
         sb.append(header(title));
+
+
+        //Find the sub layers
         List<Element> layerNodes =
             (List<Element>) XmlUtil.findChildren(topLevelLayer,
                 WmsUtil.TAG_LAYER);
-        String[] message = new String[] { null };
+
+        //Go through each layer, find its styles and then use the WmsUtil method to extract out the
+        //urls and other information from the DOM
         for (Element layerNode : layerNodes) {
+            String[] message = new String[] { null };
             List<Element> styles = XmlUtil.findChildren(layerNode,
                                        WmsUtil.TAG_STYLE);
+
+            //Throw in the parent layer node so we get its title, etc.
             styles.add(0, layerNode);
             List<WmsSelection> layers = WmsUtil.processNode(root, styles,
                                             message, false);
+            //Check if there was a problem
             if (message[0] != null) {
                 sb.append(message[0]);
                 sb.append("<br>");
                 continue;
             }
             StringBuffer layerSB = new StringBuffer("<ul>");
+
+            //Now just go through the children styles
             for (int i = 1; i < layers.size(); i++) {
                 WmsSelection wms = layers.get(i);
                 layerSB.append("<li>");
@@ -188,11 +201,11 @@ public class WmsOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the href link for the given wms layer
      *
-     * @param wms _more_
+     * @param wms wms info
      *
-     * @return _more_
+     * @return href
      */
     public String getHref(WmsSelection wms) {
         String href = HtmlUtil.href(getUrl(wms), wms.getTitle());
@@ -201,11 +214,11 @@ public class WmsOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the url for the given wms layer
      *
-     * @param wms _more_
+     * @param wms wms info
      *
-     * @return _more_
+     * @return url to image
      */
     public String getUrl(WmsSelection wms) {
         double width  = wms.getBounds().getDegreesX();
