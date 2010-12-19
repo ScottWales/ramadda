@@ -2225,7 +2225,7 @@ public class TypeHandler extends RepositoryManager {
             sb.append(HtmlUtil.formEntry("Altitude:",
                                          HtmlUtil.input(ARG_ALTITUDE,
                                              altitude, HtmlUtil.SIZE_10)));
-        } else if (okToShowInForm(ARG_ALTITUDE_TOP, true)) {
+        } else if (okToShowInForm(ARG_ALTITUDE_TOP, false)) {
             String altitudeTop    = "";
             String altitudeBottom = "";
             if (entry != null) {
