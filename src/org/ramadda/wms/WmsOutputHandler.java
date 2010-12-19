@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.geo;
+package org.ramadda.wms;
 
 
 import org.w3c.dom.*;

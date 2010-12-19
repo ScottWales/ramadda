@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<project basedir="../../../../" default="geojar" name="Geo Ramadda">
+<project basedir="../../../../" default="" name="WMS Ramadda">
     <target name="init">
         <property name="distdir" value="${basedir}/dist"/>
         <mkdir dir="${distdir}"/>
-
-        <property name="jars_dest" value="${distdir}"/>
-        <property name="jarfile" value="geo.jar"/>
+        <property name="jarfile" value="wmsplugin.jar"/>
 
         <property name="srcdir" value="${basedir}/src"/>
         <property name="libdir" value="${basedir}/lib"/>
@@ -35,7 +33,7 @@
 
 
 
-    <target name="geojar" depends="init,clean">
+    <target name="wmsjar" depends="init,clean">
         <javac
             classpath="${classpath}"
             verbose="false"
@@ -48,27 +46,27 @@
             memoryMaximumSize="${javac.maxmemory}"
             target="1.5"
         >
-        <include name="org/ramadda/geo/**/*.java"/>
+        <include name="org/ramadda/wms/**/*.java"/>
         </javac>
 
-        <echo message="Making jar ${jars_dest}/${jarfile}"/>
+        <echo message="Making jar ${distdir}/${jarfile}"/>
         <jar 
             basedir="${srcdir}"
             update="false"
             compress="true"
-            jarfile="${jars_dest}/${jarfile}">
+            jarfile="${distdir}/${jarfile}">
             <include name="org/**/*.class"/>
-            <include name="org/ramadda/geo/htdocs/**/*"/>
-            <include name="org/ramadda/geo/*.xml"/>
-            <include name="org/ramadda/geo/ramadda/*.properties"/>
+            <include name="org/ramadda/wms/htdocs/**/*"/>
+            <include name="org/ramadda/wms/*.xml"/>
+            <include name="org/ramadda/wms/*.properties"/>
 	    </jar>
     </target>
 
 
 
-    <target name="install" depends="geojar">
+    <target name="install" depends="wmsjar">
         <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
-             <fileset file="${jars_dest}/geo.jar"/>
+             <fileset file="${distdir}/${jarfile}"/>
         </copy>
     </target>
 
