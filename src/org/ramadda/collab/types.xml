@@ -4,9 +4,9 @@
 <!--
   <type name="emaillist"  description="Email List" handler="org.ramadda.collab.EmailListTypeHandler" >
      <property name="icon" value="/icons/email.png"/>
-     <property name="form.show.date" value="false"/>
-     <property name="form.show.area" value="false"/>
-     <property name="form.show.resource" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
      <column name="emaillist" type="clob" size="256000" label="Mail List"  showinhtml="false" columns="80" rows="40" suffix="One address per line:&lt;br&gt;&lt;i&gt;johndoe@email.com,John Doe&lt;/i&gt;"/>
   </type>
 
@@ -15,10 +15,10 @@
 
   <type name="chatroom"  description="Chat Room" category="Collaboration">
      <property name="icon" value="/icons/user_comment.png"/>
-     <property name="form.rows.desc" value="10"/>
-     <property name="form.show.date" value="false"/>
-     <property name="form.show.area" value="false"/>
-     <property name="form.show.resource" value="false"/>
+     <property name="form.description.rows" value="10"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
   </type>
 
 

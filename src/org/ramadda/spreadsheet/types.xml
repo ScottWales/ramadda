@@ -2,9 +2,9 @@
 <!--
   <type name="spreadsheet"  description="Spreadsheet" handler="org.ramadda.spreadsheet.SpreadsheetTypeHandler">
      <property name="icon" value="/icons/xls.png"/>
-     <property name="form.show.date" value="false"/>
-     <property name="form.show.area" value="false"/>
-     <property name="form.show.resource" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
      <column name="properties" type="clob" size="512000" label="" cansearch="false" showinhtml="false"/>
 </type>
 -->
