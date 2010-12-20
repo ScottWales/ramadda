@@ -62,14 +62,7 @@ import java.util.Properties;
  *
  *
  */
-public class BlogEntryTypeHandler extends GenericTypeHandler {
-
-
-    /** _more_ */
-    public static String TYPE_BLOGENTRY = "blogentry";
-
-    /** _more_ */
-    public static final String ARG_BLOG_TEXT = "blogentry.blogtext";
+public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
 
     private WeblogOutputHandler weblogOutputHandler;
 
@@ -81,7 +74,7 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public BlogEntryTypeHandler(Repository repository, Element entryNode)
+    public WeblogTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
@@ -97,39 +90,16 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry entry)
-            throws Exception {
+    public Result getHtmlDisplay(Request request, Group group,
+                                 List<Group> subGroups, List<Entry> entries)
+        throws Exception {
         if(weblogOutputHandler==null) {
             weblogOutputHandler= (WeblogOutputHandler)getRepository().getOutputHandler(WeblogOutputHandler.OUTPUT_BLOG);
         }
-        StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtil.cssLink(getRepository().fileUrl("/blog/blogstyle.css"))) ;
-        sb.append(weblogOutputHandler.getBlogEntry( request, entry));
-        return new Result("",sb);
+        return weblogOutputHandler.outputGroup(request, weblogOutputHandler.OUTPUT_BLOG,
+                                               group,  subGroups,
+                                               entries);
     }
-
-
-    /**
-     * add the tinymce javascript to add html editing to text areas
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
-            throws Exception {
-        String js = "<script type=\"text/javascript\" src=\"/repository/blog/tiny_mce/tiny_mce.js\"></script><script type=\"text/javascript\">	tinyMCE.init({		mode : \"textareas\",		theme : \"simple\"	});</script>";
-
-        sb.append(js);
-        super.addToEntryForm(request, sb, entry);
-    }
-
-
-
-
-
 
 
 

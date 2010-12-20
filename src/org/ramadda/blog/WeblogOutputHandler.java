@@ -108,8 +108,8 @@ public class WeblogOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+        if(true) return;
         if(state.group==null) return;
-
         List<Entry> entries = state.getAllEntries();
         if (entries.size() == 0) {
             return;
@@ -132,8 +132,17 @@ public class WeblogOutputHandler extends OutputHandler {
                               Group group, List<Group> subGroups,
                               List<Entry> entries)
             throws Exception {
+        boolean canAdd =   getAccessManager().canDoAction(request, group,
+                                                          Permission.ACTION_NEW);
+
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtil.cssLink(getRepository().getUrlBase()+"/blog/blogstyle.css")) ;
+        if(canAdd) {
+            sb.append(HtmlUtil.href(
+                                    HtmlUtil.url(request.entryUrl(getRepository().URL_ENTRY_FORM, group, ARG_GROUP),
+                                                 ARG_TYPE, BlogEntryTypeHandler.TYPE_BLOGENTRY),
+                                    HtmlUtil.img(getRepository().iconUrl(ICON_NEW),msg("New Weblog Entry"))));
+        }
 
         StringBuffer blogEntries = new StringBuffer();
         for (Entry entry : entries) {
@@ -157,7 +166,12 @@ public class WeblogOutputHandler extends OutputHandler {
                                      HtmlUtil.cssClass("blogdate"));
         String header = HtmlUtil.leftRight(subject, date);
         blogEntry.append(HtmlUtil.div(header,HtmlUtil.cssClass("blogheader")));
-        StringBuffer blogBody  = new StringBuffer(entry.getDescription());
+        String desc = entry.getDescription();
+        if(desc.startsWith("<p>")) {
+            desc = desc.substring(3);
+            if(desc.endsWith("</p>")) desc = desc.substring(0, desc.length()-4);
+        }
+        StringBuffer blogBody  = new StringBuffer(desc);
         Object[]values = entry.getValues();
         if(values[0]!=null) {
             String extra = ((String) values[0]).trim();
@@ -165,7 +179,7 @@ public class WeblogOutputHandler extends OutputHandler {
                 blogBody.append(HtmlUtil.makeShowHideBlock(msg("More..."), extra,false));
             }
         }
-        blogEntry.append(HtmlUtil.div(blogBody.toString(), HtmlUtil.cssClass("blogbody")));
+        blogEntry.append(HtmlUtil.div(HtmlUtil.makeToggleTable("", blogBody.toString(), true),HtmlUtil.cssClass("blogbody")));
         return blogEntry.toString();
     } 
 

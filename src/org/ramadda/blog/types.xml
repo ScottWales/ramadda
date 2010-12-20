@@ -1,10 +1,29 @@
 <types>
+
+
+  <type name="weblog"  description="Weblog" handler="org.ramadda.blog.WeblogTypeHandler" category="Collaboration">
+     <property name="icon" value="/blog/blog_icon.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+</type>
+
+
+
   <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.blog.BlogEntryTypeHandler" category="Collaboration">
      <property name="icon" value="/blog/blog_icon.png"/>
-     <property name="form.rows.desc" value="5"/>
-     <property name="form.show.area" value="false"/>
-     <property name="form.show.resource" value="false"/>
-     <column name="blogtext" type="clob" size="256000" label="Blog Text" cansearch="true" showinhtml="false" rows="20" columns="80"/>
+
+     <property name="form.name.label" value="Subject"/>
+     <property name="form.name.columns" value="80"/>
+
+     <property name="form.description.label" value="Blog Entry"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.description.columns" value="80"/>
+
+     <property name="form.todate.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+
+     <column name="blogtext" type="clob" size="256000" label="Extra Text" cansearch="true" showinhtml="false" rows="20" columns="80"/>
 </type>
 
 
