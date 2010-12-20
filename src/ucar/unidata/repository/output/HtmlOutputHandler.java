@@ -831,7 +831,8 @@ public class HtmlOutputHandler extends OutputHandler {
             return getLinksXml(request, group);
         }
 
-        if(typeHandler!=null) {
+        boolean      showTimeline = outputType.equals(OUTPUT_TIMELINE);
+        if(!showTimeline && typeHandler!=null) {
             Result typeResult = typeHandler.getHtmlDisplay(request, group,
                                                            subGroups, entries);
             if (typeResult != null) {
@@ -840,7 +841,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        boolean      showApplet = outputType.equals(OUTPUT_TIMELINE);
 
         StringBuffer sb         = new StringBuffer();
         request.appendMessage(sb);
@@ -868,7 +868,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String wikiTemplate = getWikiText(request, group);
 
-        if (showApplet) {
+        if (showTimeline) {
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
             sb.append(getTimelineApplet(request, allEntries));

@@ -3,28 +3,28 @@
 
   <type name="cataloglink"  description="Catalog Link" category="Geo Data" >
      <property name="icon" value="/icons/book_link.png"/>
-     <property name="form.show.date" value="false"/>
-     <property name="form.show.area" value="false"/>
-     <property name="form.show.file" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.file.show" value="false"/>
   </type>
 
 
   <type name="opendaplink"  description="OpenDAP Link" handler="ucar.unidata.repository.data.OpendapLinkTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/opendap.gif"/>
-     <property name="form.show.date" value="false"/>
-     <property name="form.show.file" value="false"/>
-     <property name="form.show.datatype" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
   </type>
 
   <type name="catalog"  description="Catalog View" handler="ucar.unidata.repository.data.CatalogTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/book_open.png"/>
-     <property name="form.show.file" value="false"/>
-     <property name="form.show.url" value="true"/>
-     <property name="form.label.url" value="Catalog URL"/>
-     <property name="form.show.resource.download" value="false"/>
-     <property name="form.show.datatype" value="false"/>
-     <property name="form.show.area" value="false"/>
-     <property name="form.show.date" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.url.label" value="Catalog URL"/>
+     <property name="form.resource.download.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
   </type>
 
 
@@ -52,9 +52,9 @@
 
   <type name="pointdatabase"  description="Point Database" handler="ucar.unidata.repository.data.PointDatabaseTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/database.png"/>
-     <property name="form.show.date" value="false"/>
-<!--     <property name="form.show.area" value="false"/> -->
-     <property name="form.show.datatype" value="false"/>
+     <property name="form.date.show" value="false"/>
+<!--     <property name="form.area.show" value="false"/> -->
+     <property name="form.datatype.show" value="false"/>
      <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
 </type>
 

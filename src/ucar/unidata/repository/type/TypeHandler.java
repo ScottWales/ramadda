@@ -671,7 +671,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getFormLabel(String arg, String dflt) {
-        return getProperty("form.label." + arg, dflt);
+        return getProperty("form." + arg+".label", dflt);
     }
 
 
@@ -695,7 +695,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean okToShowInForm(String arg, boolean dflt) {
-        String value = getProperty("form.show." + arg, "" + dflt);
+        String value = getProperty("form." + arg+".show", "" + dflt);
         return value.equals("true");
     }
 
@@ -709,7 +709,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getFormDefault(String arg, String dflt) {
-        String prop = getProperty("form.default." + arg);
+        String prop = getProperty("form." + arg+".default");
         if (prop == null) {
             return dflt;
         }
@@ -1898,6 +1898,8 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
 
+        
+
         String size = HtmlUtil.SIZE_70;
 
         boolean forUpload = (entry == null)
@@ -1917,7 +1919,8 @@ public class TypeHandler extends RepositoryManager {
 
 
         if ( !forUpload && okToShowInForm(ARG_NAME)) {
-            sb.append(HtmlUtil.formEntry(msgLabel("Name"),
+            sb.append(HtmlUtil.formEntry( 
+                                         msgLabel(getFormLabel(ARG_NAME, "Name")),
                                          HtmlUtil.input(ARG_NAME,
                                              ((entry != null)
                     ? entry.getName()
@@ -1932,7 +1935,7 @@ public class TypeHandler extends RepositoryManager {
         if (okToShowInForm(ARG_DESCRIPTION)) {
             String desc    = "";
             String buttons = "";
-            int    rows    = getProperty("form.rows.desc", 3);
+            int    rows    = getProperty("form.description.rows", 3);
             if (entry != null) {
                 desc = entry.getDescription();
                 if (desc.length() > 100) {
@@ -1948,10 +1951,11 @@ public class TypeHandler extends RepositoryManager {
             }
             sb.append(
                 HtmlUtil.formEntryTop(
-                    msgLabel("Description"),
+                                      msgLabel(getFormLabel(ARG_DESCRIPTION,  "Description")),
                     buttons
                     + HtmlUtil.textArea(
-                        ARG_DESCRIPTION, desc, rows, 60,
+                        ARG_DESCRIPTION, desc, rows, 
+                        getProperty("form.description.columns", 60),
                         HtmlUtil.id(ARG_DESCRIPTION))));
         }
 
