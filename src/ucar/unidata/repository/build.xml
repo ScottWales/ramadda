@@ -287,6 +287,7 @@
         <include name="${repositoryrelpath}/ftp/*.java"/>
         <include name="${repositoryrelpath}/util/*.java"/>
         <include name="${repositoryrelpath}/monitor/*.java"/>
+        <include name="${repositoryrelpath}/services/*.java"/>
         <exclude name="${repositoryrelpath}/examples/*.java"/>
 <!--
         <exclude name="${repositoryrelpath}/auth/ldap/*.java"/>

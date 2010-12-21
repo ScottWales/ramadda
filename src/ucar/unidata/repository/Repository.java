@@ -2121,9 +2121,18 @@ public class Repository extends RepositoryBase implements RequestHandler {
                     Misc.findConstructor(handlerClass,
                                          new Class[] { Repository.class,
                                                        Element.class });
-                handler = (RequestHandler) ctor.newInstance(new Object[] {
-                    this,
-                    node });
+                Object[] params = new Object[] {this, node };
+                if(ctor == null) {
+                    ctor =
+                        Misc.findConstructor(handlerClass,
+                                         new Class[] { Repository.class});
+                    params = new Object[] {this};
+                }
+
+                if(ctor == null) {
+                    throw new IllegalStateException("Could not find ctor:" + handlerClass.getName());
+                }
+                handler = (RequestHandler) ctor.newInstance(params);
             }
             if (handler == null) {
                 getLogManager().logInfo("Could not find handler for:"
