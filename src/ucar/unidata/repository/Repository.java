@@ -759,7 +759,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
      *
      * @param port _more_
      */
-    protected void setHttpsPort(int port) {
+    public void setHttpsPort(int port) {
         super.setHttpsPort(port);
         reinitializeRequestUrls();
     }
@@ -772,7 +772,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @param properties _more_
      * @throws Exception _more_
      */
-    protected void init(Properties properties) throws Exception {
+    public void init(Properties properties) throws Exception {
 
 
         /*

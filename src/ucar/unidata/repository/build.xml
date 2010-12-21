@@ -80,7 +80,7 @@
     </target>
 
     <target name="runserver" depends="init">
-      <java classname="ucar.unidata.repository.RepositoryServer" maxmemory="512mb">
+      <java classname="ucar.unidata.repository.server.RepositoryServer" maxmemory="512mb">
           <arg value="-port"/>
           <arg value="8080"/>
           <arg value="-Dramadda.db=mysql"/>
@@ -287,6 +287,7 @@
         <include name="${repositoryrelpath}/ftp/*.java"/>
         <include name="${repositoryrelpath}/util/*.java"/>
         <include name="${repositoryrelpath}/monitor/*.java"/>
+        <include name="${repositoryrelpath}/server/*.java"/>
         <include name="${repositoryrelpath}/services/*.java"/>
         <exclude name="${repositoryrelpath}/examples/*.java"/>
 <!--
@@ -320,7 +321,7 @@
               <attribute name="Implementation-Title" value="Unidata's Ramada"/>
               <attribute name="Implementation-Version" value="1.1"/>
               <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-              <attribute name="Main-class" value="ucar.unidata.repository.RepositoryServer"/>
+              <attribute name="Main-class" value="ucar.unidata.repository.server.RepositoryServer"/>
               <attribute name="Class-Path" value="${manifestjars}"/>
             </manifest> 
             <include name="**/*.class"/>

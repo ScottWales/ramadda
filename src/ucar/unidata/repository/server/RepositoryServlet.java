@@ -18,7 +18,8 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository;
+package ucar.unidata.repository.server;
+import ucar.unidata.repository.*;
 
 
 import org.apache.commons.fileupload.FileItem;
@@ -175,24 +176,24 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             repositoryClassName = "ucar.unidata.repository.Repository";
         }
         Class repositoryClass = Misc.findClass(repositoryClassName);
-        Repository tmp = (Repository)repositoryClass.newInstance();
-        tmp.init(getInitParams(), port);
-        //        Repository tmp = new Repository(getInitParams(), port);
-        tmp.init(webAppProperties);
+        Repository tmpRepository = (Repository)repositoryClass.newInstance();
+        tmpRepository.init(getInitParams(), port);
+        //        Repository tmpRepository = new Repository(getInitParams(), port);
+        tmpRepository.init(webAppProperties);
         if (checkSsl) {
             int sslPort = -1;
-            String ssls = tmp.getPropertyValue(PROP_SSL_PORT, (String) null,
+            String ssls = tmpRepository.getPropertyValue(PROP_SSL_PORT, (String) null,
                               false);
             if ((ssls != null) && (ssls.trim().length() > 0)) {
                 sslPort = new Integer(ssls.trim());
             }
             if (sslPort >= 0) {
-                tmp.getLogManager().logInfo("SSL: using port:" + sslPort);
-                tmp.setHttpsPort(sslPort);
+                tmpRepository.getLogManager().logInfo("SSL: using port:" + sslPort);
+                tmpRepository.setHttpsPort(sslPort);
             }
         }
 
-        repository = tmp;
+        repository = tmpRepository;
 
     }
 

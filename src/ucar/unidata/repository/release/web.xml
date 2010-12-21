@@ -24,7 +24,7 @@ Configure RAMADDA
 
   <servlet>
     <servlet-name>RepositoryServlet</servlet-name>
-    <servlet-class>ucar.unidata.repository.RepositoryServlet</servlet-class>
+    <servlet-class>ucar.unidata.repository.server.RepositoryServlet</servlet-class>
   </servlet>
 
    <!-- The mapping for the default servlet -->
