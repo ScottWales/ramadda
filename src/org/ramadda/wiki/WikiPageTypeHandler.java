@@ -1,19 +1,20 @@
-/**
- * Copyright 2009 ramadda.org
- *
+/*
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
+ * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version.
- *
+ * 
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
  * General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.wiki;
@@ -87,8 +88,18 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
     }
 
 
-    public String getInlineHtml(Request request, Entry entry) 
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getInlineHtml(Request request, Entry entry)
+            throws Exception {
         Result result = getRepository().getOutputHandler(
                             WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
                             request, request.getOutput(), entry);
@@ -148,8 +159,8 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeEntryFromForm(Request request, Entry entry, Group parent,
-                                boolean newEntry)
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Group parent, boolean newEntry)
             throws Exception {
         Object[] values       = entry.getValues();
         String   originalText = null;
@@ -176,7 +187,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
                                     request, OutputHandler.PROP_ENTRY,
                                     entry }));
             getRepository().getHtmlOutputHandler().wikifyEntry(request,
-							       entry, wikiUtil, newText, true, null, null);
+                    entry, wikiUtil, newText, true, null, null);
 
             List categories = (List) wikiUtil.getProperty("wikicategories");
             if (categories == null) {
@@ -185,8 +196,8 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             //TODO: 
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
-            for (Metadata metadata : (List<Metadata>) new ArrayList(
-                    metadataList)) {
+            for (Metadata metadata :
+                    (List<Metadata>) new ArrayList(metadataList)) {
                 if (metadata.getType().equals("wikicategory")) {
                     if ( !categories.contains(metadata.getAttr1())) {
                         metadataList.remove(metadata);
@@ -225,8 +236,8 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
 
             List<Association> associations =
                 getAssociationManager().getAssociations(request, entry);
-            for (Association oldAssociation : (List<Association>) new ArrayList(
-                    associations)) {
+            for (Association oldAssociation :
+                    (List<Association>) new ArrayList(associations)) {
                 if (oldAssociation.getType().equals(ASSOC_WIKILINK)
                         && oldAssociation.getFromId().equals(entry.getId())) {
                     if ( !newAssociations.contains(oldAssociation)) {
@@ -236,8 +247,8 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
                     }
                 }
             }
-            for (Association newAssociation : (List<Association>) new ArrayList(
-                    newAssociations)) {
+            for (Association newAssociation :
+                    (List<Association>) new ArrayList(newAssociations)) {
                 if ( !associations.contains(newAssociation)) {
                     getAssociationManager().addAssociation(request,
                             newAssociation);
@@ -270,8 +281,8 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
         } else {
             name = request.getString(ARG_NAME, "");
             List tmp = new ArrayList();
-            for (String tok : (List<String>) StringUtil.split(name, " ",
-                    true, true)) {
+            for (String tok :
+                    (List<String>) StringUtil.split(name, " ", true, true)) {
                 tmp.add(StringUtil.camelCase(tok));
             }
             name = StringUtil.join(" ", tmp);
@@ -406,18 +417,18 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
         List<WikiPageHistory> history = new ArrayList<WikiPageHistory>();
         int                   version = 1;
         while ((results = iter.getNext()) != null) {
-                int col = 1;
-                WikiPageHistory wph =
-                    new WikiPageHistory(
-                        version++,
-                        getUserManager().findUser(
-                            results.getString(col++),
-                            true), getDatabaseManager().getDate(
-                                results, col++), results.getString(col++),
-                                    (includeText
-                                     ? results.getString(col++)
-                                     : ""));
-                history.add(wph);
+            int col = 1;
+            WikiPageHistory wph = new WikiPageHistory(
+                                      version++,
+                                      getUserManager().findUser(
+                                          results.getString(col++),
+                                          true), getDatabaseManager().getDate(
+                                              results,
+                                              col++), results.getString(
+                                                  col++), (includeText
+                    ? results.getString(col++)
+                    : ""));
+            history.add(wph);
         }
         return history;
     }
@@ -425,4 +436,3 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
 
 
 }
-

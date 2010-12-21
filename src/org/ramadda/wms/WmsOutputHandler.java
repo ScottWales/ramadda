@@ -1,5 +1,5 @@
 /*
- * Copyright 2010- ramadda.org
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -80,7 +80,7 @@ public class WmsOutputHandler extends OutputHandler {
     /**
      * This method gets called to add to the types list the OutputTypes that are applicable
      * to the given State.  The State can be viewing a single Entry (state.entry non-null),
-     * viewing a Group (state.group non-null). 
+     * viewing a Group (state.group non-null).
      *
      * @param request The request
      * @param state The state
@@ -141,14 +141,14 @@ public class WmsOutputHandler extends OutputHandler {
             throws Exception {
         //For now we just have one output - the wms viewer
 
-        StringBuffer sb   = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
 
         //Include the javascript library
         sb.append(HtmlUtil.importJS(fileUrl("/wms/wms.js")));
 
-        
+
         //Get the DOM
-        Element      root = getWmsRoot(entry);
+        Element root = getWmsRoot(entry);
 
         //Find the capability node
         Element capabilityNode = XmlUtil.findDescendant(root,

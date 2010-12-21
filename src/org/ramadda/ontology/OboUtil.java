@@ -1,5 +1,5 @@
 /*
- * Copyright 2010- ramadda.org
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -101,7 +101,7 @@ public class OboUtil {
     /** _more_ */
     public static final String TAG_RELATIONSHIP = "relationship";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_PROPERTY_VALUE = "property_value";
 
     /** _more_ */

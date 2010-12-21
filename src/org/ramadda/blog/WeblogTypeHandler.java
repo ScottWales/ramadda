@@ -1,19 +1,20 @@
-/**
- * Copyright 2009 ramadda.org
- *
+/*
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
+ * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version.
- *
+ * 
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
  * General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.blog;
@@ -64,6 +65,7 @@ import java.util.Properties;
  */
 public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
 
+    /** _more_          */
     private WeblogOutputHandler weblogOutputHandler;
 
     /**
@@ -85,6 +87,9 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
      *
      * @return _more_
      *
@@ -92,16 +97,16 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Group group,
                                  List<Group> subGroups, List<Entry> entries)
-        throws Exception {
-        if(weblogOutputHandler==null) {
-            weblogOutputHandler= (WeblogOutputHandler)getRepository().getOutputHandler(WeblogOutputHandler.OUTPUT_BLOG);
+            throws Exception {
+        if (weblogOutputHandler == null) {
+            weblogOutputHandler =
+                (WeblogOutputHandler) getRepository().getOutputHandler(
+                    WeblogOutputHandler.OUTPUT_BLOG);
         }
-        return weblogOutputHandler.outputGroup(request, weblogOutputHandler.OUTPUT_BLOG,
-                                               group,  subGroups,
-                                               entries);
+        return weblogOutputHandler.outputGroup(request,
+                weblogOutputHandler.OUTPUT_BLOG, group, subGroups, entries);
     }
 
 
 
 }
-

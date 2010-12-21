@@ -1,5 +1,5 @@
 /*
- * Copyright 2010- ramadda.org
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -20,21 +20,23 @@
 package org.ramadda.ontology;
 
 
+import org.w3c.dom.*;
+
+
 import ucar.unidata.repository.*;
 
 import ucar.unidata.util.IOUtil;
-import java.io.*;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
+
+import java.io.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 
 import java.util.List;
-
-import org.w3c.dom.*;
 
 
 /**
@@ -49,20 +51,30 @@ public class OboConverter extends ImportHandler {
     /** _more_ */
     private HashSet<String> tagMap = new HashSet<String>();
 
-    /** _more_          */
+    /** _more_ */
     private String defaultNamespace = "";
 
     /**
      * ctor
      */
-    public OboConverter() {
-    }
+    public OboConverter() {}
 
 
 
-    public InputStream getStream(String fileName, InputStream stream) throws Exception {
+    /**
+     * _more_
+     *
+     * @param fileName _more_
+     * @param stream _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public InputStream getStream(String fileName, InputStream stream)
+            throws Exception {
         String ext = IOUtil.getFileExtension(fileName);
-        if(!ext.equals(".obo"))  {
+        if ( !ext.equals(".obo")) {
             return null;
         }
         String xml = processFile(fileName);
@@ -113,6 +125,8 @@ public class OboConverter extends ImportHandler {
      *
      * @param file _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     public String processFile(String file) throws Exception {
@@ -305,7 +319,8 @@ public class OboConverter extends ImportHandler {
     public static void main(String[] args) throws Exception {
         OboConverter oboConverter = new OboConverter();
         for (String file : args) {
-            String entriesFile = IOUtil.stripExtension(IOUtil.getFileTail(file))
+            String entriesFile =
+                IOUtil.stripExtension(IOUtil.getFileTail(file))
                 + "entries.xml";
             String xml = oboConverter.processFile(file);
             IOUtil.writeFile(entriesFile, xml);

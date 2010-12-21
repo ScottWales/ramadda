@@ -30,9 +30,6 @@
     </target>
 
 
-
-
-
     <target name="wmsjar" depends="init,clean">
         <javac
             classpath="${classpath}"

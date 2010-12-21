@@ -1,5 +1,5 @@
 /*
- * Copyright 2010- ramadda.org
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -20,15 +20,17 @@
 package org.ramadda.ontology;
 
 
-import ucar.unidata.repository.*;
-import java.io.*;
-
 import org.w3c.dom.*;
+
+
+import ucar.unidata.repository.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
+
+import java.io.*;
 
 
 
@@ -47,7 +49,7 @@ import java.util.List;
  * @version        $version$, Thu, Nov 25, '10
  * @author         Enter your name here...
  */
-public class OrcaConverter  extends ImportHandler {
+public class OrcaConverter extends ImportHandler {
 
     /** _more_ */
     public static final String TAG_REGISTRYOBJECTS = "registryObjects";
@@ -145,11 +147,24 @@ public class OrcaConverter  extends ImportHandler {
     /** _more_ */
     static int idcnt = 0;
 
-    public OrcaConverter() {
-    }
+    /**
+     * _more_
+     */
+    public OrcaConverter() {}
 
-    public Element getDOM( Element root) throws Exception {
-        if(!root.getTagName().equals(TAG_REGISTRYOBJECTS)) return null;
+    /**
+     * _more_
+     *
+     * @param root _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Element getDOM(Element root) throws Exception {
+        if ( !root.getTagName().equals(TAG_REGISTRYOBJECTS)) {
+            return null;
+        }
         String xml = processFile(root);
         return XmlUtil.getRoot(xml);
     }
@@ -160,6 +175,8 @@ public class OrcaConverter  extends ImportHandler {
      *
      * @param file _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     public String processFile(String file) throws Exception {
@@ -167,7 +184,17 @@ public class OrcaConverter  extends ImportHandler {
         return processFile(root);
     }
 
+    /**
+     * _more_
+     *
+     * @param root _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String processFile(Element root) throws Exception {
+
         String[] subTags = { TAG_PARTY, TAG_ACTIVITY, TAG_COLLECTION,
                              TAG_SERVICE };
         String[] subTagNames = { "Parties", "Activities", "Collections",
@@ -180,8 +207,8 @@ public class OrcaConverter  extends ImportHandler {
         Hashtable<String, Object> keyMap = new Hashtable<String, Object>();
         Hashtable<String, Group>  groups = new Hashtable<String, Group>();
 
-        NodeList     children = XmlUtil.getElements(root);
-        StringBuffer xml      = new StringBuffer(XmlUtil.XML_HEADER);
+        NodeList                  children        = XmlUtil.getElements(root);
+        StringBuffer              xml = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("<entries>\n");
         for (int i = 0; i < children.getLength(); i++) {
             Element repositoryObject = (Element) children.item(i);
@@ -348,6 +375,7 @@ public class OrcaConverter  extends ImportHandler {
         }
         xml.append("</entries>\n");
         return xml.toString();
+
     }
 
 
@@ -584,7 +612,7 @@ public class OrcaConverter  extends ImportHandler {
         OrcaConverter converter = new OrcaConverter();
         for (String arg : args) {
             String xml = converter.processFile(arg);
-            IOUtil.writeFile(IOUtil.stripExtension(arg)+"entries.xml", xml);
+            IOUtil.writeFile(IOUtil.stripExtension(arg) + "entries.xml", xml);
         }
 
 

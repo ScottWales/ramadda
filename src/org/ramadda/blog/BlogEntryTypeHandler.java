@@ -1,19 +1,20 @@
-/**
- * Copyright 2009 ramadda.org
- *
+/*
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
+ * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version.
- *
+ * 
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
  * General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.blog;
@@ -71,6 +72,7 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final String ARG_BLOG_TEXT = "blogentry.blogtext";
 
+    /** _more_          */
     private WeblogOutputHandler weblogOutputHandler;
 
     /**
@@ -99,13 +101,16 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        if(weblogOutputHandler==null) {
-            weblogOutputHandler= (WeblogOutputHandler)getRepository().getOutputHandler(WeblogOutputHandler.OUTPUT_BLOG);
+        if (weblogOutputHandler == null) {
+            weblogOutputHandler =
+                (WeblogOutputHandler) getRepository().getOutputHandler(
+                    WeblogOutputHandler.OUTPUT_BLOG);
         }
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtil.cssLink(getRepository().fileUrl("/blog/blogstyle.css"))) ;
-        sb.append(weblogOutputHandler.getBlogEntry( request, entry));
-        return new Result("",sb);
+        sb.append(
+            HtmlUtil.cssLink(getRepository().fileUrl("/blog/blogstyle.css")));
+        sb.append(weblogOutputHandler.getBlogEntry(request, entry));
+        return new Result("", sb);
     }
 
 
@@ -120,7 +125,8 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
      */
     public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
             throws Exception {
-        String js = "<script type=\"text/javascript\" src=\"/repository/blog/tiny_mce/tiny_mce.js\"></script><script type=\"text/javascript\">	tinyMCE.init({		mode : \"textareas\",		theme : \"simple\"	});</script>";
+        String js =
+            "<script type=\"text/javascript\" src=\"/repository/blog/tiny_mce/tiny_mce.js\"></script><script type=\"text/javascript\">  tinyMCE.init({          mode : \"textareas\",           theme : \"simple\"      });</script>";
 
         sb.append(js);
         super.addToEntryForm(request, sb, entry);
@@ -134,4 +140,3 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
 
 
 }
-
