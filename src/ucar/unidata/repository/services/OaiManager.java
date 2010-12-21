@@ -19,11 +19,12 @@
  * 
  */
 
-package ucar.unidata.repository;
+package ucar.unidata.repository.services;
 
 
 import org.w3c.dom.*;
 
+import ucar.unidata.repository.*;
 import ucar.unidata.repository.auth.*;
 
 import ucar.unidata.repository.metadata.*;

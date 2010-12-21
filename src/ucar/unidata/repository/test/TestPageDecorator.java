@@ -18,7 +18,7 @@
  * 
  */
 
-package ucar.unidata.repository;
+package ucar.unidata.repository.test;
 
 
 import ucar.unidata.repository.*;

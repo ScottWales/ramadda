@@ -403,22 +403,6 @@ return new Result(title, sb);
      * @throws Exception _more_
      */
     public Result processEntryShow(Request request) throws Exception {
-
-        if (false) {
-            while (true) {
-                Misc.sleep(1000);
-                if ( !request.isConnected()) {
-                    System.err.println("break");
-                    break;
-                }
-                System.err.println("still connected");
-            }
-        }
-
-
-
-
-        //        System.err.println ("processEntryShow " + request);
         if (request.getCheckingAuthMethod()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
             return new Result(handler.getAuthorizationMethod(request));
@@ -2463,12 +2447,29 @@ return new Result(title, sb);
                 }
             }
         }
+
         entries = getAccessManager().filterEntries(request, entries);
+        Group group =null;
+        for(Entry entry: entries) {
+            if(group == null) {
+                group = entry.getParentEntry();
+            } else if(!group.equals(entry.getParentEntry())) {
+                group = null;
+                break;
+            }
+        }
 
-        return getRepository().getOutputHandler(request).outputGroup(request,
-                request.getOutput(), getDummyGroup(), new ArrayList<Group>(),
-                entries);
+        if(group!=null) {
+            request.put(ARG_ENTRYID, group.getId());
+        }
 
+
+        Result result= getRepository().getOutputHandler(request).outputGroup(request,
+                                                                     request.getOutput(), 
+                                                                     (group!=null?group:getDummyGroup()), 
+                                                                     new ArrayList<Group>(),
+                                                                     entries);
+        return addEntryHeader(request, group!=null?group:getTopGroup(), result);
     }
 
 
