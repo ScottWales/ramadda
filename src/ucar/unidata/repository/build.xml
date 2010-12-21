@@ -86,6 +86,7 @@
           <arg value="-Dramadda.db=mysql"/>
           <arg value="-Dramadda.cacheresources=false"/>
           <classpath>
+             <pathelement path="${distdir}/${repositoryjar}"/>
              <pathelement path="${classpath}"/>
              <pathelement location=""/>
          </classpath>

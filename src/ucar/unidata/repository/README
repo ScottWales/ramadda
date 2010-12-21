@@ -16,7 +16,7 @@ to do any further configurations
 ################# Information for the source distribution  #################
 If you have installed the source distribution (i.e., the repository_src.zip, not from SVN)
 To build and run ramadda just do:
-ant compile runserver
+ant compile 
 
 This compiles the local ramadda source and runs the server on port 8080
 
@@ -36,7 +36,10 @@ This unjars lots of jar files that RAMADDA depends on and creates one big jar:
 trunk/lib/repositorylib.jar
 
 To build RAMADDA then just do:
+have the src dir in your classpath
+run:
 ant compile
+java -Xmx1024m -server   ucar.unidata.repository.server.RepositoryServer
 
 
 The required classpath is:
@@ -44,7 +47,7 @@ ${libsdir}/idv.jar:${libsdir}/repositorylib.jar:${libsdir}/repositorytds.jar:${l
 where libsdir is trunk/lib
 
 If you have the ucar directory in your classpath and the requisite jar files you can run RAMADDA stand-alone with:
-java -Xmx1024m -server   ucar.unidata.repository.RepositoryServer
+java -Xmx1024m -server   ucar.unidata.repository.server.RepositoryServer
 
 
 
