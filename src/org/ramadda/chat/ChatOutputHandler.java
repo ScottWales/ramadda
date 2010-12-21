@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.ramadda.collab;
+package org.ramadda.chat;
 
 
 //import org.slf4j.Logger;
