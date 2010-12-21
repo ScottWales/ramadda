@@ -2095,19 +2095,19 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      *
      * @param request _more_
      * @param entry _more_
-     * @param onlyOfWeHaveThem _more_
+     * @param onlyIfWeHaveThem _more_
      *
      *
      * @return _more_
      * @throws Exception _more_
      */
     public StringBuffer getCommentBlock(Request request, Entry entry,
-                                        boolean onlyOfWeHaveThem)
+                                        boolean onlyIfWeHaveThem)
             throws Exception {
         StringBuffer  sb       = new StringBuffer();
         List<Comment> comments = getEntryManager().getComments(request,
                                      entry);
-        if ( !onlyOfWeHaveThem || (comments.size() > 0)) {
+        if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
             sb.append(getEntryManager().getCommentHtml(request, entry));
         }
         return sb;

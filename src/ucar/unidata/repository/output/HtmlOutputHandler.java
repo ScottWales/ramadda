@@ -798,7 +798,6 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
-
         TypeHandler typeHandler =
             getRepository().getTypeHandler(group.getType());
 
@@ -849,6 +848,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (messageLeft != null) {
             sb.append(messageLeft);
         }
+
 
 
         showNext(request, subGroups, entries, sb);
@@ -923,8 +923,6 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
         }
-
-
 
         return makeLinksResult(request, msg("Folder"), sb,
                                new State(group, subGroups, entries));
