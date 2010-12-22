@@ -22,6 +22,53 @@ used by the javadoc target
 
 
 
+<target name="commoninit">
+      <mkdir dir="${distdir}"/>
+</target>
+
+
+
+    <target name="plugin" depends="init,clean">
+        <echo message="Building plugin ${plugindir}"/>
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            target="1.5"
+        >
+        <include name="${plugindir}/*.java"/>
+        </javac>
+
+        <echo message="Making jar ${distdir}/${jarfile}"/>
+        <jar 
+            basedir="${srcdir}"
+            update="false"
+            compress="true"
+            jarfile="${distdir}/${jarfile}">
+            <include name="${plugindir}/**/*.class"/>
+            <include name="${plugindir}/htdocs/**/*"/>
+            <include name="${plugindir}/*.xml"/>
+            <include name="${plugindir}/*.properties"/>
+	    </jar>
+    </target>
+
+
+
+    <target name="plugin_install">
+        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+             <fileset file="${distdir}/${jarfile}"/>
+        </copy>
+    </target>
+
+
+
+
    <target name="clean" depends="init" >
         <delete>
             <fileset dir="${srcdir}/org" includes="**/*.class"/>
@@ -42,6 +89,8 @@ used by the javadoc target
     <target name="plugins" depends="init">
       <echo message="Building RAMADDA plugins"/>
       <ant antfile="${srcdir}/org/ramadda/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/wms/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/ontology/build.xml" inheritAll="false"/>
     </target>
 
 
