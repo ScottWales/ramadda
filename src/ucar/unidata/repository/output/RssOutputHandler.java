@@ -211,6 +211,15 @@ public class RssOutputHandler extends OutputHandler {
 
 
 
+    public Result outputEntry(Request request, OutputType outputType,
+                              Entry entry)
+            throws Exception {
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+        return outputEntries(request, entry, entries);
+    }
+
+
     /**
      * _more_
      *
