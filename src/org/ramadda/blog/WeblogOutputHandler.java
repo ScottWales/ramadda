@@ -71,7 +71,7 @@ import java.util.zip.*;
 public class WeblogOutputHandler extends OutputHandler {
 
     /** _more_          */
-    SimpleDateFormat sdf;
+    private SimpleDateFormat sdf;
 
 
     /** _more_ */
@@ -181,6 +181,11 @@ public class WeblogOutputHandler extends OutputHandler {
         return new Result("", sb);
     }
 
+    private String formatDate(Date date) {
+        synchronized(sdf) {
+            return sdf.format(date);
+        }
+    }
 
     /**
      * _more_
@@ -199,10 +204,11 @@ public class WeblogOutputHandler extends OutputHandler {
                              entry.getName(), null, false);
         String subject = HtmlUtil.div(link.getLink(),
                                       HtmlUtil.cssClass("blogsubject"));
-        String date =
-            HtmlUtil.div(sdf.format(new Date(entry.getStartDate())),
+        String postingInfo =
+            HtmlUtil.div("by" + " " + entry.getUser().getName() +" @ " +
+                         formatDate(new Date(entry.getStartDate())),
                          HtmlUtil.cssClass("blogdate"));
-        String header = HtmlUtil.leftRight(subject, date);
+        String header = HtmlUtil.leftRight(subject, postingInfo);
         blogEntry.append(HtmlUtil.div(header,
                                       HtmlUtil.cssClass("blogheader")));
         String desc = entry.getDescription();
@@ -221,12 +227,14 @@ public class WeblogOutputHandler extends OutputHandler {
                         extra, false));
             }
         }
+        StringBuffer comments = getCommentBlock(request, entry, false);
+        String commentsBlock = HtmlUtil.makeShowHideBlock(msg("Comments"),
+                                                          HtmlUtil.insetDiv(comments.toString(), 0,30,0,0), false);
+
+        blogBody.append(commentsBlock);
         blogEntry.append(HtmlUtil.div(HtmlUtil.makeToggleTable("",
                 blogBody.toString(), true), HtmlUtil.cssClass("blogbody")));
 
-        StringBuffer comments = getCommentBlock(request, entry, false);
-        blogEntry.append(HtmlUtil.makeShowHideBlock(msg("Comments"),
-                comments.toString(), false));
         return blogEntry.toString();
     }
 
