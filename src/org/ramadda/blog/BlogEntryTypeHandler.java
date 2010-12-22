@@ -89,6 +89,15 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
     }
 
 
+    public String getEntryText(Entry entry) {
+        Object[]     values   = entry.getValues();
+        if (values!=null && values.length>0 && values[0] != null) {
+            String extra = ((String) values[0]).trim();
+            return entry.getDescription() + extra;
+        }
+        return entry.getDescription();
+    }
+
     /**
      * _more_
      *

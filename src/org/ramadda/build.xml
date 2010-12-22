@@ -70,7 +70,9 @@
             update="false"
             compress="true"
             jarfile="${pluginjar}">
+<!--
             <include name="org/ramadda/**/*.class"/> 
+-->
             <exclude name="org/ramadda/**/*.java"/> 
             <exclude name="org/ramadda/spreadsheet/*"/> 
             <exclude name="org/ramadda/spreadsheet/**/*"/> 
