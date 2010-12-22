@@ -3735,7 +3735,7 @@ return new Result(title, sb);
         comment = request.getEncodedString(ARG_COMMENT, BLANK).trim();
         if (comment.length() == 0) {
             sb.append(
-                getRepository().showDialogWarning(
+                getRepository().showDialogNote(
                     msg("Please enter a comment")));
         } else {
             getDatabaseManager().executeInsert(Tables.COMMENTS.INSERT,
@@ -3803,12 +3803,9 @@ return new Result(title, sb);
         StringBuffer  sb       = new StringBuffer();
         List<Comment> comments = getComments(request, entry);
 
-
         if (canComment) {
-            sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-            sb.append(HtmlUtil.submit("Add Comment", ARG_ADD));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtil.href(request.entryUrl(getRepository().URL_COMMENTS_ADD, 
+                                                     entry), "Add Comment"));
         }
 
 
@@ -3841,27 +3838,28 @@ return new Result(title, sb);
 
 
             String theClass = HtmlUtil.cssClass("listrow" + rowNum);
+            theClass = HtmlUtil.cssClass("comment_block");
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
             }
             StringBuffer content = new StringBuffer();
-            content.append("<table>");
-            String byLine = "By: " + comment.getUser().getLabel() + " @ "
-                            + formatDate(request, comment.getDate())
-                            + HtmlUtil.space(1) + deleteLink;
-            //            content.append(HtmlUtil.formEntry("By:",
-            //                                         ));
-            content.append(HtmlUtil.formEntryTop("", comment.getComment()));
-            content.append("</table>");
+            String byLine = 
+                HtmlUtil.span("Posted by " + comment.getUser().getLabel(), HtmlUtil.cssClass("comment_commenter")) + 
+                " @ " + 
+                HtmlUtil.span(formatDate(request, comment.getDate()), HtmlUtil.cssClass("comment_date")) + 
+                HtmlUtil.space(1) + deleteLink;
+            content.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("comment_inner")));
+            content.append(comment.getComment());
+            content.append(HtmlUtil.br());
+            content.append(byLine);
+            content.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
             sb.append(
                 HtmlUtil.div(
-                    HtmlUtil.makeShowHideBlock(
-                        "<b>Subject</b>:" + comment.getSubject()
-                        + HtmlUtil.space(2) + byLine, content.toString(),
+                             HtmlUtil.makeShowHideBlock(HtmlUtil.span(comment.getSubject(), HtmlUtil.cssClass("comment_subject")),
+                                                        content.toString(),
                             true, ""), theClass));
         }
-        //        sb.append("</table>");
         return sb.toString();
     }
 

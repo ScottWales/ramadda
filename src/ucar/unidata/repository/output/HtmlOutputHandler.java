@@ -754,7 +754,9 @@ public class HtmlOutputHandler extends OutputHandler {
             tabContents.add(tfo.getId());
         }
         tabTitles.add(msg("Comments"));
-        tabContents.add(getCommentBlock(request, entry, true));
+        StringBuffer comments = getCommentBlock(request, entry, true);
+        //        System.out.println (comments);
+        tabContents.add(comments);
 
         StringBuffer associationBlock = getAssociationManager().getAssociationBlock(request,
                                                                               entry);

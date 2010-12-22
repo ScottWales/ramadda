@@ -228,6 +228,7 @@ a:hover {
 }
 
 
+
 .subnavoncomp  {
    background-color:#ffffff;
    border: 1px #000 solid; 
@@ -274,6 +275,28 @@ a:hover {
    color:red;
 }
 
+
+.comment_block {
+   border-bottom : 1px #aaaaaa dashed;
+   padding-bottom:5px;
+   margin-bottom:10px;
+}
+
+.comment_commenter {
+   font-style:italic;
+}
+
+.comment_subject {
+   font-weight:bold;
+}
+
+.comment_inner {
+    padding-left:20px;
+}
+
+.comment_date {
+   font-style:italic;
+}
 
 .wiki-infobox {
    margin-top:5px;

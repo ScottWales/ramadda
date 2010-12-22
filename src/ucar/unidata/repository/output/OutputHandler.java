@@ -2106,7 +2106,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             throws Exception {
         StringBuffer  sb       = new StringBuffer();
         List<Comment> comments = getEntryManager().getComments(request,
-                                     entry);
+                                                               entry);
         if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
             sb.append(getEntryManager().getCommentHtml(request, entry));
         }
