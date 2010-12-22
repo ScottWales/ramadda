@@ -391,6 +391,10 @@ public class TypeHandler extends RepositoryManager {
     public void addToMap(Request request, Entry entry, String mapVarName,
                          StringBuffer jsBuff) {}
 
+    public String getEntryText(Entry entry) {
+        return entry.getDescription();
+    }
+
 
     /**
      * _more_

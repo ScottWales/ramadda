@@ -274,7 +274,7 @@ public class RssOutputHandler extends OutputHandler {
                     entry.getTypeHandler().getEntryContent(
                                                            entry, request, true, false).toString());
             } else {
-                XmlUtil.appendCdata(sb, entry.getDescription()+extra);
+                XmlUtil.appendCdata(sb, entry.getTypeHandler().getEntryText(entry)+extra);
             }
 
             sb.append(XmlUtil.closeTag(TAG_RSS_DESCRIPTION));
