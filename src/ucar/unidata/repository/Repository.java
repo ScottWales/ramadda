@@ -1842,6 +1842,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 continue;
             }
             String pluginFile = plugins[i].toString();
+            //            System.err.println ("Loading plugin:" + pluginFile);
             if (pluginFile.toLowerCase().endsWith(".jar")) {
                 PluginClassLoader cl = new MyClassLoader(pluginFile,
                                            getClass().getClassLoader());

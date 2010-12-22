@@ -2491,13 +2491,13 @@ public class TypeHandler extends RepositoryManager {
          *       : null), 100);
          *
          * if (collection == null) {
-         *   advancedSB.append(HtmlUtil.formEntry(msgLabel("Collection"),
+         *   basicSB.append(HtmlUtil.formEntry(msgLabel("Collection"),
          *           collectionSelect));
          * }
          */
 
 
-        addSearchField(request, ARG_FILESUFFIX, advancedSB);
+        addSearchField(request, ARG_FILESUFFIX, basicSB);
 
 
         String dateTypeValue = request.getString(ARG_DATE_SEARCHMODE,
@@ -2549,10 +2549,10 @@ public class TypeHandler extends RepositoryManager {
                                                 + msg("Search sub-folders")
                                                 + ")";
             if (groupArg.length() > 0) {
-                advancedSB.append(HtmlUtil.hidden(ARG_GROUP, groupArg));
+                basicSB.append(HtmlUtil.hidden(ARG_GROUP, groupArg));
                 Entry group = getEntryManager().findGroup(request, groupArg);
                 if (group != null) {
-                    advancedSB.append(HtmlUtil.formEntry(msgLabel("Folder"),
+                    basicSB.append(HtmlUtil.formEntry(msgLabel("Folder"),
                             group.getFullName() + "&nbsp;" + searchChildren));
 
                 }
@@ -2636,8 +2636,8 @@ public class TypeHandler extends RepositoryManager {
 
         formBuffer.append(HtmlUtil.makeShowHideBlock(msg("Basic"),
                 basicSB.toString(), true));
-        formBuffer.append(HtmlUtil.makeShowHideBlock(msg("Advanced"),
-                advancedSB.toString(), false));
+        //        formBuffer.append(HtmlUtil.makeShowHideBlock(msg("Advanced"),
+        //                advancedSB.toString(), false));
 
     }
 
@@ -2839,7 +2839,6 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-
         List<Clause> dateClauses = new ArrayList<Clause>();
         Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
                                new Date());
@@ -3036,25 +3035,18 @@ public class TypeHandler extends RepositoryManager {
 
 
         Hashtable args           = request.getArgs();
-        String    metadataPrefix = ARG_METADATA_TYPE + ".";
-        Hashtable typeMap        = new Hashtable();
-        List      types          = new ArrayList();
+        String    metadataPrefix = ARG_METADATA_ATTR1 + ".";
+        Hashtable<String,List<Metadata>> typeMap        = new Hashtable<String,List<Metadata>>();
+        List<String>      types          = new ArrayList<String>();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
-            if ( !arg.startsWith(metadataPrefix)) {
+            if (!arg.startsWith(metadataPrefix)) {
                 continue;
             }
             if ( !request.defined(arg)) {
                 continue;
             }
-            String type = request.getString(arg, "");
-            if ( !request.defined(ARG_METADATA_ATTR1 + "." + type)
-                    && !request.defined(ARG_METADATA_ATTR2 + "." + type)
-                    && !request.defined(ARG_METADATA_ATTR3 + "." + type)
-                    && !request.defined(ARG_METADATA_ATTR4 + "." + type)) {
-                continue;
-            }
-
+            String type = arg.substring(ARG_METADATA_ATTR1.length()+1);
             Metadata metadata =
                 new Metadata(
                     type,
@@ -3066,22 +3058,22 @@ public class TypeHandler extends RepositoryManager {
 
             metadata.setInherited(request.get(ARG_METADATA_INHERITED + "."
                     + type, false));
-            List values = (List) typeMap.get(type);
+            List<Metadata> values = typeMap.get(type);
             if (values == null) {
-                typeMap.put(type, values = new ArrayList());
+                typeMap.put(type, values = new ArrayList<Metadata>());
                 types.add(type);
             }
             values.add(metadata);
         }
 
+
         List<Clause> metadataAnds = new ArrayList<Clause>();
         for (int typeIdx = 0; typeIdx < types.size(); typeIdx++) {
-            String       type        = (String) types.get(typeIdx);
-            List         values      = (List) typeMap.get(type);
+            String       type        =  types.get(typeIdx);
+            List<Metadata>         values      = typeMap.get(type);
             List<Clause> metadataOrs = new ArrayList<Clause>();
             String       subTable    = Tables.METADATA.NAME + "_" + typeIdx;
-            for (int i = 0; i < values.size(); i++) {
-                Metadata     metadata   = (Metadata) values.get(i);
+            for (Metadata     metadata: values) {
                 List<Clause> subClauses = new ArrayList<Clause>();
                 subClauses.add(Clause.join(subTable + ".entry_id",
                                            Tables.ENTRIES.COL_ID));

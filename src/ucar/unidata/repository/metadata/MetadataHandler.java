@@ -567,8 +567,8 @@ public class MetadataHandler extends RepositoryManager {
     public String getSearchUrl(Request request, MetadataType type,
                                String value) {
         List args = new ArrayList();
-        args.add(ARG_METADATA_TYPE + "." + type.getId());
-        args.add(type.toString());
+        //        args.add(ARG_METADATA_TYPE + "." + type.getId());
+        //        args.add(type.toString());
         args.add(ARG_METADATA_ATTR1 + "." + type.getId());
         args.add(value);
         return HtmlUtil.url(request.url(getRepository().URL_ENTRY_SEARCH),
@@ -607,22 +607,22 @@ public class MetadataHandler extends RepositoryManager {
                                 MetadataType type)
             throws Exception {
         boolean doSelect = true;
-        sb.append(HtmlUtil.hidden(ARG_METADATA_TYPE + "." + type,
-                                  type.toString()));
+        //        sb.append(HtmlUtil.hidden(ARG_METADATA_TYPE + "." + type,
+        //                                  type.toString()));
         String inheritedCbx = HtmlUtil.checkbox(ARG_METADATA_INHERITED + "."
                                   + type, "true", false) + HtmlUtil.space(1)
                                       + "inherited";
         inheritedCbx = "";
+        String argName = ARG_METADATA_ATTR1 + "." + type;
 
         if (doSelect) {
             String[] values = getMetadataManager().getDistinctValues(request,
-                                  this, type);
+                                                                     this, type);
             if ((values == null) || (values.length == 0)) {
                 return;
             }
             List l = trimValues((List<String>) Misc.toList(values));
             l.add(0, new TwoFacedObject(msg("-all-"), ""));
-            String argName = ARG_METADATA_ATTR1 + "." + type;
             String value   = request.getString(argName, "");
             sb.append(HtmlUtil.formEntry(msgLabel(type.getLabel()),
                                          HtmlUtil.select(argName, l, value,
@@ -631,7 +631,7 @@ public class MetadataHandler extends RepositoryManager {
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel(type.getLabel()),
-                    HtmlUtil.input(ARG_METADATA_ATTR1 + "." + type, "")
+                    HtmlUtil.input(argName, "")
                     + inheritedCbx));
         }
     }
@@ -670,7 +670,7 @@ public class MetadataHandler extends RepositoryManager {
         for (int i = 0; i < values.length; i++) {
             String browseUrl = HtmlUtil.url(url,
                                             ARG_METADATA_TYPE + "."
-                                            + type.getId(), type.getId(),
+                                              + type.getId(), type.getId(),
                                                 ARG_METADATA_ATTR1 + "."
                                                 + type.getId(), values[i]);
             String value = values[i].trim();
