@@ -119,7 +119,14 @@ public class SearchManager extends RepositoryManager {
 
 
 
+    public Result processCapabilities(Request request) throws Exception {
+        
+        return new Result("", "text/xml");
+    }
+
+
     public Result processOpenSearch(Request request) throws Exception {
+
         Document doc   = XmlUtil.makeDocument();
         Element root = OpenSearchUtil.getRoot();
         /*
@@ -660,6 +667,9 @@ public class SearchManager extends RepositoryManager {
             if (s.length() > 0) {
                 searchForm.append(msg("Search Criteria") +"<br><table>" + s + "</table>");
             }
+            String searchUrl = request.getUrl();
+            searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
+            searchForm.append(HtmlUtil.br());
             makeSearchForm(request, false, true, searchForm);
             String form = HtmlUtil.makeShowHideBlock(searchLink +msg("Search Again"), RepositoryUtil.inset(searchForm.toString(), 0 , 20, 0 ,0), false);
             String heading =   msgHeader("Search Results") + form;
