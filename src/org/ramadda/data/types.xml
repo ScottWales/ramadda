@@ -1,0 +1,13 @@
+<types>
+
+  <type name="grid.agggregation"  description="Grid Aggregation" handler="org.ramadda.data.GridAggregationTypeHandler" category="Geo Data">
+     <property name="icon" value="/icons/data.gif"/>
+     <property name="form.show.resource" value="false"/>
+     <property name="form.show.area" value="true"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.date" value="false"/>
+     <property name="form.show.altitude" value="false"/>
+     <property name="form.show.altitude.top" value="false"/>
+   </type>
+
+</types>
