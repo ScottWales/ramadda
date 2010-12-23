@@ -11,15 +11,23 @@
    </type>
 
 
-  <type name="map.entry"  description="Map Item" handler="org.ramadda.map.MapEntryTypeHandler" category="Geo Data">
-     <property name="icon" value="/icons/map.png"/>
-     <property name="form.show.resource" value="false"/>
-     <property name="form.show.area" value="true"/>
-     <property name="form.show.datatype" value="false"/>
-     <property name="form.show.date" value="false"/>
-     <property name="form.show.altitude" value="false"/>
-     <property name="form.show.altitude.top" value="false"/>
+  <type name="map.entry"  description="Map Item" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" category="Geo Data">
      <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
+   </type>
+
+
+<!--
+  <type name="map.entry.image"  super="map.entry" description="Map Image" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" >
+     <property name="icon" value="/icons/map.png"/>
+   </type>
+
+  <type name="map.entry.polygon"  super="map.entry" description="Map Polygon" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" >
+     <property name="icon" value="/icons/map.png"/>
+   </type>
+-->
+
+  <type name="map.entry.marker"  super="map.entry" description="Map Marker" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" >
+     <property name="icon" value="/icons/map.png"/>
    </type>
 
 </types>
