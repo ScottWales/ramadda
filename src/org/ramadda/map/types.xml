@@ -1,0 +1,25 @@
+<types>
+
+  <type name="map.map"  description="Editable Map" handler="org.ramadda.map.MapTypeHandler" category="Geo Data">
+     <property name="icon" value="/icons/map.png"/>
+     <property name="form.show.resource" value="false"/>
+     <property name="form.show.area" value="true"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.date" value="false"/>
+     <property name="form.show.altitude" value="false"/>
+     <property name="form.show.altitude.top" value="false"/>
+   </type>
+
+
+  <type name="map.entry"  description="Map Item" handler="org.ramadda.map.MapEntryTypeHandler" category="Geo Data">
+     <property name="icon" value="/icons/map.png"/>
+     <property name="form.show.resource" value="false"/>
+     <property name="form.show.area" value="true"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.date" value="false"/>
+     <property name="form.show.altitude" value="false"/>
+     <property name="form.show.altitude.top" value="false"/>
+     <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
+   </type>
+
+</types>

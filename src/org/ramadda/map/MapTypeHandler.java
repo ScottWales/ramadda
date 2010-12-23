@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.grid;
+package org.ramadda.map;
 
 
 import org.w3c.dom.*;
@@ -47,12 +47,8 @@ import java.util.List;
 
 
 /**
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
-public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
+public class MapTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
@@ -64,7 +60,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      * @param node _more_
      * @throws Exception _more_
      */
-    public GridAggregationTypeHandler(Repository repository, Element node)
+    public MapTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
