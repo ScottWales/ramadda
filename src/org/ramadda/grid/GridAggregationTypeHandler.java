@@ -16,7 +16,7 @@
  * 
  */
 
-package org.ramadda.data;
+package org.ramadda.grid;
 
 
 import org.w3c.dom.*;

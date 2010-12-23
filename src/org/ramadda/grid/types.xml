@@ -1,6 +1,6 @@
 <types>
 
-  <type name="grid.agggregation"  description="Grid Aggregation" handler="org.ramadda.data.GridAggregationTypeHandler" category="Geo Data">
+  <type name="grid.agggregation"  description="Grid Aggregation" handler="org.ramadda.grid.GridAggregationTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/data.gif"/>
      <property name="form.show.resource" value="false"/>
      <property name="form.show.area" value="true"/>
