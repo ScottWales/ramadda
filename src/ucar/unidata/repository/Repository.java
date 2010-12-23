@@ -309,10 +309,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private Date startTime = new Date();
 
     /** _more_ */
-    private Hashtable theTypeHandlersMap = new Hashtable();
+    private Hashtable typeHandlersMap = new Hashtable();
 
     /** _more_ */
-    private List<TypeHandler> theTypeHandlers = new ArrayList<TypeHandler>();
+    private List<TypeHandler> allTypeHandlers = new ArrayList<TypeHandler>();
 
     /** _more_ */
     private List<OutputHandler> outputHandlers =
@@ -3754,7 +3754,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         //        SqlUtil.showLoadingSql = true;
         getDatabaseManager().loadSql(sql, true, false);
         //        SqlUtil.showLoadingSql = false;
-        System.err.println("RAMADDA: done loading schema");
+        //        System.err.println("RAMADDA: done loading schema");
 
         for (String sqlFile : pluginSqlFiles) {
             sql = getStorageManager().readUncheckedSystemResource(sqlFile);
@@ -4099,8 +4099,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @param typeHandler _more_
      */
     public void addTypeHandler(String typeName, TypeHandler typeHandler) {
-        theTypeHandlersMap.put(typeName, typeHandler);
-        theTypeHandlers.add(typeHandler);
+        typeHandlersMap.put(typeName, typeHandler);
+        allTypeHandlers.add(typeHandler);
     }
 
 
@@ -4110,8 +4110,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @param typeHandler _more_
      */
     public void removeTypeHandler(TypeHandler typeHandler) {
-        theTypeHandlersMap.remove(typeHandler.getType());
-        theTypeHandlers.remove(typeHandler);
+        typeHandlersMap.remove(typeHandler.getType());
+        allTypeHandlers.remove(typeHandler);
     }
 
     /**
@@ -4122,7 +4122,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @throws Exception _more_
      */
     public List<TypeHandler> getTypeHandlers() throws Exception {
-        return new ArrayList<TypeHandler>(theTypeHandlers);
+        return new ArrayList<TypeHandler>(allTypeHandlers);
     }
 
 
@@ -4178,7 +4178,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if(type.trim().length()==0) {
             type = TypeHandler.TYPE_FILE;
         }
-        TypeHandler typeHandler = (TypeHandler) theTypeHandlersMap.get(type);
+        TypeHandler typeHandler = (TypeHandler) typeHandlersMap.get(type);
         if (typeHandler == null) {
             if ( !useDefaultIfNotFound) {
                 return null;
@@ -5118,9 +5118,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                  String selected, boolean checkAddOk,
                                  HashSet<String> exclude)
             throws Exception {
-        List<TypeHandler> typeHandlers = getTypeHandlers();
         List              tmp          = new ArrayList();
-        for (TypeHandler typeHandler : typeHandlers) {
+        for (TypeHandler typeHandler : getTypeHandlers()) {
             if (typeHandler.isAnyHandler() && !includeAny) {
                 continue;
             }
@@ -5129,6 +5128,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
                     continue;
                 }
             }
+            if(!typeHandler.getForUser()) {
+                continue;
+            }
+
             if (checkAddOk && !typeHandler.canBeCreatedBy(request)) {
                 continue;
             }
@@ -5159,10 +5162,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
             return tmp;
         }
         //For now don't do the db query to find the type handlers
-        if (true) {
-            return getTypeHandlers();
-        }
-
+        return getTypeHandlers();
+        /*
 
         List<Clause> where = typeHandler.assembleWhereClause(request);
         Statement stmt =
@@ -5172,16 +5173,17 @@ public class Repository extends RepositoryBase implements RequestHandler {
         String[] types =
             SqlUtil.readString(getDatabaseManager().getIterator(stmt), 1);
         for (int i = 0; i < types.length; i++) {
-            TypeHandler theTypeHandler = getTypeHandler(types[i]);
+            TypeHandler typeHandler = getTypeHandler(types[i]);
 
             if (types[i].equals(TypeHandler.TYPE_ANY)) {
-                tmp.add(0, theTypeHandler);
+                tmp.add(0, typeHandler);
 
             } else {
-                tmp.add(theTypeHandler);
+                tmp.add(typeHandler);
             }
         }
         return tmp;
+        */
     }
 
     /**

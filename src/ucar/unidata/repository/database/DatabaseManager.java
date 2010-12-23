@@ -201,7 +201,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         haveInitialized = true;
         SqlUtil.setConnectionManager(this);
 
-        System.err.println("RAMADDA: DatabaseManager init");
         dataSource = doMakeDataSource();
         Statement statement = getConnection().createStatement();
         if (db.equals(DB_MYSQL)) {
@@ -209,7 +208,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
         closeAndReleaseConnection(statement);
         Misc.run(this, "checkConnections", null);
-        System.err.println("RAMADDA: DatabaseManager init done");
     }
 
 

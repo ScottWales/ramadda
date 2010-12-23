@@ -648,7 +648,6 @@ public class DataOutputHandler extends OutputHandler {
             return;
         }
 
-
         long t1 = System.currentTimeMillis();
         if ( !canLoadAsCdm(entry)) {
             long t2 = System.currentTimeMillis();

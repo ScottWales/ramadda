@@ -2438,6 +2438,9 @@ public class TypeHandler extends RepositoryManager {
         if (true || (typeHandlers.size() > 1)) {
             List tmp = new ArrayList();
             for (TypeHandler typeHandler : typeHandlers) {
+                if(!typeHandler.getForUser()) {
+                    continue;
+                }
                 tmp.add(new TwoFacedObject(typeHandler.getLabel(),
                                            typeHandler.getType()));
             }
