@@ -2912,7 +2912,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
             path = "/repository/applets/gantt/gantt.jar";
         }
 
+        //        System.err.println("path:" + path);
         if (!path.startsWith(getUrlBase())) {
+            //            System.err.println("bad:" + getUrlBase());
             getLogManager().log(request,
                                 "Unknown request" + " \"" + path + "\"");
             Result result = new Result(

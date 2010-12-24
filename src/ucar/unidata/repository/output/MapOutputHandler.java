@@ -181,20 +181,14 @@ public class MapOutputHandler extends OutputHandler {
         boolean [] haveBearingLines = {false};
         String mapVarName = getMap(request, entriesToUse, sb, 700, 500, true,haveBearingLines);
         sb.append("</td><td>");
-        if(haveBearingLines[0]) {
-            sb.append(HtmlUtil.checkbox("dummy", "true", false, HtmlUtil.onMouseClick("toggleBearingLines(" + mapVarName+");")));
-            sb.append("  ");
-            sb.append(msg("Show bearing lines"));
-            sb.append(HtmlUtil.br());
-        }
+
 
         for (Entry entry : entriesToUse) {
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 sb.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
                         entry)));
                 sb.append(HtmlUtil.space(1));
-                sb.append("<a href=\"javascript:hiliteEntry(" + mapVarName
-                          + "," + sqt(entry.getId()) + ");\">"
+                sb.append("<a href=\"javascript:" + mapVarName +".hiliteMarker("+sqt(entry.getId()) + ");\">"
                           + entry.getName() + "</a><br>");
             }
         }
@@ -224,13 +218,9 @@ public class MapOutputHandler extends OutputHandler {
                          boolean normalControls, boolean []haveBearingLines)
             throws Exception {
         StringBuffer js         = new StringBuffer();
-        String       mapVarName = "mapstraction" + HtmlUtil.blockCnt++;
+        String       mapVarName = "map" + HtmlUtil.blockCnt++;
         getRepository().getMapManager().initMap(request, mapVarName, sb,
                 width, height, normalControls);
-        js.append(mapVarName + ".resizeTo(" + width + "," + height + ");\n");
-        js.append("var marker;\n");
-        js.append("var line;\n");
-
         int cnt = 0;
         for (Entry entry : entriesToUse) {
             if (entry.hasAreaDefined()) {
@@ -242,22 +232,11 @@ public class MapOutputHandler extends OutputHandler {
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
             if (entry.hasAreaDefined()) {
-                js.append("line = new Polyline([");
-                js.append(llp(entry.getNorth(), entry.getWest()));
-                js.append(",");
-                js.append(llp(entry.getNorth(), entry.getEast()));
-                js.append(",");
-                js.append(llp(entry.getSouth(), entry.getEast()));
-                js.append(",");
-                js.append(llp(entry.getSouth(), entry.getWest()));
-                js.append(",");
-                js.append(llp(entry.getNorth(), entry.getWest()));
-                js.append("]);\n");
-                js.append("initLine(line," + qt(entry.getId()) + ","
-                          + (makeRectangles
-                             ? "1"
-                             : "0") + "," + mapVarName + ");\n");
-
+                js.append(mapVarName +".addBox(" + sqt(entry.getId()) +"," +
+                           entry.getNorth() +"," +
+                           entry.getWest() +"," +
+                           entry.getSouth() +"," +
+                           entry.getEast()+");\n");
             }
 
             if(makeRectangles) {
@@ -293,17 +272,9 @@ public class MapOutputHandler extends OutputHandler {
                             double dir = Double.parseDouble(metadata.getAttr1());
                             LatLonPointImpl fromPt = new LatLonPointImpl(location[0],location[1]);
                             LatLonPointImpl pt = Bearing.findPoint(fromPt,dir,0.25,null);
-                            js.append("var bearingLine = new Polyline([");
-                            js.append(llp(location[0],location[1]));
-                            js.append(",");
-                            js.append(llp(pt.getLatitude(), pt.getLongitude()));
-                            js.append("]);");
-                            js.append("bearingLine.setColor(bearingLineColor);\n");
-                            js.append("bearingLine.setWidth(1);\n");
-                            js.append("bearingLines[bearingLines.length] = bearingLine;\n");
-                            if(entriesToUse.size()==1) {
-                                js.append(mapVarName +".addPolyline(bearingLine);\n");
-                            }
+                            js.append(mapVarName +".addLine(" + sqt(entry.getId()) +"," +
+                                      location[0]+"," + location[1] +"," +
+                                      pt.getLatitude()+"," + pt.getLongitude()+");\n");
                             haveBearingLines[0] = true;
                             break;
                         } 
@@ -314,18 +285,19 @@ public class MapOutputHandler extends OutputHandler {
                 info = info.replace("\n", " ");
                 info = info.replace("\"", "\\\"");
                 String icon = getEntryManager().getIconUrl(request, entry);
-                js.append("marker = new Marker("
-                          + llp(location[0], location[1])
-                              + ");\n");
-
-                
-                js.append("marker.setIcon(" + qt(icon) + ");\n");
-                js.append("marker.setInfoBubble(\"" + info + "\");\n");
-                js.append("initMarker(marker," + qt(entry.getId()) + ","
-                          + mapVarName + ");\n");
+                js.append(mapVarName+".addMarker(" +
+                           qt(entry.getId()) +
+                           "," +
+                           newllp(location[0], location[1]) +
+                           "," +
+                           qt(icon)+ 
+                           "," +
+                           qt(info) +
+                           ");\n");
             }
         }
-        js.append(mapVarName + ".autoCenterAndZoom();\n");
+        js.append(mapVarName+".centerOnMarkers();\n");
+        //        js.append(mapVarName+".getMap().zoomToMaxExtent();\n");
         sb.append(HtmlUtil.script(js.toString()));
         return mapVarName;
     }
@@ -375,9 +347,26 @@ public class MapOutputHandler extends OutputHandler {
             lon = 180;
         }
         return "new LatLonPoint(" + lat + "," + lon + ")";
-
     }
 
 
+
+    public static String newllp(double lat, double lon) {
+        if (lat < -90) {
+            lat = -90;
+        }
+        if (lat > 90) {
+            lat = 90;
+        }
+        if (lon < -180) {
+            lon = -180;
+        }
+        if (lon > 180) {
+            lon = 180;
+        }
+        return "new OpenLayers.LonLat(" + lon + "," + lat + ")";
+    }
+
+    
 
 }

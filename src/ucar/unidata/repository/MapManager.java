@@ -100,9 +100,10 @@ public class MapManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public void initMap(Request request, String mapVarName,
+    public void initMapxxxx(Request request, String mapVarName,
                           StringBuffer sb, int width, int height,
                           boolean normalControls) {
+        /******
         if(!shouldShowMaps()) {
             return;
         }
@@ -119,7 +120,7 @@ public class MapManager extends RepositoryManager {
         if (userAgent == null) {
             userAgent = "Mozilla";
         }
-        String mapProvider = MAP_ID_MICROSOFT;
+
         String mapJS       = MAP_JS_MICROSOFT;
         String googleKeys  = getProperty(PROP_GOOGLEAPIKEYS, "");
         for (String line :
@@ -139,11 +140,6 @@ public class MapManager extends RepositoryManager {
                 googleMapsKey = toks[1];
                 break;
             }
-        }
-
-        if (userAgent.indexOf("MSIE") >= 0) {
-            mapProvider = MAP_ID_YAHOO;
-            mapJS       = MAP_JS_YAHOO;
         }
 
         if (googleMapsKey != null) {
@@ -170,7 +166,59 @@ public class MapManager extends RepositoryManager {
                                                   normalControls + ","
                                       + HtmlUtil.squote(mapProvider) + ","
                                       + HtmlUtil.squote(mapVarName)) + ";"));
+        ****/
     }
+
+
+
+    public void initMap(Request request, String mapVarName,
+                          StringBuffer sb, int width, int height,
+                          boolean normalControls) {
+        if(!shouldShowMaps()) {
+            return;
+        }
+
+
+
+        if (request.getExtraProperty("initmap") == null) {
+
+
+
+            sb.append("\n");
+            sb.append(HtmlUtil.cssLink(fileUrl("/openlayers/theme/default/google.css")));
+            sb.append("\n");
+            sb.append(HtmlUtil.cssLink(fileUrl("/openlayers/theme/default/style.css")));
+            sb.append("\n");
+            sb.append(HtmlUtil.importJS(fileUrl("/openlayers/OpenLayers.js")));
+            sb.append("\n");
+            sb.append(HtmlUtil.importJS(fileUrl("/repositorymap.js")));
+            sb.append("\n");
+            sb.append(HtmlUtil.importJS("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
+            sb.append("\n");
+            sb.append(HtmlUtil.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
+            sb.append("\n");
+            sb.append(HtmlUtil.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
+            sb.append("\n");
+            request.putExtraProperty("initmap", "");
+        }
+
+        sb.append(HtmlUtil.div("",
+                               HtmlUtil.style("border:1px; width:" + width
+                                   + "px; height:" + height + "px") + " "
+                                       + HtmlUtil.id(mapVarName)));
+        sb.append("\n");
+        StringBuffer js = new StringBuffer();
+        js.append("var " + mapVarName +" = new RepositoryMap('" +mapVarName +"');\n");
+        js.append("var map = " + mapVarName+";\n");
+        js.append("map.initMap2();\n");
+        sb.append(HtmlUtil.script(js.toString()));
+        sb.append("\n");
+    }
+
+
+
+
+
 
 
 
