@@ -10,38 +10,8 @@ function RepositoryMap (mapId, initialLocation) {
     if(!initialLocation) {
         initialLocation = new OpenLayers.LonLat(-104, 40);
     }
-    var zoom = 5;
+    var zoom = 1;
     var map, layer, markers, boxes, lines;
-
-    this.initMap1 = function(mapDivId){
-
-        map = new OpenLayers.Map(this.mapDivId);
-        this.addBaseLayers();
-
-        var control = new OpenLayers.Control();
-        OpenLayers.Util.extend(control, {
-                draw: function () {
-                    // this Handler.Box will intercept the shift-mousedown
-                    // before Control.MouseDefault gets to see it
-                    this.box = new OpenLayers.Handler.Box( control,
-                                                           {"done": this.notice},
-                                                           {keyMask: OpenLayers.Handler.MOD_SHIFT});
-                    this.box.activate();
-                },
-
-                    notice: function (bounds) {
-                    var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
-                    var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-                    alert(ll.lon.toFixed(4) + ", " + 
-                          ll.lat.toFixed(4) + ", " + 
-                          ur.lon.toFixed(4) + ", " + 
-                          ur.lat.toFixed(4));
-                }
-            });
-
-        this.map.addControl(control);
-        this.map.setCenter(initialLocation, zoom);
-    }
 
     this.addWMSLayer  = function(name, url, layer) {
         //"http://vmap0.tiles.osgeo.org/wms/vmap0"
@@ -96,7 +66,8 @@ function RepositoryMap (mapId, initialLocation) {
     }
 
 
-    this.initMap2 = function(){
+    this.initMap = function(forSelection) {
+        this.inited = true;
         this.map = new OpenLayers.Map( this.mapDivId );
         //        this.map.fractionalZoom = true;
         this.map.minResolution = 0.0000001;
@@ -104,12 +75,75 @@ function RepositoryMap (mapId, initialLocation) {
         //        this.map.numZoomLevels = 32;
 
         this.addBaseLayers();
-        var control = new OpenLayers.Control();
-        OpenLayers.Util.extend(control, {
+        this.name  = "map";
+        var theMap = this;
+        this.map.setCenter(initialLocation, zoom);
+        this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
+        this.map.addControl( new OpenLayers.Control.MousePosition() );
+        if(forSelection) {
+            this.addSelectorControl();
+        }
+    }
+
+
+    this.setSelection = function(argBase, absolute) { 
+        this.argBase = argBase;
+        if(util) {
+            this.fldNorth= util.getDomObject(this.argBase+"_north");
+            this.fldSouth= util.getDomObject(this.argBase+"_south");
+            this.fldEast= util.getDomObject(this.argBase+"_east");
+            this.fldWest= util.getDomObject(this.argBase+"_west");
+            this.fldLat= util.getDomObject(this.argBase+"_lat");
+            this.fldLon= util.getDomObject(this.argBase+"_lon");
+        }
+    }
+
+    this.selectionPopupInit = function() {
+        if(!this.inited) {
+            this.initMap(true);
+            if(this.fldNorth) {
+                alert("north = " + this.fldNorth.obj.value);
+                this.setSelectionBox(this.fldNorth.obj.value,
+                                     this.fldWest.obj.value,
+                                     this.fldSouth.obj.value,
+                                     this.fldEast.obj.value);
+            }
+        }
+    }
+
+    this.setSelectionBox = function(north, west, south, east) {
+        if(north == "" || west == "" || south == "" || east == "") return;
+        if(!this.selectorBox) {
+            this.selectorBox = this.addBox(north, west, south, east);
+        } else {
+            var bounds = new OpenLayers.Bounds(west, south, east, north);
+            this.selectorBox.bounds = bounds;
+        }
+        this.boxes.redraw();
+    }
+
+
+
+
+    this.selectionClear = function() {
+        if(this.fldNorth) {
+            this.fldNorth.obj.value = "";
+            this.fldSouth.obj.value = "";
+            this.fldWest.obj.value = "";
+            this.fldEast.obj.value = "";
+        }
+    }
+
+
+    this.addSelectorControl = function() {
+        var theMap = this;
+        if(theMap.selectorControl) return;
+        theMap.selectorControl = new OpenLayers.Control();
+        OpenLayers.Util.extend(theMap.selectorControl, {
                 draw: function () {
                     // this Handler.Box will intercept the shift-mousedown
                     // before Control.MouseDefault gets to see it
-                    this.box = new OpenLayers.Handler.Box( control,
+                    this.box = new OpenLayers.Handler.Box( theMap.selectorControl,
                                                            {"done": this.notice},
                                                            {keyMask: OpenLayers.Handler.MOD_SHIFT});
                     this.box.activate();
@@ -118,17 +152,20 @@ function RepositoryMap (mapId, initialLocation) {
                 notice: function (bounds) {
                     var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
                     var ur = this.map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-                    alert(ll.lon.toFixed(4) + ", " + 
-                          ll.lat.toFixed(4) + ", " + 
-                          ur.lon.toFixed(4) + ", " + 
-                          ur.lat.toFixed(4));
+                    theMap.setSelectionBox(ur.lat, ll.lon, ll.lat,ur.lon);
+                    if(theMap.argBase && util) {
+                    }
+                    if(theMap.fldNorth) {
+                        theMap.fldNorth.obj.value = ur.lat;
+                        theMap.fldSouth.obj.value = ll.lat;
+                        theMap.fldWest.obj.value = ll.lon;
+                        theMap.fldEast.obj.value = ur.lon;
+                    }
+                    //                    OpenLayers.Event.stop(evt); 
                 }
             });
 
-        //        this.map.addControl(control);
-        this.map.setCenter(initialLocation, zoom);
-        this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
-        this.map.addControl( new OpenLayers.Control.MousePosition() );
+        theMap.map.addControl(theMap.selectorControl);
     }
 
 
@@ -217,6 +254,7 @@ function RepositoryMap (mapId, initialLocation) {
             });
         return marker;
     }
+
 
 
     this.addBox = function(id, north, west, south, east) {

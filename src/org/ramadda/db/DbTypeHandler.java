@@ -2149,9 +2149,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         int          width      = 700;
         int          height     = 500;
 
-        js.append(mapVarName + ".resizeTo(" + width + "," + height + ");\n");
-        js.append("var marker;\n");
-        js.append("var line;\n");
+        //        js.append(mapVarName + ".resizeTo(" + width + "," + height + ");\n");
 
         boolean      makeRectangles = valueList.size() <= 20;
 
@@ -2180,21 +2178,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
 
             if (bbox) {
-                js.append("line = new Polyline([");
-                js.append(MapOutputHandler.llp(north, west));
-                js.append(",");
-                js.append(MapOutputHandler.llp(north, east));
-                js.append(",");
-                js.append(MapOutputHandler.llp(south, east));
-                js.append(",");
-                js.append(MapOutputHandler.llp(south, west));
-                js.append(",");
-                js.append(MapOutputHandler.llp(north, west));
-                js.append("]);\n");
-                js.append("initLine(line," + HtmlUtil.squote(dbid) + ","
-                          + (makeRectangles
-                             ? "1"
-                             : "0") + "," + mapVarName + ");\n");
+                js.append(mapVarName +".addBox('', " + north +"," +west +"," + south +"," +east +");\n");
             }
             rightSide.append("\n");
             if (canEdit) {
@@ -2224,26 +2208,28 @@ public class DbTypeHandler extends BlobTypeHandler {
             info = info.replace("\n", " ");
             info = info.replace("\"", "\\\"");
             if ( !bbox) {
-                js.append("marker = new Marker("
-                          + MapOutputHandler.llp(lat, lon) + ");\n");
+                js.append(mapVarName+".addMarker(''," +
+                          + MapOutputHandler.newllp(south, east) + 
+                          "," + HtmlUtil.squote(icon) +
+                          "," + HtmlUtil.squote(info) +
+                          ");\n");
             } else {
                 if ( !makeRectangles) {
-                    js.append("marker = new Marker("
-                              + MapOutputHandler.llp(south, east) + ");\n");
+                    js.append(mapVarName+".addMarker(''," +
+                              + MapOutputHandler.newllp(south, east) + 
+                              "," + HtmlUtil.squote(icon) +
+                              "," + HtmlUtil.squote(info) +
+                              ");\n");
+
                 } else {
-                    js.append("marker = new Marker("
-                              + MapOutputHandler.llp(south
-                                  + (north - south) / 2, west
-                                      + (east - west) / 2) + ");\n");
+                    js.append(mapVarName+".addMarker(''," +
+                              + MapOutputHandler.newllp(south+ (north - south) / 2, 
+                                                        west + (east - west) / 2) + 
+                              "," + HtmlUtil.squote(icon) +
+                              "," + HtmlUtil.squote(info) +
+                              ");\n");
                 }
             }
-
-            js.append("marker.setIcon(" + HtmlUtil.squote(icon) + ");\n");
-            js.append("marker.setLabel("
-                      + HtmlUtil.squote(getLabel(entry, values)) + ");\n");
-            js.append("marker.setInfoBubble(\"" + info + "\");\n");
-            js.append("initMarker(marker," + HtmlUtil.squote(dbid) + ","
-                      + mapVarName + ");\n");
         }
         js.append(mapVarName + ".autoCenterAndZoom();\n");
 

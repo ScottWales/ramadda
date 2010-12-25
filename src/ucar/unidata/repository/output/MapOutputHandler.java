@@ -220,7 +220,7 @@ public class MapOutputHandler extends OutputHandler {
         StringBuffer js         = new StringBuffer();
         String       mapVarName = "map" + HtmlUtil.blockCnt++;
         getRepository().getMapManager().initMap(request, mapVarName, sb,
-                width, height, normalControls);
+                width, height, false);
         int cnt = 0;
         for (Entry entry : entriesToUse) {
             if (entry.hasAreaDefined()) {

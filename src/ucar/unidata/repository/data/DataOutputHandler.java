@@ -1771,6 +1771,7 @@ public class DataOutputHandler extends OutputHandler {
                                           + HtmlUtil.blockCnt++;
         StringBuffer         js           = new StringBuffer();
         List                 trajectories = tod.getTrajectories();
+        //TODO: Use new openlayers map
         for (int i = 0; i < trajectories.size(); i++) {
             List allVariables = tod.getDataVariables();
             TrajectoryObsDatatype todt =
@@ -1822,7 +1823,6 @@ public class DataOutputHandler extends OutputHandler {
                 continue;
             }
         }
-
 
 
         js.append(mapVarName + ".autoCenterAndZoom();\n");

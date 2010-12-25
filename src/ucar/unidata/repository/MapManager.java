@@ -88,102 +88,15 @@ public class MapManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mapVarName _more_
-     * @param sb _more_
-     * @param width _more_
-     * @param height _more_
-     * @param normalControls _more_
-     *
-     * @return _more_
-     */
-    public void initMapxxxx(Request request, String mapVarName,
-                          StringBuffer sb, int width, int height,
-                          boolean normalControls) {
-        /******
-        if(!shouldShowMaps()) {
-            return;
-        }
-
-
-        String userAgent = request.getHeaderArg("User-Agent");
-        String host      = request.getHeaderArg("Host");
-        if (host == null) {
-            host = "localhost";
-        }
-        host = (String) StringUtil.split(host, ":", true, true).get(0);
-        String googleMapsKey = null;
-
-        if (userAgent == null) {
-            userAgent = "Mozilla";
-        }
-
-        String mapJS       = MAP_JS_MICROSOFT;
-        String googleKeys  = getProperty(PROP_GOOGLEAPIKEYS, "");
-        for (String line :
-                (List<String>) StringUtil.split(googleKeys, "\n", true,
-                true)) {
-            if (line.length() == 0) {
-                continue;
-            }
-            String[] toks = StringUtil.split(line, ":", 2);
-            if (toks == null) {
-                continue;
-            }
-            if (toks.length != 2) {
-                continue;
-            }
-            if (toks[0].equals(host)) {
-                googleMapsKey = toks[1];
-                break;
-            }
-        }
-
-        if (googleMapsKey != null) {
-            mapJS = "http://maps.google.com/maps?file=api&v=2&key=" + googleMapsKey;
-            mapProvider = "google";
-        }
-
-
-        if (request.getExtraProperty("initmap") == null) {
-            sb.append(HtmlUtil.importJS(mapJS));
-            sb.append(
-                HtmlUtil.importJS(fileUrl("/mapstraction/mapstraction.js")));
-            sb.append(HtmlUtil.importJS(fileUrl("/mapstraction/mymap.js")));
-            request.putExtraProperty("initmap", "");
-        }
-
-
-        sb.append(HtmlUtil.div("",
-                               HtmlUtil.style("width:" + width
-                                   + "px; height:" + height + "px") + " "
-                                       + HtmlUtil.id(mapVarName)));
-        sb.append(HtmlUtil.script(mapVarName + "="
-                                  + HtmlUtil.call("MapInitialize",
-                                                  normalControls + ","
-                                      + HtmlUtil.squote(mapProvider) + ","
-                                      + HtmlUtil.squote(mapVarName)) + ";"));
-        ****/
-    }
-
-
 
     public void initMap(Request request, String mapVarName,
                           StringBuffer sb, int width, int height,
-                          boolean normalControls) {
+                          boolean forSelection) {
         if(!shouldShowMaps()) {
             return;
         }
 
-
-
         if (request.getExtraProperty("initmap") == null) {
-
-
-
             sb.append("\n");
             sb.append(HtmlUtil.cssLink(fileUrl("/openlayers/theme/default/google.css")));
             sb.append("\n");
@@ -210,7 +123,9 @@ public class MapManager extends RepositoryManager {
         StringBuffer js = new StringBuffer();
         js.append("var " + mapVarName +" = new RepositoryMap('" +mapVarName +"');\n");
         js.append("var map = " + mapVarName+";\n");
-        js.append("map.initMap2();\n");
+        if(!forSelection) {
+            js.append("map.initMap(" + forSelection+");\n");
+        }
         sb.append(HtmlUtil.script(js.toString()));
         sb.append("\n");
     }
@@ -294,11 +209,9 @@ public class MapManager extends RepositoryManager {
                                   String extraLeft, String extraTop,
                                   String[]snew,
                                   double[][]markerLatLons) {
-        
-
 
         StringBuffer sb = new StringBuffer();
-        String msg = HtmlUtil.italics(msg("Shift-click to select point"));
+        String msg = HtmlUtil.italics(msg("Shift-drag to select region"));
         sb.append(msg);
         sb.append(HtmlUtil.br());
         String       widget;
@@ -329,25 +242,23 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        String var         = "mapselector" + HtmlUtil.blockCnt++;
-        String onClickCall = HtmlUtil.onMouseClick(var + ".click(event);");
+        String mapVarName = "selectormap";
         String rightSide = null;
-        String clearLink = HtmlUtil.mouseClickHref(var + ".clear();",
+        String clearLink = HtmlUtil.mouseClickHref(mapVarName + ".selectionClear();",
                                msg("Clear"));
         String initParams = HtmlUtil.squote(arg) + "," + (popup
                 ? "1"
                 : "0");
 
-        String mapVarName = "selectormap";
 
         try {
-            initMap(getRepository().getTmpRequest(), mapVarName, sb, 500,300,true);
+            initMap(getRepository().getTmpRequest(), mapVarName, sb, 500, 300,true);
         } catch(Exception exc) {}
 
         if (popup) {
             rightSide = getRepository().makeStickyPopup(msg("Select"),
                                                         sb.toString(),
-                                                        var + ".init();") + HtmlUtil.space(2) + clearLink
+                                                        mapVarName + ".selectionPopupInit();") + HtmlUtil.space(2) + clearLink
                                       + HtmlUtil.space(2)
                                       + HtmlUtil.space(2) + extraTop;
         } else {
@@ -356,8 +267,9 @@ public class MapManager extends RepositoryManager {
         }
 
         StringBuffer script = new StringBuffer();
-        script.append("var " + var + " =  new MapSelector(" + initParams+ ");\n");
+        script.append(mapVarName+".setSelection(" + initParams+ ");\n");
         if(markerLatLons!=null) {
+            /*
             script.append("var markerLine = new Polyline([");
             for(int i=0;i<markerLatLons[0].length;i++) {
                 if(i>0)
@@ -370,6 +282,7 @@ public class MapManager extends RepositoryManager {
             script.append("markerLine.setWidth(3);\n");
             script.append(mapVarName +".addPolyline(markerLine);\n");
             script.append(mapVarName +".autoCenterAndZoom();\n");
+            */
         }
 
         return HtmlUtil.table(new Object[] { widget, rightSide }) + "\n"
