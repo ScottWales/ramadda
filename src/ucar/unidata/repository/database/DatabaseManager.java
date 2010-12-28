@@ -149,7 +149,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     //    private Hashtable<Connection, ConnectionInfo> connectionMap =
     //        new Hashtable<Connection, ConnectionInfo>();
 
-
     private final Object CONNECTION_MUTEX = new Object();
 
     /** _more_          */
@@ -207,7 +206,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             statement.execute("set time_zone = '+0:00'");
         }
         closeAndReleaseConnection(statement);
-        Misc.run(this, "checkConnections", null);
+        //        Misc.run(this, "checkConnections", null);
     }
 
 
@@ -270,6 +269,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE,
                 100));
         ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE, 100));
+
+        ds.setRemoveAbandonedTimeout(60*10);
+        ds.setRemoveAbandoned(false);
 
         String userName = (String) getRepository().getProperty(
                               PROP_DB_USER.replace("${db}", db));
@@ -710,7 +712,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             connection = dataSource.getConnection();
         }
         synchronized (connectionInfos) {
-            connectionInfos.add(new ConnectionInfo(connection, msg));
+            //            connectionInfos.add(new ConnectionInfo(connection, msg));
             //            connectionMap.put(connection,
             //                              new ConnectionInfo(connection, msg));
         }
