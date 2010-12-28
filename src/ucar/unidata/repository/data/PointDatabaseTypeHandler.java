@@ -178,7 +178,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String FORMAT_TIMESERIES_IMAGE = "timeseries_image";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FORMAT_TIMESERIES_DATA = "timeseries_data";
 
     /** _more_ */
@@ -340,7 +340,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     /** _more_ */
     private List hours;
 
-    /** _more_          */
+    /** _more_ */
     private String chartTemplate;
 
 
@@ -395,36 +395,37 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(entryStmt);
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
-                Entry entry = this.createEntryFromDatabase(results, false);
+            Entry entry = this.createEntryFromDatabase(results, false);
 
-                List<Metadata> metadataList =
-                    getMetadataManager().findMetadata(entry,
-                        ContentMetadataHandler.TYPE_ATTACHMENT, true);
-                System.err.println("Initializing point database entry:"
-                                   + entry.getFullName());
-                int cnt = 0;
-                for (Metadata metadata : metadataList) {
-                    File dataFile =
-                        new File(IOUtil
-                            .joinDir(getRepository().getStorageManager()
-                                .getEntryDir(metadata.getEntryId(),
-                                             false), metadata.getAttr1()));
-                    if (cnt == 0) {
-                        Connection connection =
-                            getDatabaseManager().getConnection();
-                        connection.setAutoCommit(false);
-                        createDatabase(getRepository().getTmpRequest(),
-                                       entry, dataFile,
-                                       entry.getParentEntry(), connection);
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(entry,
+                    ContentMetadataHandler.TYPE_ATTACHMENT, true);
+            System.err.println("Initializing point database entry:"
+                               + entry.getFullName());
+            int cnt = 0;
+            for (Metadata metadata : metadataList) {
+                File dataFile =
+                    new File(
+                        IOUtil.joinDir(
+                            getRepository().getStorageManager().getEntryDir(
+                                metadata.getEntryId(),
+                                false), metadata.getAttr1()));
+                if (cnt == 0) {
+                    Connection connection =
+                        getDatabaseManager().getConnection();
+                    connection.setAutoCommit(false);
+                    createDatabase(getRepository().getTmpRequest(), entry,
+                                   dataFile, entry.getParentEntry(),
+                                   connection);
 
-                        connection.commit();
-                        connection.setAutoCommit(true);
-                        getDatabaseManager().closeConnection(connection);
-                    } else {
-                        loadData(entry, dataFile);
-                    }
-                    cnt++;
+                    connection.commit();
+                    connection.setAutoCommit(true);
+                    getDatabaseManager().closeConnection(connection);
+                } else {
+                    loadData(entry, dataFile);
                 }
+                cnt++;
+            }
 
         }
     }
@@ -437,7 +438,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    private String getTableName(String id) {
+    protected String getTableName(String id) {
         id = id.replace("-", "_");
         return "pt_" + id;
     }
@@ -449,7 +450,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    private String getTableName(Entry entry) {
+    protected String getTableName(Entry entry) {
         return getTableName(entry.getId());
     }
 
@@ -467,8 +468,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeEntryFromForm(Request request, Entry entry, Group parent,
-                                boolean newEntry)
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Group parent, boolean newEntry)
             throws Exception {
         if ( !newEntry) {
             return;
@@ -553,8 +554,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void createDatabase(Request request, Entry entry, File dataFile,
-                                Group parent, Connection connection)
+    protected void createDatabase(Request request, Entry entry,
+                                  File dataFile, Group parent,
+                                  Connection connection)
             throws Exception {
 
         String                  tableName = getTableName(entry);
@@ -630,11 +632,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     : PointDataMetadata.TYPE_DOUBLE)));
         }
         for (PointDataMetadata pdm : stringMetadata) {
-            pdm.columnNumber = metadata.size();
+            pdm.setColumnNumber(metadata.size());
             metadata.add(pdm);
         }
         for (PointDataMetadata pdm : numericMetadata) {
-            pdm.columnNumber = metadata.size();
+            pdm.setColumnNumber(metadata.size());
             metadata.add(pdm);
         }
         createDatabase(entry, metadata, connection);
@@ -653,9 +655,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void createDatabase(Entry entry,
-                                List<PointDataMetadata> metadata,
-                                Connection connection)
+    protected void createDatabase(Entry entry,
+                                  List<PointDataMetadata> metadata,
+                                  Connection connection)
             throws Exception {
         String       tableName = getTableName(entry);
         StringBuffer sql       = new StringBuffer();
@@ -671,13 +673,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 sql.append(",");
             }
             first = false;
-            sql.append(pdm.columnName);
+            sql.append(pdm.getColumnName());
             sql.append(" ");
             sql.append(pdm.getDatabaseType());
             if (pdm.isBasic()) {
                 indexSql.add("CREATE INDEX " + tableName + "_I"
                              + (indexCnt++) + " ON " + tableName + " ("
-                             + pdm.columnName + ");");
+                             + pdm.getColumnName() + ");");
             }
         }
         sql.append(")");
@@ -712,7 +714,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    private double checkWriteValue(double v) {
+    protected double checkWriteValue(double v) {
         if (v != v) {
             return MISSING;
         }
@@ -761,7 +763,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         String   tableName = getTableName(entry);
         String[] ARRAY     = new String[metadata.size()];
         for (PointDataMetadata pdm : metadata) {
-            ARRAY[pdm.columnNumber] = pdm.columnName;
+            ARRAY[pdm.getColumnNumber()] = pdm.getColumnName();
         }
         String insertString = SqlUtil.makeInsert(tableName,
                                   SqlUtil.commaNoDot(ARRAY),
@@ -863,20 +865,20 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
             for (PointDataMetadata pdm : metadata) {
                 Object value;
-                if (COL_ID.equals(pdm.columnName)) {
+                if (COL_ID.equals(pdm.getColumnName())) {
                     value = new Integer(baseId);
                     baseId++;
-                } else if (COL_LATITUDE.equals(pdm.columnName)) {
+                } else if (COL_LATITUDE.equals(pdm.getColumnName())) {
                     value = new Double(checkWriteValue(lat));
-                } else if (COL_LONGITUDE.equals(pdm.columnName)) {
+                } else if (COL_LONGITUDE.equals(pdm.getColumnName())) {
                     value = new Double(checkWriteValue(lon));
-                } else if (COL_ALTITUDE.equals(pdm.columnName)) {
+                } else if (COL_ALTITUDE.equals(pdm.getColumnName())) {
                     value = new Double(checkWriteValue(alt));
-                } else if (COL_DATE.equals(pdm.columnName)) {
+                } else if (COL_DATE.equals(pdm.getColumnName())) {
                     value = time;
-                } else if (COL_HOUR.equals(pdm.columnName)) {
+                } else if (COL_HOUR.equals(pdm.getColumnName())) {
                     value = new Integer(calendar.get(GregorianCalendar.HOUR));
-                } else if (COL_MONTH.equals(pdm.columnName)) {
+                } else if (COL_MONTH.equals(pdm.getColumnName())) {
                     value =
                         new Integer(calendar.get(GregorianCalendar.MONTH));
                 } else {
@@ -897,7 +899,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                         value = new Double(checkWriteValue(d));
                     }
                 }
-                values[pdm.columnNumber] = value;
+                values[pdm.getColumnNumber()] = value;
             }
             if (hadAnyNumericValues && !hadGoodNumericValue) {
                 continue;
@@ -1148,7 +1150,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 seen.add(col);
             }
             for (PointDataMetadata pdm : metadata) {
-                if (seen.contains("" + pdm.columnNumber)) {
+                if (seen.contains("" + pdm.getColumnNumber())) {
                     tmp.add(pdm);
                 }
             }
@@ -1160,8 +1162,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             new ArrayList<PointDataMetadata>();
         for (PointDataMetadata pdm : tmp) {
             //Skip the db month and hour
-            if (pdm.columnName.equals(COL_MONTH)
-                    || pdm.columnName.equals(COL_HOUR)) {
+            if (pdm.getColumnName().equals(COL_MONTH)
+                    || pdm.getColumnName().equals(COL_HOUR)) {
                 continue;
             }
             columnsToUse.add(pdm);
@@ -1169,10 +1171,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
         for (PointDataMetadata pdm : metadata) {
-            if (pdm.isBasic() && !pdm.columnName.equals(COL_ALTITUDE)) {
+            if (pdm.isBasic() && !pdm.getColumnName().equals(COL_ALTITUDE)) {
                 continue;
             }
-            String suffix = "" + pdm.columnNumber;
+            String suffix = "" + pdm.getColumnNumber();
             if ( !request.defined(ARG_POINT_FIELD_VALUE + suffix)) {
                 continue;
             }
@@ -1180,9 +1182,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 String value = request.getString(ARG_POINT_FIELD_VALUE
                                    + suffix, "");
                 if (request.get(ARG_POINT_FIELD_EXACT + suffix, false)) {
-                    clauses.add(Clause.eq(pdm.columnName, value));
+                    clauses.add(Clause.eq(pdm.getColumnName(), value));
                 } else {
-                    clauses.add(Clause.like(pdm.columnName,
+                    clauses.add(Clause.like(pdm.getColumnName(),
                                             "%" + value + "%"));
                 }
             } else {
@@ -1191,11 +1193,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 double value = request.get(ARG_POINT_FIELD_VALUE + suffix,
                                            0.0);
                 if (op.equals(OP_LT)) {
-                    clauses.add(Clause.le(pdm.columnName, value));
+                    clauses.add(Clause.le(pdm.getColumnName(), value));
                 } else if (op.equals(OP_GT)) {
-                    clauses.add(Clause.ge(pdm.columnName, value));
+                    clauses.add(Clause.ge(pdm.getColumnName(), value));
                 } else {
-                    clauses.add(Clause.eq(pdm.columnName, value));
+                    clauses.add(Clause.eq(pdm.getColumnName(), value));
                 }
             }
         }
@@ -1225,7 +1227,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             } else {
                 cols.append(",");
             }
-            cols.append(pdm.columnName);
+            cols.append(pdm.getColumnName());
         }
 
         if (cols == null) {
@@ -1240,7 +1242,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         String sortByArg = request.getString(ARG_POINT_SORTBY, "");
         for (PointDataMetadata pdm : metadata) {
-            if (pdm.columnName.equals(sortByArg)) {
+            if (pdm.getColumnName().equals(sortByArg)) {
                 sortByCol = sortByArg;
                 break;
             }
@@ -1266,44 +1268,42 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         int              skipHowMany   = 0;
         while ((results = iter.getNext()) != null) {
-                if (skipHowMany > 0) {
-                    skipHowMany--;
+            if (skipHowMany > 0) {
+                skipHowMany--;
+                continue;
+            }
+            if (stride > 1) {
+                skipHowMany = stride - 1;
+            }
+            int col = 1;
+            PointData pointData =
+                new PointData(results.getInt(col++),
+                              getDatabaseManager().getDate(results, col++),
+                              checkReadValue(results.getDouble(col++)),
+                              checkReadValue(results.getDouble(col++)),
+                              checkReadValue(results.getDouble(col++)), 0, 0);
+            List values = new ArrayList();
+            //Add in the selected basic values
+            for (PointDataMetadata pdm : columnsToUse) {
+                if (pdm.isBasic()) {
+                    values.add(pointData.getValue(pdm.getColumnName()));
+                }
+            }
+
+            while (col <= queryColumns.size()) {
+                PointDataMetadata pdm = queryColumns.get(col - 1);
+                if (pdm.isDate()) {
                     continue;
                 }
-                if (stride > 1) {
-                    skipHowMany = stride - 1;
+                if (pdm.isString()) {
+                    pointData.setValue(pdm, results.getString(col).trim());
+                } else {
+                    double d = checkReadValue(results.getDouble(col));
+                    pointData.setValue(pdm, new Double(d));
                 }
-                int col = 1;
-                PointData pointData =
-                    new PointData(
-                        results.getInt(col++),
-                        getDatabaseManager().getDate(results, col++),
-                        checkReadValue(results.getDouble(col++)),
-                        checkReadValue(results.getDouble(col++)),
-                        checkReadValue(results.getDouble(col++)), 0, 0);
-                List values = new ArrayList();
-                //Add in the selected basic values
-                for (PointDataMetadata pdm : columnsToUse) {
-                    if (pdm.isBasic()) {
-                        values.add(pointData.getValue(pdm.columnName));
-                    }
-                }
-
-                while (col <= queryColumns.size()) {
-                    PointDataMetadata pdm = queryColumns.get(col - 1);
-                    if (pdm.isDate()) {
-                        continue;
-                    }
-                    if (pdm.isString()) {
-                        pointData.setValue(pdm,
-                                           results.getString(col).trim());
-                    } else {
-                        double d = checkReadValue(results.getDouble(col));
-                        pointData.setValue(pdm, new Double(d));
-                    }
-                    col++;
-                }
-                pointDataList.add(pointData);
+                col++;
+            }
+            pointDataList.add(pointData);
         }
 
 
@@ -1562,19 +1562,19 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         for (PointDataMetadata pdm : columnsToUse) {
             String pdmName = pdm.shortName.toLowerCase();
 
-            if (pdm.columnName.equals(COL_ID)) {
+            if (pdm.getColumnName().equals(COL_ID)) {
                 continue;
             }
             if (entityCol == null) {
                 if ((pdmName.indexOf("station") >= 0)
                         || pdmName.equals("region") || pdmName.equals("id")
                         || pdmName.equals("idn")) {
-                    entityCol = pdm.columnName;
+                    entityCol = pdm.getColumnName();
                     continue;
                 }
             }
             if (pdmName.indexOf("name") >= 0) {
-                entityCol = pdm.columnName;
+                entityCol = pdm.getColumnName();
                 break;
             }
         }
@@ -1890,7 +1890,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     range[0] = Math.min(range[0], value);
                     range[1] = Math.max(range[1], value);
                 }
-                MyTimeSeries series = seriesMap.get(pdm.columnName);
+                MyTimeSeries series = seriesMap.get(pdm.getColumnName());
                 if (series == null) {
                     paramCount++;
                     TimeSeriesCollection dataset = new TimeSeriesCollection();
@@ -1919,7 +1919,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
                     dataset.setDomainIsPointsInTime(true);
                     dataset.addSeries(series);
-                    seriesMap.put(pdm.columnName, series);
+                    seriesMap.put(pdm.getColumnName(), series);
                     xyPlot.setDataset(paramCount, dataset);
                     xyPlot.mapDatasetToRangeAxis(paramCount, paramCount);
                 }
@@ -2634,7 +2634,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         if (canEdit && request.defined(ARG_POINT_CHANGETYPE)) {
             String column = request.getString(ARG_POINT_CHANGETYPE, "");
             for (PointDataMetadata pdm : metadata) {
-                if (pdm.isString() && pdm.columnName.equals(column)) {
+                if (pdm.isString() && pdm.getColumnName().equals(column)) {
                     if (pdm.varType.equals(pdm.TYPE_STRING)) {
                         pdm.varType = pdm.TYPE_ENUMERATION;
                     } else {
@@ -2650,7 +2650,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                         .eq(
                                         Tables.POINTDATAMETADATA
                                             .COL_COLUMNNAME, pdm
-                                            .columnName)), new String[] {
+                                            .getColumnName())), new String[] {
                                                 Tables.POINTDATAMETADATA
                                                     .COL_VARTYPE }, new String[] {
                                                         pdm.varType });
@@ -2670,8 +2670,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     request.entryUrl(
                         getRepository().URL_ENTRY_SHOW, entry,
                         ARG_POINT_VIEW, VIEW_METADATA, ARG_POINT_CHANGETYPE,
-                        pdm.columnName), type,
-                                         HtmlUtil.title(msg("Change type")));
+                        pdm.getColumnName()), type,
+                            HtmlUtil.title(msg("Change type")));
 
             }
             sb.append(HtmlUtil.row(HtmlUtil.cols(pdm.shortName, pdm.longName,
@@ -2703,7 +2703,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         for (PointDataMetadata pdm : metadata) {
             String  type    = pdm.varType;
             Element colNode = XmlUtil.create("column", root);
-            XmlUtil.create(doc, "id", colNode, "" + pdm.columnNumber, null);
+            XmlUtil.create(doc, "id", colNode, "" + pdm.getColumnNumber(),
+                           null);
             XmlUtil.create(doc, "isbasic", colNode, "" + pdm.isBasic(), null);
             XmlUtil.create(doc, "shortname", colNode, pdm.shortName, null);
             XmlUtil.create(doc, "longname", colNode, pdm.longName, null);
@@ -2820,7 +2821,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 continue;
             }
             sortByList.add(new TwoFacedObject(pdm.formatName(),
-                    pdm.columnName));
+                    pdm.getColumnName()));
         }
 
         int          cnt = Misc.getProperty(getProperties(entry), PROP_CNT,
@@ -2903,18 +2904,19 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                 new TwoFacedObject("=", OP_EQUALS));
 
         for (PointDataMetadata pdm : metadata) {
-            if (pdm.isBasic() && !pdm.columnName.equals(COL_ALTITUDE)) {
+            if (pdm.isBasic() && !pdm.getColumnName().equals(COL_ALTITUDE)) {
                 continue;
             }
             String suffix    = HtmlUtil.space(1) + pdm.formatUnit();
-            String argSuffix = "" + pdm.columnNumber;
+            String argSuffix = "" + pdm.getColumnNumber();
             String label     = pdm.formatName() + ":";
             if (pdm.isEnumeration()) {
                 List values = pdm.enumeratedValues;
                 if (values == null) {
                     Statement stmt = getDatabaseManager().select(
-                                         SqlUtil.distinct(pdm.columnName),
-                                         tableName, (Clause) null);
+                                         SqlUtil.distinct(
+                                             pdm.getColumnName()), tableName,
+                                                 (Clause) null);
                     values = Misc.toList(
                         SqlUtil.readString(
                             getDatabaseManager().getIterator(stmt), 1));
@@ -2973,7 +2975,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (pdm.isBasic()) {
                 //                continue;
             }
-            String  value   = "" + pdm.columnNumber;
+            String  value   = "" + pdm.getColumnNumber();
 
             boolean checked = ((list.size() == 0)
                                ? pdm.isBasic()
@@ -3083,15 +3085,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 getDatabaseManager().getIterator(statement);
             ResultSet results;
             while ((results = iter.getNext()) != null) {
-                    int col = 1;
-                    metadata.add(
-                        new PointDataMetadata(
-                            results.getString(col++),
-                            results.getString(col++), results.getInt(col++),
-                            results.getString(col++),
-                            results.getString(col++),
-                            results.getString(col++),
-                            results.getString(col++)));
+                int col = 1;
+                metadata.add(new PointDataMetadata(results.getString(col++),
+                        results.getString(col++), results.getInt(col++),
+                        results.getString(col++), results.getString(col++),
+                        results.getString(col++), results.getString(col++)));
             }
             if (checkCache && (metadata.size() > 0)) {
                 metadataCache.put(tableName, metadata);
@@ -3307,13 +3305,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         public PointDataMetadata(String tableName, String columnName,
                                  int column, String shortName,
                                  String longName, String unit, String type) {
-            this.tableName    = tableName;
-            this.columnName   = columnName;
-            this.shortName    = shortName;
-            this.longName     = longName;
-            this.columnNumber = column;
-            this.unit         = unit;
-            this.varType      = type;
+            this.tableName = tableName;
+            this.setColumnName(columnName);
+            this.shortName = shortName;
+            this.longName  = longName;
+            this.setColumnNumber(column);
+            this.unit    = unit;
+            this.varType = type;
 
         }
 
@@ -3342,7 +3340,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
          * @return _more_
          */
         public boolean isColumn(String c) {
-            return Misc.equals(columnName, c);
+            return Misc.equals(getColumnName(), c);
         }
 
 
@@ -3413,7 +3411,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         public String toString() {
             //            return columnName + " " + shortName + "  "
             //                   + varType;
-            return columnName;
+            return getColumnName();
         }
 
         /**
@@ -3468,8 +3466,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
          */
         public Object[] getValues() {
             return new Object[] {
-                tableName, columnName, new Integer(columnNumber), shortName,
-                longName, unit, varType
+                tableName, getColumnName(), new Integer(getColumnNumber()),
+                shortName, longName, unit, varType
             };
         }
 
@@ -3516,7 +3514,47 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
          * @return _more_
          */
         public boolean isBasic() {
-            return columnNumber < NUM_BASIC_COLUMNS;
+            return getColumnNumber() < NUM_BASIC_COLUMNS;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param columnNumber _more_
+         */
+        public void setColumnNumber(int columnNumber) {
+            this.columnNumber = columnNumber;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public int getColumnNumber() {
+            return columnNumber;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param columnName _more_
+         */
+        public void setColumnName(String columnName) {
+            this.columnName = columnName;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public String getColumnName() {
+            return columnName;
         }
 
     }
@@ -3584,7 +3622,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
          * @param v _more_
          */
         public void setValue(PointDataMetadata pdm, Object v) {
-            values.put(pdm.columnName, v);
+            values.put(pdm.getColumnName(), v);
         }
 
         /**
@@ -3595,7 +3633,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
          * @return _more_
          */
         public Object getValue(PointDataMetadata pdm) {
-            return getValue(pdm.columnName);
+            return getValue(pdm.getColumnName());
         }
 
         /**
