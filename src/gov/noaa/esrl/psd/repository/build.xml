@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../../../" default="all" name="PSD_Repository">
+
+
+    <target name="init">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property  name="version" value="1.0"/>
+
+
+        <property name="srcdir" value="${basedir}/src"/>
+        <property name="libdir" value="${basedir}/lib"/>
+
+        <property name="distdir" value="${basedir}/dist"/>
+        <mkdir dir="${distdir}"/>
+
+        <property name="releasedir" value="${distdir}/repository" />
+        <property name="tmpjardir" value="${distdir}/tmpjardir" />
+
+        <property  name="build.sysclasspath" value="ignore"/>
+        <property name="geoclasspath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+        <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+        <property name="pluginjar" value="${distdir}/psdrepository.jar"/>
+
+        <property name="compiledir" value="${srcdir}"/>
+        <property name="failonerror" value="true"/>
+        <property name="srcversion" value="1.6"/>
+
+    </target>
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compiledir}/gov" includes="**/*.class"/>
+        </delete>
+        <delete file="${pluginjar}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac
+            classpath="${classpath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+	    fork="true"
+            memoryMaximumSize="512m"
+            target="1.6"
+        >
+        <include name="gov/**/*.java"/>
+    </javac>
+  </target>
+
+
+    <target name="all" depends="clean,compile,plugin">
+    </target>
+
+    <target name="plugin" depends="init" >
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${pluginjar}">
+            <include name="gov/noaa/esrl/psd/**/*.class"/> 
+            <exclude name="gov/noaa/esrl/psd/**/*.java"/> 
+            <include name="gov/noaa/esrl/psd/repository/htdocs/**/*.css"/> 
+            <include name="gov/noaa/esrl/psd/repository/resources/**/*.xml"/> 
+            <include name="gov/noaa/esrl/psd/repository/resources/**/*.html"/> 
+            <include name="gov/noaa/esrl/psd/repository/resources/**/*.jnlp"/> 
+            <include name="gov/noaa/esrl/psd/repository/resources/**/*.properties"/> 
+	    </jar>
+        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+             <fileset file="${pluginjar}"/>
+        </copy>
+    </target>
+
+</project>
