@@ -191,6 +191,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
         double dayValue = 0, lat = 0, lon = 0, alt = 0;
         List<DayValue> dayValues = null;
         boolean packed = false;
+        int wordsize = 0;
         for (int i = 0; i < dataLines.size(); i++) {
             String line = dataLines.get(i);
             //if (line.indexOf(" ") > 6) {
@@ -235,6 +236,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
             dayValues = new ArrayList<DayValue>();
             //String[] tokens = line.split(BLANK_DELIM);
             packed = (line.indexOf(".") < 0);
+            wordsize = (packed) ? 5 : 7;
             int start = 0;
             try {
             if (daily) {
@@ -248,8 +250,8 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
                    buf.append(StringUtil.padLeft(month, 2, "0"));  // month
                    buf.append("-");
                    buf.append(StringUtil.padLeft(""+(day+1), 2, "0")); // day
-                   start = 10 + day*7;
-                   String dayString = line.substring(start, start+7).trim();
+                   start = 10 + day*wordsize;
+                   String dayString = line.substring(start, start+wordsize).trim();
                    if (dayString.equals(MISSING_VALUE) || dayString.equals(MISSING_VALUE2)) {
                 	   dayValue = Double.NaN;
                    } else {
@@ -265,8 +267,8 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
                    buf.append("-");
                    buf.append(StringUtil.padLeft(""+(month+1), 2, "0"));  // month
                    buf.append("-01");
-                   start = 4 + month*7;
-                   String dayString = line.substring(start, start+7).trim();
+                   start = 4 + month*wordsize;
+                   String dayString = line.substring(start, start+wordsize).trim();
                    if (dayString.equals(MISSING_VALUE) || dayString.equals(MISSING_VALUE2)) {
                 	   dayValue = Double.NaN;
                    } else {

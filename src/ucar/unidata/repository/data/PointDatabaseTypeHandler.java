@@ -1037,14 +1037,15 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         if (format.equals(FORMAT_TIMESERIES)) {
             StringBuffer sb = new StringBuffer();
             getHtmlHeader(request, sb, entry, null);
+            /*
             request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_IMAGE);
             String redirectUrl = request.getRequestPath() + "/" + baseName
                                  + ".png" + "?"
                                  + request.getUrlArgs(null,
                                      Misc.newHashtable(OP_LT, OP_LT));
             sb.append(HtmlUtil.img(redirectUrl));
-            /*
-              for amcharts flash
+            */
+            //  for amcharts flash
             if (chartTemplate == null) {
                 chartTemplate = getRepository().getResource(
                     "/ucar/unidata/repository/resources/chart/amline.html");
@@ -1064,7 +1065,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                  Misc.newHashtable(OP_LT, OP_LT));
             html = html.replace("${dataurl}", dataUrl);
             sb.append(html);
-            */
             return new Result("Search Results", sb);
         }
 
