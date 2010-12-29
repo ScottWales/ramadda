@@ -797,7 +797,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         long      t1         = System.currentTimeMillis();
 
         long tt1 = System.currentTimeMillis();
-        for(int i=0;i<200;i++) {
+        //        for(int i=0;i<200;i++) {
 
         PointFeatureIterator pfi = DataOutputHandler.getPointIterator(fdp);
         while (pfi.hasNext()) {
@@ -922,7 +922,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             }
         }
 
-        }
+        //        }
 
         if (batchCnt > 0) {
             insertStmt.executeBatch();
