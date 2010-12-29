@@ -190,6 +190,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
         StationImpl station = null;
         double dayValue = 0, lat = 0, lon = 0, alt = 0;
         List<DayValue> dayValues = null;
+        boolean packed = false;
         for (int i = 0; i < dataLines.size(); i++) {
             String line = dataLines.get(i);
             //if (line.indexOf(" ") > 6) {
@@ -233,6 +234,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
             // parse lines
             dayValues = new ArrayList<DayValue>();
             //String[] tokens = line.split(BLANK_DELIM);
+            packed = (line.indexOf(".") < 0);
             int start = 0;
             try {
             if (daily) {
@@ -252,6 +254,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
                 	   dayValue = Double.NaN;
                    } else {
                       dayValue = Misc.parseDouble(dayString);
+                      if (packed) dayValue /= 10;
                    }
                    dayValues.add(new DayValue(buf.toString(), dayValue));
                 }
@@ -268,6 +271,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
                 	   dayValue = Double.NaN;
                    } else {
                       dayValue = Misc.parseDouble(dayString);
+                      if (packed) dayValue /= 10;
                    }
                    dayValues.add(new DayValue(buf.toString(), dayValue));
                 }
