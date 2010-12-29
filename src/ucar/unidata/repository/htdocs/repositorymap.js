@@ -1,20 +1,65 @@
 
+var mapLayers = null;
+var map_google_terrain = "google.terrain";
+var map_google_streets = "google.streets";
+var map_google_hybrid = "google.hybrid";
+var map_google_satellite = "google.satellite";
+var map_ms_shaded = "ms.shaded";
+var map_ms_hybrid = "ms.hybrid";
+var map_ms_aerial = "ms.aerial";
+var map_yahoo = "yahoo";
+var map_wms_topographic = "wms:Topo Maps,http://terraservice.net/ogcmap.ashx,DRG";
+var map_wms_openlayers = "wms:OpenLayers WMS,http://vmap0.tiles.osgeo.org/wms/vmap0,basic";
+
+var defaultLocation = new OpenLayers.LonLat(-104, 40);
+var defaultZoomLevel = 5;
+
+
+
+
+
+function loadjscssfile(filename, filetype){
+    if (filetype=="js") { 
+        var fileref=document.createElement('script');
+        fileref.setAttribute("type","text/javascript");
+        fileref.setAttribute("src", filename);
+    } else if (filetype=="css") {
+        var fileref=document.createElement("link");
+        fileref.setAttribute("rel", "stylesheet");
+        fileref.setAttribute("type", "text/css");
+        fileref.setAttribute("href", filename);
+    }
+    if (typeof fileref!="undefined") {
+        alert("loading " +filename);
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+    }
+}
+
+
+/*
+var yahooJS= "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers";
+var msJS= "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1";
+var googleJS= "http://maps.google.com/maps/api/js?v=3.2&sensor=false";
+
+loadjscssfile(yahooJS, "js")
+//loadjscssfile(msJS, "js")
+//loadjscssfile(googleJS, "js")
+*/
 
 
 function RepositoryMap (mapId, initialLocation) {
+    var map, layer, markers, boxes, lines;
+
     this.mapDivId = mapId;
     if(!this.mapDivId) {
         this.mapDivId= "map";
     }
     this.initialLocation = initialLocation;
     if(!initialLocation) {
-        initialLocation = new OpenLayers.LonLat(-104, 40);
+        initialLocation = defaultLocation;
     }
-    var zoom = 1;
-    var map, layer, markers, boxes, lines;
 
     this.addWMSLayer  = function(name, url, layer) {
-        //"http://vmap0.tiles.osgeo.org/wms/vmap0"
         var layer = new OpenLayers.Layer.WMS( name, url,
                                                {layers: layer} );
         this.map.addLayer(layer);
@@ -22,43 +67,64 @@ function RepositoryMap (mapId, initialLocation) {
 
 
     this.addBaseLayers = function() {
-        var gphy = new OpenLayers.Layer.Google("Google Physical",  {type: google.maps.MapTypeId.TERRAIN});
-        var gmap = new OpenLayers.Layer.Google("Google Streets",  {numZoomLevels: 20});
-        var ghyb = new OpenLayers.Layer.Google("Google Hybrid",{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20});
-        var gsat = new OpenLayers.Layer.Google("Google Satellite",{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22});
-        //        this.map.addLayers([gphy, gmap, ghyb, gsat]);
+        if(!mapLayers) {
+            mapLayers = [
+                         map_yahoo,
+                         map_wms_openlayers,
+                         map_wms_topographic,
+                         map_ms_shaded,
+                         //map_ms_hybrid,
+                         map_ms_aerial,
+                         map_google_terrain,
+                         //map_google_streets,
+                         map_google_hybrid,
+                         map_google_satellite
+                         ];
+        }
 
-        this.map.addLayer(new OpenLayers.Layer.Yahoo( "Yahoo"));
-        this.addWMSLayer("Topo Maps", "http://terraservice.net/ogcmap.ashx",  "DRG");
-
-
-        var shaded = new OpenLayers.Layer.VirtualEarth("Virtual Earth - Shaded", {
-                type: VEMapStyle.Shaded
-            });
-        var hybrid = new OpenLayers.Layer.VirtualEarth("Virtual Earth - Hybrid", {
-                type: VEMapStyle.Hybrid
-            });
-        var aerial = new OpenLayers.Layer.VirtualEarth("Virtual Earth - Aerial", {
-                type: VEMapStyle.Aerial
-            });
-
-        this.map.addLayers([shaded, hybrid, aerial]);
-
-        var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-                                            "http://vmap0.tiles.osgeo.org/wms/vmap0",
-                                             {layers: 'basic'} );
-
-        this.map.addLayer(wms);
-
+            
+        for (i = 0; i < mapLayers.length; i++) {
+            mapLayer = mapLayers[i];
+            if(mapLayer == map_google_terrain) {
+                this.map.addLayer(new OpenLayers.Layer.Google("Google Terrain",  {type: google.maps.MapTypeId.TERRAIN}));
+            } else if(mapLayer == map_google_streets) {
+                this.map.addLayer(OpenLayers.Layer.Google("Google Streets",  {numZoomLevels: 20}));
+            } else if(mapLayer == map_google_hybrid) {
+                this.map.addLayer(new OpenLayers.Layer.Google("Google Hybrid",{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}));
+            } else if(mapLayer == map_google_satellite) {
+                this.map.addLayer(new OpenLayers.Layer.Google("Google Satellite",{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}));
+            } else if(mapLayer == map_yahoo) {
+                this.map.addLayer(new OpenLayers.Layer.Yahoo( "Yahoo"));
+            } else if(mapLayer == map_ms_shaded) {
+                this.map.addLayer(new OpenLayers.Layer.VirtualEarth("Virtual Earth - Shaded", {
+                            type: VEMapStyle.Shaded
+                        }));
+            } else if(mapLayer == map_ms_hybrid) {
+                this.map.addLayer(OpenLayers.Layer.VirtualEarth("Virtual Earth - Hybrid", {
+                            type: VEMapStyle.Hybrid
+                        }));
+            } else if(mapLayer == map_ms_aerial) {
+                this.map.addLayer(new OpenLayers.Layer.VirtualEarth("Virtual Earth - Aerial", {
+                            type: VEMapStyle.Aerial
+                        }));
+            } else {
+                var match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
+                if(!match) {
+                    alert("no match " + mapLayer);
+                    continue;
+                }
+                this.addWMSLayer(match[1], match[2], match[3]);
+            }
+        }
+            
         this.graticule = new OpenLayers.Control.Graticule({
+                layerName: "Grid",
                 numPoints: 2, 
                 labelled: true,
-                visible: false,
-                layerName: "Grid"
+                visible: false
+
             });
         this.map.addControl(this.graticule);
-
-
     }
 
     this.getMap = function(){
@@ -67,24 +133,68 @@ function RepositoryMap (mapId, initialLocation) {
 
 
     this.initMap = function(forSelection) {
+        var theMap = this;
+        this.name  = "map";
         this.inited = true;
+
         this.map = new OpenLayers.Map( this.mapDivId );
-        //        this.map.fractionalZoom = true;
         this.map.minResolution = 0.0000001;
         this.map.minScale = 0.0000001;
-        //        this.map.numZoomLevels = 32;
+
+        this.vectors = new OpenLayers.Layer.Vector("Drawing");
+        this.map.addLayer(this.vectors);
 
         this.addBaseLayers();
-        this.name  = "map";
-        var theMap = this;
-        this.map.setCenter(initialLocation, zoom);
+        this.map.setCenter(initialLocation, defaultZoomLevel);
         this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
         this.map.addControl( new OpenLayers.Control.MousePosition() );
-        if(forSelection) {
+
+
+        /*
+        var options = {featureAdded:     
+                       function(feature) {
+                           theMap.drawingFeatureAdded(feature);
+                       }
+        }; 
+
+        controls = {
+            point: new OpenLayers.Control.DrawFeature(this.vectors,
+                                                      OpenLayers.Handler.Point, options)
+                        line: new OpenLayers.Control.DrawFeature(this.vectors,
+                                                     OpenLayers.Handler.Path),
+            polygon: new OpenLayers.Control.DrawFeature(this.vectors,
+                                                        OpenLayers.Handler.Polygon),
+                                                        drag: new OpenLayers.Control.DragFeature(this.vectors)
+            
+        };
+       for(var key in controls) {
+            //            this.map.addControl(controls[key]);
+        }
+//        var control = controls["point"];
+//        control.activate();
+        */
+        //        var draw = new OpenLayers.Control.DrawFeature(this.drawingLayer,
+        //                                                      OpenLayers.Handler.Point);
+       if(forSelection) {
             this.addSelectorControl();
         }
     }
 
+    this.initForDrawing = function() {
+        var theMap = this;
+        if(!theMap.drawingLayer) {
+            theMap.drawingLayer = new OpenLayers.Layer.Vector("Drawing");
+            theMap.map.addLayer(theMap.drawingLayer);
+        }
+        theMap.drawControl=    new OpenLayers.Control.DrawFeature(theMap.drawingLayer,
+                                                                  OpenLayers.Handler.Point);
+        //        theMap.drawControl.activate();
+        theMap.map.addControl(theMap.drawControl);
+    }
+
+    this.drawingFeatureAdded = function(feature) {
+        //        alert(feature);
+    }
 
     this.setSelection = function(argBase, absolute) { 
         this.argBase = argBase;
@@ -124,15 +234,18 @@ function RepositoryMap (mapId, initialLocation) {
 
 
 
-
     this.selectionClear = function() {
         if(this.fldNorth) {
             this.fldNorth.obj.value = "";
             this.fldSouth.obj.value = "";
             this.fldWest.obj.value = "";
             this.fldEast.obj.value = "";
+        } else if(this.fldLat) {
+            this.fldLon.obj.value = "";
+            this.fldLat.obj.value = "";
         }
     }
+
 
 
     this.addSelectorControl = function() {
@@ -230,6 +343,15 @@ function RepositoryMap (mapId, initialLocation) {
 
     this.addMarker = function(id, location, iconUrl, text) {
         var theMap = this;
+        if(!theMap.markers) {
+            theMap.markers = new OpenLayers.Layer.Markers("Markers");
+            //Added this because I was getting an unknown method error
+            theMap.markers.getFeatureFromEvent = function(evt) {return null;};
+            theMap.map.addLayer(theMap.markers);
+            var sf = new OpenLayers.Control.SelectFeature(theMap.markers);
+            theMap.map.addControl(sf);
+            sf.activate();
+        }
         if(!iconUrl) {
             iconUrl = 'http://www.openlayers.org/dev/img/marker.png';
         }
@@ -238,40 +360,47 @@ function RepositoryMap (mapId, initialLocation) {
             return new OpenLayers.Pixel(-(size.w/2), -size.h);
         };
         var icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
-        marker = new OpenLayers.Marker(location, icon);
+        var marker = new OpenLayers.Marker(location, icon);
         marker.id = id;
-
-        if(!this.markers) {
-            this.markers = new OpenLayers.Layer.Markers("Markers");
-            this.map.addLayer(this.markers);
-        }
-        this.markers.addMarker(marker);
         marker.text = text;
         marker.location = location;
-        marker.events.register('mousedown', marker, function(evt) { 
-                theMap.showMarkerPopup(this);
+        marker.events.register('click', marker, function(evt) { 
+                theMap.showMarkerPopup(marker);
                 OpenLayers.Event.stop(evt); 
             });
+        theMap.markers.addMarker(marker);
         return marker;
     }
 
 
-
     this.addBox = function(id, north, west, south, east) {
+        var theMap = this;
         if(!this.boxes) {
-            this.boxes = new OpenLayers.Layer.Boxes("Boxes");
-            this.map.addLayer(this.boxes);
-            //            var sf = new OpenLayers.Control.SelectFeature(this.boxes);
-            //            this.map.addControl(sf);
-            //            sf.activate();
+            theMap.boxes = new OpenLayers.Layer.Boxes("Boxes");
+            theMap.map.addLayer(theMap.boxes);
+
+            var t="";
+            for(var key in theMap.boxes) {
+                //                t = t +" " + theMap.boxes[key];
+                t = t +" " + key;
+            }
+            alert(t);
+            //Added this because I was getting an unknown method error
+            theMap.boxes.getFeatureFromEvent = function(evt) {return null;};
+            var sf = new OpenLayers.Control.SelectFeature(theMap.boxes);
+            theMap.map.addControl(sf);
+            sf.activate();
         }
         var bounds = new OpenLayers.Bounds(west, south, east, north);
         box = new OpenLayers.Marker.Box(bounds);
         box.events.register("click", box, function (e) {
+                theMap.showMarkerPopup(box);
+                OpenLayers.Event.stop(evt); 
+                alert("box click");
             });
         box.setBorder("blue");
-        this.boxes.addMarker(box);
         box.id = id;
+        theMap.boxes.addMarker(box);
         return box;
     }
 
@@ -284,8 +413,8 @@ function RepositoryMap (mapId, initialLocation) {
         style_blue.strokeWidth = 3;
 
         if(!this.lines) {
-            layer_style.fillOpacity = 0.2;
-            layer_style.graphicOpacity = 1;
+            //            layer_style.fillOpacity = 0.2;
+            //            layer_style.graphicOpacity = 1;
             //            this.lines = new OpenLayers.Layer.Vector("Lines", {style: layer_style});
             this.lines = new OpenLayers.Layer.PointTrack("Lines", {style: layer_style});
             this.map.addLayer(this.lines);

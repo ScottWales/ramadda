@@ -288,7 +288,7 @@ public class MapOutputHandler extends OutputHandler {
                 js.append(mapVarName+".addMarker(" +
                            qt(entry.getId()) +
                            "," +
-                           newllp(location[0], location[1]) +
+                          llp(location[0], location[1]) +
                            "," +
                            qt(icon)+ 
                            "," +
@@ -325,33 +325,8 @@ public class MapOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     */
+
     public static String llp(double lat, double lon) {
-        if (lat < -90) {
-            lat = -90;
-        }
-        if (lat > 90) {
-            lat = 90;
-        }
-        if (lon < -180) {
-            lon = -180;
-        }
-        if (lon > 180) {
-            lon = 180;
-        }
-        return "new LatLonPoint(" + lat + "," + lon + ")";
-    }
-
-
-
-    public static String newllp(double lat, double lon) {
         if (lat < -90) {
             lat = -90;
         }
