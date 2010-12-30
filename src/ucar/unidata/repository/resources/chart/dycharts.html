@@ -1,7 +1,11 @@
 <script type="text/javascript" src="${urlroot}/chart/dygraph-combined.js"></script>
 
-<h1>${title}</h1>
-<div id="dygraph" style="width:640px; height:480px;"></div>
+<table>
+<tr><td align="center"><h1>${title}</h1></td></tr>
+<tr><td> <div id="dygraph" style="width:640px; height:480px;"></div></td> </tr>
+<tr> <td> <div id="dygraphlabels"></div></td> </tr>
+</table>
+
 <script type="text/javascript">
   g2 = new Dygraph(
     document.getElementById("dygraph"),
@@ -9,7 +13,9 @@
     {
       rollPeriod: 1,
       showRoller: true,
-      errorBars: true
+      labelsDiv: document.getElementById("dygraphlabels")
     }          // options
   );
+  
+  
 </script>
