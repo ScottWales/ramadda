@@ -402,7 +402,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     ContentMetadataHandler.TYPE_ATTACHMENT, true);
             System.err.println("Initializing point database entry:"
                                + entry.getFullName());
-            int cnt = 0;
+            int     cnt     = 0;
             Request request = getRepository().getTmpRequest();
             for (Metadata metadata : metadataList) {
                 File dataFile =
@@ -415,9 +415,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     Connection connection =
                         getDatabaseManager().getConnection();
                     //                    connection.setAutoCommit(false);
-                    createDatabase(request, entry,
-                                   dataFile, entry.getParentEntry(),
-                                   connection);
+                    createDatabase(request, entry, dataFile,
+                                   entry.getParentEntry(), connection);
                     //                    connection.commit();
                     //                    connection.setAutoCommit(true);
                     getDatabaseManager().closeConnection(connection);
@@ -747,6 +746,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param metadata _more_
      * @param fdp _more_
@@ -755,8 +756,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void insertData(Request request,
-                            Entry entry, List<PointDataMetadata> metadata,
+    private void insertData(Request request, Entry entry,
+                            List<PointDataMetadata> metadata,
                             FeatureDatasetPoint fdp, Connection connection,
                             boolean newEntry)
             throws Exception {
@@ -784,9 +785,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                           : entry.getEndDate());
         PreparedStatement insertStmt =
             connection.prepareStatement(insertString);
-        Object[]             values   = new Object[metadata.size()];
-        int                  cnt      = 0;
-        int                  batchCnt = 0;
+        Object[] values   = new Object[metadata.size()];
+        int      cnt      = 0;
+        int      batchCnt = 0;
         GregorianCalendar calendar =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         boolean   didone     = false;
@@ -796,7 +797,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         int       totalCnt   = Misc.getProperty(properties, PROP_CNT, 0);
         long      t1         = System.currentTimeMillis();
 
-        long tt1 = System.currentTimeMillis();
+        long      tt1        = System.currentTimeMillis();
         //        for(int i=0;i<200;i++) {
 
         PointFeatureIterator pfi = DataOutputHandler.getPointIterator(fdp);
@@ -918,7 +919,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 batchCnt = 0;
             }
             if (((++cnt) % 5000) == 0) {
-                System.err.println("added " + cnt + " observations " + (System.currentTimeMillis()-tt1));
+                System.err.println("added " + cnt + " observations "
+                                   + (System.currentTimeMillis() - tt1));
             }
         }
 
@@ -956,12 +958,15 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param file _more_
      *
      * @throws Exception _more_
      */
-    private void loadData(Request request, Entry entry, File file) throws Exception {
+    private void loadData(Request request, Entry entry, File file)
+            throws Exception {
 
         FeatureDatasetPoint fdp = getDataset(entry, entry.getParentEntry(),
                                              file);
@@ -1044,7 +1049,6 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                  + request.getUrlArgs(null,
                                      Misc.newHashtable(OP_LT, OP_LT));
             sb.append(HtmlUtil.img(redirectUrl));
-            */
             //  for amcharts flash
             if (chartTemplate == null) {
                 chartTemplate = getRepository().getResource(
@@ -1056,6 +1060,19 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 chartTemplate = chartTemplate.replace("${urlroot}",
                         getRepository().getUrlBase());
             }
+            */
+
+            //  for dycharts javascript
+            chartTemplate = getRepository().getResource(
+                "/ucar/unidata/repository/resources/chart/dycharts.html");
+            chartTemplate = chartTemplate.replace("${urlroot}",
+                    getRepository().getUrlBase());
+            String title = request.getString(ARG_POINT_TIMESERIES_TITLE,
+                                             entry.getName());
+            if (title.equals("")) {
+                title = entry.getName();
+            }
+            chartTemplate = chartTemplate.replace("${title}", title);
 
             String html = chartTemplate;
             request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_DATA);
@@ -1338,7 +1355,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     pointDataList);
 
         } else if (format.equals(FORMAT_TIMESERIES_DATA)) {
-            return makeSearchResultsTimeSeriesXml(request, entry,
+            return makeSearchResultsTimeSeriesData(request, entry,
                     columnsToUse, pointDataList);
 
         } else if (format.equals(FORMAT_SCATTERPLOT_IMAGE)) {
@@ -2156,6 +2173,25 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         return new Result("", sb, "text/csv");
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param columnsToUse _more_
+     * @param list _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result makeSearchResultsTimeSeriesData(Request request,
+            Entry entry, List<PointDataMetadata> columnsToUse,
+            List<PointData> list)
+            throws Exception {
+        StringBuffer sb = getCsv(columnsToUse, list, FORMAT_TIMESERIES_DATA);
+        return new Result("", sb, "text/csv");
+    }
 
     /**
      * <?xml version="1.0" encoding="UTF-8"?>
@@ -2201,12 +2237,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     private StringBuffer getCsv(List<PointDataMetadata> columnsToUse,
                                 List<PointData> list, String format)
             throws Exception {
-        boolean          addMetadata = format.equals(FORMAT_CSVIDV);
-        boolean          addHeader   = format.equals(FORMAT_CSVHEADER);
-        boolean          xls         = format.equals(FORMAT_XLS);
+        boolean addMetadata = format.equals(FORMAT_CSVIDV);
+        boolean addHeader = format.equals(FORMAT_CSVHEADER)
+                            || format.equals(FORMAT_TIMESERIES_DATA);
+        boolean          xls        = format.equals(FORMAT_XLS);
 
-        String           dateFormat  = "yyyy/MM/dd HH:mm:ss Z";
-        SimpleDateFormat sdf         = new SimpleDateFormat(dateFormat);
+        String           dateFormat = "yyyy/MM/dd HH:mm:ss Z";
+        SimpleDateFormat sdf        = new SimpleDateFormat(dateFormat);
         sdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
         StringBuffer sb    = new StringBuffer();
         String       comma = ", ";

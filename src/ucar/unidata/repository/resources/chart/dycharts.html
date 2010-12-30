@@ -1,0 +1,15 @@
+<script type="text/javascript" src="${urlroot}/chart/dygraph-combined.js"></script>
+
+<h1>${title}</h1>
+<div id="dygraph" style="width:640px; height:480px;"></div>
+<script type="text/javascript">
+  g2 = new Dygraph(
+    document.getElementById("dygraph"),
+    "${dataurl}", // path to CSV file
+    {
+      rollPeriod: 1,
+      showRoller: true,
+      errorBars: true
+    }          // options
+  );
+</script>
