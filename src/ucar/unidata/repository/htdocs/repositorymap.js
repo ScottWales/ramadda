@@ -1,3 +1,7 @@
+/*
+ * Copyright 2010 Jeff McWhirter & ramadda.org
+ */
+
 
 var mapLayers = null;
 var map_google_terrain = "google.terrain";
