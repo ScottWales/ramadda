@@ -1,5 +1,5 @@
 /*
- *  Copyright 1997-2010 Unidata Program Center/University Corporation for
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  * 
@@ -20,7 +20,6 @@
  */
 
 package ucar.unidata.repository;
-
 
 
 import ucar.unidata.repository.database.*;
@@ -3363,7 +3362,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
     }
 
 
-
     /**
      * _more_
      *
@@ -4718,79 +4716,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processListHome(Request request) throws Exception {
-        StringBuffer         sb           = new StringBuffer();
-        List                 links = getListLinks(request, BLANK, false);
-        TypeHandler          typeHandler  = getTypeHandler(request);
-        List<TwoFacedObject> typeList     = new ArrayList<TwoFacedObject>();
-        List<TwoFacedObject> specialTypes = typeHandler.getListTypes(false);
-        if (specialTypes.size() > 0) {
-            sb.append(HtmlUtil.bold(typeHandler.getDescription() + ":"));
-        }
-        typeList.addAll(specialTypes);
-        /*
-          if(typeList.size()>0) {
-          sb.append("<ul>");
-          for(TwoFacedObject tfo: typeList) {
-          sb.append("<li>");
-          sb.append(HtmlUtil.href(request.url(URL_LIST_SHOW,ARG_WHAT, tfo.getId(),ARG_TYPE,,typeHandler.getType()) , tfo.toString())));
-          sb.append("\n");
-          }
-          sb.append("</ul>");
-          }
-          sb.append("<p><b>Basic:</b><ul><li>");
-        */
-        sb.append("<ul><li>");
-        sb.append(StringUtil.join("<li>", links));
-        sb.append("</ul>");
-
-
-        Result result = new Result("Lists", sb);
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getListLinks(request, BLANK, true));
-        return result;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processListShow(Request request) throws Exception {
-        String what   = request.getWhat(WHAT_TYPE);
-        Result result = null;
-        if (what.equals(WHAT_TAG)) {
-            //            result = listTags(request);
-        } else if (what.equals(WHAT_ASSOCIATION)) {
-            result = listAssociations(request);
-        } else if (what.equals(WHAT_TYPE)) {
-            result = listTypes(request);
-        } else {
-            TypeHandler typeHandler = getTypeHandler(request);
-            result = typeHandler.processList(request, what);
-        }
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getListLinks(request, what, true));
-        return result;
-    }
-
-
-
-
 
 
     /**
@@ -4846,10 +4771,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
     public static String header(String h) {
         return HtmlUtil.div(h, HtmlUtil.cssClass("pageheading"));
     }
-
-
-
-
 
 
     /**
@@ -4994,33 +4915,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
         sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
 
     }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processModelProducts(Request request) throws Exception {
-        Date date = request.get(ARG_DATE, new Date());
-        //        System.err.println(date);
-        StringBuffer sb = new StringBuffer();
-        request.remove(ARG_DATE);
-        Hashtable dayLinks = new Hashtable();
-        dayLinks.put("2008/10/2", "");
-        dayLinks.put("2008/10/3", "");
-        createMonthNav(sb, date, request.getUrl(), dayLinks);
-        return new Result("Model Products", sb);
-    }
-
-
-
-
-
 
 
 
@@ -5223,39 +5117,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
         tmp.add(0, "");
         return dataTypeList = tmp;
     }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result listTypes(Request request) throws Exception {
-        List<TypeHandler> tmp = getTypeHandlers(request);
-        return getOutputHandler(request).listTypes(request, tmp);
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result listAssociations(Request request) throws Exception {
-        return getOutputHandler(request).listAssociations(request);
-    }
-
 
 
 
@@ -5472,24 +5333,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
             return dflt;
         }
         return s;
-    }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param tag _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getTagLinks(Request request, String tag) throws Exception {
-        return BLANK;
-
     }
 
 

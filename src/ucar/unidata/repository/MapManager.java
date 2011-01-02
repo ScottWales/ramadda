@@ -52,25 +52,6 @@ import java.util.List;
  */
 public class MapManager extends RepositoryManager {
 
-
-
-
-
-    /** _more_ */
-    private static final String MAP_JS_MICROSOFT =
-        "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1";
-
-    /** _more_ */
-    private static final String MAP_ID_MICROSOFT = "microsoft";
-
-    /** _more_ */
-    private static final String MAP_JS_YAHOO =
-        "http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=idvunidata";
-
-    /** _more_ */
-    private static final String MAP_ID_YAHOO = "yahoo";
-
-
     /**
      * _more_
      *
@@ -85,7 +66,6 @@ public class MapManager extends RepositoryManager {
     public boolean shouldShowMaps() {
         return  getRepository().getProperty(PROP_SHOWMAP, true);
     }
-
 
 
     public void initMap(Request request, String mapVarName,
@@ -115,7 +95,7 @@ public class MapManager extends RepositoryManager {
         }
 
         sb.append(HtmlUtil.div("",
-                               HtmlUtil.style("border:1px; width:" + width
+                               HtmlUtil.style("border:2px #888888 solid; width:" + width
                                    + "px; height:" + height + "px") + " "
                                        + HtmlUtil.id(mapVarName)));
         sb.append("\n");
@@ -135,15 +115,6 @@ public class MapManager extends RepositoryManager {
 
 
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getMapUrl() {
-        return getRepository().getUrlBase() + "/images/maps/caida.jpg";
-    }
 
     /**
      * _more_
@@ -230,10 +201,10 @@ public class MapManager extends RepositoryManager {
                                                       + HtmlUtil.id(arg
                                                           + "_lon"));
         }
+
         if(!shouldShowMaps()) {
             return widget;
         }
-
 
 
         if ((extraLeft != null) && (extraLeft.length() > 0)) {

@@ -538,18 +538,6 @@ public class SearchManager extends RepositoryManager {
             return processEntrySearchForm(request);
         }
 
-        String what = request.getWhat(WHAT_ENTRIES);
-        if ( !what.equals(WHAT_ENTRIES)) {
-            Result result = getRepository().processListShow(request);
-            if (result == null) {
-                throw new IllegalArgumentException("Unknown list request: "
-                        + what);
-            }
-            //  result.putProperty(PROP_NAVSUBLINKS,
-            //                               getSearchFormLinks(request, what));
-            return result;
-        }
-
 
         StringBuffer     searchCriteriaSB = new StringBuffer();
         boolean          searchThis       = true;

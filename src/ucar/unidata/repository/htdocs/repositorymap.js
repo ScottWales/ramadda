@@ -59,8 +59,8 @@ function RepositoryMap (mapId, initialLocation) {
         this.mapDivId= "map";
     }
     this.initialLocation = initialLocation;
-    if(!initialLocation) {
-        initialLocation = defaultLocation;
+    if(!this.initialLocation) {
+        this.initialLocation = defaultLocation;
     }
 
     this.addWMSLayer  = function(name, url, layer) {
@@ -140,19 +140,16 @@ function RepositoryMap (mapId, initialLocation) {
         var theMap = this;
         this.name  = "map";
         this.inited = true;
-
         this.map = new OpenLayers.Map( this.mapDivId );
         this.map.minResolution = 0.0000001;
         this.map.minScale = 0.0000001;
-
         this.vectors = new OpenLayers.Layer.Vector("Drawing");
         this.map.addLayer(this.vectors);
 
         this.addBaseLayers();
-        this.map.setCenter(initialLocation, defaultZoomLevel);
+        this.map.setCenter(this.initialLocation, defaultZoomLevel);
         this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
         this.map.addControl( new OpenLayers.Control.MousePosition() );
-
 
         /*
         var options = {featureAdded:     
@@ -388,7 +385,7 @@ function RepositoryMap (mapId, initialLocation) {
                 //                t = t +" " + theMap.boxes[key];
                 t = t +" " + key;
             }
-            alert(t);
+            //            alert(t);
             //Added this because I was getting an unknown method error
             theMap.boxes.getFeatureFromEvent = function(evt) {return null;};
             var sf = new OpenLayers.Control.SelectFeature(theMap.boxes);

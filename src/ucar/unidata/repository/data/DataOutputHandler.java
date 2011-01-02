@@ -1542,7 +1542,7 @@ public class DataOutputHandler extends OutputHandler {
     public Result outputPointMap(Request request, Entry entry)
             throws Exception {
 
-        String              mapVarName = "mapstraction" + HtmlUtil.blockCnt++;
+        String              mapVarName = "map" + HtmlUtil.blockCnt++;
         String              path       = getPath(entry);
         FeatureDatasetPoint pod        = pointPool.get(path);
 
@@ -1767,7 +1767,7 @@ public class DataOutputHandler extends OutputHandler {
         String               path         = getPath(entry);
         TrajectoryObsDataset tod          = trajectoryPool.get(path);
         StringBuffer         sb           = new StringBuffer();
-        String               mapVarName = "mapstraction"
+        String               mapVarName = "map"
                                           + HtmlUtil.blockCnt++;
         StringBuffer         js           = new StringBuffer();
         List                 trajectories = tod.getTrajectories();
