@@ -21,9 +21,6 @@
 
 package com.infocetera.tableview;
 
-
-import com.infocetera.common.*;
-
 import com.infocetera.util.*;
 
 import java.applet.*;
@@ -434,10 +431,10 @@ public class TableView extends ScrollCanvas implements ItemListener,
      */
     public void actionPerformed(ActionEvent e) {
         try {
+            Container contents = null;
             if (e.getSource() == floatBtn) {
                 //      print ("btn:" + floating);
                 if (floating) {
-                    Container contents = tableViewApplet.contents;
                     floatBtn.setLabel("Float");
                     oldParent.add("Center", contents);
                     floatFrame.dispose();
@@ -446,7 +443,6 @@ public class TableView extends ScrollCanvas implements ItemListener,
                     floating = false;
                 } else {
                     try {
-                        Container contents = tableViewApplet.contents;
                         oldParent = contents.getParent();
                         floatBtn.setLabel("Embed");
                         floatFrame = new Frame();
@@ -619,7 +615,7 @@ public class TableView extends ScrollCanvas implements ItemListener,
      *
      * @param g _more_
      */
-    public void paint(Graphics g) {
+    public void paintIt(Graphics g) {
         if (needLayout) {
             layoutRows();
         }
@@ -653,7 +649,7 @@ public class TableView extends ScrollCanvas implements ItemListener,
      */
     public Image getImage(String url) {
         try {
-            url = tableViewApplet.getUrlPrefix() + url;
+            //            url = tableViewApplet.getUrlPrefix() + url;
             System.err.println(url);
             URL imageUrl = new URL(url);
             return tableViewApplet.getImage(imageUrl);
