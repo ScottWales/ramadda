@@ -176,6 +176,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     public static final String FORMAT_TIMESERIES = "timeseries";
 
     /** _more_ */
+    public static final String FORMAT_TIMESERIES_CHART = "timeseries_chart";
+
+    /** _more_ */
     public static final String FORMAT_TIMESERIES_IMAGE = "timeseries_image";
 
     /** _more_ */
@@ -1039,49 +1042,54 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         boolean redirect = request.get(ARG_POINT_REDIRECT, false);
         request.remove(ARG_POINT_REDIRECT);
         request.remove(ARG_POINT_SEARCH);
-        if (format.equals(FORMAT_TIMESERIES)) {
+        if (format.equals(FORMAT_TIMESERIES)
+                || format.equals(FORMAT_TIMESERIES_CHART)) {
             StringBuffer sb = new StringBuffer();
             getHtmlHeader(request, sb, entry, null);
-            /*
-            request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_IMAGE);
-            String redirectUrl = request.getRequestPath() + "/" + baseName
-                                 + ".png" + "?"
+            if (format.equals(FORMAT_TIMESERIES)) {
+                request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_IMAGE);
+                String redirectUrl = request.getRequestPath() + "/"
+                                     + baseName + ".png" + "?"
+                                     + request.getUrlArgs(null,
+                                         Misc.newHashtable(OP_LT, OP_LT));
+                sb.append(HtmlUtil.img(redirectUrl));
+            } else {
+                /*
+                //  for amcharts flash
+                if (chartTemplate == null) {
+                    chartTemplate = getRepository().getResource(
+                        "/ucar/unidata/repository/resources/chart/amline.html");
+                    chartTemplate = chartTemplate.replace("${urlroot}",
+                            getRepository().getUrlBase());
+                    chartTemplate = chartTemplate.replace("${urlroot}",
+                            getRepository().getUrlBase());
+                    chartTemplate = chartTemplate.replace("${urlroot}",
+                            getRepository().getUrlBase());
+                }
+                */
+
+                //  for dycharts javascript
+                chartTemplate = getRepository().getResource(
+                    "/ucar/unidata/repository/resources/chart/dycharts.html");
+                chartTemplate = chartTemplate.replace("${urlroot}",
+                        getRepository().getUrlBase());
+                String title = request.getString(ARG_POINT_TIMESERIES_TITLE,
+                                   entry.getName());
+                if (title.equals("")) {
+                    title = entry.getName();
+                }
+                chartTemplate = chartTemplate.replace("${title}", title);
+
+                String html = chartTemplate;
+                request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_DATA);
+                String dataUrl = request.getRequestPath() + "/" + baseName
+                                 + ".xml" + "?"
                                  + request.getUrlArgs(null,
                                      Misc.newHashtable(OP_LT, OP_LT));
-            sb.append(HtmlUtil.img(redirectUrl));
-            //  for amcharts flash
-            if (chartTemplate == null) {
-                chartTemplate = getRepository().getResource(
-                    "/ucar/unidata/repository/resources/chart/amline.html");
-                chartTemplate = chartTemplate.replace("${urlroot}",
-                        getRepository().getUrlBase());
-                chartTemplate = chartTemplate.replace("${urlroot}",
-                        getRepository().getUrlBase());
-                chartTemplate = chartTemplate.replace("${urlroot}",
-                        getRepository().getUrlBase());
-            }
-            */
+                html = html.replace("${dataurl}", dataUrl);
 
-            //  for dycharts javascript
-            chartTemplate = getRepository().getResource(
-                "/ucar/unidata/repository/resources/chart/dycharts.html");
-            chartTemplate = chartTemplate.replace("${urlroot}",
-                    getRepository().getUrlBase());
-            String title = request.getString(ARG_POINT_TIMESERIES_TITLE,
-                                             entry.getName());
-            if (title.equals("")) {
-                title = entry.getName();
+                sb.append(html);
             }
-            chartTemplate = chartTemplate.replace("${title}", title);
-
-            String html = chartTemplate;
-            request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_DATA);
-            String dataUrl = request.getRequestPath() + "/" + baseName
-                             + ".xml" + "?"
-                             + request.getUrlArgs(null,
-                                 Misc.newHashtable(OP_LT, OP_LT));
-            html = html.replace("${dataurl}", dataUrl);
-            sb.append(html);
             return new Result("Search Results", sb);
         }
 
@@ -2844,6 +2852,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         List formats = Misc.toList(new Object[] {
             new TwoFacedObject("Html", FORMAT_HTML),
             new TwoFacedObject("Interactive Chart", FORMAT_CHART),
+            new TwoFacedObject("Interactive Time Series",
+                               FORMAT_TIMESERIES_CHART),
             new TwoFacedObject("Time Series Image", FORMAT_TIMESERIES),
             new TwoFacedObject("Map", FORMAT_MAP),
             new TwoFacedObject("Google Earth KML", FORMAT_KML),
