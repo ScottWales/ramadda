@@ -2845,10 +2845,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         basicSB.append(HtmlUtil.formTableClose());
 
 
-
         String max = HtmlUtil.input(ARG_MAX,
                                     request.getString(ARG_MAX, "1000"),
-                                    HtmlUtil.SIZE_5);
+                                    HtmlUtil.SIZE_5+HtmlUtil.id(ARG_MAX));
         List formats = Misc.toList(new Object[] {
             new TwoFacedObject("Html", FORMAT_HTML),
             new TwoFacedObject("Interactive Chart", FORMAT_CHART),
@@ -2890,9 +2889,18 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         outputSB.append(HtmlUtil.formEntry(msgLabel("Format"),
                                            HtmlUtil.select(ARG_POINT_FORMAT,
                                                formats, format)));
+
+        
+        String totalLabel = HtmlUtil.jsLink(HtmlUtil.onMouseClick("clearPointCount();"),cnt +" " + msg("total"),
+                                            HtmlUtil.attr(HtmlUtil.ATTR_ALT,msg("Click to clear count")) +
+                                            HtmlUtil.attr(HtmlUtil.ATTR_TITLE,msg("Click to clear count")));
+
+
+
         outputSB.append(HtmlUtil.formEntry(msgLabel("Max"),
                                            max + HtmlUtil.space(1) + "("
-                                           + cnt + " " + msg("total") + ")"));
+                                           + totalLabel + ")"));
+        outputSB.append(HtmlUtil.script("function clearPointCount() {obj=util.getDomObject('" +ARG_MAX +"');\nif(!obj)return;obj.obj.value='';\n}"));
         List skip = Misc.toList(new Object[] {
             new TwoFacedObject("None", 1),
             new TwoFacedObject("Every other one", 2),
@@ -2943,11 +2951,14 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         advOutputSB.append(HtmlUtil.formTableClose());
 
 
+        /*
         outputSB.append(
             HtmlUtil.formEntry(
                 msgLabel("Settings"),
                 HtmlUtil.makeShowHideBlock(
                     msg("..."), advOutputSB.toString(), false)));
+        */
+
         outputSB.append(HtmlUtil.formTableClose());
 
         StringBuffer extra = new StringBuffer();
@@ -3061,18 +3072,28 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtil.submit(msg("Search"), ARG_POINT_SEARCH));
         sb.append(HtmlUtil.p());
 
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Basic"),
+        sb.append(HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(
+                                                            msgHeader("Select")+
+                                                            basicSB.toString(), 
+                                                            msgHeader("Results") +outputSB.toString()),
+                                              HtmlUtil.attr(HtmlUtil.ATTR_VALIGN,"top")),
+                                 HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,"100%")));
+
+        /*        sb.append(HtmlUtil.makeShowHideBlock(msg("Basic"),
                                              basicSB.toString(), true));
 
         sb.append(HtmlUtil.makeShowHideBlock(msg("Output"),
                                              outputSB.toString(), false));
-
+        */
         sb.append(HtmlUtil.makeShowHideBlock(msg("Advanced Search"),
                                              extra.toString(), false));
 
         sb.append(HtmlUtil.makeShowHideBlock(msg("Parameters"),
                                              params.toString(), false));
 
+        sb.append(HtmlUtil.makeShowHideBlock(
+                                             msg("Settings"),
+                                             advOutputSB.toString(), false));
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Search"), ARG_POINT_SEARCH));
         sb.append(HtmlUtil.formClose());
