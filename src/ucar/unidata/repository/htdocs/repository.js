@@ -50,6 +50,17 @@ function Util () {
 
 
 
+    this.getUrlArg  = function( name ) {
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regexS = "[\\?&]"+name+"=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var results = regex.exec( window.location.href );
+        if( results == null )
+            return null;
+        else
+            return results[1];
+    }
+
     this.setCursor = function(c) {
         var cursor = document.cursor;
         if(!cursor && document.getElementById) {

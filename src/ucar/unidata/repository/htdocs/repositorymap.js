@@ -51,16 +51,16 @@ loadjscssfile(yahooJS, "js")
 */
 
 
-function RepositoryMap (mapId, initialLocation) {
+function RepositoryMap (mapId, params) {
     var map, layer, markers, boxes, lines;
 
     this.mapDivId = mapId;
+    this.initialLocation = defaultLocation;
     if(!this.mapDivId) {
         this.mapDivId= "map";
     }
-    this.initialLocation = initialLocation;
-    if(!this.initialLocation) {
-        this.initialLocation = defaultLocation;
+    for(var key  in params) {
+        this[key] = params[key];
     }
 
     this.addWMSLayer  = function(name, url, layer) {
@@ -69,10 +69,9 @@ function RepositoryMap (mapId, initialLocation) {
         this.map.addLayer(layer);
     }
 
-
     this.addBaseLayers = function() {
-        if(!mapLayers) {
-            mapLayers = [
+        if(!this.mapLayers) {
+            this.mapLayers = [
                          map_yahoo,
                          map_wms_openlayers,
                          map_wms_topographic,
@@ -87,8 +86,8 @@ function RepositoryMap (mapId, initialLocation) {
         }
 
             
-        for (i = 0; i < mapLayers.length; i++) {
-            mapLayer = mapLayers[i];
+        for (i = 0; i < this.mapLayers.length; i++) {
+            mapLayer = this.mapLayers[i];
             if(mapLayer == map_google_terrain) {
                 this.map.addLayer(new OpenLayers.Layer.Google("Google Terrain",  {type: google.maps.MapTypeId.TERRAIN}));
             } else if(mapLayer == map_google_streets) {
@@ -140,7 +139,24 @@ function RepositoryMap (mapId, initialLocation) {
         var theMap = this;
         this.name  = "map";
         this.inited = true;
-        this.map = new OpenLayers.Map( this.mapDivId );
+        var mousecontrols = new OpenLayers.Control.Navigation();
+        var optionsorig = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+            displayProjection: new OpenLayers.Projection("EPSG:4326"),
+            units: "m",
+            maxResolution: 156543.0339,
+            maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+                                             20037508.34, 20037508.34)
+,            controls: [mousecontrols]
+        };
+        var options = {
+            //            projection: new OpenLayers.Projection("EPSG:900913"),
+            //            displayProjection: new OpenLayers.Projection("EPSG:4326")
+        };
+
+
+        //        this.map = new OpenLayers.Map( this.mapDivId, options );
+        this.map = new OpenLayers.Map( this.mapDivId);
         this.map.minResolution = 0.0000001;
         this.map.minScale = 0.0000001;
         this.vectors = new OpenLayers.Layer.Vector("Drawing");
@@ -148,6 +164,7 @@ function RepositoryMap (mapId, initialLocation) {
 
         this.addBaseLayers();
         this.map.setCenter(this.initialLocation, defaultZoomLevel);
+        this.map.addControl(mousecontrols);
         this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
         this.map.addControl( new OpenLayers.Control.MousePosition() );
 
@@ -213,7 +230,7 @@ function RepositoryMap (mapId, initialLocation) {
         if(!this.inited) {
             this.initMap(true);
             if(this.fldNorth) {
-                alert("north = " + this.fldNorth.obj.value);
+                //                alert("north = " + this.fldNorth.obj.value);
                 this.setSelectionBox(this.fldNorth.obj.value,
                                      this.fldWest.obj.value,
                                      this.fldSouth.obj.value,
@@ -397,7 +414,7 @@ function RepositoryMap (mapId, initialLocation) {
         box.events.register("click", box, function (e) {
                 theMap.showMarkerPopup(box);
                 OpenLayers.Event.stop(evt); 
-                alert("box click");
+                //                alert("box click");
             });
         box.setBorder("blue");
         box.id = id;
@@ -457,3 +474,5 @@ function RepositoryMap (mapId, initialLocation) {
     }
 
 }
+
+
