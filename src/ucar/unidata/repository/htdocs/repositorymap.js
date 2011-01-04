@@ -216,17 +216,37 @@ function RepositoryMap (mapId, params) {
         this.argBase = argBase;
         if(util) {
             this.fldNorth= util.getDomObject(this.argBase+"_north");
+            if(!this.fldNorth)  
+                this.fldNorth= util.getDomObject(this.argBase+".north");
             this.fldSouth= util.getDomObject(this.argBase+"_south");
+            if(!this.fldSouth)
+                this.fldSouth= util.getDomObject(this.argBase+".south");
+
             this.fldEast= util.getDomObject(this.argBase+"_east");
+            if(!this.fldEast)
+                this.fldEast= util.getDomObject(this.argBase+".east");
+
             this.fldWest= util.getDomObject(this.argBase+"_west");
+            if(!this.fldWest)
+                this.fldWest= util.getDomObject(this.argBase+".west");
+
             this.fldLat= util.getDomObject(this.argBase+"_lat");
+            if(!this.fldLat) 
+                this.fldLat= util.getDomObject(this.argBase+".lat");
+
             this.fldLon= util.getDomObject(this.argBase+"_lon");
+            if(!this.fldLon) 
+                this.fldLon= util.getDomObject(this.argBase+".lon");
         }
     }
 
     this.selectionPopupInit = function() {
         if(!this.inited) {
             this.initMap(true);
+            if(this.argBase && !this.fldNorth) {
+                this.setSelection(this.argBase);
+            }
+
             if(this.fldNorth) {
                 //                alert("north = " + this.fldNorth.obj.value);
                 this.setSelectionBox(this.fldNorth.obj.value,

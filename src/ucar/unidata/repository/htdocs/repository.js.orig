@@ -1,20 +1,23 @@
 
 var root = "${urlroot}";
+var urlroot = "${urlroot}";
 var icon_close = "${urlroot}/icons/close.gif";
 var icon_rightarrow = "${urlroot}/icons/grayrightarrow.gif";
 
 var icon_downdart ="${urlroot}/icons/downdart.gif";
+//var icon_downdart ="${urlroot}/icons/bullet_arrow_down.png";
 var icon_rightdart ="${urlroot}/icons/rightdart.gif";
 
 var icon_progress = "${urlroot}/icons/progress.gif";
-var icon_information = "${urlroot}/icons/information.png"
+var icon_information = "${urlroot}/icons/information.png";
 var icon_folderclosed = "${urlroot}/icons/folderclosed.png";
 var icon_folderopen = "${urlroot}/icons/togglearrowdown.gif";
+var icon_menuarrow = "${urlroot}/icons/downdart.gif";
+var icon_blank = "${urlroot}/icons/blank.gif";
 
 
 
 function Util () {
-
     this.loadXML = function (url, callback,arg) {
         var req = false;
         if(window.XMLHttpRequest) {
@@ -46,6 +49,17 @@ function Util () {
     }
 
 
+
+    this.getUrlArg  = function( name, dflt ) {
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regexS = "[\\?&]"+name+"=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var results = regex.exec( window.location.href );
+        if( results == null || results=="" )
+            return dflt;
+        else
+            return results[1];
+    }
 
     this.setCursor = function(c) {
         var cursor = document.cursor;
@@ -122,6 +136,11 @@ function Util () {
     }
 
 
+    this.getBottom = function (obj) {
+        if(!obj) return 0;
+        return this.getTop(obj) + obj.offsetHeight;
+    }
+
 
     this.setPosition = function(obj,x,y) {
         obj.style.top = y;
@@ -148,6 +167,24 @@ function Util () {
 }
 
 util = new Util();
+
+
+
+  function HtmlUtil() {
+     this.qt = function (value) {
+        return "'" + value +"'";
+     }
+     this.attr = function(name, value) {
+      return " " + name +"=" + this.qt(value) +" ";
+    }
+    this.input =   function(name, value, attrs) {
+       if(!attrs) attrs = "";
+       return "<input " + attrs + this.attr("name", name) + this.attr("value",value) +"/>";
+    }
+
+  }
+  var htmlUtil = new HtmlUtil();
+
 
 
 
@@ -186,7 +223,6 @@ function DomObject(name) {
 
 function noop() {
 }
-
 
 
 
@@ -417,6 +453,9 @@ function Tooltip () {
         util.print(msg);
     }
     this.keyPressed = function (event) {
+        alert("key")
+        tooltip.doHide();
+        return;
         if(state==STATE_INIT) return;
         c =util.getKeyChar(event);
         if(c == '\r' && state == STATE_TIP) {
@@ -519,7 +558,8 @@ function Tooltip () {
     function handleTooltip(request, obj) {
         var xmlDoc=request.responseXML.documentElement;
         text = getChildText(xmlDoc);
-        obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
+        obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table cellspacing=0 cellpadding=0><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
+        checkTabs(text);
         showObject(obj);
     }
 
@@ -534,6 +574,9 @@ var keyEvent;
 function handleKeyPress(event) {
     keyEvent = event;
     c =util.getKeyChar(event);
+    div = util.getDomObject("tooltipdiv");
+    if(!div) return;
+    hideObject(div);
 }
 
 document.onkeypress = handleKeyPress;
@@ -696,8 +739,12 @@ function initEntryListForm(formId) {
 
 function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
     this.entryId = entryId;
+
     this.onColor = "#FFFFCC";
-    this.overColor = "#f5f5f5";
+    this.overColor = "#f6f6f6";
+    this.overColor = "#edf5ff";
+    this.overColor = "#ffffee";
+    this.overColor = "#f4f4f4";
     this.rowId = rowId;
     this.cbxId = cbxId;
     this.cbxWrapperId = cbxWrapperId;
@@ -740,20 +787,91 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
         }
     }
 
+
     this.mouseOver = function(event) {
+        img = util.getDomObject("entrymenuarrow_" +rowId);
+        if(img) {
+            img.obj.src =  icon_menuarrow;
+        }
+        
         this.row.style.backgroundColor = this.overColor;
-        //        mouseOverOnEntry(event, "", rowId);
-        //        this.row.style.borderBottom =  "1px #888  solid";
+        this.row.style.border =  "1px #ddd  dotted";
     }
 
+    this.mouseClick = function(event) {
+        left = util.getLeft(this.row);
+        eventX = util.getEventX(event);
+        //Don't pick up clicks on the left side
+        if(eventX-left<150) return;
+        var url = "${urlroot}/entry/show?entryid=" + entryId +"&output=metadataxml";
+	util.loadXML( url, this.handleTooltip,this);
+    }
+
+    this.handleTooltip = function(request,entryRow) {
+        var xmlDoc=request.responseXML.documentElement;
+        text = getChildText(xmlDoc);
+        div = util.getDomObject("tooltipdiv");
+        if(!div) return;
+        util.setPosition(obj, util.getLeft(entryRow.row), util.getBottom(entryRow.row));
+
+        div.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</table></div></div>";
+
+        checkTabs(text);
+        showObject(div);
+
+    }
+
+
+
     this.mouseOut = function(event) {
+        img = util.getDomObject("entrymenuarrow_" +rowId);
+        if(img) {
+            img.obj.src =  icon_blank;
+        }
         this.setRowColor();
         //        mouseOutOnEntry(event, "", rowId);
         //        this.row.style.borderBottom =  "1px #fff  solid";
+        this.row.style.border =  "1px #fff  solid";
     }
 }
 
 
+function checkTabs(html) {
+    while(1) {
+        var re = new RegExp("id=\"(tabId[^\"]+)\"");
+        var m = re.exec(html);
+        if(!m) {
+            break;
+        }
+        var s =   m[1];
+        if(s.indexOf("-")<0) {
+            jQuery(function(){
+                    jQuery('#'+ s).tabs();
+                });
+        }
+        var idx = html.indexOf("id=\"tabId");
+        if(idx<0) {
+            break;
+        }
+        html = html.substring(idx+20);
+    }
+}
+
+function xxxcheckTabs(html) {
+    var re = new RegExp("(tabId[0-9]+)");
+    var m = re.exec(html);
+    if (m != null) {
+        var s =   m[m.length-1];
+        jQuery(function(){
+                jQuery('#'+ s).tabs();
+            });
+    }
+}
+
+
+function hideEntryPopup() {
+    hideObject(util.getDomObject("tooltipdiv"));
+}
 
 function findEntryRow(rowId) {
     for(i=0;i<groupList.length;i++) {
@@ -773,6 +891,11 @@ function entryRowOver(rowId) {
 function entryRowOut(rowId) {
     var entryRow = findEntryRow(rowId);
     if(entryRow) entryRow.mouseOut();
+}
+
+function entryRowClick(event,rowId) {
+    var entryRow = findEntryRow(rowId);
+    if(entryRow) entryRow.mouseClick(event);
 }
 
 
@@ -913,7 +1036,6 @@ function  handleFolderList(request, uid) {
         var xmlDoc=request.responseXML.documentElement;
 	var script;
 	var html;
-
 	for(i=0;i<xmlDoc.childNodes.length;i++) {
             var childNode = xmlDoc.childNodes[i];
             if(childNode.tagName=="javascript") {
@@ -928,6 +1050,7 @@ function  handleFolderList(request, uid) {
         }
 	if(html) {
             block.obj.innerHTML = "<div>"+html+"</div>";
+            checkTabs(html);
 	}
 	if(script) {
             eval(script);
@@ -962,8 +1085,9 @@ function scrollObject(id,cnt,lastHeight) {
 
 var selectors = new Array();
 
-function Selector(event, id, allEntries, selecttype) {
+function Selector(event, id, allEntries, selecttype, localeId) {
     this.id = id;
+    this.localeId = localeId;
     this.allEntries = allEntries;
     this.selecttype = selecttype;
     this.textComp = util.getDomObject(id);
@@ -1008,6 +1132,9 @@ function Selector(event, id, allEntries, selecttype) {
     util.setPosition(this.div, x+10,y);
     showObject(this.div);
     url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + id+"&noredirect=true";
+    if(localeId) {
+        url = url+"&localeid=" + localeId;
+    }
     util.loadXML( url, handleSelect,id);
     return false;
 }
@@ -1050,8 +1177,8 @@ function selectCancel() {
 
 
 
-function selectInitialClick(event, id,allEntries,selecttype) {
-    selectors[id] = new Selector(event,id,allEntries,selecttype);
+function selectInitialClick(event, id,allEntries,selecttype, localeId) {
+    selectors[id] = new Selector(event,id,allEntries,selecttype,localeId);
     return false;
 }
 
@@ -1091,12 +1218,26 @@ function toggleVisibility(id,style) {
 
 
 function hide(id) {
+    hideElementById(id);
+}
+
+function hideElementById(id) {
     hideObject(util.getDomObject(id));
 }
 
+function setFormValue(id, value) {
+    var obj = util.getDomObject(id);
+    obj.obj.value   = value;
+}
+
+
+function setHtml(id, html) {
+    var obj = util.getDomObject(id);
+    obj.obj.innerHTML = html;
+}
 
 function showAjaxPopup(event,srcId,url) {
-    util.loadXML( url, handleAjaxPopup,srcId);
+    util.loadXML(url, handleAjaxPopup,srcId);
 }
 
 function handleAjaxPopup(request, srcId) {
@@ -1105,9 +1246,9 @@ function handleAjaxPopup(request, srcId) {
     var srcObj = util.getDomObject(srcId);
     var obj = util.getDomObject("tooltipdiv");
     obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
+    checkTabs(text);
     showObject(obj);
 }
-
 
 
 function showPopup(event, srcId, popupId, alignLeft) {
@@ -1123,7 +1264,6 @@ function showPopup(event, srcId, popupId, alignLeft) {
         y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
     } 
 
-
     if(alignLeft) {
         x = util.getLeft(srcObj.obj);
         y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
@@ -1133,6 +1273,33 @@ function showPopup(event, srcId, popupId, alignLeft) {
     }
 
     popupObject = popup;
+    showObject(popup);
+    util.setPosition(popup, x,y);
+}
+
+
+
+
+function showStickyPopup(event, srcId, popupId, alignLeft) {
+    var popup = util.getDomObject(popupId);
+    var srcObj = util.getDomObject(srcId);
+    if(!popup || !srcObj) return;
+    event = util.getEvent(event);
+    x = util.getEventX(event);
+    y = util.getEventY(event);
+    if(srcObj.obj.offsetLeft && srcObj.obj.offsetWidth) {
+        x = util.getLeft(srcObj.obj);
+        y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
+    } 
+
+    if(alignLeft) {
+        x = util.getLeft(srcObj.obj);
+        y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
+    } else {
+        x+=2;
+        x+=3;
+    }
+
     showObject(popup);
     util.setPosition(popup, x,y);
 }
@@ -1209,6 +1376,15 @@ function toggleVisibilityOnObject(obj, display) {
 
 
 
+function findFormElement(form, id) {
+    var form = document.forms[form];
+    if(form) {
+        if(form[id]) return form[id];
+    }
+    obj = util.getDomObject(id);
+    if(obj) return obj.obj;
+    return null;
+}
 
 
 function selectDate(div,field,id,fmt) {
@@ -1275,7 +1451,7 @@ function toggleTab(mainId) {
             content.style.visibility="hidden";
             content.style.display = "none";
             title.style.backgroundColor=this.offColor;
-            title.style.borderBottom = "1px #dddddd solid";
+            title.style.borderBottom = "1px #000000 solid";
 	}
     }
 }
@@ -1382,54 +1558,51 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
 }
 
 
-var imageDoFirst = 1;
-function editImageClick(event, imgId, pt1x,pt1y,pt2x,pt2y) {
-    var obj = util.getDomObject(imgId);
-    if(obj) {
-	var ex  = util.getEventX(event);
-	var ey  = util.getEventY(event);
-        var  idx =  util.getLeft(obj.obj);
-        var  idy =  util.getTop(obj.obj);
-	var ix = ex-idx;
-	var iy = ey-idy;
 
-	var    fldx1= util.getDomObject(pt1x);
-	var    fldy1= util.getDomObject(pt1y);
-	var    fldx2= util.getDomObject(pt2x);
-	var    fldy2= util.getDomObject(pt2y);
-        var fldx;
-	var fldy;
-	if(imageDoFirst) {
-            imageDoFirst	 =0;
-	    fldx= fldx1;
-	    fldy= fldy1;
-	    fldx2.obj.value	 = ""+0
-            fldy2.obj.value	 = ""+0;
-        } else {
-  	     imageDoFirst = 1;
-	     fldx= fldx2;
-	     fldy= fldy2;
+
+
+var http_request = false;
+function makePOSTRequest(url, parameters) {
+    http_request = false;
+
+    if (window.XMLHttpRequest) { // Mozilla, Safari,...
+        http_request = new XMLHttpRequest();
+        if (http_request.overrideMimeType) {
+            // set type accordingly to anticipated content type
+            //http_request.overrideMimeType('text/xml');
+            http_request.overrideMimeType('text/html');
         }
-	if(fldx) {
-		fldx.obj.value	 = ""+ix;
-		fldy.obj.value	 = ""+iy;
-	}
-	var box = util.getDomObject("image_edit_box");
-	if(box) {
-		var style = util.getStyle(box);
-		style.visibility =  "visible";
-                style.left = idx+parseInt(fldx1.obj.value);
-		style.top =  idy+parseInt(fldy1.obj.value);
-		var x2 = parseInt(fldx2.obj.value);
-		var y2 = parseInt(fldy2.obj.value);
-	        if(x2>0) {
- 	            style.width = x2-parseInt(fldx1.obj.value);
-	            style.height = y2-parseInt(fldy1.obj.value);
-		}  else {
- 	            style.width = 0;
-	            style.height = 0;
-		}
-//		alert(style.top + " " + style.left + " w:" + style.width + " " + style.height);
-	}
+    } else if (window.ActiveXObject) { // IE
+        try {
+            http_request = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e) {
+            try {
+                http_request = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e) {}
+        }
+    }
+    if (!http_request) {
+        alert('Cannot create XMLHTTP instance');
+        return false;
+    }
+      
+    http_request.onreadystatechange = alertContents;
+    http_request.open('POST', url, true);
+    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    http_request.setRequestHeader("Content-length", parameters.length);
+    http_request.setRequestHeader("Connection", "close");
+    http_request.send(parameters);
+}
+
+function alertContents() {
+    if (http_request.readyState == 4) {
+        if (http_request.status == 200) {
+            result = http_request.responseText;
+        } else {
+            alert('There was a problem with the request.');
+        }
     }
 }
+
+
+

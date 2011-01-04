@@ -5540,7 +5540,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
     public String makeStickyPopupDiv(String contents, String compId) {
         StringBuffer menu = new StringBuffer();
         String cLink =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick(HtmlUtil.call("hide",
+            HtmlUtil.jsLink(HtmlUtil.onMouseClick(HtmlUtil.call("hideElementById",
                 HtmlUtil.squote(compId))), HtmlUtil.img(iconUrl(ICON_CLOSE)),
                                            "");
         contents = cLink + HtmlUtil.br() + contents;

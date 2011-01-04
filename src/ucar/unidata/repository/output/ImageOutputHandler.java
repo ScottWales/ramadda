@@ -396,6 +396,8 @@ public class ImageOutputHandler extends OutputHandler {
                              HtmlUtil.squote(ARG_IMAGE_CROPX2),
                              HtmlUtil.squote(ARG_IMAGE_CROPY2));
 
+        sb.append(HtmlUtil.importJS(getRepository().fileUrl("/editimage.js")));
+
         String call = HtmlUtil.onMouseClick(HtmlUtil.call("editImageClick",
                           clickParams));
         sb.append(HtmlUtil.img(url, "", HtmlUtil.id("imgid") + call));
