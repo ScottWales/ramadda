@@ -50,13 +50,13 @@ function Util () {
 
 
 
-    this.getUrlArg  = function( name ) {
+    this.getUrlArg  = function( name, dflt ) {
         name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
         var regexS = "[\\?&]"+name+"=([^&#]*)";
         var regex = new RegExp( regexS );
         var results = regex.exec( window.location.href );
-        if( results == null )
-            return null;
+        if( results == null || results=="" )
+            return dflt;
         else
             return results[1];
     }
@@ -167,6 +167,24 @@ function Util () {
 }
 
 util = new Util();
+
+
+
+  function HtmlUtil() {
+     this.qt = function (value) {
+        return "'" + value +"'";
+     }
+     this.attr = function(name, value) {
+      return " " + name +"=" + this.qt(value) +" ";
+    }
+    this.input =   function(name, value, attrs) {
+       if(!attrs) attrs = "";
+       return "<input " + attrs + this.attr("name", name) + this.attr("value",value) +"/>";
+    }
+
+  }
+  var htmlUtil = new HtmlUtil();
+
 
 
 

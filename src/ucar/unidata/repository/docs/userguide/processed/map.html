@@ -3,7 +3,9 @@
 <head>
    <title>Maps</title>
 </head>
-<body>
+<body onload="createMap();">
+
+<div id="content"></div>
 <div style="height: 500px; border:2px #888888 solid;" id="map"></div>
 
 <link href="/repository/openlayers/theme/default/style.css"  rel="stylesheet"  type="text/css" />
@@ -14,25 +16,106 @@
 <script src="http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1" ></script>
 <script src="http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false" ></script>
 
+
+
 <script type="text/JavaScript" >
-  var lat = util.getUrlArg('lat');
-  var lon = util.getUrlArg('lon');
-  var initLocation = new OpenLayers.LonLat(-104, 40);
-  if(lat && lon) {
-       initLocation = new OpenLayers.LonLat(lon, lat);
-  }
+
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+                defaultHandlerOptions: {
+                    'single': true,
+                    'double': false,
+                    'pixelTolerance': 0,
+                    'stopSingle': false,
+                    'stopDouble': false
+                },
+
+                initialize: function(options) {
+                    this.handlerOptions = OpenLayers.Util.extend(
+                        {}, this.defaultHandlerOptions
+                    );
+                    OpenLayers.Control.prototype.initialize.apply(
+                        this, arguments
+                    ); 
+                    this.handler = new OpenLayers.Handler.Click(
+                        this, {
+                            'click': this.trigger
+                        }, this.handlerOptions
+                    );
+                }, 
+
+                setTheMap: function(map) {
+                    this.theMap = map;
+                },
+
+                trigger: function(e) { 
+                    var lonlat = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
+
+                    lonFld  = util.getDomObject("lonfld");
+                    latFld  = util.getDomObject("latfld");
+                    zoomFld  = util.getDomObject("zoomfld");
+                    if(latFld && lonFld) {
+                      latFld.obj.value = lonlat.lat;
+                      lonFld.obj.value = lonlat.lon;
+                    }
+                    if(zoomFld) {
+                        zoomFld.obj.value = this.theMap.getMap().getZoom();
+                    }
+                }
+
+            });
+
+
+
+
+  function createMap() {
+  var form = "<form method=get action=map.html>" +
+    "Title: " +  htmlUtil.input("title", util.getUrlArg("title", "")) +
+    "  Marker: " +  htmlUtil.input("marker", util.getUrlArg("marker", "")) +
+    "  Lat: " +  htmlUtil.input("lat", util.getUrlArg("lat", ""), htmlUtil.attr("size","8")+ htmlUtil.attr("id","latfld")) +
+    "  Lon: " +  htmlUtil.input("lon", util.getUrlArg("lon", ""), htmlUtil.attr("size","8") + htmlUtil.attr("id","lonfld")) +
+    "  Zoom: " +  htmlUtil.input("zoom", util.getUrlArg("zoom", ""), htmlUtil.attr("size","8") + htmlUtil.attr("id","zoomfld")) +
+    "<input value='View Map' type=submit></form>"
+  content = util.getDomObject('content');
+  content.obj.innerHTML =form;
+
+  var lat = util.getUrlArg('lat', '40');
+  var lon = util.getUrlArg('lon','-105');
+  var initLocation = new OpenLayers.LonLat(lon, lat);
+//  var initLocation = new OpenLayers.LonLat(-107,40);
+//  var map = new RepositoryMap('map');
   var map = new RepositoryMap('map',
-  {'initialLocation': initLocation,
-  'mapLayers': [map_ms_shaded, map_ms_aerial,  map_wms_topographic, map_wms_openlayers]
-}
-);
+  {
+     'initialLocation': initLocation,
+     'xxxmapLayers': [map_ms_shaded, map_ms_aerial,  map_wms_topographic, map_wms_openlayers]
+   }
+  );
+
+
   map.initMap(false);
+  map.name = "Test Repository Map";
+  var click = new OpenLayers.Control.Click();
+  click.name = "Test Click";
+  click.setTheMap(map);
+  map.getMap().addControl(click);
+  click.activate();
+
+
   var zoom = util.getUrlArg('zoom');
   if(zoom) {
       map.getMap().zoomTo(zoom);
   }
+  var title = util.getUrlArg("title", null);
+  if(title) {
+      document.title = title;
+  }
+  var marker = util.getUrlArg("marker", null);
+  if(marker) {
+      map.addMarker("marker", initLocation, null, marker);
+  }
+}
 
-  map.addMarker("marker", initLocation, null,"here");
+
+
 </script>
 
 </body>

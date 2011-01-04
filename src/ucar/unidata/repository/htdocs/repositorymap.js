@@ -153,8 +153,6 @@ function RepositoryMap (mapId, params) {
             //            projection: new OpenLayers.Projection("EPSG:900913"),
             //            displayProjection: new OpenLayers.Projection("EPSG:4326")
         };
-
-
         //        this.map = new OpenLayers.Map( this.mapDivId, options );
         this.map = new OpenLayers.Map( this.mapDivId);
         this.map.minResolution = 0.0000001;
