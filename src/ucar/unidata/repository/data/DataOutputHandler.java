@@ -21,9 +21,6 @@
 package ucar.unidata.repository.data;
 
 
-
-import thredds.server.ncSubset.GridPointWriter;
-import thredds.server.ncSubset.QueryParams;
 import opendap.dap.DAP2Exception;
 
 
@@ -33,7 +30,18 @@ import opendap.dap.parser.ParseException;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
+//import ucar.nc2.dt.PointObsDataset;
+//import ucar.nc2.dt.PointObsDatatype;
+
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.*;
+
 import org.w3c.dom.*;
+
+
+
+import thredds.server.ncSubset.GridPointWriter;
+import thredds.server.ncSubset.QueryParams;
 
 import thredds.server.opendap.GuardedDatasetImpl;
 
@@ -58,17 +66,11 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dt.GridDatatype;
-
-//import ucar.nc2.dt.PointObsDataset;
-//import ucar.nc2.dt.PointObsDatatype;
-
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.*;
 
 
 
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.TypedDatasetFactory;
@@ -125,11 +127,11 @@ import java.net.*;
 
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -529,9 +531,10 @@ public class DataOutputHandler extends OutputHandler {
         nj22Dir.setMaxFiles(500);
 
         // Apply settings for the NetcdfDataset
-        ucar.nc2.dataset.NetcdfDataset.setHttpClient(getRepository().getHttpClient());
-     
-       
+        ucar.nc2.dataset.NetcdfDataset.setHttpClient(
+            getRepository().getHttpClient());
+
+
         // Apply settings for the opendap.dap
         opendap.dap.DConnect2.setHttpClient(getRepository().getHttpClient());
 
@@ -1076,7 +1079,7 @@ public class DataOutputHandler extends OutputHandler {
                 sb.append(getRepository().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
-                                                                              request, entry, false, false));
+                        request, entry, false, false));
 
             } else {
                 sb.append("You cannot add properties");
@@ -1243,15 +1246,14 @@ public class DataOutputHandler extends OutputHandler {
             //            System.err.println(varNames);
             LatLonPointImpl llp = null;
             if (request.get(ARG_SUBSETLOCATION, true)) {
-                llp =  new LatLonPointImpl(
-                        request.get(ARG_LOCATION_LATITUDE, 40.0), request.get(
-                            ARG_LOCATION_LONGITUDE, -105.0));
+                llp = new LatLonPointImpl(request.get(ARG_LOCATION_LATITUDE,
+                        40.0), request.get(ARG_LOCATION_LONGITUDE, -105.0));
             }
-            int     timeStride    = 1;
-            Date[]  dates = new Date[] { request.get(ARG_SUBSETTIME, false)
-                                         ? request.getDate(ARG_FROMDATE, null)
-                                         : null, request.get(ARG_SUBSETTIME,
-                                             false)
+            int    timeStride = 1;
+            Date[] dates = new Date[] { request.get(ARG_SUBSETTIME, false)
+                                        ? request.getDate(ARG_FROMDATE, null)
+                                        : null, request.get(ARG_SUBSETTIME,
+                                            false)
                     ? request.getDate(ARG_TODATE, null)
                     : null };
             if ((dates[0] != null) && (dates[1] != null)
@@ -1264,24 +1266,39 @@ public class DataOutputHandler extends OutputHandler {
                     getRepository().showDialogWarning(
                         "No variables selected"));
             } else {
-            	
+
                 GridDataset gds = gridPool.get(path);
                 //                System.err.println ("varNames:" + varNames);
 
-                GridPointWriter writer = 
-                	new GridPointWriter(gds, new DiskCache2(getRepository().getStorageManager().getTmpDir().toString(), false, 0, 0));
+                GridPointWriter writer =
+                    new GridPointWriter(gds,
+                                        new DiskCache2(getRepository()
+                                            .getStorageManager().getTmpDir()
+                                            .toString(), false, 0, 0));
                 QueryParams qp = new QueryParams();
-                qp.acceptType = QueryParams.NETCDF;
+                qp.acceptType     = QueryParams.NETCDF;
 
-                qp.vars = varNames;
+                qp.vars           = varNames;
 
                 qp.hasLatlonPoint = true;
-                qp.lat = llp.getLatitude();
-                qp.lon = llp.getLongitude();
+                qp.lat            = llp.getLatitude();
+                qp.lon            = llp.getLongitude();
+
+                if (dates[0] != null) {
+                    qp.time_start = new DateType(false, dates[0]);
+                    if (dates[1] != null) {
+                        qp.time_end     = new DateType(false, dates[1]);
+                        qp.hasDateRange = true;
+                    } else {
+                        qp.hasTimePoint = true;
+                        qp.hasDateRange = false;
+                        qp.time         = qp.time_start;
+                    }
+                }
 
                 PrintWriter pw = new PrintWriter(System.out);
 
-                File f = writer.write(qp, pw);
+                File        f  = writer.write(qp, pw);
 
                 gridPool.put(path, gds);
 
@@ -1326,7 +1343,7 @@ public class DataOutputHandler extends OutputHandler {
             }
         }
 
-        String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
+        String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
                           + "_point.nc";
 
@@ -1362,28 +1379,30 @@ public class DataOutputHandler extends OutputHandler {
                                          */
 
 
-        Date[]       dateRange = null;
-        List<Date>   dates     = null;
+        Date[]             dateRange = null;
+        List<Date>         dates     = null;
 
-        GridDataset  dataset   = gridPool.get(path);
-        List<GridDatatype> grids = dataset.getGrids();
-        
-        StringBuffer varSB     = new StringBuffer();
-        HashSet<Date> dateHash = new HashSet<Date>();
-        List<CoordinateAxis1DTime> timeAxes = new ArrayList<CoordinateAxis1DTime>();
+        GridDataset        dataset   = gridPool.get(path);
+        List<GridDatatype> grids     = dataset.getGrids();
+
+        StringBuffer       varSB     = new StringBuffer();
+        HashSet<Date>      dateHash  = new HashSet<Date>();
+        List<CoordinateAxis1DTime> timeAxes =
+            new ArrayList<CoordinateAxis1DTime>();
 
         for (GridDatatype grid : grids) {
-          GridCoordSystem gcs = grid.getCoordinateSystem();
-          CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-          if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
-            timeAxes.add(timeAxis);
+            GridCoordSystem      gcs      = grid.getCoordinateSystem();
+            CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
+            if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
+                timeAxes.add(timeAxis);
 
-            Date[] timeDates = timeAxis.getTimeDates();
-            for (Date timeDate : timeDates)
-              dateHash.add(timeDate);
-          }
+                Date[] timeDates = timeAxis.getTimeDates();
+                for (Date timeDate : timeDates) {
+                    dateHash.add(timeDate);
+                }
+            }
         }
-        dates = Arrays.asList( dateHash.toArray(new Date[dateHash.size()]));
+        dates = Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
         Collections.sort(dates);
         /*
         for (VariableSimpleIF var : dataset.getDataVariables()) {
@@ -1432,6 +1451,38 @@ public class DataOutputHandler extends OutputHandler {
 
         }
 
+        LatLonRect llr = dataset.getBoundingBox();
+        String     lat = "";
+        String     lon = "";
+        if (llr != null) {
+            lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
+            lon = Misc.format(llr.getCenterLon());
+        }
+        //String llb =
+        //  getRepository().getMapManager().makeMapSelector(ARG_LOCATION, true, new String[]{ "", ""});
+        String llb = " Latitude: "
+                     + HtmlUtil.input(
+                         ARG_LOCATION_LATITUDE, lat,
+                         HtmlUtil.SIZE_5 + " "
+                         + HtmlUtil.id(
+                             ARG_LOCATION_LATITUDE)) + " Longitude: "
+                                 + HtmlUtil.input(
+                                     ARG_LOCATION_LONGITUDE, lon,
+                                     HtmlUtil.SIZE_5 + " "
+                                     + HtmlUtil.id(ARG_LOCATION_LONGITUDE));
+
+        sb.append(
+            HtmlUtil.formEntryTop(
+                msgLabel("Choose Point"),
+                "<table cellpadding=0 cellspacing=0><tr valign=top><td>"
+        /*
+        + HtmlUtil.checkbox(
+            ARG_SUBSETLOCATION, HtmlUtil.VALUE_TRUE,
+            request.get(ARG_SUBSETLOCATION, true)) + "</td><td>"
+        */
+        + llb + "</td></tr></table>"));
+        //}
+
         if ((dates != null) && (dates.size() > 0)) {
             List formattedDates = new ArrayList();
             for (Date date : dates) {
@@ -1448,7 +1499,7 @@ public class DataOutputHandler extends OutputHandler {
                     msgLabel("Time Range"),
                     HtmlUtil.checkbox(
                         ARG_SUBSETTIME, HtmlUtil.VALUE_TRUE,
-                        request.get(ARG_SUBSETTIME, true)) + HtmlUtil.space(
+                        request.get(ARG_SUBSETTIME, false)) + HtmlUtil.space(
                             1) + HtmlUtil.select(
                             ARG_FROMDATE, formattedDates,
                             fromDate) + HtmlUtil.img(iconUrl(ICON_ARROW))
@@ -1456,28 +1507,6 @@ public class DataOutputHandler extends OutputHandler {
                                           ARG_TODATE, formattedDates,
                                           toDate)));
         }
-
-        //LatLonRect llr = dataset.getBoundingBox();
-        //if (llr != null) {
-            //String llb =
-            //  getRepository().getMapManager().makeMapSelector(ARG_LOCATION, true, new String[]{ "", ""});
-            String llb = " Lat: "
-                + HtmlUtil.input(ARG_LOCATION_LATITUDE, "",
-                                 HtmlUtil.SIZE_5 + " "
-                                 + HtmlUtil.id(ARG_LOCATION_LATITUDE)) + " Lon: "
-                                     + HtmlUtil.input(ARG_LOCATION_LONGITUDE, "",
-                                             HtmlUtil.SIZE_5 + " "
-                                                 + HtmlUtil.id(ARG_LOCATION_LONGITUDE));
-
-            sb.append(
-                HtmlUtil.formEntryTop(
-                    msgLabel("Select Point"),
-                    "<table cellpadding=0 cellspacing=0><tr valign=top><td>"
-                    + HtmlUtil.checkbox(
-                        ARG_SUBSETLOCATION, HtmlUtil.VALUE_TRUE,
-                        request.get(ARG_SUBSETLOCATION, true)) + "</td><td>"
-                            + llb + "</table>"));
-        //}
 
         sb.append("</table>");
         sb.append("<hr>");
@@ -1488,6 +1517,7 @@ public class DataOutputHandler extends OutputHandler {
         sb.append("</ul>");
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.submit("Get Point"));
+        //sb.append(submitExtra);
         sb.append(HtmlUtil.formClose());
         gridPool.put(path, dataset);
         return makeLinksResult(request, msg("Grid As Point"), sb,
@@ -1740,9 +1770,10 @@ public class DataOutputHandler extends OutputHandler {
         if (llr != null) {
             String llb =
                 getRepository().getMapManager().makeMapSelector(ARG_AREA,
-                                                                true, new String[]{
-                                                                    "" + llr.getLatMin(), "" + llr.getLatMax(),
-                                                                    "" + llr.getLonMax(), "" + llr.getLonMin()});
+                    true, new String[] { "" + llr.getLatMin(),
+                                         "" + llr.getLatMax(),
+                                         "" + llr.getLonMax(),
+                                         "" + llr.getLonMin() });
 
             sb.append(
                 HtmlUtil.formEntryTop(
@@ -2078,8 +2109,7 @@ public class DataOutputHandler extends OutputHandler {
         String               path         = getPath(entry);
         TrajectoryObsDataset tod          = trajectoryPool.get(path);
         StringBuffer         sb           = new StringBuffer();
-        String               mapVarName = "map"
-                                          + HtmlUtil.blockCnt++;
+        String               mapVarName   = "map" + HtmlUtil.blockCnt++;
         StringBuffer         js           = new StringBuffer();
         List                 trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
@@ -2112,7 +2142,7 @@ public class DataOutputHandler extends OutputHandler {
                     markerSB.append("initMarker(startMarker,\"startMarker\","
                                     + mapVarName + ");\n");
                 }
-               js.append(MapOutputHandler.llp(lats[ptIdx], lons[ptIdx]));
+                js.append(MapOutputHandler.llp(lats[ptIdx], lons[ptIdx]));
             }
             js.append("]);\n");
             js.append("line.setWidth(2);\n");
@@ -2415,7 +2445,7 @@ public class DataOutputHandler extends OutputHandler {
                 || outputType.equals(OUTPUT_GRIDSUBSET_FORM)) {
             return outputGridSubset(request, entry);
         }
-        
+
         if (outputType.equals(OUTPUT_GRIDASPOINT)
                 || outputType.equals(OUTPUT_GRIDASPOINT_FORM)) {
             return outputGridAsPoint(request, entry);
@@ -2527,8 +2557,7 @@ public class DataOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
 
-    public Result outputOpendap(final Request request,
-                                             final Entry entry)
+    public Result outputOpendap(final Request request, final Entry entry)
             throws Exception {
         //jeffmc: this used to be synchronized and I just don't know why
         //whether there was a critical section here or what
