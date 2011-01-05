@@ -20,49 +20,6 @@
 
 <script type="text/JavaScript" >
 
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
-                defaultHandlerOptions: {
-                    'single': true,
-                    'double': false,
-                    'pixelTolerance': 0,
-                    'stopSingle': false,
-                    'stopDouble': false
-                },
-
-                initialize: function(options) {
-                    this.handlerOptions = OpenLayers.Util.extend(
-                        {}, this.defaultHandlerOptions
-                    );
-                    OpenLayers.Control.prototype.initialize.apply(
-                        this, arguments
-                    ); 
-                    this.handler = new OpenLayers.Handler.Click(
-                        this, {
-                            'click': this.trigger
-                        }, this.handlerOptions
-                    );
-                }, 
-
-                setTheMap: function(map) {
-                    this.theMap = map;
-                },
-
-                trigger: function(e) { 
-                    var lonlat = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
-
-                    lonFld  = util.getDomObject("lonfld");
-                    latFld  = util.getDomObject("latfld");
-                    zoomFld  = util.getDomObject("zoomfld");
-                    if(latFld && lonFld) {
-                      latFld.obj.value = lonlat.lat;
-                      lonFld.obj.value = lonlat.lon;
-                    }
-                    if(zoomFld) {
-                        zoomFld.obj.value = this.theMap.getMap().getZoom();
-                    }
-                }
-
-            });
 
 
 
@@ -93,12 +50,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
   map.initMap(false);
   map.name = "Test Repository Map";
-  var click = new OpenLayers.Control.Click();
-  click.name = "Test Click";
-  click.setTheMap(map);
-  map.getMap().addControl(click);
-  click.activate();
 
+  map.addClickHandler("lonfld", "latfld", "zoomfld");
 
   var zoom = util.getUrlArg('zoom');
   if(zoom) {

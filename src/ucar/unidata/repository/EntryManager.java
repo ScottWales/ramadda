@@ -4345,7 +4345,7 @@ return new Result(title, sb);
             }
             sb.append(HtmlUtil.space(1));
             sb.append("</div></td><td><div  class=\"menutd\">");
-            sb.append(HtmlUtil.href(link.getUrl(), link.getLabel(),
+            sb.append(HtmlUtil.href(link.getUrl(),msg(link.getLabel()),
                                     HtmlUtil.cssClass("menulink")));
             sb.append("</div></td></tr>");
         }

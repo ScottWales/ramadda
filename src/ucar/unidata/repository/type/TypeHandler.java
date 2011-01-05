@@ -1215,7 +1215,7 @@ public class TypeHandler extends RepositoryManager {
             links.add(
                 new Link(
                     request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
-                    getRepository().iconUrl(ICON_EDIT), msg("Edit Entry"),
+                    getRepository().iconUrl(ICON_EDIT), "Edit Entry",
                     OutputType.TYPE_EDIT | OutputType.TYPE_TOOLBAR));
 
             if (getEntryManager().isAnonymousUpload(entry)) {
@@ -1224,7 +1224,7 @@ public class TypeHandler extends RepositoryManager {
                         request.entryUrl(
                             getRepository().URL_ENTRY_CHANGE, entry,
                             ARG_JUSTPUBLISH, "true"), getRepository().iconUrl(
-                                ICON_PUBLISH), msg("Make Entry Public"),
+                                ICON_PUBLISH), "Make Entry Public",
                                     OutputType.TYPE_EDIT
                                     | OutputType.TYPE_TOOLBAR));
             }
@@ -1234,18 +1234,18 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_FORM,
                         entry), getRepository().iconUrl(ICON_METADATA_EDIT),
-                                msg("Edit Properties"),
+                                "Edit Properties",
                                 OutputType.TYPE_EDIT));
             links.add(
                 new Link(
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_ADDFORM,
                         entry), getRepository().iconUrl(ICON_METADATA_ADD),
-                                msg("Add property"), OutputType.TYPE_EDIT));
+                                "Add property", OutputType.TYPE_EDIT));
             links.add(
                 new Link(
                     request.entryUrl(getRepository().URL_ACCESS_FORM, entry),
-                    getRepository().iconUrl(ICON_ACCESS), msg("Access"),
+                    getRepository().iconUrl(ICON_ACCESS),"Access",
                     OutputType.TYPE_EDIT));
 
         }
@@ -1257,7 +1257,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_ENTRY_DELETE,
                         entry), getRepository().iconUrl(ICON_DELETE),
-                                msg("Delete Entry"),
+                                "Delete Entry",
                                 OutputType.TYPE_EDIT
                                 | OutputType.TYPE_TOOLBAR));
 
@@ -1273,7 +1273,7 @@ public class TypeHandler extends RepositoryManager {
             new Link(
                 request.entryUrl(getRepository().URL_COMMENTS_SHOW, entry),
                 getRepository().iconUrl(ICON_COMMENTS),
-                msg("Add/View Comments"),
+                "Add/View Comments",
                 OutputType.TYPE_EDIT | OutputType.TYPE_TOOLBAR));
 
         if ((request.getUser() != null)
@@ -1283,7 +1283,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_ENTRY_COPY, entry,
                         ARG_FROM), getRepository().iconUrl(ICON_MOVE),
-                                   msg("Copy/Move Entry"),
+                                   "Copy/Move Entry",
                                    OutputType.TYPE_EDIT
                                    | OutputType.TYPE_TOOLBAR));
         }
@@ -1976,7 +1976,8 @@ public class TypeHandler extends RepositoryManager {
         boolean showUrl       = (forUpload
                                  ? false
                                  : okToShowInForm(ARG_URL));
-        if (okToShowInForm(ARG_RESOURCE)) {
+        boolean showResourceForm =  okToShowInForm(ARG_RESOURCE);
+        if (showResourceForm) {
             boolean showDownload  =okToShowInForm(ARG_RESOURCE_DOWNLOAD);
             List<String> tabTitles  = new ArrayList<String>();
             List<String> tabContent = new ArrayList<String>();

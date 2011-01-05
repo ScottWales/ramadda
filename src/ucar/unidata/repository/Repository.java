@@ -298,11 +298,20 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
 
     /** _more_ */
-    private Hashtable languageMap = new Hashtable();
+    private Hashtable<String,Properties> languageMap = new Hashtable<String,Properties>();
 
     /** _more_ */
     private List<TwoFacedObject> languages = new ArrayList<TwoFacedObject>();
 
+
+    /** _more_ */
+    private HashSet<String> seenMsg = new HashSet<String>();
+
+    /** _more_ */
+    private boolean trackMsg = false;
+
+    private PrintWriter allMsgOutput;
+    private PrintWriter missingMsgOutput;
 
     private Date startTime = new Date();
 
@@ -1618,7 +1627,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         List sourcePaths =
             Misc.newList(
                 getStorageManager().getSystemResourcePath() + "/languages",
-                getStorageManager().getRepositoryDir().toString());
+                getStorageManager().getPluginsDir().toString());
         for (int i = 0; i < sourcePaths.size(); i++) {
             String       dir     = (String) sourcePaths.get(i);
             List<String> listing = IOUtil.getListing(dir, getClass());
@@ -1632,9 +1641,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 if (content == null) {
                     continue;
                 }
-
-
-
                 Object[]   result     = parsePhrases(content);
                 String     type       = (String) result[0];
                 String     name       = (String) result[1];
@@ -1678,17 +1684,18 @@ public class Repository extends RepositoryBase implements RequestHandler {
             if (line.startsWith("#")) {
                 continue;
             }
-            List toks = StringUtil.split(line, "=", true, true);
+            List<String> toks = StringUtil.split(line, "=", true, true);
             if (toks.size() != 2) {
                 continue;
             }
-            String key   = (String) toks.get(0);
-            String value = (String) toks.get(1);
+            String key   =  toks.get(0).trim();
+            String value =  toks.get(1).trim();
             if (key.equals("language.type")) {
                 type = value;
             } else if (key.equals("language.name")) {
                 name = value;
             } else {
+                if(value.length()==0) continue;
                 phrases.put(key, value);
             }
         }
@@ -3270,11 +3277,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
     }
 
 
-    /** _more_ */
-    private Hashtable seenMsg = new Hashtable();
-
-    /** _more_ */
-    private boolean trackMsg = false;
 
 
     /**
@@ -3341,19 +3343,33 @@ public class Repository extends RepositoryBase implements RequestHandler {
                     "No closing message suffix:" + s);
             }
             String key   = s.substring(prefixLength - 1, idx2);
-
             String value = null;
             if (map != null) {
                 value = (String) map.get(key);
             }
+            if (trackMsg) {
+                try {
+                    if(allMsgOutput==null) {
+                        allMsgOutput = new PrintWriter(new FileOutputStream("allmessages.pack"));
+                        missingMsgOutput = new PrintWriter(new FileOutputStream("missingmessages.pack"));
+                    }
+                    if (!seenMsg.contains(key)) {
+                        allMsgOutput.println(key + "=");
+                        allMsgOutput.flush();
+                        if(value==null) {
+                            missingMsgOutput.println(key + "=");
+                            missingMsgOutput.flush();
+                        }
+                        seenMsg.add(key);
+                    }
+                } catch(Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+
+
             if (value == null) {
                 value = key;
-                if (trackMsg) {
-                    if (seenMsg.get(key) == null) {
-                        System.out.println(key + "=" + value);
-                        seenMsg.put(key, key);
-                    }
-                }
             }
             stripped.append(value);
             s = s.substring(idx2 + suffixLength);
@@ -4072,7 +4088,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                        "Any file type"));
         addTypeHandler(TypeHandler.TYPE_GROUP,
                        groupTypeHandler = new GroupTypeHandler(this));
-        groupTypeHandler.putProperty("form.show." + ARG_RESOURCE, "false");
+        groupTypeHandler.putProperty("form.resource.show", "false");
         groupTypeHandler.putProperty("icon", ICON_FOLDER);
         TypeHandler typeHandler;
         addTypeHandler(TypeHandler.TYPE_FILE,
@@ -4730,7 +4746,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
             return null;
         }
         if (msg.indexOf(MSG_PREFIX) >= 0) {
-            throw new IllegalArgumentException("bad msg:" + msg);
+            System.err.println("bad msg:" + msg+"\n" + LogUtil.getStackTrace());
+            //            throw new IllegalArgumentException("bad msg:" + msg);
+            return msg;
+
         }
         return MSG_PREFIX + msg + MSG_SUFFIX;
     }

@@ -181,26 +181,32 @@ public class MapManager extends RepositoryManager {
                                   double[][]markerLatLons) {
 
         StringBuffer sb = new StringBuffer();
-        String msg = HtmlUtil.italics(msg("Shift-drag to select region"));
-        sb.append(msg);
-        sb.append(HtmlUtil.br());
         String       widget;
+        boolean doRegion = true;
         if (snew==null) {
             widget = HtmlUtil.makeLatLonBox(arg, "","","","");
         } else if (snew.length == 4) {
             widget = HtmlUtil.makeLatLonBox(arg, snew[0], snew[1], snew[2],
                                             snew[3]);
         } else {
-            widget = " Lat: "
-                     + HtmlUtil.input(arg + "_lat", snew[0],
+            doRegion = false;
+            widget = " Latitude: "
+                     + HtmlUtil.input(arg + ".latitude", snew[0],
                                       HtmlUtil.SIZE_5 + " "
-                                      + HtmlUtil.id(arg + "_lat")) + " Lon: "
-                                          + HtmlUtil.input(arg + "_lon",
+                                      + HtmlUtil.id(arg + ".latitude")) + " Longitude: "
+                                          + HtmlUtil.input(arg + ".longitude",
                                               snew[1],
                                                   HtmlUtil.SIZE_5 + " "
                                                       + HtmlUtil.id(arg
-                                                          + "_lon"));
+                                                          + ".longitude"))+" ";
         }
+
+        String msg = HtmlUtil.italics(doRegion?
+                                      msg("Shift-drag to select region"):
+                                      msg("Click to select point"));
+        sb.append(msg);
+        sb.append(HtmlUtil.br());
+
 
         if(!shouldShowMaps()) {
             return widget;
@@ -216,10 +222,10 @@ public class MapManager extends RepositoryManager {
         String rightSide = null;
         String clearLink = HtmlUtil.mouseClickHref(mapVarName + ".selectionClear();",
                                msg("Clear"));
-        String initParams = HtmlUtil.squote(arg) + "," + (popup
+        String initParams = HtmlUtil.squote(arg) + "," + doRegion +"," +
+            (popup
                 ? "1"
                 : "0");
-
 
         try {
             initMap(getRepository().getTmpRequest(), mapVarName, sb, 500, 300,true);

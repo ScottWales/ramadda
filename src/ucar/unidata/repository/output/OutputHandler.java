@@ -955,7 +955,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                                          entry, ARG_OUTPUT, output,
                                          ARG_PREVIOUS,
                                          "true"), iconUrl(ICON_LEFT),
-                                             msg("View Previous Entry"));
+                                             "View Previous Entry");
 
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
         link.setLinkType(OutputType.TYPE_VIEW);
@@ -963,7 +963,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         link = new Link(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                          entry, ARG_OUTPUT, output, ARG_NEXT,
                                          "true"), iconUrl(ICON_RIGHT),
-                                             msg("View Next Entry"));
+                        "View Next Entry");
         link.setLinkType(OutputType.TYPE_VIEW);
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
         links.add(link);

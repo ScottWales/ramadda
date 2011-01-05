@@ -192,7 +192,7 @@ function RepositoryMap (mapId, params) {
         //        var draw = new OpenLayers.Control.DrawFeature(this.drawingLayer,
         //                                                      OpenLayers.Handler.Point);
        if(forSelection) {
-            this.addSelectorControl();
+            this.addRegionSelectorControl();
         }
     }
 
@@ -212,31 +212,46 @@ function RepositoryMap (mapId, params) {
         //        alert(feature);
     }
 
-    this.setSelection = function(argBase, absolute) { 
+
+    this.addClickHandler = function(lonfld, latfld, zoomfld) {
+        if(this.clickHandler) return;
+        if(!this.map) return;
+        this.clickHandler = new OpenLayers.Control.Click();
+        this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld);
+        this.clickHandler.setTheMap(this);
+        this.map.addControl(this.clickHandler);
+        this.clickHandler.activate();
+    }
+
+
+    this.setSelection = function(argBase, doRegion, absolute) { 
         this.argBase = argBase;
-        if(util) {
-            this.fldNorth= util.getDomObject(this.argBase+"_north");
-            if(!this.fldNorth)  
-                this.fldNorth= util.getDomObject(this.argBase+".north");
-            this.fldSouth= util.getDomObject(this.argBase+"_south");
-            if(!this.fldSouth)
-                this.fldSouth= util.getDomObject(this.argBase+".south");
+        if(!util) {return;}
+        this.fldNorth= util.getDomObject(this.argBase+"_north");
+        if(!this.fldNorth)  
+            this.fldNorth= util.getDomObject(this.argBase+".north");
+        this.fldSouth= util.getDomObject(this.argBase+"_south");
+        if(!this.fldSouth)
+            this.fldSouth= util.getDomObject(this.argBase+".south");
 
-            this.fldEast= util.getDomObject(this.argBase+"_east");
-            if(!this.fldEast)
-                this.fldEast= util.getDomObject(this.argBase+".east");
+        this.fldEast= util.getDomObject(this.argBase+"_east");
+        if(!this.fldEast)
+            this.fldEast= util.getDomObject(this.argBase+".east");
 
-            this.fldWest= util.getDomObject(this.argBase+"_west");
-            if(!this.fldWest)
-                this.fldWest= util.getDomObject(this.argBase+".west");
+        this.fldWest= util.getDomObject(this.argBase+"_west");
+        if(!this.fldWest)
+            this.fldWest= util.getDomObject(this.argBase+".west");
 
-            this.fldLat= util.getDomObject(this.argBase+"_lat");
-            if(!this.fldLat) 
-                this.fldLat= util.getDomObject(this.argBase+".lat");
+        this.fldLat= util.getDomObject(this.argBase+"_latitude");
+        if(!this.fldLat) 
+            this.fldLat= util.getDomObject(this.argBase+".latitude");
 
-            this.fldLon= util.getDomObject(this.argBase+"_lon");
-            if(!this.fldLon) 
-                this.fldLon= util.getDomObject(this.argBase+".lon");
+        this.fldLon= util.getDomObject(this.argBase+"_longitude");
+        if(!this.fldLon)  
+            this.fldLon= util.getDomObject(this.argBase+".longitude");
+
+        if(this.fldLon) {
+            this.addClickHandler(this.fldLon.id, this.fldLat.id);
         }
     }
 
@@ -284,7 +299,7 @@ function RepositoryMap (mapId, params) {
 
 
 
-    this.addSelectorControl = function() {
+    this.addRegionSelectorControl = function() {
         var theMap = this;
         if(theMap.selectorControl) return;
         theMap.selectorControl = new OpenLayers.Control();
@@ -492,5 +507,61 @@ function RepositoryMap (mapId, params) {
     }
 
 }
+
+
+
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+        defaultHandlerOptions: {
+            'single': true,
+            'double': false,
+            'pixelTolerance': 0,
+            'stopSingle': false,
+            'stopDouble': false
+        },
+
+        initialize: function(options) {
+            this.handlerOptions = OpenLayers.Util.extend(
+{}, this.defaultHandlerOptions
+                                                         );
+            OpenLayers.Control.prototype.initialize.apply(
+                                                          this, arguments
+                                                          ); 
+            this.handler = new OpenLayers.Handler.Click(
+                                                        this, {
+                                                            'click': this.trigger
+                                                        }, this.handlerOptions
+                                                        );
+        }, 
+
+        setLatLonZoomFld: function(lonFld, latFld, zoomFld) {
+            this.lonFldId = lonFld;
+            this.latFldId = latFld;
+            this.zoomFldId = zoomFld;
+        },
+
+        setTheMap: function(map) {
+            this.theMap = map;
+        },
+
+        trigger: function(e) { 
+            var lonlat = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
+            if(!this.lonFldId) {
+                this.lonFldId = "lonfld";
+                this.latFldId = "latfld";
+                this.zoomFldId = "zoomfld";  
+            }
+            lonFld  = util.getDomObject(this.lonFldId);
+            latFld  = util.getDomObject(this.latFldId);
+            zoomFld  = util.getDomObject(this.zoomFldId);
+            if(latFld && lonFld) {
+                latFld.obj.value = lonlat.lat;
+                lonFld.obj.value = lonlat.lon;
+            }
+            if(zoomFld) {
+                zoomFld.obj.value = this.theMap.getMap().getZoom();
+            }
+        }
+
+    });
 
 

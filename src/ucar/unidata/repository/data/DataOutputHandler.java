@@ -152,6 +152,8 @@ import javax.servlet.http.*;
  */
 public class DataOutputHandler extends OutputHandler {
 
+    public static final String VAR_PREFIX =  ARG_VARIABLE + ".";
+
     /** _more_ */
     public static final String ARG_ADDLATLON = "addlatlon";
 
@@ -1210,138 +1212,128 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result outputGridAsPoint(Request request, Entry entry)
-            throws Exception {
+    public Result outputGridAsPointProcess(Request request, Entry entry, GridDataset gds, StringBuffer sb)
+        throws Exception {
 
         boolean canAdd =
             getRepository().getAccessManager().canDoAction(request,
-                entry.getParentEntry(), Permission.ACTION_NEW);
+                                                           entry.getParentEntry(), Permission.ACTION_NEW);
 
-
-
-
-        String       path   = getPath(entry);
-        StringBuffer sb     = new StringBuffer();
-        String       prefix = ARG_VARIABLE + ".";
-        OutputType   output = request.getOutput();
-        if (output.equals(OUTPUT_GRIDASPOINT)) {
-            List      varNames = new ArrayList<String>();
-            Hashtable args     = request.getArgs();
-            for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
-                String arg = (String) keys.nextElement();
-                if (arg.startsWith(prefix) && request.get(arg, false)) {
-                    varNames.add(arg.substring(prefix.length()));
-                }
-            }
-            //            System.err.println(varNames);
-            LatLonPointImpl llp = null;
-            if (request.get(ARG_SUBSETLOCATION, true)) {
-                llp = new LatLonPointImpl(request.get(ARG_LOCATION_LATITUDE,
-                        40.0), request.get(ARG_LOCATION_LONGITUDE, -105.0));
-            }
-            int    timeStride = 1;
-            Date[] dates = new Date[] { request.get(ARG_SUBSETTIME, false)
-                                        ? request.getDate(ARG_FROMDATE, null)
-                                        : null, request.get(ARG_SUBSETTIME,
-                                            false)
-                    ? request.getDate(ARG_TODATE, null)
-                    : null };
-            if ((dates[0] != null) && (dates[1] != null)
-                    && (dates[0].getTime() > dates[1].getTime())) {
-                sb.append(
-                    getRepository().showDialogWarning(
-                        "From date is after to date"));
-            } else if (varNames.size() == 0) {
-                sb.append(
-                    getRepository().showDialogWarning(
-                        "No variables selected"));
-            } else {
-
-                GridDataset gds = gridPool.get(path);
-                //                System.err.println ("varNames:" + varNames);
-
-                GridPointWriter writer =
-                    new GridPointWriter(gds,
-                                        new DiskCache2(getRepository()
-                                            .getStorageManager().getTmpDir()
-                                            .toString(), false, 0, 0));
-                QueryParams qp = new QueryParams();
-                qp.acceptType     = QueryParams.NETCDF;
-
-                qp.vars           = varNames;
-
-                qp.hasLatlonPoint = true;
-                qp.lat            = llp.getLatitude();
-                qp.lon            = llp.getLongitude();
-
-                if (dates[0] != null) {
-                    qp.time_start = new DateType(false, dates[0]);
-                    if (dates[1] != null) {
-                        qp.time_end     = new DateType(false, dates[1]);
-                        qp.hasDateRange = true;
-                    } else {
-                        qp.hasTimePoint = true;
-                        qp.hasDateRange = false;
-                        qp.time         = qp.time_start;
-                    }
-                }
-
-                PrintWriter pw = new PrintWriter(System.out);
-
-                File        f  = writer.write(qp, pw);
-
-                gridPool.put(path, gds);
-
-                if (request.get(ARG_ADDTOREPOSITORY, false)) {
-                    if ( !canAdd) {
-                        sb.append("Cannot add to repository");
-                    } else {
-                        Entry newEntry = (Entry) entry.clone();
-                        File newFile =
-                            getRepository().getStorageManager().moveToStorage(
-                                request, f);
-                        newEntry.setResource(new Resource(newFile,
-                                Resource.TYPE_STOREDFILE));
-                        newEntry.setId(getRepository().getGUID());
-                        newEntry.setName("subset_" + newEntry.getName());
-                        newEntry.clearMetadata();
-                        newEntry.setUser(request.getUser());
-                        newEntry.addAssociation(
-                            new Association(
-                                getRepository().getGUID(), "", "subset from",
-                                entry.getId(), newEntry.getId()));
-                        if (request.get(ARG_METADATA_ADD, false)) {
-                            newEntry.clearArea();
-                            List<Entry> entries =
-                                (List<Entry>) Misc.newList(newEntry);
-                            getEntryManager().addInitialMetadata(request,
-                                    entries, false,
-                                    request.get(ARG_SHORT, false));
-                        }
-                        getEntryManager().insertEntries(
-                            Misc.newList(newEntry), true);
-                        return new Result(
-                            request.entryUrl(
-                                getRepository().URL_ENTRY_FORM, newEntry));
-                    }
-                } else {
-                    return new Result(
-                        entry.getName() + ".nc",
-                        getStorageManager().getFileInputStream(f),
-                        "application/x-netcdf");
-                }
+        List      varNames = new ArrayList<String>();
+        Hashtable args     = request.getArgs();
+        for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
+            String arg = (String) keys.nextElement();
+            if (arg.startsWith(VAR_PREFIX) && request.get(arg, false)) {
+                varNames.add(arg.substring(VAR_PREFIX.length()));
             }
         }
+        //            System.err.println(varNames);
+        LatLonPointImpl llp = null;
+        if (request.get(ARG_SUBSETLOCATION, true)) {
+            llp = new LatLonPointImpl(request.get(ARG_LOCATION_LATITUDE,
+                                                  40.0), request.get(ARG_LOCATION_LONGITUDE, -105.0));
+        }
+        int    timeStride = 1;
+        Date[] dates = new Date[] { request.get(ARG_SUBSETTIME, false)
+                                    ? request.getDate(ARG_FROMDATE, null)
+                                    : null, request.get(ARG_SUBSETTIME,
+                                                        false)
+                                    ? request.getDate(ARG_TODATE, null)
+                                    : null };
+        if ((dates[0] != null) && (dates[1] != null)
+            && (dates[0].getTime() > dates[1].getTime())) {
+            sb.append(
+                      getRepository().showDialogWarning(
+                                                        "From date is after to date"));
+        } else if (varNames.size() == 0) {
+            sb.append(
+                      getRepository().showDialogWarning(
+                                                        "No variables selected"));
+        } else {
+
+            //                System.err.println ("varNames:" + varNames);
+
+            GridPointWriter writer =
+                new GridPointWriter(gds,
+                                    new DiskCache2(getRepository()
+                                                   .getStorageManager().getTmpDir()
+                                                   .toString(), false, 0, 0));
+            QueryParams qp = new QueryParams();
+            qp.acceptType     = QueryParams.NETCDF;
+
+            qp.vars           = varNames;
+
+            qp.hasLatlonPoint = true;
+            qp.lat            = llp.getLatitude();
+            qp.lon            = llp.getLongitude();
+
+            if (dates[0] != null) {
+                qp.time_start = new DateType(false, dates[0]);
+                if (dates[1] != null) {
+                    qp.time_end     = new DateType(false, dates[1]);
+                    qp.hasDateRange = true;
+                } else {
+                    qp.hasTimePoint = true;
+                    qp.hasDateRange = false;
+                    qp.time         = qp.time_start;
+                }
+            }
+
+            PrintWriter pw = new PrintWriter(System.out);
+
+            File        f  = writer.write(qp, pw);
+
+
+            if (request.get(ARG_ADDTOREPOSITORY, false)) {
+                if ( !canAdd) {
+                    sb.append("Cannot add to repository");
+                } else {
+                    Entry newEntry = (Entry) entry.clone();
+                    File newFile =
+                        getRepository().getStorageManager().moveToStorage(
+                                                                          request, f);
+                    newEntry.setResource(new Resource(newFile,
+                                                      Resource.TYPE_STOREDFILE));
+                    newEntry.setId(getRepository().getGUID());
+                    newEntry.setName("subset_" + newEntry.getName());
+                    newEntry.clearMetadata();
+                    newEntry.setUser(request.getUser());
+                    newEntry.addAssociation(
+                                            new Association(
+                                                            getRepository().getGUID(), "", "subset from",
+                                                            entry.getId(), newEntry.getId()));
+                    if (request.get(ARG_METADATA_ADD, false)) {
+                        newEntry.clearArea();
+                        List<Entry> entries =
+                            (List<Entry>) Misc.newList(newEntry);
+                        getEntryManager().addInitialMetadata(request,
+                                                             entries, false,
+                                                             request.get(ARG_SHORT, false));
+                    }
+                    getEntryManager().insertEntries(
+                                                    Misc.newList(newEntry), true);
+                    return new Result(
+                                      request.entryUrl(
+                                                       getRepository().URL_ENTRY_FORM, newEntry));
+                }
+            } else {
+                return new Result(
+                                  entry.getName() + ".nc",
+                                  getStorageManager().getFileInputStream(f),
+                                  "application/x-netcdf");
+            }
+        }
+
+        return null;
+    }
+
+
+    public Result outputGridAsPointForm(Request request, Entry entry, GridDataset dataset, StringBuffer sb)
+        throws Exception {
+
+        boolean canAdd =
+            getRepository().getAccessManager().canDoAction(request,
+                                                           entry.getParentEntry(), Permission.ACTION_NEW);
 
         String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
@@ -1382,7 +1374,7 @@ public class DataOutputHandler extends OutputHandler {
         Date[]             dateRange = null;
         List<Date>         dates     = null;
 
-        GridDataset        dataset   = gridPool.get(path);
+
         List<GridDatatype> grids     = dataset.getGrids();
 
         StringBuffer       varSB     = new StringBuffer();
@@ -1433,8 +1425,6 @@ public class DataOutputHandler extends OutputHandler {
                                   HtmlUtil.comma(
                                       "event", HtmlUtil.squote(ARG_VARIABLE),
                                       HtmlUtil.squote(cbxId))));
-
-
             VariableEnhanced var = grid.getVariable();
             varSB.append(
                 HtmlUtil.row(
@@ -1460,6 +1450,7 @@ public class DataOutputHandler extends OutputHandler {
         }
         //String llb =
         //  getRepository().getMapManager().makeMapSelector(ARG_LOCATION, true, new String[]{ "", ""});
+
         String llb = " Latitude: "
                      + HtmlUtil.input(
                          ARG_LOCATION_LATITUDE, lat,
@@ -1471,17 +1462,12 @@ public class DataOutputHandler extends OutputHandler {
                                      HtmlUtil.SIZE_5 + " "
                                      + HtmlUtil.id(ARG_LOCATION_LONGITUDE));
 
+        llb = getRepository().getMapManager().makeMapSelector(ARG_LOCATION, true, "", "", new String[]{"",""}, null);
         sb.append(
             HtmlUtil.formEntryTop(
                 msgLabel("Choose Point"),
-                "<table cellpadding=0 cellspacing=0><tr valign=top><td>"
-        /*
-        + HtmlUtil.checkbox(
-            ARG_SUBSETLOCATION, HtmlUtil.VALUE_TRUE,
-            request.get(ARG_SUBSETLOCATION, true)) + "</td><td>"
-        */
-        + llb + "</td></tr></table>"));
-        //}
+                llb));
+
 
         if ((dates != null) && (dates.size() > 0)) {
             List formattedDates = new ArrayList();
@@ -1510,18 +1496,44 @@ public class DataOutputHandler extends OutputHandler {
 
         sb.append("</table>");
         sb.append("<hr>");
-        sb.append("Select Variables:<ul>");
-        sb.append("<table>");
-        sb.append(varSB);
-        sb.append("</table>");
-        sb.append("</ul>");
-        sb.append(HtmlUtil.br());
+        sb.append(msgLabel("Select Variables"));
+        sb.append(HtmlUtil.insetDiv(HtmlUtil.table(varSB.toString(),
+                                                   HtmlUtil.attrs(HtmlUtil.ATTR_CELLPADDING, "5", HtmlUtil.ATTR_CELLSPACING, "0")),0,30,0,0));
+
         sb.append(HtmlUtil.submit("Get Point"));
         //sb.append(submitExtra);
         sb.append(HtmlUtil.formClose());
-        gridPool.put(path, dataset);
+
         return makeLinksResult(request, msg("Grid As Point"), sb,
                                new State(entry));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result outputGridAsPoint(Request request, Entry entry)
+        throws Exception {
+        StringBuffer sb     = new StringBuffer();
+        String       path   = getPath(entry);
+        GridDataset gds = gridPool.get(path);
+        OutputType   output = request.getOutput();
+        try {
+            if (output.equals(OUTPUT_GRIDASPOINT)) {
+                Result result = outputGridAsPointProcess(request, entry, gds, sb);
+                if(result!=null) return result;
+            }
+            return  outputGridAsPointForm(request, entry, gds, sb);
+        } finally {
+            gridPool.put(path, gds);
+        }
     }
 
 
@@ -1547,15 +1559,15 @@ public class DataOutputHandler extends OutputHandler {
 
         String       path   = getPath(entry);
         StringBuffer sb     = new StringBuffer();
-        String       prefix = ARG_VARIABLE + ".";
+
         OutputType   output = request.getOutput();
         if (output.equals(OUTPUT_GRIDSUBSET)) {
             List      varNames = new ArrayList();
             Hashtable args     = request.getArgs();
             for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
                 String arg = (String) keys.nextElement();
-                if (arg.startsWith(prefix) && request.get(arg, false)) {
-                    varNames.add(arg.substring(prefix.length()));
+                if (arg.startsWith(VAR_PREFIX) && request.get(arg, false)) {
+                    varNames.add(arg.substring(VAR_PREFIX.length()));
                 }
             }
             //            System.err.println(varNames);
@@ -1594,9 +1606,9 @@ public class DataOutputHandler extends OutputHandler {
                     getRepository().getStorageManager().getTmpFile(request,
                         "subset.nc");
 
-                GridDataset gds = gridPool.get(path);
                 //                System.err.println ("varNames:" + varNames);
 
+                GridDataset gds = gridPool.get(path);
                 writer.makeFile(f.toString(), gds, varNames, llr,
                                 ((dates[0] == null)
                                  ? null
@@ -1659,12 +1671,12 @@ public class DataOutputHandler extends OutputHandler {
                           + HtmlUtil.checkbox(
                               ARG_ADDTOREPOSITORY, HtmlUtil.VALUE_TRUE,
                               request.get(ARG_ADDTOREPOSITORY, false)) + msg(
-                                  "Add to Repository") + HtmlUtil.checkbox(
+                                                                             "Add to Repository") + HtmlUtil.checkbox(
                                   ARG_METADATA_ADD, HtmlUtil.VALUE_TRUE,
                                   request.get(ARG_METADATA_ADD, false)) + msg(
                                       "Add properties");
-
         }
+
 
 
         sb.append(HtmlUtil.submit("Subset Grid", ARG_SUBMIT));
