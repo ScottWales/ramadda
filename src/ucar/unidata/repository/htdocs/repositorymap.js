@@ -16,7 +16,7 @@ var map_wms_topographic = "wms:Topo Maps,http://terraservice.net/ogcmap.ashx,DRG
 var map_wms_openlayers = "wms:OpenLayers WMS,http://vmap0.tiles.osgeo.org/wms/vmap0,basic";
 
 var defaultLocation = new OpenLayers.LonLat(-104, 40);
-var defaultZoomLevel = 5;
+var defaultZoomLevel = 3;
 
 
 
@@ -72,8 +72,8 @@ function RepositoryMap (mapId, params) {
     this.addBaseLayers = function() {
         if(!this.mapLayers) {
             this.mapLayers = [
-                         map_yahoo,
                          map_wms_openlayers,
+                         map_yahoo,
                          map_wms_topographic,
                          map_ms_shaded,
                          //map_ms_hybrid,
@@ -155,8 +155,8 @@ function RepositoryMap (mapId, params) {
         };
         //        this.map = new OpenLayers.Map( this.mapDivId, options );
         this.map = new OpenLayers.Map( this.mapDivId);
-        this.map.minResolution = 0.0000001;
-        this.map.minScale = 0.0000001;
+        //        this.map.minResolution = 0.0000001;
+        //        this.map.minScale = 0.0000001;
         this.vectors = new OpenLayers.Layer.Vector("Drawing");
         this.map.addLayer(this.vectors);
 
@@ -424,9 +424,9 @@ function RepositoryMap (mapId, params) {
     }
 
 
-    this.addBox = function(id, north, west, south, east) {
+    this.addBox = function(id, north, west, south, east, attrs) {
         var theMap = this;
-        if(!this.boxes) {
+        if(!theMap.boxes) {
             theMap.boxes = new OpenLayers.Layer.Boxes("Boxes");
             theMap.map.addLayer(theMap.boxes);
 
@@ -456,29 +456,57 @@ function RepositoryMap (mapId, params) {
     }
 
 
-    this.addLine = function(id, lat1, lon1, lat2, lon2) {
-        var layer_style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-        var style_blue = OpenLayers.Util.extend({}, layer_style);
-        style_blue.strokeColor = "blue";
-        style_blue.strokeColor = "blue";
-        style_blue.strokeWidth = 3;
+    this.addRectangle = function(id, north, west, south, east, attrs) {
+        var points = [
+                      new OpenLayers.Geometry.Point(west,north),
+                      new OpenLayers.Geometry.Point(west,south),
+                      new OpenLayers.Geometry.Point(east,south),
+                      new OpenLayers.Geometry.Point(east,north),
+                      new OpenLayers.Geometry.Point(west,north)];
+        return this.addPolygon(id, points, attrs);
+    }
 
-        if(!this.lines) {
-            //            layer_style.fillOpacity = 0.2;
-            //            layer_style.graphicOpacity = 1;
-            //            this.lines = new OpenLayers.Layer.Vector("Lines", {style: layer_style});
-            this.lines = new OpenLayers.Layer.PointTrack("Lines", {style: layer_style});
-            this.map.addLayer(this.lines);
+    this.addLine = function(id, lat1, lon1, lat2, lon2, attrs) {
+        var points = [
+                      new OpenLayers.Geometry.Point(lon1,lat1),
+                      new OpenLayers.Geometry.Point(lon2,lat2)];
+        return this.addPolygon(id,points, attrs);
+    }
+
+    this.addPolygon = function(id, points,attrs) {
+        var theMap = this;
+        var base_style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+        var style = OpenLayers.Util.extend({}, base_style);
+        style.strokeColor = "blue";
+        style.strokeWidth = 3;
+        if(attrs) {
+            for(key in attrs) {
+                style[key] = attrs[key];
+            }
         }
-        var points = [];
-        points.push(new OpenLayers.Geometry.Point(lon1,lat1));
-        points.push(new OpenLayers.Geometry.Point(lon2,lat2));
+        if(!this.lines) {
+            this.lines = new OpenLayers.Layer.Vector("Lines", {style: base_style});
+            //            this.lines = new OpenLayers.Layer.PointTrack("Lines", {style: base_style});
+            this.map.addLayer(this.lines);
+            /*
+            var sf = new OpenLayers.Control.SelectFeature(theMap.lines,{
+                    onSelect: function(o) {
+                        alert(o)
+                    }
+                });
+            theMap.map.addControl(sf);
+            sf.activate();*/
+        }
         var lineString = new OpenLayers.Geometry.LineString(points);
         var line = new OpenLayers.Feature.Vector(lineString, null,
-                                                        style_blue);
+                                                        style);
+        /*        line.events.register("click", line, function (e) {
+                alert("box click");
+                theMap.showMarkerPopup(box);
+                OpenLayers.Event.stop(evt); 
+                });*/
+
         this.lines.addFeatures([line]);
-        //        pointList.push(new OpenLayers.LonLat(lon1,lat1));
-        //        pointList.push(new OpenLayers.LonLat(lon2,lat2));
         line.id = id;
         return line;
     }
@@ -520,8 +548,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         },
 
         initialize: function(options) {
-            this.handlerOptions = OpenLayers.Util.extend(
-{}, this.defaultHandlerOptions
+            this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions
                                                          );
             OpenLayers.Control.prototype.initialize.apply(
                                                           this, arguments

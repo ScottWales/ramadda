@@ -50,8 +50,19 @@
 
   map.initMap(false);
   map.name = "Test Repository Map";
+  var points = [new OpenLayers.Geometry.Point(-110,40),
+                new OpenLayers.Geometry.Point(-100,40),
+                new OpenLayers.Geometry.Point(-100,30),
+                new OpenLayers.Geometry.Point(-110,30),
+                new OpenLayers.Geometry.Point(-110,40)];
 
-  map.addClickHandler("lonfld", "latfld", "zoomfld");
+  map.addRectangle("test points2", 50, -110,40, -100);
+  map.addPolygon("test points", points, {strokeColor:"red",strokeWidth: 5});
+  map.addLine("test points3", 60, -100, 50, -90);
+//map.addRectangle("test points", 60, -100, 50, -90, {strokeColor:"green",strokeWidth: 5});
+
+
+//  map.addClickHandler("lonfld", "latfld", "zoomfld");
 
   var zoom = util.getUrlArg('zoom');
   if(zoom) {

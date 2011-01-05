@@ -1778,6 +1778,7 @@ public class DataOutputHandler extends OutputHandler {
           break;
           }
         */
+
         LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
             String llb =

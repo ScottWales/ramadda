@@ -20,6 +20,8 @@
 
 package ucar.unidata.repository;
 
+import ucar.unidata.repository.output.MapOutputHandler;
+
 
 
 import ucar.unidata.util.Counter;
@@ -245,20 +247,15 @@ public class MapManager extends RepositoryManager {
         StringBuffer script = new StringBuffer();
         script.append(mapVarName+".setSelection(" + initParams+ ");\n");
         if(markerLatLons!=null) {
-            /*
-            script.append("var markerLine = new Polyline([");
+            script.append("var markerLine = [");
             for(int i=0;i<markerLatLons[0].length;i++) {
                 if(i>0)
                     script.append(",");
-                script.append("new LatLonPoint(" + markerLatLons[0][i]+"," +
-                              markerLatLons[1][i]+")");
+                script.append(MapOutputHandler.llp(markerLatLons[0][i],
+                                                   markerLatLons[1][i]));
             }
-            script.append("]);\n");
-            script.append("markerLine.setColor(\"#00FF00\");\n");
-            script.append("markerLine.setWidth(3);\n");
+            script.append("];\n");
             script.append(mapVarName +".addPolyline(markerLine);\n");
-            script.append(mapVarName +".autoCenterAndZoom();\n");
-            */
         }
 
         return HtmlUtil.table(new Object[] { widget, rightSide }) + "\n"
