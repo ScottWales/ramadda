@@ -2718,7 +2718,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if (incoming.equals("/") || incoming.equals("")) {
             incoming = urlBase;
         }
-
+        while(incoming.startsWith("//")) {
+            incoming = incoming.substring(1);
+        }
         if ( !incoming.startsWith(urlBase)) {
             return null;
         }

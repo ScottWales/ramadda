@@ -431,7 +431,20 @@ return new Result(title, sb);
         } else if (request.defined(ARG_GROUP)) {
             entry = findGroup(request);
         } else {
-            entry = getTopGroup();
+            String path = request.getRequestPath();
+            String prefix = getRepository().URL_ENTRY_SHOW.toString();
+            if(path.length()>prefix.length()) {
+                String suffix  = path.substring(prefix.length());
+                suffix = java.net.URLDecoder.decode(suffix, "UTF-8");
+                System.err.println("suffix:" + suffix);
+                entry = findEntryFromName(suffix, request.getUser(), false);
+                if(entry == null) {
+                    fatalError(request, "Could not find entry:" + suffix);
+                }
+            }
+            if(entry == null) {
+                entry = getTopGroup();
+            }
         }
         if (entry == null) {
             fatalError(request, "No entry specified");
@@ -6670,6 +6683,9 @@ return new Result(title, sb);
             throws Exception {
         if(name == null) return null;
         name = name.trim();
+        if(name.startsWith(Group.PATHDELIMITER)) {
+            name = name.substring(1);
+        }
         String topEntryName = getTopGroup().getName();
         if (name.equals(topEntryName)) {
             return getTopGroup();
@@ -6681,8 +6697,8 @@ return new Result(title, sb);
         //split the list
         List<String> toks = (List<String>) StringUtil.split(name,
                                 Group.PATHDELIMITER, true, true);
-        //        System.err.println("toks:" + toks);
         //Now remove the top group
+        
         toks.remove(0);
         Entry currentEntry = getTopGroup();
 
@@ -6691,10 +6707,12 @@ return new Result(title, sb);
         }
         String groupType = TypeHandler.TYPE_GROUP;
 
+
         for (int i = 0; i < toks.size(); i++) {
             boolean lastOne   = (i == toks.size() - 1);
             String  childName = toks.get(i);
-            //  System.err.println("   looking for:" + childName);
+            //            System.err.println("   looking for:" + childName);
+
             List<Clause> clauses = new ArrayList<Clause>();
             clauses.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                   currentEntry.getId()));
@@ -6703,7 +6721,9 @@ return new Result(title, sb);
                                       getDatabaseManager().select(
                                           Tables.ENTRIES.COLUMNS,
                                           Tables.ENTRIES.NAME, clauses));
+            //            System.err.println("   Found: " + entries);
             if (entries.size() > 0) {
+                
                 currentEntry = entries.get(0);
             } else {
                 if ( !createIfNeeded) {
