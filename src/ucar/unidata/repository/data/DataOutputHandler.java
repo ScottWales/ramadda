@@ -116,6 +116,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.Pool;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TemporaryDir;
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
 
@@ -172,6 +173,9 @@ public class DataOutputHandler extends OutputHandler {
 
     /** level */
     public static final String ARG_LEVEL = "level";
+
+    /** format */
+    public static final String ARG_FORMAT = "format";
 
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
@@ -1260,13 +1264,9 @@ public class DataOutputHandler extends OutputHandler {
                 getRepository().showDialogWarning("No variables selected"));
         } else {
             //                System.err.println ("varNames:" + varNames);
-            GridPointWriter writer =
-                new GridPointWriter(gds,
-                                    new DiskCache2(getRepository()
-                                        .getStorageManager().getTmpDir()
-                                        .toString(), false, 0, 0));
+
             QueryParams qp = new QueryParams();
-            qp.acceptType     = QueryParams.NETCDF;
+            qp.acceptType = request.getString(ARG_FORMAT, QueryParams.NETCDF);
 
             qp.vars           = varNames;
 
@@ -1289,16 +1289,39 @@ public class DataOutputHandler extends OutputHandler {
                 qp.hasVerticalCoord = true;
                 qp.vertCoord        = levelVal;
             }
+            String suffix = ".nc";
+            if (qp.acceptType.equals(QueryParams.CSV)) {
+                suffix = ".csv";
+            } else if (qp.acceptType.equals(QueryParams.XML)) {
+                suffix = ".xml";
+            }
 
-            PrintWriter pw = new PrintWriter(System.out);
+            File tmpFile = getStorageManager().getTmpFile(request,
+                               "pointsubset" + suffix);
+
+            GridPointWriter writer =
+                new GridPointWriter(gds,
+                                    new DiskCache2(getRepository()
+                                        .getStorageManager().getTmpDir()
+                                        .toString(), false, 0, 0));
+            OutputStream outStream =
+                (qp.acceptType.equals(QueryParams.NETCDF))
+                ? System.out
+                : getStorageManager().getFileOutputStream(tmpFile);
+
+            PrintWriter pw = new PrintWriter(outStream);
             File        f  = writer.write(qp, pw);
+            if (f == null) {
+                outStream.close();
+                f = tmpFile;
+            }
             if (doingPublish(request)) {
                 return getEntryManager().processEntryPublish(request, f,
                         (Entry) entry.clone(), entry, "point series of");
             }
-            return new Result(entry.getName() + ".nc",
+            return new Result(entry.getName() + suffix,
                               getStorageManager().getFileInputStream(f),
-                              "application/x-netcdf");
+                              qp.acceptType);
         }
 
         return new Result("", sb);
@@ -1326,8 +1349,7 @@ public class DataOutputHandler extends OutputHandler {
                 entry.getParentEntry(), Permission.ACTION_NEW);
 
         String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
-        String fileName = IOUtil.stripExtension(entry.getName())
-                          + "_point.nc";
+        String fileName = IOUtil.stripExtension(entry.getName()) + "_point";
 
         sb.append(HtmlUtil.form(formUrl + "/" + fileName));
         sb.append(HtmlUtil.br());
@@ -1339,6 +1361,7 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_GRIDASPOINT));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.formTable());
+
 
 
         Date[]       dateRange = null;
@@ -1394,6 +1417,19 @@ public class DataOutputHandler extends OutputHandler {
                                           ARG_TODATE, formattedDates,
                                           toDate)));
         }
+        List formats = Misc.toList(new Object[] {
+                           new TwoFacedObject("NetCDF", QueryParams.NETCDF),
+                           new TwoFacedObject("Xml", QueryParams.XML),
+        //new TwoFacedObject("Interactive Time Series", FORMAT_TIMESERIES_CHART),
+        new TwoFacedObject("Comma Separated Values (CSV)",
+                           QueryParams.CSV) });
+
+        String format = request.getString(ARG_FORMAT, QueryParams.NETCDF);
+
+        sb.append(HtmlUtil.formEntry(msgLabel("Format"),
+                                     HtmlUtil.select(ARG_FORMAT, formats,
+                                         format)));
+
 
         addPublishWidget(request, entry, sb,
                          msg("Select a folder to publish the point data to"));
