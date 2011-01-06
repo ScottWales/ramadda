@@ -152,147 +152,151 @@ import javax.servlet.http.*;
  */
 public class DataOutputHandler extends OutputHandler {
 
-    public static final String VAR_PREFIX =  ARG_VARIABLE + ".";
+    /** Variable prefix */
+    public static final String VAR_PREFIX = ARG_VARIABLE + ".";
 
-    /** _more_ */
+    /** add lat lon argument */
     public static final String ARG_ADDLATLON = "addlatlon";
 
-    /** _more_ */
+    /** subset area argument */
     public static final String ARG_SUBSETAREA = "subsetarea";
 
-    /** _more_ */
+    /** subset location argument */
     public static final String ARG_SUBSETLOCATION = "subsetlocation";
 
-    /** _more_ */
+    /** subset time argument */
     public static final String ARG_SUBSETTIME = "subsettime";
 
-    /** _more_ */
+    /** horizontal stride */
     public static final String ARG_HSTRIDE = "hstride";
 
-    /** _more_ */
+    /** level */
+    public static final String ARG_LEVEL = "level";
+
+    /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
         new OutputType("OpenDAP", "data.opendap", OutputType.TYPE_NONHTML,
                        OutputType.SUFFIX_NONE, ICON_OPENDAP);
 
-    /** _more_ */
+    /** CDL Output Type */
     public static final OutputType OUTPUT_CDL = new OutputType("CDL",
                                                     "data.cdl",
                                                     OutputType.TYPE_HTML,
                                                     OutputType.SUFFIX_NONE,
                                                     ICON_DATA);
 
-    /** _more_ */
+    /** WCS Output Type */
     public static final OutputType OUTPUT_WCS = new OutputType("WCS",
                                                     "data.wcs",
                                                     OutputType.TYPE_NONHTML);
 
-    /** _more_ */
+    /** Point map Output Type */
     public static final OutputType OUTPUT_POINT_MAP =
         new OutputType("Point as Map", "data.point.map",
                        OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
                        ICON_MAP);
 
-    /** _more_ */
+    /** CSV Output Type */
     public static final OutputType OUTPUT_POINT_CSV =
         new OutputType("Point as CSV", "data.point.csv",
                        OutputType.TYPE_NONHTML, OutputType.SUFFIX_NONE,
                        ICON_CSV);
 
-    /** _more_ */
+    /** KML Output Type */
     public static final OutputType OUTPUT_POINT_KML =
         new OutputType("Point as KML", "data.point.kml",
                        OutputType.TYPE_NONHTML, "", ICON_KML);
 
-    /** _more_ */
+    /** Trajectory map Output Type */
     public static final OutputType OUTPUT_TRAJECTORY_MAP =
         new OutputType("Trajectory as Map", "data.trajectory.map",
                        OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
                        ICON_MAP);
 
-    /** _more_ */
+    /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Grid Subset", "data.gridsubset.form",
                        OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
                        ICON_SUBSET);
 
-    /** _more_ */
+    /** Grid subset Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET =
         new OutputType("data.gridsubset", OutputType.TYPE_NONHTML);
 
-    /** _more_ */
+    /** Grid as point form Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
         new OutputType("Grid As Point Data", "data.gridaspoint.form",
                        OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
                        ICON_SUBSET);
 
-    /** _more_ */
+    /** Grid as point Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT =
         new OutputType("data.gridaspoint", OutputType.TYPE_NONHTML);
 
-    /** _more_ */
+    /** cdm cache */
     private Cache<String, Boolean> cdmEntries = new Cache<String,
                                                     Boolean>(5000);
 
-    /** _more_ */
+    /** grid entries cache */
     private Cache<String, Boolean> gridEntries = new Cache<String,
                                                      Boolean>(5000);
 
 
-    /** _more_ */
+    /** point entries cache */
     private Cache<String, Boolean> pointEntries = new Cache<String,
                                                       Boolean>(5000);
 
-    /** _more_ */
+    /** trajectory entries cache */
     private Cache<String, Boolean> trajectoryEntries = new Cache<String,
                                                            Boolean>(5000);
 
 
-    /** _more_ */
+    /** nj cache directory */
     private TemporaryDir nj22Dir;
 
-    /** _more_ */
+    /** data cache directory */
     private TemporaryDir dataCacheDir;
 
 
     //TODO: When we close a ncfile some thread might be using it
     //Do we have to actually close it??
 
-    /** _more_ */
+    /** nc counter */
     Counter ncCounter = new Counter();
 
-    /** _more_ */
+    /** nc create counter */
     Counter ncCreateCounter = new Counter();
 
-    /** _more_ */
+    /** nc remove counter */
     Counter ncRemoveCounter = new Counter();
 
-    /** _more_ */
+    /** nc get counter */
     Counter ncGetCounter = new Counter();
 
-    /** _more_ */
+    /** nc put counter */
     Counter ncPutCounter = new Counter();
 
-    /** _more_ */
+    /** ext counter */
     Counter extCounter = new Counter();
 
-    /** _more_ */
+    /** opendap counter */
     Counter opendapCounter = new Counter();
 
 
-    /** _more_ */
+    /** grid open counter */
     Counter gridOpenCounter = new Counter();
 
-    /** _more_ */
+    /** grid close counter */
     Counter gridCloseCounter = new Counter();
 
 
-    /** _more_ */
+    /** point open counter */
     Counter pointOpenCounter = new Counter();
 
-    /** _more_ */
+    /** point close counter */
     Counter pointCloseCounter = new Counter();
 
-    /** _more_ */
+    /** nc dataset pool */
     private Pool<String, NetcdfDataset> ncDatasetPool =
         new Pool<String, NetcdfDataset>(10) {
         protected void removeValue(String key, NetcdfDataset dataset) {
@@ -340,7 +344,7 @@ public class DataOutputHandler extends OutputHandler {
 
 
 
-    /** _more_ */
+    /** nc file pool */
     private Pool<String, NetcdfFile> ncFilePool = new Pool<String,
                                                       NetcdfFile>(10) {
         protected void removeValue(String key, NetcdfFile ncFile) {
@@ -386,7 +390,7 @@ public class DataOutputHandler extends OutputHandler {
     };
 
 
-    /** _more_ */
+    /** grid pool */
     private Pool<String, GridDataset> gridPool = new Pool<String,
                                                      GridDataset>(10) {
         protected void removeValue(String key, GridDataset dataset) {
@@ -430,7 +434,7 @@ public class DataOutputHandler extends OutputHandler {
     };
 
 
-    /** _more_ */
+    /** point pool */
     private Pool<String, FeatureDatasetPoint> pointPool =
         new Pool<String, FeatureDatasetPoint>(10) {
         protected void removeValue(String key, FeatureDatasetPoint dataset) {
@@ -471,7 +475,7 @@ public class DataOutputHandler extends OutputHandler {
     };
 
 
-    /** _more_ */
+    /** trajectory pool */
     private Pool<String, TrajectoryObsDataset> trajectoryPool =
         new Pool<String, TrajectoryObsDataset>(10) {
         protected void removeValue(String key, TrajectoryObsDataset dataset) {
@@ -514,10 +518,10 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     *     _more_
+     *     Create a DataOutputHandler
      *
-     *     @param repository _more_
-     *     @param element _more_
+     *     @param repository  the repository
+     *     @param element     the element
      *     @throws Exception On badness
      */
     public DataOutputHandler(Repository repository, Element element)
@@ -573,9 +577,9 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the system stats
      *
-     * @param sb _more_
+     * @param sb  the stats
      */
     public void getSystemStats(StringBuffer sb) {
         super.getSystemStats(sb);
@@ -604,7 +608,7 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * clear the cache
      */
     public void clearCache() {
         super.clearCache();
@@ -623,13 +627,13 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Add to an entry
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
+     * @param request the request
+     * @param entry  the entry
+     * @param node   the node
      *
-     * @throws Exception _more_
+     * @throws Exception  on badness
      */
     public void addToEntryNode(Request request, Entry entry, Element node)
             throws Exception {
@@ -651,13 +655,13 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the Entry links
      *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
+     * @param request  the request
+     * @param state    the state
+     * @param links    the links
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -1207,8 +1211,21 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
-    public Result outputGridAsPointProcess(Request request, Entry entry, GridDataset gds, StringBuffer sb)
-        throws Exception {
+    /**
+     * Process a grid as point request
+     *
+     * @param request  the request
+     * @param entry    the entry
+     * @param gds      the corresponding grid dataset
+     * @param sb       the StringBuffer
+     *
+     * @return a Result
+     *
+     * @throws Exception problem doing what was asked
+     */
+    public Result outputGridAsPointProcess(Request request, Entry entry,
+                                           GridDataset gds, StringBuffer sb)
+            throws Exception {
 
         List      varNames = new ArrayList<String>();
         Hashtable args     = request.getArgs();
@@ -1222,31 +1239,32 @@ public class DataOutputHandler extends OutputHandler {
         LatLonPointImpl llp = null;
         if (request.get(ARG_SUBSETLOCATION, true)) {
             llp = new LatLonPointImpl(request.get(ARG_LOCATION_LATITUDE,
-                                                  40.0), request.get(ARG_LOCATION_LONGITUDE, -105.0));
+                    40.0), request.get(ARG_LOCATION_LONGITUDE, -105.0));
         }
+        double levelVal   = request.get(ARG_LEVEL, Double.NaN);
+
         int    timeStride = 1;
-        Date[] dates = new Date[] { request.get(ARG_SUBSETTIME, false)
-                                    ? request.getDate(ARG_FROMDATE, null)
-                                    : null, request.get(ARG_SUBSETTIME,
-                                                        false)
-                                    ? request.getDate(ARG_TODATE, null)
-                                    : null };
+        Date[] dates      = new Date[] { request.get(ARG_SUBSETTIME, false)
+                                         ? request.getDate(ARG_FROMDATE, null)
+                                         : null, request.get(ARG_SUBSETTIME,
+                                             false)
+                ? request.getDate(ARG_TODATE, null)
+                : null };
         if ((dates[0] != null) && (dates[1] != null)
-            && (dates[0].getTime() > dates[1].getTime())) {
+                && (dates[0].getTime() > dates[1].getTime())) {
             sb.append(
-                      getRepository().showDialogWarning(
-                                                        "From date is after to date"));
+                getRepository().showDialogWarning(
+                    "From date is after to date"));
         } else if (varNames.size() == 0) {
             sb.append(
-                      getRepository().showDialogWarning(
-                                                        "No variables selected"));
+                getRepository().showDialogWarning("No variables selected"));
         } else {
             //                System.err.println ("varNames:" + varNames);
             GridPointWriter writer =
                 new GridPointWriter(gds,
                                     new DiskCache2(getRepository()
-                                                   .getStorageManager().getTmpDir()
-                                                   .toString(), false, 0, 0));
+                                        .getStorageManager().getTmpDir()
+                                        .toString(), false, 0, 0));
             QueryParams qp = new QueryParams();
             qp.acceptType     = QueryParams.NETCDF;
 
@@ -1267,28 +1285,45 @@ public class DataOutputHandler extends OutputHandler {
                     qp.time         = qp.time_start;
                 }
             }
+            if (levelVal == levelVal) {
+                qp.hasVerticalCoord = true;
+                qp.vertCoord        = levelVal;
+            }
 
             PrintWriter pw = new PrintWriter(System.out);
             File        f  = writer.write(qp, pw);
             if (doingPublish(request)) {
-                return getEntryManager().processEntryPublish(request, f, (Entry)entry.clone(), entry, "point series of");
+                return getEntryManager().processEntryPublish(request, f,
+                        (Entry) entry.clone(), entry, "point series of");
             }
-            return new Result(
-                              entry.getName() + ".nc",
+            return new Result(entry.getName() + ".nc",
                               getStorageManager().getFileInputStream(f),
                               "application/x-netcdf");
         }
 
-        return new Result("",sb);
+        return new Result("", sb);
     }
 
 
-    public Result outputGridAsPointForm(Request request, Entry entry, GridDataset dataset, StringBuffer sb)
-        throws Exception {
+    /**
+     * Output the grid as a point form
+     *
+     * @param request   the request
+     * @param entry     the entry
+     * @param dataset   the corresponding dataset
+     * @param sb        the string buffer
+     *
+     * @return the result
+     *
+     * @throws Exception problem creating form
+     */
+    public Result outputGridAsPointForm(Request request, Entry entry,
+                                        GridDataset dataset, StringBuffer sb)
+            throws Exception {
 
         boolean canAdd =
             getRepository().getAccessManager().canDoAction(request,
-                                                           entry.getParentEntry(), Permission.ACTION_NEW);
+                entry.getParentEntry(), Permission.ACTION_NEW);
 
         String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
@@ -1305,93 +1340,19 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.formTable());
 
-        /*
-        sb.append(HtmlUtil.formEntry(msgLabel("Horizontal Stride"),
-                                     HtmlUtil.input(ARG_HSTRIDE,
-                                         request.getString(ARG_HSTRIDE, "1"),
-                                         HtmlUtil.SIZE_3)));
-                                         */
 
+        Date[]       dateRange = null;
+        List<Date>   dates     = getGridDates(dataset);
 
-        Date[]             dateRange = null;
-        List<Date>         dates     = null;
+        StringBuffer varSB     = getVariableForm(dataset, true);
 
-
-        List<GridDatatype> grids     = dataset.getGrids();
-
-        StringBuffer       varSB     = new StringBuffer();
-        HashSet<Date>      dateHash  = new HashSet<Date>();
-        List<CoordinateAxis1DTime> timeAxes =
-            new ArrayList<CoordinateAxis1DTime>();
-
-        for (GridDatatype grid : grids) {
-            GridCoordSystem      gcs      = grid.getCoordinateSystem();
-            CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-            if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
-                timeAxes.add(timeAxis);
-
-                Date[] timeDates = timeAxis.getTimeDates();
-                for (Date timeDate : timeDates) {
-                    dateHash.add(timeDate);
-                }
-            }
-        }
-        dates = Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
-        Collections.sort(dates);
-        /*
-        for (VariableSimpleIF var : dataset.getDataVariables()) {
-            //            System.err.println("var:" + var.getName() + " type:"
-            //                               + var.getClass().getName());
-            if (var instanceof CoordinateAxis) {
-                CoordinateAxis ca       = (CoordinateAxis) var;
-                AxisType       axisType = ca.getAxisType();
-                if (axisType == null) {
-                    continue;
-                }
-                if (axisType.equals(AxisType.Time)) {
-                    dates = (List<Date>) Misc.sort(
-                        ThreddsMetadataHandler.getDates(var, ca));
-                }
-                continue;
-            }
-        }
-        */
-        int varCnt = 0;
-
-        for (GridDatatype grid : sortGrids(dataset)) {
-            String cbxId = "varcbx_" + (varCnt++);
-            String call = HtmlUtil.attr(
-                              HtmlUtil.ATTR_ONCLICK,
-                              HtmlUtil.call(
-                                  "checkboxClicked",
-                                  HtmlUtil.comma(
-                                      "event", HtmlUtil.squote(ARG_VARIABLE),
-                                      HtmlUtil.squote(cbxId))));
-            VariableEnhanced var = grid.getVariable();
-            varSB.append(
-                HtmlUtil.row(
-                    HtmlUtil.cols(
-                        HtmlUtil.checkbox(
-                            ARG_VARIABLE + "." + var.getShortName(),
-                            HtmlUtil.VALUE_TRUE, false,
-                            HtmlUtil.id(cbxId) + call) + HtmlUtil.space(1)
-                                + var.getName() + HtmlUtil.space(1)
-                                + ((var.getUnitsString() != null)
-                                   ? "(" + var.getUnitsString() + ")"
-                                   : ""), "<i>" + var.getDescription()
-                                          + "</i>")));
-
-        }
-
-        LatLonRect llr = dataset.getBoundingBox();
-        String     lat = "";
-        String     lon = "";
+        LatLonRect   llr       = dataset.getBoundingBox();
+        String       lat       = "";
+        String       lon       = "";
         if (llr != null) {
             lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
             lon = Misc.format(llr.getCenterLon());
         }
-        //String llb =
-        //  getRepository().getMapManager().makeMapSelector(ARG_LOCATION, true, new String[]{ "", ""});
 
         String llb = " Latitude: "
                      + HtmlUtil.input(
@@ -1404,11 +1365,10 @@ public class DataOutputHandler extends OutputHandler {
                                      HtmlUtil.SIZE_5 + " "
                                      + HtmlUtil.id(ARG_LOCATION_LONGITUDE));
 
-        llb = getRepository().getMapManager().makeMapSelector(ARG_LOCATION, true, "", "", new String[]{"",""}, null);
-        sb.append(
-            HtmlUtil.formEntryTop(
-                msgLabel("Choose Point"),
-                llb));
+        llb = getRepository().getMapManager().makeMapSelector(ARG_LOCATION,
+                true, "", "", new String[] { "",
+                                             "" }, null);
+        sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
 
         if ((dates != null) && (dates.size() > 0)) {
             List formattedDates = new ArrayList();
@@ -1435,12 +1395,15 @@ public class DataOutputHandler extends OutputHandler {
                                           toDate)));
         }
 
-        addPublishWidget(request, entry, sb,msg("Select a folder to publish the point data to"));
+        addPublishWidget(request, entry, sb,
+                         msg("Select a folder to publish the point data to"));
         sb.append(HtmlUtil.formTableClose());
         sb.append("<hr>");
         sb.append(msgLabel("Select Variables"));
         sb.append(HtmlUtil.insetDiv(HtmlUtil.table(varSB.toString(),
-                                                   HtmlUtil.attrs(HtmlUtil.ATTR_CELLPADDING, "5", HtmlUtil.ATTR_CELLSPACING, "0")),0,30,0,0));
+                HtmlUtil.attrs(HtmlUtil.ATTR_CELLPADDING, "5",
+                               HtmlUtil.ATTR_CELLSPACING, "0")), 0, 30, 0,
+                                   0));
 
         sb.append(HtmlUtil.submit("Get Point"));
         //sb.append(submitExtra);
@@ -1450,29 +1413,131 @@ public class DataOutputHandler extends OutputHandler {
                                new State(entry));
     }
 
+    /**
+     * Get the grid dates
+     *
+     * @param dataset  the dataset
+     *
+     * @return  the dates or null
+     */
+    private List<Date> getGridDates(GridDataset dataset) {
+        List<Date>         gridDates = null;
+        List<GridDatatype> grids     = dataset.getGrids();
+        HashSet<Date>      dateHash  = new HashSet<Date>();
+        List<CoordinateAxis1DTime> timeAxes =
+            new ArrayList<CoordinateAxis1DTime>();
+
+        for (GridDatatype grid : grids) {
+            GridCoordSystem      gcs      = grid.getCoordinateSystem();
+            CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
+            if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
+                timeAxes.add(timeAxis);
+
+                Date[] timeDates = timeAxis.getTimeDates();
+                for (Date timeDate : timeDates) {
+                    dateHash.add(timeDate);
+                }
+            }
+        }
+        if ( !dateHash.isEmpty()) {
+            gridDates =
+                Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
+            Collections.sort(gridDates);
+        }
+        return gridDates;
+    }
 
     /**
-     * _more_
+     * Get the variable selector form
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param dataset  the dataset
+     * @param withLevelSelector  if true, include a level selector widget
      *
-     * @return _more_
+     * @return  the form
+     */
+    protected StringBuffer getVariableForm(GridDataset dataset,
+                                           boolean withLevelSelector) {
+        int          varCnt  = 0;
+        StringBuffer varSB   = new StringBuffer();
+        StringBuffer varSB2D = new StringBuffer();
+        StringBuffer varSB3D = new StringBuffer();
+
+        for (GridDatatype grid : sortGrids(dataset)) {
+            String cbxId = "varcbx_" + (varCnt++);
+            String call = HtmlUtil.attr(
+                              HtmlUtil.ATTR_ONCLICK,
+                              HtmlUtil.call(
+                                  "checkboxClicked",
+                                  HtmlUtil.comma(
+                                      "event", HtmlUtil.squote(ARG_VARIABLE),
+                                      HtmlUtil.squote(cbxId))));
+            VariableEnhanced var     = grid.getVariable();
+            StringBuffer     sbToUse = (grid.getZDimension() == null)
+                                       ? varSB2D
+                                       : varSB3D;
+
+            sbToUse.append(
+                HtmlUtil.row(
+                    HtmlUtil.cols(
+                        HtmlUtil.checkbox(
+                            ARG_VARIABLE + "." + var.getShortName(),
+                            HtmlUtil.VALUE_TRUE, false,
+                            HtmlUtil.id(cbxId) + call) + HtmlUtil.space(1)
+                                + var.getName() + HtmlUtil.space(1)
+                                + ((var.getUnitsString() != null)
+                                   ? "(" + var.getUnitsString() + ")"
+                                   : ""), "<i>" + var.getDescription()
+                                          + "</i>")));
+
+        }
+        if (varSB2D.length() > 0) {
+            if (varSB3D.length() > 0) {
+                varSB.append(HtmlUtil.row(HtmlUtil.headerCols(new Object[] {
+                    "2D Grids" })));
+            }
+            varSB.append(varSB2D);
+        }
+        if (varSB3D.length() > 0) {
+            if ((varSB2D.length() > 0) || withLevelSelector) {
+                String header = " 3D Grids";
+                if (withLevelSelector) {
+                    header += HtmlUtil.space(3) + "Level:"
+                              + HtmlUtil.space(1)
+                              + HtmlUtil.input(ARG_LEVEL, "");
+                }
+                varSB.append(HtmlUtil.row(HtmlUtil.headerCols(new Object[] {
+                    header })));
+            }
+            varSB.append(varSB3D);
+        }
+        return varSB;
+    }
+
+    /**
+     * Handle a grid as point request
      *
-     * @throws Exception _more_
+     * @param request  the request
+     * @param entry    the entry
+     *
+     * @return  the result
+     *
+     * @throws Exception problems
      */
     public Result outputGridAsPoint(Request request, Entry entry)
-        throws Exception {
+            throws Exception {
         StringBuffer sb     = new StringBuffer();
         String       path   = getPath(entry);
-        GridDataset gds = gridPool.get(path);
+        GridDataset  gds    = gridPool.get(path);
         OutputType   output = request.getOutput();
         try {
             if (output.equals(OUTPUT_GRIDASPOINT)) {
-                Result result = outputGridAsPointProcess(request, entry, gds, sb);
-                if(result!=null) return result;
+                Result result = outputGridAsPointProcess(request, entry, gds,
+                                    sb);
+                if (result != null) {
+                    return result;
+                }
             }
-            return  outputGridAsPointForm(request, entry, gds, sb);
+            return outputGridAsPointForm(request, entry, gds, sb);
         } finally {
             gridPool.put(path, gds);
         }
@@ -1480,14 +1545,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Handle a grid subset request
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request the request
+     * @param entry   the entry
      *
-     * @return _more_
+     * @return  a Result
      *
-     * @throws Exception _more_
+     * @throws Exception  problem handling the request
      */
     public Result outputGridSubset(Request request, Entry entry)
             throws Exception {
@@ -1557,11 +1622,11 @@ public class DataOutputHandler extends OutputHandler {
                 gridPool.put(path, gds);
 
                 if (doingPublish(request)) {
-                    return getEntryManager().processEntryPublish(request, f, (Entry)entry.clone(), entry, "subset of");
+                    return getEntryManager().processEntryPublish(request, f,
+                            (Entry) entry.clone(), entry, "subset of");
                 }
-                
-                return new Result(
-                                  entry.getName() + ".nc",
+
+                return new Result(entry.getName() + ".nc",
                                   getStorageManager().getFileInputStream(f),
                                   "application/x-netcdf");
             }
@@ -1588,11 +1653,34 @@ public class DataOutputHandler extends OutputHandler {
                                          HtmlUtil.SIZE_3)));
 
 
-        Date[]       dateRange = null;
-        List<Date>   dates     = null;
-
         GridDataset  dataset   = gridPool.get(path);
+        Date[]       dateRange = null;
+        List<Date>   dates     = getGridDates(dataset);
+        StringBuffer varSB     = getVariableForm(dataset, false);
+
+        /*
+        List<GridDatatype> grids     = dataset.getGrids();
         StringBuffer varSB     = new StringBuffer();
+        HashSet<Date>      dateHash  = new HashSet<Date>();
+        List<CoordinateAxis1DTime> timeAxes =
+            new ArrayList<CoordinateAxis1DTime>();
+
+        for (GridDatatype grid : grids) {
+            GridCoordSystem      gcs      = grid.getCoordinateSystem();
+            CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
+            if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
+                timeAxes.add(timeAxis);
+
+                Date[] timeDates = timeAxis.getTimeDates();
+                for (Date timeDate : timeDates) {
+                    dateHash.add(timeDate);
+                }
+            }
+        }
+        dates = Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
+        Collections.sort(dates);
+        */
+        /*
         for (VariableSimpleIF var : dataset.getDataVariables()) {
             //            System.err.println("var:" + var.getName() + " type:"
             //                               + var.getClass().getName());
@@ -1609,6 +1697,8 @@ public class DataOutputHandler extends OutputHandler {
                 continue;
             }
         }
+        */
+        /*
         int varCnt = 0;
 
         for (GridDatatype grid : sortGrids(dataset)) {
@@ -1662,6 +1752,7 @@ public class DataOutputHandler extends OutputHandler {
                                           ARG_TODATE, formattedDates,
                                           toDate)));
         }
+        */
 
 
         /*
@@ -1700,7 +1791,8 @@ public class DataOutputHandler extends OutputHandler {
                                          HtmlUtil.VALUE_TRUE,
                                          request.get(ARG_ADDLATLON, true))));
 
-        addPublishWidget(request, entry, sb, msg("Select a folder to publish the subset to"));
+        addPublishWidget(request, entry, sb,
+                         msg("Select a folder to publish the subset to"));
         sb.append(HtmlUtil.formTableClose());
         sb.append("<hr>");
         sb.append(msgLabel("Select Variables"));
@@ -2397,13 +2489,13 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the path for the Entry
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return   the path
      *
-     * @throws Exception _more_
+     * @throws Exception problem getting the path
      */
     public String getPath(Entry entry) throws Exception {
         String location;
