@@ -976,6 +976,23 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_PUBLISH = "publish";
 
+
+    /** _more_          */
+    public static final String ARG_SUBMIT_PUBLISH = "submit.publish";
+
+    /** _more_ */
+    public static final String ARG_PUBLISH_ENTRY = "publish.entry";
+
+    /** _more_ */
+    public static final String ARG_PUBLISH_NAME = "publish.name";
+
+    /** _more_ */
+    public static final String ARG_PUBLISH_DESCRIPTION =
+        "publish.description";
+
+
+
+
     /** _more_ */
     public static final String ARG_JUSTPUBLISH = "justpublish";
 

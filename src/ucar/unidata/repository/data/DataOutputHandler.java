@@ -158,9 +158,6 @@ public class DataOutputHandler extends OutputHandler {
     public static final String ARG_ADDLATLON = "addlatlon";
 
     /** _more_ */
-    public static final String ARG_ADDTOREPOSITORY = "addtorepository";
-
-    /** _more_ */
     public static final String ARG_SUBSETAREA = "subsetarea";
 
     /** _more_ */
@@ -1090,8 +1087,6 @@ public class DataOutputHandler extends OutputHandler {
         }
 
 
-
-
         if (getRepository().getAccessManager().canDoAction(request, entry,
                 Permission.ACTION_EDIT)) {
             request.put(ARG_METADATA_ADD, HtmlUtil.VALUE_TRUE);
@@ -1215,10 +1210,6 @@ public class DataOutputHandler extends OutputHandler {
     public Result outputGridAsPointProcess(Request request, Entry entry, GridDataset gds, StringBuffer sb)
         throws Exception {
 
-        boolean canAdd =
-            getRepository().getAccessManager().canDoAction(request,
-                                                           entry.getParentEntry(), Permission.ACTION_NEW);
-
         List      varNames = new ArrayList<String>();
         Hashtable args     = request.getArgs();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
@@ -1250,9 +1241,7 @@ public class DataOutputHandler extends OutputHandler {
                       getRepository().showDialogWarning(
                                                         "No variables selected"));
         } else {
-
             //                System.err.println ("varNames:" + varNames);
-
             GridPointWriter writer =
                 new GridPointWriter(gds,
                                     new DiskCache2(getRepository()
@@ -1280,51 +1269,17 @@ public class DataOutputHandler extends OutputHandler {
             }
 
             PrintWriter pw = new PrintWriter(System.out);
-
             File        f  = writer.write(qp, pw);
-
-
-            if (request.get(ARG_ADDTOREPOSITORY, false)) {
-                if ( !canAdd) {
-                    sb.append("Cannot add to repository");
-                } else {
-                    Entry newEntry = (Entry) entry.clone();
-                    File newFile =
-                        getRepository().getStorageManager().moveToStorage(
-                                                                          request, f);
-                    newEntry.setResource(new Resource(newFile,
-                                                      Resource.TYPE_STOREDFILE));
-                    newEntry.setId(getRepository().getGUID());
-                    newEntry.setName("subset_" + newEntry.getName());
-                    newEntry.clearMetadata();
-                    newEntry.setUser(request.getUser());
-                    newEntry.addAssociation(
-                                            new Association(
-                                                            getRepository().getGUID(), "", "subset from",
-                                                            entry.getId(), newEntry.getId()));
-                    if (request.get(ARG_METADATA_ADD, false)) {
-                        newEntry.clearArea();
-                        List<Entry> entries =
-                            (List<Entry>) Misc.newList(newEntry);
-                        getEntryManager().addInitialMetadata(request,
-                                                             entries, false,
-                                                             request.get(ARG_SHORT, false));
-                    }
-                    getEntryManager().insertEntries(
-                                                    Misc.newList(newEntry), true);
-                    return new Result(
-                                      request.entryUrl(
-                                                       getRepository().URL_ENTRY_FORM, newEntry));
-                }
-            } else {
-                return new Result(
-                                  entry.getName() + ".nc",
-                                  getStorageManager().getFileInputStream(f),
-                                  "application/x-netcdf");
+            if (doingPublish(request)) {
+                return getEntryManager().processEntryPublish(request, f, (Entry)entry.clone(), entry, "point series of");
             }
+            return new Result(
+                              entry.getName() + ".nc",
+                              getStorageManager().getFileInputStream(f),
+                              "application/x-netcdf");
         }
 
-        return null;
+        return new Result("",sb);
     }
 
 
@@ -1342,22 +1297,9 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.form(formUrl + "/" + fileName));
         sb.append(HtmlUtil.br());
 
-        String submitExtra = "";
-        if (canAdd) {
-            submitExtra = HtmlUtil.space(1)
-                          + HtmlUtil.checkbox(
-                              ARG_ADDTOREPOSITORY, HtmlUtil.VALUE_TRUE,
-                              request.get(ARG_ADDTOREPOSITORY, false)) + msg(
-                                  "Add to Repository") + HtmlUtil.checkbox(
-                                  ARG_METADATA_ADD, HtmlUtil.VALUE_TRUE,
-                                  request.get(ARG_METADATA_ADD, false)) + msg(
-                                      "Add properties");
-
-        }
 
 
         sb.append(HtmlUtil.submit("Get Point", ARG_SUBMIT));
-        sb.append(submitExtra);
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_GRIDASPOINT));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
@@ -1468,7 +1410,6 @@ public class DataOutputHandler extends OutputHandler {
                 msgLabel("Choose Point"),
                 llb));
 
-
         if ((dates != null) && (dates.size() > 0)) {
             List formattedDates = new ArrayList();
             for (Date date : dates) {
@@ -1494,7 +1435,8 @@ public class DataOutputHandler extends OutputHandler {
                                           toDate)));
         }
 
-        sb.append("</table>");
+        addPublishWidget(request, entry, sb,msg("Select a folder to publish the point data to"));
+        sb.append(HtmlUtil.formTableClose());
         sb.append("<hr>");
         sb.append(msgLabel("Select Variables"));
         sb.append(HtmlUtil.insetDiv(HtmlUtil.table(varSB.toString(),
@@ -1605,9 +1547,6 @@ public class DataOutputHandler extends OutputHandler {
                 File f =
                     getRepository().getStorageManager().getTmpFile(request,
                         "subset.nc");
-
-                //                System.err.println ("varNames:" + varNames);
-
                 GridDataset gds = gridPool.get(path);
                 writer.makeFile(f.toString(), gds, varNames, llr,
                                 ((dates[0] == null)
@@ -1617,44 +1556,14 @@ public class DataOutputHandler extends OutputHandler {
                                              timeStride);
                 gridPool.put(path, gds);
 
-                if (request.get(ARG_ADDTOREPOSITORY, false)) {
-                    if ( !canAdd) {
-                        sb.append("Cannot add to repository");
-                    } else {
-                        Entry newEntry = (Entry) entry.clone();
-                        File newFile =
-                            getRepository().getStorageManager().moveToStorage(
-                                request, f);
-                        newEntry.setResource(new Resource(newFile,
-                                Resource.TYPE_STOREDFILE));
-                        newEntry.setId(getRepository().getGUID());
-                        newEntry.setName("subset_" + newEntry.getName());
-                        newEntry.clearMetadata();
-                        newEntry.setUser(request.getUser());
-                        newEntry.addAssociation(
-                            new Association(
-                                getRepository().getGUID(), "", "subset from",
-                                entry.getId(), newEntry.getId()));
-                        if (request.get(ARG_METADATA_ADD, false)) {
-                            newEntry.clearArea();
-                            List<Entry> entries =
-                                (List<Entry>) Misc.newList(newEntry);
-                            getEntryManager().addInitialMetadata(request,
-                                    entries, false,
-                                    request.get(ARG_SHORT, false));
-                        }
-                        getEntryManager().insertEntries(
-                            Misc.newList(newEntry), true);
-                        return new Result(
-                            request.entryUrl(
-                                getRepository().URL_ENTRY_FORM, newEntry));
-                    }
-                } else {
-                    return new Result(
-                        entry.getName() + ".nc",
-                        getStorageManager().getFileInputStream(f),
-                        "application/x-netcdf");
+                if (doingPublish(request)) {
+                    return getEntryManager().processEntryPublish(request, f, (Entry)entry.clone(), entry, "subset of");
                 }
+                
+                return new Result(
+                                  entry.getName() + ".nc",
+                                  getStorageManager().getFileInputStream(f),
+                                  "application/x-netcdf");
             }
         }
 
@@ -1665,26 +1574,13 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.form(formUrl + "/" + fileName));
         sb.append(HtmlUtil.br());
 
-        String submitExtra = "";
-        if (canAdd) {
-            submitExtra = HtmlUtil.space(1)
-                          + HtmlUtil.checkbox(
-                              ARG_ADDTOREPOSITORY, HtmlUtil.VALUE_TRUE,
-                              request.get(ARG_ADDTOREPOSITORY, false)) + msg(
-                                                                             "Add to Repository") + HtmlUtil.checkbox(
-                                  ARG_METADATA_ADD, HtmlUtil.VALUE_TRUE,
-                                  request.get(ARG_METADATA_ADD, false)) + msg(
-                                      "Add properties");
-        }
-
-
-
         sb.append(HtmlUtil.submit("Subset Grid", ARG_SUBMIT));
-        sb.append(submitExtra);
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_GRIDSUBSET));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.formTable());
+
+
 
         sb.append(HtmlUtil.formEntry(msgLabel("Horizontal Stride"),
                                      HtmlUtil.input(ARG_HSTRIDE,
@@ -1804,16 +1700,17 @@ public class DataOutputHandler extends OutputHandler {
                                          HtmlUtil.VALUE_TRUE,
                                          request.get(ARG_ADDLATLON, true))));
 
-
-        sb.append("</table>");
+        addPublishWidget(request, entry, sb, msg("Select a folder to publish the subset to"));
+        sb.append(HtmlUtil.formTableClose());
         sb.append("<hr>");
-        sb.append("Select Variables:<ul>");
+        sb.append(msgLabel("Select Variables"));
+        sb.append("<ul>");
         sb.append("<table>");
         sb.append(varSB);
         sb.append("</table>");
         sb.append("</ul>");
         sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.submit("Subset Grid"));
+        sb.append(HtmlUtil.submit(msg("Subset Grid")));
         sb.append(HtmlUtil.formClose());
         gridPool.put(path, dataset);
         return makeLinksResult(request, msg("Grid Subset"), sb,

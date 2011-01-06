@@ -2763,6 +2763,14 @@ return new Result(title, sb);
 
     }
 
+    public boolean canAddTo(Request request, Entry parent) throws Exception {
+        return 
+                getRepository().getAccessManager().canDoAction(request,
+                                                               parent, Permission.ACTION_NEW);
+
+    }
+
+
 
     /**
      * _more_
@@ -5307,6 +5315,54 @@ return new Result(title, sb);
     }
 
 
+    public Result processEntryPublish(Request request, File file, Entry entry,
+                                      Entry associatedEntry,
+                                      String associationType) throws Exception {
+        Group parent = getEntryManager().findGroup(request,
+                                                   request.getString(ARG_PUBLISH_ENTRY
+                                                                     + "_hidden", ""));
+        if (parent == null) {
+            return new Result(
+                              "",
+                              new StringBuffer(
+                                               getRepository().showDialogError(
+                                                                               msg("Could not find folder"))));
+        }
+
+        if(!canAddTo(request, parent)) {
+            throw new IllegalArgumentException("No permissions to add new entry");
+        } 
+
+        Entry newEntry = (entry!=null?entry:new Entry(getRepository().getTypeHandler(TypeHandler.TYPE_FILE),false));
+        File newFile =
+            getRepository().getStorageManager().moveToStorage(
+                                                              request, file);
+        newEntry.setParentEntry(parent);
+        newEntry.setResource(new Resource(newFile,
+                                          Resource.TYPE_STOREDFILE));
+        newEntry.setId(getRepository().getGUID());
+        newEntry.setName(request.getString(ARG_PUBLISH_NAME,"subset_" + newEntry.getName()));
+        newEntry.clearMetadata();
+        newEntry.setUser(request.getUser());
+        if (request.get(ARG_METADATA_ADD, false)) {
+            newEntry.clearArea();
+            List<Entry> entries =
+                (List<Entry>) Misc.newList(newEntry);
+            getEntryManager().addInitialMetadata(request,
+                                                 entries, false,
+                                                 request.get(ARG_SHORT, false));
+        }
+        insertEntries(Misc.newList(newEntry), true);
+        if(associatedEntry!=null) {
+            getAssociationManager().addAssociation(request, associatedEntry,
+                                                   newEntry, "", associationType);
+        }
+        return new Result(
+                          request.entryUrl(
+                                           getRepository().URL_ENTRY_FORM, newEntry));
+
+    }
+
 
     /**
      * _more_
@@ -5604,6 +5660,9 @@ return new Result(title, sb);
                 (PreparedStatement) typeStatements.get(keys.nextElement());
             getDatabaseManager().closeStatement(typeStatement);
         }
+
+
+
 
         Misc.run(getRepository(), "checkNewEntries", entries);
     }

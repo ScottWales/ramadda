@@ -2848,6 +2848,79 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param arg _more_
+     * @param dflt _more_
+     * @param width _more_
+     *
+     * @return _more_
+     */
+    public String htmlInput(Request request, String arg, String dflt,
+                             int width) {
+        return HtmlUtil.input(arg, request.getString(arg, dflt),
+                              HtmlUtil.attr(HtmlUtil.ATTR_SIZE, "" + width));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param arg _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String htmlInput(Request request, String arg, String dflt) {
+        return htmlInput(request, arg, dflt, 5);
+    }
+
+    public boolean canAddTo(Request request, Entry parent) throws Exception {
+        return getEntryManager().canAddTo(request, parent);
+    }
+
+
+    /**
+     * Did the user choose an entry to publish to 
+     */
+    public boolean doingPublish(Request request) {
+        return request.defined(ARG_PUBLISH_ENTRY + "_hidden");
+    }
+
+    /**
+     * If the user is not anonymous then add the "Publish to" widget.
+     */
+    public void addPublishWidget(Request request, Entry entry, StringBuffer sb, String header) throws Exception { 
+        if ( !request.getUser().getAnonymous()) {
+            StringBuffer publishSB = new StringBuffer();
+            sb.append(HtmlUtil.hidden(ARG_PUBLISH_ENTRY + "_hidden",
+                                             "",
+                                             HtmlUtil.id(ARG_PUBLISH_ENTRY
+                                                 + "_hidden")));
+            sb.append(
+                      HtmlUtil.row(HtmlUtil.cols("",
+                                                 header)));
+
+            String select = OutputHandler.getSelect(request,
+                                ARG_PUBLISH_ENTRY, "Select folder", false,
+                                null, entry);
+            String addMetadata=  HtmlUtil.checkbox(
+                                                   ARG_METADATA_ADD, HtmlUtil.VALUE_TRUE,
+                                                   request.get(ARG_METADATA_ADD, false)) + 
+                msg("Add properties");
+            sb.append(HtmlUtil.formEntry(msgLabel("Folder"),
+                    HtmlUtil.disabledInput(ARG_PUBLISH_ENTRY, "",
+                                           HtmlUtil.id(ARG_PUBLISH_ENTRY)
+                                           + HtmlUtil.SIZE_60) + select+HtmlUtil.space(2) +addMetadata));
+
+            sb.append(HtmlUtil.formEntry(msgLabel("Name"),
+                    htmlInput(request, ARG_PUBLISH_NAME, "", 30)));
+            
+        }
+    }
 
 
 }

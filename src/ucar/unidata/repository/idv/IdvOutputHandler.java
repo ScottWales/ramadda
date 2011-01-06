@@ -191,20 +191,6 @@ public class IdvOutputHandler extends OutputHandler {
 
 
 
-    /** _more_          */
-    public static final String ARG_SUBMIT_PUBLISH = "submit.publish";
-
-    /** _more_ */
-    public static final String ARG_PUBLISH_ENTRY = "publish.entry";
-
-    /** _more_ */
-    public static final String ARG_PUBLISH_NAME = "publish.name";
-
-    /** _more_ */
-    public static final String ARG_PUBLISH_DESCRIPTION =
-        "publish.description";
-
-
 
 
     /** _more_ */
@@ -821,35 +807,6 @@ public class IdvOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param dflt _more_
-     * @param width _more_
-     *
-     * @return _more_
-     */
-    private String htmlInput(Request request, String arg, String dflt,
-                             int width) {
-        return HtmlUtil.input(arg, request.getString(arg, dflt),
-                              HtmlUtil.attr(HtmlUtil.ATTR_SIZE, "" + width));
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    private String htmlInput(Request request, String arg, String dflt) {
-        return htmlInput(request, arg, dflt, 5);
-    }
 
     /**
      * _more_
@@ -1493,31 +1450,10 @@ public class IdvOutputHandler extends OutputHandler {
                     StringUtil.shorten(choice.getDescription(), 25)));
             tabContents.add(tab.toString());
         }
-
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
             publishSB.append(HtmlUtil.formTable());
-            publishSB.append(HtmlUtil.hidden(ARG_PUBLISH_ENTRY + "_hidden",
-                                             "",
-                                             HtmlUtil.id(ARG_PUBLISH_ENTRY
-                                                 + "_hidden")));
-            publishSB.append(
-                HtmlUtil.row(
-                    HtmlUtil.colspan(
-                        msgHeader(
-                            "Select a folder to publish the product to"), 2)));
-
-            String select = OutputHandler.getSelect(request,
-                                ARG_PUBLISH_ENTRY, "Select folder", false,
-                                null, entry);
-            publishSB.append(HtmlUtil.formEntry(msgLabel("Folder"),
-                    HtmlUtil.disabledInput(ARG_PUBLISH_ENTRY, "",
-                                           HtmlUtil.id(ARG_PUBLISH_ENTRY)
-                                           + HtmlUtil.SIZE_60) + select));
-
-            publishSB.append(HtmlUtil.formEntry(msgLabel("Name"),
-                    htmlInput(request, ARG_PUBLISH_NAME, "", 30)));
-
+            addPublishWidget(request, entry, publishSB,msg("Select a folder to publish the product to"));
             publishSB.append(HtmlUtil.formEntry("",
                     HtmlUtil.submit(msg("Publish image"),
                                     ARG_SUBMIT_PUBLISH)));
@@ -1735,37 +1671,10 @@ public class IdvOutputHandler extends OutputHandler {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
-
-        if (request.exists(ARG_SUBMIT_PUBLISH)
-                && request.defined(ARG_PUBLISH_ENTRY + "_hidden")) {
-            Group parent = getEntryManager().findGroup(request,
-                               request.getString(ARG_PUBLISH_ENTRY
-                                   + "_hidden", ""));
-            if (parent == null) {
-                return new Result(
-                    "Grid Displays",
-                    new StringBuffer(
-                        getRepository().showDialogError(
-                            msg("Could not find folder"))));
-            }
-
+        if (request.exists(ARG_SUBMIT_PUBLISH)  && doingPublish(request)) {
             File imageFile = (File) generateGridImage(request, entry,
-                                 dataSource);
-            String name = request.getString(ARG_PUBLISH_NAME, "").trim();
-            if (name.length() == 0) {
-                name = "Generated Grid Image";
-            }
-            String fileName = IOUtil.cleanFileName(name).replace(" ", "_");
-            imageFile = getStorageManager().copyToStorage(request, imageFile,
-                    fileName + IOUtil.getFileExtension(imageFile.toString()));
-
-            Entry newEntry = getEntryManager().addFileEntry(request,
-                                 imageFile, parent, name, request.getUser());
-            getRepository().getAssociationManager().addAssociation(request,
-                    newEntry, entry, "generated image",
-                    "product generated from");
-            return new Result(
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, newEntry));
+                                                      dataSource);
+            return getEntryManager().processEntryPublish(request, imageFile, null, entry, "derived product");
         }
 
 
