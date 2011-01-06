@@ -1690,7 +1690,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
             String key   =  toks.get(0).trim();
             String value =  toks.get(1).trim();
-            if (key.equals("language.type")) {
+            if (key.equals("language.id")) {
                 type = value;
             } else if (key.equals("language.name")) {
                 name = value;
