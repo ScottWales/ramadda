@@ -234,7 +234,7 @@ public class MapManager extends RepositoryManager {
         } catch(Exception exc) {}
 
         if (popup) {
-            rightSide = getRepository().makeStickyPopup(msg("Select"),
+            rightSide = HtmlUtil.space(2)+getRepository().makeStickyPopup(msg("Select"),
                                                         sb.toString(),
                                                         mapVarName + ".selectionPopupInit();") + HtmlUtil.space(2) + clearLink
                                       + HtmlUtil.space(2)
