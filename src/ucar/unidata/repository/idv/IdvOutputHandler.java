@@ -349,7 +349,7 @@ public class IdvOutputHandler extends OutputHandler {
     };
 
     /** _more_          */
-    private Hashtable exceptArgs = new Hashtable();
+    private HashSet<String> exceptArgs = new HashSet<String>();
 
     /** _more_ */
     private Properties valueToAbbrev;
@@ -481,7 +481,7 @@ public class IdvOutputHandler extends OutputHandler {
         okControls.add("volumerender");
         okControls.add("pointvolumerender");
         for (String notArg : NOTARGS) {
-            exceptArgs.put(notArg, "");
+            exceptArgs.add(notArg);
         }
 
         valueToAbbrev = new Properties();
@@ -1901,7 +1901,7 @@ public class IdvOutputHandler extends OutputHandler {
         for (Enumeration keys =
                 requestArgs.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
-            if (exceptArgs.get(arg) != null) {
+            if (exceptArgs.contains(arg)) {
                 continue;
             }
             Object value = requestArgs.get(arg);
@@ -2656,8 +2656,8 @@ public class IdvOutputHandler extends OutputHandler {
         String jnlpUrl = url + "/" + IOUtil.stripExtension(entry.getName())
                          + ".jnlp";
 
-        Hashtable exceptArgs = new Hashtable();
-        exceptArgs.put(ARG_ACTION, ARG_ACTION);
+        HashSet<String> exceptArgs = new HashSet<String>();
+        exceptArgs.add(ARG_ACTION);
         String args = request.getUrlArgs(exceptArgs, null, ".*_gvdflt");
 
 

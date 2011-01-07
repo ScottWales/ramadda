@@ -1176,16 +1176,34 @@ function selectCancel() {
 }
 
 
+function selectCreate(event, id,allEntries,selecttype, localeId) {
+    if(!selectors[id]) {
+        selectors[id] = new Selector(event,id,allEntries,selecttype,localeId);
+    }
+}
 
-function selectInitialClick(event, id,allEntries,selecttype, localeId) {
-    selectors[id] = new Selector(event,id,allEntries,selecttype,localeId);
+
+function selectInitialClick(event, id, allEntries, selecttype, localeId) {
+    selectCreate(event, id, allEntries, selecttype, localeId);
     return false;
 }
 
 
 function clearSelect(id) {
     selector = selectors[id];
-    if(selector) selector.clearInput();
+    if(selector) {
+        selector.clearInput();
+    } else {
+        //In case the user never clicked select
+        var textComp = util.getDomObject(id);
+        var hiddenComp = util.getDomObject(id+"_hidden");
+	if(hiddenComp) {
+            hiddenComp.obj.value =""
+        }
+	if(textComp) {
+            textComp.obj.value =""
+        }
+    }
 }
 
 

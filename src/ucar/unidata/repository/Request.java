@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.*;
@@ -620,7 +621,7 @@ public class Request implements Constants {
      *
      * @return _more_
      */
-    public String getUrl(Hashtable exceptArgs, Hashtable exceptValues) {
+    public String getUrl(HashSet<String> exceptArgs, HashSet<String> exceptValues) {
         return checkUrl(getRequestPath() + "?"
                         + getUrlArgs(exceptArgs, exceptValues));
     }
@@ -665,7 +666,7 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getUrlArgs() {
-        return getUrlArgs((Hashtable) null);
+        return getUrlArgs((HashSet) null);
     }
 
     /**
@@ -676,7 +677,9 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getUrlArgs(String except) {
-        return getUrlArgs(Misc.newHashtable(except, except));
+        HashSet<String> tmp  = new HashSet<String>();
+        tmp.add(except);
+        return getUrlArgs(tmp);
     }
 
 
@@ -688,7 +691,7 @@ public class Request implements Constants {
      *
      * @return _more_
      */
-    public String getUrlArgs(Hashtable exceptArgs) {
+    public String getUrlArgs(HashSet<String> exceptArgs) {
         return getUrlArgs(exceptArgs, null);
     }
 
@@ -701,7 +704,7 @@ public class Request implements Constants {
      *
      * @return _more_
      */
-    public String getUrlArgs(Hashtable exceptArgs, Hashtable exceptValues) {
+    public String getUrlArgs(HashSet<String> exceptArgs, HashSet<String> exceptValues) {
         return getUrlArgs(exceptArgs, exceptValues, null);
     }
 
@@ -716,13 +719,13 @@ public class Request implements Constants {
      *
      * @return _more_
      */
-    public String getUrlArgs(Hashtable exceptArgs, Hashtable exceptValues,
+    public String getUrlArgs(HashSet<String> exceptArgs, HashSet<String> exceptValues,
                              String exceptArgsPattern) {
         StringBuffer sb  = new StringBuffer();
         int          cnt = 0;
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
-            if ((exceptArgs != null) && (exceptArgs.get(arg) != null)) {
+            if ((exceptArgs != null) && (exceptArgs.contains(arg))) {
                 continue;
             }
 
@@ -733,7 +736,7 @@ public class Request implements Constants {
             //      System.out.println(arg+":" + exceptArgsPattern+":");
 
             Object value = parameters.get(arg);
-            if ((exceptValues != null) && (exceptValues.get(value) != null)) {
+            if ((exceptValues != null) && (exceptValues.contains(value))) {
                 continue;
             }
             if (value instanceof List) {

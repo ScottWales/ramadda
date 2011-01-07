@@ -72,20 +72,21 @@ function RepositoryMap (mapId, params) {
     this.addBaseLayers = function() {
         if(!this.mapLayers) {
             this.mapLayers = [
-                         map_wms_openlayers,
-                         map_yahoo,
-                         map_wms_topographic,
-                         map_ms_shaded,
-                         //map_ms_hybrid,
-                         map_ms_aerial,
-                         map_google_terrain,
-                         //map_google_streets,
-                         map_google_hybrid,
-                         map_google_satellite
+
+                              map_wms_openlayers,
+                              map_yahoo,
+                              map_wms_topographic,
+                              //                              map_ms_shaded,
+                              map_ms_aerial,
+                              //map_ms_hybrid,
+                              //map_google_terrain,
+                              //map_google_streets,
+                              //map_google_hybrid,
+                              //                              map_google_satellite
                          ];
         }
 
-            
+
         for (i = 0; i < this.mapLayers.length; i++) {
             mapLayer = this.mapLayers[i];
             if(mapLayer == map_google_terrain) {
@@ -119,7 +120,9 @@ function RepositoryMap (mapId, params) {
                 this.addWMSLayer(match[1], match[2], match[3]);
             }
         }
-            
+
+
+        return;
         this.graticule = new OpenLayers.Control.Graticule({
                 layerName: "Grid",
                 numPoints: 2, 
@@ -140,21 +143,17 @@ function RepositoryMap (mapId, params) {
         this.name  = "map";
         this.inited = true;
         var mousecontrols = new OpenLayers.Control.Navigation();
-        var optionsorig = {
-            projection: new OpenLayers.Projection("EPSG:900913"),
-            displayProjection: new OpenLayers.Projection("EPSG:4326"),
-            units: "m",
-            maxResolution: 156543.0339,
-            maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
-                                             20037508.34, 20037508.34)
-,            controls: [mousecontrols]
-        };
         var options = {
-            //            projection: new OpenLayers.Projection("EPSG:900913"),
-            //            displayProjection: new OpenLayers.Projection("EPSG:4326")
+            xxxprojection: new OpenLayers.Projection("EPSG:900913"),
+            xxxdisplayProjection: new OpenLayers.Projection("EPSG:900913"),
+            xxxdisplayProjection: new OpenLayers.Projection("EPSG:4326"),
+            xxxunits: "m",
+            xxxmaxResolution: 156543.0339,
+            xxxmaxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+                                             20037508.34, 20037508.34)
         };
-        //        this.map = new OpenLayers.Map( this.mapDivId, options );
-        this.map = new OpenLayers.Map( this.mapDivId);
+        this.map = new OpenLayers.Map( this.mapDivId, options );
+        //        this.map = new OpenLayers.Map( this.mapDivId);
         //        this.map.minResolution = 0.0000001;
         //        this.map.minScale = 0.0000001;
         this.vectors = new OpenLayers.Layer.Vector("Drawing");
@@ -463,6 +462,16 @@ function RepositoryMap (mapId, params) {
                       new OpenLayers.Geometry.Point(east,south),
                       new OpenLayers.Geometry.Point(east,north),
                       new OpenLayers.Geometry.Point(west,north)];
+
+        var earthCS = new OpenLayers.Projection("EPSG:4326");
+        var sphericalMercatorCS = new OpenLayers.Projection("EPSG:900913");
+
+        for(i in points) {
+            break
+            points[i].transform(
+                                earthCS, sphericalMercatorCS);
+        }
+
         return this.addPolygon(id, points, attrs);
     }
 
@@ -485,8 +494,8 @@ function RepositoryMap (mapId, params) {
             }
         }
         if(!this.lines) {
-            this.lines = new OpenLayers.Layer.Vector("Lines", {style: base_style});
-            //            this.lines = new OpenLayers.Layer.PointTrack("Lines", {style: base_style});
+            //            this.lines = new OpenLayers.Layer.Vector("Lines", {style: base_style});
+            this.lines = new OpenLayers.Layer.PointTrack("Lines", {style: base_style});
             this.map.addLayer(this.lines);
             /*
             var sf = new OpenLayers.Control.SelectFeature(theMap.lines,{
@@ -531,7 +540,9 @@ function RepositoryMap (mapId, params) {
     } 
 
     this.removeMarker = function(marker) {
-        this.markers.removeMarker(marker);
+        if(this.markers) {
+            this.markers.removeMarker(marker);
+        }
     }
 
 }

@@ -78,7 +78,6 @@
             <exclude name="org/ramadda/spreadsheet/**/*"/> 
             <include name="org/ramadda/blog/**/*"/>
             <include name="org/ramadda/chat/**/*"/>
-            <include name="org/ramadda/db/**/*"/>
             <include name="org/ramadda/slideshow/**/*"/>
             <include name="org/ramadda/wiki/**/*"/>
 	    </jar>

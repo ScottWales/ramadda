@@ -1878,9 +1878,9 @@ public class DbTypeHandler extends BlobTypeHandler {
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         }
         boolean   canEdit = getAccessManager().canEditEntry(request, entry);
-        Hashtable except  = new Hashtable();
-        except.put(ARG_DB_SORTBY, ARG_DB_SORTBY);
-        except.put(ARG_DB_SORTDIR, ARG_DB_SORTDIR);
+        HashSet<String> except  = new HashSet<String>();
+        except.add(ARG_DB_SORTBY);
+        except.add(ARG_DB_SORTDIR);
 
         String  baseUrl = request.getUrl(except, null);
         boolean asc     = request.getString(ARG_DB_SORTDIR, (dfltSortAsc
@@ -2209,21 +2209,21 @@ public class DbTypeHandler extends BlobTypeHandler {
             info = info.replace("\"", "\\\"");
             if ( !bbox) {
                 js.append(mapVarName+".addMarker(''," +
-                          + MapOutputHandler.newllp(south, east) + 
+                          MapOutputHandler.llp(south, east) + 
                           "," + HtmlUtil.squote(icon) +
                           "," + HtmlUtil.squote(info) +
                           ");\n");
             } else {
                 if ( !makeRectangles) {
                     js.append(mapVarName+".addMarker(''," +
-                              + MapOutputHandler.newllp(south, east) + 
+                              MapOutputHandler.llp(south, east) + 
                               "," + HtmlUtil.squote(icon) +
                               "," + HtmlUtil.squote(info) +
                               ");\n");
 
                 } else {
                     js.append(mapVarName+".addMarker(''," +
-                              + MapOutputHandler.newllp(south+ (north - south) / 2, 
+                              MapOutputHandler.llp(south+ (north - south) / 2, 
                                                         west + (east - west) / 2) + 
                               "," + HtmlUtil.squote(icon) +
                               "," + HtmlUtil.squote(info) +

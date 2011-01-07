@@ -1051,7 +1051,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 String redirectUrl = request.getRequestPath() + "/"
                                      + baseName + ".png" + "?"
                                      + request.getUrlArgs(null,
-                                         Misc.newHashtable(OP_LT, OP_LT));
+                                         getSet(OP_LT));
                 sb.append(HtmlUtil.img(redirectUrl));
             } else {
                 /*
@@ -1085,7 +1085,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 String dataUrl = request.getRequestPath() + "/" + baseName
                                  + ".xml" + "?"
                                  + request.getUrlArgs(null,
-                                     Misc.newHashtable(OP_LT, OP_LT));
+                                     getSet(OP_LT));
                 html = html.replace("${dataurl}", dataUrl);
 
                 sb.append(html);
@@ -1110,7 +1110,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                  + HtmlUtil.urlEncode(baseName) + urlSuffix
                                  + "?"
                                  + request.getUrlArgs(null,
-                                     Misc.newHashtable(OP_LT, OP_LT));
+                                     getSet(OP_LT));
             return new Result(redirectUrl);
         }
 
@@ -1381,6 +1381,12 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     }
 
 
+    private HashSet<String> getSet(String s) {
+        HashSet h = new HashSet();
+        h.add(s);
+        return h;
+    }
+
     /**
      * _more_
      *
@@ -1495,7 +1501,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 request.put(ARG_SKIP, (skip - max) + "");
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null,
-                                           Misc.newHashtable(OP_LT, OP_LT));
+                                           getSet(OP_LT));
                 request.put(ARG_SKIP, skip + "");
                 toks.add(HtmlUtil.href(url, msg("Previous...")));
             }
@@ -1504,7 +1510,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 request.put(ARG_SKIP, (skip + max) + "");
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null,
-                                           Misc.newHashtable(OP_LT, OP_LT));
+                                           getSet(OP_LT));
                 request.put(ARG_SKIP, skip + "");
                 toks.add(HtmlUtil.href(url, msg("Next...")));
             }
@@ -1514,12 +1520,12 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 request.put(ARG_MAX, "" + (max + 100));
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null,
-                                           Misc.newHashtable(OP_LT, OP_LT));
+                                           getSet(OP_LT));
                 toks.add(HtmlUtil.href(url, msg("View More")));
                 request.put(ARG_MAX, "" + (max / 2));
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null,
-                                           Misc.newHashtable(OP_LT, OP_LT));
+                                           getSet(OP_LT));
                 toks.add(HtmlUtil.href(url, msg("View Less")));
             }
 
