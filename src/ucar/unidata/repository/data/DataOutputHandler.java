@@ -1319,9 +1319,12 @@ public class DataOutputHandler extends OutputHandler {
                 return getEntryManager().processEntryPublish(request, f,
                         (Entry) entry.clone(), entry, "point series of");
             }
-            return new Result(entry.getName() + suffix,
-                              getStorageManager().getFileInputStream(f),
-                              qp.acceptType);
+            Result result  =  new Result(getStorageManager().getFileInputStream(f),
+                                         qp.acceptType);
+            //Set return filename sets the Content-Disposition http header so the browser saves the file
+            //with the correct name and suffix
+            result.setReturnFilename(IOUtil.stripExtension(entry.getName()) + suffix);
+            return result;
         }
 
         return new Result("", sb);

@@ -217,6 +217,17 @@ public class Result {
      * @param inputStream _more_
      * @param mimeType _more_
      */
+    public Result(InputStream inputStream, String mimeType) {
+        this("",inputStream, mimeType);
+    }
+
+    /**
+     * _more_
+     *
+     * @param title _more_
+     * @param inputStream _more_
+     * @param mimeType _more_
+     */
     public Result(String title, InputStream inputStream, String mimeType) {
         this.title          = title;
         this.inputStream    = inputStream;
@@ -467,6 +478,12 @@ public class Result {
 
 
 
+
+
+
+    public void setReturnFilename(String filename) {
+        addHttpHeader("Content-disposition","attachment; filename=" + filename);
+    }
 
 
 
