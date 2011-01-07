@@ -185,6 +185,8 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
     public static final String PROP_CACHERESOURCES = "ramadda.cacheresources";
 
+    public static final String PROP_LANGUAGE_DEFAULT = "ramadda.language.default";
+
     /** _more_ */
     protected List<RequestUrl> entryEditUrls =
         RepositoryUtil.toList(new RequestUrl[] {
@@ -308,7 +310,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private HashSet<String> seenMsg = new HashSet<String>();
 
     /** _more_ */
-    private boolean trackMsg = false;
+    private boolean trackMsg = true;
 
     private PrintWriter allMsgOutput;
     private PrintWriter missingMsgOutput;
@@ -1641,7 +1643,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 if (content == null) {
                     continue;
                 }
-                Object[]   result     = parsePhrases(content);
+                Object[]   result     = parsePhrases(path, content);
                 String     type       = (String) result[0];
                 String     name       = (String) result[1];
                 Properties properties = (Properties) result[2];
@@ -1675,11 +1677,11 @@ public class Repository extends RepositoryBase implements RequestHandler {
      *
      * @return _more_
      */
-    private Object[] parsePhrases(String content) {
+    private Object[] parsePhrases(String file, String content) {
         List<String> lines   = StringUtil.split(content, "\n", true, true);
         Properties   phrases = new Properties();
-        String       type    = null;
-        String       name    = null;
+        String       type    = IOUtil.stripExtension(IOUtil.getFileTail(file));
+        String       name    = type;
         for (String line : lines) {
             if (line.startsWith("#")) {
                 continue;
@@ -3293,7 +3295,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         User       user     = request.getUser();
         String     language = user.getLanguage();
         Properties tmpMap;
-        Properties map = (Properties) languageMap.get("default");
+        Properties map = (Properties) languageMap.get(getProperty(PROP_LANGUAGE_DEFAULT, "default"));
         if (map == null) {
             map = new Properties();
         }
@@ -3311,7 +3313,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if (phraseMap == null) {
             String phrases = getProperty(PROP_ADMIN_PHRASES, (String) null);
             if (phrases != null) {
-                Object[] result = parsePhrases(phrases);
+                Object[] result = parsePhrases("", phrases);
                 phraseMap = (Properties) result[2];
             }
         }
