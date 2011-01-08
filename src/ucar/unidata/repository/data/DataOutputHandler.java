@@ -162,9 +162,6 @@ public class DataOutputHandler extends OutputHandler {
     /** subset area argument */
     public static final String ARG_SUBSETAREA = "subsetarea";
 
-    /** subset location argument */
-    public static final String ARG_SUBSETLOCATION = "subsetlocation";
-
     /** subset time argument */
     public static final String ARG_SUBSETTIME = "subsettime";
 
@@ -176,6 +173,9 @@ public class DataOutputHandler extends OutputHandler {
 
     /** format */
     public static final String ARG_FORMAT = "format";
+
+    /** chart format */
+    private static final String FORMAT_TIMESERIES_CHART = "timeserieschart";
 
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
@@ -1240,10 +1240,20 @@ public class DataOutputHandler extends OutputHandler {
             }
         }
         //            System.err.println(varNames);
+        LatLonRect llr    = gds.getBoundingBox();
+        double     deflat = 0;
+        double     deflon = 0;
+        if (llr != null) {
+            deflat = llr.getLatMin() + llr.getHeight() / 2;
+            deflon = llr.getCenterLon();
+        }
         LatLonPointImpl llp = null;
-        if (request.get(ARG_SUBSETLOCATION, true)) {
-            llp = new LatLonPointImpl(request.get(ARG_LOCATION_LATITUDE,
-                    40.0), request.get(ARG_LOCATION_LONGITUDE, -105.0));
+
+        if (request.get(ARG_LOCATION, true)) {
+            llp = new LatLonPointImpl(
+                request.getLatOrLonValue(ARG_LOCATION + ".latitude", deflat),
+                request.getLatOrLonValue(
+                    ARG_LOCATION + ".longitude", deflon));
         }
         double levelVal   = request.get(ARG_LEVEL, Double.NaN);
 
@@ -1266,7 +1276,8 @@ public class DataOutputHandler extends OutputHandler {
             //                System.err.println ("varNames:" + varNames);
 
             QueryParams qp = new QueryParams();
-            qp.acceptType = request.getString(ARG_FORMAT, QueryParams.NETCDF);
+            String format = request.getString(ARG_FORMAT, QueryParams.NETCDF);
+            qp.acceptType = format.equals(FORMAT_TIMESERIES_CHART) ? QueryParams.CSV : format;
 
             qp.vars           = varNames;
 
@@ -1290,7 +1301,8 @@ public class DataOutputHandler extends OutputHandler {
                 qp.vertCoord        = levelVal;
             }
             String suffix = ".nc";
-            if (qp.acceptType.equals(QueryParams.CSV)) {
+            if (qp.acceptType.equals(QueryParams.CSV) ||
+            		format.equals(FORMAT_TIMESERIES_CHART)) {
                 suffix = ".csv";
             } else if (qp.acceptType.equals(QueryParams.XML)) {
                 suffix = ".xml";
@@ -1319,11 +1331,38 @@ public class DataOutputHandler extends OutputHandler {
                 return getEntryManager().processEntryPublish(request, f,
                         (Entry) entry.clone(), entry, "point series of");
             }
-            Result result  =  new Result(getStorageManager().getFileInputStream(f),
-                                         qp.acceptType);
-            //Set return filename sets the Content-Disposition http header so the browser saves the file
-            //with the correct name and suffix
-            result.setReturnFilename(IOUtil.stripExtension(entry.getName()) + suffix);
+            String baseName =  IOUtil.stripExtension(entry.getName());
+            Result result = null;
+            if (format.equals(FORMAT_TIMESERIES_CHART)) {
+            	StringBuffer buf = new StringBuffer();
+                String chartTemplate = getRepository().getResource(
+                    "/ucar/unidata/repository/resources/chart/dycharts.html");
+                chartTemplate = chartTemplate.replace("${urlroot}",
+                        getRepository().getUrlBase());
+                //String title = request.getString(ARG_POINT_TIMESERIES_TITLE,
+                //                   entry.getName());
+                String title = "Data at: "+llp.toString();
+                if (title.equals("")) {
+                    title = entry.getName();
+                }
+                chartTemplate = chartTemplate.replace("${title}", title);
+
+                String html = chartTemplate;
+                request.put(ARG_FORMAT, QueryParams.CSV);
+                String dataUrl = request.getRequestPath() + "/" + baseName
+                                 + suffix + "?" + request.getUrlArgs();
+                html = html.replace("${dataurl}", dataUrl);
+
+                buf.append(html);
+                result = new Result("Search Results", buf);
+            	
+            } else {
+                result = new Result(getStorageManager().getFileInputStream(f),
+                           qp.acceptType);
+                //Set return filename sets the Content-Disposition http header so the browser saves the file
+                //with the correct name and suffix
+                result.setReturnFilename(baseName + suffix);
+            }
             return result;
         }
 
@@ -1392,8 +1431,8 @@ public class DataOutputHandler extends OutputHandler {
                                      + HtmlUtil.id(ARG_LOCATION_LONGITUDE));
 
         llb = getRepository().getMapManager().makeMapSelector(ARG_LOCATION,
-                true, "", "", new String[] { "",
-                                             "" }, null);
+                true, "", "", new String[] { lat,
+                                             lon }, null);
         sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
 
         if ((dates != null) && (dates.size() > 0)) {
