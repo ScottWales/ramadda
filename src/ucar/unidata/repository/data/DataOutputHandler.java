@@ -1351,9 +1351,12 @@ public class DataOutputHandler extends OutputHandler {
                 }
                 chartTemplate = chartTemplate.replace("${title}", title);
                 StringBuffer vizsb =
-                    new StringBuffer("visibility: [ false, false, ");
+                    new StringBuffer("visibility: [false, false");
+                if (qp.hasVerticalCoord) {
+                    vizsb.append(", false");
+                }
                 for (int var = 0; var < varNames.size(); var++) {
-                    vizsb.append("true ");
+                    vizsb.append(", true");
                 }
                 vizsb.append("],");
                 chartTemplate = chartTemplate.replace("${options}",
