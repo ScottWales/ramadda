@@ -1664,20 +1664,16 @@ public class Repository extends RepositoryBase implements RequestHandler {
         List<String> listing = new ArrayList<String>();
         File         f       = new File(path);
         if (f.exists()) {
-            System.err.println("file listing: " + path);
             File[] files = f.listFiles();
             for (int i = 0; i < files.length; i++) {
                 listing.add(files[i].toString());
             }
         } else {
             //try it as a java resource                                                                           
-            System.err.println("resource listing: " + path);
             String contents = IOUtil.readContents(path, c, (String) null);
             if(contents == null) {
                 contents = IOUtil.readContents(path+"/files.txt", c, (String) null);
             }
-            System.err.println("contents:" + contents);
-
             if (contents != null) {
                 List<String> lines = StringUtil.split(contents, "\n", true,
                                                       true);
