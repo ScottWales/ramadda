@@ -1079,13 +1079,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     title = entry.getName();
                 }
                 chartTemplate = chartTemplate.replace("${title}", title);
+                chartTemplate = chartTemplate.replace("${options}", "");
 
                 String html = chartTemplate;
                 request.put(ARG_POINT_FORMAT, FORMAT_TIMESERIES_DATA);
                 String dataUrl = request.getRequestPath() + "/" + baseName
                                  + ".xml" + "?"
-                                 + request.getUrlArgs(null,
-                                     getSet(OP_LT));
+                                 + request.getUrlArgs(null, getSet(OP_LT));
                 html = html.replace("${dataurl}", dataUrl);
 
                 sb.append(html);
@@ -1109,8 +1109,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             String redirectUrl = request.getRequestPath() + "/"
                                  + HtmlUtil.urlEncode(baseName) + urlSuffix
                                  + "?"
-                                 + request.getUrlArgs(null,
-                                     getSet(OP_LT));
+                                 + request.getUrlArgs(null, getSet(OP_LT));
             return new Result(redirectUrl);
         }
 
@@ -1381,6 +1380,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     private HashSet<String> getSet(String s) {
         HashSet h = new HashSet();
         h.add(s);
@@ -1500,8 +1506,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (skip > 0) {
                 request.put(ARG_SKIP, (skip - max) + "");
                 url = request.getRequestPath() + "?"
-                      + request.getUrlArgs(null,
-                                           getSet(OP_LT));
+                      + request.getUrlArgs(null, getSet(OP_LT));
                 request.put(ARG_SKIP, skip + "");
                 toks.add(HtmlUtil.href(url, msg("Previous...")));
             }
@@ -1509,8 +1514,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (numItems >= max) {
                 request.put(ARG_SKIP, (skip + max) + "");
                 url = request.getRequestPath() + "?"
-                      + request.getUrlArgs(null,
-                                           getSet(OP_LT));
+                      + request.getUrlArgs(null, getSet(OP_LT));
                 request.put(ARG_SKIP, skip + "");
                 toks.add(HtmlUtil.href(url, msg("Next...")));
             }
@@ -1519,13 +1523,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (numItems >= max) {
                 request.put(ARG_MAX, "" + (max + 100));
                 url = request.getRequestPath() + "?"
-                      + request.getUrlArgs(null,
-                                           getSet(OP_LT));
+                      + request.getUrlArgs(null, getSet(OP_LT));
                 toks.add(HtmlUtil.href(url, msg("View More")));
                 request.put(ARG_MAX, "" + (max / 2));
                 url = request.getRequestPath() + "?"
-                      + request.getUrlArgs(null,
-                                           getSet(OP_LT));
+                      + request.getUrlArgs(null, getSet(OP_LT));
                 toks.add(HtmlUtil.href(url, msg("View Less")));
             }
 
@@ -2853,7 +2855,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         String max = HtmlUtil.input(ARG_MAX,
                                     request.getString(ARG_MAX, "1000"),
-                                    HtmlUtil.SIZE_5+HtmlUtil.id(ARG_MAX));
+                                    HtmlUtil.SIZE_5 + HtmlUtil.id(ARG_MAX));
         List formats = Misc.toList(new Object[] {
             new TwoFacedObject("Html", FORMAT_HTML),
             new TwoFacedObject("Interactive Chart", FORMAT_CHART),
@@ -2896,17 +2898,26 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                            HtmlUtil.select(ARG_POINT_FORMAT,
                                                formats, format)));
 
-        
-        String totalLabel = HtmlUtil.jsLink(HtmlUtil.onMouseClick("clearPointCount();"),cnt +" " + msg("total"),
-                                            HtmlUtil.attr(HtmlUtil.ATTR_ALT,msg("Click to clear count")) +
-                                            HtmlUtil.attr(HtmlUtil.ATTR_TITLE,msg("Click to clear count")));
+
+        String totalLabel = HtmlUtil.jsLink(
+                                HtmlUtil.onMouseClick("clearPointCount();"),
+                                cnt + " " + msg("total"),
+                                HtmlUtil.attr(
+                                    HtmlUtil.ATTR_ALT,
+                                    msg(
+                                    "Click to clear count")) + HtmlUtil.attr(
+                                        HtmlUtil.ATTR_TITLE,
+                                        msg("Click to clear count")));
 
 
 
         outputSB.append(HtmlUtil.formEntry(msgLabel("Max"),
                                            max + HtmlUtil.space(1) + "("
                                            + totalLabel + ")"));
-        outputSB.append(HtmlUtil.script("function clearPointCount() {obj=util.getDomObject('" +ARG_MAX +"');\nif(!obj)return;obj.obj.value='';\n}"));
+        outputSB.append(
+            HtmlUtil.script(
+                "function clearPointCount() {obj=util.getDomObject('"
+                + ARG_MAX + "');\nif(!obj)return;obj.obj.value='';\n}"));
         List skip = Misc.toList(new Object[] {
             new TwoFacedObject("None", 1),
             new TwoFacedObject("Every other one", 2),
@@ -3078,12 +3089,15 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtil.submit(msg("Search"), ARG_POINT_SEARCH));
         sb.append(HtmlUtil.p());
 
-        sb.append(HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(
-                                                            msgHeader("Select")+
-                                                            basicSB.toString(), 
-                                                            msgHeader("Results") +outputSB.toString()),
-                                              HtmlUtil.attr(HtmlUtil.ATTR_VALIGN,"top")),
-                                 HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,"100%")));
+        sb.append(
+            HtmlUtil.table(
+                HtmlUtil.row(
+                    HtmlUtil.cols(
+                        msgHeader("Select") + basicSB.toString(),
+                        msgHeader("Results")
+                        + outputSB.toString()), HtmlUtil.attr(
+                            HtmlUtil.ATTR_VALIGN, "top")), HtmlUtil.attr(
+                                HtmlUtil.ATTR_WIDTH, "100%")));
 
         /*        sb.append(HtmlUtil.makeShowHideBlock(msg("Basic"),
                                              basicSB.toString(), true));
@@ -3097,8 +3111,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtil.makeShowHideBlock(msg("Parameters"),
                                              params.toString(), false));
 
-        sb.append(HtmlUtil.makeShowHideBlock(
-                                             msg("Settings"),
+        sb.append(HtmlUtil.makeShowHideBlock(msg("Settings"),
                                              advOutputSB.toString(), false));
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Search"), ARG_POINT_SEARCH));

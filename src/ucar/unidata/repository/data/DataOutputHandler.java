@@ -1276,8 +1276,11 @@ public class DataOutputHandler extends OutputHandler {
             //                System.err.println ("varNames:" + varNames);
 
             QueryParams qp = new QueryParams();
-            String format = request.getString(ARG_FORMAT, QueryParams.NETCDF);
-            qp.acceptType = format.equals(FORMAT_TIMESERIES_CHART) ? QueryParams.CSV : format;
+            String format  = request.getString(ARG_FORMAT,
+                                 QueryParams.NETCDF);
+            qp.acceptType     = format.equals(FORMAT_TIMESERIES_CHART)
+                                ? QueryParams.CSV
+                                : format;
 
             qp.vars           = varNames;
 
@@ -1301,8 +1304,8 @@ public class DataOutputHandler extends OutputHandler {
                 qp.vertCoord        = levelVal;
             }
             String suffix = ".nc";
-            if (qp.acceptType.equals(QueryParams.CSV) ||
-            		format.equals(FORMAT_TIMESERIES_CHART)) {
+            if (qp.acceptType.equals(QueryParams.CSV)
+                    || format.equals(FORMAT_TIMESERIES_CHART)) {
                 suffix = ".csv";
             } else if (qp.acceptType.equals(QueryParams.XML)) {
                 suffix = ".xml";
@@ -1331,21 +1334,30 @@ public class DataOutputHandler extends OutputHandler {
                 return getEntryManager().processEntryPublish(request, f,
                         (Entry) entry.clone(), entry, "point series of");
             }
-            String baseName =  IOUtil.stripExtension(entry.getName());
-            Result result = null;
+            String baseName = IOUtil.stripExtension(entry.getName());
+            Result result   = null;
             if (format.equals(FORMAT_TIMESERIES_CHART)) {
-            	StringBuffer buf = new StringBuffer();
-                String chartTemplate = getRepository().getResource(
-                    "/ucar/unidata/repository/resources/chart/dycharts.html");
+                StringBuffer buf = new StringBuffer();
+                String chartTemplate =
+                    getRepository().getResource(
+                        "/ucar/unidata/repository/resources/chart/dycharts.html");
                 chartTemplate = chartTemplate.replace("${urlroot}",
                         getRepository().getUrlBase());
                 //String title = request.getString(ARG_POINT_TIMESERIES_TITLE,
                 //                   entry.getName());
-                String title = "Data at: "+llp.toString();
+                String title = "Data at: " + llp.toString();
                 if (title.equals("")) {
                     title = entry.getName();
                 }
                 chartTemplate = chartTemplate.replace("${title}", title);
+                StringBuffer vizsb =
+                    new StringBuffer("visibility: [ false, false, ");
+                for (int var = 0; var < varNames.size(); var++) {
+                    vizsb.append("true ");
+                }
+                vizsb.append("],");
+                chartTemplate = chartTemplate.replace("${options}",
+                        vizsb.toString());
 
                 String html = chartTemplate;
                 request.put(ARG_FORMAT, QueryParams.CSV);
@@ -1355,10 +1367,11 @@ public class DataOutputHandler extends OutputHandler {
 
                 buf.append(html);
                 result = new Result("Search Results", buf);
-            	
+
             } else {
-                result = new Result(getStorageManager().getFileInputStream(f),
-                           qp.acceptType);
+                result =
+                    new Result(getStorageManager().getFileInputStream(f),
+                               qp.acceptType);
                 //Set return filename sets the Content-Disposition http header so the browser saves the file
                 //with the correct name and suffix
                 result.setReturnFilename(baseName + suffix);
@@ -1462,9 +1475,10 @@ public class DataOutputHandler extends OutputHandler {
         List formats = Misc.toList(new Object[] {
                            new TwoFacedObject("NetCDF", QueryParams.NETCDF),
                            new TwoFacedObject("Xml", QueryParams.XML),
-        //new TwoFacedObject("Interactive Time Series", FORMAT_TIMESERIES_CHART),
-        new TwoFacedObject("Comma Separated Values (CSV)",
-                           QueryParams.CSV) });
+                           new TwoFacedObject("Interactive Time Series",
+                               FORMAT_TIMESERIES_CHART),
+                           new TwoFacedObject("Comma Separated Values (CSV)",
+                               QueryParams.CSV) });
 
         String format = request.getString(ARG_FORMAT, QueryParams.NETCDF);
 
