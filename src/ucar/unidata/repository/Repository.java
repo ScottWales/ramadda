@@ -1632,7 +1632,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 getStorageManager().getPluginsDir().toString());
         for (int i = 0; i < sourcePaths.size(); i++) {
             String       dir     = (String) sourcePaths.get(i);
-            List<String> listing = IOUtil.getListing(dir, getClass());
+            List<String> listing = getListing(dir, getClass());
             for (String path : listing) {
                 if ( !path.endsWith(".pack")) {
                     continue;
@@ -1659,6 +1659,38 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
         }
     }
+
+    public static List<String> getListing(String path, Class c) {
+        List<String> listing = new ArrayList<String>();
+        File         f       = new File(path);
+        if (f.exists()) {
+            System.err.println("file listing: " + path);
+            File[] files = f.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                listing.add(files[i].toString());
+            }
+        } else {
+            //try it as a java resource                                                                           
+            System.err.println("resource listing: " + path);
+            String contents = IOUtil.readContents(path, c, (String) null);
+            if(contents == null) {
+                contents = IOUtil.readContents(path+"/files.txt", c, (String) null);
+            }
+            System.err.println("contents:" + contents);
+
+            if (contents != null) {
+                List<String> lines = StringUtil.split(contents, "\n", true,
+                                                      true);
+                for (String file : lines) {
+                    listing.add(IOUtil.joinDir(path, file));
+                }
+            }
+        }
+
+        return listing;
+    }
+
+
 
     public Date getStartTime() {
         return startTime;
