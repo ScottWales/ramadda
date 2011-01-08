@@ -366,7 +366,16 @@ public class Request implements Constants {
     }
 
 
-    public String entryUrl(RequestUrl theUrl, Entry entry, String [] args) {
+    /**
+     * _more_
+     *
+     * @param theUrl _more_
+     * @param entry _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public String entryUrl(RequestUrl theUrl, Entry entry, String[] args) {
         return checkUrl(HtmlUtil.url(entryUrl(theUrl, entry), args));
     }
 
@@ -1021,7 +1030,9 @@ public class Request implements Constants {
      * @return _more_
      */
     public boolean defined(String key) {
-        if(key == null) return false;
+        if (key == null) {
+            return false;
+        }
         Object result = getValue(key, (Object) null);
         if (result == null) {
             return false;
@@ -1034,7 +1045,7 @@ public class Request implements Constants {
             return false;
         }
         //Check if its a macro that was not set
-        if(sresult.equals("${" + key +"}")) {
+        if (sresult.equals("${" + key + "}")) {
             return false;
         }
         return true;
@@ -1147,7 +1158,7 @@ public class Request implements Constants {
             //            message = HtmlUtil.entityEncode(getUnsafeString(ARG_MESSAGE, "");
             message = RepositoryBase.getDialogString(message);
             //Encode this to keep from a spoof attack
-            message  =HtmlUtil.entityEncode(message);
+            message = HtmlUtil.entityEncode(message);
             sb.append(repository.showDialogNote(message));
             remove(ARG_MESSAGE);
         }
@@ -1202,10 +1213,12 @@ public class Request implements Constants {
         return getString(key, "");
     }
 
+    /**
+     * _more_
+     */
     public void ensureAdmin() {
         if ( !getUser().getAdmin()) {
-            throw new IllegalArgumentException(
-                                               "Need to be an administrator");
+            throw new IllegalArgumentException("Need to be an administrator");
         }
     }
 
@@ -1350,6 +1363,27 @@ public class Request implements Constants {
         return v;
     }
 
+    /**
+     * Get the value for a latitude or longitude property
+     *
+     * @param from the the property
+     * @param dflt  the default value
+     *
+     * @return  the decoded value or the default if not defined
+     *
+     * @throws Exception  problem parsing the input
+     */
+    public double getLatOrLonValue(String from, double dflt)
+            throws Exception {
+        if ( !defined(from)) {
+            return dflt;
+        }
+        String llString = (String) getString(from, "").trim();
+        if ((llString == null) || (llString.length() == 0)) {
+            return dflt;
+        }
+        return Misc.decodeLatLon(llString);
+    }
 
 
     /**
@@ -1389,6 +1423,14 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public long get(Object key, long dflt) {
         String result = (String) getValue(key, (String) null);
         if ((result == null) || (result.trim().length() == 0)) {
