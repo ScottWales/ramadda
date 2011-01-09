@@ -1278,7 +1278,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             }
         }
 
-        int max    = request.get(ARG_MAX, 1000);
+        int max =  request.get(ARG_MAX, 1000);
         int stride = request.get(ARG_POINT_STRIDE, 1);
         if (stride > 1) {
             max = max * stride;
@@ -1492,7 +1492,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         StringBuffer cntSB    = new StringBuffer();
 
-        int          max      = request.get(ARG_MAX, 1000);
+        
+        int max =  request.get(ARG_MAX, 1000);
         int          numItems = ((list == null)
                                  ? max
                                  : list.size());
@@ -2914,10 +2915,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         outputSB.append(HtmlUtil.formEntry(msgLabel("Max"),
                                            max + HtmlUtil.space(1) + "("
                                            + totalLabel + ")"));
-        outputSB.append(
-            HtmlUtil.script(
-                "function clearPointCount() {obj=util.getDomObject('"
-                + ARG_MAX + "');\nif(!obj)return;obj.obj.value='';\n}"));
+        outputSB.append(HtmlUtil.script("function clearPointCount() {obj=util.getDomObject('" +ARG_MAX +"');\nif(!obj)return;obj.obj.value='" + cnt +"';\n}"));
         List skip = Misc.toList(new Object[] {
             new TwoFacedObject("None", 1),
             new TwoFacedObject("Every other one", 2),
