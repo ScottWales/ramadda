@@ -604,7 +604,7 @@ public class ChatOutputHandler extends OutputHandler {
             throws Exception {
 
         String chatAppletTemplate =
-            getRepository().getResource("/org/ramadda/collab/chat.html");
+            getRepository().getResource("/org/ramadda/chat/chat.html");
 
         String params = "";
         chatAppletTemplate = chatAppletTemplate.replace("${root}",
