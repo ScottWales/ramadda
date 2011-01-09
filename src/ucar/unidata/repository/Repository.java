@@ -310,9 +310,10 @@ public class Repository extends RepositoryBase implements RequestHandler {
     private HashSet<String> seenMsg = new HashSet<String>();
 
     /** _more_ */
-    private boolean trackMsg = true;
+    private boolean debugMsg = false;
 
     private PrintWriter allMsgOutput;
+
     private PrintWriter missingMsgOutput;
 
     private Date startTime = new Date();
@@ -1715,17 +1716,32 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 continue;
             }
             List<String> toks = StringUtil.split(line, "=", true, true);
-            if (toks.size() != 2) {
+            if (toks.size() ==0) {
                 continue;
             }
             String key   =  toks.get(0).trim();
-            String value =  toks.get(1).trim();
+            String value;
+            if (toks.size() == 1) {
+                if(!debugMsg) 
+                    continue;
+                value = "UNDEF:" + key;
+            } else {
+                value =  toks.get(1).trim();
+            }
             if (key.equals("language.id")) {
                 type = value;
             } else if (key.equals("language.name")) {
                 name = value;
             } else {
-                if(value.length()==0) continue;
+                if(value.length()==0) {
+                    if(debugMsg) {
+                        value = "UNDEF:" + value;
+                    } else {
+                        continue;
+                    }
+                }
+
+
                 phrases.put(key, value);
             }
         }
@@ -3379,7 +3395,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             if (map != null) {
                 value = (String) map.get(key);
             }
-            if (trackMsg) {
+            if (debugMsg) {
                 try {
                     if(allMsgOutput==null) {
                         allMsgOutput = new PrintWriter(new FileOutputStream("allmessages.pack"));
@@ -3402,6 +3418,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
             if (value == null) {
                 value = key;
+                if(debugMsg) {
+                    value = "NA:" + key;
+                }
             }
             stripped.append(value);
             s = s.substring(idx2 + suffixLength);
@@ -4778,7 +4797,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             return null;
         }
         if (msg.indexOf(MSG_PREFIX) >= 0) {
-            System.err.println("bad msg:" + msg+"\n" + LogUtil.getStackTrace());
+            //            System.err.println("bad msg:" + msg+"\n" + LogUtil.getStackTrace());
             //            throw new IllegalArgumentException("bad msg:" + msg);
             return msg;
 

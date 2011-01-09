@@ -941,6 +941,8 @@ public class PatternHarvester extends Harvester {
         String dirPath = f.getParent().toString();
         dirPath = dirPath.substring(rootDir.toString().length());
         dirPath = dirPath.replace("\\", "/");
+        //New
+        dirPath = dirPath.replaceAll("_", " ");
         List dirToks = (List<String>) StringUtil.split(dirPath, "/", true,
                            true);
         //        System.err.println ("file:" +fileName + " " + dirPath +" " + dirToks);
@@ -1003,12 +1005,12 @@ public class PatternHarvester extends Harvester {
             ext = ext.substring(1);
         }
         tag       = tag.replace("${extension}", ext);
+        String filename = f.getName();
         groupName = groupName.replace("${dirgroup}", dirGroup);
         groupName = applyMacros(groupName, createDate, fromDate, toDate,
-                                f.getName());
-        name = applyMacros(name, createDate, fromDate, toDate, f.getName());
-        desc = applyMacros(desc, createDate, fromDate, toDate, f.getName());
-
+                                filename);
+        name = applyMacros(name, createDate, fromDate, toDate, filename);
+        desc = applyMacros(desc, createDate, fromDate, toDate, filename);
         desc = desc.replace("${name}", name);
 
         if (baseGroup != null) {

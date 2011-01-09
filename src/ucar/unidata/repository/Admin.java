@@ -1441,8 +1441,8 @@ public class Admin extends RepositoryManager {
             HtmlUtil.row(
                 HtmlUtil.cols(
                     HtmlUtil.space(10),
-                    HtmlUtil.b("Action") + HtmlUtil.space(3),
-                    HtmlUtil.b("Role"))));
+                    HtmlUtil.b(msg("Action")) + HtmlUtil.space(3),
+                    HtmlUtil.b(msg("Role")))));
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
             sb.append(

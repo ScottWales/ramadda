@@ -634,7 +634,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append("<tr>");
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 sb.append("<td width=\"14%\" class=\"calheader\">"
-                          + dayNames[colIdx] + "</td>");
+                          + msg(dayNames[colIdx]) + "</td>");
             }
             sb.append("</tr>");
             int startDow = cal.get(cal.DAY_OF_WEEK);
@@ -985,7 +985,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append("<tr>");
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 sb.append("<td width=\"14%\" class=\"calheader\">"
-                          + dayNames[colIdx] + "</td>");
+                          + msg(dayNames[colIdx]) + "</td>");
             }
             sb.append("</tr>");
             int startDow = cal.get(cal.DAY_OF_WEEK);

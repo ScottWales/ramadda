@@ -1370,7 +1370,7 @@ public class TypeHandler extends RepositoryManager {
         fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
         return new Link(getEntryManager().getEntryResourceUrl(request,
                 entry), getRepository().iconUrl(ICON_FETCH),
-                        "Download file" + size, OutputType.TYPE_FILE);
+                        msg("Download file") + size, OutputType.TYPE_FILE);
     }
 
 
@@ -2032,7 +2032,7 @@ public class TypeHandler extends RepositoryManager {
                                        + HtmlUtil.space(1)
                                        + HtmlUtil.select(ARG_DATE_PATTERN,
                                            datePatterns) + " ("
-                                               + msg("use file name") + ")";
+                                               + msg("Use file name") + ")";
 
 
 
@@ -2152,7 +2152,7 @@ public class TypeHandler extends RepositoryManager {
             } else {
                 sb.append(
                     HtmlUtil.formEntry(
-                        "Date Range:",
+                                       msgLabel("Date Range"),
                         getRepository().makeDateInput(
                             request, ARG_FROMDATE, "entryform", fromDate,
                             timezone) + HtmlUtil.space(1)
@@ -2183,7 +2183,7 @@ public class TypeHandler extends RepositoryManager {
                 + HtmlUtil.input(ARG_LOCATION_LONGITUDE, lon,
                                  HtmlUtil.SIZE_6);
 
-            sb.append(HtmlUtil.formEntry("Location:", locationWidget));
+            sb.append(HtmlUtil.formEntry(msgLabel("Location"), locationWidget));
         } else if (okToShowInForm(ARG_AREA)) {
             StringBuffer mapSB = new StringBuffer();
             MapOutputHandler mapOutputHandler =
@@ -2220,7 +2220,7 @@ public class TypeHandler extends RepositoryManager {
                 getRepository().getMapManager().makeMapSelector(ARG_AREA,
                     true, pts) + extraMapStuff;
 
-            sb.append(HtmlUtil.formEntry("Location:", mapSelector));
+            sb.append(HtmlUtil.formEntry(msgLabel("Location"), mapSelector));
 
         }
 

@@ -245,10 +245,10 @@ public class RegistryManager extends RepositoryManager {
 
         sb.append(HtmlUtil.p());
         sb.append(request.form(URL_REGISTRY_REMOTESERVERS, ""));
-        sb.append(HtmlUtil.submit("Change Selected", ARG_SUBMIT));
-        sb.append(HtmlUtil.submit("Delete Selected", ARG_DELETE));
-        sb.append(HtmlUtil.submit("Add New Server", ARG_REGISTRY_ADD));
-        sb.append(HtmlUtil.submit("Reload from Registry Servers",
+        sb.append(HtmlUtil.submit(msg("Change Selected"), ARG_SUBMIT));
+        sb.append(HtmlUtil.submit(msg("Delete Selected"), ARG_DELETE));
+        sb.append(HtmlUtil.submit(msg("Add New Server"), ARG_REGISTRY_ADD));
+        sb.append(HtmlUtil.submit(msg("Reload from Registry Servers"),
                                   ARG_REGISTRY_RELOAD));
         sb.append(HtmlUtil.open(HtmlUtil.TAG_UL));
         List<ServerInfo> remoteServers = getRemoteServers();

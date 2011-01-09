@@ -2288,7 +2288,9 @@ public class UserManager extends RepositoryManager {
             return new Result(msg("Password Reset"), sb);
         }
 
-        if ( !request.getUser().canEditSettings()) {
+        
+
+        if ( !request.getUser().canEditSettings() && !request.getUser().getAnonymous()) {
             return new Result(msg("Password Reset"),
                               new StringBuffer(msg("Cannot reset password")));
         }
