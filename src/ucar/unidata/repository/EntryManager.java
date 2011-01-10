@@ -585,20 +585,10 @@ return new Result(title, sb);
     public Result processEntryShow(Request request, Entry entry)
             throws Exception {
         Result result = null;
+        //        OutputHandler outputHandler =
+        //            getRepository().getOutputHandler(request, entry);
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
-
-        /* Don't do this for now
-        if (outputHandler.getMaxConnections() > 0) {
-            if (outputHandler.getNumberOfConnections()
-                    >= outputHandler.getMaxConnections()) {
-
-                return new Result(
-                    "Connection error",
-                    new StringBuffer(
-                        "Unable to process request at this time"));
-            }
-            }*/
         outputHandler.incrNumberOfConnections();
         OutputType outputType = request.getOutput();
         outputType.incrNumberOfCalls();

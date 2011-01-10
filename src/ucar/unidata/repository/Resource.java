@@ -166,7 +166,17 @@ public class Resource {
         }
         String file = path.toLowerCase();
         return file.endsWith(".jpg") || file.endsWith(".jpeg")
-               || file.endsWith(".gif") || file.endsWith(".png");
+            || file.endsWith(".gif") || file.endsWith(".png")||
+            file.endsWith(".bmp");
+    }
+
+    public boolean isEditableImage() {
+        if (path == null) {
+            return false;
+        }
+        String file = path.toLowerCase();
+        return file.endsWith(".jpg") || file.endsWith(".jpeg")
+            || file.endsWith(".gif") || file.endsWith(".png");
     }
 
     /**

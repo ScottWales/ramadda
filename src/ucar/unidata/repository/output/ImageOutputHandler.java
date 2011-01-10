@@ -78,6 +78,8 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
+    public static final String ARG_IMAGE_APPLY_TO_GROUP = "image.applytogroup";
+
     /** _more_ */
     public static final String ARG_IMAGE_UNDO = "image.undo";
 
@@ -176,13 +178,15 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (state.entry != null) {
             if (getAccessManager().canDoAction(request, state.entry,
-                    Permission.ACTION_EDIT)) {
-                File f = state.entry.getFile();
-                if ((f != null) && f.canWrite()) {
-                    Link link = makeLink(request, state.getEntry(),
-                                         OUTPUT_EDIT);
-                    link.setLinkType(OutputType.TYPE_EDIT);
-                    links.add(link);
+                                               Permission.ACTION_EDIT)) {
+                if (state.entry.getResource().isEditableImage()) {
+                    File f = state.entry.getFile();
+                    if ((f != null) && f.canWrite()) {
+                        Link link = makeLink(request, state.getEntry(),
+                                             OUTPUT_EDIT);
+                        link.setLinkType(OutputType.TYPE_EDIT);
+                        links.add(link);
+                    }
                 }
             }
             return;
@@ -270,86 +274,55 @@ public class ImageOutputHandler extends OutputHandler {
                               Entry entry)
             throws Exception {
 
-        if ( !getAccessManager().canDoAction(request, entry,
-                                             Permission.ACTION_EDIT)) {
-            throw new AccessException("Cannot edit image", null);
-        }
+
 
         StringBuffer sb          = new StringBuffer();
 
-
         String       url         = getImageUrl(request, entry, true);
-        Image        image       = getImage(entry);
-        int          imageWidth  = image.getWidth(null);
-        int          imageHeight = image.getHeight(null);
-        Image        newImage    = null;
-        if (request.exists(ARG_IMAGE_UNDO)) {
-            File f = entry.getFile();
-            if ((f != null) && f.canWrite()) {
-                File entryDir =
-                    getStorageManager().getEntryDir(entry.getId(), true);
-                File original = new File(entryDir + "/" + "originalimage");
-                if (original.exists()) {
-                    imageCache.remove(entry.getId());
-                    IOUtil.copyFile(original, f);
-                    request.remove(ARG_IMAGE_UNDO);
-                    return new Result(request.getUrl());
-                }
+
+        Image image = null;
+        boolean shouldRedirect = false;
+
+
+        boolean applyToGroup = request.get(ARG_IMAGE_APPLY_TO_GROUP, false);
+
+        if(!applyToGroup) {
+            image       = getImage(entry);
+            shouldRedirect =  processImage(request, entry, image);
+        } else {
+            List<Entry> entries =getEntryManager().getChildren(request, entry.getParentEntry());
+            for(Entry childEntry: entries) {
+                if(!childEntry.getResource().isEditableImage()) continue;
+                image       = getImage(childEntry);
+                shouldRedirect =  processImage(request, childEntry, image);
             }
-        } else if (request.exists(ARG_IMAGE_EDIT_RESIZE)) {
-            newImage = ImageUtils.resize(image,
-                                         request.get(ARG_IMAGE_EDIT_WIDTH,
-                                             imageWidth), -1);
-            request.remove(ARG_IMAGE_EDIT_RESIZE);
-        } else if (request.exists(ARG_IMAGE_EDIT_REDEYE)) {
-            int x1 = request.get(ARG_IMAGE_CROPX1, 0);
-            int y1 = request.get(ARG_IMAGE_CROPY1, 0);
-            int x2 = request.get(ARG_IMAGE_CROPX2, 0);
-            int y2 = request.get(ARG_IMAGE_CROPY2, 0);
-            if ((x1 < x2) && (y1 < y2)) {
-                newImage = ImageUtils.removeRedeye(image, x1, y1, x2, y2);
-            }
-            request.remove(ARG_IMAGE_EDIT_REDEYE);
-        } else if (request.exists(ARG_IMAGE_EDIT_CROP)) {
-            int x1 = request.get(ARG_IMAGE_CROPX1, 0);
-            int y1 = request.get(ARG_IMAGE_CROPY1, 0);
-            int x2 = request.get(ARG_IMAGE_CROPX2, 0);
-            int y2 = request.get(ARG_IMAGE_CROPY2, 0);
-            if ((x1 < x2) && (y1 < y2)) {
-                newImage = ImageUtils.clip(ImageUtils.toBufferedImage(image),
-                                           new int[] { x1,
-                        y1 }, new int[] { x2, y2 });
-            }
-            request.remove(ARG_IMAGE_EDIT_CROP);
-        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT)) {
-            newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
-                                           true);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT);
-        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT)) {
-            newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
-                                           false);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT);
         }
-        if (newImage != null) {
-            ImageUtils.waitOnImage(newImage);
-            putImage(entry, newImage);
-            File f = entry.getFile();
-            getStorageManager().checkFile(f);
-            if ((f != null) && f.canWrite()) {
-                File entryDir =
-                    getStorageManager().getEntryDir(entry.getId(), true);
-                File original = new File(entryDir + "/" + "originalimage");
-                if ( !original.exists()) {
-                    IOUtil.copyFile(f, original);
-                }
-                ImageUtils.writeImageToFile(newImage, f);
-            }
+
+
+        if(shouldRedirect) {
+            request.remove(ARG_IMAGE_EDIT_RESIZE);
+            request.remove(ARG_IMAGE_EDIT_REDEYE);
+            request.remove(ARG_IMAGE_EDIT_CROP);
+            request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT);
+            request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT);
+            request.remove(ARG_IMAGE_UNDO);
             return new Result(request.getUrl());
         }
+
+
+        
+        if(image == null) {
+            image       = getImage(entry);
+        }
+        int          imageWidth  = image.getWidth(null);
+        int          imageHeight = image.getHeight(null);
+
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+
+
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_EDIT));
-        sb.append(HtmlUtil.submit(msg("Change width:"),
+        sb.append(HtmlUtil.submit(msgLabel("Change width"),
                                   ARG_IMAGE_EDIT_RESIZE));
         sb.append(HtmlUtil.input(ARG_IMAGE_EDIT_WIDTH, "" + imageWidth,
                                  HtmlUtil.SIZE_5));
@@ -374,6 +347,8 @@ public class ImageOutputHandler extends OutputHandler {
                                HtmlUtil.cssClass("image_edit_box")
                                + HtmlUtil.id("image_edit_box")));
 
+
+
         sb.append(HtmlUtil.space(2));
         sb.append(HtmlUtil.submitImage(iconUrl(ICON_ANTIROTATE),
                                        ARG_IMAGE_EDIT_ROTATE_LEFT));
@@ -386,6 +361,13 @@ public class ImageOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.space(2));
             sb.append(HtmlUtil.submit(msg("Undo all edits"), ARG_IMAGE_UNDO));
         }
+
+        sb.append(HtmlUtil.space(20));
+        sb.append(HtmlUtil.checkbox(ARG_IMAGE_APPLY_TO_GROUP,"true", applyToGroup));
+        sb.append(HtmlUtil.space(1));
+        sb.append(msg("Apply to siblings"));
+
+
         sb.append(HtmlUtil.formClose());
 
 
@@ -405,6 +387,80 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
+
+    private boolean processImage(Request request, Entry entry, Image image) throws Exception {
+        if ( !getAccessManager().canDoAction(request, entry,
+                                             Permission.ACTION_EDIT)) {
+            throw new AccessException("Cannot edit image", null);
+        }
+
+        int          imageWidth  = image.getWidth(null);
+        int          imageHeight = image.getHeight(null);
+        Image        newImage    = null;
+        if (request.exists(ARG_IMAGE_UNDO)) {
+            File f = entry.getFile();
+            if ((f != null) && f.canWrite()) {
+                File entryDir =
+                    getStorageManager().getEntryDir(entry.getId(), true);
+                File original = new File(entryDir + "/" + "originalimage");
+                if (original.exists()) {
+                    imageCache.remove(entry.getId());
+                    IOUtil.copyFile(original, f);
+                    return true;
+                }
+            }
+        } else if (request.exists(ARG_IMAGE_EDIT_RESIZE)) {
+            newImage = ImageUtils.resize(image,
+                                         request.get(ARG_IMAGE_EDIT_WIDTH,
+                                             imageWidth), -1);
+
+        } else if (request.exists(ARG_IMAGE_EDIT_REDEYE)) {
+            int x1 = request.get(ARG_IMAGE_CROPX1, 0);
+            int y1 = request.get(ARG_IMAGE_CROPY1, 0);
+            int x2 = request.get(ARG_IMAGE_CROPX2, 0);
+            int y2 = request.get(ARG_IMAGE_CROPY2, 0);
+            if ((x1 < x2) && (y1 < y2)) {
+                newImage = ImageUtils.removeRedeye(image, x1, y1, x2, y2);
+            }
+
+        } else if (request.exists(ARG_IMAGE_EDIT_CROP)) {
+            int x1 = request.get(ARG_IMAGE_CROPX1, 0);
+            int y1 = request.get(ARG_IMAGE_CROPY1, 0);
+            int x2 = request.get(ARG_IMAGE_CROPX2, 0);
+            int y2 = request.get(ARG_IMAGE_CROPY2, 0);
+            if ((x1 < x2) && (y1 < y2)) {
+                newImage = ImageUtils.clip(ImageUtils.toBufferedImage(image),
+                                           new int[] { x1,
+                        y1 }, new int[] { x2, y2 });
+            }
+        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT)) {
+            newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
+                                           true);
+
+        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT)) {
+            newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
+                                           false);
+
+        }
+        if (newImage != null) {
+            ImageUtils.waitOnImage(newImage);
+            putImage(entry, newImage);
+            File f = entry.getFile();
+            getStorageManager().checkFile(f);
+            if ((f != null) && f.canWrite()) {
+                File entryDir =
+                    getStorageManager().getEntryDir(entry.getId(), true);
+                File original = new File(entryDir + "/" + "originalimage");
+                if ( !original.exists()) {
+                    IOUtil.copyFile(f, original);
+                }
+                ImageUtils.writeImageToFile(newImage, f);
+            }
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * _more_
@@ -468,6 +524,7 @@ public class ImageOutputHandler extends OutputHandler {
             sb.append("<b>Nothing Found</b><p>");
             return new Result("Query Results", sb, getMimeType(output));
         }
+
 
         if (output.equals(OUTPUT_GALLERY)) {
             sb.append("<table>");
