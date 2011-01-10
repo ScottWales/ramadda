@@ -1670,7 +1670,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 listing.add(files[i].toString());
             }
         } else {
-            //try it as a java resource                                                                           
+            //try it as a java resource
             String contents = IOUtil.readContents(path, c, (String) null);
             if(contents == null) {
                 contents = IOUtil.readContents(path+"/files.txt", c, (String) null);

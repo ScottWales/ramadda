@@ -400,6 +400,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
 
+        System.err.println ("Entry:" + entry.getResource().getPath());
+
         Metadata      metadata = null;
         String        varName  = null;
         NetcdfDataset dataset  = null;

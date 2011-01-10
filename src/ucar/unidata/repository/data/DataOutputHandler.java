@@ -682,7 +682,9 @@ public class DataOutputHandler extends OutputHandler {
         }
 
         long t1 = System.currentTimeMillis();
-        if ( !canLoadAsCdm(entry)) {
+        boolean canLoadAsCdm = canLoadAsCdm(entry);
+
+        if (!canLoadAsCdm) {
             long t2 = System.currentTimeMillis();
             if ((t2 - t1) > 1) {
                 //                System.err.println("DataOutputHandler (cdm) getEntryLinks  "
@@ -814,12 +816,12 @@ public class DataOutputHandler extends OutputHandler {
             return true;
         }
 
-
         if ( !entry.getType().equals(
                 OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             if ( !entry.isFile()) {
                 return false;
             }
+
             if (cannotLoad(entry, TYPE_CDM)) {
                 return false;
             }
@@ -875,6 +877,9 @@ public class DataOutputHandler extends OutputHandler {
         }
         if (canLoad(entry, TYPE_POINT)) {
             return true;
+        }
+        if ( !canLoadAsCdm(entry)) {
+            return false;
         }
 
         Boolean b = (Boolean) pointEntries.get(entry.getId());
