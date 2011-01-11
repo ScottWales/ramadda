@@ -2036,7 +2036,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-            String extra = HtmlUtil.makeShowHideBlock("More...",
+            String extra = HtmlUtil.makeShowHideBlock(msg("More..."),
                                addMetadata + HtmlUtil.br() + unzipWidget
                                + HtmlUtil.br() + datePatternWidget, false);
             if (forUpload || !showDownload) {
@@ -2334,7 +2334,7 @@ public class TypeHandler extends RepositoryManager {
                                  request.get(ARG_EXACT, false)) + " "
                                      + msg("Match exactly");
         String extra = HtmlUtil.p() + searchExact + searchMetaData;
-        extra = HtmlUtil.makeToggleInline("More...", extra, false);
+        extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
         sb.append(HtmlUtil.formEntryTop(msgLabel("Text"),
                                         HtmlUtil.input(ARG_TEXT, name,
                                             HtmlUtil.SIZE_50
@@ -2525,7 +2525,7 @@ public class TypeHandler extends RepositoryManager {
                                  VALUE_NODATAMODE_INCLUDE,
                                  noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
         String dateExtra = HtmlUtil.space(4)
-                           + HtmlUtil.makeToggleInline("More...",
+            + HtmlUtil.makeToggleInline(msg("More..."),
                                HtmlUtil.p()
                                + HtmlUtil.formTable(new String[] {
             msgLabel("Search for data whose time is"), dateTypeInput,

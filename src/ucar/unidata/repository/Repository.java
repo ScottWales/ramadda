@@ -4741,7 +4741,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 url = request.url(apiMethod.getUrl());
             }
             String html = template.replace("${url}", url);
-            html = html.replace("${label}", apiMethod.getName());
+            html = html.replace("${label}", msg(apiMethod.getName()));
             html = html.replace("${topgroup}",
                                 getEntryManager().getTopGroup().getName());
             links.add(html);
