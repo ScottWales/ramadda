@@ -832,6 +832,13 @@ public class HtmlOutputHandler extends OutputHandler {
             return getLinksXml(request, group);
         }
 
+
+        //        Result typeResult = typeHandler.getHtmlDisplay(request, group, subGroups, entries);
+        //        if (typeResult != null) {
+        //            return typeResult;
+        //        }
+
+
         boolean      showTimeline = outputType.equals(OUTPUT_TIMELINE);
         if(!showTimeline && typeHandler!=null) {
             Result typeResult = typeHandler.getHtmlDisplay(request, group,

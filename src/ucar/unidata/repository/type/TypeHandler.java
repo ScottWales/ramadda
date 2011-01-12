@@ -460,6 +460,8 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+
+
     /**
      * _more_
      *
@@ -878,6 +880,10 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+
+    public boolean canHarvestFile(File f) {
+        return false;
+    }
 
     /**
      * _more_

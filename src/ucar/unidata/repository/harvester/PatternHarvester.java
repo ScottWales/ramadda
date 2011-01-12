@@ -937,6 +937,16 @@ public class PatternHarvester extends Harvester {
             putProcessedFile(fileName);
         }
 
+        TypeHandler  typeHandler = getTypeHandler();
+        if(typeHandler.getType().equals(typeHandler.TYPE_FILE)) {
+            for(TypeHandler otherTypeHandler: getRepository().getTypeHandlers()) {
+                if(otherTypeHandler.canHarvestFile(f)) {
+                    typeHandler = otherTypeHandler;
+                    break;
+                }            
+            }
+        }
+
 
         String dirPath = f.getParent().toString();
         dirPath = dirPath.substring(rootDir.toString().length());
@@ -972,7 +982,7 @@ public class PatternHarvester extends Harvester {
             } else if (dataName.equals("todate")) {
                 value = toDate = parseDate((String) value);
             } else {
-                value = getTypeHandler().convert(dataName, (String) value);
+                value = typeHandler.convert(dataName, (String) value);
                 groupName = groupName.replace("${" + dataName + "}",
                         value.toString());
                 name = name.replace("${" + dataName + "}", value.toString());
@@ -984,7 +994,7 @@ public class PatternHarvester extends Harvester {
 
         //        System.err.println("values:");
         //        System.err.println("map:" + map);
-        Object[] values = getTypeHandler().makeValues(map);
+        Object[] values = typeHandler.makeValues(map);
         //        Date     createDate = new Date();
         Date createDate = new Date(f.lastModified());
         if (fromDate == null) {
@@ -1031,7 +1041,7 @@ public class PatternHarvester extends Harvester {
         boolean createIfNeeded = !getTestMode();
         Group group = getEntryManager().findGroupFromName(groupName,
                           getUser(), createIfNeeded, getLastGroupType());
-        Entry    entry = getTypeHandler().createEntry(getRepository().getGUID());
+        Entry    entry = typeHandler.createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
             File fromFile = new File(fileName);
