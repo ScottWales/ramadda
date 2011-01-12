@@ -1896,7 +1896,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 continue;
             }
             String pluginFile = plugins[i].toString();
-            //            System.err.println ("Loading plugin:" + pluginFile);
+            pluginSB.append("<tr><td><b>Plugin file</b></td><td colspan=2><i>" +pluginFile +"</i></td></tr>");
             if (pluginFile.toLowerCase().endsWith(".jar")) {
                 PluginClassLoader cl = new MyClassLoader(pluginFile,
                                            getClass().getClassLoader());
@@ -1930,7 +1930,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
     }
 
     private void pluginStat(String desc, Object what) {
-        pluginSB.append("<tr><td><b>" + desc + "</b></td><td><i>" +what +"</i></td></tr>");
+        pluginSB.append("<tr><td></td><td><b>" + desc + "</b></td><td><i>" +what +"</i></td></tr>");
     }
 
 
