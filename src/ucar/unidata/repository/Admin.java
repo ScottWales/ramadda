@@ -1534,7 +1534,9 @@ public class Admin extends RepositoryManager {
                     StringUtil.join("<br>", counter.getMessages()), false)));
 
 
+        getRepository().addStatusInfo(statusSB);
         getEntryManager().addStatusInfo(statusSB);
+
         statusSB.append(HtmlUtil.formTableClose());
 
         StringBuffer outputSB = new StringBuffer();

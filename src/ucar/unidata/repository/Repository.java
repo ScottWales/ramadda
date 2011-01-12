@@ -318,6 +318,9 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
     private Date startTime = new Date();
 
+    private StringBuffer pluginSB = new StringBuffer();
+
+
     /** _more_ */
     private Hashtable typeHandlersMap = new Hashtable();
 
@@ -1812,8 +1815,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
          */
         protected void checkClass(Class c) throws Exception {
             if (ImportHandler.class.isAssignableFrom(c)) {
-                getLogManager().logInfoAndPrint("Adding import handler:"
-                                                + c.getName());
+                pluginStat("Import handler",  c.getName());
                 Constructor ctor = Misc.findConstructor(c, new Class[]{Repository.class});
                 if(ctor!=null) {
                     importHandlers.add((ImportHandler) ctor.newInstance(new Object[]{Repository.this}));
@@ -1825,9 +1827,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
 
             if (UserAuthenticator.class.isAssignableFrom(c)) {
-                getLogManager().logInfo("Adding authenticator:"
-                                        + c.getName());
-                getLogManager().logInfo("Instantiating UserAuthenticator:" + c.getName());
+                pluginStat("Authenticator", c.getName());
                 Constructor ctor = Misc.findConstructor(c, new Class[]{Repository.class});
                 if(ctor!=null) {
                     getUserManager().addUserAuthenticator(
@@ -1838,11 +1838,14 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                                           (UserAuthenticator) c.newInstance());
                 }
             } else if (PageDecorator.class.isAssignableFrom(c)) {
+                pluginStat("Page decorator", c.getName());
                 PageDecorator pageDecorator = (PageDecorator) c.newInstance();
                 pageDecorators.add(pageDecorator);
             } else if (AdminHandler.class.isAssignableFrom(c)) {
+                pluginStat("Admin handler", c.getName());
                 adminHandlerClasses.add(c);
             } else if (Harvester.class.isAssignableFrom(c)) {
+                pluginStat("Harvester",c.getName());
                 getHarvesterManager().addHarvesterType(c);
             }
 
@@ -1926,6 +1929,11 @@ public class Repository extends RepositoryBase implements RequestHandler {
         return checkFile(file, false);
     }
 
+    private void pluginStat(String desc, Object what) {
+        pluginSB.append("<tr><td><b>" + desc + "</b></td><td><i>" +what +"</i></td></tr>");
+    }
+
+
     /**
      * _more_
      *
@@ -1936,25 +1944,42 @@ public class Repository extends RepositoryBase implements RequestHandler {
      */
     protected boolean checkFile(String file, boolean fromPlugin) {
         if (file.indexOf("api.xml") >= 0) {
+            if (fromPlugin) 
+                pluginStat("Api", file);
             apiDefFiles.add(file);
         } else if ((file.indexOf("types.xml") >= 0)
                    || (file.indexOf("type.xml") >= 0)) {
+            if (fromPlugin) 
+                pluginStat("Types", file);
             typeDefFiles.add(file);
         } else if (file.indexOf("outputhandlers.xml") >= 0) {
+            if (fromPlugin) 
+                pluginStat("Output", file);
             outputDefFiles.add(file);
         } else if (file.indexOf("metadata.xml") >= 0) {
+            if (fromPlugin) 
+                pluginStat("Metadata", file);
             metadataDefFiles.add(file);
         } else if (file.endsWith(".py")) {
+            if (fromPlugin) 
+                pluginStat("Python", file);
             pythonLibs.add(file);
         } else if (file.endsWith(".sql")) {
+            if (fromPlugin) 
+                pluginStat("Sql", file);
             pluginSqlFiles.add(file);
         } else if (file.endsWith("template.html")) {
+            if (fromPlugin) 
+                pluginStat("Template", file);
             pluginTemplateFiles.add(file);
         } else if (file.endsWith(".properties")) {
             if (fromPlugin) {
+                pluginStat("Properties", file);
                 pluginPropertyFiles.add(file);
             }
         } else {
+            //            if (fromPlugin) 
+            //                pluginStat("Unknown", file);
             pluginFiles.add(file);
             return false;
         }
@@ -4784,6 +4809,11 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
 
 
+    public void addStatusInfo(StringBuffer sb) {
+        sb.append(HtmlUtil.formEntryTop(msgLabel("Plugins"),
+                                        HtmlUtil.makeShowHideBlock("",
+                                                                   "<table>" +pluginSB.toString()+"</table>",false)));
+    }
 
     /**
      * _more_
