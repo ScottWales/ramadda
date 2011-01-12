@@ -70,7 +70,7 @@ public class CalendarTypeHandler extends ExtensibleGroupTypeHandler {
     public static String TYPE_CALENDAR = "calendar";
 
 
-    /** _more_          */
+    /** _more_ */
     private CalendarOutputHandler calendarOutputHandler;
 
     /**
@@ -87,15 +87,28 @@ public class CalendarTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    public Result getHtmlDisplay(Request request, Group group, List<Group> subGroups,
-                                 List<Entry> entries)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result getHtmlDisplay(Request request, Group group,
+                                 List<Group> subGroups, List<Entry> entries)
+            throws Exception {
         if (calendarOutputHandler == null) {
             calendarOutputHandler =
                 (CalendarOutputHandler) getRepository().getOutputHandler(
-                                                                         CalendarOutputHandler.OUTPUT_CALENDAR);
+                    CalendarOutputHandler.OUTPUT_CALENDAR);
         }
-        return calendarOutputHandler.outputGroup(request, request.getOutput(), group, subGroups, entries);
+        return calendarOutputHandler.outputGroup(request,
+                request.getOutput(), group, subGroups, entries);
     }
 
 
