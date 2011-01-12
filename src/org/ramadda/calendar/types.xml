@@ -1,0 +1,21 @@
+<types>
+
+  <type name="calendar"  description="Calendar" handler="org.ramadda.calendar.CalendarTypeHandler" category="Collaboration">
+     <property name="icon" value="/icons/calendar.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+</type>
+
+
+  <type name="calendarentry"  description="Calendar Entry" handler="org.ramadda.calendar.CalendarEntryTypeHandler" category="Collaboration">
+     <property name="icon" value="/icons/calendar.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+</type>
+
+
+</types>
