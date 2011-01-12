@@ -52,14 +52,17 @@
             memoryMaximumSize="512m"
             target="1.6"
         >
-        <include name="org/ramadda/**/*.java"/>
+            <include name="org/ramadda/blog/**/*.java"/>
+            <include name="org/ramadda/calendar/**/*.java"/>
+            <include name="org/ramadda/chat/**/*.java"/>
+            <include name="org/ramadda/slideshow/**/*.java"/>
+            <include name="org/ramadda/wiki/**/*.java"/>
     </javac>
   </target>
 
 
     <target name="all" depends="clean,compile,plugin">
     </target>
-
 
 
 
@@ -77,6 +80,7 @@
             <exclude name="org/ramadda/spreadsheet/*"/> 
             <exclude name="org/ramadda/spreadsheet/**/*"/> 
             <include name="org/ramadda/blog/**/*"/>
+            <include name="org/ramadda/calendar/**/*"/>
             <include name="org/ramadda/chat/**/*"/>
             <include name="org/ramadda/slideshow/**/*"/>
             <include name="org/ramadda/wiki/**/*"/>
