@@ -23,6 +23,10 @@ package ucar.unidata.repository.metadata;
 
 import ucar.unidata.repository.*;
 
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.ui.ImageUtils;
+import java.awt.Image;
+import java.awt.image.*;
 
 import com.drew.metadata.*;
 import com.drew.metadata.exif.*;
@@ -63,6 +67,34 @@ public class JpegMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
         String path = entry.getResource().getPath();
+
+        if(!entry.getResource().isImage()) return;
+
+        try {
+            Image image = ImageUtils.readImage(entry.getResource().getPath(),
+                                               false);
+
+            ImageUtils.waitOnImage(image);
+            Image newImage = ImageUtils.resize(image,100, -1);
+
+            ImageUtils.waitOnImage(newImage);
+            File f = getStorageManager().getTmpFile(request,
+                                                    IOUtil.stripExtension(entry.getName())+"_thumb.jpg");
+            ImageUtils.writeImageToFile(newImage, f);
+
+
+            String fileName = getStorageManager().copyToEntryDir(entry,f).getName();
+            Metadata thumbnailMetadata =
+                new Metadata(getRepository().getGUID(), entry.getId(), ContentMetadataHandler.TYPE_THUMBNAIL, false,
+                             fileName,null,null,null,null);
+
+            metadataList.add(thumbnailMetadata);
+
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
+
+
         if(!(path.toLowerCase().endsWith(".jpg") || path.toLowerCase().endsWith(".jpeg"))) return;
         try {
             File jpegFile = new File(path); 

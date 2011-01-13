@@ -228,6 +228,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+
+
     /**
      * _more_
      *
@@ -2282,6 +2284,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
+
+    public void addTextSearch(Request request, TypeHandler typeHandler, String textToSearch, StringBuffer searchCriteria, List<Clause> where) throws Exception {
+        typeHandler.addTextSearch(request,  textToSearch,  searchCriteria, where);
+    }
 
 
 }

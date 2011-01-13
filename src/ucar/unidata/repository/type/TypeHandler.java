@@ -3163,10 +3163,16 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
-
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
+        //A hook to allow the database manager do its own text search based on the dbms type
         if (textToSearch.length() > 0) {
+            getDatabaseManager().addTextSearch( request, this,  textToSearch,  searchCriteria, where);
+        }            
+        return where;
+    }
+
+
+    public void addTextSearch(Request request, String textToSearch, StringBuffer searchCriteria, List<Clause> where) throws Exception {
             List<Clause> textOrs = new ArrayList<Clause>();
             for (String textTok :
                     (List<String>) StringUtil.split(textToSearch, ",", true,
@@ -3227,10 +3233,14 @@ public class TypeHandler extends RepositoryManager {
                                             doNot));
                         ors.add(Clause.like(Tables.ENTRIES.COL_DESCRIPTION,
                                             nameTok, doNot));
+                        ors.add(Clause.like(Tables.ENTRIES.COL_RESOURCE,
+                                            nameTok, doNot));
                     } else {
                         ors.add(Clause.eq(Tables.ENTRIES.COL_NAME, nameTok,
                                           doNot));
                         ors.add(Clause.eq(Tables.ENTRIES.COL_DESCRIPTION,
+                                          nameTok, doNot));
+                        ors.add(Clause.eq(Tables.ENTRIES.COL_RESOURCE,
                                           nameTok, doNot));
 
                     }
@@ -3249,12 +3259,9 @@ public class TypeHandler extends RepositoryManager {
             } else if (textOrs.size() == 1) {
                 where.add(textOrs.get(0));
             }
-
-
         }
-        return where;
 
-    }
+
 
 
     /**
