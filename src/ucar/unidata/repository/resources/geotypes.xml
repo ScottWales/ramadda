@@ -16,6 +16,21 @@
      <property name="form.datatype.show" value="false"/>
   </type>
 
+
+  <type name="grid.agggregation"  description="Grid Aggregation" handler="ucar.unidata.repository.data.GridAggregationTypeHandler" category="Geo Data">
+     <property name="icon" value="/icons/data.gif"/>
+     <property name="form.show.resource" value="false"/>
+     <property name="form.show.area" value="true"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.date" value="false"/>
+     <property name="form.show.altitude" value="false"/>
+     <property name="form.show.altitude.top" value="false"/>
+   </type>
+
+
+
+
+
   <type name="catalog"  description="Catalog View" handler="ucar.unidata.repository.data.CatalogTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/book_open.png"/>
      <property name="form.file.show" value="false"/>

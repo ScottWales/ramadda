@@ -525,7 +525,10 @@ public class Admin extends RepositoryManager {
 
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
-                //            System.err.println("table name:" + tableName);
+
+                //Humm, not sure why I get this table name and its giving me an error
+                if(tableName.equals("ENTRY")) continue;
+
                 String tableType = tables.getString("TABLE_TYPE");
                 //            System.err.println("table type" + tableType);
                 if (Misc.equals(tableType, "INDEX")) {

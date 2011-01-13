@@ -567,16 +567,27 @@ public class CatalogOutputHandler extends OutputHandler {
         int cnt = 0;
         List<Service>  services = entry.getTypeHandler().getServices(request, entry);
         boolean didOpendap = false;
+
         if (canDataLoad(request, entry)
                 && !entry.getType().equals(
                     OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             String urlPath = getDataOutputHandler().getOpendapUrl(entry);
+            boolean aggregation = entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
+
             addService(catalogInfo, SERVICE_OPENDAP,
                        getRepository().URL_ENTRY_SHOW.getFullUrl());
 
+            Element opendapDataDataset = dataset;
             cnt++;
+            if(aggregation) {
+                opendapDataDataset =  XmlUtil.create(catalogInfo.doc,
+                                                     CatalogUtil.TAG_DATASET,opendapDataDataset,
+                                                     new String[] {
+                                                         CatalogUtil.ATTR_NAME,"Aggregation OpenDAP"});
+            } 
+
             Element service = XmlUtil.create(catalogInfo.doc,
-                                             CatalogUtil.TAG_ACCESS, dataset,
+                                             CatalogUtil.TAG_ACCESS,opendapDataDataset,
                                              new String[] {
                                                  CatalogUtil.ATTR_SERVICENAME,
                     SERVICE_OPENDAP, CatalogUtil.ATTR_URLPATH, urlPath });
@@ -816,10 +827,14 @@ public class CatalogOutputHandler extends OutputHandler {
         List<Group> groups  = new ArrayList();
         for (int i = 0; i < entryList.size(); i++) {
             Entry entry = (Entry) entryList.get(i);
-            if (!embedGroups && entry.isGroup()) {
-                groups.add((Group) entry);
+            if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+                    entries.add(entry);
             } else {
-                entries.add(entry);
+                if (!embedGroups && entry.isGroup()) {
+                    groups.add((Group) entry);
+                } else {
+                    entries.add(entry);
+                }
             }
         }
         for (Group group : groups) {

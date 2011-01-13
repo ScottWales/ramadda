@@ -670,8 +670,13 @@ public class DataOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
-
         Entry entry = state.entry;
+
+        if(state.group!=null && state.group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            entry = state.group;
+        }
+
+
         if (entry == null) {
             return;
         }
@@ -816,7 +821,10 @@ public class DataOutputHandler extends OutputHandler {
             return true;
         }
 
-        if ( !entry.getType().equals(
+        if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            return true;
+        }
+        if (!entry.getType().equals(
                 OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             if ( !entry.isFile()) {
                 return false;
@@ -1114,7 +1122,7 @@ public class DataOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.href(request.getUrl(),
                                     msg("Add full properties")));
         }
-        String        path    = getPath(entry);
+        String        path    = getPath(request, entry);
         NetcdfDataset dataset = ncDatasetPool.get(path);
         if (dataset == null) {
             sb.append("Could not open dataset");
@@ -1626,7 +1634,7 @@ public class DataOutputHandler extends OutputHandler {
     public Result outputGridAsPoint(Request request, Entry entry)
             throws Exception {
         StringBuffer sb     = new StringBuffer();
-        String       path   = getPath(entry);
+        String       path   = getPath(request, entry);
         GridDataset  gds    = gridPool.get(path);
         OutputType   output = request.getOutput();
         try {
@@ -1664,7 +1672,7 @@ public class DataOutputHandler extends OutputHandler {
 
 
 
-        String       path   = getPath(entry);
+        String       path   = getPath(request, entry);
         StringBuffer sb     = new StringBuffer();
 
         OutputType   output = request.getOutput();
@@ -1987,7 +1995,7 @@ public class DataOutputHandler extends OutputHandler {
             throws Exception {
 
         String              mapVarName = "map" + HtmlUtil.blockCnt++;
-        String              path       = getPath(entry);
+        String              path       = getPath(request, entry);
         FeatureDatasetPoint pod        = pointPool.get(path);
 
         StringBuffer        sb         = new StringBuffer();
@@ -2208,7 +2216,7 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputTrajectoryMap(Request request, Entry entry)
             throws Exception {
-        String               path         = getPath(entry);
+        String               path         = getPath(request, entry);
         TrajectoryObsDataset tod          = trajectoryPool.get(path);
         StringBuffer         sb           = new StringBuffer();
         String               mapVarName   = "map" + HtmlUtil.blockCnt++;
@@ -2366,7 +2374,7 @@ public class DataOutputHandler extends OutputHandler {
     public Result outputPointCsv(Request request, Entry entry)
             throws Exception {
 
-        String               path         = getPath(entry);
+        String               path         = getPath(request, entry);
         FeatureDatasetPoint  pod          = pointPool.get(path);
         StringBuffer         sb           = new StringBuffer();
         List                 vars         = pod.getDataVariables();
@@ -2442,7 +2450,7 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputPointKml(Request request, Entry entry)
             throws Exception {
-        String               path         = getPath(entry);
+        String               path         = getPath(request, entry);
         FeatureDatasetPoint  pod          = pointPool.get(path);
         Element              root         = KmlUtil.kml(entry.getName());
         Element              docNode = KmlUtil.document(root,
@@ -2507,6 +2515,20 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
+
+
+    public Result outputGroup(Request request, OutputType outputType,
+                              Group group, List<Group> subGroups,
+                              List<Entry> entries)
+
+        throws Exception {
+        if (group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            return outputEntry(request, outputType, group);
+        }
+        return super.outputGroup(request,  outputType,
+                                 group, subGroups,
+                                 entries);
+    }
 
 
     /**
@@ -2587,6 +2609,10 @@ public class DataOutputHandler extends OutputHandler {
                                            + outputType);
     }
 
+    public String getPath(Entry entry) throws Exception {
+        return getPath(null, entry);
+    }
+
 
     /**
      * Get the path for the Entry
@@ -2597,7 +2623,7 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @throws Exception problem getting the path
      */
-    public String getPath(Entry entry) throws Exception {
+    public String getPath(Request request, Entry entry) throws Exception {
         String location;
         if (entry.getType().equals(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             Resource resource = entry.getResource();
@@ -2607,6 +2633,9 @@ public class DataOutputHandler extends OutputHandler {
                     || ext.equals(".dds")) {
                 location = IOUtil.stripExtension(location);
             }
+        }  else if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            GridAggregationTypeHandler gridAggregation = (GridAggregationTypeHandler) entry.getTypeHandler();
+            location = gridAggregation.getNcmlFile(request, entry).toString();
         } else {
             File file = getEntryManager().getFileForEntry(entry);
             location = file.toString();
@@ -2667,7 +2696,7 @@ public class DataOutputHandler extends OutputHandler {
         //if opening a file hangs. So, lets remove the synchronized
         //    public synchronized Result outputOpendap(final Request request,
 
-        String     location = getPath(entry);
+        String     location = getPath(request, entry);
         NetcdfFile ncFile   = ncFilePool.get(location);
         opendapCounter.incr();
         //        try {
