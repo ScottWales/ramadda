@@ -25,7 +25,6 @@
            <argument>14445</argument>
            <argument>-installplugin</argument>
            <argument>http://motherlode.ucar.edu/repository/entry/get/noaacsi.jar?entryid=dfd8ddb3-6d2e-4f46-bdd7-576effb36af7</argument>
-           <argument>-debug</argument>
            ${args}
         </application-desc>
        <security>
