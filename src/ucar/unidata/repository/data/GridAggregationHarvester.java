@@ -21,7 +21,6 @@ package ucar.unidata.repository.data;
 
 import org.w3c.dom.*;
 
-import org.unavco.data.lidar.LidarFile;
 
 import ucar.unidata.repository.*;
 import ucar.unidata.repository.auth.*;
