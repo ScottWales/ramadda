@@ -1,15 +1,16 @@
 /*
- *
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
+ * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version.
- *
+ * 
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
  * General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -50,6 +51,7 @@ import java.lang.reflect.*;
 
 
 import java.net.*;
+
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -111,14 +113,24 @@ public class GridAggregationHarvester extends PatternHarvester {
         return GridAggregationTypeHandler.TYPE_GRIDAGGREGATION;
     }
 
-    public Entry initializeNewEntry(FileInfo fileInfo, File originalFile, Entry entry) {
+    /**
+     * _more_
+     *
+     * @param fileInfo _more_
+     * @param originalFile _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public Entry initializeNewEntry(FileInfo fileInfo, File originalFile,
+                                    Entry entry) {
         try {
-                    /*
-            Object[] values = entry.getValues();
-            if(values==null) values = new Object[2];
-            values[1] = contents;*/
+            /*
+    Object[] values = entry.getValues();
+    if(values==null) values = new Object[2];
+    values[1] = contents;*/
             return entry;
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }

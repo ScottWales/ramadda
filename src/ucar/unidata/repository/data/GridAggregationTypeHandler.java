@@ -25,10 +25,10 @@ import org.w3c.dom.*;
 import ucar.unidata.repository.*;
 import ucar.unidata.repository.output.*;
 import ucar.unidata.repository.type.*;
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
+
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
 
@@ -55,6 +55,7 @@ import java.util.List;
  */
 public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
+    /** _more_          */
     public static final String TYPE_GRIDAGGREGATION = "grid.agggregation";
 
 
@@ -68,31 +69,45 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     public GridAggregationTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
-        getRepository().getHarvesterManager().addHarvesterType(GridAggregationHarvester.class);
+        getRepository().getHarvesterManager().addHarvesterType(
+            GridAggregationHarvester.class);
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public File getNcmlFile(Request request, Entry entry) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(
-                  "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
+            "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
         sb.append("<aggregation type=\"joinExisting\" dimName=\""
-                  + entry.getValue(0,"time") + "\" timeUnitsChange=\"true\">\n");
-        for(Entry child:getRepository().getEntryManager().getChildren(request, entry)) {
+                  + entry.getValue(0, "time")
+                  + "\" timeUnitsChange=\"true\">\n");
+        for (Entry child :
+                getRepository().getEntryManager().getChildren(request,
+                    entry)) {
             String s = child.getResource().getPath();
-            sb.append(
-                      XmlUtil.tag(
-                                  "netcdf",
-                                  XmlUtil.attrs(
-                                                "location",
-                                                IOUtil.getURL(s, getClass()).toString(),
-                                                "enhance", "true"), ""));
+            sb.append(XmlUtil.tag("netcdf",
+                                  XmlUtil.attrs("location",
+                                      IOUtil.getURL(s,
+                                          getClass()).toString(), "enhance",
+                                              "true"), ""));
         }
         sb.append("</aggregation>\n</netcdf>\n");
         System.err.println(sb);
 
-        File tmpFile = getRepository().getStorageManager().getTmpFile(request, "grid.ncml");
+        File tmpFile =
+            getRepository().getStorageManager().getTmpFile(request,
+                "grid.ncml");
         IOUtil.writeFile(tmpFile, sb.toString());
         return tmpFile;
     }
