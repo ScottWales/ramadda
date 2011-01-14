@@ -17,7 +17,7 @@
   </type>
 
 
-  <type name="grid.agggregation"  description="Grid Aggregation" handler="ucar.unidata.repository.data.GridAggregationTypeHandler" category="Geo Data">
+  <type name="gridaggregation"  description="Grid Aggregation" handler="ucar.unidata.repository.data.GridAggregationTypeHandler" category="Geo Data">
      <column name="coordinate" type="string" default="time"  label="Time Coordinate" cansearch="false" showinhtml="true"/>
      <property name="icon" value="/icons/aggregation.png"/>
      <property name="form.resource.show" value="false"/>

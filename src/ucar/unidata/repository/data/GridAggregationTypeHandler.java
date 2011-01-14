@@ -56,7 +56,7 @@ import java.util.List;
 public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** _more_          */
-    public static final String TYPE_GRIDAGGREGATION = "grid.agggregation";
+    public static final String TYPE_GRIDAGGREGATION = "gridaggregation";
 
 
     /**
@@ -95,6 +95,11 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         for (Entry child :
                 getRepository().getEntryManager().getChildren(request,
                     entry)) {
+            if (child.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+                //TODO: aggregation of aggregations
+                continue;
+            }
+
             String s = child.getResource().getPath();
             sb.append(XmlUtil.tag("netcdf",
                                   XmlUtil.attrs("location",

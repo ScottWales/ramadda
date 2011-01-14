@@ -563,17 +563,22 @@ public class IdvOutputHandler extends OutputHandler {
         if ( !idvOk) {
             return;
         }
+        Entry entry = state.entry;
+        if(state.group!=null && state.group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            entry = state.group;
+        }
+
 
         List<Entry> theEntries = null;
-        if (state.entry != null) {
-            if ( !getDataOutputHandler().canLoadAsGrid(state.entry)) {
-                if (getDataOutputHandler().canLoadAsPoint(state.entry)) {
-                    links.add(makeLink(request, state.getEntry(),
+        if (entry != null) {
+            if ( !getDataOutputHandler().canLoadAsGrid(entry)) {
+                if (getDataOutputHandler().canLoadAsPoint(entry)) {
+                    links.add(makeLink(request, entry,
                                        OUTPUT_IDV_POINT));
                 }
                 return;
             }
-            links.add(makeLink(request, state.getEntry(), OUTPUT_IDV_GRID));
+            links.add(makeLink(request, entry, OUTPUT_IDV_GRID));
         } else {
             //            theEntries = getRadarEntries(state.getAllEntries());
         }
@@ -683,7 +688,7 @@ public class IdvOutputHandler extends OutputHandler {
         DataOutputHandler dataOutputHandler = getDataOutputHandler();
         String action = request.getString(ARG_ACTION, ACTION_MAKEINITFORM);
         String            path              =
-            dataOutputHandler.getPath(entry);
+            dataOutputHandler.getPath(request, entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load grid");
@@ -2460,10 +2465,19 @@ public class IdvOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result xxxoutputGroup(Request request, OutputType outputType,
+    public Result outputGroup(Request request, OutputType outputType,
                                  Group group, List<Group> subGroups,
                                  List<Entry> entries)
             throws Exception {
+
+        if (group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            return outputEntry(request, outputType, group);
+        }
+        return super.outputGroup(request,  outputType,
+                                 group, subGroups,
+                                 entries);
+
+        /*
 
         final List<Entry> radarEntries = getRadarEntries(entries);
         Entry             theEntry     = null;
@@ -2588,6 +2602,7 @@ public class IdvOutputHandler extends OutputHandler {
         return new Result("preview.png",
                           getStorageManager().getFileInputStream(image),
                           "image/png");
+        */
     }
 
 

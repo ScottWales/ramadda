@@ -1047,6 +1047,11 @@ public class DataOutputHandler extends OutputHandler {
      * @return _more_
      */
     public boolean canLoadAsGrid(Entry entry) {
+        if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            return true;
+        }
+
+
         if (cannotLoad(entry, TYPE_GRID)) {
             return false;
         }
@@ -1171,9 +1176,13 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    public GridDataset getGridDataset(Entry entry, String path) {
+    public GridDataset getGridDataset(Entry entry, String path) throws Exception {
         if ( !canLoadAsGrid(entry)) {
             return null;
+        }
+        //Don't cache the aggregations
+        if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            return  GridDataset.open(path);
         }
         return gridPool.get(path);
     }
@@ -1635,7 +1644,8 @@ public class DataOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb     = new StringBuffer();
         String       path   = getPath(request, entry);
-        GridDataset  gds    = gridPool.get(path);
+       
+        GridDataset  gds    = getGridDataset(entry, path);
         OutputType   output = request.getOutput();
         try {
             if (output.equals(OUTPUT_GRIDASPOINT)) {
@@ -1720,7 +1730,7 @@ public class DataOutputHandler extends OutputHandler {
                 File f =
                     getRepository().getStorageManager().getTmpFile(request,
                         "subset.nc");
-                GridDataset gds = gridPool.get(path);
+                GridDataset gds = getGridDataset(entry, path);
                 writer.makeFile(f.toString(), gds, varNames, llr,
                                 ((dates[0] == null)
                                  ? null
@@ -1761,7 +1771,7 @@ public class DataOutputHandler extends OutputHandler {
                                          HtmlUtil.SIZE_3)));
 
 
-        GridDataset  dataset   = gridPool.get(path);
+        GridDataset  dataset   = getGridDataset(entry, path);
         Date[]       dateRange = null;
         List<Date>   dates     = getGridDates(dataset);
         StringBuffer varSB     = getVariableForm(dataset, false);

@@ -583,7 +583,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 opendapDataDataset =  XmlUtil.create(catalogInfo.doc,
                                                      CatalogUtil.TAG_DATASET,opendapDataDataset,
                                                      new String[] {
-                                                         CatalogUtil.ATTR_NAME,"Aggregation OpenDAP"});
+                                                         CatalogUtil.ATTR_NAME,entry.getName()+" Aggregation"});
             } 
 
             Element service = XmlUtil.create(catalogInfo.doc,
