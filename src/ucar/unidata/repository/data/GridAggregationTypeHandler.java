@@ -68,6 +68,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     public GridAggregationTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+        getRepository().getHarvesterManager().addHarvesterType(GridAggregationHarvester.class);
     }
 
 
@@ -77,7 +78,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(
                   "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
         sb.append("<aggregation type=\"joinExisting\" dimName=\""
-                  + "time" + "\" timeUnitsChange=\"true\">\n");
+                  + entry.getValue(0,"time") + "\" timeUnitsChange=\"true\">\n");
         for(Entry child:getRepository().getEntryManager().getChildren(request, entry)) {
             String s = child.getResource().getPath();
             sb.append(

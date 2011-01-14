@@ -456,6 +456,12 @@ public class Entry extends Entity {
         return values;
     }
 
+    public String getValue(int index, String dflt) {
+        if(values == null || index>=values.length|| values[index]==null) {
+            return dflt;
+        }
+        return values[index].toString();
+    }
 
 
     /**
