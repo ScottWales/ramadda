@@ -59,6 +59,11 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     public static final String TYPE_GRIDAGGREGATION = "gridaggregation";
 
 
+    public static final String TYPE_JOINEXISTING ="joinExisting";
+    public static final String TYPE_JOINNEW ="joinNew";
+    public static final String TYPE_UNION ="union";
+
+    
     /**
      * _more_
      *
@@ -87,11 +92,25 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public File getNcmlFile(Request request, Entry entry) throws Exception {
         StringBuffer sb = new StringBuffer();
+        String type = entry.getValue(1, TYPE_JOINEXISTING);
+        String typeToUse = TYPE_JOINEXISTING;
+        if(type.equalsIgnoreCase(TYPE_UNION)) 
+            typeToUse = TYPE_UNION;
+        else if(type.equalsIgnoreCase(TYPE_JOINNEW)) 
+            typeToUse = TYPE_JOINNEW;
+
         sb.append(
             "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
-        sb.append("<aggregation type=\"joinExisting\" dimName=\""
-                  + entry.getValue(0, "time")
-                  + "\" timeUnitsChange=\"true\">\n");
+        if(typeToUse.equals(TYPE_JOINEXISTING)) {
+            sb.append("<aggregation type=\"joinExisting\" dimName=\""
+                      + entry.getValue(0, "time")
+                      + "\" timeUnitsChange=\"true\">\n");
+        } else if(typeToUse.equals(TYPE_UNION)) {
+            sb.append("<aggregation type=\"union\" >");
+        } else {
+            //TODO: figure this out.
+
+        }
         for (Entry child :
                 getRepository().getEntryManager().getChildren(request,
                     entry)) {
