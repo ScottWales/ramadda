@@ -2367,35 +2367,6 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
 
-        List dateSelect = new ArrayList();
-        dateSelect.add(new TwoFacedObject(msg("---"), "none"));
-        dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
-        dateSelect.add(new TwoFacedObject(msg("Last 3 hours"), "-3 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last 6 hours"), "-6 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last 12 hours"), "-12 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
-        dateSelect.add(new TwoFacedObject(msg("Last 7 days"), "-7 days"));
-        String dateSelectValue;
-        if (request.exists(ARG_RELATIVEDATE)) {
-            dateSelectValue = request.getString(ARG_RELATIVEDATE, "");
-        } else {
-            dateSelectValue = "none";
-        }
-
-        String dateSelectInput = HtmlUtil.select(ARG_RELATIVEDATE,
-                                     dateSelect, dateSelectValue);
-        String minDate = request.getDateSelect(ARG_FROMDATE, (String) null);
-        String maxDate = request.getDateSelect(ARG_TODATE, (String) null);
-
-        //        request.remove(ARG_FROMDATE);
-        //        request.remove(ARG_TODATE);
-
-
-
-        //        List<TypeHandler> typeHandlers =
-        //            getRepository().getTypeHandlers(request);
-
-
         if (request.defined(ARG_TYPE)) {
             TypeHandler typeHandler = getRepository().getTypeHandler(request);
             if ( !typeHandler.isAnyHandler()) {
@@ -2511,11 +2482,7 @@ public class TypeHandler extends RepositoryManager {
          */
 
 
-        addSearchField(request, ARG_FILESUFFIX, basicSB);
 
-
-        String dateTypeValue = request.getString(ARG_DATE_SEARCHMODE,
-                                                 DATE_SEARCHMODE_DEFAULT);
         List dateTypes = new ArrayList();
         dateTypes.add(new TwoFacedObject(msg("Overlaps range"),
                                          DATE_SEARCHMODE_OVERLAPS));
@@ -2523,34 +2490,81 @@ public class TypeHandler extends RepositoryManager {
                                          DATE_SEARCHMODE_CONTAINEDBY));
         dateTypes.add(new TwoFacedObject(msg("Contains range"),
                                          DATE_SEARCHMODE_CONTAINS));
-        String dateTypeInput = HtmlUtil.select(ARG_DATE_SEARCHMODE,
-                                               dateTypes, dateTypeValue);
 
-        String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
-        String noDateInput = HtmlUtil.checkbox(ARG_DATE_NODATAMODE,
-                                 VALUE_NODATAMODE_INCLUDE,
-                                 noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
-        String dateExtra = HtmlUtil.space(4)
-            + HtmlUtil.makeToggleInline(msg("More..."),
-                               HtmlUtil.p()
-                               + HtmlUtil.formTable(new String[] {
-            msgLabel("Search for data whose time is"), dateTypeInput,
-            msgLabel("Or search relative"), dateSelectInput, "",
-            noDateInput + HtmlUtil.space(1)
-            + msg("Include entries with no data times")
-        }), false);
 
-        basicSB.append(
-            HtmlUtil.formEntryTop(
-                msgLabel("Date Range"),
-                getRepository().makeDateInput(
-                    request, ARG_FROMDATE, "searchform",
-                    null) + HtmlUtil.space(1)
-                          + HtmlUtil.img(getRepository().iconUrl(ICON_RANGE))
-                          + HtmlUtil.space(1)
-                          + getRepository().makeDateInput(
-                              request, ARG_TODATE, "searchform",
-                              null) + dateExtra));
+        List dateSelect = new ArrayList();
+        dateSelect.add(new TwoFacedObject(msg("---"), "none"));
+        dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
+        dateSelect.add(new TwoFacedObject(msg("Last 3 hours"), "-3 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Last 6 hours"), "-6 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Last 12 hours"), "-12 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
+        dateSelect.add(new TwoFacedObject(msg("Last 7 days"), "-7 days"));
+
+
+
+        String dateSelectValue;
+        for(Constants.DateArg arg: Constants.DATEARGS) {
+            if (request.exists(arg.relative)) {
+                dateSelectValue = request.getString(arg.relative, "");
+            } else {
+                dateSelectValue = "none";
+            }
+            
+            String dateSelectInput = HtmlUtil.select(arg.relative,
+                                                     dateSelect, dateSelectValue);
+            String minDate = request.getDateSelect(arg.from, (String) null);
+            String maxDate = request.getDateSelect(arg.to, (String) null);
+            //        request.remove(arg.from);
+            //        request.remove(arg.to);
+            //        List<TypeHandler> typeHandlers =
+            //            getRepository().getTypeHandlers(request);
+
+
+            String dateTypeValue = request.getString(arg.mode,
+                                                     DATE_SEARCHMODE_DEFAULT);
+            String dateTypeInput = HtmlUtil.select(arg.mode,
+                                                   dateTypes, dateTypeValue);
+
+            String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
+            String noDateInput = HtmlUtil.checkbox(ARG_DATE_NODATAMODE,
+                                                   VALUE_NODATAMODE_INCLUDE,
+                                                   noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
+            String dateExtra;
+            if(arg.hasRange) {
+                dateExtra = HtmlUtil.space(4)
+                    + HtmlUtil.makeToggleInline(msg("More..."),
+                                                HtmlUtil.p()
+                                                + HtmlUtil.formTable(new String[] {
+                                                        msgLabel("Search for data whose time is"), dateTypeInput,
+                                                        msgLabel("Or search relative"), dateSelectInput, "",
+                                                        noDateInput + HtmlUtil.space(1)
+                                                        + msg("Include entries with no data times")
+                                                    }), false);
+            } else {
+                dateExtra = HtmlUtil.space(4)
+                    + HtmlUtil.makeToggleInline(msg("More..."),
+                                                HtmlUtil.p()
+                                                + HtmlUtil.formTable(new String[] {
+                                                        msgLabel("Or search relative"), dateSelectInput}), false);
+
+
+            }
+
+            basicSB.append(
+                           HtmlUtil.formEntryTop(
+                                                 msgLabel(arg.label),
+                                                 getRepository().makeDateInput(
+                                                                               request, arg.from, "searchform",
+                                                                               null) + HtmlUtil.space(1)
+                                                 + HtmlUtil.img(getRepository().iconUrl(ICON_RANGE))
+                                                 + HtmlUtil.space(1)
+                                                 + getRepository().makeDateInput(
+                                                                                 request, arg.to, "searchform",
+                                                                                 null) + dateExtra));
+
+
+        }
 
 
         if (advancedForm || request.defined(ARG_GROUP)) {
@@ -2633,7 +2647,11 @@ public class TypeHandler extends RepositoryManager {
 
             basicSB.append(HtmlUtil.formEntry(msgLabel("Area"), mapSelector));
             basicSB.append("\n");
+
+            addSearchField(request, ARG_FILESUFFIX, basicSB);
+
         }
+
 
 
 
@@ -2854,48 +2872,65 @@ public class TypeHandler extends RepositoryManager {
 
 
         List<Clause> dateClauses = new ArrayList<Clause>();
-        Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
-                               new Date());
-        if ((dateRange[0] != null) || (dateRange[1] != null)) {
-            Date date1 = dateRange[0];
-            Date date2 = dateRange[1];
-            if (date1 == null) {
-                date1 = date2;
-            }
-            if (date2 == null) {
-                date2 = date1;
-            }
+        for(Constants.DateArg arg: Constants.DATEARGS) {
+            Date[] dateRange = request.getDateRange(arg.from, arg.to, arg.relative,
+                                                    new Date());
+            if ((dateRange[0] != null) || (dateRange[1] != null)) {
+                Date date1 = dateRange[0];
+                Date date2 = dateRange[1];
+                if (date1 == null) {
+                    date1 = date2;
+                }
+                if (date2 == null) {
+                    date2 = date1;
+                }
 
-            String dateSearchMode = request.getString(ARG_DATE_SEARCHMODE,
-                                                      DATE_SEARCHMODE_DEFAULT);
-            if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
-                addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
-                            date1);
-                addCriteria(request, searchCriteria, "From&nbsp;Date&lt;=",
-                            date2);
-                dateClauses.add(Clause.le(Tables.ENTRIES.COL_FROMDATE,
-                                          date2));
-                dateClauses.add(Clause.ge(Tables.ENTRIES.COL_TODATE, date1));
-            } else if (dateSearchMode.equals(DATE_SEARCHMODE_CONTAINEDBY)) {
-                addCriteria(request, searchCriteria, "From&nbsp;Date&gt;=",
-                            date1);
-                addCriteria(request, searchCriteria, "To&nbsp;Date&lt;=",
-                            date2);
-                dateClauses.add(Clause.ge(Tables.ENTRIES.COL_FROMDATE,
-                                          date1));
-                dateClauses.add(Clause.le(Tables.ENTRIES.COL_TODATE, date2));
-            } else {
-                //DATE_SEARCHMODE_CONTAINS
-                addCriteria(request, searchCriteria, "From&nbsp;Date&lt;=",
-                            date1);
-                addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
-                            date2);
-                dateClauses.add(Clause.le(Tables.ENTRIES.COL_FROMDATE,
-                                          date1));
-                dateClauses.add(Clause.ge(Tables.ENTRIES.COL_TODATE, date2));
-            }
-        }
+                if(arg.equals(Constants.createDate) || arg.equals(Constants.changeDate)) {
+                    String column = arg.equals(Constants.createDate)?Tables.ENTRIES.COL_CREATEDATE:
+                        Tables.ENTRIES.COL_CHANGEDATE;
+                    if (date1 != null) {
+                        addCriteria(request, searchCriteria, msg(arg.label) +">=",
+                                    date1);
+                        dateClauses.add(Clause.ge(column, date1));
+                    }
+                    if (date2 != null) {
+                        addCriteria(request, searchCriteria, msg(arg.label)+"<=",
+                                    date2);
+                        dateClauses.add(Clause.le(column, date2));
+                    }
+                    continue;
+                }
 
+
+                String dateSearchMode = request.getString(arg.mode,
+                                                          DATE_SEARCHMODE_DEFAULT);
+                if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
+                    addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
+                                date1);
+                    addCriteria(request, searchCriteria, "From&nbsp;Date&lt;=",
+                                date2);
+                    dateClauses.add(Clause.le(Tables.ENTRIES.COL_FROMDATE,
+                                              date2));
+                    dateClauses.add(Clause.ge(Tables.ENTRIES.COL_TODATE, date1));
+                } else if (dateSearchMode.equals(DATE_SEARCHMODE_CONTAINEDBY)) {
+                    addCriteria(request, searchCriteria, "From&nbsp;Date&gt;=",
+                                date1);
+                    addCriteria(request, searchCriteria, "To&nbsp;Date&lt;=",
+                                date2);
+                    dateClauses.add(Clause.ge(Tables.ENTRIES.COL_FROMDATE,
+                                              date1));
+                    dateClauses.add(Clause.le(Tables.ENTRIES.COL_TODATE, date2));
+                } else {
+                    //DATE_SEARCHMODE_CONTAINS
+                    addCriteria(request, searchCriteria, "From&nbsp;Date&lt;=",
+                                date1);
+                    addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
+                                date2);
+                    dateClauses.add(Clause.le(Tables.ENTRIES.COL_FROMDATE,
+                                              date1));
+                    dateClauses.add(Clause.ge(Tables.ENTRIES.COL_TODATE, date2));
+                }
+            }
 
 
         String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
@@ -2917,39 +2952,9 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        dateRange = request.getDateRange(ARG_CREATEDATE + "_from",
-                                         ARG_CREATEDATE + "_to", null,
-                                         new Date());
-        if (dateRange[0] != null) {
-            addCriteria(request, searchCriteria, "Create Date>=",
-                        dateRange[0]);
-            dateClauses.add(Clause.ge(Tables.ENTRIES.COL_CREATEDATE,
-                                      dateRange[0]));
         }
 
-        if (dateRange[1] != null) {
-            addCriteria(request, searchCriteria, "Create Date<=",
-                        dateRange[1]);
-            dateClauses.add(Clause.le(Tables.ENTRIES.COL_CREATEDATE,
-                                      dateRange[1]));
-        }
 
-        dateRange = request.getDateRange(ARG_CHANGEDATE + "_from",
-                                         ARG_CHANGEDATE + "_to", null,
-                                         new Date());
-        if (dateRange[0] != null) {
-            addCriteria(request, searchCriteria, "Change Date>=",
-                        dateRange[0]);
-            dateClauses.add(Clause.ge(Tables.ENTRIES.COL_CHANGEDATE,
-                                      dateRange[0]));
-        }
-
-        if (dateRange[1] != null) {
-            addCriteria(request, searchCriteria, "Change Date<=",
-                        dateRange[1]);
-            dateClauses.add(Clause.le(Tables.ENTRIES.COL_CHANGEDATE,
-                                      dateRange[1]));
-        }
 
 
 

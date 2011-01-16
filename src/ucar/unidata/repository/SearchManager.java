@@ -204,9 +204,10 @@ public class SearchManager extends RepositoryManager {
             throws Exception {
         StringBuffer sb          = new StringBuffer();
         makeSearchForm(request, justText, typeSpecific, sb);
-        return getRepository().makeResult(request, msg("Search Form"), sb,
-                                          getSearchUrls());
-
+        Result result =  getRepository().makeResult(request, msg("Search Form"), sb,
+                                                    getSearchUrls());
+        return result;
+        //        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
     }
 
     public String getSearchUrl(Request request) {

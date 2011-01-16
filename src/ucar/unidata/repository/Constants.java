@@ -751,6 +751,47 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_FROMDATE_TIME = ARG_FROMDATE + ".time";
 
+
+    public static final String ARG_DATA_DATE= "datadate";
+    public static final String ARG_CREATE_DATE= "createdate";
+    public static final String ARG_CHANGE_DATE= "changedate";
+
+
+    public static final class DateArg {
+        public String suffix;
+        public boolean hasRange;
+        public String label;
+        public String from;
+        public String to;
+        public String mode;
+        public String relative;
+        public DateArg(String suffix, String label, boolean hasRange) {
+            this.suffix = suffix;
+            this.label = label;
+            this.hasRange = hasRange;
+            from = suffix+".from";
+            to = suffix+".to";
+            mode = suffix+".mode";
+            relative = suffix+".relative";
+        }
+        
+        public boolean equals(Object o) {
+            if(!(o instanceof DateArg)) return false;
+            DateArg that = (DateArg) o;
+            return this.suffix.equals(that.suffix);
+        }
+    }
+
+    public static final DateArg dataDate = new DateArg(ARG_DATA_DATE,"Data Date", true);
+    public static final DateArg createDate = new DateArg(ARG_CREATE_DATE,"Create Date", false);
+    public static final DateArg changeDate = new DateArg(ARG_CHANGE_DATE,"Change Date",false);
+
+    public static final Constants.DateArg[] DATEARGS ={Constants.dataDate,
+                                                       Constants.createDate,
+                                                       Constants.changeDate};
+
+
+
     /** _more_ */
     public static final String ARG_FROMLOGIN = "user.fromlogin";
 
