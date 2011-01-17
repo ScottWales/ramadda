@@ -12,7 +12,6 @@ ramadda.template.link.separator=
 ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 ramadda.template.userlink.separator=
 
-
 ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
 ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
 ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
@@ -29,6 +28,16 @@ ${html.imports}
 
 <style type="text/css">
 
+
+.content {
+  border-top: 0px #aaa solid;
+}
+
+.navlinks {
+  padding-top:5px;
+   border-bottom : 1px #444 solid;
+}
+
 .breadcrumbs {
    margin-left:5px;
 }
@@ -41,42 +50,33 @@ ${html.imports}
 .subnavoffcomp  {
    padding-bottom:0px; 
 }
-
-
 .linkslabel {
    font-weight: bold;
 }
-
 .favorites {
    max-width: 125px; 
    overflow-x: auto;
-//   border: 1px #999999 solid; 
    margin-top: 0px;
    margin-left:4px;
    background-color:#ffffff;
 }
-
 .topbox {
    padding:0px;
    margin-top: 5px;
 }
-
 .innercontent {
   margin-left:5px;
   margin-right:5px;
 }
-
 .header-leftcolumn {
   border-bottom : 2px #888888 solid;
   color: #000000;
   padding-top:10px;
   padding-right:5px;
 }
-
 a.header-leftcolumn  {
     color:black;
 }
-
 .header-leftcolumn a:hover  {
     color:red;
 }
@@ -145,22 +145,13 @@ ${userlink}
 <br>
 
 ${favorites}
-
-
-
 </div>
 </td>
 
 <td>
 <div  class="header-leftcolumn-title">${header.title} - ${title}</div>
-<div class="topbox">
-${sublinks}
-</div>
-<div class="content">${entry.header}<div class="innercontent">${content}</div></div>
-
+<div class="content">${entry.header}${sublinks}<div class="innercontent">${content}</div></div>
 </td></tr></table>
-
-
 <div class="footer">${footer}</div>
 ${bottom}
 </body></html>

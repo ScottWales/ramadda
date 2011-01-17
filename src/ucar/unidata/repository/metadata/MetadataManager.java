@@ -810,11 +810,12 @@ public class MetadataManager extends RepositoryManager {
 
 
 
-        return getRepository().makeResult(request,
+        Result result =  getRepository().makeResult(request,
                                           msg(type.getLabel() + " Cloud"),
                                           sb,
                                           getSearchManager().getSearchUrls());
 
+        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
     }
 
 
@@ -837,7 +838,8 @@ public class MetadataManager extends RepositoryManager {
             return new Result("", "Could not find metadata");
         }
         MetadataHandler handler = findMetadataHandler(metadata.getType());
-        return handler.processView(request, entry, metadata);
+        Result result =  handler.processView(request, entry, metadata);
+        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
     }
 
 

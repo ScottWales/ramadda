@@ -17,6 +17,10 @@ ramadda.template.sublink.wrapper=${sublinks}
 ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
 ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
 
+ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
+ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
+ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
+
 ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
 ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 
@@ -27,42 +31,32 @@ ${html.imports}
 
 <style type="text/css">
 
-body {
+.navlinks {
+  padding-top:5px;
+  border-bottom : 1px #444 solid;
 }
-
-
 
 .breadcrumbs a {
    text-decoration: none;
-   xcolor: black;
 }
 
 .breadcrumbs {
    margin-left:5px;
 }
-
-
 .linkslabel {
    font-weight: bold;
 }
-
-
-
 .topbox {
    padding:0px;
    margin-top: 5px;
 }
-
 .innercontent {
   margin-left:5px;
   margin-right:5px;
 }
-
-
-
-
-
-
+.content {
+  border-top: 0px #aaa solid;
+}
 .content {
   border-left: none;
   border-right: none;
@@ -112,47 +106,6 @@ a.header-leftcolumn  {
 
 
 
-.subnav {
-   margin:10;
-   margin-left:0;
-   padding:0;
-   color: black;
-   min-height: 500px;
-}
-
-
-
-
-
-.subnavoncomp  {
-   background-color:#ffffff;
-   border: 1px #999999 solid; 
-   border-bottom: 2px white solid; 
-   margin-left:5px;
-   margin-right:5px;
-   padding-left:5;   
-   padding-right:5;   
-   padding-top:2px;   
-   padding-bottom:0px;   
-   font-weight: bold;
-}
-
-.subnavoffcomp  {
-   font-weight: bold;
-   background-color:#f1f0f3;
-   border: 1px #999999 solid; 
-   border-bottom: 1px 000000 solid; 
-   margin-left:5px;
-   margin-right:5px;
-   padding-left:5;   
-   padding-right:5;   
-   padding-top:2px;   
-   padding-bottom:0px;   
-}
-
-
-
-
 
 </style>
 
@@ -170,10 +123,7 @@ ${headfinal}
 ${links}
 </td></tr></table>
 
-<div class="topbox">
-${sublinks}
-</div>
-<div class="content">${entry.header}<div class="innercontent">${content}</div></div>
+<div class="content">${entry.header}${sublinks}<div class="innercontent">${content}</div></div>
 </td></tr></table>
 
 <div class="footer">${userlink}</div>

@@ -206,8 +206,8 @@ public class SearchManager extends RepositoryManager {
         makeSearchForm(request, justText, typeSpecific, sb);
         Result result =  getRepository().makeResult(request, msg("Search Form"), sb,
                                                     getSearchUrls());
-        return result;
-        //        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
+        //        return result;
+        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
     }
 
     public String getSearchUrl(Request request) {
@@ -507,8 +507,9 @@ public class SearchManager extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         getMetadataManager().addToBrowseSearchForm(request, sb);
-        return getRepository().makeResult(request, msg("Search Form"), sb,
+        Result result =  getRepository().makeResult(request, msg("Search Form"), sb,
                                           getSearchUrls());
+        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
     }
 
 

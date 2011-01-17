@@ -3180,6 +3180,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         } else {
             header = sublinksHtml;
         }
+        header = entryHeader+sublinksHtml;
 
         String favoritesWrapper = getTemplateProperty(request,
                                       "ramadda.template.favorites.wrapper",
