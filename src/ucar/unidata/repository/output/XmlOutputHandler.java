@@ -112,9 +112,6 @@ public class XmlOutputHandler extends OutputHandler {
 
 
 
-
-
-
     /**
      * _more_
      *

@@ -179,17 +179,20 @@ public class DataOutputHandler extends OutputHandler {
     /** chart format */
     private static final String FORMAT_TIMESERIES_CHART = "timeserieschart";
 
+    public static final String  GROUP_DATA = "Data";
+
+
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
-        new OutputType("OpenDAP", "data.opendap", OutputType.TYPE_NONHTML,
-                       OutputType.SUFFIX_NONE, ICON_OPENDAP);
+        new OutputType("OpenDAP", "data.opendap", OutputType.TYPE_CATEGORY,
+                       OutputType.SUFFIX_NONE, ICON_OPENDAP, GROUP_DATA);
 
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL = new OutputType("CDL",
                                                     "data.cdl",
-                                                    OutputType.TYPE_HTML,
+                                                    OutputType.TYPE_CATEGORY,
                                                     OutputType.SUFFIX_NONE,
-                                                    ICON_DATA);
+                                                    ICON_DATA, GROUP_DATA);
 
     /** WCS Output Type */
     public static final OutputType OUTPUT_WCS = new OutputType("WCS",
@@ -199,31 +202,31 @@ public class DataOutputHandler extends OutputHandler {
     /** Point map Output Type */
     public static final OutputType OUTPUT_POINT_MAP =
         new OutputType("Point as Map", "data.point.map",
-                       OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
-                       ICON_MAP);
+                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       ICON_MAP, GROUP_DATA);
 
     /** CSV Output Type */
     public static final OutputType OUTPUT_POINT_CSV =
         new OutputType("Point as CSV", "data.point.csv",
                        OutputType.TYPE_NONHTML, OutputType.SUFFIX_NONE,
-                       ICON_CSV);
+                       ICON_CSV, GROUP_DATA);
 
     /** KML Output Type */
     public static final OutputType OUTPUT_POINT_KML =
         new OutputType("Point as KML", "data.point.kml",
-                       OutputType.TYPE_NONHTML, "", ICON_KML);
+                       OutputType.TYPE_NONHTML, "", ICON_KML, GROUP_DATA);
 
     /** Trajectory map Output Type */
     public static final OutputType OUTPUT_TRAJECTORY_MAP =
         new OutputType("Trajectory as Map", "data.trajectory.map",
-                       OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
-                       ICON_MAP);
+                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       ICON_MAP, GROUP_DATA);
 
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Grid Subset", "data.gridsubset.form",
-                       OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
-                       ICON_SUBSET);
+                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       ICON_SUBSET, GROUP_DATA);
 
     /** Grid subset Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET =
@@ -232,8 +235,8 @@ public class DataOutputHandler extends OutputHandler {
     /** Grid as point form Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
         new OutputType("Grid As Point Data", "data.gridaspoint.form",
-                       OutputType.TYPE_HTML, OutputType.SUFFIX_NONE,
-                       ICON_SUBSET);
+                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       ICON_SUBSET, GROUP_DATA);
 
     /** Grid as point Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT =
