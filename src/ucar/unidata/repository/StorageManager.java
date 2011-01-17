@@ -291,9 +291,18 @@ public class StorageManager extends RepositoryManager {
         String repositoryDirProperty =
             getRepository().getProperty(PROP_REPOSITORY_HOME, (String) null);
         if (repositoryDirProperty == null) {
+            //Use the old <home>/.unidata/repository if its there
             repositoryDirProperty =
                 IOUtil.joinDir(Misc.getSystemProperty("user.home", "."),
-                               IOUtil.joinDir(".unidata", DIR_REPOSITORY));
+                               IOUtil.joinDir(".unidata", "repository"));
+            //Else use  <home>/.ramadda
+            if(!new File(repositoryDirProperty).exists()) {
+                repositoryDirProperty =
+                    IOUtil.joinDir(Misc.getSystemProperty("user.home", "."),
+                                   ".ramadda");
+            } else {
+                //                System.err.println ("RAMADDA: Using old .unidata directory:" +repositoryDirProperty);
+            }
         }
         repositoryDir = new File(repositoryDirProperty);
 
@@ -1141,9 +1150,10 @@ public class StorageManager extends RepositoryManager {
             getRepository().getProperty(PROP_FASTDIR, (String) null);
         if(fastDir == null || !entry.isFile()) return entry.getResource().getPath();
 
-        File f = new File(entry.getResource().getPath());
+        File f = entry.getTypeHandler().getFileForEntry(entry);
         if(!f.exists()) return entry.getResource().getPath();
         //TODO: do this
+
 
         return f.toString();
     }
