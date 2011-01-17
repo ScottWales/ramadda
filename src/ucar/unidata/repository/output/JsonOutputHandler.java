@@ -127,10 +127,11 @@ public class JsonOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
-        StringBuffer sb = new StringBuffer();
         List<Entry> allEntries = new ArrayList<Entry>();
+        //        allEntries.add(group);
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
+        StringBuffer sb = new StringBuffer();
         sb.append("[");
         int cnt=0;
         for(Entry entry: allEntries) {
@@ -141,6 +142,7 @@ public class JsonOutputHandler extends OutputHandler {
             sb.append("\n");
         }
         sb.append("]");
+
 
         return new Result("", sb, "application/json");
     }
@@ -158,6 +160,7 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
     private void qtattr(StringBuffer sb, String name, String value, boolean addComma) {
+        if(value==null) return;
         value = value.replaceAll("\"","\\\"");
         attr(sb,name, qt(value), addComma);
     }
@@ -190,10 +193,10 @@ public class JsonOutputHandler extends OutputHandler {
             attr(sb, "isGroup", "true");
         }
         qtattr(sb, "parent", entry.getParentEntryId());
-        attr(sb, "user", entry.getUser().getId());
-        attr(sb, "createDate", fmt(entry.getCreateDate()));
-        attr(sb, "startDate", fmt(entry.getStartDate()));
-        attr(sb, "endDate", fmt(entry.getEndDate()));
+        qtattr(sb, "user", entry.getUser().getId());
+        qtattr(sb, "createDate", fmt(entry.getCreateDate()));
+        qtattr(sb, "startDate", fmt(entry.getStartDate()));
+        qtattr(sb, "endDate", fmt(entry.getEndDate()));
 
         if(entry.hasNorth())
             attr(sb, "north", ""+entry.getNorth());

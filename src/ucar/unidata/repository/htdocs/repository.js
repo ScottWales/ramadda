@@ -1624,3 +1624,25 @@ function alertContents() {
 
 
 
+function testReturn(request) {
+    jsonText=request.responseText;
+    if(JSON) {
+        entries = JSON.parse(jsonText);
+    }  else {
+        entries = eval('(' + jsonText + ')');
+    }
+
+    var names = "";
+    for (i = 0; i < entries.length; i++) {
+        entry = entries[i];
+        names = names+"\n" + entry.name;
+    }
+    //    alert(names);
+}
+
+//var url = "http://localhost:8080/repository/entry/show/Grids.json?entryid=42d0e1ad-687a-415b-9ace-f5432c5d9aa0&output=json"
+//util.loadXML( url, testReturn);
+
+
+
+
