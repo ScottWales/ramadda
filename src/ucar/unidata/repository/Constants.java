@@ -303,6 +303,9 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_XML = "ramadda.icon.xml";
 
+    public static final String ICON_JSON = "ramadda.icon.json";
+
+
     /** _more_ */
     public static final String ICON_ZIP = "ramadda.icon.zip";
 
@@ -584,6 +587,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_CANCEL = "cancel";
+
+    public static final String ARG_COLUMNS = "columns";
 
     /** _more_ */
     public static final String ARG_COMPRESS = "compress";

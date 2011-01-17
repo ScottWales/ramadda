@@ -6,6 +6,7 @@
   <outputhandler class="ucar.unidata.repository.output.KmlOutputHandler" name="KML"/>
   <outputhandler class="ucar.unidata.repository.output.RssOutputHandler" name="RSS"/>
   <outputhandler class="ucar.unidata.repository.output.IcalOutputHandler" name="ICAL"/>
+  <outputhandler class="ucar.unidata.repository.output.JsonOutputHandler" name="JSON"/>
   <outputhandler class="ucar.unidata.repository.output.XmlOutputHandler" name="XML"/>
   <outputhandler class="ucar.unidata.repository.output.ZipOutputHandler" name="ZIP Files" maxconnections="1"/>
   <outputhandler class="ucar.unidata.repository.output.WgetOutputHandler" name="WGET script"/>

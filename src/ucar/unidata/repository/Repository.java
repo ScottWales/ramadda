@@ -3115,6 +3115,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         //        System.err.println(request +" DECORATE=" + request.get(ARG_DECORATE, true));
 
         if ( !request.get(ARG_DECORATE, true)) {
+            if(true) return;
             template = getResource(
                 "/ucar/unidata/repository/resources/templates/plain.html");
         }

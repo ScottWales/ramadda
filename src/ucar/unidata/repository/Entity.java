@@ -98,6 +98,9 @@ public class Entity implements Cloneable {
      */
     public Entity() {}
 
+    public Entity(Entity that) {
+    }
+
 
     /**
      * _more_

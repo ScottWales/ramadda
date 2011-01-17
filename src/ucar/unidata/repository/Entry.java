@@ -134,7 +134,10 @@ public class Entry extends Entity {
      */
     public Entry() {}
 
-
+    public Entry(Entry that) {
+        super(that);
+        initWith(that);
+    }
     /**
      * _more_
      *
@@ -175,7 +178,6 @@ public class Entry extends Entity {
         this(id);
         this.typeHandler = typeHandler;
     }
-
 
 
     /**
@@ -223,6 +225,7 @@ public class Entry extends Entity {
     public void initWith(Entry template) {
         setName(template.getName());
         setDescription(template.getDescription());
+
         if (template.getMetadata() != null) {
             List<Metadata> thisMetadata = new ArrayList<Metadata>();
             for (Metadata metadata : template.getMetadata()) {
@@ -239,6 +242,8 @@ public class Entry extends Entity {
         setSouth(template.getSouth());
         setEast(template.getEast());
         setWest(template.getWest());
+        this.altitudeTop = template.altitudeTop;
+        this.altitudeBottom = template.altitudeBottom;
     }
 
     public Rectangle2D.Double getBounds() {

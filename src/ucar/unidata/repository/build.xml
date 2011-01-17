@@ -440,6 +440,7 @@
         <unjar src="${libdir}/mailapi.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/javadiff.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/smtp.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/gson-1.5.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/postgres.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/mysql.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/derby.jar" dest="${tmpjardir}"/>
