@@ -85,6 +85,12 @@ public class HtmlOutputHandler extends OutputHandler {
                        OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
                        ICON_TIMELINE);
 
+    public static final OutputType OUTPUT_GRID =
+        new OutputType("Grid Layout", "html.grid",
+                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       ICON_DATA);
+
+
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH =
         new OutputType("Graph", "default.graph",
@@ -127,6 +133,7 @@ public class HtmlOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_HTML);
         addType(OUTPUT_TIMELINE);
+        addType(OUTPUT_GRID);
         addType(OUTPUT_GRAPH);
         addType(OUTPUT_INLINE);
         addType(OUTPUT_SELECTXML);
@@ -153,6 +160,10 @@ public class HtmlOutputHandler extends OutputHandler {
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_TIMELINE));
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_GRID));
+
+
             }
         }
     }
@@ -340,6 +351,8 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_TIMELINE)) {
+            return getRepository().getMimeTypeFromSuffix(".html");
+        } if (output.equals(OUTPUT_GRID)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
@@ -782,6 +795,56 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    public Result outputGrid(Request request, 
+                              Group group, List<Group> subGroups,
+                              List<Entry> entries)
+            throws Exception {
+        StringBuffer sb = new StringBuffer();
+        int cols = request.get(ARG_COLUMNS,3);
+        sb.append("<table width=100% border=0 cellpadding=10>");
+
+        List<Entry> allEntries = new ArrayList<Entry>();
+        allEntries.addAll(subGroups);
+        allEntries.addAll(entries);
+
+        int col=0;
+        boolean  needToOpenRow= true;
+        int width = (int)(10*1.0/(float)cols);
+        for(Entry entry: allEntries) {
+            if(col>=cols) {
+                sb.append("</tr>");
+                needToOpenRow = true;
+                col=0;
+            }
+            if(needToOpenRow) {
+                sb.append("<tr align=bottom>");
+                needToOpenRow = false;
+            }
+            col++;
+            sb.append("<td align=center width=" + width+"% >");
+            StringBuffer metadataSB = new StringBuffer();
+            //            getMetadataManager().decorateEntry(request, entry, metadataSB,
+            //                                               true);
+
+            //            sb.append(metadataSB);
+            sb.append (getEntryManager().getAjaxLink( request,  entry,
+                                                      "<br>"+entry.getName(),null, false));
+
+            sb.append("</td>");
+        }
+
+
+
+        sb.append("</table>");
+
+
+        return makeLinksResult(request, msg("Grid"), sb,
+                               new State(group, subGroups, entries));
+
+        
+    }
+
+
     /**
      * _more_
      *
@@ -830,6 +893,10 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (outputType.equals(OUTPUT_LINKSXML)) {
             return getLinksXml(request, group);
+        }
+
+        if (outputType.equals(OUTPUT_GRID)) {
+            return outputGrid(request, group,  subGroups, entries);
         }
 
 
