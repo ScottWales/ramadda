@@ -2653,8 +2653,7 @@ public class DataOutputHandler extends OutputHandler {
             GridAggregationTypeHandler gridAggregation = (GridAggregationTypeHandler) entry.getTypeHandler();
             location = gridAggregation.getNcmlFile(request, entry).toString();
         } else {
-            File file = getEntryManager().getFileForEntry(entry);
-            location = file.toString();
+            location = getStorageManager().getFastResourcePath(entry);
         }
         getStorageManager().checkPath(location);
 
