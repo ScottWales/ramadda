@@ -688,7 +688,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             System.out.println("Error reading metadata:"
                                + entry.getResource());
             System.out.println("Error:" + exc);
-            //            exc.printStackTrace();
+            exc.printStackTrace();
         } finally {
             try {
                 if (dataset != null) {

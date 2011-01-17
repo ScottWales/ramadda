@@ -91,6 +91,9 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public File getNcmlFile(Request request, Entry entry) throws Exception {
+        if(request == null) {
+            request = getRepository().getTmpRequest();
+        }
         StringBuffer sb = new StringBuffer();
         String type = entry.getValue(1, TYPE_JOINEXISTING);
         String typeToUse = TYPE_JOINEXISTING;

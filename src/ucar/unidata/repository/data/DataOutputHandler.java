@@ -20,6 +20,8 @@
 
 package ucar.unidata.repository.data;
 
+import ucar.unidata.repository.type.TypeHandler;
+
 
 import opendap.dap.DAP2Exception;
 
@@ -725,7 +727,7 @@ public class DataOutputHandler extends OutputHandler {
         request.put(ARG_OUTPUT, oldOutput);
 
 
-        Link cdlLink = makeLink(request, state.entry, OUTPUT_CDL);
+        Link cdlLink = makeLink(request, entry, OUTPUT_CDL);
         //        cdlLink.setLinkType(OutputType.TYPE_ACTION);
         links.add(cdlLink);
         long t2 = System.currentTimeMillis();
@@ -1740,8 +1742,10 @@ public class DataOutputHandler extends OutputHandler {
                 gridPool.put(path, gds);
 
                 if (doingPublish(request)) {
+                    TypeHandler typeHandler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+                    Entry    newEntry = typeHandler.createEntry(getRepository().getGUID());
                     return getEntryManager().processEntryPublish(request, f,
-                            (Entry) entry.clone(), entry, "subset of");
+                                                                 newEntry, entry, "subset of");
                 }
 
                 return new Result(entry.getName() + ".nc",
@@ -2535,6 +2539,8 @@ public class DataOutputHandler extends OutputHandler {
         if (group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return outputEntry(request, outputType, group);
         }
+        System.err.println("group:"+ group +" " + group.getType());
+        
         return super.outputGroup(request,  outputType,
                                  group, subGroups,
                                  entries);
