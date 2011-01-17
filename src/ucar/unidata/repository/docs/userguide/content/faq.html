@@ -36,7 +36,7 @@ See <a href="installing.html#ssljetty">here</a> if you are running stand-alone.
 <faqitem cat="Administration" id="allowedlogin" q="I want to restrict where users can login from" >
 For security reasons you can configure what IP addresses users are allowed to login from.
 In your <i>repository.properties</i> file in your local RAMADDA directory, e.g.,<pre>
-&lt;home&gt;/.unidata/repository/repository.properties</pre>
+&lt;home&gt;/.ramadda/repository.properties</pre>
 add the property:<pre>
 
 ##Comma separated list of ip addresses (or prefixes) that are the ones where the user can login
@@ -90,7 +90,7 @@ a SMTP server that RAMADDA will use to send email.
 The HTML pages that RAMADDA generates are based on a template mechanism.
 Here is an example template: <a href="template.html.txt">template.html.txt</a>.
 Copy the example to your local RAMADDA directory (strip off the .txt):<pre>
-&lt;user home&gt;/.unidata/repository/resources/template.html
+&lt;user home&gt;/.ramadda/resources/template.html
 </pre>
 This is one of the places where RAMADDA looks for templates.
 <p>

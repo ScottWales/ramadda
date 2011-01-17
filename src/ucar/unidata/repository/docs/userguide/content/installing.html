@@ -6,14 +6,13 @@
 
 <body>
 First you need to download RAMADDA.
-The RAMADDA downloads area can be accessed here:<br>
-<a href="http://www.unidata.ucar.edu/downloads/ramadda/index.jsp">http://www.unidata.ucar.edu/downloads/ramadda/index.jsp</a>.
-<br>
-You will need to register at the Unidata site to access the downloads area.
+The RAMADDA downloads area can be accessed at the SourceForge site:<br>
+<a href="https://sourceforge.net/projects/ramadda/">https://sourceforge.net/projects/ramadda/</a>.
 <p>
 
 RAMADDA can run under Tomcat or can run stand-alone with just Java.
-To run under Tomcat download the <a href="http://www.unidata.ucar.edu/downloads/ramadda/ftp/repository.war">repository.war</a> file. To run stand alone download the <a href="http://www.unidata.ucar.edu/downloads/ramadda/ftp/repository.zip">repository.zip</a> file.
+To run under Tomcat download the repository.war file. 
+To run stand alone download the repository.zip file.
 <p>
 
 
@@ -27,7 +26,7 @@ place the repository.war in the tomcat webapps directory. By default the reposit
 You need to specify the ramadda home directory. This is where it looks for properties files and other resources, where the java derby database is stored and where any uploaded data files are stored. 
 <p>
 By default ramadda will use: <pre>
-   &lt;tomcat home&gt;/.unidata/repository</pre>
+   &lt;tomcat home&gt;/.ramadda</pre>
 i.e., the home directory of the process that runs tomcat.
 <p>
 You can override this a number of ways. What ramadda does is look for the property: ramadda_home in a variety of places, in precedence:
@@ -80,7 +79,7 @@ By default the server is on port 8080.  To change the port do:<pre>
 </pre>
 
 RAMADDA creates a local storage directory in:<pre>
-&lt;home dir&gt;/.unidata/repository</pre>
+&lt;home dir&gt;/.ramadda</pre>
 
 To change this do:<pre>
     java -Xmx512m -jar repository.jar -Dramadda_home=/home/dir
