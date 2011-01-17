@@ -145,6 +145,8 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String PROP_DIRDEPTH = "ramadda.storage.dirdepth";
 
+    public static final String PROP_FASTDIR = "ramadda.storage.fastdir";
+
     /** _more_ */
     public static final String PROP_DIRRANGE = "ramadda.storage.dirrange";
 
@@ -1131,6 +1133,19 @@ public class StorageManager extends RepositoryManager {
 
 
         return false;
+    }
+
+
+    public String getFastResourcePath(Entry entry) {
+        String fastDir = 
+            getRepository().getProperty(PROP_FASTDIR, (String) null);
+        if(fastDir == null || !entry.isFile()) return entry.getResource().getPath();
+
+        File f = new File(entry.getResource().getPath());
+        if(!f.exists()) return entry.getResource().getPath();
+        //TODO: do this
+
+        return f.toString();
     }
 
 
