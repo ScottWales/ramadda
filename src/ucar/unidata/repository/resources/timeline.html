@@ -1,7 +1,8 @@
 
 
 
-<div id="timeline" class="timeline-default" style="height: 400px;"></div>
+
+<div id="timeline" class="timeline-default" style="height: 400px; overflow-x:hidden; overflow-y:scroll;"></div>
 
     <script>
         function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
@@ -123,18 +124,14 @@
      var timeline = createTimeline(url, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit);
      timeline.getBand(0).zoom(true);
 
-
-     function timelineZoomIn(timeline) {
-        timeline.getBand(0).zoom(true);
-//        timeline.getBand(0).repaint();
-   }
-     function timelineZoomOut(timeline) {
-        timeline.getBand(0).zoom(false,500,200);
-//        timeline.getBand(0).repaint();
+     function timelineZoom(inOrOut, timeline,evt) {
+        for(var i=0;i<1;i++) {
+             var band = timeline.getBand(i);
+             var loc = SimileAjax.DOM.getEventRelativeCoordinates(evt, band.innerFrame);
+             timeline.getBand(i).zoom(inOrOut, loc.x, loc.y);
+        }
    }
     </script>
   
 
-   <a href="javascript:timelineZoomIn(timeline);">zoom in</a>
-   <a href="javascript:timelineZoomOut(timeline);">zoom out</a>
 
