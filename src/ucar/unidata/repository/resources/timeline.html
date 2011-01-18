@@ -1,0 +1,140 @@
+
+
+
+<div id="timeline" class="timeline-default" style="height: 400px;"></div>
+
+    <script>
+        function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
+            if(!timelineIntervalUnit) {
+                 timelineIntervalUnit = SimileAjax.DateTime.DECADE;
+            }            
+           var nextInterval =  Timeline.DateTime.YEAR;
+            if(timelineIntervalUnit == Timeline.DateTime.DAY) 
+                 nextInterval =  Timeline.DateTime.WEEK;
+            else if(timelineIntervalUnit == Timeline.DateTime.WEEK) 
+                 nextInterval =  Timeline.DateTime.MONTH;
+            else if(timelineIntervalUnit == Timeline.DateTime.MONTH) 
+                 nextInterval =  Timeline.DateTime.YEAR;
+            else if(timelineIntervalUnit == Timeline.DateTime.YEAR) 
+                 nextInterval =  Timeline.DateTime.DECADE;
+            else if(timelineIntervalUnit == Timeline.DateTime.DECADE) 
+                 nextInterval =  Timeline.DateTime.CENTURY;
+            var eventSource = new Timeline.DefaultEventSource(0);
+            var theme1 = Timeline.ClassicTheme.create();
+            theme1.event.bubble.width = 320;
+            theme1.event.bubble.height = 220;
+            theme1.ether.backgroundColors[1] = theme1.ether.backgroundColors[0];
+            theme1.mouseWheel='zoom'; 
+            var bandInfos = [
+                Timeline.createBandInfo({
+                    width:          "25%", 
+                    intervalUnit:   nextInterval,
+                    intervalPixels: 100,
+                    date:           baseDate,
+                    showEventText:  true,
+                    eventSource:    eventSource,
+                    theme:          theme1,
+                   zoomIndex:      10,
+                   zoomSteps:      new Array(
+              {pixelsPerInterval: 1000,  unit: nextInterval},
+              {pixelsPerInterval: 900,  unit: nextInterval},
+              {pixelsPerInterval:  800,  unit: nextInterval},
+              {pixelsPerInterval:  700,  unit: nextInterval},
+              {pixelsPerInterval: 600,  unit: nextInterval},
+              {pixelsPerInterval: 500,  unit: nextInterval},
+              {pixelsPerInterval: 400,  unit: nextInterval},
+              {pixelsPerInterval: 300,  unit: nextInterval},
+              {pixelsPerInterval: 200,  unit: nextInterval},
+              {pixelsPerInterval: 100,  unit: nextInterval},
+              {pixelsPerInterval: 50,  unit: nextInterval} // DEFAULT zoomIndex
+            )
+                }),
+                Timeline.createBandInfo({
+                    width:          "75%", 
+                    intervalUnit:   timelineIntervalUnit, 
+                    intervalPixels: 100,
+                    eventSource:    eventSource,
+                    date:           baseDate,
+                    theme:          theme1,
+                   zoomIndex:      10,
+                   zoomSteps:      new Array(
+              {pixelsPerInterval: 1000,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 900,  unit: timelineIntervalUnit},
+              {pixelsPerInterval:  800,  unit: timelineIntervalUnit},
+              {pixelsPerInterval:  700,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 600,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 500,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 400,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 300,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 200,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 100,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 50,  unit: timelineIntervalUnit} // DEFAULT zoomIndex
+            )
+                })
+
+            ];
+
+/*
+            bandInfos[0].etherPainter = new Timeline.YearCountEtherPainter({
+                startDate:  "Nov 14 1840 00:00:00 GMT",
+                multiple:   5,
+                theme:      theme1
+            });
+
+*/
+/*
+            bandInfos[0].syncWith = 1;
+            bandInfos[0].highlight = false;
+            bandInfos[0].decorators = [
+                new Timeline.SpanHighlightDecorator({
+                    startDate:  "Nov 14 1840 00:00:00 GMT",
+                    endDate:    "Dec 05 1926 00:00:00 GMT",
+                    startLabel: "birth",
+                    endLabel:   "death",
+                    color:      "red",
+                    opacity:    50,
+                    theme:      theme1
+                })
+            ];
+*/
+            
+        timeline = Timeline.create(document.getElementById("timeline"), bandInfos, Timeline.HORIZONTAL);
+        timeline.loadXML(dataUrl, function(xml, url) {
+                eventSource.loadXML(xml, url);
+            });
+        return timeline;
+        }
+        var resizeTimerID = null;
+        function onResize() {
+            if (resizeTimerID == null) {
+                resizeTimerID = window.setTimeout(function() {
+                    resizeTimerID = null;
+                     if(timeline) {
+                        timeline.layout();
+                     }
+                }, 500);
+            }
+        }
+
+//MILLISECOND,SECOND,MINUTE,HOUR,DAY,WEEK,MONTH,YEAR,DECADE,CENTURY,MILLENNIUM,EPOCH,ERA
+     var url = "${timelineurl}";
+     var baseDate = "${basedate}";
+     var intervalUnit = ${intervalUnit};
+     var timeline = createTimeline(url, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit);
+     timeline.getBand(0).zoom(true);
+
+
+     function timelineZoomIn(timeline) {
+        timeline.getBand(0).zoom(true);
+//        timeline.getBand(0).repaint();
+   }
+     function timelineZoomOut(timeline) {
+        timeline.getBand(0).zoom(false,500,200);
+//        timeline.getBand(0).repaint();
+   }
+    </script>
+  
+
+   <a href="javascript:timelineZoomIn(timeline);">zoom in</a>
+   <a href="javascript:timelineZoomOut(timeline);">zoom out</a>
+

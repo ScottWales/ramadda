@@ -795,6 +795,65 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+public static final String TAG_DATA = "data";
+public static final String TAG_EVENT = "event";
+
+public static final String ATTR_WIKI_SECTION = "wiki-section";
+public static final String ATTR_WIKI_URL = "wiki-url";
+public static final String ATTR_IMAGE = "image";
+public static final String ATTR_LINK = "link";
+public static final String ATTR_START = "start";
+public static final String ATTR_TITLE = "title";
+public static final String ATTR_END = "end";
+public static final String ATTR_EARLIESTEND = "earliestEnd";
+public static final String ATTR_ISDURATION = "isDuration";
+public static final String ATTR_LATESTSTART = "latestStart";
+public static final String ATTR_ICON = "icon";
+public static final String ATTR_COLOR = "color";
+
+
+
+    public Result outputTimelineXml(Request request, 
+                              Group group, List<Group> subGroups,
+                              List<Entry> entries)
+            throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
+        StringBuffer sb = new StringBuffer();
+        sb.append(XmlUtil.openTag(TAG_DATA));
+        List<Entry> allEntries = new ArrayList<Entry>();
+        allEntries.addAll(subGroups);
+        allEntries.addAll(entries);
+        for(Entry entry: allEntries) {
+            String       icon     = getEntryManager().getIconUrl(request, entry);
+            StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE, entry.getName(),
+                                                                ATTR_ICON,icon));
+
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request,  entry,urls);
+            if(urls.size()>0) {
+                attrs.append(XmlUtil.attrs(ATTR_IMAGE, urls.get(0)));
+            }
+            String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+            attrs.append(XmlUtil.attrs(ATTR_LINK, entryUrl));
+
+            attrs.append(XmlUtil.attrs(ATTR_START, sdf.format(new Date(entry.getStartDate()))));
+            if(entry.getStartDate() != entry.getEndDate()) {
+                attrs.append(XmlUtil.attrs(ATTR_END, sdf.format(new Date(entry.getEndDate()))));
+            }
+            sb.append(XmlUtil.openTag(TAG_EVENT, attrs.toString()));
+            if(entry.getDescription().length()>0) {
+                sb.append(XmlUtil.getCdata(entry.getDescription()));
+            }
+            sb.append(XmlUtil.closeTag(TAG_EVENT));
+            sb.append("\n");
+        }
+        sb.append(XmlUtil.closeTag(TAG_DATA));
+        System.err.println(sb);
+        return new Result("", sb,"text/xml");
+    }
+
+
+
     public Result outputGrid(Request request, 
                               Group group, List<Group> subGroups,
                               List<Entry> entries)
@@ -821,14 +880,28 @@ public class HtmlOutputHandler extends OutputHandler {
                 needToOpenRow = false;
             }
             col++;
-            sb.append("<td align=center width=" + width+"% >");
+            sb.append("<td valign=bottom align=center width=" + width+"% >");
             StringBuffer metadataSB = new StringBuffer();
             //            getMetadataManager().decorateEntry(request, entry, metadataSB,
             //                                               true);
 
             //            sb.append(metadataSB);
-            sb.append (getEntryManager().getAjaxLink( request,  entry,
-                                                      "<br>"+entry.getName(),null, false));
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request,  entry,urls);
+            if(urls.size()>0) {
+                sb.append(HtmlUtil.img(urls.get(0)));
+                sb.append(HtmlUtil.br());
+            }
+            sb.append(getEntryManager().getTooltipLink(request, entry, entry.getName(),null));
+            sb.append(HtmlUtil.br());
+            //            System.err.println("date:" + getRepository().formatDate(request, new Date(entry.getStartDate())));
+            sb.append(getRepository().formatDateShort(request,
+                                                      new Date(entry.getStartDate()),
+                                                      getEntryManager().getTimezone(entry), ""));
+
+
+            //            sb.append (getEntryManager().getAjaxLink( request,  entry,
+            //                                                      "<br>"+entry.getName(),null, false));
 
             sb.append("</td>");
         }
@@ -899,12 +972,14 @@ public class HtmlOutputHandler extends OutputHandler {
             return outputGrid(request, group,  subGroups, entries);
         }
 
+        if(request.get("timelinexml",false)) {
+            return outputTimelineXml(request, group, subGroups, entries);
+        }
 
         //        Result typeResult = typeHandler.getHtmlDisplay(request, group, subGroups, entries);
         //        if (typeResult != null) {
         //            return typeResult;
         //        }
-
 
         boolean      showTimeline = outputType.equals(OUTPUT_TIMELINE);
         if(!showTimeline && typeHandler!=null) {
@@ -914,7 +989,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 return typeResult;
             }
         }
-
 
 
         StringBuffer sb         = new StringBuffer();
@@ -943,11 +1017,58 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         String wikiTemplate = getWikiText(request, group);
+        String head = null;
+
 
         if (showTimeline) {
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
-            sb.append(getTimelineApplet(request, allEntries));
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
+            long minDate = 0;
+            long maxDate = 0;
+            for(Entry entry: (List<Entry>)allEntries) {
+                if(minDate==0 || entry.getStartDate()<minDate)
+                    minDate = entry.getStartDate();
+                if(maxDate==0 || entry.getEndDate()>maxDate)
+                    maxDate = entry.getEndDate();
+            }
+            long diffDays = (maxDate-minDate)/1000/3600/24;
+            //            System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
+            String interval = "Timeline.DateTime.MONTH";
+            if(diffDays<3)
+                interval = "Timeline.DateTime.HOUR";
+            else if(diffDays<7)
+                interval = "Timeline.DateTime.DAY";
+            else if(diffDays<30)
+                interval = "Timeline.DateTime.WEEK";
+            else if(diffDays<150)
+                interval = "Timeline.DateTime.MONTH";
+            else if(diffDays<5*365)
+                interval = "Timeline.DateTime.YEAR";
+            else
+                interval = "Timeline.DateTime.DECADE";
+
+
+            //            sb.append(getTimelineApplet(request, allEntries));
+            head = "<script>var Timeline_urlPrefix='${root}/timeline/timeline_js/';\nvar Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';\nTimeline_parameters='bundle=true';\n</script>\n<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>\n<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />";
+            head = head.replace("${root}", getRepository().getUrlBase());
+            String timelineApplet =
+                getRepository().getResource("/ucar/unidata/repository/resources/timeline.html");
+            String url = request.getUrl();
+            url = url+"&timelinexml=true";
+            //            timelineApplet = timelineApplet.replace("${timelineurl}", "${root}/monet.xml");
+
+
+            timelineApplet = timelineApplet.replace("${timelineurl}", url);
+            timelineApplet = timelineApplet.replace("${basedate}", sdf.format(new Date(minDate)));
+            timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
+            sb.append(timelineApplet);
+            Result result =  makeLinksResult(request, msg("Timeline"), sb,
+                                             new State(group, subGroups, entries));
+            if(head!=null)
+                result.putProperty(PROP_HTML_HEAD, head);
+            return result;
+
         } else if ((wikiTemplate == null) && !group.isDummy()) {
             addDescription(request, group, sb, !hasChildren);
             String informationBlock = getInformationTabs(request, group,
@@ -1000,8 +1121,13 @@ public class HtmlOutputHandler extends OutputHandler {
 
         }
 
-        return makeLinksResult(request, msg("Folder"), sb,
+        Result result =  makeLinksResult(request, msg("Folder"), sb,
                                new State(group, subGroups, entries));
+        if(head!=null)
+            result.putProperty(PROP_HTML_HEAD, head);
+
+
+        return result;
     }
 
 

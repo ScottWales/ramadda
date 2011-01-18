@@ -3241,6 +3241,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         String head =
             "<script type=\"text/javascript\" src=\"${root}/shadowbox/adapter/shadowbox-base.js\"></script>\n<script type=\"text/javascript\" src=\"${root}/shadowbox/shadowbox.js\"></script>\n<script type=\"text/javascript\">\nShadowbox.loadSkin('classic', '${root}/shadowbox/skin'); \nShadowbox.loadLanguage('en', '${root}/shadowbox/lang');\nShadowbox.loadPlayer(['img', 'qt'], '${root}/shadowbox/player'); \nwindow.onload = Shadowbox.init;\n</script>";
 
+        //Skip the shadowbox for now
         head = (String) result.getProperty(PROP_HTML_HEAD);
         if (head == null) {
             head = "";
