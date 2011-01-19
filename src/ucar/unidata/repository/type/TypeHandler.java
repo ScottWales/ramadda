@@ -2448,8 +2448,8 @@ public class TypeHandler extends RepositoryManager {
                         msg(
                         "Show search form with this type")) + HtmlUtil.space(
                             1) + groupCbx));
-        } else if (typeHandlers.size() == 1) {
-            basicSB.append(HtmlUtil.hidden(ARG_TYPE,
+        } else if (typeHandlers.size() == 1) { 
+           basicSB.append(HtmlUtil.hidden(ARG_TYPE,
                                            typeHandlers.get(0).getType()));
             basicSB.append(HtmlUtil.formEntry(msgLabel("Type"),
                     typeHandlers.get(0).getDescription()));
@@ -3066,42 +3066,62 @@ public class TypeHandler extends RepositoryManager {
                 continue;
             }
             String type = arg.substring(ARG_METADATA_ATTR1.length()+1);
-            Metadata metadata =
-                new Metadata(
-                    type,
-                    request.getString(ARG_METADATA_ATTR1 + "." + type, ""),
-                    request.getString(ARG_METADATA_ATTR2 + "." + type, ""),
-                    request.getString(ARG_METADATA_ATTR3 + "." + type, ""),
-                    request.getString(ARG_METADATA_ATTR4 + "." + type, ""),
-                    "");
+            List[] urlArgs = new List[]{
+                request.get(ARG_METADATA_ATTR1 + "." + type, new ArrayList<String>()),
+                request.get(ARG_METADATA_ATTR2 + "." + type, new ArrayList<String>()),
+                request.get(ARG_METADATA_ATTR3 + "." + type, new ArrayList<String>()),
+                request.get(ARG_METADATA_ATTR4 + "." + type, new ArrayList<String>())
+            };
 
-            metadata.setInherited(request.get(ARG_METADATA_INHERITED + "."
-                    + type, false));
-            List<Metadata> values = typeMap.get(type);
-            if (values == null) {
-                typeMap.put(type, values = new ArrayList<Metadata>());
-                types.add(type);
+            int index=0;
+            while(true) {
+                boolean ok = false;
+                String[] valueArray = {"","","",""};
+                for(int valueIdx=0;valueIdx<urlArgs.length;valueIdx++) {
+                    if(index<urlArgs[valueIdx].size()) {
+                        ok = true;
+                        valueArray[valueIdx] = (String)urlArgs[valueIdx].get(index);
+                    }
+                }
+                if(!ok) break;
+                index++;
+
+                Metadata metadata =
+                    new Metadata(
+                                 type,
+                                 valueArray[0],
+                                 valueArray[1],
+                                 valueArray[2],
+                                 valueArray[3],
+                                 "");
+
+
+                metadata.setInherited(request.get(ARG_METADATA_INHERITED + "."
+                                                  + type, false));
+                List<Metadata> values = typeMap.get(type);
+                if (values == null) {
+                    typeMap.put(type, values = new ArrayList<Metadata>());
+                    types.add(type);
+                }
+                values.add(metadata);
             }
-            values.add(metadata);
         }
+
 
 
         List<Clause> metadataAnds = new ArrayList<Clause>();
         for (int typeIdx = 0; typeIdx < types.size(); typeIdx++) {
             String       type        =  types.get(typeIdx);
             List<Metadata>         values      = typeMap.get(type);
-            List<Clause> metadataOrs = new ArrayList<Clause>();
+            List<Clause> attrOrs = new ArrayList<Clause>();
             String       subTable    = Tables.METADATA.NAME + "_" + typeIdx;
             for (Metadata     metadata: values) {
-                List<Clause> subClauses = new ArrayList<Clause>();
-                subClauses.add(Clause.join(subTable + ".entry_id",
-                                           Tables.ENTRIES.COL_ID));
-                subClauses.add(Clause.eq(subTable + ".type", type));
                 String tmp = "";
+                List<Clause> attrAnds = new ArrayList<Clause>();
                 for (int attrIdx = 1; attrIdx <= 4; attrIdx++) {
                     String attr = metadata.getAttr(attrIdx);
                     if (attr.trim().length() > 0) {
-                        subClauses.add(Clause.eq(subTable + ".attr"
+                        attrAnds.add(Clause.eq(subTable + ".attr"
                                 + attrIdx, attr));
                         tmp = tmp + ((tmp.length() == 0)
                                      ? ""
@@ -3109,8 +3129,8 @@ public class TypeHandler extends RepositoryManager {
                     }
                 }
 
-                Clause clause = Clause.and(subClauses);
-
+                Clause attrClause = Clause.and(attrAnds);
+                attrOrs.add(attrClause);
                 MetadataHandler handler =
                     getRepository().getMetadataManager().findMetadataHandler(
                         type);
@@ -3119,56 +3139,29 @@ public class TypeHandler extends RepositoryManager {
                     addCriteria(request, searchCriteria,
                                 metadataType.getLabel() + "=", tmp);
                 }
+            }
 
-                /**
-                 * *TODO
-                 * if (metadata.getInherited()) {
-                 *   String subselect =
-                 *       SqlUtil.makeSelect(
-                 *           "metadata.entry_id", Tables.METADATA.NAME,
-                 *           SqlUtil.makeAnd(
-                 *               SqlUtil.like(
-                 *                   Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                 *                   Tables.METADATA.COL_ENTRY_ID), SqlUtil
-                 *                       .eq(
-                 *                       "metadata.attr1",
-                 *                       SqlUtil.quote(
-                 *                           metadata.getAttr1())), SqlUtil
-                 *                               .eq(
-                 *                               "metadata.type",
-                 *                               SqlUtil.quote(
-                 *                                   metadata.getType()
-                 *                                       .toString()))));
-                 *
-                 *   String inheritedClause = Tables.ENTRIES.COL_PARENT_GROUP_ID
-                 *                            + " LIKE "
-                 *                            + SqlUtil.group(subselect)
-                 *                            + " ||'%'";
-                 *   clause = SqlUtil.group(
-                 *       SqlUtil.makeOr(
-                 *           Misc.newList(
-                 *               SqlUtil.group(clause),
-                 *               SqlUtil.group(inheritedClause))));
-                 *   //                clause = SqlUtil.group(inheritedClause);
-                 *   }
-                 */
-                //                System.err.println(clause);
-                metadataOrs.add(clause);
-            }
-            if (metadataOrs.size() > 0) {
-                metadataAnds.add(Clause.or(metadataOrs));
-            }
+            List<Clause> subClauses = new ArrayList<Clause>();
+            subClauses.add(Clause.join(subTable + ".entry_id",
+                                       Tables.ENTRIES.COL_ID));
+            subClauses.add(Clause.eq(subTable + ".type", type));
+            subClauses.add(Clause.or(attrOrs));
+            metadataAnds.add(Clause.and(subClauses));
         }
 
         if (metadataAnds.size() > 0) {
             if (isOrSearch(request)) {
                 where.add(Clause.or(metadataAnds));
+                //                System.err.println ("metadata:" +Clause.or(metadataAnds));
             } else {
                 where.add(Clause.and(metadataAnds));
+                //                System.err.println ("metadata:" +Clause.and(metadataAnds));
             }
         }
 
+
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
+
         //A hook to allow the database manager do its own text search based on the dbms type
         if (textToSearch.length() > 0) {
             getDatabaseManager().addTextSearch( request, this,  textToSearch,  searchCriteria, where);
