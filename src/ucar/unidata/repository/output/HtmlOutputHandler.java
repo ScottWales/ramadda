@@ -160,6 +160,24 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    public String getHtmlHeader(Request request, Entry entry) {
+        if(entry.isDummy()) {
+            return "";
+        }
+
+        OutputType []types = new OutputType[]{OUTPUT_HTML, OUTPUT_GRID, OUTPUT_TIMELINE,CalendarOutputHandler.OUTPUT_CALENDAR};
+        StringBuffer sb = new StringBuffer();
+        for(OutputType output: types) {
+            sb.append(HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                                     entry, ARG_OUTPUT, output),
+                                    HtmlUtil.img(iconUrl(output.getIcon()), output.getLabel())));
+
+            sb.append(" ");
+        }
+        return "<table width=100%><tr><td align=right>" +sb.toString()+"</td></tr></table>";
+    }
+
+
     /**
      * _more_
      *
@@ -861,7 +879,8 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        int cols = request.get(ARG_COLUMNS,3);
+        sb.append(getHtmlHeader(request,  group));
+            int cols = request.get(ARG_COLUMNS,3);
         sb.append("<table width=100% border=0 cellpadding=10>");
 
         List<Entry> allEntries = new ArrayList<Entry>();
@@ -936,6 +955,7 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
+        boolean isSearchResults = group.isDummy();
         TypeHandler typeHandler =
             getRepository().getTypeHandler(group.getType());
 
@@ -1007,7 +1027,7 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean hasChildren = ((subGroups.size() != 0)
                                || (entries.size() != 0));
 
-        boolean isSearchResults = group.isDummy();
+
         if (isSearchResults) {
             if ( !hasChildren) {
                 sb.append(
@@ -1021,6 +1041,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         if (showTimeline) {
+
+            sb.append(getHtmlHeader(request,  group));
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
             SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
@@ -1070,6 +1092,9 @@ public class HtmlOutputHandler extends OutputHandler {
             return result;
 
         } else if ((wikiTemplate == null) && !group.isDummy()) {
+
+            sb.append(getHtmlHeader(request,  group));
+
             addDescription(request, group, sb, !hasChildren);
             String informationBlock = getInformationTabs(request, group,
                                                          false,
