@@ -80,12 +80,13 @@
             <exclude name="org/ramadda/spreadsheet/*"/> 
             <exclude name="org/ramadda/spreadsheet/**/*"/> 
             <include name="org/ramadda/blog/**/*"/>
+            <include name="org/ramadda/plugins/misctypes.xml"/>
             <include name="org/ramadda/calendar/**/*"/>
             <include name="org/ramadda/chat/**/*"/>
             <include name="org/ramadda/slideshow/**/*"/>
             <include name="org/ramadda/wiki/**/*"/>
 	    </jar>
-        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
              <fileset file="${pluginjar}"/>
         </copy>
     </target>
@@ -122,7 +123,7 @@
             <include name="org/ramadda/**/*.jar"/> 
             <include name="org/ramadda/**/*.properties"/> 
 	    </jar>
-        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
              <fileset file="${pluginjar}"/>
         </copy>
     </target>
@@ -138,7 +139,7 @@
             <include name="org/ramadda/spreadsheet/*"/> 
             <include name="org/ramadda/spreadsheet/**/*"/> 
 	    </jar>
-        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
              <fileset file="${distdir}/spreadsheet.jar"/>
         </copy>
     </target>

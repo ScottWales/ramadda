@@ -1,0 +1,11 @@
+<types>
+
+  <type name="note"  description="Note">
+     <property name="icon" value="/icons/note.gif"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+</type>
+
+
+</types>
