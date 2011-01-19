@@ -594,7 +594,7 @@
 
 
     <target name="ldapplugininstall" depends="ldapplugin">
-        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
              <fileset file="${distdir}/ldapplugin.jar"/>
         </copy>
     </target>
