@@ -76,7 +76,6 @@ public class KmlOutputHandler extends OutputHandler {
 
 
 
-
     /**
      * _more_
      *

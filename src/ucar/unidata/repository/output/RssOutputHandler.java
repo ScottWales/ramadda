@@ -127,8 +127,6 @@ public class RssOutputHandler extends OutputHandler {
                        "", ICON_RSS);
 
 
-
-
     /**
      * _more_
      *

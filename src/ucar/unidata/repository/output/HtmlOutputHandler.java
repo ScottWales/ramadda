@@ -120,6 +120,24 @@ public class HtmlOutputHandler extends OutputHandler {
         new OutputType("linksxml", OutputType.TYPE_INTERNAL);
 
 
+    public static final String TAG_DATA = "data";
+    public static final String TAG_EVENT = "event";
+
+    public static final String ATTR_WIKI_SECTION = "wiki-section";
+    public static final String ATTR_WIKI_URL = "wiki-url";
+    public static final String ATTR_IMAGE = "image";
+    public static final String ATTR_LINK = "link";
+    public static final String ATTR_START = "start";
+    public static final String ATTR_TITLE = "title";
+    public static final String ATTR_END = "end";
+    public static final String ATTR_EARLIESTEND = "earliestEnd";
+    public static final String ATTR_ISDURATION = "isDuration";
+    public static final String ATTR_LATESTSTART = "latestStart";
+    public static final String ATTR_ICON = "icon";
+    public static final String ATTR_COLOR = "color";
+
+
+
 
     /**
      * _more_
@@ -795,22 +813,6 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
-public static final String TAG_DATA = "data";
-public static final String TAG_EVENT = "event";
-
-public static final String ATTR_WIKI_SECTION = "wiki-section";
-public static final String ATTR_WIKI_URL = "wiki-url";
-public static final String ATTR_IMAGE = "image";
-public static final String ATTR_LINK = "link";
-public static final String ATTR_START = "start";
-public static final String ATTR_TITLE = "title";
-public static final String ATTR_END = "end";
-public static final String ATTR_EARLIESTEND = "earliestEnd";
-public static final String ATTR_ISDURATION = "isDuration";
-public static final String ATTR_LATESTSTART = "latestStart";
-public static final String ATTR_ICON = "icon";
-public static final String ATTR_COLOR = "color";
-
 
 
     public Result outputTimelineXml(Request request, 
@@ -848,7 +850,7 @@ public static final String ATTR_COLOR = "color";
             sb.append("\n");
         }
         sb.append(XmlUtil.closeTag(TAG_DATA));
-        System.err.println(sb);
+        //        System.err.println(sb);
         return new Result("", sb,"text/xml");
     }
 
@@ -881,20 +883,18 @@ public static final String ATTR_COLOR = "color";
             }
             col++;
             sb.append("<td valign=bottom align=center width=" + width+"% >");
-            StringBuffer metadataSB = new StringBuffer();
-            //            getMetadataManager().decorateEntry(request, entry, metadataSB,
-            //                                               true);
-
-            //            sb.append(metadataSB);
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request,  entry,urls);
             if(urls.size()>0) {
                 sb.append(HtmlUtil.img(urls.get(0)));
                 sb.append(HtmlUtil.br());
             }
-            sb.append(getEntryManager().getTooltipLink(request, entry, entry.getName(),null));
+            String       icon     = getEntryManager().getIconUrl(request, entry);
+            sb.append(HtmlUtil.img(icon));
+            String url  = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT, OUTPUT_GRID);
+            sb.append(HtmlUtil.space(1));
+            sb.append(getEntryManager().getTooltipLink(request, entry, entry.getName(),url));
             sb.append(HtmlUtil.br());
-            //            System.err.println("date:" + getRepository().formatDate(request, new Date(entry.getStartDate())));
             sb.append(getRepository().formatDateShort(request,
                                                       new Date(entry.getStartDate()),
                                                       getEntryManager().getTimezone(entry), ""));

@@ -146,6 +146,7 @@ public class StorageManager extends RepositoryManager {
     public static final String PROP_DIRDEPTH = "ramadda.storage.dirdepth";
 
     public static final String PROP_FASTDIR = "ramadda.storage.fastdir";
+    public static final String PROP_FASTDIRSIZE = "ramadda.storage.fastdirsize";
 
     /** _more_ */
     public static final String PROP_DIRRANGE = "ramadda.storage.dirrange";

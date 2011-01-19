@@ -4451,9 +4451,13 @@ return new Result(title, sb);
         StringBuffer editMenuInner =
             new StringBuffer(getEntryActionsTable(request, entry,
                 OutputType.TYPE_EDIT, links));
+        StringBuffer feedMenuInner =
+            new StringBuffer(getEntryActionsTable(request, entry,
+                OutputType.TYPE_NONHTML, links));
         StringBuffer viewMenuInner =
             new StringBuffer(getEntryActionsTable(request, entry,
-                OutputType.TYPE_HTML | OutputType.TYPE_NONHTML, links));
+           //                OutputType.TYPE_HTML | OutputType.TYPE_NONHTML, links));
+                OutputType.TYPE_HTML, links));
 
         StringBuffer categoryMenuInner = null;
         String       categoryMenu      = null;
@@ -4490,6 +4494,13 @@ return new Result(title, sb);
                     HtmlUtil.cssClass(
                         "entrymenulink")), editMenuInner.toString(), false,
                                            true);
+        String feedMenu =
+            getRepository().makePopupLink(
+                HtmlUtil.span(
+                    msg("Feeds"),
+                    HtmlUtil.cssClass(
+                        "entrymenulink")), feedMenuInner.toString(), false,
+                                           true);
         String viewMenu =
             getRepository().makePopupLink(
                 HtmlUtil.span(
@@ -4497,18 +4508,20 @@ return new Result(title, sb);
                     HtmlUtil.cssClass(
                         "entrymenulink")), viewMenuInner.toString(), false,
                                            true);
+
         String sep = HtmlUtil.div("&nbsp;|&nbsp;",
                                   HtmlUtil.cssClass("menuseparator"));
         String leftTable;
+        
         if (categoryMenu == null) {
-            leftTable = HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(fileMenu,
-                    sep, editMenu, sep,
-                    viewMenu)), " cellpadding=0 cellspacing=0 border=0 ");
+            leftTable = HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(new String[] {fileMenu,
+                                                                  sep, editMenu, sep, feedMenu, sep,
+                                                                                viewMenu})), " cellpadding=0 cellspacing=0 border=0 ");
 
         } else {
             leftTable =
                 HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(new String[] {
-                fileMenu, sep, editMenu, sep, viewMenu, sep, categoryMenu
+                fileMenu, sep, editMenu, sep, feedMenu, sep, viewMenu, sep, categoryMenu
             })), " cellpadding=0 cellspacing=0 border=0 ");
         }
 
