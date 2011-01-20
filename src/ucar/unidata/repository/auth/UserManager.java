@@ -180,8 +180,8 @@ public class UserManager extends RepositoryManager {
             allowedIpsForLogin =
                 StringUtil.split(getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
                                  true, true);
-            getLogManager().logInfoAndPrint(
-                "UserManager: allowed ip addresses: " + allowedIpsForLogin);
+            //            getLogManager().logInfoAndPrint(
+            //                "UserManager: allowed ip addresses: " + allowedIpsForLogin);
         }
 
         if (allowedIpsForLogin.size() > 0) {
