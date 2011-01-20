@@ -259,7 +259,6 @@ public class SearchManager extends RepositoryManager {
             sb.append(HtmlUtil.p());
         }
 
-
         if (justText) {
             sb.append(
                 "<table width=\"100%\" border=\"0\"><tr><td width=\"60\">");
@@ -284,13 +283,15 @@ public class SearchManager extends RepositoryManager {
                     metadataSB.toString(), false));
 
 
-
             StringBuffer outputForm = new StringBuffer(HtmlUtil.formTable());
+            /* Humm, we probably don't want to include this as it screws up setting the output in the form
             if (request.defined(ARG_OUTPUT)) {
+
                 OutputType output = request.getOutput(BLANK);
                 outputForm.append(HtmlUtil.hidden(ARG_OUTPUT,
                         output.getId().toString()));
             }
+            */
 
             List orderByList = new ArrayList();
             orderByList.add(new TwoFacedObject(msg("None"), "none"));
