@@ -174,7 +174,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
             sb.append(" ");
         }
-        return "<table width=100%><tr><td align=right>" +sb.toString()+"</td></tr></table>";
+        return "<table cellspacing=0 cellpadding=0 width=100%><tr><td align=right>" +sb.toString()+"</td></tr></table>";
     }
 
 
