@@ -333,9 +333,6 @@
             <include name="${repositoryrelpath}/docs/userguide/processed/**/*.*"/>
             <include name="${repositoryrelpath}/resources/**/*.*"/>
             <include name="${repositoryrelpath}/idv/template.jnlp"/>
-<!--TODO -->
-            <include name="auxdata/maps/*"/>
-            <include name="auxdata/ui/icons/*"/>
         </jar>
     </target>
 
@@ -431,6 +428,7 @@
         </delete>
         <unjar src="${lib1}" dest="${tmpjardir}"/>
         <unjar src="${libdir}/unidatacommon.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/idvmaps.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/extra.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/jython.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/external.jar" dest="${tmpjardir}"/>
