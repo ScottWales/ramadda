@@ -149,7 +149,7 @@ public class CalendarOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(getRepository().getHtmlOutputHandler().getHtmlHeader(request, group));
+        //        sb.append(getRepository().getHtmlOutputHandler().getHtmlHeader(request, group));
         showNext(request, subGroups, entries, sb);
         entries.addAll(subGroups);
         Result result;

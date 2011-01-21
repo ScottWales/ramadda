@@ -161,7 +161,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
     public String getHtmlHeader(Request request, Entry entry) {
-        if(entry.isDummy()) {
+        if(entry.isDummy() || !entry.isGroup()) {
             return "";
         }
 
@@ -879,8 +879,8 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(getHtmlHeader(request,  group));
-            int cols = request.get(ARG_COLUMNS,3);
+        //        sb.append(getHtmlHeader(request,  group));
+        int cols = request.get(ARG_COLUMNS,3);
         sb.append("<table width=100% border=0 cellpadding=10>");
 
         List<Entry> allEntries = new ArrayList<Entry>();
@@ -904,13 +904,27 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append("<td valign=bottom align=center width=" + width+"% >");
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request,  entry,urls);
+            String url  = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT, OUTPUT_GRID);
             if(urls.size()>0) {
-                sb.append(HtmlUtil.img(urls.get(0)));
+                sb.append(HtmlUtil.href(url, HtmlUtil.img(urls.get(0), "", HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "100"))));
+                sb.append(HtmlUtil.br());
+            } else if(entry.getResource().isImage()) {
+                String thumburl = HtmlUtil.url(
+                                               request.url(repository.URL_ENTRY_GET)
+                                      + "/"
+                                               + getStorageManager().getFileTail(
+                                                                                 entry), ARG_ENTRYID, entry.getId(),
+                                               ARG_IMAGEWIDTH, "" + 100);
+
+                sb.append(HtmlUtil.href(url, HtmlUtil.img(thumburl)));
+                sb.append(HtmlUtil.br());
+            } else {
+                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtil.space(1));
                 sb.append(HtmlUtil.br());
             }
             String       icon     = getEntryManager().getIconUrl(request, entry);
-            sb.append(HtmlUtil.img(icon));
-            String url  = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT, OUTPUT_GRID);
+            sb.append(HtmlUtil.href(url,HtmlUtil.img(icon)));
             sb.append(HtmlUtil.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry, entry.getName(),url));
             sb.append(HtmlUtil.br());
@@ -1042,7 +1056,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (showTimeline) {
 
-            sb.append(getHtmlHeader(request,  group));
+            //            sb.append(getHtmlHeader(request,  group));
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
             SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
@@ -1093,7 +1107,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         } else if ((wikiTemplate == null) && !group.isDummy()) {
 
-            sb.append(getHtmlHeader(request,  group));
+            //            sb.append(getHtmlHeader(request,  group));
 
             addDescription(request, group, sb, !hasChildren);
             String informationBlock = getInformationTabs(request, group,

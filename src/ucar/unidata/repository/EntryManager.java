@@ -4775,7 +4775,7 @@ return new Result(title, sb);
             nav = StringUtil.join(separator, breadcrumbs);
             String toolbar = getEntryToolbar(request, entry, true);
             String menubar = getEntryMenubar(request, entry, toolbar);
-            toolbar = "";
+            toolbar = getRepository().getHtmlOutputHandler().getHtmlHeader(request, entry);
 
             String header =
                 "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
