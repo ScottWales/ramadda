@@ -95,8 +95,8 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Group group,
-                                 List<Group> subGroups, List<Entry> entries)
+    public Result getHtmlDisplay(Request request, Entry group,
+                                 List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         if (weblogOutputHandler == null) {
             weblogOutputHandler =

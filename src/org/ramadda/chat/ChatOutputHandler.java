@@ -345,8 +345,8 @@ public class ChatOutputHandler extends OutputHandler {
                 Request      request = new Request(getRepository(),
                                            this.user);
                 StringBuffer sb      = new StringBuffer();
-                Group        parent  = (entry.isGroup()
-                                        ? (Group) entry
+                Entry parent  = (entry.isGroup()
+                                        ? (Entry) entry
                                         : entry.getParentEntry());
                 for (Entry entry :
                         getEntryManager().getChildren(request, parent)) {
@@ -582,7 +582,7 @@ public class ChatOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         return outputEntry(request, outputType, group);

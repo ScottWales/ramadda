@@ -160,7 +160,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public void initializeEntryFromForm(Request request, Entry entry,
-                                        Group parent, boolean newEntry)
+                                        Entry parent, boolean newEntry)
             throws Exception {
         Object[] values       = entry.getValues();
         String   originalText = null;
