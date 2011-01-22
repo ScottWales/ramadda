@@ -439,7 +439,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         Resource resource;
         if (CatalogUtil.haveChildDatasets(root)
                 || CatalogUtil.haveChildCatalogs(root)) {
-            entry    = new Entry(newId, this);
+            entry    = new Entry(newId, this, true);
             resource = new Resource("", Resource.TYPE_URL);
         } else {
             String urlPath = XmlUtil.getAttribute(root,
@@ -495,7 +495,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Entry(id, this);
+        return new Entry(id, this, true);
     }
 
 }

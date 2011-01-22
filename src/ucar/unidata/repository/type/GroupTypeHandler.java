@@ -123,6 +123,6 @@ public class GroupTypeHandler extends TypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Entry(id, this);
+        return new Entry(id, this, true);
     }
 }

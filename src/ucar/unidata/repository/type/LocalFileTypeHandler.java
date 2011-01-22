@@ -194,7 +194,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
-
+        //        System.err.println("getSynthIds " + mainEntry);
         List<String> ids    = new ArrayList<String>();
         Object[]     values = mainEntry.getValues();
         if (values == null) {
@@ -204,7 +204,6 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         int  skip = request.get(ARG_SKIP, 0);
 
         long t1   = System.currentTimeMillis();
-        //        System.err.println("getSynthIds " + mainEntry);
         File rootDir = new File((String) values[0]);
         if ( !rootDir.exists()) {
             throw new RepositoryUtil.MissingEntryException(
@@ -415,7 +414,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
                                : getRepository().getTypeHandler(
                                    TypeHandler.TYPE_FILE));
         Entry entry = (targetFile.isDirectory()
-                       ? (Entry) new Entry(synthId, handler)
+                       ? (Entry) new Entry(synthId, handler, true)
                        : new Entry(synthId, handler));
 
         if (targetFile.isDirectory()) {
@@ -487,7 +486,8 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Entry(id, this);
+        //Make the top level entyr act like a group
+        return new Entry(id, this, true);
     }
 
 }

@@ -158,6 +158,26 @@ public class Entry extends Entity {
     }
 
 
+
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param typeHandler _more_
+     */
+    public Entry(String id, TypeHandler typeHandler) {
+        this(id);
+        this.typeHandler = typeHandler;
+    }
+
+    public Entry(String id, TypeHandler typeHandler, boolean isGroup) {
+        this(id);
+        this.typeHandler = typeHandler;
+        this.isGroup = isGroup;
+    }
+
+
+
     /**
      * _more_
      *
@@ -170,16 +190,7 @@ public class Entry extends Entity {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param typeHandler _more_
-     */
-    public Entry(String id, TypeHandler typeHandler) {
-        this(id);
-        this.typeHandler = typeHandler;
-    }
+
 
 
     /**
@@ -393,7 +404,6 @@ public class Entry extends Entity {
         return isGroup() && (getParentEntryId() == null);
     }
 
-
     /**
      * _more_
      *
@@ -411,8 +421,9 @@ public class Entry extends Entity {
      * @return _more_
      */
     public boolean isGroup() {
+        if(isGroup) return true;
         if(typeHandler!=null) return typeHandler.isGroup();
-        return isGroup;
+        return false;
     }
 
     public void setGroup(boolean g) {

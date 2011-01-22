@@ -681,7 +681,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
 
         boolean isDir = ftpFile.isDirectory();
         Entry   entry = (isDir
-                         ? (Entry) new Entry(synthId, handler)
+                         ? (Entry) new Entry(synthId, handler, true)
                          : new Entry(synthId, handler));
 
         String  name  = IOUtil.getFileTail(ftpFile.getName());
@@ -768,7 +768,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Entry(id, this);
+        return new Entry(id, this, true);
     }
 
 
