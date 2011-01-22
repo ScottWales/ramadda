@@ -1,0 +1,18 @@
+<types>
+
+
+  <type name="gdata_base"  description="Gdata"  category="Google Data" handler="org.ramadda.gdata.GdataTypeHandler" foruser="false">  
+     <column name="userid" group="Google Login" type="string"     default="" label="User ID" columns="20"  showinhtml="false"/>
+     <column name="password" group="Google Login" type="password"     label="Password"  showinhtml="false"/>
+  </type>
+
+
+
+  <type name="gdata_photos"  super="gdata_base" description="Google Web Albums View"  handler="org.ramadda.gdata.PhotosTypeHandler">  
+     <property name="icon" value="/gdata/picasa.png"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
+
+
+</types>
