@@ -164,7 +164,7 @@ public class XmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
 
@@ -174,7 +174,7 @@ public class XmlOutputHandler extends OutputHandler {
 
         Document doc  = XmlUtil.makeDocument();
         Element  root = getGroupTag(request, group, doc, null);
-        for (Group subgroup : subGroups) {
+        for (Entry subgroup : subGroups) {
             getGroupTag(request, subgroup, doc, root);
         }
         for (Entry entry : entries) {
@@ -322,7 +322,7 @@ public class XmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Element getGroupTag(Request request, Group group, Document doc,
+    private Element getGroupTag(Request request, Entry group, Document doc,
                                 Element parent)
             throws Exception {
         Element node = getEntryTag(request, group, doc, parent, false, true);

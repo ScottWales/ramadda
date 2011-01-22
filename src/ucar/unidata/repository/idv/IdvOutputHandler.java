@@ -2468,7 +2468,7 @@ public class IdvOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                                 Group group, List<Group> subGroups,
+                                 Entry group, List<Entry> subGroups,
                                  List<Entry> entries)
             throws Exception {
 

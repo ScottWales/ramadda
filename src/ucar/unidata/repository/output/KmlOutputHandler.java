@@ -143,7 +143,7 @@ public class KmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
 
@@ -164,7 +164,7 @@ public class KmlOutputHandler extends OutputHandler {
         int cnt  = subGroups.size() + entries.size();
         int max  = request.get(ARG_MAX, DB_MAX_ROWS);
         int skip = Math.max(0, request.get(ARG_SKIP, 0));
-        for (Group childGroup : subGroups) {
+        for (Entry childGroup : subGroups) {
             String url = getRepository().absoluteUrl(
                              request.url(
                                  repository.URL_ENTRY_SHOW, ARG_ENTRYID,

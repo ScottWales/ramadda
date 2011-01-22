@@ -131,7 +131,7 @@ public class TestGenerator extends Harvester {
         final User  user    = repository.getUserManager().getDefaultUser();
         List        groups  = new ArrayList();
         for (int j = 0; j < 100; j++) {
-            Group group =
+            Entry group =
                 getEntryManager().findGroupFromName("Test/Generated/"
                     + "Group" + j, user, true);
             groups.add(group);
@@ -139,7 +139,7 @@ public class TestGenerator extends Harvester {
 
         for (int i = 0; i < 1000; i++) {
             for (int j = 0; j < 100; j++) {
-                Group group = (Group) groups.get(j);
+                Entry group = (Entry) groups.get(j);
                 for (int k = 0; k < 10; k++) {
                     Date createDate = new Date();
                     Entry entry =

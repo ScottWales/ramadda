@@ -331,8 +331,8 @@ public class FtpTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Group mainEntry,
-                                    Group parentEntry, String synthId)
+    public List<String> getSynthIds(Request request, Entry mainEntry,
+                                    Entry parentEntry, String synthId)
             throws Exception {
         long         t0      = System.currentTimeMillis();
         List<String> ids     = new ArrayList<String>();
@@ -681,22 +681,22 @@ public class FtpTypeHandler extends GenericTypeHandler {
 
         boolean isDir = ftpFile.isDirectory();
         Entry   entry = (isDir
-                         ? (Entry) new Group(synthId, handler)
+                         ? (Entry) new Entry(synthId, handler)
                          : new Entry(synthId, handler));
 
         String  name  = IOUtil.getFileTail(ftpFile.getName());
         entry.setIsLocalFile(true);
-        Group parent;
+        Entry parent;
         if (myFtpFile.path.equals(baseDir)) {
-            parent = (Group) parentEntry;
+            parent = (Entry) parentEntry;
         } else {
             File   tmp        = new File(myFtpFile.path);
             String parentPath = tmp.getParent().replace("\\", "/");
             String parentId   = getSynthId(parentEntry, baseDir, parentPath);
             if (parentPath.equals(baseDir)) {
-                parent = (Group) parentEntry;
+                parent = (Entry) parentEntry;
             } else {
-                parent = (Group) getEntryManager().getEntry(request,
+                parent = (Entry) getEntryManager().getEntry(request,
                         parentId, false, false);
             }
         }
@@ -768,7 +768,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Group(id, this);
+        return new Entry(id, this);
     }
 
 

@@ -476,7 +476,7 @@ public class ImageOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         Result result = makeResult(request, group, entries);
@@ -514,7 +514,7 @@ public class ImageOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Result makeResult(Request request, Group group,
+    private Result makeResult(Request request, Entry group,
                               List<Entry> entries)
             throws Exception {
 
@@ -670,7 +670,7 @@ public class ImageOutputHandler extends OutputHandler {
             sb = new StringBuffer(template);
         }
         StringBuffer finalSB = new StringBuffer();
-        showNext(request, new ArrayList<Group>(), entries, finalSB);
+        showNext(request, new ArrayList<Entry>(), entries, finalSB);
 
         finalSB.append(HtmlUtil.p());
         finalSB.append(sb);

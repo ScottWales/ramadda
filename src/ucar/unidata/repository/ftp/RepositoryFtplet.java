@@ -31,8 +31,6 @@ import org.apache.log4j.config.PropertyPrinter;
 import ucar.unidata.repository.Constants;
 import ucar.unidata.repository.Entry;
 import ucar.unidata.repository.EntryManager;
-import ucar.unidata.repository.Group;
-
 
 
 
@@ -253,7 +251,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             ftpManager.logInfo("command:" + ftpRequest.getCommand() + " arg:"
                                + ftpRequest.getArgument());
             Request request = getRequest(session);
-            Group   group   = getGroup(request, session);
+            Entry   group   = getGroup(request, session);
             if (group == null) {
                 return handleError(session, ftpRequest, "No CWD");
             }
@@ -354,13 +352,13 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    private Group getGroup(Request request, FtpSession session)
+    private Entry getGroup(Request request, FtpSession session)
             throws Exception {
         String id = (String) session.getAttribute(PROP_ENTRYID);
         if (id == null) {
             return getEntryManager().getTopGroup();
         }
-        return (Group) getEntryManager().getEntry(request, id);
+        return (Entry) getEntryManager().getEntry(request, id);
     }
 
 
@@ -427,7 +425,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handlePwd(Request request, Group group,
+    public FtpletResult handlePwd(Request request, Entry group,
                                   FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         StringBuffer result = new StringBuffer();
@@ -459,7 +457,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleSyst(Request request, Group group,
+    public FtpletResult handleSyst(Request request, Entry group,
                                    FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         session.write(
@@ -481,7 +479,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleList(Request request, Group group,
+    public FtpletResult handleList(Request request, Entry group,
                                    FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         //dr-x------   3 user group            0 Oct 20 14:27 Desktop
@@ -561,7 +559,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleMkd(Request request, Group group,
+    public FtpletResult handleMkd(Request request, Entry group,
                                   FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         if ( !getRepository().getAccessManager().canDoAction(request, group,
@@ -598,7 +596,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleStor(Request request, Group group,
+    public FtpletResult handleStor(Request request, Entry group,
                                    FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         if ( !getRepository().getAccessManager().canDoAction(request, group,
@@ -658,7 +656,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleDele(Request request, Group group,
+    public FtpletResult handleDele(Request request, Entry group,
                                    FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         Entry entry = findEntry(request, group, ftpRequest.getArgument());
@@ -710,7 +708,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleRmd(Request request, Group group,
+    public FtpletResult handleRmd(Request request, Entry group,
                                   FtpSession session, FtpRequest ftpRequest)
             throws Exception {
         Entry entry = findEntry(request, group, ftpRequest.getArgument());
@@ -763,7 +761,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleRetr(Request request, Group group,
+    public FtpletResult handleRetr(Request request, Entry group,
                                    FtpSession session, FtpRequest ftpRequest)
             throws Exception {
 
@@ -849,7 +847,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleSize(Request request, Group group,
+    public FtpletResult handleSize(Request request, Entry group,
                                    FtpSession session, FtpRequest ftpRequest)
             throws Exception {
 
@@ -900,7 +898,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    private Entry findEntry(Request request, Group parent, String name)
+    private Entry findEntry(Request request, Entry parent, String name)
             throws Exception {
         List<Entry> result = findEntries(request, parent, name);
         if (result.size() > 0) {
@@ -922,7 +920,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    private List<Entry> findEntries(Request request, Group parent,
+    private List<Entry> findEntries(Request request, Entry parent,
                                     String name)
             throws Exception {
         if (name.endsWith("/")) {
@@ -978,7 +976,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      *
      * @throws Exception _more_
      */
-    public FtpletResult handleCwd(Request request, Group group,
+    public FtpletResult handleCwd(Request request, Entry group,
                                   FtpSession session, FtpRequest ftpRequest)
             throws Exception {
 
@@ -994,7 +992,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             return handleError(session, ftpRequest,
                                "Not a valid directory:" + subGroupName);
         }
-        Group subGroup = (Group) entry;
+        Entry subGroup = (Entry) entry;
 
         session.setAttribute(PROP_ENTRYID, subGroup.getId());
         result.append("Directory successfully changed");

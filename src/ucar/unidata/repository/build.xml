@@ -431,6 +431,7 @@
         <unjar src="${libdir}/idvmaps.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/extra.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/jython.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/gdata.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/external.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/twitter4j-1.1.4.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/jetty.jar" dest="${tmpjardir}"/>

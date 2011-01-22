@@ -188,7 +188,7 @@ public class DirectoryHarvester extends Harvester {
         if ( !canContinueRunning(timestamp)) {
             return;
         }
-        Group baseGroup = getBaseGroup();
+        Entry baseGroup = getBaseGroup();
         if (baseGroup == null) {
             baseGroup = getEntryManager().getTopGroup();
         }
@@ -204,12 +204,12 @@ public class DirectoryHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    protected void walkTree(File dir, Group parentGroup) throws Exception {
+    protected void walkTree(File dir, Entry parentGroup) throws Exception {
         String name = dir.getName();
         File xmlFile = new File(IOUtil.joinDir(dir.getParentFile(),
                            "." + name + ".ramadda"));
         Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir);
-        Group group =
+        Entry group =
             getEntryManager().findGroupFromName(parentGroup.getFullName()
                 + "/" + name, getUser(), false);
         if (group == null) {

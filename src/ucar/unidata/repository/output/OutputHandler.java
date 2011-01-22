@@ -236,7 +236,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      *
      * @return _more_
      */
-    public boolean showingAll(Request request, List<Group> subGroups,
+    public boolean showingAll(Request request, List<Entry> subGroups,
                               List<Entry> entries) {
         int cnt = subGroups.size() + entries.size();
         int max = request.get(ARG_MAX, DB_MAX_ROWS);
@@ -269,7 +269,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      *
      * @throws Exception _more_
      */
-    public void showNext(Request request, List<Group> subGroups,
+    public void showNext(Request request, List<Entry> subGroups,
                          List<Entry> entries, StringBuffer sb)
             throws Exception {
         int cnt = subGroups.size() + entries.size();
@@ -387,10 +387,10 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         public Entry entry;
 
         /** _more_ */
-        public Group group;
+        public Entry group;
 
         /** _more_ */
-        public List<Group> subGroups;
+        public List<Entry> subGroups;
 
         /** _more_ */
         public List<Entry> entries;
@@ -406,7 +406,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         public State(Entry entry) {
             if (entry != null) {
                 if (entry.isGroup()) {
-                    group          = (Group) entry;
+                    group          = (Entry) entry;
                     this.subGroups = group.getSubGroups();
                     this.entries   = group.getSubEntries();
                 } else {
@@ -423,7 +423,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
          * @param subGroups _more_
          * @param entries _more_
          */
-        public State(Group group, List<Group> subGroups,
+        public State(Entry group, List<Entry> subGroups,
                      List<Entry> entries) {
             this.group     = group;
             this.entries   = entries;
@@ -438,7 +438,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
          * @param group _more_
          * @param entries _more_
          */
-        public State(Group group, List<Entry> entries) {
+        public State(Entry group, List<Entry> entries) {
             this.group   = group;
             this.entries = entries;
         }
@@ -663,7 +663,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         entries.add(entry);
         return outputGroup(request, outputType,
                            getEntryManager().getDummyGroup(),
-                           new ArrayList<Group>(), entries);
+                           new ArrayList<Entry>(), entries);
     }
 
 
@@ -681,7 +681,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         return notImplemented("outputGroup");
@@ -701,8 +701,8 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      *
      * @throws Exception _more_
      */
-    public final Result xoutputGroup(Request request, Group group,
-                                     List<Group> subGroups,
+    public final Result xoutputGroup(Request request, Entry group,
+                                     List<Entry> subGroups,
                                      List<Entry> entries)
             throws Exception {
         return null;
@@ -900,7 +900,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         String type      = request.getString(ARG_SELECTTYPE, "");
         String elementId = entry.getId();
         String value     = (entry.isGroup()
-                            ? ((Group) entry).getFullName()
+                            ? ((Entry) entry).getFullName()
                             : entry.getName());
         value = value.replace("'", "\\'");
 
@@ -1880,9 +1880,9 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             src = src.trim();
             if ((src.length() == 0) || entry.getName().equals(src)) {
                 srcEntry = entry;
-            } else if (entry instanceof Group) {
+            } else if (entry instanceof Entry) {
                 srcEntry = getEntryManager().findEntryWithName(request,
-                        (Group) entry, src);
+                        (Entry) entry, src);
             }
         }
         if (srcEntry == null) {
@@ -1937,9 +1937,9 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
 
         if ((src.length() == 0) || entry.getName().equals(src)) {
             srcEntry = entry;
-        } else if (entry instanceof Group) {
+        } else if (entry instanceof Entry) {
             srcEntry = getEntryManager().findEntryWithName(request,
-                    (Group) entry, src);
+                    (Entry) entry, src);
         }
         if (srcEntry == null) {
             return msg("Could not find src:" + src);
@@ -2240,7 +2240,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         theEntry = getEntryManager().getEntry(request, name);
         if ((theEntry == null) && parent.isGroup()) {
             for (Entry child :
-                    getEntryManager().getChildren(request, (Group) parent)) {
+                    getEntryManager().getChildren(request, (Entry) parent)) {
                 if (child.getName().trim().equalsIgnoreCase(name)) {
                     theEntry = child;
                     break;
@@ -2460,7 +2460,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         try {
             Entry   entry   = (Entry) wikiUtil.getProperty(PROP_ENTRY);
             Request request = (Request) wikiUtil.getProperty(PROP_REQUEST);
-            Group   parent  = entry.getParentEntry();
+            Entry   parent  = entry.getParentEntry();
 
 
             name = name.trim();
@@ -2486,7 +2486,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             //If the entry is a group first check its children.
             if (entry.isGroup()) {
                 theEntry = findWikiEntry(request, wikiUtil, name,
-                                         (Group) entry);
+                                         (Entry) entry);
             }
             if (theEntry == null) {
                 theEntry = findWikiEntry(request, wikiUtil, name, parent);
@@ -2561,7 +2561,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      */
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
-                              List<Group> subGroups, List<Entry> subEntries)
+                              List<Entry> subGroups, List<Entry> subEntries)
             throws Exception {
         WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {
                                 PROP_REQUEST,
@@ -2588,7 +2588,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      */
     public String wikifyEntry(Request request, Entry entry,
                               WikiUtil wikiUtil, String wikiContent,
-                              boolean wrapInDiv, List<Group> subGroups,
+                              boolean wrapInDiv, List<Entry> subGroups,
                               List<Entry> subEntries)
             throws Exception {
         List children = new ArrayList();

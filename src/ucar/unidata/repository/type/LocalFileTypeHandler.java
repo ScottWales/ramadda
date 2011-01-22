@@ -113,6 +113,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     }
 
 
+
     /**
      * _more_
      *
@@ -190,8 +191,8 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Group mainEntry,
-                                    Group parentEntry, String synthId)
+    public List<String> getSynthIds(Request request, Entry mainEntry,
+                                    Entry parentEntry, String synthId)
             throws Exception {
 
         List<String> ids    = new ArrayList<String>();
@@ -414,10 +415,10 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
                                : getRepository().getTypeHandler(
                                    TypeHandler.TYPE_FILE));
         Entry entry = (targetFile.isDirectory()
-                       ? (Entry) new Group(synthId, handler)
+                       ? (Entry) new Entry(synthId, handler)
                        : new Entry(synthId, handler));
 
-        if (entry instanceof Group) {
+        if (targetFile.isDirectory()) {
             entry.setIcon(ICON_SYNTH_FILE);
         }
         Entry templateEntry = getEntryManager().getTemplateEntry(targetFile);
@@ -449,13 +450,13 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             name = IOUtil.getFileTail(targetFile.toString());
         }
         entry.setIsLocalFile(true);
-        Group parent;
+        Entry parent;
         if (targetFile.getParentFile().equals(rootDir)) {
-            parent = (Group) parentEntry;
+            parent = (Entry) parentEntry;
         } else {
             String parentId = getSynthId(parentEntry, rootDir.toString(),
                                          targetFile.getParentFile());
-            parent = (Group) getEntryManager().getEntry(request, parentId,
+            parent = (Entry) getEntryManager().getEntry(request, parentId,
                     false, false);
         }
 
@@ -486,7 +487,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Group(id, this);
+        return new Entry(id, this);
     }
 
 }

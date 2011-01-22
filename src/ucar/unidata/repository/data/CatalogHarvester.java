@@ -150,7 +150,7 @@ public class CatalogHarvester extends Harvester {
      * @param recurse _more_
      * @param download _more_
      */
-    public CatalogHarvester(Repository repository, Group group, String url,
+    public CatalogHarvester(Repository repository, Entry group, String url,
                             User user, boolean recurse, boolean download) {
         super(repository);
         setName("Catalog harvester");
@@ -314,7 +314,7 @@ public class CatalogHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    private boolean importCatalog(String url, Group parent, int depth,
+    private boolean importCatalog(String url, Entry parent, int depth,
                                   int timestamp)
             throws Exception {
         if ( !canContinueRunning(timestamp)) {
@@ -430,7 +430,7 @@ public class CatalogHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    private void recurseCatalog(Element node, Group parent,
+    private void recurseCatalog(Element node, Entry parent,
                                 String catalogUrlPath, int xmlDepth,
                                 int recurseDepth, int timestamp)
             throws Exception {
@@ -481,13 +481,13 @@ public class CatalogHarvester extends Harvester {
             }
         }
 
-        name = name.replace(Group.IDDELIMITER, "--");
+        name = name.replace(Entry.IDDELIMITER, "--");
         name = name.replace("'", "");
-        Group group = null;
+        Entry group = null;
         for(Entry newGroup: getEntryManager().findEntriesWithName(null, parent,
                                                                   name)) {
             if (newGroup.isGroup()) {
-                group = (Group) newGroup;
+                group = (Entry) newGroup;
                 break;
             }
         }
@@ -550,7 +550,7 @@ public class CatalogHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    private boolean makeEntry(Element node, Group parent,
+    private boolean makeEntry(Element node, Entry parent,
                               String catalogUrlPath, String urlPath,
                               String name)
             throws Exception {

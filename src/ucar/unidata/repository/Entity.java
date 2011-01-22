@@ -71,7 +71,7 @@ public class Entity implements Cloneable {
     private String description = "";
 
     /** _more_ */
-    private Group parentEntry;
+    private Entry parentEntry;
 
     /** _more_ */
     private String parentEntryId;
@@ -115,7 +115,7 @@ public class Entity implements Cloneable {
      * @param createDate _more_
      */
     public Entity(String id, String name, String description,
-                  Group parentEntry, User user, long createDate, long changeDate) {
+                  Entry parentEntry, User user, long createDate, long changeDate) {
         this.id          = id;
         this.name        = name;
         this.description = description;
@@ -135,7 +135,7 @@ public class Entity implements Cloneable {
      * @param user _more_
      * @param createDate _more_
      */
-    public void init(String name, String description, Group parentEntry,
+    public void init(String name, String description, Entry parentEntry,
                      User user, long createDate, long changeDate) {
         this.name        = name;
         this.description = description;
@@ -223,11 +223,7 @@ public class Entity implements Cloneable {
      * @param value The new value for Group
      * @deprecated use setParentEntry
      */
-    public void xxxsetParentGroup(Group value) {
-        setParentEntry(value);
-    }
-
-    public void setParentEntry(Group value) {
+    public void setParentEntry(Entry value) {
         parentEntry = value;
         if (parentEntry != null) {
             parentEntryId = parentEntry.getId();
@@ -236,18 +232,9 @@ public class Entity implements Cloneable {
         }
     }
 
-    /**
-     * Get the Group property.
-     *
-     * @return The Group
-     * @deprecated use getParentEntry
-     */
-    public Group xxxxgetParentGroup() {
-        return getParentEntry();
-    }
 
 
-    public Group getParentEntry() {
+    public Entry getParentEntry() {
         return parentEntry;
     }
 

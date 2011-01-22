@@ -121,9 +121,11 @@ public class Entry extends Entity {
     private Hashtable transientProperties = new Hashtable();
 
 
+    private boolean isGroup = false;
+
 
     /** _more_ */
-    List<Group> subGroups;
+    List<Entry> subGroups;
 
     /** _more_ */
     List<Entry> subEntries;
@@ -276,7 +278,7 @@ public class Entry extends Entity {
      * @param endDate _more_
      * @param values _more_
      */
-    public void initEntry(String name, String description, Group parentEntry,
+    public void initEntry(String name, String description, Entry parentEntry,
                           User user, Resource resource, String dataType,
                           long createDate, long changeDate, long startDate, long endDate,
                           Object[] values) {
@@ -409,9 +411,13 @@ public class Entry extends Entity {
      * @return _more_
      */
     public boolean isGroup() {
-        return this instanceof Group;
+        if(typeHandler!=null) return typeHandler.isGroup();
+        return isGroup;
     }
 
+    public void setGroup(boolean g) {
+        isGroup = g;
+    }
 
     /**
      * Set the Type property.
@@ -939,7 +945,7 @@ public class Entry extends Entity {
      *
      *  @param value The new value for SubGroups
      */
-    public void setSubGroups(List<Group> value) {
+    public void setSubGroups(List<Entry> value) {
         subGroups = value;
     }
 
@@ -948,7 +954,7 @@ public class Entry extends Entity {
      *
      *  @return The SubGroups
      */
-    public List<Group> getSubGroups() {
+    public List<Entry> getSubGroups() {
         return subGroups;
     }
 

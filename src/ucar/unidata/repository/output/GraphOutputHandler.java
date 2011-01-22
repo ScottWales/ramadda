@@ -177,7 +177,7 @@ public class GraphOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         return outputEntry(request, outputType, group);
@@ -355,7 +355,7 @@ public class GraphOutputHandler extends OutputHandler {
         }
 
         if (entry.isGroup()) {
-            List<Group> subGroups =
+            List<Entry> subGroups =
                 getEntryManager().getGroups(
                     request,
                     Clause.eq(
@@ -363,7 +363,7 @@ public class GraphOutputHandler extends OutputHandler {
 
             cnt       = 0;
             actualCnt = 0;
-            for (Group subGroup : subGroups) {
+            for (Entry subGroup : subGroups) {
                 if (++cnt <= skip) {
                     continue;
                 }

@@ -474,8 +474,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Group group,
-                                 List<Group> subGroups, List<Entry> entries)
+    public Result getHtmlDisplay(Request request, Entry group,
+                                 List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         if (parent != null) {
             return parent.getHtmlDisplay(request, group, subGroups, entries);
@@ -554,8 +554,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Group mainEntry,
-                                    Group ancestor, String synthId)
+    public List<String> getSynthIds(Request request, Entry mainEntry,
+                                    Entry ancestor, String synthId)
             throws Exception {
         if (parent != null) {
             return parent.getSynthIds(request, mainEntry, ancestor, synthId);
@@ -870,7 +870,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void initializeEntryFromForm(Request request, Entry entry,
-                                        Group parent, boolean newEntry)
+                                        Entry parent, boolean newEntry)
             throws Exception {
         if (this.parent != null) {
             this.parent.initializeEntryFromForm(request, entry, parent,
@@ -2458,11 +2458,11 @@ public class TypeHandler extends RepositoryManager {
 
 
         /**
-         * List<Group> collectionGroups =
+         * List<Entry> collectionGroups =
          *   getEntryManager().getTopGroups(request);
          * List<TwoFacedObject> collections = new ArrayList<TwoFacedObject>();
          * collections.add(new TwoFacedObject("All", ""));
-         * for (Group group : collectionGroups) {
+         * for (Entry group : collectionGroups) {
          *   collections.add(new TwoFacedObject(group.getLabel(),
          *           group.getId()));
          *
@@ -2592,14 +2592,14 @@ public class TypeHandler extends RepositoryManager {
                  *          SqlUtil.distinct(Tables.ENTRIES.COL_PARENT_GROUP_ID),
                  *          where, "");
                  *
-                 * List<Group> groups =
+                 * List<Entry> groups =
                  *   getRepository().getGroups(SqlUtil.readString(stmt, 1));
                  * getDatabaseManager().closeAndReleaseStatement(stmt);
                  *
                  * if (groups.size() > 1) {
                  *   List groupList = new ArrayList();
                  *   groupList.add(ALL_OBJECT);
-                 *   for (Group group : groups) {
+                 *   for (Entry group : groups) {
                  *       groupList.add(
                  *           new TwoFacedObject(group.getFullName(), group.getId()));
                  *   }

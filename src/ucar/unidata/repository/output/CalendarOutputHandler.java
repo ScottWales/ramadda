@@ -145,7 +145,7 @@ public class CalendarOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -177,7 +177,7 @@ public class CalendarOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Result outputDateGrid(Request request, Group group,
+    private Result outputDateGrid(Request request, Entry group,
                                   List<Entry> entries, StringBuffer sb)
             throws Exception {
         List             types    = new ArrayList();
@@ -367,7 +367,7 @@ public class CalendarOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Result outputCalendar(Request request, Group group,
+    private Result outputCalendar(Request request, Entry group,
                                   List<Entry> entries, StringBuffer sb)
             throws Exception {
 

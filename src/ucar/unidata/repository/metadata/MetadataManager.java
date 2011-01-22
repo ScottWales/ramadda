@@ -623,7 +623,7 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataChange(Request request) throws Exception {
         synchronized (MUTEX_METADATA) {
             Entry entry = getEntryManager().getEntry(request);
-            Group parent = getEntryManager().getParent(request, entry);
+            Entry parent = getEntryManager().getParent(request, entry);
             boolean canEditParent =
                 (parent != null)
                 && getAccessManager().canDoAction(request, parent,

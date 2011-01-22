@@ -98,6 +98,6 @@ public class ExtensibleGroupTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Group(id, this);
+        return new Entry(id, this);
     }
 }

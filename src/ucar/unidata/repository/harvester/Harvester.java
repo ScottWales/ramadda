@@ -369,12 +369,12 @@ public abstract class Harvester extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Group getBaseGroup() throws Exception {
+    public Entry getBaseGroup() throws Exception {
         if ((baseGroupId == null) || (baseGroupId.length() == 0)) {
             return null;
         }
         Request request = new Request(getRepository(), getUser());
-        Group   g = getEntryManager().findGroup(getRequest(), baseGroupId);
+        Entry   g = getEntryManager().findGroup(getRequest(), baseGroupId);
         if (g != null) {
             return g;
         }
@@ -394,7 +394,7 @@ public abstract class Harvester extends RepositoryManager {
      */
     protected void addBaseGroupSelect(String selectId, StringBuffer sb)
             throws Exception {
-        Group baseGroup = getBaseGroup();
+        Entry baseGroup = getBaseGroup();
         String baseSelect = OutputHandler.getGroupSelect(getRequest(),
                                 selectId);
         String extra = "";
@@ -438,7 +438,7 @@ public abstract class Harvester extends RepositoryManager {
                                              groupTemplate);
         this.baseGroupId = XmlUtil.getAttribute(element, ATTR_BASEGROUP, "");
 
-        Group baseGroup = getBaseGroup();
+        Entry baseGroup = getBaseGroup();
         if (baseGroup != null) {
             baseGroupId = baseGroup.getId();
         }

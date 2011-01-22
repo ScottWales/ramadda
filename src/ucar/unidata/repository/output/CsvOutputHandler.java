@@ -127,10 +127,10 @@ public class CsvOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    protected Result listGroups(Request request, List<Group> groups)
+    protected Result listGroups(Request request, List<Entry> groups)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        for (Group group : groups) {
+        for (Entry group : groups) {
             sb.append(SqlUtil.comma(group.getFullName(), group.getId()));
             sb.append("\n");
         }
@@ -193,7 +193,7 @@ public class CsvOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         return listGroups(request, subGroups);

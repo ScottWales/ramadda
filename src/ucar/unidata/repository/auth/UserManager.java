@@ -1118,7 +1118,7 @@ public class UserManager extends RepositoryManager {
             msg.append("<p>");
 
             if (homeGroupId.length() > 0) {
-                Group parent = getEntryManager().findGroup(request,
+                Entry parent = getEntryManager().findGroup(request,
                                    homeGroupId);
                 Entry home = getEntryManager().makeNewGroup(parent,
                                  newUser.getName(), newUser, null,
@@ -2582,7 +2582,7 @@ public class UserManager extends RepositoryManager {
             }
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Group group, List<Group> subGroups,
+                                      Entry group, List<Entry> subGroups,
                                       List<Entry> entries)
                     throws Exception {
                 OutputType output = request.getOutput();

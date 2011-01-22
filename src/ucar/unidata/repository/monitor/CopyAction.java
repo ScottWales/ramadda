@@ -59,7 +59,7 @@ public class CopyAction extends MonitorAction {
     private String subGroup = "";
 
     /** _more_ */
-    private Group group;
+    private Entry group;
 
     /**
      * _more_
@@ -92,11 +92,11 @@ public class CopyAction extends MonitorAction {
      *
      * @return _more_
      */
-    private Group getGroup(EntryMonitor entryMonitor) {
+    private Entry getGroup(EntryMonitor entryMonitor) {
         try {
             if (group == null) {
                 group =
-                    (Group) entryMonitor.getRepository().getEntryManager()
+                    (Entry) entryMonitor.getRepository().getEntryManager()
                         .findGroup(null, parentGroupId);
             }
             return group;
@@ -113,7 +113,7 @@ public class CopyAction extends MonitorAction {
      * @return _more_
      */
     public String getSummary(EntryMonitor entryMonitor) {
-        Group group = getGroup(entryMonitor);
+        Entry group = getGroup(entryMonitor);
         if (group == null) {
             return "Copy entry: Error bad folder";
         }
@@ -147,7 +147,7 @@ public class CopyAction extends MonitorAction {
         sb.append(HtmlUtil.formTable());
         sb.append(HtmlUtil.colspan("Copy Action", 2));
         try {
-            Group  group      = getGroup(monitor);
+            Entry  group      = getGroup(monitor);
             String errorLabel = "";
             if ((group != null) && !monitor.okToAddNew(group)) {
                 errorLabel = HtmlUtil.span(
@@ -196,7 +196,7 @@ public class CopyAction extends MonitorAction {
      */
     protected void entryMatched(EntryMonitor monitor, Entry entry) {
         try {
-            Group group = getGroup(monitor);
+            Entry group = getGroup(monitor);
             if (group == null) {
                 return;
             }

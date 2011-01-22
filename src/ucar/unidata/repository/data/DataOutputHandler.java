@@ -2535,7 +2535,7 @@ public class DataOutputHandler extends OutputHandler {
 
 
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
 
         throws Exception {

@@ -305,7 +305,7 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
 
 
     /** _more_ */
-    Group topGroup;
+    Entry topGroup;
 
     /** _more_ */
     String url;
@@ -318,7 +318,7 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
      * @param url _more_
      * @param user _more_
      */
-    public DifHarvester(Repository repository, Group group, String url,
+    public DifHarvester(Repository repository, Entry group, String url,
                         User user) {
         super(repository);
         setName("DIF harvester");

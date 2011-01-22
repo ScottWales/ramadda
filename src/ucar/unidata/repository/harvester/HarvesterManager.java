@@ -593,7 +593,7 @@ public class HarvesterManager extends RepositoryManager {
      */
     public Result processImportCatalog(Request request) throws Exception {
 
-        Group group = getEntryManager().findGroup(request);
+        Entry group = getEntryManager().findGroup(request);
         if ( !request.exists(ARG_CATALOG)) {
             StringBuffer sb = new StringBuffer();
             sb.append(

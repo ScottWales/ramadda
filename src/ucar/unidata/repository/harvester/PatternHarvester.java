@@ -820,7 +820,7 @@ public class PatternHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    private String getDirNames(File parentFile, Group parentGroup,
+    private String getDirNames(File parentFile, Entry parentGroup,
                                List<String> dirToks, boolean makeGroup)
             throws Exception {
         //        if(dirToks.size()==0) return parentFile.toString();
@@ -833,9 +833,9 @@ public class PatternHarvester extends Harvester {
                                ? template.getName()
                                : filename);
             if (makeGroup && (parentGroup != null)) {
-                Group group = getEntryManager().findGroupFromName(
+                Entry group = getEntryManager().findGroupFromName(
                                   parentGroup.getFullName()
-                                  + Group.PATHDELIMITER + name, getUser(),
+                                  + Entry.PATHDELIMITER + name, getUser(),
                                       false);
                 if (group == null) {
                     group = getEntryManager().makeNewGroup(parentGroup, name,
@@ -846,7 +846,7 @@ public class PatternHarvester extends Harvester {
             names.add(name);
             parentFile = file;
         }
-        return StringUtil.join(Group.PATHDELIMITER, names);
+        return StringUtil.join(Entry.PATHDELIMITER, names);
     }
 
 
@@ -956,7 +956,7 @@ public class PatternHarvester extends Harvester {
         List dirToks = (List<String>) StringUtil.split(dirPath, "/", true,
                            true);
         //        System.err.println ("file:" +fileName + " " + dirPath +" " + dirToks);
-        Group baseGroup = getBaseGroup();
+        Entry baseGroup = getBaseGroup();
         String dirGroup =
             getDirNames(rootDir, baseGroup, dirToks,
                         false && !getTestMode()
@@ -1024,7 +1024,7 @@ public class PatternHarvester extends Harvester {
         desc = desc.replace("${name}", name);
 
         if (baseGroup != null) {
-            groupName = baseGroup.getFullName() + Group.PATHDELIMITER
+            groupName = baseGroup.getFullName() + Entry.PATHDELIMITER
                         + groupName;
         }
         if (getTestMode()) {
@@ -1039,7 +1039,7 @@ public class PatternHarvester extends Harvester {
         }
 
         boolean createIfNeeded = !getTestMode();
-        Group group = getEntryManager().findGroupFromName(groupName,
+        Entry group = getEntryManager().findGroupFromName(groupName,
                           getUser(), createIfNeeded, getLastGroupType());
         Entry    entry = typeHandler.createEntry(getRepository().getGUID());
         Resource resource;

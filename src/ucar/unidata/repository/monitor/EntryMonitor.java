@@ -474,8 +474,8 @@ public class EntryMonitor implements Constants {
             String id = (String) ((filter == null)
                                   ? ""
                                   : filter.getValue());
-            Group group =
-                (Group) getRepository().getEntryManager().getEntry(null, id);
+            Entry group =
+                (Entry) getRepository().getEntryManager().getEntry(null, id);
 
             String select = OutputHandler.getGroupSelect(getRequest(), what);
             sb.append(
@@ -537,13 +537,13 @@ public class EntryMonitor implements Constants {
      *
      * @return _more_
      */
-    private Group getGroup(Filter filter) {
+    private Entry getGroup(Filter filter) {
         try {
-            Group group = (Group) filter.getProperty("ancestor");
+            Entry group = (Entry) filter.getProperty("ancestor");
             if (group != null) {
                 return group;
             }
-            group = (Group) getRepository().getEntryManager().getEntry(null,
+            group = (Entry) getRepository().getEntryManager().getEntry(null,
                     (String) filter.getValue());
             filter.putProperty("ancestor", group);
             return group;
@@ -574,7 +574,7 @@ public class EntryMonitor implements Constants {
             desc = "area";
         } else if (what.equals(ARG_ANCESTOR)) {
             desc = "ancestor";
-            Group group = getGroup(filter);
+            Entry group = getGroup(filter);
             value = ((group == null)
                      ? "_undefined_"
                      : group.getFullName());
@@ -784,9 +784,9 @@ public class EntryMonitor implements Constants {
             ok = nameMatch(value.toString(), entry.getDescription())
                  || nameMatch(value.toString(), entry.getName());
         } else if (field.equals(ARG_ANCESTOR)) {
-            Group ancestor = getGroup(filter);
+            Entry ancestor = getGroup(filter);
             if (ancestor != null) {
-                Group parent = entry.getParentEntry();
+                Entry parent = entry.getParentEntry();
                 while (parent != null) {
                     if (ancestor.equals(parent)) {
                         ok = true;
@@ -865,7 +865,7 @@ public class EntryMonitor implements Constants {
      *
      * @throws Exception _more_
      */
-    public boolean okToAddNew(Group group) throws Exception {
+    public boolean okToAddNew(Entry group) throws Exception {
         if (group == null) {
             return false;
         }

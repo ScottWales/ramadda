@@ -94,7 +94,7 @@ public class ExampleOutputHandler extends OutputHandler {
     /**
      * This method gets called to add in to the types list the OutputTypes that are applicable
      * to the given State.  The State can be viewing a single Entry (state.entry non-null),
-     * viewing a Group (state.group non-null). These would show up along the top navigation bar.
+     * viewing a Entry (state.group non-null). These would show up along the top navigation bar.
      *
      * The Request holds all information about the request
      *
@@ -146,7 +146,7 @@ public class ExampleOutputHandler extends OutputHandler {
      * @throws Exception On badness
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
 
@@ -160,7 +160,7 @@ public class ExampleOutputHandler extends OutputHandler {
         //URL_ENTRY_SHOW is used for showing all content through the output handlers
         if (subGroups.size() > 0) {
             sb.append("Sub-groups:<br>");
-            for (Group childGroup : subGroups) {
+            for (Entry childGroup : subGroups) {
                 sb.append(
                     HtmlUtil.href(
                         request.entryUrl(

@@ -1058,19 +1058,26 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                 TypeHandler.TAG_TYPE);
             for (int i = 0; i < children.size(); i++) {
                 Element entryNode = (Element) children.get(i);
-                Class handlerClass =
-                    Misc.findClass(XmlUtil.getAttribute(entryNode,
-                        TypeHandler.TAG_HANDLER,
-                        "ucar.unidata.repository.type.GenericTypeHandler"));
+                String classPath = XmlUtil.getAttribute(entryNode,
+                                                        TypeHandler.TAG_HANDLER,
+                                                        "ucar.unidata.repository.type.GenericTypeHandler");
+
+                System.err.println ("RAMADDA: loading type handler:" + classPath);
+                try {
+                    Class handlerClass = Misc.findClass(classPath);
 
 
-                Constructor ctor = Misc.findConstructor(handlerClass,
-                                       new Class[] { Repository.class,
-                        Element.class });
-                TypeHandler typeHandler =
-                    (TypeHandler) ctor.newInstance(new Object[] { this,
-                        entryNode });
-                addTypeHandler(typeHandler.getType(), typeHandler);
+                    Constructor ctor = Misc.findConstructor(handlerClass,
+                                                            new Class[] { Repository.class,
+                                                                          Element.class });
+                    TypeHandler typeHandler =
+                        (TypeHandler) ctor.newInstance(new Object[] { this,
+                                                                      entryNode });
+                    addTypeHandler(typeHandler.getType(), typeHandler);
+                } catch(Exception exc) {
+                    System.err.println ("RAMADDA: Error loading type handler:" + classPath);
+                    throw exc;
+                }
             }
         }
 
@@ -2479,7 +2486,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Group group, List<Group> subGroups,
+                                      Entry group, List<Entry> subGroups,
                                       List<Entry> entries)
                     throws Exception {
 
@@ -2542,7 +2549,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
             }
 
             public Result outputGroup(Request request, OutputType outputType,
-                                      Group group, List<Group> subGroups,
+                                      Entry group, List<Entry> subGroups,
                                       List<Entry> entries)
                     throws Exception {
                 if (request.getUser().getAnonymous()) {

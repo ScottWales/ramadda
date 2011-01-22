@@ -471,7 +471,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      * @throws Exception _more_
      */
     public void initializeEntryFromForm(Request request, Entry entry,
-                                        Group parent, boolean newEntry)
+                                        Entry parent, boolean newEntry)
             throws Exception {
         if ( !newEntry) {
             return;
@@ -557,7 +557,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      * @throws Exception _more_
      */
     protected void createDatabase(Request request, Entry entry,
-                                  File dataFile, Group parent,
+                                  File dataFile, Entry parent,
                                   Connection connection)
             throws Exception {
 
@@ -3252,7 +3252,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    protected FeatureDatasetPoint getDataset(Entry entry, Group parent,
+    protected FeatureDatasetPoint getDataset(Entry entry, Entry parent,
                                              File file)
             throws Exception {
         Formatter buf = new Formatter();

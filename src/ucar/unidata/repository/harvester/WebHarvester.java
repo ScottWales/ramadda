@@ -373,7 +373,7 @@ public class WebHarvester extends Harvester {
 
     protected void addBaseFolderToForm(Request request, StringBuffer  entrySB, HarvesterEntry urlEntry, int cnt) throws Exception {
         String baseGroupFieldId = ATTR_BASEGROUP + cnt;
-        Group  baseGroup        = ((urlEntry.baseGroupId.length() == 0)
+        Entry  baseGroup        = ((urlEntry.baseGroupId.length() == 0)
                                    ? null
                                    : getEntryManager().findGroup(request,
                                                                  urlEntry.baseGroupId));
@@ -490,7 +490,7 @@ public class WebHarvester extends Harvester {
 
     protected void processEntry(HarvesterEntry urlEntry, List<Entry> entries) throws Exception {
 
-        Group baseGroup = ((urlEntry.baseGroupId.length() == 0)
+        Entry baseGroup = ((urlEntry.baseGroupId.length() == 0)
                            ? null
                            : getEntryManager().findGroup(null,
                                                          urlEntry.baseGroupId));
@@ -527,7 +527,7 @@ public class WebHarvester extends Harvester {
      * @throws Exception _more_
      */
     private Entry processUrl(String url, String name, String desc,
-                             Group baseGroup, String groupName)
+                             Entry baseGroup, String groupName)
             throws Exception {
 
 
@@ -563,7 +563,7 @@ public class WebHarvester extends Harvester {
         desc = applyMacros(desc, createDate, fromDate, toDate, fileName);
 
 
-        Group group = ((baseGroup != null)
+        Entry group = ((baseGroup != null)
                        ? getEntryManager().findGroupUnder(getRequest(),
                            baseGroup, groupName, getUser())
                        : getEntryManager().findGroupFromName(groupName,

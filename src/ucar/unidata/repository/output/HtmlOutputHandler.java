@@ -562,8 +562,8 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getChildrenXml(Request request, Group parent,
-                                 List<Group> subGroups, List<Entry> entries)
+    public Result getChildrenXml(Request request, Entry parent,
+                                 List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
         String       folder     = iconUrl(ICON_FOLDER_CLOSED);
@@ -589,7 +589,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.br());
         }
 
-        for (Group subGroup : subGroups) {
+        for (Entry subGroup : subGroups) {
             if(cnt==0) {
                 //                sb.append(HtmlUtil.makeToggleInline("...", tabs, false));
             }
@@ -654,7 +654,7 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getSelectXml(Request request, List<Group> subGroups,
+    public Result getSelectXml(Request request, List<Entry> subGroups,
                                List<Entry> entries)
             throws Exception {
         String       localeId = request.getString(ARG_LOCALEID, null);
@@ -719,7 +719,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        for (Group subGroup : subGroups) {
+        for (Entry subGroup : subGroups) {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
             }
@@ -834,7 +834,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
     public Result outputTimelineXml(Request request, 
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
@@ -875,7 +875,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
     public Result outputGrid(Request request, 
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -965,7 +965,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
 

@@ -221,7 +221,7 @@ public class ZipOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
         OutputType output = request.getOutput();
@@ -411,7 +411,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
             if (entry.isGroup() && recurse) {
-                Group group = (Group) entry;
+                Entry group = (Entry) entry;
                 List<Entry> children = getEntryManager().getChildren(request,
                                            group);
                 String path = group.getName();

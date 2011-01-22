@@ -312,7 +312,7 @@ public class CatalogOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                              Group group, List<Group> subGroups,
+                              Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
 
@@ -817,27 +817,27 @@ public class CatalogOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    protected void toCatalogInner(Request request, Group parentGroup,
+    protected void toCatalogInner(Request request, Entry parentGroup,
                                   List entryList, CatalogInfo catalogInfo,
                                   Element parent, int depth)
             throws Exception {
 
         boolean embedGroups = request.getString(ARG_OUTPUT,"").equals(OUTPUT_CATALOG_EMBED.getId());
         List<Entry> entries = new ArrayList();
-        List<Group> groups  = new ArrayList();
+        List<Entry> groups  = new ArrayList();
         for (int i = 0; i < entryList.size(); i++) {
             Entry entry = (Entry) entryList.get(i);
             if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
                     entries.add(entry);
             } else {
                 if (!embedGroups && entry.isGroup()) {
-                    groups.add((Group) entry);
+                    groups.add((Entry) entry);
                 } else {
                     entries.add(entry);
                 }
             }
         }
-        for (Group group : groups) {
+        for (Entry group : groups) {
             if (depth > 1) {
                 Element datasetNode = XmlUtil.create(catalogInfo.doc,
                                           CatalogUtil.TAG_DATASET, parent,

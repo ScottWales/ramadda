@@ -326,7 +326,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeEntryFromForm(Request request, Entry entry, Group parent,
+    public void initializeEntryFromForm(Request request, Entry entry, Entry parent,
                                 boolean newEntry)
             throws Exception {
         //Always call getEntryValues here so we get create the correct size array

@@ -271,8 +271,8 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public List<String> getSynthIds(Request request, Group mainEntry,
-                                    Group parentEntry, String id)
+    public List<String> getSynthIds(Request request, Entry mainEntry,
+                                    Entry parentEntry, String id)
             throws Exception {
         if (id == null) {
             id = mainEntry.getId();
@@ -439,7 +439,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         Resource resource;
         if (CatalogUtil.haveChildDatasets(root)
                 || CatalogUtil.haveChildCatalogs(root)) {
-            entry    = new Group(newId, this);
+            entry    = new Entry(newId, this);
             resource = new Resource("", Resource.TYPE_URL);
         } else {
             String urlPath = XmlUtil.getAttribute(root,
@@ -481,7 +481,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         }
 
         Date now = new Date();
-        entry.initEntry(name, "", (Group) parentEntry,
+        entry.initEntry(name, "", (Entry) parentEntry,
                         getUserManager().getLocalFileUser(), resource, "",
                         now.getTime(), now.getTime(), now.getTime(), now.getTime(), null);
         return entry;
@@ -495,7 +495,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        return new Group(id, this);
+        return new Entry(id, this);
     }
 
 }
