@@ -2,6 +2,7 @@
 
 
   <type name="gdata_base"  description="Gdata"  category="Google Data" handler="org.ramadda.gdata.GdataTypeHandler" foruser="false">  
+     <property name="icon" value="/gdata/google.gif"/>
      <column name="userid" group="Google Login" type="string"     default="" label="User ID" columns="20"  showinhtml="false"/>
      <column name="password" group="Google Login" type="password"     label="Password"  showinhtml="false"/>
   </type>
