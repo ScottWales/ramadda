@@ -270,6 +270,11 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         return null;
     }
 
+    public String getIconUrl(Request request, Entry entry) throws Exception {
+        if(entry.getId().indexOf(TYPE_EVENT)>=0) 
+            return iconUrl("/icons/calendar_view_day.png");
+        return super.getIconUrl(request, entry);
+    }
 
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
