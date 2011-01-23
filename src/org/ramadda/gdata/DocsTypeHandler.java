@@ -245,28 +245,45 @@ public class DocsTypeHandler extends GdataTypeHandler {
 
 
 
+    */
+
     public static void main(String[]args) throws Exception {
         DocsService client = new DocsService("ramadda");
         client.setUserCredentials("jeff.mcwhirter@gmail.com", args[0]);
-
         //        DocumentQuery query = new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full/-/folder"));
-        DocumentQuery query = new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full"));
+        String url = "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents?showfolders=true";
+        url = "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents?showfolders=true";
+        //        String url = "https://docs.google.com/feeds/default/private/full?showfolders=true";
+        DocumentQuery query = new DocumentQuery(new URL(url));
         DocumentListFeed allEntries = new DocumentListFeed();
         DocumentListFeed tempFeed = client.getFeed(query, DocumentListFeed.class);
         do {
             allEntries.getEntries().addAll(tempFeed.getEntries());
             com.google.gdata.data.Link link  =tempFeed.getNextLink();
             if(link==null) break;
+            if(true) break;
             tempFeed = client.getFeed(new URL(link.getHref()), DocumentListFeed.class);
         } while (tempFeed.getEntries().size() > 0);
 
+        List<DocumentListEntry>topLevel = new ArrayList<DocumentListEntry>();
+        System.out.println("query url:" + url);
         System.out.println("User has " + allEntries.getEntries().size() + " total entries");
         for (DocumentListEntry entry : allEntries.getEntries()) {
-            System.out.println(entry.getType()+" " +entry.getTitle().getPlainText());
+           java.util.List<com.google.gdata.data.Link> links = entry.getParentLinks();
+           if(links.size()==0) {
+               topLevel.add(entry);
+               System.out.println("Top level:" +entry.getType()+" " +entry.getTitle().getPlainText() +" " + entry.getId());
+           } else {
+                System.out.println("Not top level " +entry.getType()+" " +entry.getTitle().getPlainText() +" " + entry.getId());
+           }
+           //            https://docs.google.com/feeds/default/private/full/folder%3Afolder_id/contents
+           for(com.google.gdata.data.Link link: links) {
+               System.out.println("\t" + link.getHref() +" " + link.getTitle());
+           }
         }
 
 
     }
-    */
+
 
 }
