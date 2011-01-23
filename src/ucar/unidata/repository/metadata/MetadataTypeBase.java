@@ -415,6 +415,8 @@ public class MetadataTypeBase extends RepositoryManager {
 
             File f = getFile(entry, metadata, element);
             if (f == null) {
+                String value  = metadata.getAttr(element.getIndex());
+                if(value!=null && value.startsWith("http")) return value;
                 return null;
             }
 

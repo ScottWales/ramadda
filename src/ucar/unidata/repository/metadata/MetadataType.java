@@ -448,6 +448,13 @@ public class MetadataType extends MetadataTypeBase {
                     sb.append(HtmlUtil.space(1));
                     sb.append(html);
                     sb.append(HtmlUtil.space(1));
+                } else {
+                    String value  = metadata.getAttr(element.getIndex());
+                    if(value!=null && value.startsWith("http")) {
+                        sb.append(HtmlUtil.space(1));
+                        sb.append(HtmlUtil.img(value));
+                        sb.append(HtmlUtil.space(1));
+                    }
                 }
                 continue;
             }
