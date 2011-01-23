@@ -772,8 +772,6 @@ public class FtpTypeHandler extends GenericTypeHandler {
     }
 
 
-
-
     /**
      * _more_
      *

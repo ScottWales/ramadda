@@ -131,6 +131,9 @@ public class Entry extends Entity {
     List<Entry> subEntries;
 
 
+    private List<String> childIds;
+
+
     /**
      * _more_
      */
@@ -189,6 +192,25 @@ public class Entry extends Entity {
     public Entry createGeneratedEntry(Request request, String id) {
         return null;
     }
+
+    /**
+       Set the ChildIds property.
+
+       @param value The new value for ChildIds
+    **/
+    public void setChildIds (List<String> value) {
+	childIds = value;
+    }
+
+    /**
+       Get the ChildIds property.
+
+       @return The ChildIds
+    **/
+    public List<String> getChildIds () {
+	return childIds;
+    }
+
 
 
 

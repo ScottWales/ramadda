@@ -228,7 +228,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @param entry _more_
      */
-    protected void cacheEntry(Entry entry) {
+    public void cacheEntry(Entry entry) {
         synchronized (MUTEX_ENTRY) {
             if (entryCache.size() > ENTRY_CACHE_LIMIT) {
                 entryCache = new Hashtable();

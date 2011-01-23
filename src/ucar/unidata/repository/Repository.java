@@ -1062,7 +1062,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                                                         TypeHandler.TAG_HANDLER,
                                                         "ucar.unidata.repository.type.GenericTypeHandler");
 
-                System.err.println ("RAMADDA: loading type handler:" + classPath);
+                //                System.err.println ("RAMADDA: loading type handler:" + classPath);
                 try {
                     Class handlerClass = Misc.findClass(classPath);
 
