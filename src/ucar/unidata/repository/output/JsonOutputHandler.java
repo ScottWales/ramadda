@@ -99,11 +99,13 @@ public class JsonOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        links.add(
-                  makeLink(
-                           request, state.getEntry(), OUTPUT_JSON,
-                           "/" + IOUtil.stripExtension(state.getEntry().getName())
-                           + ".json"));
+        if(state.getEntry()!=null && state.getEntry().getName()!=null) {
+            links.add(
+                      makeLink(
+                               request, state.getEntry(), OUTPUT_JSON,
+                               "/" + IOUtil.stripExtension(state.getEntry().getName())
+                               + ".json"));
+        }
     }
 
 
