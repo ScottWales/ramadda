@@ -24,28 +24,33 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.repository.*;
+import ucar.unidata.repository.metadata.*;
+import ucar.unidata.repository.type.*;
+
+import ucar.unidata.util.StringUtil;
 
 
 
 
 
 
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Date;
 import java.io.File;
 import java.net.URL;
 
 import com.google.gdata.client.*;
 import com.google.gdata.client.photos.*;
-import com.google.gdata.data.*;
+//import com.google.gdata.data.*;
 import com.google.gdata.data.media.*;
 import com.google.gdata.data.photos.*;
 import com.google.gdata.client.*;
 import com.google.gdata.client.calendar.*;
-import com.google.gdata.data.*;
 import com.google.gdata.data.extensions.*;
 import com.google.gdata.util.*;
-import java.net.URL;
 
-import com.google.gdata.client.*;
 import com.google.gdata.client.docs.*;
 import com.google.gdata.data.MediaContent;
 import com.google.gdata.data.acl.*;
@@ -54,7 +59,192 @@ import com.google.gdata.data.extensions.*;
 import com.google.gdata.util.*;
 
 
-public class DocsTypeHandler {
+/**
+ * Class TypeHandler _more_
+ *
+ *
+ * @author IDV Development Team
+ * @version $Revision: 1.3 $
+ */
+public class DocsTypeHandler extends GdataTypeHandler {
+
+    public static final String TYPE_FOLDER = "folder";
+    public static final String TYPE_FILE = "file";
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param entryNode _more_
+     *
+     * @throws Exception _more_
+     */
+    public DocsTypeHandler(Repository repository, Element entryNode)
+            throws Exception {
+        super(repository, entryNode);
+    }
+
+
+    private DocsService getService(Entry entry) throws Exception {
+        String userId = getUserId(entry);
+        String password = getPassword(entry);
+        if (userId == null || password == null) {
+            return null;
+        }
+        DocsService service = new DocsService("ramadda");
+        service.setUserCredentials(userId, password);
+        return service;
+    }
+
+
+    /*
+    public List<String> getAlbumIds(Request request, Entry entry)
+            throws Exception {
+        List<String> ids    = entry.getChildIds();
+        if(ids!=null) return ids;
+        ids = new ArrayList<String>();
+        for(Entry album: getAlbumEntries(request, entry)) {
+            ids.add(album.getId());
+        }
+        entry.setChildIds(ids);
+        return ids;
+    }
+
+
+    public List<Entry> getAlbumEntries(Request request, Entry entry)
+        throws Exception {
+        List<Entry> entries    = new ArrayList<Entry>();
+        System.err.println("getAlbumEntries from picasa");
+        String userId = getUserId(entry);
+        if(userId ==null) return entries;
+
+        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" +userId +"?kind=album");
+        UserFeed myUserFeed = getService(entry).getFeed(feedUrl, UserFeed.class);
+        for (AlbumEntry album : myUserFeed.getAlbumEntries()) {
+            String albumEntryId = getSynthId(entry, TYPE_ALBUM, album.getGphotoId());
+            String title = album.getTitle().getPlainText();
+            Entry newEntry =  new Entry(albumEntryId, this,true);
+            entries.add(newEntry);
+            newEntry.setIcon("/gdata/picasa.png");
+            Date dttm = album.getDate();
+            Date now = new Date();
+            newEntry.initEntry(title, "", entry, getUserManager().getLocalFileUser(),
+                            new Resource(), "", dttm.getTime(),dttm.getTime(),dttm.getTime(),dttm.getTime(),
+                            null);
+            getEntryManager().cacheEntry(newEntry);
+        }
+        return entries;
+    }
+
+
+
+
+    public List<String> getSynthIds(Request request, Entry mainEntry,
+                                    Entry parentEntry, String synthId)
+            throws Exception {
+        if(synthId==null) {
+            return getAlbumIds(request, mainEntry);
+        }
+
+        List<String> ids    = parentEntry.getChildIds();
+        if(ids!=null) return ids;
+        ids = new ArrayList<String>();
+
+
+        List<String> toks = StringUtil.split(synthId,":");
+        String type = toks.get(0);
+        String albumId = toks.get(1);
+        for(Entry photoEntry: getPhotoEntries(request, mainEntry, parentEntry, albumId)) {
+            ids.add(photoEntry.getId());
+        }
+        parentEntry.setChildIds(ids);
+        return ids;
+    }
+
+    public List<Entry> getPhotoEntries(Request request, Entry mainEntry,
+                                       Entry parentEntry, String albumId)
+        throws Exception {
+        System.err.println("getPhotoEntries from picasa:" + albumId);
+        List<Entry> entries = new ArrayList<Entry>();
+        String userId = getUserId(mainEntry);
+        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" + userId +"/albumid/" + albumId);
+        AlbumFeed feed = getService(mainEntry).getFeed(feedUrl, AlbumFeed.class);
+        for(PhotoEntry photo : feed.getPhotoEntries()) {
+            String name = photo.getTitle().getPlainText();
+            String newId = getSynthId(mainEntry, TYPE_PHOTO, photo.getAlbumId()+":"+photo.getGphotoId());
+            Entry newEntry =  new Entry(newId, this);
+            entries.add(newEntry);
+            //            newEntry.setIcon("/gdata/picasa.png");
+            Date dttm = new Date();
+            Date timestamp = photo.getTimestamp();
+            Resource resource = new Resource();
+            java.util.List<com.google.gdata.data.media.mediarss.MediaContent> media = photo.getMediaContents();
+            if(media.size()>0) {
+                resource = new Resource(media.get(0).getUrl());
+                resource.setFileSize(photo.getSize());
+            }
+            newEntry.initEntry(name, "", parentEntry, getUserManager().getLocalFileUser(),
+                            resource, "", dttm.getTime(),dttm.getTime(), timestamp.getTime(),timestamp.getTime(),
+                            null);
+            com.google.gdata.data.geo.Point point = photo.getGeoLocation();
+            if(point!=null) {
+                newEntry.setNorth(point.getLatitude().doubleValue());
+                newEntry.setSouth(point.getLatitude().doubleValue());
+                newEntry.setWest(point.getLongitude().doubleValue());
+                newEntry.setEast(point.getLongitude().doubleValue());
+            }
+
+            java.util.List<com.google.gdata.data.media.mediarss.MediaThumbnail> thumbs = photo.getMediaThumbnails() ;
+            //            for(int i=0;i<thumbs.size();i++) {
+            if(thumbs.size()>0) {
+                Metadata thumbnailMetadata =                                                                                                
+                    new Metadata(getRepository().getGUID(), newId, ContentMetadataHandler.TYPE_THUMBNAIL, false,                    
+                                 thumbs.get(0).getUrl(),null,null,null,null);
+                newEntry.addMetadata(thumbnailMetadata);
+            }
+            getEntryManager().cacheEntry(newEntry);
+        }
+        return entries;
+    }
+
+
+    public Entry makeSynthEntry(Request request, Entry mainEntry, String id)
+        throws Exception {
+        
+        String userId = getUserId(mainEntry);
+        System.err.println ("ID:" + id);
+        List<String> toks = StringUtil.split(id,":");
+        String type = toks.get(0);
+        if(type.equals(TYPE_ALBUM)) {
+            for(Entry album: getAlbumEntries(request, mainEntry)) {
+                if(album.getId().endsWith(id)) {
+                    return album;
+                }
+            }
+            return null;
+        }
+
+        String albumId =  toks.get(1);
+        String albumEntryId = getSynthId(mainEntry, TYPE_ALBUM, albumId);
+        Entry albumEntry = getEntryManager().getEntry(request, albumEntryId);
+        String photoEntryId =  getSynthId(mainEntry, TYPE_PHOTO, toks.get(1)+":" + toks.get(2));
+        for(Entry photoEntry: getPhotoEntries(request, mainEntry, albumEntry, albumId)) {
+            if(photoEntry.getId().equals(photoEntryId)) {
+                return photoEntry;
+            }
+        }
+        return null;
+    }
+
+
+    public String getIconUrl(Request request, Entry entry) throws Exception {
+        if(entry.getId().indexOf(TYPE_PHOTO)>=0) 
+            return iconUrl("/icons/jpg.png");
+        return iconUrl("/gdata/picasa.png");
+    }
+
+
+
     public static void main(String[]args) throws Exception {
         DocsService client = new DocsService("ramadda");
         client.setUserCredentials("jeff.mcwhirter@gmail.com", args[0]);
@@ -77,6 +267,6 @@ public class DocsTypeHandler {
 
 
     }
-
+    */
 
 }

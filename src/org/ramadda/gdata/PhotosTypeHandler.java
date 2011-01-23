@@ -24,7 +24,10 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.repository.*;
+import ucar.unidata.repository.metadata.*;
 import ucar.unidata.repository.type.*;
+
+import ucar.unidata.util.StringUtil;
 
 
 
@@ -66,6 +69,7 @@ import com.google.gdata.util.*;
 public class PhotosTypeHandler extends GdataTypeHandler {
 
     public static final String TYPE_ALBUM = "album";
+    public static final String TYPE_PHOTO = "photo";
 
     /**
      * _more_
@@ -82,92 +86,164 @@ public class PhotosTypeHandler extends GdataTypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isSynthType() {
-        return true;
+    private PicasawebService getService(Entry entry) throws Exception {
+        String userId = getUserId(entry);
+        String password = getPassword(entry);
+        if (userId == null || password == null) {
+            return null;
+        }
+        PicasawebService myService = new PicasawebService("ramadda");
+        myService.setUserCredentials(userId, password);
+        return myService;
     }
+
+
+    public List<String> getAlbumIds(Request request, Entry entry)
+            throws Exception {
+        List<String> ids    = entry.getChildIds();
+        if(ids!=null) return ids;
+        ids = new ArrayList<String>();
+        for(Entry album: getAlbumEntries(request, entry)) {
+            ids.add(album.getId());
+        }
+        entry.setChildIds(ids);
+        return ids;
+    }
+
+
+    public List<Entry> getAlbumEntries(Request request, Entry entry)
+        throws Exception {
+        List<Entry> entries    = new ArrayList<Entry>();
+        System.err.println("getAlbumEntries from picasa");
+        String userId = getUserId(entry);
+        if(userId ==null) return entries;
+
+        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" +userId +"?kind=album");
+        UserFeed myUserFeed = getService(entry).getFeed(feedUrl, UserFeed.class);
+        for (AlbumEntry album : myUserFeed.getAlbumEntries()) {
+            String albumEntryId = getSynthId(entry, TYPE_ALBUM, album.getGphotoId());
+            String title = album.getTitle().getPlainText();
+            Entry newEntry =  new Entry(albumEntryId, this,true);
+            entries.add(newEntry);
+            newEntry.setIcon("/gdata/picasa.png");
+            Date dttm = album.getDate();
+            Date now = new Date();
+            newEntry.initEntry(title, "", entry, getUserManager().getLocalFileUser(),
+                            new Resource(), "", dttm.getTime(),dttm.getTime(),dttm.getTime(),dttm.getTime(),
+                            null);
+            getEntryManager().cacheEntry(newEntry);
+        }
+        return entries;
+    }
+
+
 
 
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
-        List<String> ids    = new ArrayList<String>();
-        String userId = getUserId(mainEntry);
-        String password = getPassword(mainEntry);
-        if (userId == null || password == null) {
-            return ids;
+        if(synthId==null) {
+            return getAlbumIds(request, mainEntry);
         }
 
-        PicasawebService myService = new PicasawebService("ramadda");
-        myService.setUserCredentials(userId, password);
-        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" +userId +"?kind=album");
-        UserFeed myUserFeed = myService.getFeed(feedUrl, UserFeed.class);
+        List<String> ids    = parentEntry.getChildIds();
+        if(ids!=null) return ids;
+        ids = new ArrayList<String>();
 
-        for (AlbumEntry album : myUserFeed.getAlbumEntries()) {
-            System.out.println(album.getTitle().getPlainText());
-            String id = getSynthId(mainEntry, TYPE_ALBUM, album.getId());
-            ids.add(id);
+
+        List<String> toks = StringUtil.split(synthId,":");
+        String type = toks.get(0);
+        String albumId = toks.get(1);
+        for(Entry photoEntry: getPhotoEntries(request, mainEntry, parentEntry, albumId)) {
+            ids.add(photoEntry.getId());
         }
-
-
+        parentEntry.setChildIds(ids);
         return ids;
+    }
 
+    public List<Entry> getPhotoEntries(Request request, Entry mainEntry,
+                                       Entry parentEntry, String albumId)
+        throws Exception {
+        System.err.println("getPhotoEntries from picasa:" + albumId);
+        List<Entry> entries = new ArrayList<Entry>();
+        String userId = getUserId(mainEntry);
+        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" + userId +"/albumid/" + albumId);
+        AlbumFeed feed = getService(mainEntry).getFeed(feedUrl, AlbumFeed.class);
+        for(PhotoEntry photo : feed.getPhotoEntries()) {
+            String name = photo.getTitle().getPlainText();
+            String newId = getSynthId(mainEntry, TYPE_PHOTO, photo.getAlbumId()+":"+photo.getGphotoId());
+            Entry newEntry =  new Entry(newId, this);
+            entries.add(newEntry);
+            //            newEntry.setIcon("/gdata/picasa.png");
+            Date dttm = new Date();
+            Date timestamp = photo.getTimestamp();
+            Resource resource = new Resource();
+            java.util.List<com.google.gdata.data.media.mediarss.MediaContent> media = photo.getMediaContents();
+            if(media.size()>0) {
+                resource = new Resource(media.get(0).getUrl());
+                resource.setFileSize(photo.getSize());
+            }
+            newEntry.initEntry(name, "", parentEntry, getUserManager().getLocalFileUser(),
+                            resource, "", dttm.getTime(),dttm.getTime(), timestamp.getTime(),timestamp.getTime(),
+                            null);
+            com.google.gdata.data.geo.Point point = photo.getGeoLocation();
+            if(point!=null) {
+                newEntry.setNorth(point.getLatitude().doubleValue());
+                newEntry.setSouth(point.getLatitude().doubleValue());
+                newEntry.setWest(point.getLongitude().doubleValue());
+                newEntry.setEast(point.getLongitude().doubleValue());
+            }
+
+            java.util.List<com.google.gdata.data.media.mediarss.MediaThumbnail> thumbs = photo.getMediaThumbnails() ;
+            //            for(int i=0;i<thumbs.size();i++) {
+            if(thumbs.size()>0) {
+                Metadata thumbnailMetadata =                                                                                                
+                    new Metadata(getRepository().getGUID(), newId, ContentMetadataHandler.TYPE_THUMBNAIL, false,                    
+                                 thumbs.get(0).getUrl(),null,null,null,null);
+                newEntry.addMetadata(thumbnailMetadata);
+            }
+            getEntryManager().cacheEntry(newEntry);
+        }
+        return entries;
     }
 
 
-
-
-    public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
-            throws Exception {
+    public Entry makeSynthEntry(Request request, Entry mainEntry, String id)
+        throws Exception {
+        
+        String userId = getUserId(mainEntry);
         System.err.println ("ID:" + id);
-
-        String synthId = Repository.ID_PREFIX_SYNTH + parentEntry.getId()
-                         + ":" + id;
-        TypeHandler handler =  getRepository().getTypeHandler(TypeHandler.TYPE_GROUP);
-        Entry entry =  new Entry(synthId, handler);
-        if (entry instanceof Entry) {
-            entry.setIcon("/gdata/icons/picasa.png");
+        List<String> toks = StringUtil.split(id,":");
+        String type = toks.get(0);
+        if(type.equals(TYPE_ALBUM)) {
+            for(Entry album: getAlbumEntries(request, mainEntry)) {
+                if(album.getId().endsWith(id)) {
+                    return album;
+                }
+            }
+            return null;
         }
 
-        String name = "album";
-        Entry parent = parentEntry;
-        Date dttm = new Date();
-        //        entry.initEntry(name, "", parent, getUserManager().getLocalFileUser(),
-        //                        null, "", dttm.getTime(),dttm.getTime(),dttm.getTime(),
-        //                        null);
-        return entry;
+        String albumId =  toks.get(1);
+        String albumEntryId = getSynthId(mainEntry, TYPE_ALBUM, albumId);
+        Entry albumEntry = getEntryManager().getEntry(request, albumEntryId);
+        String photoEntryId =  getSynthId(mainEntry, TYPE_PHOTO, toks.get(1)+":" + toks.get(2));
+        for(Entry photoEntry: getPhotoEntries(request, mainEntry, albumEntry, albumId)) {
+            if(photoEntry.getId().equals(photoEntryId)) {
+                return photoEntry;
+            }
+        }
+        return null;
     }
 
 
-
-
-
-    public static void main(String[]args) throws Exception {
-        DocsService client = new DocsService("ramadda");
-        client.setUserCredentials("jeff.mcwhirter@gmail.com", args[0]);
-
-        //        DocumentQuery query = new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full/-/folder"));
-        DocumentQuery query = new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full"));
-        DocumentListFeed allEntries = new DocumentListFeed();
-        DocumentListFeed tempFeed = client.getFeed(query, DocumentListFeed.class);
-        do {
-            allEntries.getEntries().addAll(tempFeed.getEntries());
-            com.google.gdata.data.Link link  =tempFeed.getNextLink();
-            if(link==null) break;
-            tempFeed = client.getFeed(new URL(link.getHref()), DocumentListFeed.class);
-        } while (tempFeed.getEntries().size() > 0);
-
-        System.out.println("User has " + allEntries.getEntries().size() + " total entries");
-        for (DocumentListEntry entry : allEntries.getEntries()) {
-            System.out.println(entry.getType()+" " +entry.getTitle().getPlainText());
-        }
-
-
+    public String getIconUrl(Request request, Entry entry) throws Exception {
+        if(entry.getId().indexOf(TYPE_PHOTO)>=0) 
+            return iconUrl("/icons/jpg.png");
+        return iconUrl("/gdata/picasa.png");
     }
+
+
 
 
 }

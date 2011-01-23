@@ -60,6 +60,23 @@ public class GdataTypeHandler extends GenericTypeHandler {
     }
 
 
+    public Entry createEntry(String id) {
+        //Make the top level entyr act like a group
+        return new Entry(id, this, true);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isSynthType() {
+        return true;
+    }
+
+
+
     public String getUserId(Entry entry) {
         return entry.getValue(0,(String)null);
     }

@@ -15,5 +15,11 @@
    </type>
 
 
+  <type name="gdata_calendar"  super="gdata_base" description="Google Calendar"  handler="org.ramadda.gdata.CalendarTypeHandler">  
+     <property name="icon" value="/icons/calendar.png"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
+
 
 </types>
