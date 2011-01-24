@@ -23,6 +23,7 @@ package org.ramadda.gdata;
 import org.w3c.dom.*;
 
 
+
 import ucar.unidata.repository.*;
 import ucar.unidata.repository.type.*;
 
@@ -31,8 +32,13 @@ import ucar.unidata.repository.type.*;
 
 
 
+import java.util.Hashtable;
+
 import java.io.File;
 import java.net.URL;
+
+import com.google.gdata.client.GoogleService;
+
 
 
 
@@ -45,6 +51,7 @@ import java.net.URL;
  */
 public class GdataTypeHandler extends GenericTypeHandler {
 
+    private Hashtable<String,GoogleService> serviceMap = new Hashtable<String,GoogleService>();
 
     /**
      * _more_
@@ -57,6 +64,26 @@ public class GdataTypeHandler extends GenericTypeHandler {
     public GdataTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
+    }
+
+
+    protected GoogleService getService(Entry entry) throws Exception {
+        String userId = getUserId(entry);
+        String password = getPassword(entry);
+        if (userId == null || password == null) {
+            return null;
+        }
+        GoogleService service = serviceMap.get(userId);
+        if(service!=null) return service;
+        service = doMakeService(userId, password);
+        if(service==null) return null;
+        serviceMap.put(userId, service);
+        return service;
+    }
+
+
+    protected GoogleService doMakeService(String userId, String password) throws Exception {
+        return null;
     }
 
 

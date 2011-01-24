@@ -85,12 +85,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
     }
 
 
-    private DocsService getService(Entry entry) throws Exception {
-        String userId = getUserId(entry);
-        String password = getPassword(entry);
-        if (userId == null || password == null) {
-            return null;
-        }
+    protected GoogleService doMakeService(String userId, String password) throws Exception {
         DocsService service = new DocsService("ramadda");
         service.setUserCredentials(userId, password);
         return service;
@@ -242,10 +237,8 @@ public class DocsTypeHandler extends GdataTypeHandler {
             return iconUrl("/icons/jpg.png");
         return iconUrl("/gdata/picasa.png");
     }
-
-
-
     */
+
 
     public static void main(String[]args) throws Exception {
         DocsService client = new DocsService("ramadda");

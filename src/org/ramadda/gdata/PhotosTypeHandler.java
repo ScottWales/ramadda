@@ -68,6 +68,8 @@ import com.google.gdata.util.*;
  */
 public class PhotosTypeHandler extends GdataTypeHandler {
 
+    public static final String PICASA_ROOT = "https://picasaweb.google.com/data/feed/api/user/";
+
     public static final String TYPE_ALBUM = "album";
     public static final String TYPE_PHOTO = "photo";
 
@@ -85,13 +87,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
     }
 
 
-
-    private PicasawebService getService(Entry entry) throws Exception {
-        String userId = getUserId(entry);
-        String password = getPassword(entry);
-        if (userId == null || password == null) {
-            return null;
-        }
+    protected GoogleService doMakeService(String userId, String password) throws Exception {
         PicasawebService myService = new PicasawebService("ramadda");
         myService.setUserCredentials(userId, password);
         return myService;
@@ -118,9 +114,9 @@ public class PhotosTypeHandler extends GdataTypeHandler {
         String userId = getUserId(entry);
         if(userId ==null) return entries;
 
-        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" +userId +"?kind=album");
-        UserFeed myUserFeed = getService(entry).getFeed(feedUrl, UserFeed.class);
-        for (AlbumEntry album : myUserFeed.getAlbumEntries()) {
+        URL feedUrl = new URL(PICASA_ROOT +userId +"?kind=album");
+        UserFeed userFeed = ((PicasawebService)getService(entry)).getFeed(feedUrl, UserFeed.class);
+        for (AlbumEntry album : userFeed.getAlbumEntries()) {
             String albumEntryId = getSynthId(entry, TYPE_ALBUM, album.getGphotoId());
             String title = album.getTitle().getPlainText();
             Entry newEntry =  new Entry(albumEntryId, this,true);
@@ -167,8 +163,8 @@ public class PhotosTypeHandler extends GdataTypeHandler {
         System.err.println("getPhotoEntries from picasa:" + albumId);
         List<Entry> entries = new ArrayList<Entry>();
         String userId = getUserId(mainEntry);
-        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" + userId +"/albumid/" + albumId);
-        AlbumFeed feed = getService(mainEntry).getFeed(feedUrl, AlbumFeed.class);
+        URL feedUrl = new URL(PICASA_ROOT + userId +"/albumid/" + albumId);
+        AlbumFeed feed = ((PicasawebService)getService(mainEntry)).getFeed(feedUrl, AlbumFeed.class);
         for(PhotoEntry photo : feed.getPhotoEntries()) {
             String name = photo.getTitle().getPlainText();
             String newId = getSynthId(mainEntry, TYPE_PHOTO, photo.getAlbumId()+":"+photo.getGphotoId());

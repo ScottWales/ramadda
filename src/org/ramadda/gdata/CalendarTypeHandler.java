@@ -74,6 +74,8 @@ public class CalendarTypeHandler extends GdataTypeHandler {
     public static final String TYPE_CALENDAR = "calendar";
     public static final String TYPE_EVENT = "event";
 
+    public static final String CALENDAR_ROOT = "https://www.google.com/calendar/feeds/";
+
     /** _more_ */
     private CalendarOutputHandler calendarOutputHandler;
 
@@ -94,15 +96,20 @@ public class CalendarTypeHandler extends GdataTypeHandler {
 
 
 
-    private CalendarService getService(Entry entry) throws Exception {
-        String userId = getUserId(entry);
-        String password = getPassword(entry);
-        if (userId == null || password == null) {
-            return null;
-        }
+    protected GoogleService doMakeService(String userId, String password) throws Exception {
         CalendarService myService = new CalendarService("exampleCo-exampleApp-1");
         myService.setUserCredentials(userId, password);
         return myService;
+    }
+
+
+    private CalendarFeed getFeed(Entry entry, URL feedUrl) throws Exception {
+        return  ((CalendarService)getService(entry)).getFeed(feedUrl, CalendarFeed.class);
+    }
+
+
+    private CalendarEventFeed getEventFeed(Entry entry, URL feedUrl) throws Exception {
+        return  ((CalendarService)getService(entry)).getFeed(feedUrl, CalendarEventFeed.class);
     }
 
 
@@ -119,13 +126,15 @@ public class CalendarTypeHandler extends GdataTypeHandler {
     }
 
 
+
+
     public List<Entry> getCalendarEntries(Request request, Entry entry)
         throws Exception {
         List<Entry> entries    = new ArrayList<Entry>();
         String userId = getUserId(entry);
         if(userId ==null) return entries;
-        URL feedUrl = new URL("https://www.google.com/calendar/feeds/default/allcalendars/full");
-        CalendarFeed resultFeed = getService(entry).getFeed(feedUrl, CalendarFeed.class);
+        URL feedUrl = new URL(CALENDAR_ROOT+"default/allcalendars/full");
+        CalendarFeed resultFeed = getFeed(entry, feedUrl);
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
             CalendarEntry calendar = resultFeed.getEntries().get(i);
             String entryId = getSynthId(entry, TYPE_CALENDAR, IOUtil.getFileTail(calendar.getId()));
@@ -161,9 +170,9 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         List<Entry> entries    = new ArrayList<Entry>();
         String userId = getUserId(mainEntry);
         if(userId ==null) return entries;
-        URL feedUrl = new URL("https://www.google.com/calendar/feeds/" + calendarId +"/private/full");
+        URL feedUrl = new URL(CALENDAR_ROOT+ calendarId +"/private/full");
         //        System.err.println("Feed:" + feedUrl);
-        CalendarEventFeed resultFeed =  getService(mainEntry).getFeed(feedUrl, CalendarEventFeed.class); 
+        CalendarEventFeed resultFeed =  getEventFeed(mainEntry, feedUrl);
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
             CalendarEventEntry  event= resultFeed.getEntries().get(i);
             String entryId = getSynthId(mainEntry, TYPE_EVENT, calendarId +":" + IOUtil.getFileTail(event.getId()));
@@ -306,9 +315,8 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         CalendarService myService = new CalendarService("exampleCo-exampleApp-1");
         myService.setUserCredentials(userId, args[0]);
 
-
         // Send the request and print the response
-        URL feedUrl = new URL("https://www.google.com/calendar/feeds/default/allcalendars/full");
+        URL feedUrl = new URL(CALENDAR_ROOT + "default/allcalendars/full");
         CalendarFeed resultFeed = myService.getFeed(feedUrl, CalendarFeed.class);
         System.out.println("Your calendars:");
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
@@ -316,7 +324,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             String id = IOUtil.getFileTail(entry.getId());
             System.out.println("\t" + entry.getTitle().getPlainText() +" " + id);
             System.out.println("\tEvents:");
-            URL eventUrl = new URL("https://www.google.com/calendar/feeds/" + id +"/private/full");
+            URL eventUrl = new URL(CALENDAR_ROOT+ id +"/private/full");
             CalendarEventFeed eventFeed =  myService.getFeed(eventUrl, CalendarEventFeed.class); 
             for (int eventIdx = 0; eventIdx < eventFeed.getEntries().size(); eventIdx++) {
                 CalendarEventEntry  calendar= eventFeed.getEntries().get(eventIdx);
