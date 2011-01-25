@@ -76,7 +76,7 @@
             <include name="gov/noaa/esrl/psd/repository/resources/**/*.jnlp"/> 
             <include name="gov/noaa/esrl/psd/repository/resources/**/*.properties"/> 
 	    </jar>
-        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
              <fileset file="${pluginjar}"/>
         </copy>
     </target>

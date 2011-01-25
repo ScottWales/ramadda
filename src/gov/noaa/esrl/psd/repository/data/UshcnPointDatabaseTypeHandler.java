@@ -15,7 +15,6 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.repository.Entry;
-import ucar.unidata.repository.Group;
 import ucar.unidata.repository.Repository;
 import ucar.unidata.repository.RepositoryUtil;
 import ucar.unidata.repository.Request;
@@ -55,7 +54,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
      * @throws Exception _more_
      */
     protected void createDatabase(Request request, Entry entry, File dataFile,
-                                Group parent, Connection connection)
+                                Entry parent, Connection connection)
             throws Exception {
 
         String                  tableName = getTableName(entry);
