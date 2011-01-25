@@ -38,6 +38,7 @@ import ucar.unidata.util.HtmlUtil;
 
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Date;
 import java.io.File;
@@ -124,11 +125,14 @@ public class DocsTypeHandler extends GdataTypeHandler {
             tempFeed = getService(mainEntry).getFeed(new URL(link.getHref()), DocumentListFeed.class);
         } while (tempFeed.getEntries().size() > 0);
 
+        Hashtable<String,Entry> entryMap = new Hashtable<String,Entry>();
+        List<Entry> newEntries = new ArrayList<Entry>();
+        entryMap.put(mainEntry.getId(), mainEntry);
         for (DocumentListEntry docListEntry : allEntries.getEntries()) {
             java.util.List<com.google.gdata.data.Link> links = docListEntry.getParentLinks();
             Entry newEntry;
             String entryId = getSynthId(mainEntry, docListEntry.getType(), IOUtil.getFileTail(docListEntry.getId()));
-            String parentId = (links.size()==0?mainEntry.getId():IOUtil.getFileTail(links.get(0).getHref()));
+            String parentId = (links.size()==0?mainEntry.getId():getSynthId(mainEntry, TYPE_FOLDER, IOUtil.getFileTail(links.get(0).getHref())));
             boolean isFolder = docListEntry.getType().equals(TYPE_FOLDER);
             System.err.println(docListEntry.getType() + " " + docListEntry.getTitle().getPlainText() + " " + isFolder +" " );
             Resource resource;
@@ -140,11 +144,13 @@ public class DocsTypeHandler extends GdataTypeHandler {
             }
             StringBuffer desc = new StringBuffer();
             newEntry =  new Entry(entryId, this, isFolder);
+            newEntries.add(newEntry);
+            entryMap.put(newEntry.getId(), newEntry);
+            newEntry.setParentEntryId(parentId);
             newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.lastmodifiedby", false,
                                           docListEntry.getLastModifiedBy().getName(),
                                           docListEntry.getLastModifiedBy().getEmail(),
                                           "","",""));
-
 
             addMetadata(newEntry, docListEntry, desc);
             //            entries.add(newEntry);
@@ -154,8 +160,27 @@ public class DocsTypeHandler extends GdataTypeHandler {
             newEntry.initEntry(docListEntry.getTitle().getPlainText(), desc.toString(), mainEntry, mainEntry.getUser(),
                             resource, "", publishTime.getTime(),editTime.getTime(),publishTime.getTime(),lastViewedTime.getTime(),
                             null);
+
+        }
+        for(Entry newEntry: newEntries) {
+            if(newEntry.getParentEntryId().equals(mainEntry.getId())) {
+                System.err.println ("is top level:" + newEntry.getParentEntryId() + " " + newEntry.getName());
+                ids.add(newEntry.getId());
+                newEntry.setParentEntry(mainEntry);
+            } else {
+                Entry tmpParentEntry = entryMap.get(newEntry.getParentEntryId());
+                if(tmpParentEntry==null) {
+                    System.err.println ("null:" + newEntry.getParentEntryId() + " " + newEntry.getName());
+                    continue;
+                }
+                System.err.println ("adding to parent:" + newEntry.getParentEntryId() + " " + newEntry.getName());
+                if(tmpParentEntry.getChildIds()==null) {
+                    tmpParentEntry.setChildIds(new ArrayList<String>());
+                }
+                tmpParentEntry.getChildIds().add(newEntry.getId());
+                newEntry.setParentEntry(tmpParentEntry);
+            }
             getEntryManager().cacheEntry(newEntry);
-            ids.add(newEntry.getId());
         }
         return ids;
     }
