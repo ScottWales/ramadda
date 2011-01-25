@@ -140,10 +140,12 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             String entryId = getSynthId(entry, TYPE_CALENDAR, IOUtil.getFileTail(calendar.getId()));
             String title = calendar.getTitle().getPlainText();
             Entry newEntry =  new Entry(entryId, this, true);
+            StringBuffer desc = new StringBuffer();
+            addMetadata(newEntry, calendar, desc);
             entries.add(newEntry);
             Resource resource = new Resource();
             Date now = new Date();
-            newEntry.initEntry(title, "", entry, entry.getUser(),
+            newEntry.initEntry(title, desc.toString(), entry, entry.getUser(),
                             resource, "", now.getTime(),now.getTime(),now.getTime(),now.getTime(),
                             null);
             getEntryManager().cacheEntry(newEntry);
@@ -178,6 +180,8 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             String entryId = getSynthId(mainEntry, TYPE_EVENT, calendarId +":" + IOUtil.getFileTail(event.getId()));
             String title = event.getTitle().getPlainText();
             Entry newEntry =  new Entry(entryId, this, false);
+            StringBuffer desc = new StringBuffer();
+            addMetadata(newEntry, event);
             entries.add(newEntry);
             Date from = new Date();
             Date to = new Date();
@@ -188,40 +192,28 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                 from = new Date(startTime.getValue());
                 to = new Date(endTime.getValue());
             }
-            StringBuffer desc = new StringBuffer();
             if(event.getContent() instanceof TextContent) {
                 TextContent content = (TextContent) event.getContent();
                 desc.append(content.getContent().getPlainText()); 
                 desc.append(HtmlUtil.p());
             }
 
-            boolean didone = false;
+
             for(EventWho who: event.getParticipants()) {
-                if(!didone) {
-                    desc.append("Participants:<ul>");
-                    didone = true;
-                }
-                desc.append("<li>");
-                desc.append(who.getValueString());
+                newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.participant", false,
+                                                  who.getValueString(),
+                                                  who.getEmail(),
+                                              "","",""));
+
             }
-            if(didone) {
-                desc.append("</ul>");
-            }
-            didone = false;
+
             for(Where where: event.getLocations()) {
                 String s = where.getValueString();
                 if(s==null || s.length()==0) continue;
-                if(!didone) {
-                    desc.append("Locations:<ul>");
-                    didone = true;
-                }
-                desc.append("<li>");
-                desc.append(s);
+                newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.location", false,
+                                                  s,
+                                                  "", "","",""));
             }
-            if(didone) {
-                desc.append("</ul>");
-            }
-
 
             Resource resource = new Resource(event.getHtmlLink().getHref());
             newEntry.initEntry(title, desc.toString(), entry, entry.getUser(),

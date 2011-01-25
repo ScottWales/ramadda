@@ -22,9 +22,12 @@ package org.ramadda.gdata;
 
 import org.w3c.dom.*;
 
+import com.google.gdata.data.Person;
+import com.google.gdata.data.Category;
 
 
 import ucar.unidata.repository.*;
+import ucar.unidata.repository.metadata.Metadata;
 import ucar.unidata.repository.type.*;
 
 
@@ -32,14 +35,16 @@ import ucar.unidata.repository.type.*;
 
 
 
+import java.util.Set;
 import java.util.Hashtable;
+import java.util.List;
 
 import java.io.File;
 import java.net.URL;
 
 import com.google.gdata.client.GoogleService;
 
-
+import com.google.gdata.data.BaseEntry;
 
 
 /**
@@ -91,6 +96,51 @@ public class GdataTypeHandler extends GenericTypeHandler {
         //Make the top level entyr act like a group
         return new Entry(id, this, true);
     }
+
+
+    public void addMetadata(Entry newEntry, BaseEntry baseEntry) throws Exception {
+        addMetadata(newEntry, baseEntry, null);
+    }
+
+
+    public void addMetadata(Entry newEntry, BaseEntry baseEntry, StringBuffer desc) throws Exception {
+        if(baseEntry.getSummary()!=null && desc!=null) {
+            desc.append(baseEntry.getSummary().getPlainText());
+        }
+
+
+
+        for(Category category: (Set<Category>)baseEntry.getCategories()) {
+            if(category.getLabel()==null)continue;
+            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"enum_tag", false,
+                                              category.getLabel(),"",
+                                              "","",""));
+        }
+
+        for(Person person: (List<Person>)baseEntry.getAuthors()) {
+            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.author", false,
+                                              person.getName(),
+                                              person.getEmail(),
+                                              "","",""));
+        }
+        for(Person person: (List<Person>)baseEntry.getContributors()) {
+            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.contributor", false,
+                                              person.getName(),
+                                              person.getEmail(),
+                                              "","",""));
+        }
+
+        if(baseEntry.getRights()!=null) {
+            String rights = baseEntry.getRights().getPlainText();
+            if(rights!=null &&rights.length()>0) {
+                newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.rights", false,
+                                                  rights, "",
+                                                  "","",""));
+                
+            }
+        }
+    }
+
 
 
     /**

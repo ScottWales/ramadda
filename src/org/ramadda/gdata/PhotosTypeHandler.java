@@ -119,12 +119,14 @@ public class PhotosTypeHandler extends GdataTypeHandler {
         for (AlbumEntry album : userFeed.getAlbumEntries()) {
             String albumEntryId = getSynthId(entry, TYPE_ALBUM, album.getGphotoId());
             String title = album.getTitle().getPlainText();
+            StringBuffer desc = new StringBuffer();
             Entry newEntry =  new Entry(albumEntryId, this,true);
+            addMetadata(newEntry, album,desc);
             entries.add(newEntry);
             newEntry.setIcon("/gdata/picasa.png");
             Date dttm = album.getDate();
             Date now = new Date();
-            newEntry.initEntry(title, "", entry, getUserManager().getLocalFileUser(),
+            newEntry.initEntry(title, desc.toString(), entry, getUserManager().getLocalFileUser(),
                             new Resource(), "", dttm.getTime(),dttm.getTime(),dttm.getTime(),dttm.getTime(),
                             null);
             getEntryManager().cacheEntry(newEntry);
@@ -169,6 +171,8 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             String name = photo.getTitle().getPlainText();
             String newId = getSynthId(mainEntry, TYPE_PHOTO, photo.getAlbumId()+":"+photo.getGphotoId());
             Entry newEntry =  new Entry(newId, this);
+            StringBuffer desc = new StringBuffer();
+            addMetadata(newEntry, photo,desc);
             entries.add(newEntry);
             //            newEntry.setIcon("/gdata/picasa.png");
             Date dttm = new Date();
@@ -179,7 +183,9 @@ public class PhotosTypeHandler extends GdataTypeHandler {
                 resource = new Resource(media.get(0).getUrl());
                 resource.setFileSize(photo.getSize());
             }
-            newEntry.initEntry(name, "", parentEntry, getUserManager().getLocalFileUser(),
+            
+
+            newEntry.initEntry(name, desc.toString(), parentEntry, getUserManager().getLocalFileUser(),
                             resource, "", dttm.getTime(),dttm.getTime(), timestamp.getTime(),timestamp.getTime(),
                             null);
             com.google.gdata.data.geo.Point point = photo.getGeoLocation();

@@ -28,6 +28,8 @@ import ucar.unidata.repository.metadata.*;
 import ucar.unidata.repository.type.*;
 
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.HtmlUtil;
 
 
 
@@ -43,7 +45,10 @@ import java.net.URL;
 
 import com.google.gdata.client.*;
 import com.google.gdata.client.photos.*;
+import com.google.gdata.data.BaseEntry;
 //import com.google.gdata.data.*;
+import com.google.gdata.data.Person;
+import  com.google.gdata.data.TextContent;
 import com.google.gdata.data.media.*;
 import com.google.gdata.data.photos.*;
 import com.google.gdata.client.*;
@@ -69,7 +74,12 @@ import com.google.gdata.util.*;
 public class DocsTypeHandler extends GdataTypeHandler {
 
     public static final String TYPE_FOLDER = "folder";
-    public static final String TYPE_FILE = "file";
+    public static final String TYPE_DOCUMENT = "document";
+    public static final String TYPE_SPREADSHEET = "spreadsheet";
+    public static final String TYPE_PDF = "pdf";
+    public static final String TYPE_DRAWING = "drawing";
+    public static final String TYPE_PRESENTATION = "presentation";
+
 
     /**
      * _more_
@@ -92,152 +102,88 @@ public class DocsTypeHandler extends GdataTypeHandler {
     }
 
 
-    /*
-    public List<String> getAlbumIds(Request request, Entry entry)
-            throws Exception {
-        List<String> ids    = entry.getChildIds();
-        if(ids!=null) return ids;
-        ids = new ArrayList<String>();
-        for(Entry album: getAlbumEntries(request, entry)) {
-            ids.add(album.getId());
-        }
-        entry.setChildIds(ids);
-        return ids;
-    }
-
-
-    public List<Entry> getAlbumEntries(Request request, Entry entry)
-        throws Exception {
-        List<Entry> entries    = new ArrayList<Entry>();
-        System.err.println("getAlbumEntries from picasa");
-        String userId = getUserId(entry);
-        if(userId ==null) return entries;
-
-        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" +userId +"?kind=album");
-        UserFeed myUserFeed = getService(entry).getFeed(feedUrl, UserFeed.class);
-        for (AlbumEntry album : myUserFeed.getAlbumEntries()) {
-            String albumEntryId = getSynthId(entry, TYPE_ALBUM, album.getGphotoId());
-            String title = album.getTitle().getPlainText();
-            Entry newEntry =  new Entry(albumEntryId, this,true);
-            entries.add(newEntry);
-            newEntry.setIcon("/gdata/picasa.png");
-            Date dttm = album.getDate();
-            Date now = new Date();
-            newEntry.initEntry(title, "", entry, getUserManager().getLocalFileUser(),
-                            new Resource(), "", dttm.getTime(),dttm.getTime(),dttm.getTime(),dttm.getTime(),
-                            null);
-            getEntryManager().cacheEntry(newEntry);
-        }
-        return entries;
-    }
-
-
-
 
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
-            throws Exception {
-        if(synthId==null) {
-            return getAlbumIds(request, mainEntry);
-        }
+        throws Exception {
 
         List<String> ids    = parentEntry.getChildIds();
         if(ids!=null) return ids;
         ids = new ArrayList<String>();
+        if(synthId!=null)
+            return ids;
+
+        String url = "https://docs.google.com/feeds/default/private/full?showfolders=true";
+        DocumentQuery query = new DocumentQuery(new URL(url));
+        DocumentListFeed allEntries = new DocumentListFeed();
+        DocumentListFeed tempFeed = getService(mainEntry).getFeed(query, DocumentListFeed.class);
+        do {
+            allEntries.getEntries().addAll(tempFeed.getEntries());
+            com.google.gdata.data.Link link  =tempFeed.getNextLink();
+            if(link==null) break;
+            tempFeed = getService(mainEntry).getFeed(new URL(link.getHref()), DocumentListFeed.class);
+        } while (tempFeed.getEntries().size() > 0);
+
+        for (DocumentListEntry docListEntry : allEntries.getEntries()) {
+            java.util.List<com.google.gdata.data.Link> links = docListEntry.getParentLinks();
+            Entry newEntry;
+            String entryId = getSynthId(mainEntry, docListEntry.getType(), IOUtil.getFileTail(docListEntry.getId()));
+            String parentId = (links.size()==0?mainEntry.getId():IOUtil.getFileTail(links.get(0).getHref()));
+            boolean isFolder = docListEntry.getType().equals(TYPE_FOLDER);
+            System.err.println(docListEntry.getType() + " " + docListEntry.getTitle().getPlainText() + " " + isFolder +" " );
+            Resource resource;
+            if(isFolder) {
+                resource = new Resource();
+            } else {
+                resource =  new Resource(docListEntry.getDocumentLink().getHref());
+                resource.setFileSize(docListEntry.getQuotaBytesUsed().longValue());
+            }
+            StringBuffer desc = new StringBuffer();
+            newEntry =  new Entry(entryId, this, isFolder);
+            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.lastmodifiedby", false,
+                                          docListEntry.getLastModifiedBy().getName(),
+                                          docListEntry.getLastModifiedBy().getEmail(),
+                                          "","",""));
 
 
-        List<String> toks = StringUtil.split(synthId,":");
-        String type = toks.get(0);
-        String albumId = toks.get(1);
-        for(Entry photoEntry: getPhotoEntries(request, mainEntry, parentEntry, albumId)) {
-            ids.add(photoEntry.getId());
+            addMetadata(newEntry, docListEntry, desc);
+            //            entries.add(newEntry);
+            Date publishTime =  new Date(docListEntry.getPublished().getValue());
+            Date lastViewedTime =  (docListEntry.getLastViewed()!=null?new Date(docListEntry.getLastViewed().getValue()):publishTime);
+            Date editTime =  new Date(docListEntry.getUpdated().getValue());
+            newEntry.initEntry(docListEntry.getTitle().getPlainText(), desc.toString(), mainEntry, mainEntry.getUser(),
+                            resource, "", publishTime.getTime(),editTime.getTime(),publishTime.getTime(),lastViewedTime.getTime(),
+                            null);
+            getEntryManager().cacheEntry(newEntry);
+            ids.add(newEntry.getId());
         }
-        parentEntry.setChildIds(ids);
         return ids;
     }
 
-    public List<Entry> getPhotoEntries(Request request, Entry mainEntry,
-                                       Entry parentEntry, String albumId)
-        throws Exception {
-        System.err.println("getPhotoEntries from picasa:" + albumId);
-        List<Entry> entries = new ArrayList<Entry>();
-        String userId = getUserId(mainEntry);
-        URL feedUrl = new URL("https://picasaweb.google.com/data/feed/api/user/" + userId +"/albumid/" + albumId);
-        AlbumFeed feed = getService(mainEntry).getFeed(feedUrl, AlbumFeed.class);
-        for(PhotoEntry photo : feed.getPhotoEntries()) {
-            String name = photo.getTitle().getPlainText();
-            String newId = getSynthId(mainEntry, TYPE_PHOTO, photo.getAlbumId()+":"+photo.getGphotoId());
-            Entry newEntry =  new Entry(newId, this);
-            entries.add(newEntry);
-            //            newEntry.setIcon("/gdata/picasa.png");
-            Date dttm = new Date();
-            Date timestamp = photo.getTimestamp();
-            Resource resource = new Resource();
-            java.util.List<com.google.gdata.data.media.mediarss.MediaContent> media = photo.getMediaContents();
-            if(media.size()>0) {
-                resource = new Resource(media.get(0).getUrl());
-                resource.setFileSize(photo.getSize());
-            }
-            newEntry.initEntry(name, "", parentEntry, getUserManager().getLocalFileUser(),
-                            resource, "", dttm.getTime(),dttm.getTime(), timestamp.getTime(),timestamp.getTime(),
-                            null);
-            com.google.gdata.data.geo.Point point = photo.getGeoLocation();
-            if(point!=null) {
-                newEntry.setNorth(point.getLatitude().doubleValue());
-                newEntry.setSouth(point.getLatitude().doubleValue());
-                newEntry.setWest(point.getLongitude().doubleValue());
-                newEntry.setEast(point.getLongitude().doubleValue());
-            }
-
-            java.util.List<com.google.gdata.data.media.mediarss.MediaThumbnail> thumbs = photo.getMediaThumbnails() ;
-            //            for(int i=0;i<thumbs.size();i++) {
-            if(thumbs.size()>0) {
-                Metadata thumbnailMetadata =                                                                                                
-                    new Metadata(getRepository().getGUID(), newId, ContentMetadataHandler.TYPE_THUMBNAIL, false,                    
-                                 thumbs.get(0).getUrl(),null,null,null,null);
-                newEntry.addMetadata(thumbnailMetadata);
-            }
-            getEntryManager().cacheEntry(newEntry);
-        }
-        return entries;
-    }
-
-
-    public Entry makeSynthEntry(Request request, Entry mainEntry, String id)
-        throws Exception {
-        
-        String userId = getUserId(mainEntry);
-        System.err.println ("ID:" + id);
-        List<String> toks = StringUtil.split(id,":");
-        String type = toks.get(0);
-        if(type.equals(TYPE_ALBUM)) {
-            for(Entry album: getAlbumEntries(request, mainEntry)) {
-                if(album.getId().endsWith(id)) {
-                    return album;
-                }
-            }
-            return null;
-        }
-
-        String albumId =  toks.get(1);
-        String albumEntryId = getSynthId(mainEntry, TYPE_ALBUM, albumId);
-        Entry albumEntry = getEntryManager().getEntry(request, albumEntryId);
-        String photoEntryId =  getSynthId(mainEntry, TYPE_PHOTO, toks.get(1)+":" + toks.get(2));
-        for(Entry photoEntry: getPhotoEntries(request, mainEntry, albumEntry, albumId)) {
-            if(photoEntry.getId().equals(photoEntryId)) {
-                return photoEntry;
-            }
-        }
-        return null;
-    }
-
-
     public String getIconUrl(Request request, Entry entry) throws Exception {
-        if(entry.getId().indexOf(TYPE_PHOTO)>=0) 
-            return iconUrl("/icons/jpg.png");
-        return iconUrl("/gdata/picasa.png");
+        String id = entry.getId();
+        if(!getEntryManager().isSynthEntry(id)) return super.getIconUrl(request, entry);
+        if(id.indexOf(TYPE_FOLDER)>=0)  {
+            return iconUrl("/icons/folder.png");
+        }
+        if(id.indexOf(TYPE_DOCUMENT)>=0)  {
+            return iconUrl("/gdata/document.gif");
+        }
+        if(id.indexOf(TYPE_PRESENTATION)>=0)  {
+            return iconUrl("/gdata/presentation.gif");
+        }
+        if(id.indexOf(TYPE_DRAWING)>=0)  {
+            return iconUrl("/gdata/drawing.gif");
+        }
+        if(id.indexOf(TYPE_SPREADSHEET)>=0)  {
+            return iconUrl("/gdata/spreadsheet.gif");
+        }
+        if(id.indexOf(TYPE_PDF)>=0)  {
+            return iconUrl("/icons/pdf.png");
+        }
+
+        return  super.getIconUrl(request, entry);
     }
-    */
 
 
     public static void main(String[]args) throws Exception {

@@ -9,6 +9,11 @@
 
 
 
+  <type name="gdata_docs"  super="gdata_base" description="Google Docs View"  handler="org.ramadda.gdata.DocsTypeHandler">  
+     <property name="icon" value="/icons/folder.png"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
   <type name="gdata_photos"  super="gdata_base" description="Google Web Albums View"  handler="org.ramadda.gdata.PhotosTypeHandler">  
      <property name="icon" value="/gdata/picasa.png"/>
      <property name="form.resource.show" value="false"/>
