@@ -28,7 +28,7 @@ import ucar.unidata.repository.auth.*;
 import ucar.unidata.repository.metadata.*;
 import ucar.unidata.repository.type.*;
 
-import ucar.unidata.sql.Clause;
+
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
@@ -47,9 +47,6 @@ import java.io.File;
 
 
 import java.net.*;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 
 
@@ -165,15 +162,23 @@ public class HtmlOutputHandler extends OutputHandler {
             return "";
         }
 
-        OutputType []types = new OutputType[]{OUTPUT_HTML, OUTPUT_GRID, OUTPUT_TIMELINE,CalendarOutputHandler.OUTPUT_CALENDAR};
-        StringBuffer sb = new StringBuffer();
+        OutputType []types = new OutputType[]{OUTPUT_TREE, OUTPUT_GRID, OUTPUT_TIMELINE,CalendarOutputHandler.OUTPUT_CALENDAR};
+        StringBuffer sb = new StringBuffer("<table cellspacing=0 cellpadding=0><tr>");
+        String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
         for(OutputType output: types) {
-            sb.append(HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+            String link = HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                                      entry, ARG_OUTPUT, output),
-                                    HtmlUtil.img(iconUrl(output.getIcon()), output.getLabel())));
-
+                                        HtmlUtil.img(iconUrl(output.getIcon()), output.getLabel()));
+            sb.append("<td align=center>");
+            if(output.getId().equals(selected)) {
+                sb.append(HtmlUtil.div(link, HtmlUtil.cssClass("toolbar-selected")));
+            } else {
+                sb.append(HtmlUtil.div(link, HtmlUtil.cssClass("toolbar")));
+            }
             sb.append(" ");
+            sb.append("</td>");
         }
+            sb.append("</table>");
         return "<table cellspacing=0 cellpadding=0 width=100%><tr><td align=right>" +sb.toString()+"</td></tr></table>";
     }
 
@@ -880,7 +885,7 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         //        sb.append(getHtmlHeader(request,  group));
-        int cols = request.get(ARG_COLUMNS,3);
+        int cols = request.get(ARG_COLUMNS,4);
         sb.append("<table width=100% border=0 cellpadding=10>");
 
         List<Entry> allEntries = new ArrayList<Entry>();
@@ -889,7 +894,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         int col=0;
         boolean  needToOpenRow= true;
-        int width = (int)(10*1.0/(float)cols);
+        int width = (int)(100*1.0/(float)cols);
         for(Entry entry: allEntries) {
             if(col>=cols) {
                 sb.append("</tr>");

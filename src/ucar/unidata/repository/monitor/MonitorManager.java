@@ -111,7 +111,7 @@ public class MonitorManager extends RepositoryManager {
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
                 String       xml        = results.getString(1);
-                XmlEncoder   xmlEncoder = new XmlEncoder();
+                XmlEncoder xmlEncoder = getRepository().getEncoder();
                 EntryMonitor monitor =
                     (EntryMonitor) xmlEncoder.toObject(xml);
                 if (monitor != null) {
@@ -234,7 +234,8 @@ public class MonitorManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void insertMonitor(EntryMonitor monitor) throws Exception {
-        String xml = new XmlEncoder().toXml(monitor);
+        XmlEncoder xmlEncoder = getRepository().getEncoder();
+        String xml = xmlEncoder.toXml(monitor);
         getDatabaseManager().executeInsert(Tables.MONITORS.INSERT,
                                            new Object[] {
             monitor.getId(), monitor.getName(), monitor.getUser().getId(),

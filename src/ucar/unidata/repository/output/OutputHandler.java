@@ -92,6 +92,11 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                        OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
                        ICON_INFORMATION);
 
+    public static final OutputType OUTPUT_TREE =
+        new OutputType("Entry", "default.html",
+                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       ICON_TREE);
+
 
     /** _more_ */
     private String name;

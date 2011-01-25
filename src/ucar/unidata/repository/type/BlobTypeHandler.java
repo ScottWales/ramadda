@@ -91,7 +91,7 @@ public class BlobTypeHandler extends GenericTypeHandler {
         Hashtable properties = null;
         if (properties == null) {
             Object[]   values     = entry.getValues();
-            XmlEncoder xmlEncoder = new XmlEncoder();
+            XmlEncoder xmlEncoder = getRepository().getEncoder();
             if ((values != null) && (values.length > 0)
                     && (values[0] != null)) {
                 properties =
@@ -114,7 +114,7 @@ public class BlobTypeHandler extends GenericTypeHandler {
      */
     protected void setProperties(Entry entry, Hashtable properties)
             throws Exception {
-        XmlEncoder xmlEncoder = new XmlEncoder();
+        XmlEncoder xmlEncoder = getRepository().getEncoder();
         entry.setValues(new Object[] { xmlEncoder.encodeObject(properties) });
     }
 

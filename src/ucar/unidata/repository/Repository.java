@@ -56,6 +56,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
 import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.xml.XmlEncoder;
 
 
 
@@ -5714,7 +5715,11 @@ public class Repository extends RepositoryBase implements RequestHandler {
         return fb.toString();
     }
 
+    public XmlEncoder getEncoder() {
+        XmlEncoder xmlEncoder = new XmlEncoder();
 
+        return xmlEncoder;
+    }
 
 
 }

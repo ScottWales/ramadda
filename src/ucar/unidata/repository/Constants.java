@@ -188,6 +188,8 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_INFORMATION = "ramadda.icon.information";
 
+    public static final String ICON_TREE = "ramadda.icon.tree";
+
     /** _more_ */
     public static final String ICON_KML = "ramadda.icon.kml";
 
