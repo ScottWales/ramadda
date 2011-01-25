@@ -17,13 +17,18 @@
         <property name="distdir" value="${basedir}/dist"/>
         <mkdir dir="${distdir}"/>
 
+        <property name="plugindestdir" value="${distdir}/plugins"/>
+        <mkdir dir="${plugindestdir}"/>
+
+
+
         <property name="releasedir" value="${distdir}/repository" />
         <property name="tmpjardir" value="${distdir}/tmpjardir" />
 
         <property  name="build.sysclasspath" value="ignore"/>
         <property name="geoclasspath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
         <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
-        <property name="pluginjar" value="${distdir}/ramaddacollab.jar"/>
+        <property name="pluginjar" value="${plugindestdir}/ramaddacollab.jar"/>
 
         <property name="compiledir" value="${srcdir}"/>
         <property name="failonerror" value="true"/>
@@ -125,22 +130,6 @@
 	    </jar>
         <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
              <fileset file="${pluginjar}"/>
-        </copy>
-    </target>
-
-
-
-    <target name="spreadsheet" depends="init" >
-        <jar 
-            basedir="${compiledir}"
-            update="false"
-            compress="true"
-            jarfile="${distdir}/spreadsheet.jar">
-            <include name="org/ramadda/spreadsheet/*"/> 
-            <include name="org/ramadda/spreadsheet/**/*"/> 
-	    </jar>
-        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
-             <fileset file="${distdir}/spreadsheet.jar"/>
         </copy>
     </target>
 
