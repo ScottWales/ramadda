@@ -584,6 +584,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+
+    public String getProperty(String name, String dflt) {
+        return getProperty(null, name, dflt);
+    }
+
+
     /**
      * _more_
      *
@@ -591,13 +597,13 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getProperty(String name) {
+    public String getProperty(Entry entry,String name) {
         String result = (String) properties.get(name);
         if (result != null) {
             return result;
         }
         if (parent != null) {
-            return parent.getProperty(name);
+            return parent.getProperty(entry, name);
         }
         return null;
     }
@@ -611,13 +617,13 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getProperty(String name, String dflt) {
+    public String getProperty(Entry entry,String name, String dflt) {
         String result = (String) properties.get(name);
         if (result != null) {
             return result;
         }
         if (parent != null) {
-            return parent.getProperty(name, dflt);
+            return parent.getProperty(entry, name, dflt);
         }
         return dflt;
     }
@@ -630,7 +636,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public int getProperty(String name, int dflt) {
+    public int getProperty(Entry entry,String name, int dflt) {
         //TODO:check for parent
         return Misc.getProperty(properties, name, dflt);
     }
@@ -644,7 +650,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public boolean getProperty(String name, boolean dflt) {
+    public boolean getProperty(Entry entry,String name, boolean dflt) {
         return Misc.getProperty(properties, name, dflt);
     }
 
@@ -676,8 +682,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getFormLabel(String arg, String dflt) {
-        return getProperty("form." + arg+".label", dflt);
+    public String getFormLabel(Entry entry,String arg, String dflt) {
+        return getProperty(entry, "form." + arg+".label", dflt);
     }
 
 
@@ -688,8 +694,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public boolean okToShowInForm(String arg) {
-        return okToShowInForm(arg, true);
+    public boolean okToShowInForm(Entry entry, String arg) {
+        return okToShowInForm(entry, arg, true);
     }
 
     /**
@@ -700,8 +706,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public boolean okToShowInForm(String arg, boolean dflt) {
-        String value = getProperty("form." + arg+".show", "" + dflt);
+    public boolean okToShowInForm(Entry entry,String arg, boolean dflt) {
+        String value = getProperty(entry, "form." + arg+".show", "" + dflt);
         return value.equals("true");
     }
 
@@ -714,8 +720,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getFormDefault(String arg, String dflt) {
-        String prop = getProperty("form." + arg+".default");
+    public String getFormDefault(Entry entry,String arg, String dflt) {
+        String prop = getProperty(entry, "form." + arg+".default");
         if (prop == null) {
             return dflt;
         }
@@ -1928,24 +1934,24 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-        if ( !forUpload && okToShowInForm(ARG_NAME)) {
+        if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
             sb.append(HtmlUtil.formEntry( 
-                                         msgLabel(getFormLabel(ARG_NAME, "Name")),
+                                         msgLabel(getFormLabel(entry,ARG_NAME, "Name")),
                                          HtmlUtil.input(ARG_NAME,
                                              ((entry != null)
                     ? entry.getName()
-                    : getFormDefault(ARG_NAME, "")), size)));
+                                              : getFormDefault(entry,ARG_NAME, "")), size)));
         } else {
-            String nameDefault = getFormDefault(ARG_NAME, null);
+            String nameDefault = getFormDefault(entry,ARG_NAME, null);
             if (nameDefault != null) {
                 sb.append(HtmlUtil.hidden(ARG_NAME, nameDefault));
             }
         }
 
-        if (okToShowInForm(ARG_DESCRIPTION)) {
+        if (okToShowInForm(entry, ARG_DESCRIPTION)) {
             String desc    = "";
             String buttons = "";
-            int    rows    = getProperty("form.description.rows", 3);
+            int    rows    = getProperty(entry, "form.description.rows", 3);
             if (entry != null) {
                 desc = entry.getDescription();
                 if (desc.length() > 100) {
@@ -1961,11 +1967,11 @@ public class TypeHandler extends RepositoryManager {
             }
             sb.append(
                 HtmlUtil.formEntryTop(
-                                      msgLabel(getFormLabel(ARG_DESCRIPTION,  "Description")),
+                                      msgLabel(getFormLabel(entry,ARG_DESCRIPTION,  "Description")),
                     buttons
                     + HtmlUtil.textArea(
                         ARG_DESCRIPTION, desc, rows, 
-                        getProperty("form.description.columns", 60),
+                        getProperty(entry, "form.description.columns", 60),
                         HtmlUtil.id(ARG_DESCRIPTION))));
         }
 
@@ -1977,18 +1983,18 @@ public class TypeHandler extends RepositoryManager {
                     : ""), HtmlUtil.SIZE_20)));
         }
 
-        boolean showFile      = okToShowInForm(ARG_FILE);
+        boolean showFile      = okToShowInForm(entry, ARG_FILE);
         boolean showLocalFile = showFile && request.getUser().getAdmin();
         boolean showUrl       = (forUpload
                                  ? false
-                                 : okToShowInForm(ARG_URL));
-        boolean showResourceForm =  okToShowInForm(ARG_RESOURCE);
+                                 : okToShowInForm(entry,ARG_URL));
+        boolean showResourceForm =  okToShowInForm(entry,ARG_RESOURCE);
         if (showResourceForm) {
-            boolean showDownload  =okToShowInForm(ARG_RESOURCE_DOWNLOAD);
+            boolean showDownload  =okToShowInForm(entry,ARG_RESOURCE_DOWNLOAD);
             List<String> tabTitles  = new ArrayList<String>();
             List<String> tabContent = new ArrayList<String>();
-            String urlLabel  = getFormLabel(ARG_URL, "URL");
-            String fileLabel = getFormLabel(ARG_FILE, "File");
+            String urlLabel  = getFormLabel(entry,ARG_URL, "URL");
+            String fileLabel = getFormLabel(entry,ARG_FILE, "File");
             if (showFile) {
                 String formContent = HtmlUtil.fileInput(ARG_FILE, size);
                 tabTitles.add(msg(fileLabel));
@@ -2048,7 +2054,7 @@ public class TypeHandler extends RepositoryManager {
             if (forUpload || !showDownload) {
                 extra = "";
             }
-            if ( !okToShowInForm("resource.extra")) {
+            if ( !okToShowInForm(entry,"resource.extra")) {
                 extra = "";
             }
 
@@ -2106,7 +2112,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-            if ( !hasDefaultDataType() && okToShowInForm(ARG_DATATYPE)) {
+            if ( !hasDefaultDataType() && okToShowInForm(entry,ARG_DATATYPE)) {
                 String selected = "";
                 if (entry != null) {
                     selected = entry.getDataType();
@@ -2146,8 +2152,8 @@ public class TypeHandler extends RepositoryManager {
                            : null);
 
 
-        if (okToShowInForm(ARG_DATE)) {
-            if ( !okToShowInForm(ARG_TODATE)) {
+        if (okToShowInForm(entry,ARG_DATE)) {
+            if ( !okToShowInForm(entry,ARG_TODATE)) {
                 sb.append(
                     HtmlUtil.formEntry(
                         "Date:",
@@ -2171,7 +2177,7 @@ public class TypeHandler extends RepositoryManager {
 
         }
 
-        if (okToShowInForm(ARG_LOCATION, false)) {
+        if (okToShowInForm(entry,ARG_LOCATION, false)) {
             String lat = "";
             String lon = "";
             if (entry != null) {
@@ -2190,7 +2196,7 @@ public class TypeHandler extends RepositoryManager {
                                  HtmlUtil.SIZE_6);
 
             sb.append(HtmlUtil.formEntry(msgLabel("Location"), locationWidget));
-        } else if (okToShowInForm(ARG_AREA)) {
+        } else if (okToShowInForm(entry,ARG_AREA)) {
             StringBuffer mapSB = new StringBuffer();
             MapOutputHandler mapOutputHandler =
                 (MapOutputHandler) getRepository().getOutputHandler(
@@ -2232,7 +2238,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-        if (okToShowInForm(ARG_ALTITUDE, false)) {
+        if (okToShowInForm(entry,ARG_ALTITUDE, false)) {
             String altitude = "";
             if ((entry != null) && entry.hasAltitude()) {
                 altitude = "" + entry.getAltitude();
@@ -2240,7 +2246,7 @@ public class TypeHandler extends RepositoryManager {
             sb.append(HtmlUtil.formEntry("Altitude:",
                                          HtmlUtil.input(ARG_ALTITUDE,
                                              altitude, HtmlUtil.SIZE_10)));
-        } else if (okToShowInForm(ARG_ALTITUDE_TOP, false)) {
+        } else if (okToShowInForm(entry,ARG_ALTITUDE_TOP, false)) {
             String altitudeTop    = "";
             String altitudeBottom = "";
             if (entry != null) {
