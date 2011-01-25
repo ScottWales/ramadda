@@ -7,6 +7,7 @@
         <property name="distdir" value="${basedir}/dist"/>
         <mkdir dir="${distdir}"/>
 
+
         <property name="dist_javadoc" value="${distdir}/javadoc"/>
         <mkdir dir="${dist_javadoc}"/>
 
@@ -29,6 +30,9 @@ used by the javadoc target
 
 
     <target name="plugin" depends="init,clean">
+        <property name="plugindestdir" value="${distdir}/plugins"/>
+        <mkdir dir="${plugindestdir}"/>
+
         <echo message="Building plugin ${plugindir}"/>
         <javac
             classpath="${classpath}"
@@ -45,12 +49,12 @@ used by the javadoc target
         <include name="${plugindir}/*.java"/>
         </javac>
 
-        <echo message="Making jar ${distdir}/${jarfile}"/>
+        <echo message="Making jar ${plugindestdir}/${jarfile}"/>
         <jar 
             basedir="${srcdir}"
             update="false"
             compress="true"
-            jarfile="${distdir}/${jarfile}">
+            jarfile="${plugindestdir}/${jarfile}">
             <include name="${plugindir}/**/*.class"/>
             <include name="${plugindir}/htdocs/**/*"/>
             <include name="${plugindir}/*.xml"/>
@@ -61,8 +65,10 @@ used by the javadoc target
 
 
     <target name="plugin_install">
-        <copy overwrite="true"  todir="${user.home}/.unidata/repository/plugins">
-             <fileset file="${distdir}/${jarfile}"/>
+        <property name="plugindestdir" value="${distdir}/plugins"/>
+        <mkdir dir="${plugindestdir}"/>
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
+             <fileset file="${plugindestdir}/${jarfile}"/>
         </copy>
     </target>
 
@@ -91,6 +97,9 @@ used by the javadoc target
       <ant antfile="${srcdir}/org/ramadda/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/wms/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/ontology/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/gdata/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/map/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/db/build.xml" inheritAll="false"/>
     </target>
 
 
