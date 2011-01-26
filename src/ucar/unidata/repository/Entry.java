@@ -507,6 +507,9 @@ public class Entry extends Entity {
         return values[index].toString();
     }
 
+    public String toString() {
+        return super.toString() +"  type:" + getTypeHandler();
+    }
 
     /**
      * _more_

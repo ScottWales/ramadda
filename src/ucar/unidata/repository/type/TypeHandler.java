@@ -379,6 +379,25 @@ public class TypeHandler extends RepositoryManager {
         return this;
     }
 
+    public Resource getResourceForCopy(Request request, Entry oldEntry, Entry newEntry) throws Exception {
+        Resource newResource = new Resource(oldEntry.getResource());
+        if (newResource.isFile()) {
+            String newFileName =
+                getStorageManager().getFileTail(
+                                                oldEntry.getResource().getTheFile().getName());
+            String newFile =
+                getStorageManager()
+                .copyToStorage(
+                               request, oldEntry.getTypeHandler()
+                               .getResourceInputStream(
+                                                       oldEntry), getRepository().getGUID()
+                               + "_" + newFileName).toString();
+            newResource.setPath(newFile);
+        }
+        return newResource;
+    }
+
+
 
     /**
      * _more_

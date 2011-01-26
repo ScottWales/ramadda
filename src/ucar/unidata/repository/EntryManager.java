@@ -2784,9 +2784,9 @@ return new Result(title, sb);
                 String      id          = tuple[0];
                 Entry       oldEntry    = getEntry(request, id);
                 String      newId       = getRepository().getGUID();
-                TypeHandler typeHandler = oldEntry.getTypeHandler();
-                typeHandler = typeHandler.getTypeHandlerForCopy(oldEntry);
-                Entry newEntry = typeHandler.createEntry(newId);
+                TypeHandler oldTypeHandler = oldEntry.getTypeHandler();
+                TypeHandler newTypeHandler = oldTypeHandler.getTypeHandlerForCopy(oldEntry);
+                Entry newEntry = newTypeHandler.createEntry(newId);
                 oldIdToNewEntry.put(oldEntry.getId(), newEntry);
                 //(String name, String description, Entry group,User user, Resource resource, String dataType,
                 //                          long createDate, long startDate, long endDate, Object[] values) {
@@ -2796,20 +2796,8 @@ return new Result(title, sb);
                 if (newParent == null) {
                     newParent = toGroup;
                 }
-                Resource newResource = new Resource(oldEntry.getResource());
-                if (newResource.isFile()) {
-                    String newFileName =
-                        getStorageManager().getFileTail(
-                            oldEntry.getResource().getTheFile().getName());
-                    String newFile =
-                        getStorageManager()
-                            .copyToStorage(
-                                request, oldEntry.getTypeHandler()
-                                    .getResourceInputStream(
-                                        oldEntry), getRepository().getGUID()
-                                            + "_" + newFileName).toString();
-                    newResource.setPath(newFile);
-                }
+                Resource newResource = oldTypeHandler.getResourceForCopy(request, oldEntry, newEntry);
+
 
 
                 newEntry.initEntry(oldEntry.getName(),
@@ -2823,7 +2811,7 @@ return new Result(title, sb);
                                    oldEntry.getValues());
 
                 newEntry.setLocation(oldEntry);
-                typeHandler.initializeCopiedEntry(newEntry, oldEntry);
+                newTypeHandler.initializeCopiedEntry(newEntry, oldEntry);
 
                 List<Metadata> newMetadata = new ArrayList<Metadata>();
                 for (Metadata oldMetadata :
@@ -7313,11 +7301,13 @@ return new Result(title, sb);
                                             entry.getResource().getPath(),
                                             entry.getResource().getType() });
             }
+            System.err.println ("desc:" + entry);
             if ( !entry.isGroup()) {
+                System.err.println ("not a group");
                 continue;
             }
 
-            if (isSynthEntry(entry.getId())) {
+            if (entry.getTypeHandler().isSynthType() || isSynthEntry(entry.getId())) {
                 for (String childId :
                         getChildIds(request, (Entry) entry, null)) {
                     Entry childEntry = getEntry(request, childId);
