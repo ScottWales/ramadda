@@ -1,0 +1,15 @@
+<types>
+
+
+  <type name="feed"  description="RSS/ATOM Feed"   handler="org.ramadda.feed.FeedTypeHandler" foruser="true">  
+     <property name="icon" value="/feed/blog_icon.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.url.label" value="Feed URL"/>
+     <property name="form.resource.download.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+  </type>
+
+
+</types>
