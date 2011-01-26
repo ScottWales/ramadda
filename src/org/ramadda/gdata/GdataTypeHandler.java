@@ -20,15 +20,27 @@
 package org.ramadda.gdata;
 
 
-import org.w3c.dom.*;
+import com.google.gdata.client.GoogleService;
+
+import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.Category;
 
 import com.google.gdata.data.Person;
-import com.google.gdata.data.Category;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.repository.*;
 import ucar.unidata.repository.metadata.Metadata;
 import ucar.unidata.repository.type.*;
+
+import java.io.File;
+
+import java.net.URL;
+
+import java.util.Hashtable;
+import java.util.List;
 
 
 
@@ -36,15 +48,6 @@ import ucar.unidata.repository.type.*;
 
 
 import java.util.Set;
-import java.util.Hashtable;
-import java.util.List;
-
-import java.io.File;
-import java.net.URL;
-
-import com.google.gdata.client.GoogleService;
-
-import com.google.gdata.data.BaseEntry;
 
 
 /**
@@ -56,7 +59,9 @@ import com.google.gdata.data.BaseEntry;
  */
 public class GdataTypeHandler extends GdataBaseTypeHandler {
 
-    private Hashtable<String,GoogleService> serviceMap = new Hashtable<String,GoogleService>();
+    /** _more_          */
+    private Hashtable<String, GoogleService> serviceMap =
+        new Hashtable<String, GoogleService>();
 
     /**
      * _more_
@@ -72,41 +77,98 @@ public class GdataTypeHandler extends GdataBaseTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     protected GoogleService getService(Entry entry) throws Exception {
-        String userId = getUserId(entry);
+        String userId   = getUserId(entry);
         String password = getPassword(entry);
-        if (userId == null || password == null) {
+        if ((userId == null) || (password == null)) {
             return null;
         }
         GoogleService service = serviceMap.get(userId);
-        if(service!=null) return service;
+        if (service != null) {
+            return service;
+        }
         service = doMakeService(userId, password);
-        if(service==null) return null;
+        if (service == null) {
+            return null;
+        }
         serviceMap.put(userId, service);
         return service;
     }
 
 
-    protected GoogleService doMakeService(String userId, String password) throws Exception {
+    /**
+     * _more_
+     *
+     * @param userId _more_
+     * @param password _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    protected GoogleService doMakeService(String userId, String password)
+            throws Exception {
         return null;
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getUserId(Entry entry) {
-        return entry.getValue(0,(String)null);
+        return entry.getValue(0, (String) null);
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getPassword(Entry entry) {
-        return entry.getValue(1,(String)null);
+        return entry.getValue(1, (String) null);
     }
 
+    /**
+     * _more_
+     *
+     * @param parentEntry _more_
+     * @param type _more_
+     * @param subId _more_
+     *
+     * @return _more_
+     */
     public String getSynthId(Entry parentEntry, String type, String subId) {
-        return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + type +":" +subId;
+        return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + type
+               + ":" + subId;
     }
 
-    public String getSynthId(Entry parentEntry,  String subId) {
-        return Repository.ID_PREFIX_SYNTH + parentEntry.getId()  +":" +subId;
+    /**
+     * _more_
+     *
+     * @param parentEntry _more_
+     * @param subId _more_
+     *
+     * @return _more_
+     */
+    public String getSynthId(Entry parentEntry, String subId) {
+        return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
     }
 
 
 
 }
+

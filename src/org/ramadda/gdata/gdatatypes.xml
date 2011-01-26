@@ -9,8 +9,8 @@
 
   <type name="gdata_base"  super="gdata" description="Gdata"   handler="org.ramadda.gdata.GdataTypeHandler" foruser="false">  
      <property name="icon" value="/gdata/google.gif"/>
-     <column name="userid" group="Google Information" type="string"     default="" label="User ID" columns="20"  showinhtml="false"/>
-     <column name="password" group="Google Information" type="password"     label="Password"  showinhtml="false"/>
+     <column name="userid" group="Google Login Information" type="string"     default="" label="User ID" columns="20"  showinhtml="false"/>
+     <column name="password" group="Google Login Information" type="password"     label="Password"  showinhtml="false"/>
   </type>
 
 
@@ -35,7 +35,7 @@
   <type name="gdata_blogger"  super="gdata_base" description="Google Blogger"  handler="org.ramadda.gdata.BloggerTypeHandler">  
      <property name="icon" value="/gdata/blog_icon.png"/>
      <property name="form.resource.show" value="false"/>
-     <column name="blogid" group="Google Information" type="string"     default="" label="Blogger Blog ID" columns="20"  showinhtml="true"/>
+     <column name="blogid" group="Blogger Information" type="string"     default="" label="Blogger Blog ID" columns="20"  showinhtml="true"/>
    </type>
 
 

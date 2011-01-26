@@ -20,16 +20,41 @@
 package org.ramadda.gdata;
 
 
+import com.google.gdata.client.*;
+import com.google.gdata.client.*;
+import com.google.gdata.client.calendar.*;
+
+import com.google.gdata.client.docs.*;
+import com.google.gdata.client.photos.*;
+import com.google.gdata.data.BaseEntry;
+import com.google.gdata.data.MediaContent;
+//import com.google.gdata.data.*;
+import com.google.gdata.data.Person;
+import com.google.gdata.data.TextContent;
+import com.google.gdata.data.acl.*;
+import com.google.gdata.data.docs.*;
+import com.google.gdata.data.extensions.*;
+import com.google.gdata.data.extensions.*;
+import com.google.gdata.data.media.*;
+import com.google.gdata.data.photos.*;
+import com.google.gdata.util.*;
+import com.google.gdata.util.*;
+
+
 import org.w3c.dom.*;
 
 
 import ucar.unidata.repository.*;
 import ucar.unidata.repository.metadata.*;
 import ucar.unidata.repository.type.*;
+import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.HtmlUtil;
+
+import java.io.File;
+
+import java.net.URL;
 
 
 
@@ -38,31 +63,9 @@ import ucar.unidata.util.HtmlUtil;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Date;
-import java.io.File;
-import java.net.URL;
-
-import com.google.gdata.client.*;
-import com.google.gdata.client.photos.*;
-import com.google.gdata.data.BaseEntry;
-//import com.google.gdata.data.*;
-import com.google.gdata.data.Person;
-import  com.google.gdata.data.TextContent;
-import com.google.gdata.data.media.*;
-import com.google.gdata.data.photos.*;
-import com.google.gdata.client.*;
-import com.google.gdata.client.calendar.*;
-import com.google.gdata.data.extensions.*;
-import com.google.gdata.util.*;
-
-import com.google.gdata.client.docs.*;
-import com.google.gdata.data.MediaContent;
-import com.google.gdata.data.acl.*;
-import com.google.gdata.data.docs.*;
-import com.google.gdata.data.extensions.*;
-import com.google.gdata.util.*;
 
 
 /**
@@ -74,11 +77,22 @@ import com.google.gdata.util.*;
  */
 public class DocsTypeHandler extends GdataTypeHandler {
 
+    /** _more_          */
     public static final String TYPE_FOLDER = "folder";
+
+    /** _more_          */
     public static final String TYPE_DOCUMENT = "document";
+
+    /** _more_          */
     public static final String TYPE_SPREADSHEET = "spreadsheet";
+
+    /** _more_          */
     public static final String TYPE_PDF = "pdf";
+
+    /** _more_          */
     public static final String TYPE_DRAWING = "drawing";
+
+    /** _more_          */
     public static final String TYPE_PRESENTATION = "presentation";
 
 
@@ -96,7 +110,18 @@ public class DocsTypeHandler extends GdataTypeHandler {
     }
 
 
-    protected GoogleService doMakeService(String userId, String password) throws Exception {
+    /**
+     * _more_
+     *
+     * @param userId _more_
+     * @param password _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    protected GoogleService doMakeService(String userId, String password)
+            throws Exception {
         DocsService service = new DocsService("ramadda");
         service.setUserCredentials(userId, password);
         return service;
@@ -104,93 +129,161 @@ public class DocsTypeHandler extends GdataTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param parentEntry _more_
+     * @param synthId _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
-        throws Exception {
-        Hashtable<String,Entry> entryMap = new Hashtable<String,Entry>();
-        return getSynthIds(request, mainEntry, parentEntry, synthId, entryMap);
+            throws Exception {
+        Hashtable<String, Entry> entryMap = new Hashtable<String, Entry>();
+        return getSynthIds(request, mainEntry, parentEntry, synthId,
+                           entryMap);
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public TypeHandler getTypeHandlerForCopy(Entry entry) throws Exception {
-        if(entry.getId().indexOf(TYPE_FOLDER)>=0)  {
+        if (entry.getId().indexOf(TYPE_FOLDER) >= 0) {
             return getRepository().getTypeHandler(TypeHandler.TYPE_GROUP);
         }
-        if(!getEntryManager().isSynthEntry(entry.getId())) return this;
+        if ( !getEntryManager().isSynthEntry(entry.getId())) {
+            return this;
+        }
         return getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param parentEntry _more_
+     * @param synthId _more_
+     * @param entryMap _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<String> getSynthIds(Request request, Entry mainEntry,
-                                    Entry parentEntry, String synthId, Hashtable<String,Entry>entryMap)
-        throws Exception {
+                                    Entry parentEntry, String synthId,
+                                    Hashtable<String, Entry> entryMap)
+            throws Exception {
 
-        List<String> ids    = (parentEntry!=null?parentEntry.getChildIds():null);
-        if(ids!=null) return ids;
+        List<String> ids = ((parentEntry != null)
+                            ? parentEntry.getChildIds()
+                            : null);
+        if (ids != null) {
+            return ids;
+        }
         ids = new ArrayList<String>();
-        if(mainEntry==null) return ids;
+        if (mainEntry == null) {
+            return ids;
+        }
 
-        String url = "https://docs.google.com/feeds/default/private/full?showfolders=true";
-        DocumentQuery query = new DocumentQuery(new URL(url));
+        String url =
+            "https://docs.google.com/feeds/default/private/full?showfolders=true";
+        DocumentQuery    query      = new DocumentQuery(new URL(url));
         DocumentListFeed allEntries = new DocumentListFeed();
-        GoogleService service = getService(mainEntry);
-        if(service==null) return ids;
-        DocumentListFeed tempFeed = service.getFeed(query, DocumentListFeed.class);
+        GoogleService    service    = getService(mainEntry);
+        if (service == null) {
+            return ids;
+        }
+        DocumentListFeed tempFeed = service.getFeed(query,
+                                        DocumentListFeed.class);
         do {
             allEntries.getEntries().addAll(tempFeed.getEntries());
-            com.google.gdata.data.Link link  =tempFeed.getNextLink();
-            if(link==null) break;
-            tempFeed = service.getFeed(new URL(link.getHref()), DocumentListFeed.class);
+            com.google.gdata.data.Link link = tempFeed.getNextLink();
+            if (link == null) {
+                break;
+            }
+            tempFeed = service.getFeed(new URL(link.getHref()),
+                                       DocumentListFeed.class);
         } while (tempFeed.getEntries().size() > 0);
 
         List<Entry> newEntries = new ArrayList<Entry>();
         entryMap.put(mainEntry.getId(), mainEntry);
         for (DocumentListEntry docListEntry : allEntries.getEntries()) {
-            java.util.List<com.google.gdata.data.Link> links = docListEntry.getParentLinks();
+            java.util.List<com.google.gdata.data.Link> links =
+                docListEntry.getParentLinks();
             Entry newEntry;
-            String entryId = getSynthId(mainEntry, IOUtil.getFileTail(docListEntry.getId()));
-            String parentId = (links.size()==0?mainEntry.getId():getSynthId(mainEntry, IOUtil.getFileTail(links.get(0).getHref())));
+            String entryId =
+                getSynthId(mainEntry,
+                           IOUtil.getFileTail(docListEntry.getId()));
+            String parentId = ((links.size() == 0)
+                               ? mainEntry.getId()
+                               : getSynthId(
+                                   mainEntry,
+                                   IOUtil.getFileTail(
+                                       links.get(0).getHref())));
             boolean isFolder = docListEntry.getType().equals(TYPE_FOLDER);
             //            System.err.println(docListEntry.getType() + " " + docListEntry.getTitle().getPlainText() + " " + isFolder +" " );
             Resource resource;
-            if(isFolder) {
+            if (isFolder) {
                 resource = new Resource();
             } else {
-                resource =  new Resource(docListEntry.getDocumentLink().getHref());
-                resource.setFileSize(docListEntry.getQuotaBytesUsed().longValue());
+                resource =
+                    new Resource(docListEntry.getDocumentLink().getHref());
+                resource.setFileSize(
+                    docListEntry.getQuotaBytesUsed().longValue());
             }
             StringBuffer desc = new StringBuffer();
-            newEntry =  new Entry(entryId, this, isFolder);
+            newEntry = new Entry(entryId, this, isFolder);
             newEntries.add(newEntry);
             System.err.println("ID:" + newEntry.getId());
             entryMap.put(newEntry.getId(), newEntry);
-            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.lastmodifiedby", false,
-                                          docListEntry.getLastModifiedBy().getName(),
-                                          docListEntry.getLastModifiedBy().getEmail(),
-                                          "","",""));
+            newEntry.addMetadata(new Metadata(getRepository().getGUID(),
+                    newEntry.getId(), "gdata.lastmodifiedby", false,
+                    docListEntry.getLastModifiedBy().getName(),
+                    docListEntry.getLastModifiedBy().getEmail(), "", "", ""));
 
             addMetadata(newEntry, docListEntry, desc);
             //            entries.add(newEntry);
-            Date publishTime =  new Date(docListEntry.getPublished().getValue());
-            Date lastViewedTime =  (docListEntry.getLastViewed()!=null?new Date(docListEntry.getLastViewed().getValue()):publishTime);
-            Date editTime =  new Date(docListEntry.getUpdated().getValue());
-            newEntry.initEntry(docListEntry.getTitle().getPlainText(), desc.toString(), null, mainEntry.getUser(),
-                            resource, "", publishTime.getTime(),editTime.getTime(),publishTime.getTime(),lastViewedTime.getTime(),
-                            null);
+            Date publishTime =
+                new Date(docListEntry.getPublished().getValue());
+            Date lastViewedTime = ((docListEntry.getLastViewed() != null)
+                                   ? new Date(docListEntry.getLastViewed()
+                                       .getValue())
+                                   : publishTime);
+            Date editTime = new Date(docListEntry.getUpdated().getValue());
+            newEntry.initEntry(docListEntry.getTitle().getPlainText(),
+                               desc.toString(), null, mainEntry.getUser(),
+                               resource, "", publishTime.getTime(),
+                               editTime.getTime(), publishTime.getTime(),
+                               lastViewedTime.getTime(), null);
 
             newEntry.setParentEntryId(parentId);
         }
-        for(Entry newEntry: newEntries) {
-            if(newEntry.getParentEntryId().equals(mainEntry.getId())) {
+        for (Entry newEntry : newEntries) {
+            if (newEntry.getParentEntryId().equals(mainEntry.getId())) {
                 //                System.err.println ("is top level:" + newEntry.getParentEntryId() + " " + newEntry.getName());
                 ids.add(newEntry.getId());
                 newEntry.setParentEntry(mainEntry);
             } else {
-                Entry tmpParentEntry = entryMap.get(newEntry.getParentEntryId());
-                if(tmpParentEntry==null) {
+                Entry tmpParentEntry =
+                    entryMap.get(newEntry.getParentEntryId());
+                if (tmpParentEntry == null) {
                     continue;
                 }
                 //                System.err.println ("adding to parent:" + newEntry.getParentEntryId() + " " + newEntry.getName());
-                if(tmpParentEntry.getChildIds()==null) {
+                if (tmpParentEntry.getChildIds() == null) {
                     tmpParentEntry.setChildIds(new ArrayList<String>());
                 }
                 tmpParentEntry.getChildIds().add(newEntry.getId());
@@ -202,76 +295,120 @@ public class DocsTypeHandler extends GdataTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param id _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Entry makeSynthEntry(Request request, Entry mainEntry, String id)
-        throws Exception {
+            throws Exception {
         id = getSynthId(mainEntry, id);
-        Hashtable<String,Entry> entryMap = new Hashtable<String,Entry>();
+        Hashtable<String, Entry> entryMap = new Hashtable<String, Entry>();
         getSynthIds(request, mainEntry, null, id, entryMap);
         Entry newEntry = entryMap.get(id);
-        System.err.println("newEntry:" + newEntry +" " + id);
+        System.err.println("newEntry:" + newEntry + " " + id);
         return newEntry;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String getIconUrl(Request request, Entry entry) throws Exception {
         String id = entry.getId();
-        if(!getEntryManager().isSynthEntry(id)) return super.getIconUrl(request, entry);
-        if(id.indexOf(TYPE_FOLDER)>=0)  {
+        if ( !getEntryManager().isSynthEntry(id)) {
+            return super.getIconUrl(request, entry);
+        }
+        if (id.indexOf(TYPE_FOLDER) >= 0) {
             return iconUrl("/icons/folder.png");
         }
-        if(id.indexOf(TYPE_DOCUMENT)>=0)  {
+        if (id.indexOf(TYPE_DOCUMENT) >= 0) {
             return iconUrl("/gdata/document.gif");
         }
-        if(id.indexOf(TYPE_PRESENTATION)>=0)  {
+        if (id.indexOf(TYPE_PRESENTATION) >= 0) {
             return iconUrl("/gdata/presentation.gif");
         }
-        if(id.indexOf(TYPE_DRAWING)>=0)  {
+        if (id.indexOf(TYPE_DRAWING) >= 0) {
             return iconUrl("/gdata/drawing.gif");
         }
-        if(id.indexOf(TYPE_SPREADSHEET)>=0)  {
+        if (id.indexOf(TYPE_SPREADSHEET) >= 0) {
             return iconUrl("/gdata/spreadsheet.gif");
         }
-        if(id.indexOf(TYPE_PDF)>=0)  {
+        if (id.indexOf(TYPE_PDF) >= 0) {
             return iconUrl("/icons/pdf.png");
         }
-        return  super.getIconUrl(request, entry);
+        return super.getIconUrl(request, entry);
     }
 
 
 
 
-    public static void main(String[]args) throws Exception {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
         DocsService client = new DocsService("ramadda");
         client.setUserCredentials("jeff.mcwhirter@gmail.com", args[0]);
         //        DocumentQuery query = new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full/-/folder"));
-        String url = "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents?showfolders=true";
+        String url =
+            "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents?showfolders=true";
         url = "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents?showfolders=true";
         //        String url = "https://docs.google.com/feeds/default/private/full?showfolders=true";
-        DocumentQuery query = new DocumentQuery(new URL(url));
+        DocumentQuery    query      = new DocumentQuery(new URL(url));
         DocumentListFeed allEntries = new DocumentListFeed();
-        DocumentListFeed tempFeed = client.getFeed(query, DocumentListFeed.class);
+        DocumentListFeed tempFeed = client.getFeed(query,
+                                        DocumentListFeed.class);
         do {
             allEntries.getEntries().addAll(tempFeed.getEntries());
-            com.google.gdata.data.Link link  =tempFeed.getNextLink();
-            if(link==null) break;
-            if(true) break;
-            tempFeed = client.getFeed(new URL(link.getHref()), DocumentListFeed.class);
+            com.google.gdata.data.Link link = tempFeed.getNextLink();
+            if (link == null) {
+                break;
+            }
+            if (true) {
+                break;
+            }
+            tempFeed = client.getFeed(new URL(link.getHref()),
+                                      DocumentListFeed.class);
         } while (tempFeed.getEntries().size() > 0);
 
-        List<DocumentListEntry>topLevel = new ArrayList<DocumentListEntry>();
+        List<DocumentListEntry> topLevel = new ArrayList<DocumentListEntry>();
         System.out.println("query url:" + url);
-        System.out.println("User has " + allEntries.getEntries().size() + " total entries");
+        System.out.println("User has " + allEntries.getEntries().size()
+                           + " total entries");
         for (DocumentListEntry entry : allEntries.getEntries()) {
-           java.util.List<com.google.gdata.data.Link> links = entry.getParentLinks();
-           if(links.size()==0) {
-               topLevel.add(entry);
-               System.out.println("Top level:" +entry.getType()+" " +entry.getTitle().getPlainText() +" " + entry.getId());
-           } else {
-                System.out.println("Not top level " +entry.getType()+" " +entry.getTitle().getPlainText() +" " + entry.getId());
-           }
-           //            https://docs.google.com/feeds/default/private/full/folder%3Afolder_id/contents
-           for(com.google.gdata.data.Link link: links) {
-               System.out.println("\t" + link.getHref() +" " + link.getTitle());
-           }
+            java.util.List<com.google.gdata.data.Link> links =
+                entry.getParentLinks();
+            if (links.size() == 0) {
+                topLevel.add(entry);
+                System.out.println("Top level:" + entry.getType() + " "
+                                   + entry.getTitle().getPlainText() + " "
+                                   + entry.getId());
+            } else {
+                System.out.println("Not top level " + entry.getType() + " "
+                                   + entry.getTitle().getPlainText() + " "
+                                   + entry.getId());
+            }
+            //            https://docs.google.com/feeds/default/private/full/folder%3Afolder_id/contents
+            for (com.google.gdata.data.Link link : links) {
+                System.out.println("\t" + link.getHref() + " "
+                                   + link.getTitle());
+            }
         }
 
 
