@@ -20,7 +20,7 @@
 package org.ramadda.gdata;
 
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
 
 import ucar.unidata.repository.*;
@@ -97,6 +97,33 @@ public class BloggerTypeHandler extends GdataTypeHandler {
     }
 
 
+    public List<Comment> getComments(Request request, Entry entry) throws Exception {
+        if(!getEntryManager().isSynthEntry(entry.getId())) return null;
+        String[] pair          = getEntryManager().getSynthId(entry.getId());
+        Entry mainEntry = getEntryManager().getEntry(request, pair[0]);
+        List<Comment>    comments = new ArrayList<Comment>();
+        String blogId = mainEntry.getValue(2,(String)null);
+        if(blogId==null) return comments;
+        String commentsFeedUri = "http://www.blogger.com/feeds/" + blogId + "/" + pair[1] + "/comments/default";
+        System.err.println(commentsFeedUri);
+        URL feedUrl = new URL(commentsFeedUri);
+        Feed resultFeed = getService(mainEntry).getFeed(feedUrl, Feed.class);
+        // Display the results
+        System.out.println(resultFeed.getTitle().getPlainText());
+        for (int i = 0; i < resultFeed.getEntries().size(); i++) {
+            com.google.gdata.data.Entry commentEntry = resultFeed.getEntries().get(i);
+
+            Comment comment = new  Comment(commentEntry.getId(), entry, mainEntry.getUser(), 
+                                           new Date(commentEntry.getUpdated().getValue()),
+                                           "", ((TextContent) commentEntry.getContent()).getContent().getPlainText());
+
+            comments.add(comment);
+
+        }
+        return comments;
+    }
+
+
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
         throws Exception {
@@ -124,7 +151,9 @@ public class BloggerTypeHandler extends GdataTypeHandler {
         System.out.println(resultFeed.getTitle().getPlainText());
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
             com.google.gdata.data.Entry entry = resultFeed.getEntries().get(i);
-            String entryId = getSynthId(mainEntry,  IOUtil.getFileTail(entry.getId()));
+            List<String> toks = StringUtil.split(entry.getId(),"-");
+            System.err.println("entry id:" + toks.get(toks.size()-1));
+            String entryId = getSynthId(mainEntry,  toks.get(toks.size()-1));
             String title = entry.getTitle().getPlainText();
             Entry newEntry =  new Entry(entryId, this, false);
             StringBuffer desc = new StringBuffer();
