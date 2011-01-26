@@ -3650,13 +3650,16 @@ return new Result(title, sb);
         if (entry.isDummy()) {
             return new ArrayList<Comment>();
         }
+        List<Comment>    comments = entry.getTypeHandler().getComments(request, entry);
+        if(comments!=null)return comments;
+        comments = new ArrayList();
+
         Statement stmt =
             getDatabaseManager().select(
                 Tables.COMMENTS.COLUMNS, Tables.COMMENTS.NAME,
                 Clause.eq(Tables.COMMENTS.COL_ENTRY_ID, entry.getId()),
                 " order by " + Tables.COMMENTS.COL_DATE + " asc ");
         SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
-        List<Comment>    comments = new ArrayList();
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
             comments.add(

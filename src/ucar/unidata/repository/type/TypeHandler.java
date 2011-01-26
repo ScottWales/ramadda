@@ -23,7 +23,7 @@
 package ucar.unidata.repository.type;
 
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
 import ucar.unidata.repository.*;
 import ucar.unidata.repository.auth.*;
@@ -303,6 +303,11 @@ public class TypeHandler extends RepositoryManager {
             parent.addChildTypeHandler(this);
         }
     }
+
+    public List<Comment> getComments(Request request, Entry entry) throws Exception  {
+        return null;
+    }
+
 
     /**
      * _more_
