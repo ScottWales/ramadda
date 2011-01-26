@@ -212,9 +212,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
 
     public Entry makeSynthEntry(Request request, Entry mainEntry, String id)
         throws Exception {
-        
         String userId = getUserId(mainEntry);
-        System.err.println ("ID:" + id);
         List<String> toks = StringUtil.split(id,":");
         String type = toks.get(0);
         if(type.equals(TYPE_ALBUM)) {

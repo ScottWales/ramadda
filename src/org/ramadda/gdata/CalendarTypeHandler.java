@@ -232,7 +232,6 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         if(synthId==null) {
             return getCalendarIds(request, mainEntry);
         }
-
         List<String> ids    = parentEntry.getChildIds();
         if(ids!=null) return ids;
         ids = new ArrayList<String>();

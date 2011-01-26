@@ -54,7 +54,7 @@ import com.google.gdata.data.BaseEntry;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class GdataTypeHandler extends GenericTypeHandler {
+public class GdataTypeHandler extends GdataBaseTypeHandler {
 
     private Hashtable<String,GoogleService> serviceMap = new Hashtable<String,GoogleService>();
 
@@ -91,69 +91,6 @@ public class GdataTypeHandler extends GenericTypeHandler {
         return null;
     }
 
-
-    public Entry createEntry(String id) {
-        //Make the top level entyr act like a group
-        return new Entry(id, this, true);
-    }
-
-
-    public void addMetadata(Entry newEntry, BaseEntry baseEntry) throws Exception {
-        addMetadata(newEntry, baseEntry, null);
-    }
-
-
-    public void addMetadata(Entry newEntry, BaseEntry baseEntry, StringBuffer desc) throws Exception {
-        if(baseEntry.getSummary()!=null && desc!=null) {
-            desc.append(baseEntry.getSummary().getPlainText());
-        }
-
-
-
-        for(Category category: (Set<Category>)baseEntry.getCategories()) {
-            if(category.getLabel()==null)continue;
-            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"enum_tag", false,
-                                              category.getLabel(),"",
-                                              "","",""));
-        }
-
-        for(Person person: (List<Person>)baseEntry.getAuthors()) {
-            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.author", false,
-                                              person.getName(),
-                                              person.getEmail(),
-                                              "","",""));
-        }
-        for(Person person: (List<Person>)baseEntry.getContributors()) {
-            newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.contributor", false,
-                                              person.getName(),
-                                              person.getEmail(),
-                                              "","",""));
-        }
-
-        if(baseEntry.getRights()!=null) {
-            String rights = baseEntry.getRights().getPlainText();
-            if(rights!=null &&rights.length()>0) {
-                newEntry.addMetadata(new Metadata(getRepository().getGUID(), newEntry.getId(),"gdata.rights", false,
-                                                  rights, "",
-                                                  "","",""));
-                
-            }
-        }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isSynthType() {
-        return true;
-    }
-
-
-
     public String getUserId(Entry entry) {
         return entry.getValue(0,(String)null);
     }
@@ -164,6 +101,10 @@ public class GdataTypeHandler extends GenericTypeHandler {
 
     public String getSynthId(Entry parentEntry, String type, String subId) {
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + type +":" +subId;
+    }
+
+    public String getSynthId(Entry parentEntry,  String subId) {
+        return Repository.ID_PREFIX_SYNTH + parentEntry.getId()  +":" +subId;
     }
 
 
