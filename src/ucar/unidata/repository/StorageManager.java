@@ -1,7 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
+ * Copyright 2010- Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -145,8 +144,12 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String PROP_DIRDEPTH = "ramadda.storage.dirdepth";
 
+    /** _more_          */
     public static final String PROP_FASTDIR = "ramadda.storage.fastdir";
-    public static final String PROP_FASTDIRSIZE = "ramadda.storage.fastdirsize";
+
+    /** _more_          */
+    public static final String PROP_FASTDIRSIZE =
+        "ramadda.storage.fastdirsize";
 
     /** _more_ */
     public static final String PROP_DIRRANGE = "ramadda.storage.dirrange";
@@ -297,7 +300,7 @@ public class StorageManager extends RepositoryManager {
                 IOUtil.joinDir(Misc.getSystemProperty("user.home", "."),
                                IOUtil.joinDir(".unidata", "repository"));
             //Else use  <home>/.ramadda
-            if(!new File(repositoryDirProperty).exists()) {
+            if ( !new File(repositoryDirProperty).exists()) {
                 repositoryDirProperty =
                     IOUtil.joinDir(Misc.getSystemProperty("user.home", "."),
                                    ".ramadda");
@@ -630,14 +633,14 @@ public class StorageManager extends RepositoryManager {
             }
             try {
 
-		//		System.err.println("RAMADDA: Configuring log4j. Note: this may print out a stack trace. If");
+                //              System.err.println("RAMADDA: Configuring log4j. Note: this may print out a stack trace. If");
 
                 org.apache.log4j.PropertyConfigurator.configure(
-                                                                log4JFile.toString());
+                    log4JFile.toString());
 
-            } catch(Exception exc) {
-                System.err.println ("RAMADDA: Error configuring log4j:" + exc);
-		exc.printStackTrace();
+            } catch (Exception exc) {
+                System.err.println("RAMADDA: Error configuring log4j:" + exc);
+                exc.printStackTrace();
             }
         }
         return logDir;
@@ -907,9 +910,66 @@ public class StorageManager extends RepositoryManager {
     public File copyToEntryDir(Entry entry, File original) throws Exception {
         File newFile = new File(IOUtil.joinDir(getEntryDir(entry.getId(),
                            true), original.getName()));
-        IOUtil.copyFile(original, newFile);
+        copyFile(original, newFile);
         return newFile;
     }
+
+    /**
+     * _more_
+     *
+     * @param oldEntry _more_
+     * @param newEntry _more_
+     * @param filename _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String copyToEntryDir(Entry oldEntry, Entry newEntry,
+                                 String filename)
+            throws Exception {
+        File oldFile = new File(IOUtil.joinDir(getEntryDir(oldEntry.getId(),
+                           true), filename));
+
+        File newFile = new File(IOUtil.joinDir(getEntryDir(newEntry.getId(),
+                           true), filename));
+
+        //If it is a URL then copy it over
+        if ( !oldFile.exists()) {
+            URL         url        = new URL(filename);
+            InputStream fromStream = getInputStream(filename);
+
+            newFile = new File(IOUtil.joinDir(getEntryDir(newEntry.getId(),
+                    true), IOUtil.getFileTail(url.getPath())));
+
+
+            FileOutputStream toStream = getFileOutputStream(newFile);
+            IOUtil.writeTo(fromStream, toStream);
+            IOUtil.close(fromStream);
+            IOUtil.close(toStream);
+            return newFile.getName();
+        }
+
+
+        copyFile(oldFile, newFile);
+        return newFile.getName();
+    }
+
+    /**
+     * _more_
+     *
+     * @param oldFile _more_
+     * @param newFile _more_
+     *
+     * @throws Exception _more_
+     */
+    private void copyFile(File oldFile, File newFile) throws Exception {
+        checkLocalFile(oldFile);
+        checkWriteFile(newFile);
+        IOUtil.copyFile(oldFile, newFile);
+    }
+
+
 
     /**
      * _more_
@@ -1146,13 +1206,24 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getFastResourcePath(Entry entry) {
-        String fastDir = 
-            getRepository().getProperty(PROP_FASTDIR, (String) null);
-        if(fastDir == null || !entry.isFile()) return entry.getResource().getPath();
+        String fastDir = getRepository().getProperty(PROP_FASTDIR,
+                             (String) null);
+        if ((fastDir == null) || !entry.isFile()) {
+            return entry.getResource().getPath();
+        }
 
         File f = entry.getTypeHandler().getFileForEntry(entry);
-        if(!f.exists()) return entry.getResource().getPath();
+        if ( !f.exists()) {
+            return entry.getResource().getPath();
+        }
         //TODO: do this
 
 

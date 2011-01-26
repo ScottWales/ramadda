@@ -1,7 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
+ * Copyright 2010- Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package ucar.unidata.repository.metadata;
@@ -211,7 +211,37 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-    public void getThumbnailUrls(Request request, Entry entry,List<String> urls) 
+    /**
+     * _more_
+     *
+     * @param oldEntry _more_
+     * @param newEntry _more_
+     * @param oldMetadata _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Metadata copyMetadata(Entry oldEntry, Entry newEntry,
+                                 Metadata oldMetadata)
+            throws Exception {
+        MetadataHandler handler = findMetadataHandler(oldMetadata.getType());
+        return handler.copyMetadata(oldEntry, newEntry, oldMetadata);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param urls _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getThumbnailUrls(Request request, Entry entry,
+                                 List<String> urls)
             throws Exception {
         for (Metadata metadata : getMetadata(entry)) {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
@@ -348,18 +378,16 @@ public class MetadataManager extends RepositoryManager {
         ResultSet        results;
         metadataList = new ArrayList();
         while ((results = iter.getNext()) != null) {
-                int             col     = 1;
-                String          type    = results.getString(3);
-                MetadataHandler handler = findMetadataHandler(type);
+            int             col     = 1;
+            String          type    = results.getString(3);
+            MetadataHandler handler = findMetadataHandler(type);
 
-                metadataList.add(
-                    handler.makeMetadata(
-                        results.getString(col++), results.getString(col++),
-                        results.getString(col++), results.getInt(col++) == 1,
-                        results.getString(col++), results.getString(col++),
-                        results.getString(col++), results.getString(col++),
-                        results.getString(col++)));
-            }
+            metadataList.add(handler.makeMetadata(results.getString(col++),
+                    results.getString(col++), results.getString(col++),
+                    results.getInt(col++) == 1, results.getString(col++),
+                    results.getString(col++), results.getString(col++),
+                    results.getString(col++), results.getString(col++)));
+        }
 
         entry.setMetadata(metadataList);
         return metadataList;
@@ -408,7 +436,9 @@ public class MetadataManager extends RepositoryManager {
                 changed = true;
             }
         }
-        if(extra.size()>0) changed=true;
+        if (extra.size() > 0) {
+            changed = true;
+        }
         return changed;
     }
 
@@ -810,12 +840,12 @@ public class MetadataManager extends RepositoryManager {
 
 
 
-        Result result =  getRepository().makeResult(request,
-                                          msg(type.getLabel() + " Cloud"),
-                                          sb,
-                                          getSearchManager().getSearchUrls());
+        Result result = getRepository().makeResult(request,
+                            msg(type.getLabel() + " Cloud"), sb,
+                            getSearchManager().getSearchUrls());
 
-        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
+        return getEntryManager().addEntryHeader(request,
+                getEntryManager().getTopGroup(), result);
     }
 
 
@@ -838,8 +868,10 @@ public class MetadataManager extends RepositoryManager {
             return new Result("", "Could not find metadata");
         }
         MetadataHandler handler = findMetadataHandler(metadata.getType());
-        Result result =  handler.processView(request, entry, metadata);
-        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
+        Result          result = handler.processView(request, entry,
+                                     metadata);
+        return getEntryManager().addEntryHeader(request,
+                getEntryManager().getTopGroup(), result);
     }
 
 

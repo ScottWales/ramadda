@@ -1,8 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * Copyright 2010- ramadda.org
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
+ * Copyright 2010- Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -288,7 +286,7 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             return null;
         }
-        return  entry;
+        return entry;
     }
 
 
@@ -428,18 +426,18 @@ return new Result(title, sb);
         } else if (request.defined(ARG_GROUP)) {
             entry = findGroup(request);
         } else {
-            String path = request.getRequestPath();
+            String path   = request.getRequestPath();
             String prefix = getRepository().URL_ENTRY_SHOW.toString();
-            if(path.length()>prefix.length()) {
-                String suffix  = path.substring(prefix.length());
+            if (path.length() > prefix.length()) {
+                String suffix = path.substring(prefix.length());
                 suffix = java.net.URLDecoder.decode(suffix, "UTF-8");
                 System.err.println("suffix:" + suffix);
                 entry = findEntryFromName(suffix, request.getUser(), false);
-                if(entry == null) {
+                if (entry == null) {
                     fatalError(request, "Could not find entry:" + suffix);
                 }
             }
-            if(entry == null) {
+            if (entry == null) {
                 entry = getTopGroup();
             }
         }
@@ -514,26 +512,28 @@ return new Result(title, sb);
      */
     public Result addEntryHeader(Request request, Entry entry, Result result)
             throws Exception {
-        if(entry == null) entry = getTopGroup();
+        if (entry == null) {
+            entry = getTopGroup();
+        }
         if (result.getShouldDecorate()) {
             //            if(entry.getDescription().indexOf("<noentryheader>")>=0) return result;
             //            String output = request.getString(ARG_OUTPUT, (String) "");
             //            request.put(ARG_OUTPUT, output);
-            StringBuffer sb = new StringBuffer();
-            Entry entryForHeader = entry;
+            StringBuffer sb             = new StringBuffer();
+            Entry        entryForHeader = entry;
 
             //If its a search result then use the top-level group for the header
-            if(entry.isDummy()) {
+            if (entry.isDummy()) {
                 entryForHeader = getTopGroup();
             }
             //            if (!entry.isGroup()) {
-                String[] crumbs = getBreadCrumbs(request, entryForHeader, false);
-                sb.append(crumbs[1]);
-                //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
-                //                result.setTitle(result.getTitle());
-                result.putProperty(PROP_ENTRY_HEADER, sb.toString());
-                result.putProperty(PROP_ENTRY_BREADCRUMBS, crumbs[0]);
-                //            }
+            String[] crumbs = getBreadCrumbs(request, entryForHeader, false);
+            sb.append(crumbs[1]);
+            //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
+            //                result.setTitle(result.getTitle());
+            result.putProperty(PROP_ENTRY_HEADER, sb.toString());
+            result.putProperty(PROP_ENTRY_BREADCRUMBS, crumbs[0]);
+            //            }
 
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(entry,
@@ -1116,12 +1116,12 @@ return new Result(title, sb);
 
             boolean isGzip = resource.endsWith(".gz");
             if (unzipArchive && !IOUtil.isZipFile(resource)) {
-                if(!isGzip) {
+                if ( !isGzip) {
                     unzipArchive = false;
                 }
             }
 
-            if(isGzip && unzipArchive) {
+            if (isGzip && unzipArchive) {
                 //TODO: use GZIPInputStream to unzip the file
             }
 
@@ -1132,7 +1132,7 @@ return new Result(title, sb);
             } else {
                 isLocalFile = false;
                 Hashtable<String, Entry> nameToGroup = new Hashtable<String,
-                    Entry>();
+                                                           Entry>();
                 FileInputStream fis =
                     getStorageManager().getFileInputStream(resource);
                 FileOutputStream fos = null;
@@ -1612,16 +1612,14 @@ return new Result(title, sb);
             entry.setEast(request.get(ARG_LOCATION_LONGITUDE,
                                       entry.getEast()));
         } else {
-	    if(request.exists(ARG_AREA +"_south")) {
-		entry.setSouth(request.get(ARG_AREA + "_south",
-					   Entry.NONGEO));
-		entry.setNorth(request.get(ARG_AREA + "_north",
-					   Entry.NONGEO));
-		entry.setWest(request.get(ARG_AREA + "_west", 
-					  Entry.NONGEO));
-		entry.setEast(request.get(ARG_AREA + "_east", 
-					  Entry.NONGEO));
-	    }
+            if (request.exists(ARG_AREA + "_south")) {
+                entry.setSouth(request.get(ARG_AREA + "_south",
+                                           Entry.NONGEO));
+                entry.setNorth(request.get(ARG_AREA + "_north",
+                                           Entry.NONGEO));
+                entry.setWest(request.get(ARG_AREA + "_west", Entry.NONGEO));
+                entry.setEast(request.get(ARG_AREA + "_east", Entry.NONGEO));
+            }
         }
 
         if (request.get(ARG_SETBOUNDSFROMCHILDREN, false)) {
@@ -1714,7 +1712,7 @@ return new Result(title, sb);
         fb.append(HtmlUtil.formClose());
         sb.append(getRepository().showDialogQuestion(inner.toString(),
                 fb.toString()));
-        String bc =  getBreadCrumbs(request, entry);
+        String bc = getBreadCrumbs(request, entry);
         sb.append(bc);
         return makeEntryEditResult(request, entry,
                                    msg("Entry delete confirm"), sb);
@@ -1932,7 +1930,7 @@ return new Result(title, sb);
             throws Exception {
 
         List<String[]> found = getDescendents(request, entries, connection,
-                                              true);
+                                   true);
         String query;
 
         query =
@@ -1966,19 +1964,17 @@ return new Result(title, sb);
                                                 Tables.ENTRIES.NAME,
                                                 Tables.ENTRIES.COL_ID, "?"));
 
-        PreparedStatement[] statements = {permissionsStmt,
-                                          metadataStmt,
-                                          commentsStmt,
-                                          assocStmt,
-                                          entriesStmt};
+        PreparedStatement[] statements = { permissionsStmt, metadataStmt,
+                                           commentsStmt, assocStmt,
+                                           entriesStmt };
 
         connection.setAutoCommit(false);
-        Statement extraStmt      = connection.createStatement();
+        Statement extraStmt = connection.createStatement();
         try {
-            int       batchCnt      = 0;
-            int       totalDeleteCnt = 0;
+            int batchCnt       = 0;
+            int totalDeleteCnt = 0;
             //Go backwards so we go up the tree and hit the children first
-            List<String> allIds = new ArrayList<String>();
+            List<String>   allIds            = new ArrayList<String>();
             List<Resource> resourcesToDelete = new ArrayList<Resource>();
             for (int i = found.size() - 1; i >= 0; i--) {
                 String[] tuple = found.get(i);
@@ -1997,11 +1993,12 @@ return new Result(title, sb);
                         "Deleted:" + totalDeleteCnt + "/" + found.size()
                         + " entries");
 
-                resourcesToDelete.add(new Resource(new File(tuple[2]), tuple[3]));
+                resourcesToDelete.add(new Resource(new File(tuple[2]),
+                        tuple[3]));
 
                 batchCnt++;
                 assocStmt.setString(2, id);
-                for(PreparedStatement stmt: statements) {
+                for (PreparedStatement stmt : statements) {
                     stmt.setString(1, id);
                     stmt.addBatch();
                 }
@@ -2010,26 +2007,26 @@ return new Result(title, sb);
                     getRepository().getTypeHandler(tuple[1]);
                 typeHandler.deleteEntry(request, extraStmt, id);
                 if (batchCnt > 100) {
-                    for(PreparedStatement stmt: statements) {
+                    for (PreparedStatement stmt : statements) {
                         stmt.executeBatch();
                     }
                     batchCnt = 0;
                 }
             }
-            for(PreparedStatement stmt: statements) {
+            for (PreparedStatement stmt : statements) {
                 stmt.executeBatch();
             }
             connection.commit();
             connection.setAutoCommit(true);
-            for(Resource resource: resourcesToDelete) {
+            for (Resource resource : resourcesToDelete) {
                 getStorageManager().removeFile(resource);
             }
-            for (String id: allIds) {
+            for (String id : allIds) {
                 getStorageManager().deleteEntryDir(id);
             }
         } finally {
             getDatabaseManager().closeStatement(extraStmt);
-            for(PreparedStatement stmt: statements) {
+            for (PreparedStatement stmt : statements) {
                 getDatabaseManager().closeStatement(stmt);
             }
         }
@@ -2446,27 +2443,30 @@ return new Result(title, sb);
         }
 
         entries = getAccessManager().filterEntries(request, entries);
-        Entry group =null;
-        for(Entry entry: entries) {
-            if(group == null) {
+        Entry group = null;
+        for (Entry entry : entries) {
+            if (group == null) {
                 group = entry.getParentEntry();
-            } else if(!group.equals(entry.getParentEntry())) {
+            } else if ( !group.equals(entry.getParentEntry())) {
                 group = null;
                 break;
             }
         }
 
-        if(group!=null) {
+        if (group != null) {
             request.put(ARG_ENTRYID, group.getId());
         }
 
 
-        Result result= getRepository().getOutputHandler(request).outputGroup(request,
-                                                                     request.getOutput(), 
-                                                                     (group!=null?group:getDummyGroup()), 
-                                                                     new ArrayList<Entry>(),
-                                                                     entries);
-        return addEntryHeader(request, group!=null?group:getTopGroup(), result);
+        Result result =
+            getRepository().getOutputHandler(request).outputGroup(request,
+                                             request.getOutput(),
+                                             ((group != null)
+                ? group
+                : getDummyGroup()), new ArrayList<Entry>(), entries);
+        return addEntryHeader(request, (group != null)
+                                       ? group
+                                       : getTopGroup(), result);
     }
 
 
@@ -2702,8 +2702,7 @@ return new Result(title, sb);
             }
 
             if (entries.size() == 1) {
-                fb.append(HtmlUtil.submit("Link it",
-                                          ARG_ACTION_ASSOCIATE));
+                fb.append(HtmlUtil.submit("Link it", ARG_ACTION_ASSOCIATE));
                 fb.append(HtmlUtil.space(1));
             }
 
@@ -2747,10 +2746,19 @@ return new Result(title, sb);
 
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param parent _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canAddTo(Request request, Entry parent) throws Exception {
-        return 
-                getRepository().getAccessManager().canDoAction(request,
-                                                               parent, Permission.ACTION_NEW);
+        return getRepository().getAccessManager().canDoAction(request,
+                parent, Permission.ACTION_NEW);
 
     }
 
@@ -2780,26 +2788,24 @@ return new Result(title, sb);
             Hashtable<String, Entry> oldIdToNewEntry = new Hashtable<String,
                                                            Entry>();
             for (int i = 0; i < ids.size(); i++) {
-                String[]    tuple       = ids.get(i);
-                String      id          = tuple[0];
-                Entry       oldEntry    = getEntry(request, id);
-                String      newId       = getRepository().getGUID();
+                String[]    tuple          = ids.get(i);
+                String      id             = tuple[0];
+                Entry       oldEntry       = getEntry(request, id);
+                String      newId          = getRepository().getGUID();
                 TypeHandler oldTypeHandler = oldEntry.getTypeHandler();
-                TypeHandler newTypeHandler = oldTypeHandler.getTypeHandlerForCopy(oldEntry);
+                TypeHandler newTypeHandler =
+                    oldTypeHandler.getTypeHandlerForCopy(oldEntry);
                 Entry newEntry = newTypeHandler.createEntry(newId);
                 oldIdToNewEntry.put(oldEntry.getId(), newEntry);
-                //(String name, String description, Entry group,User user, Resource resource, String dataType,
-                //                          long createDate, long startDate, long endDate, Object[] values) {
                 //See if this new entry is somewhere down in the tree
                 Entry newParent =
                     oldIdToNewEntry.get(oldEntry.getParentEntryId());
                 if (newParent == null) {
                     newParent = toGroup;
                 }
-                Resource newResource = oldTypeHandler.getResourceForCopy(request, oldEntry, newEntry);
-
-
-
+                Resource newResource =
+                    oldTypeHandler.getResourceForCopy(request, oldEntry,
+                        newEntry);
                 newEntry.initEntry(oldEntry.getName(),
                                    oldEntry.getDescription(),
                                    (Entry) newParent, request.getUser(),
@@ -2816,8 +2822,9 @@ return new Result(title, sb);
                 List<Metadata> newMetadata = new ArrayList<Metadata>();
                 for (Metadata oldMetadata :
                         getMetadataManager().getMetadata(oldEntry)) {
-                    newMetadata.add(new Metadata(getRepository().getGUID(),
-                            newEntry.getId(), oldMetadata));
+                    newMetadata.add(
+                        getMetadataManager().copyMetadata(
+                            oldEntry, newEntry, oldMetadata));
                 }
                 newEntry.setMetadata(newMetadata);
                 newEntries.add(newEntry);
@@ -2840,6 +2847,7 @@ return new Result(title, sb);
      *
      * @param request _more_
      * @param toEntry _more_
+     * @param toGroup _more_
      * @param entries _more_
      *
      * @return _more_
@@ -2934,7 +2942,7 @@ return new Result(title, sb);
     public void setBoundsOnEntry(final Entry parent, List<Entry> children) {
         try {
             Rectangle2D.Double rect = getBounds(children);
-	    System.err.println("set bounds on entry:" + rect);
+            System.err.println("set bounds on entry:" + rect);
             if ((rect != null) && !rect.equals(parent.getBounds())) {
                 parent.setBounds(rect);
                 setEntryBounds(parent);
@@ -2954,11 +2962,11 @@ return new Result(title, sb);
      */
     public Rectangle2D.Double getBounds(List<Entry> children) {
         Rectangle2D.Double rect = null;
-	System.err.println("children:" + children);
+        System.err.println("children:" + children);
 
         for (Entry child : children) {
             if ( !child.hasAreaDefined()) {
-		System.err.println("no bounds:" + child);
+                System.err.println("no bounds:" + child);
                 continue;
             }
             if (rect == null) {
@@ -2966,7 +2974,7 @@ return new Result(title, sb);
             } else {
                 rect.add(child.getBounds());
             }
-	    System.err.println(" rect:" + rect);
+            System.err.println(" rect:" + rect);
         }
         return rect;
     }
@@ -3106,22 +3114,25 @@ return new Result(title, sb);
             parent = findGroup(request, request.getString(ARG_GROUP));
         }
 
-        String file = request.getUploadedFile(ARG_FILE);
+        String file    = request.getUploadedFile(ARG_FILE);
         String xmlFile = file;
         if (file == null) {
             throw new IllegalArgumentException("No file argument given");
         }
 
         //Check the import handlers
-        for(ImportHandler importHandler: getRepository().getImportHandlers()) {
-            Result result = importHandler.handleRequest(request, getRepository(), file, parent);
-            if(result!=null) {
+        for (ImportHandler importHandler :
+                getRepository().getImportHandlers()) {
+            Result result = importHandler.handleRequest(request,
+                                getRepository(), file, parent);
+            if (result != null) {
                 return result;
             }
         }
 
-        String      entriesXml        = null;
-        Hashtable<String,String>   origFileToStorage = new Hashtable<String,String>();
+        String entriesXml = null;
+        Hashtable<String, String> origFileToStorage = new Hashtable<String,
+                                                          String>();
 
         InputStream fis = getStorageManager().getFileInputStream(file);
         try {
@@ -3136,16 +3147,20 @@ return new Result(title, sb);
 
                         InputStream entriesStream = zin;
                         //Check the import handlers
-                        for(ImportHandler importHandler: getRepository().getImportHandlers()) {
-                            InputStream newStream = importHandler.getStream(entryName, entriesStream);
-                            if(newStream!=null) {
+                        for (ImportHandler importHandler :
+                                getRepository().getImportHandlers()) {
+                            InputStream newStream =
+                                importHandler.getStream(entryName,
+                                    entriesStream);
+                            if (newStream != null) {
                                 entriesStream = newStream;
                                 break;
                             }
                         }
 
-                        entriesXml = new String(IOUtil.readBytes(entriesStream, null,
-                                                                 false));
+                        entriesXml =
+                            new String(IOUtil.readBytes(entriesStream, null,
+                                false));
                     } else {
                         String name = IOUtil.getFileTail(ze.getName());
                         File f = getStorageManager().getTmpFile(request,
@@ -3166,10 +3181,13 @@ return new Result(title, sb);
                 System.err.println("Checking import handlers");
                 InputStream entriesStream = fis;
                 //Check the import handlers
-                for(ImportHandler importHandler: getRepository().getImportHandlers()) 
-{                    System.err.println("    " + importHandler.getClass().getName());
-                    InputStream newStream = importHandler.getStream(file, entriesStream);
-                    if(newStream!=null && newStream!=entriesStream) {
+                for (ImportHandler importHandler :
+                        getRepository().getImportHandlers()) {
+                    System.err.println("    "
+                                       + importHandler.getClass().getName());
+                    InputStream newStream = importHandler.getStream(file,
+                                                entriesStream);
+                    if ((newStream != null) && (newStream != entriesStream)) {
                         entriesStream = newStream;
                         break;
                     }
@@ -3181,7 +3199,7 @@ return new Result(title, sb);
             getStorageManager().deleteFile(new File(file));
         }
 
-        List<Entry>     newEntries = new ArrayList<Entry>();
+        List<Entry>              newEntries = new ArrayList<Entry>();
         Hashtable<String, Entry> entries    = new Hashtable<String, Entry>();
         if (parent != null) {
             entries.put("", parent);
@@ -3189,16 +3207,17 @@ return new Result(title, sb);
         Document resultDoc = XmlUtil.makeDocument();
         Element resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE, null,
                                             new String[] { ATTR_CODE,
-                                                           CODE_OK });
+                CODE_OK });
 
 
 
 
-        Element  root = XmlUtil.getRoot(entriesXml);
+        Element root = XmlUtil.getRoot(entriesXml);
 
-        for(ImportHandler importHandler: getRepository().getImportHandlers()) {
-            Element newRoot  = importHandler.getDOM(root);
-            if(newRoot!=null && newRoot!=root) {
+        for (ImportHandler importHandler :
+                getRepository().getImportHandlers()) {
+            Element newRoot = importHandler.getDOM(root);
+            if ((newRoot != null) && (newRoot != root)) {
                 root = newRoot;
                 break;
             }
@@ -3208,10 +3227,10 @@ return new Result(title, sb);
 
 
 
-        List<Element> entryNodes = new ArrayList<Element>();
+        List<Element> entryNodes       = new ArrayList<Element>();
         List<Element> associationNodes = new ArrayList<Element>();
 
-        NodeList children;
+        NodeList      children;
         if (root.getTagName().equals(TAG_ENTRY)) {
             children = new XmlNodeList();
             ((XmlNodeList) children).add(root);
@@ -3232,26 +3251,30 @@ return new Result(title, sb);
             }
         }
 
-        for (Element node: entryNodes) {
+        for (Element node : entryNodes) {
             Entry entry = processEntryXml(request, node, entries,
                                           origFileToStorage, true, false);
             //System.err.println("entry:" + entry.getFullName() + " " + entry.getId());
             XmlUtil.create(resultDoc, TAG_ENTRY, resultRoot,
-                           new String[] {ATTR_ID,
+                           new String[] { ATTR_ID,
                                           entry.getId() });
             newEntries.add(entry);
             if (XmlUtil.getAttribute(node, ATTR_ADDMETADATA, false)) {
-                addInitialMetadata(request, (List<Entry>) Misc.newList(entry), true, false);
+                addInitialMetadata(request,
+                                   (List<Entry>) Misc.newList(entry), true,
+                                   false);
             } else if (XmlUtil.getAttribute(node, ATTR_ADDSHORTMETADATA,
                                             false)) {
-                addInitialMetadata(request, (List<Entry>) Misc.newList(entry), true, true);
+                addInitialMetadata(request,
+                                   (List<Entry>) Misc.newList(entry), true,
+                                   true);
             }
         }
 
-        for (Element node: associationNodes) {
+        for (Element node : associationNodes) {
             String id =
-                getAssociationManager().processAssociationXml(request,
-                                                              node, entries, origFileToStorage);
+                getAssociationManager().processAssociationXml(request, node,
+                    entries, origFileToStorage);
             XmlUtil.create(resultDoc, TAG_ASSOCIATION, resultRoot,
                            new String[] { ATTR_ID,
                                           id });
@@ -3302,21 +3325,20 @@ return new Result(title, sb);
      */
     protected Entry processEntryXml(Request request, Element node,
                                     Hashtable<String, Entry> entries,
-                                    Hashtable<String,String> files, boolean checkAccess,
-                                    boolean internal)
-        throws Exception {
-        String parentId = XmlUtil.getAttribute(node, ATTR_PARENT,
-                                               "");
-        Entry parentEntry = (Entry) entries.get(parentId);
+                                    Hashtable<String, String> files,
+                                    boolean checkAccess, boolean internal)
+            throws Exception {
+        String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
+        Entry  parentEntry = (Entry) entries.get(parentId);
         if (parentEntry == null) {
             parentEntry = (Entry) getEntry(request, parentId);
             if (parentEntry == null) {
                 parentEntry = (Entry) findEntryFromName(parentId,
-                                                        request.getUser(), false);
+                        request.getUser(), false);
             }
             if (parentEntry == null) {
                 throw new RepositoryUtil.MissingEntryException(
-                                                               "Could not find parent:" + parentId);
+                    "Could not find parent:" + parentId);
             }
         }
         Entry entry = processEntryXml(request, node, parentEntry, files,
@@ -3345,14 +3367,15 @@ return new Result(title, sb);
      * @throws Exception _more_
      */
     protected Entry processEntryXml(Request request, Element node,
-                                    Entry parentEntry, Hashtable<String,String> files,
+                                    Entry parentEntry,
+                                    Hashtable<String, String> files,
                                     boolean checkAccess, boolean internal)
             throws Exception {
 
         boolean doAnonymousUpload = false;
         String  name              = XmlUtil.getAttribute(node, ATTR_NAME);
-        if(name.length()>200) {
-            name = name.substring(0,195)+"...";
+        if (name.length() > 200) {
+            name = name.substring(0, 195) + "...";
         }
         String type = XmlUtil.getAttribute(node, ATTR_TYPE,
                                            TypeHandler.TYPE_FILE);
@@ -3650,8 +3673,11 @@ return new Result(title, sb);
         if (entry.isDummy()) {
             return new ArrayList<Comment>();
         }
-        List<Comment>    comments = entry.getTypeHandler().getComments(request, entry);
-        if(comments!=null)return comments;
+        List<Comment> comments = entry.getTypeHandler().getComments(request,
+                                     entry);
+        if (comments != null) {
+            return comments;
+        }
         comments = new ArrayList();
 
         Statement stmt =
@@ -3659,7 +3685,7 @@ return new Result(title, sb);
                 Tables.COMMENTS.COLUMNS, Tables.COMMENTS.NAME,
                 Clause.eq(Tables.COMMENTS.COL_ENTRY_ID, entry.getId()),
                 " order by " + Tables.COMMENTS.COL_DATE + " asc ");
-        SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
             comments.add(
@@ -3800,8 +3826,11 @@ return new Result(title, sb);
         List<Comment> comments = getComments(request, entry);
 
         if (canComment) {
-            sb.append(HtmlUtil.href(request.entryUrl(getRepository().URL_COMMENTS_ADD, 
-                                                     entry), "Add Comment"));
+            sb.append(
+                HtmlUtil.href(
+                    request.entryUrl(
+                        getRepository().URL_COMMENTS_ADD,
+                        entry), "Add Comment"));
         }
 
 
@@ -3840,21 +3869,30 @@ return new Result(title, sb);
                 rowNum = 1;
             }
             StringBuffer content = new StringBuffer();
-            String byLine = 
-                HtmlUtil.span("Posted by " + comment.getUser().getLabel(), HtmlUtil.cssClass("comment_commenter")) + 
-                " @ " + 
-                HtmlUtil.span(formatDate(request, comment.getDate()), HtmlUtil.cssClass("comment_date")) + 
-                HtmlUtil.space(1) + deleteLink;
-            content.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("comment_inner")));
+            String byLine =
+                HtmlUtil.span(
+                    "Posted by "
+                    + comment.getUser().getLabel(), HtmlUtil.cssClass(
+                        "comment_commenter")) + " @ "
+                            + HtmlUtil.span(
+                                formatDate(
+                                    request, comment.getDate()), HtmlUtil.cssClass(
+                                    "comment_date")) + HtmlUtil.space(1)
+                                        + deleteLink;
+            content.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                         HtmlUtil.cssClass("comment_inner")));
             content.append(comment.getComment());
             content.append(HtmlUtil.br());
             content.append(byLine);
             content.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
             sb.append(
                 HtmlUtil.div(
-                             HtmlUtil.makeShowHideBlock(HtmlUtil.span(comment.getSubject(), HtmlUtil.cssClass("comment_subject")),
-                                                        content.toString(),
-                            true, ""), theClass));
+                    HtmlUtil.makeShowHideBlock(
+                        HtmlUtil.span(
+                            comment.getSubject(),
+                            HtmlUtil.cssClass(
+                                "comment_subject")), content.toString(),
+                                    true, ""), theClass));
         }
         return sb.toString();
     }
@@ -4341,7 +4379,7 @@ return new Result(title, sb);
             }
             sb.append(HtmlUtil.space(1));
             sb.append("</div></td><td><div  class=\"menutd\">");
-            sb.append(HtmlUtil.href(link.getUrl(),msg(link.getLabel()),
+            sb.append(HtmlUtil.href(link.getUrl(), msg(link.getLabel()),
                                     HtmlUtil.cssClass("menulink")));
             sb.append("</div></td></tr>");
         }
@@ -4441,8 +4479,8 @@ return new Result(title, sb);
                 OutputType.TYPE_NONHTML, links));
         StringBuffer viewMenuInner =
             new StringBuffer(getEntryActionsTable(request, entry,
-           //                OutputType.TYPE_HTML | OutputType.TYPE_NONHTML, links));
-                OutputType.TYPE_HTML, links));
+        //                OutputType.TYPE_HTML | OutputType.TYPE_NONHTML, links));
+        OutputType.TYPE_HTML, links));
 
         StringBuffer categoryMenuInner = null;
         String       categoryMenu      = null;
@@ -4497,16 +4535,18 @@ return new Result(title, sb);
         String sep = HtmlUtil.div("&nbsp;|&nbsp;",
                                   HtmlUtil.cssClass("menuseparator"));
         String leftTable;
-        
+
         if (categoryMenu == null) {
-            leftTable = HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(new String[] {fileMenu,
-                                                                  sep, editMenu, sep, feedMenu, sep,
-                                                                                viewMenu})), " cellpadding=0 cellspacing=0 border=0 ");
+            leftTable =
+                HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(new String[] {
+                fileMenu, sep, editMenu, sep, feedMenu, sep, viewMenu
+            })), " cellpadding=0 cellspacing=0 border=0 ");
 
         } else {
             leftTable =
                 HtmlUtil.table(HtmlUtil.row(HtmlUtil.cols(new String[] {
-                fileMenu, sep, editMenu, sep, feedMenu, sep, viewMenu, sep, categoryMenu
+                fileMenu, sep, editMenu, sep, feedMenu, sep, viewMenu, sep,
+                categoryMenu
             })), " cellpadding=0 cellspacing=0 border=0 ");
         }
 
@@ -4649,9 +4689,11 @@ return new Result(title, sb);
         //        System.err.println("BC:" + breadcrumbs);
 
         String separator = getRepository().getTemplateProperty(request,
-                               "ramadda.template.breadcrumbs.separator", BREADCRUMB_SEPARATOR);
-        
-        return StringUtil.join(HtmlUtil.pad(BREADCRUMB_SEPARATOR), breadcrumbs);
+                               "ramadda.template.breadcrumbs.separator",
+                               BREADCRUMB_SEPARATOR);
+
+        return StringUtil.join(HtmlUtil.pad(BREADCRUMB_SEPARATOR),
+                               breadcrumbs);
     }
 
 
@@ -4741,7 +4783,8 @@ return new Result(title, sb);
         titleList.add(entry.getLabel());
         String nav;
         String separator = getRepository().getTemplateProperty(request,
-                               "ramadda.template.breadcrumbs.separator", BREADCRUMB_SEPARATOR);
+                               "ramadda.template.breadcrumbs.separator",
+                               BREADCRUMB_SEPARATOR);
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
@@ -4760,7 +4803,9 @@ return new Result(title, sb);
             nav = StringUtil.join(separator, breadcrumbs);
             String toolbar = getEntryToolbar(request, entry, true);
             String menubar = getEntryMenubar(request, entry, toolbar);
-            toolbar = getRepository().getHtmlOutputHandler().getHtmlHeader(request, entry);
+            toolbar =
+                getRepository().getHtmlOutputHandler().getHtmlHeader(request,
+                    entry);
 
             String header =
                 "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
@@ -4774,7 +4819,9 @@ return new Result(title, sb);
                 + header, HtmlUtil.cssClass("entryheader"));
 
         }
-        String title = StringUtil.join(HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), titleList);
+        String title =
+            StringUtil.join(HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR),
+                            titleList);
         return new String[] { title, nav };
     }
 
@@ -5303,51 +5350,66 @@ return new Result(title, sb);
     }
 
 
-    public Result processEntryPublish(Request request, File file, Entry entry,
-                                      Entry associatedEntry,
-                                      String associationType) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param file _more_
+     * @param entry _more_
+     * @param associatedEntry _more_
+     * @param associationType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processEntryPublish(Request request, File file,
+                                      Entry entry, Entry associatedEntry,
+                                      String associationType)
+            throws Exception {
         Entry parent = getEntryManager().findGroup(request,
-                                                   request.getString(ARG_PUBLISH_ENTRY
-                                                                     + "_hidden", ""));
+                           request.getString(ARG_PUBLISH_ENTRY + "_hidden",
+                                             ""));
         if (parent == null) {
             return new Result(
-                              "",
-                              new StringBuffer(
-                                               getRepository().showDialogError(
-                                                                               msg("Could not find folder"))));
+                "",
+                new StringBuffer(
+                    getRepository().showDialogError(
+                        msg("Could not find folder"))));
         }
 
-        if(!canAddTo(request, parent)) {
-            throw new IllegalArgumentException("No permissions to add new entry");
-        } 
+        if ( !canAddTo(request, parent)) {
+            throw new IllegalArgumentException(
+                "No permissions to add new entry");
+        }
 
-        Entry newEntry = (entry!=null?entry:new Entry(getRepository().getTypeHandler(TypeHandler.TYPE_FILE),false));
+        Entry newEntry = ((entry != null)
+                          ? entry
+                          : new Entry(
+                              getRepository().getTypeHandler(
+                                  TypeHandler.TYPE_FILE), false));
         File newFile =
-            getRepository().getStorageManager().moveToStorage(
-                                                              request, file);
+            getRepository().getStorageManager().moveToStorage(request, file);
         newEntry.setParentEntry(parent);
-        newEntry.setResource(new Resource(newFile,
-                                          Resource.TYPE_STOREDFILE));
+        newEntry.setResource(new Resource(newFile, Resource.TYPE_STOREDFILE));
         newEntry.setId(getRepository().getGUID());
-        newEntry.setName(request.getString(ARG_PUBLISH_NAME,"subset_" + newEntry.getName()));
+        newEntry.setName(request.getString(ARG_PUBLISH_NAME,
+                                           "subset_" + newEntry.getName()));
         newEntry.clearMetadata();
         newEntry.setUser(request.getUser());
         if (request.get(ARG_METADATA_ADD, false)) {
             newEntry.clearArea();
-            List<Entry> entries =
-                (List<Entry>) Misc.newList(newEntry);
-            getEntryManager().addInitialMetadata(request,
-                                                 entries, false,
-                                                 request.get(ARG_SHORT, false));
+            List<Entry> entries = (List<Entry>) Misc.newList(newEntry);
+            getEntryManager().addInitialMetadata(request, entries, false,
+                    request.get(ARG_SHORT, false));
         }
         insertEntries(Misc.newList(newEntry), true);
-        if(associatedEntry!=null) {
+        if (associatedEntry != null) {
             getAssociationManager().addAssociation(request, associatedEntry,
-                                                   newEntry, "", associationType);
+                    newEntry, "", associationType);
         }
-        return new Result(
-                          request.entryUrl(
-                                           getRepository().URL_ENTRY_FORM, newEntry));
+        return new Result(request.entryUrl(getRepository().URL_ENTRY_FORM,
+                                           newEntry));
 
     }
 
@@ -5625,9 +5687,9 @@ return new Result(title, sb);
         for (Entry entry : entries) {
             Entry parentEntry = entry.getParentEntry();
             if (parentEntry != null) {
-		parentEntry.getTypeHandler().childEntryChanged(entry, isNew);
+                parentEntry.getTypeHandler().childEntryChanged(entry, isNew);
             }
-	}
+        }
 
         if (t2 > t1) {
             //System.err.println("added:" + entries.size() + " entries in " + (t2-t1) + " ms  Rate:" + (entries.size()/(t2-t1)));
@@ -5717,9 +5779,11 @@ return new Result(title, sb);
             for (Entry entry : entries) {
                 String path = getStorageManager().resourceToDB(
                                   entry.getResource().getPath());
-                Entry  parentEntry = entry.getParentEntry();
-                if(parentEntry==null) continue;
-                String key         = parentEntry.getId() + "_" + path;
+                Entry parentEntry = entry.getParentEntry();
+                if (parentEntry == null) {
+                    continue;
+                }
+                String key = parentEntry.getId() + "_" + path;
                 if (seenResources.contains(key)) {
                     nonUniqueOnes.add(entry);
                     //                    System.out.println("seen resource:" + path);
@@ -5823,7 +5887,7 @@ return new Result(title, sb);
         if ( !group.isGroup()) {
             return result;
         }
-        for (Entry entry : getChildren(request,  group)) {
+        for (Entry entry : getChildren(request, group)) {
             if (entry.isGroup()) {
                 result.add(entry);
             }
@@ -5847,7 +5911,7 @@ return new Result(title, sb);
         if ( !group.isGroup()) {
             return result;
         }
-        for (Entry entry : getChildren(request,  group)) {
+        for (Entry entry : getChildren(request, group)) {
             if ( !entry.isGroup()) {
                 result.add(entry);
             }
@@ -6344,7 +6408,7 @@ return new Result(title, sb);
                                         Clause.eq(Tables.ENTRIES.COL_ID, id));
 
         List<Entry> groups = readEntries(statement);
-        for(Entry entry: groups) {
+        for (Entry entry : groups) {
             if (entry.isGroup()) {
                 return entry;
             }
@@ -6409,10 +6473,9 @@ return new Result(title, sb);
     public Entry findEntryWithName(Request request, Entry parent, String name)
             throws Exception {
         String fullPath = ((parent == null)
-                            ? ""
-                            : parent.getFullName()) + Entry.IDDELIMITER
-                                + name;
-        Entry group = getGroupFromCache(fullPath, false);
+                           ? ""
+                           : parent.getFullName()) + Entry.IDDELIMITER + name;
+        Entry  group    = getGroupFromCache(fullPath, false);
         if (group != null) {
             return group;
         }
@@ -6439,12 +6502,12 @@ return new Result(title, sb);
     public List<Entry> findEntriesWithName(Request request, Entry parent,
                                            String name)
             throws Exception {
-        List<Entry> entries   = new ArrayList<Entry>();
+        List<Entry> entries  = new ArrayList<Entry>();
         String      fullPath = ((parent == null)
-                                 ? ""
-                                 : parent.getFullName()) + Entry.IDDELIMITER
-                                     + name;
-        Entry group = getGroupFromCache(fullPath, false);
+                                ? ""
+                                : parent.getFullName()) + Entry.IDDELIMITER
+                                    + name;
+        Entry       group    = getGroupFromCache(fullPath, false);
         if (group != null) {
             entries.add(group);
             return entries;
@@ -6728,9 +6791,11 @@ return new Result(title, sb);
                                     boolean createIfNeeded,
                                     String lastGroupType)
             throws Exception {
-        if(name == null) return null;
+        if (name == null) {
+            return null;
+        }
         name = name.trim();
-        if(name.startsWith(Entry.PATHDELIMITER)) {
+        if (name.startsWith(Entry.PATHDELIMITER)) {
             name = name.substring(1);
         }
         String topEntryName = getTopGroup().getName();
@@ -6745,7 +6810,7 @@ return new Result(title, sb);
         List<String> toks = (List<String>) StringUtil.split(name,
                                 Entry.PATHDELIMITER, true, true);
         //Now remove the top group
-        
+
         toks.remove(0);
         Entry currentEntry = getTopGroup();
 
@@ -6756,11 +6821,11 @@ return new Result(title, sb);
 
 
         for (int i = 0; i < toks.size(); i++) {
-            boolean lastOne   = (i == toks.size() - 1);
-            String  childName = toks.get(i);
+            boolean      lastOne   = (i == toks.size() - 1);
+            String       childName = toks.get(i);
             //            System.err.println("   looking for:" + childName);
 
-            List<Clause> clauses = new ArrayList<Clause>();
+            List<Clause> clauses   = new ArrayList<Clause>();
             clauses.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                   currentEntry.getId()));
             clauses.add(Clause.eq(Tables.ENTRIES.COL_NAME, childName));
@@ -6770,7 +6835,7 @@ return new Result(title, sb);
                                           Tables.ENTRIES.NAME, clauses));
             //            System.err.println("   Found: " + entries);
             if (entries.size() > 0) {
-                
+
                 currentEntry = entries.get(0);
             } else {
                 if ( !createIfNeeded) {
@@ -7304,13 +7369,14 @@ return new Result(title, sb);
                                             entry.getResource().getPath(),
                                             entry.getResource().getType() });
             }
-            System.err.println ("desc:" + entry);
+            System.err.println("desc:" + entry);
             if ( !entry.isGroup()) {
-                System.err.println ("not a group");
+                System.err.println("not a group");
                 continue;
             }
 
-            if (entry.getTypeHandler().isSynthType() || isSynthEntry(entry.getId())) {
+            if (entry.getTypeHandler().isSynthType()
+                    || isSynthEntry(entry.getId())) {
                 for (String childId :
                         getChildIds(request, (Entry) entry, null)) {
                     Entry childEntry = getEntry(request, childId);
@@ -7353,14 +7419,15 @@ return new Result(title, sb);
                                             resourceType });
                 Entry childEntry = getEntry(request, childId);
 
-                if(childEntry==null) {
+                if (childEntry == null) {
                     //This happened when a previous delete tree went bad and a parent has a record of
                     //a child that does not exist
                     continue;
                 }
 
                 children.addAll(getDescendents(request,
-                                               (List<Entry>) Misc.newList(childEntry), connection, false));
+                        (List<Entry>) Misc.newList(childEntry), connection,
+                        false));
             }
             getDatabaseManager().closeStatement(stmt);
         }

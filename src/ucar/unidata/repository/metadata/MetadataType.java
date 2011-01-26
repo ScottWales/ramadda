@@ -1,7 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
+ * Copyright 2010- Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package ucar.unidata.repository.metadata;
@@ -190,10 +190,10 @@ public class MetadataType extends MetadataTypeBase {
             throws Exception {
 
         NodeList children = XmlUtil.getElements(root);
-        if(children.getLength()==0 && root.getTagName().equals(TAG_HANDLER)) {
-            Class c =
-                Misc.findClass(XmlUtil.getAttribute(root, ATTR_CLASS));
-            MetadataHandler handler      = manager.getHandler(c);
+        if ((children.getLength() == 0)
+                && root.getTagName().equals(TAG_HANDLER)) {
+            Class c = Misc.findClass(XmlUtil.getAttribute(root, ATTR_CLASS));
+            MetadataHandler handler = manager.getHandler(c);
         }
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -438,7 +438,7 @@ public class MetadataType extends MetadataTypeBase {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
                 continue;
             }
-            if (!element.showAsAttachment()) {
+            if ( !element.showAsAttachment()) {
                 continue;
             }
             if (element.getThumbnail() || isThumbnail) {
@@ -449,8 +449,8 @@ public class MetadataType extends MetadataTypeBase {
                     sb.append(html);
                     sb.append(HtmlUtil.space(1));
                 } else {
-                    String value  = metadata.getAttr(element.getIndex());
-                    if(value!=null && value.startsWith("http")) {
+                    String value = metadata.getAttr(element.getIndex());
+                    if ((value != null) && value.startsWith("http")) {
                         sb.append(HtmlUtil.space(1));
                         sb.append(HtmlUtil.img(value));
                         sb.append(HtmlUtil.space(1));
@@ -471,18 +471,53 @@ public class MetadataType extends MetadataTypeBase {
     }
 
 
-    public void getThumbnailUrls(Request request, Entry entry,List<String> urls, Metadata metadata) 
+    /**
+     * _more_
+     *
+     * @param oldEntry _more_
+     * @param newEntry _more_
+     * @param newMetadata _more_
+     *
+     * @throws Exception _more_
+     */
+    public void initializeCopiedMetadata(Entry oldEntry, Entry newEntry,
+                                         Metadata newMetadata)
             throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
                 continue;
             }
-            if (!element.showAsAttachment()) {
+            String oldFileName = newMetadata.getAttr(element.getIndex());
+            String newFileName = getStorageManager().copyToEntryDir(oldEntry,
+                                     newEntry, oldFileName);
+            newMetadata.setAttr(element.getIndex(), newFileName);
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param urls _more_
+     * @param metadata _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getThumbnailUrls(Request request, Entry entry,
+                                 List<String> urls, Metadata metadata)
+            throws Exception {
+        for (MetadataElement element : getChildren()) {
+            if ( !element.getDataType().equals(element.TYPE_FILE)) {
+                continue;
+            }
+            if ( !element.showAsAttachment()) {
                 continue;
             }
             if (element.getThumbnail()) {
-                String url = getImageUrl(request,  entry,
-                                        metadata, null);
+                String url = getImageUrl(request, entry, metadata, null);
                 if (url != null) {
                     urls.add(url);
                 }

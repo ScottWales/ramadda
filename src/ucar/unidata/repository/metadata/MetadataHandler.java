@@ -1,7 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
+ * Copyright 2010- Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package ucar.unidata.repository.metadata;
@@ -120,6 +120,30 @@ public class MetadataHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @param oldEntry _more_
+     * @param newEntry _more_
+     * @param oldMetadata _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Metadata copyMetadata(Entry oldEntry, Entry newEntry,
+                                 Metadata oldMetadata)
+            throws Exception {
+        Metadata newMetadata = new Metadata(getRepository().getGUID(),
+                                            newEntry.getId(), oldMetadata);
+
+        MetadataType type = getType(newMetadata.getType());
+        if (type != null) {
+            type.initializeCopiedMetadata(oldEntry, newEntry, newMetadata);
+        }
+        return newMetadata;
+    }
+
+    /**
+     * _more_
+     *
      * @param type _more_
      */
     public void addMetadataType(MetadataType type) {
@@ -161,7 +185,7 @@ public class MetadataHandler extends RepositoryManager {
                                              ATTR_ATTR4, ""), extra);
 
         MetadataType metadataType = findType(type);
-        if(metadataType == null) {
+        if (metadataType == null) {
             //            System.err.println("Unknown metadata type:" + type);
             throw new IllegalStateException("Unknown metadata type:" + type);
         }
@@ -209,7 +233,18 @@ public class MetadataHandler extends RepositoryManager {
     }
 
 
-    public void getThumbnailUrls(Request request, Entry entry,List<String> urls, Metadata metadata) 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param urls _more_
+     * @param metadata _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getThumbnailUrls(Request request, Entry entry,
+                                 List<String> urls, Metadata metadata)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
@@ -617,22 +652,20 @@ public class MetadataHandler extends RepositoryManager {
 
         if (doSelect) {
             String[] values = getMetadataManager().getDistinctValues(request,
-                                                                     this, type);
+                                  this, type);
             if ((values == null) || (values.length == 0)) {
                 return;
             }
             List l = trimValues((List<String>) Misc.toList(values));
             l.add(0, new TwoFacedObject(msg("-all-"), ""));
-            String value   = request.getString(argName, "");
+            String value = request.getString(argName, "");
             sb.append(HtmlUtil.formEntry(msgLabel(type.getLabel()),
                                          HtmlUtil.select(argName, l, value,
                                              100) + inheritedCbx));
         } else {
-            sb.append(
-                HtmlUtil.formEntry(
-                    msgLabel(type.getLabel()),
-                    HtmlUtil.input(argName, "")
-                    + inheritedCbx));
+            sb.append(HtmlUtil.formEntry(msgLabel(type.getLabel()),
+                                         HtmlUtil.input(argName, "")
+                                         + inheritedCbx));
         }
     }
 
@@ -670,7 +703,7 @@ public class MetadataHandler extends RepositoryManager {
         for (int i = 0; i < values.length; i++) {
             String browseUrl = HtmlUtil.url(url,
                                             ARG_METADATA_TYPE + "."
-                                              + type.getId(), type.getId(),
+                                            + type.getId(), type.getId(),
                                                 ARG_METADATA_ATTR1 + "."
                                                 + type.getId(), values[i]);
             String value = values[i].trim();
