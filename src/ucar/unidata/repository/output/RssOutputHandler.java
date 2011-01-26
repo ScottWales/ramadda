@@ -23,6 +23,8 @@ package ucar.unidata.repository.output;
 
 import org.w3c.dom.*;
 
+import org.ramadda.util.RssUtil;
+
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.repository.*;
 import ucar.unidata.repository.auth.*;
@@ -87,7 +89,6 @@ public class RssOutputHandler extends OutputHandler {
     public static final String TAG_RSS_GEOLON = "georss:lon";
 
     public static final String TAG_RSS_GEOBOX = "georss:box";
-
 
     /** _more_ */
     public static final String TAG_RSS_LINK = "link";
@@ -233,10 +234,10 @@ public class RssOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         sb.append(XmlUtil.XML_HEADER + "\n");
-        sb.append(XmlUtil.openTag(TAG_RSS_RSS,
+        sb.append(XmlUtil.openTag(RssUtil.TAG_RSS,
                                   XmlUtil.attrs(ATTR_RSS_VERSION, "2.0")));
-        sb.append(XmlUtil.openTag(TAG_RSS_CHANNEL));
-        sb.append(XmlUtil.tag(TAG_RSS_TITLE, "", parentEntry.getName()));
+        sb.append(XmlUtil.openTag(RssUtil.TAG_CHANNEL));
+        sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", parentEntry.getName()));
         StringBufferCollection sbc    = new StringBufferCollection();
         OutputType             output = request.getOutput();
         request.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML);
@@ -253,19 +254,19 @@ public class RssOutputHandler extends OutputHandler {
                 extra.append(HtmlUtil.img(imageUrl));
             }
 
-            sb.append(XmlUtil.openTag(TAG_RSS_ITEM));
+            sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));
             sb.append(
                 XmlUtil.tag(
-                    TAG_RSS_PUBDATE, "",
+                    RssUtil.TAG_PUBDATE, "",
                     rssSdf.format(new Date(entry.getStartDate()))));
-            sb.append(XmlUtil.tag(TAG_RSS_TITLE, "", entry.getName()));
+            sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
             String url =
                 repository.absoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, entry.getId()));
-            sb.append(XmlUtil.tag(TAG_RSS_LINK, "", url));
-            sb.append(XmlUtil.tag(TAG_RSS_GUID, "", url));
+            sb.append(XmlUtil.tag(RssUtil.TAG_LINK, "", url));
+            sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "", url));
 
-            sb.append(XmlUtil.openTag(TAG_RSS_DESCRIPTION, ""));
+            sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
             if (output.equals(OUTPUT_RSS_FULL)) {
                 XmlUtil.appendCdata(
                     sb,
@@ -275,27 +276,27 @@ public class RssOutputHandler extends OutputHandler {
                 XmlUtil.appendCdata(sb, entry.getTypeHandler().getEntryText(entry)+extra);
             }
 
-            sb.append(XmlUtil.closeTag(TAG_RSS_DESCRIPTION));
+            sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (entry.hasLocationDefined()) {
-                sb.append(XmlUtil.tag(TAG_RSS_GEOLAT, "",
+                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "",
                                       "" + entry.getSouth()));
-                sb.append(XmlUtil.tag(TAG_RSS_GEOLON, "",
+                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "",
                                       "" + entry.getEast()));
             } else if (entry.hasAreaDefined()) {
                 //For now just include the southeast point
-                sb.append(XmlUtil.tag(TAG_RSS_GEOBOX, "",
+                sb.append(XmlUtil.tag(RssUtil.TAG_GEOBOX, "",
                                       entry.getSouth()+","+entry.getWest()+"," +
                                       entry.getNorth() +"," +
                                       entry.getEast()));
             }
 
 
-            sb.append(XmlUtil.closeTag(TAG_RSS_ITEM));
+            sb.append(XmlUtil.closeTag(RssUtil.TAG_ITEM));
         }
 
         request.put(ARG_OUTPUT, output);
-        sb.append(XmlUtil.closeTag(TAG_RSS_CHANNEL));
-        sb.append(XmlUtil.closeTag(TAG_RSS_RSS));
+        sb.append(XmlUtil.closeTag(RssUtil.TAG_CHANNEL));
+        sb.append(XmlUtil.closeTag(RssUtil.TAG_RSS));
         Result result = new Result("Query Results", sb,
                                    getMimeType(OUTPUT_RSS_SUMMARY));
 

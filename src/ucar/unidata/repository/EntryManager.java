@@ -973,7 +973,7 @@ return new Result(title, sb);
         } else {
             typeHandler =
                 getRepository().getTypeHandler(request.getString(ARG_TYPE,
-                    TypeHandler.TYPE_ANY));
+                                                                 TypeHandler.TYPE_ANY));
         }
 
         List<Entry> entries  = new ArrayList<Entry>();
@@ -1292,7 +1292,6 @@ return new Result(title, sb);
 
 
                 entry = typeHandler.createEntry(id);
-
                 entry.initEntry(name, description, parent, request.getUser(),
                                 new Resource(theResource, resourceType),
                                 dataType, createDate.getTime(),
@@ -1407,8 +1406,8 @@ return new Result(title, sb);
             }
         }
 
-        insertEntries(entries, newEntry);
 
+        insertEntries(entries, newEntry);
 
         if (forUpload) {
             entry = (Entry) entries.get(0);
@@ -5590,7 +5589,8 @@ return new Result(title, sb);
             //                getTopGroup()s = null;
             //                }
             TypeHandler typeHandler = entry.getTypeHandler();
-            typeHandler = typeHandler.getTypeHandlerForCopy(entry);
+            //I don't think we want to do this here since it screws up the type
+            //typeHandler = typeHandler.getTypeHandlerForCopy(entry);
 
             List<TypeInsertInfo> typeInserts =
                 new ArrayList<TypeInsertInfo>();
