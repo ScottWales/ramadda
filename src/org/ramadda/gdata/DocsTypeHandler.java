@@ -159,12 +159,10 @@ public class DocsTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     public TypeHandler getTypeHandlerForCopy(Entry entry) throws Exception {
-        if (entry.getId().indexOf(TYPE_FOLDER) >= 0) {
+        if (entry.getId().indexOf(TYPE_FOLDER) >= 0 ||  !getEntryManager().isSynthEntry(entry.getId())) {
             return getRepository().getTypeHandler(TypeHandler.TYPE_GROUP);
         }
-        if ( !getEntryManager().isSynthEntry(entry.getId())) {
-            return this;
-        }
+
         return getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
     }
 
