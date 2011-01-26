@@ -19,8 +19,13 @@
 
 package org.ramadda.feed;
 
+import ucar.unidata.util.DateUtil;
+
+import java.text.SimpleDateFormat;
+
 
 import org.w3c.dom.*;
+
 
 
 import ucar.unidata.repository.*;
@@ -28,17 +33,12 @@ import ucar.unidata.repository.metadata.*;
 import ucar.unidata.repository.type.*;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.xml.XmlUtil;
 
+import org.ramadda.util.RssUtil;
+import org.ramadda.util.AtomUtil;
 import ucar.unidata.util.StringUtil;
-
-import java.io.File;
-
 import java.net.URL;
-
-
-
-
-
 
 
 import java.util.ArrayList;
@@ -83,10 +83,11 @@ public class FeedTypeHandler extends GenericTypeHandler {
             throws Exception {
         List<String> ids = mainEntry.getChildIds();
         if (ids != null) {
-            //Don't cache for now
-            //            return ids;
+            return ids;
         }
         ids = new ArrayList<String>();
+        if(synthId!=null) return ids;
+
         for (Entry item : getFeedEntries(request, mainEntry)) {
             ids.add(item.getId());
         }
@@ -115,10 +116,61 @@ public class FeedTypeHandler extends GenericTypeHandler {
         return getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
     }
 
+    /*
+<title>Heading west</title>
+    <link>http://scripting.com/stories/2011/01/25/headingWest.html</link>
+    <guid>http://scripting.com/stories/2011/01/25/headingWest.html</guid>
+    <comments>http://scripting.com/stories/2011/01/25/headingWest.html#disqus_thread</comments>
+      <description>
+    </description>
+        <pubDate>Tue, 25 Jan 2011 14:26:27 GMT</pubDate>
+</item>
+    */
+
+
+
+    public void processRss(Request request, Entry mainEntry, List<Entry> items, Element root) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        Element channel = XmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
+        if(channel==null) throw new IllegalArgumentException("No channel tag");
+        NodeList children = XmlUtil.getElements(channel, RssUtil.TAG_ITEM);
+        for (int childIdx = 0; childIdx < children.getLength();
+             childIdx++) {
+            Element item = (Element) children.item(childIdx);
+            String title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,"");
+            String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,"");
+            String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,"");
+            String desc = XmlUtil.getGrandChildText(item, RssUtil.TAG_DESCRIPTION,"");
+            String pubDate = XmlUtil.getGrandChildText(item, RssUtil.TAG_PUBDATE,"").trim();
+            Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
+            Date dttm = new Date();
+            try {
+                dttm = sdf.parse(pubDate);
+            } catch (Exception exc) {
+                dttm  =DateUtil.parse(pubDate);
+            }
+
+            //Tue, 25 Jan 2011 05:00:00 GMT
+            Resource resource = new Resource(link);
+            entry.initEntry(title, desc, null, mainEntry.getUser(),
+                               resource, "", dttm.getTime(),
+                               dttm.getTime(), dttm.getTime(),
+                               dttm.getTime(), null);
+
+            items.add(entry);
+        }
+    }
+
     public List<Entry> getFeedEntries(Request request, Entry mainEntry) throws Exception {
         List<Entry> items = new ArrayList<Entry>();
-        String url =  mainEntry.getValue(0, (String) null);
+        String url =  mainEntry.getResource().getPath();
         if(url==null || url.trim().length()==0) return items;
+
+
+        Element root = XmlUtil.getRoot(url, getClass());
+        if(root.getTagName().equals(RssUtil.TAG_RSS)) {
+            processRss(request, mainEntry, items, root);
+        }
 
         return items;
     }
