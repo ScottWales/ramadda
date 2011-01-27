@@ -2324,8 +2324,6 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getIconUrl(Request request, Entry entry) throws Exception {
-        Resource resource = entry.getResource();
-        String   path     = resource.getPath();
         if (entry.isGroup()) {
             if (getAccessManager().hasPermissionSet(entry,
                     Permission.ACTION_VIEWCHILDREN)) {
@@ -2336,6 +2334,13 @@ public class TypeHandler extends RepositoryManager {
             }
             return iconUrl(ICON_FOLDER_CLOSED);
         }
+        Resource resource = entry.getResource();
+        String   path     = resource.getPath();
+        return getIconUrlFromPath(path);
+    }
+
+
+    public String getIconUrlFromPath(String path) throws Exception {
         String img = ICON_FILE;
         if (path != null) {
             String suffix = IOUtil.getFileExtension(path.toLowerCase());
