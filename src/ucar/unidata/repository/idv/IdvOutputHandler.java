@@ -134,169 +134,182 @@ import java.util.Properties;
  */
 public class IdvOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** Visualization metadata type */
     public static final String METADATA_TYPE_VISUALIZATION =
         "data.visualization";
 
-    /** _more_ */
+    /** product argument id */
     public static final String ARG_PRODUCT = "product";
 
+    /** azimuth argument id */
     public static final String ARG_AZIMUTH = "azimuth";
+
+    /** tilt argument id */
     public static final String ARG_TILT = "tilt";
+
+    /** wireframe argument id */
     public static final String ARG_WIREFRAME = "wireframe";
+
+    /** view direction argument id */
     public static final String ARG_VIEWDIR = "viewdir";
 
+    /** lat/lon lines visible argument id */
     public static final String ARG_LATLON_VISIBLE = "latlon.visible";
+
+    /** lat/lon lines spacing argument id */
     public static final String ARG_LATLON_SPACING = "latlon.spacing";
 
-
+    /** Latitude 1 argument id */
     public static final String ARG_LAT1 = "lat1";
+
+    /** Longitude 1 argument id */
     public static final String ARG_LON1 = "lon1";
+
+    /** Latitude 2 argument id */
     public static final String ARG_LAT2 = "lat2";
+
+    /** Longitude 2 argument id */
     public static final String ARG_LON2 = "lon2";
 
-    /** _more_          */
+    /** submit/save argument id */
     public static final String ARG_SUBMIT_SAVE = "submit.save";
 
-    /** _more_          */
+    /** save attach argument id */
     public static final String ARG_SAVE_ATTACH = "save.attach";
 
-    /** _more_          */
+    /** Save name argument id */
     public static final String ARG_SAVE_NAME = "save.name";
 
-    /** _more_          */
+    /** predefined argument id */
     public static final String ARG_PREDEFINED = "predefined";
 
-    /** _more_ */
+    /** image product id */
     public static final String PRODUCT_IMAGE = "product.image";
 
-
-    /** _more_ */
+    /** QuickTime movie product id */
     public static final String PRODUCT_MOV = "product.mov";
 
-    /** _more_ */
+    /** KMZ product id */
     public static final String PRODUCT_KMZ = "product.kmz";
 
-    /** _more_          */
+    /** GE Plugin product id */
+    public static final String PRODUCT_GEPLUGIN = "product.geplugin";
+
+    /** IDV product id */
     public static final String PRODUCT_IDV = "product.idv";
 
-    /** _more_          */
+    /** ISL product id */
     public static final String PRODUCT_ISL = "product.isl";
 
-    /** _more_ */
+    /** output products */
     private static TwoFacedObject[] products = { new TwoFacedObject("Image",
                                                    PRODUCT_IMAGE),
             new TwoFacedObject("Quicktime Movie", PRODUCT_MOV),
             new TwoFacedObject("Google Earth KMZ", PRODUCT_KMZ) };
 
+    /** optional GE Plugin product */
+    private static TwoFacedObject gePluginProduct =
+        new TwoFacedObject("Google Earth Plugin", PRODUCT_GEPLUGIN);
 
 
-
-
-    /** _more_ */
+    /** globe view argument id */
     public static final String ARG_VIEW_GLOBE = "globe";
 
-    /** _more_ */
+    /** projection argument id */
     public static final String ARG_VIEW_PROJECTION = "proj";
 
-    /** _more_ */
+    /** viewpoint argument id */
     public static final String ARG_VIEW_VIEWPOINT = "viewpoint";
 
-    /** _more_ */
+    /** view bounds argument id */
     public static final String ARG_VIEW_BOUNDS = "bounds";
 
-    /** _more_ */
+    /** "just clip" argument id */
     public static final String ARG_VIEW_JUSTCLIP = "justclip";
 
-    /** _more_ */
+    /** background image argument id */
     public static final String ARG_VIEW_BACKGROUNDIMAGE = "backgroundimage";
 
-
-
-    /** _more_ */
+    /** parameter argument id */
     public static final String ARG_PARAM = "param";
 
-    /** _more_ */
+    /** target argument id */
     public static final String ARG_TARGET = "target";
 
-    /** _more_ */
+    /** target image id */
     public static final String TARGET_IMAGE = "image";
 
-    /** _more_ */
+    /** target jnlp id */
     public static final String TARGET_JNLP = "jnlp";
 
-    /** _more_ */
+    /** target isl id */
     public static final String TARGET_ISL = "isl";
 
-    /** _more_ */
+    /** zoom argument id */
     public static final String ARG_ZOOM = "zoom";
 
-
-    /** _more_ */
+    /** layoutmodel argument id */
     public static final String ARG_POINT_LAYOUTMODEL = "layoutmodel";
 
-    /** _more_ */
+    /** animation argument id */
     public static final String ARG_POINT_DOANIMATION = "doanimation";
 
-    /** _more_ */
+    /** display list label arg id */
     public static final String ARG_DISPLAYLISTLABEL = "dll";
 
-    /** _more_ */
+    /** display list color arg id */
     public static final String ARG_DISPLAYCOLOR = "clr";
 
-    /** _more_ */
+    /** colortable arg id */
     public static final String ARG_COLORTABLE = "ct";
 
-    /** _more_ */
+    /** stride arg id */
     public static final String ARG_STRIDE = "stride";
 
-
-    /** _more_ */
+    /** flow scale arg id */
     public static final String ARG_FLOW_SCALE = "f_s";
 
-    /** _more_ */
+    /** flow density arg id */
     public static final String ARG_FLOW_DENSITY = "f_d";
 
-    /** _more_ */
+    /** flow skip arg id */
     public static final String ARG_FLOW_SKIP = "f_sk";
 
-    /** _more_ */
+    /** display unit arg id */
     public static final String ARG_DISPLAYUNIT = "unit";
 
-    /** _more_ */
+    /** isosurface value arg id */
     public static final String ARG_ISOSURFACEVALUE = "iso_value";
 
-    /** _more_ */
+    /** contour width arg id */
     public static final String ARG_CONTOUR_WIDTH = "c_w";
 
-    /** _more_ */
+    /** contour min arg id */
     public static final String ARG_CONTOUR_MIN = "c_mn";
 
-    /** _more_ */
+    /** contour max arg id */
     public static final String ARG_CONTOUR_MAX = "c_mx";
 
-    /** _more_ */
+    /** contour interval arg id */
     public static final String ARG_CONTOUR_INTERVAL = "c_int";
 
-    /** _more_ */
+    /** contour base arg id */
     public static final String ARG_CONTOUR_BASE = "c_b";
 
-    /** _more_ */
+    /** contour dash arg id */
     public static final String ARG_CONTOUR_DASHED = "c_d";
 
-    /** _more_ */
+    /** contour labels arg id */
     public static final String ARG_CONTOUR_LABELS = "c_l";
 
-
-    /** _more_ */
+    /** scale visible arg id */
     public static final String ARG_SCALE_VISIBLE = "s_v";
 
-    /** _more_ */
+    /** scale orientation arg id */
     public static final String ARG_SCALE_ORIENTATION = "s_o";
 
-    /** _more_ */
+    /** scale placement arg id */
     public static final String ARG_SCALE_PLACEMENT = "s_p";
-
 
     /** _more_ */
     public static final String ARG_RANGE_MIN = "r_mn";
@@ -313,7 +326,6 @@ public class IdvOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_TIMES = "times";
 
-
     /** _more_ */
     public static final String ARG_MAPS = "maps";
 
@@ -322,7 +334,6 @@ public class IdvOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final String ARG_MAPCOLOR = "mapcolor";
-
 
 
     /** _more_ */
@@ -341,14 +352,14 @@ public class IdvOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_HEIGHT = "height";
 
 
-    /** _more_          */
+    /** _more_ */
     private static final String[] NOTARGS = {
         ARG_SUBMIT_SAVE, ARG_SUBMIT_PUBLISH, ARG_PUBLISH_NAME,
         ARG_PUBLISH_ENTRY, ARG_PUBLISH_ENTRY + "_hidden",
         ARG_PUBLISH_DESCRIPTION, ARG_SAVE_ATTACH, ARG_SAVE_NAME, ARG_ACTION
     };
 
-    /** _more_          */
+    /** _more_ */
     private HashSet<String> exceptArgs = new HashSet<String>();
 
     /** _more_ */
@@ -385,8 +396,13 @@ public class IdvOutputHandler extends OutputHandler {
 
 
 
+    /** _more_ */
     public static final String DISPLAY_XS_CONTOUR = "contourxs";
+
+    /** _more_ */
     public static final String DISPLAY_XS_COLOR = "colorxs";
+
+    /** _more_ */
     public static final String DISPLAY_XS_FILLEDCONTOUR = "contourxsfilled";
 
 
@@ -427,9 +443,9 @@ public class IdvOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_IDV_POINT =
-        new OutputType("Point Displays", "idv.point", OutputType.TYPE_CATEGORY,
-                       OutputType.SUFFIX_NONE, ICON_PLANVIEW,
-                       DataOutputHandler.GROUP_DATA);
+        new OutputType("Point Displays", "idv.point",
+                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       ICON_PLANVIEW, DataOutputHandler.GROUP_DATA);
 
 
     /** _more_ */
@@ -444,6 +460,7 @@ public class IdvOutputHandler extends OutputHandler {
     /** _more_ */
     private HashSet<String> okControls = new HashSet<String>();
 
+    /** _more_ */
     private HashSet<String> vertControls = new HashSet<String>();
 
 
@@ -506,7 +523,7 @@ public class IdvOutputHandler extends OutputHandler {
         }
         //Call this in a thread because if there is any problem with xvfb this will just hang
         //Run in a couple of seconds because we are deadlocking deep down in Java on the mac
-        Misc.runInABit(2000,this, "checkIdv",null);
+        Misc.runInABit(2000, this, "checkIdv", null);
     }
 
 
@@ -528,12 +545,11 @@ public class IdvOutputHandler extends OutputHandler {
         } catch (java.awt.HeadlessException jahe) {
             idvOk = false;
             jahe.printStackTrace();
-            getRepository().getLogManager().logWarning("To run the IdvOutputHandler a graphics environment is needed");
+            getRepository().getLogManager().logWarning(
+                "To run the IdvOutputHandler a graphics environment is needed");
         } catch (Throwable exc) {
             idvOk = false;
-            logError(
-                "Creating IdvOutputHandler",
-                exc);
+            logError("Creating IdvOutputHandler", exc);
         }
     }
 
@@ -566,7 +582,9 @@ public class IdvOutputHandler extends OutputHandler {
             return;
         }
         Entry entry = state.entry;
-        if(state.group!=null && state.group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if ((state.group != null)
+                && state.group.getType().equals(
+                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             entry = state.group;
         }
 
@@ -575,8 +593,7 @@ public class IdvOutputHandler extends OutputHandler {
         if (entry != null) {
             if ( !getDataOutputHandler().canLoadAsGrid(entry)) {
                 if (getDataOutputHandler().canLoadAsPoint(entry)) {
-                    links.add(makeLink(request, entry,
-                                       OUTPUT_IDV_POINT));
+                    links.add(makeLink(request, entry, OUTPUT_IDV_POINT));
                 }
                 return;
             }
@@ -689,8 +706,7 @@ public class IdvOutputHandler extends OutputHandler {
             throws Exception {
         DataOutputHandler dataOutputHandler = getDataOutputHandler();
         String action = request.getString(ARG_ACTION, ACTION_MAKEINITFORM);
-        String            path              =
-            dataOutputHandler.getPath(request, entry);
+        String            path = dataOutputHandler.getPath(request, entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load grid");
@@ -839,13 +855,19 @@ public class IdvOutputHandler extends OutputHandler {
 
         StringBuffer basic = new StringBuffer();
         basic.append(HtmlUtil.formTable());
+        // check if we can add in GE Plugin
+        List   productList = Misc.toList(products);
+        String gekeys      = getProperty(PROP_GOOGLEAPIKEYS, null);
+        if (gekeys != null) {
+            productList.add(gePluginProduct);
+        }
 
         basic.append(
             HtmlUtil.formEntry(
                 msgLabel("Product"),
-                htmlSelect(request, ARG_PRODUCT, Misc.toList(products))
+                htmlSelect(request, ARG_PRODUCT, productList)
                 + HtmlUtil.space(2)
-                + msg("Note: For KMZ make sure to set the view bounds")));
+                + msg("Note: For Google Earth, make sure to set the view bounds")));
 
 
         String viewPointHtml = "";
@@ -918,9 +940,11 @@ public class IdvOutputHandler extends OutputHandler {
                                             projectionOptions)));
 
 
-        basic.append(HtmlUtil.formEntry(msgLabel("Azimuth/Tilt"), 
-                                        htmlInput(request, ARG_AZIMUTH, "", 6) +" " + 
-                                        htmlInput(request, ARG_TILT, "", 6)));
+        basic.append(HtmlUtil.formEntry(msgLabel("Azimuth/Tilt"),
+                                        htmlInput(request, ARG_AZIMUTH, "",
+                                            6) + " "
+                                                + htmlInput(request,
+                                                    ARG_TILT, "", 6)));
 
 
         List viewOptions = new ArrayList();
@@ -933,8 +957,7 @@ public class IdvOutputHandler extends OutputHandler {
         viewOptions.add(new TwoFacedObject("top"));
 
         basic.append(HtmlUtil.formEntry(msgLabel("View"),
-                                        htmlSelect(request,
-                                            ARG_VIEWDIR,
+                                        htmlSelect(request, ARG_VIEWDIR,
                                             viewOptions)));
 
         /*
@@ -1057,15 +1080,19 @@ public class IdvOutputHandler extends OutputHandler {
                                                    backgrounds)));
 
         mapAttrs.append(HtmlUtil.formEntry(msgLabel("Wireframe"),
-                                           HtmlUtil.checkbox(ARG_WIREFRAME,"true",
-                                                             request.get(ARG_WIREFRAME,false))));
+                                           HtmlUtil.checkbox(ARG_WIREFRAME,
+                                               "true",
+                                                   request.get(ARG_WIREFRAME,
+                                                       false))));
 
-        mapAttrs.append(HtmlUtil.formEntry(msgLabel("Lat/Lon Lines"),
-                                           HtmlUtil.checkbox(ARG_LATLON_VISIBLE,"true",
-                                                             request.get(ARG_LATLON_VISIBLE,false)) +"  " +
-                                           msgLabel("Spacing") + " " +
-                                           htmlInput(request, ARG_LATLON_SPACING, "")
-                                           ));
+        mapAttrs.append(
+            HtmlUtil.formEntry(
+                msgLabel("Lat/Lon Lines"),
+                HtmlUtil.checkbox(
+                    ARG_LATLON_VISIBLE, "true",
+                    request.get(ARG_LATLON_VISIBLE, false)) + "  "
+                        + msgLabel("Spacing") + " "
+                        + htmlInput(request, ARG_LATLON_SPACING, "")));
 
 
 
@@ -1409,15 +1436,17 @@ public class IdvOutputHandler extends OutputHandler {
                                            htmlInput(request,
                                                ARG_ISOSURFACEVALUE
                                                    + displayIdx, "", 3)));
-            misc.append(HtmlUtil.formEntry(msgLabel("XS Selector"),
-                                           "Lat 1: " + 
-                                           htmlInput(request, ARG_LAT1 + displayIdx,"", 6) +
-                                           "Lon 1: " + 
-                                           htmlInput(request, ARG_LON1 + displayIdx,"", 6) +"     " +
-                                           "Lat 2: " + 
-                                           htmlInput(request, ARG_LAT2 + displayIdx,"", 6) +
-                                           "Lon 2: " + 
-                                           htmlInput(request, ARG_LON2 + displayIdx,"", 6)));
+            misc.append(
+                HtmlUtil.formEntry(
+                    msgLabel("XS Selector"),
+                    "Lat 1: "
+                    + htmlInput(request, ARG_LAT1 + displayIdx, "", 6)
+                    + "Lon 1: "
+                    + htmlInput(request, ARG_LON1 + displayIdx, "", 6)
+                    + "     " + "Lat 2: "
+                    + htmlInput(request, ARG_LAT2 + displayIdx, "", 6)
+                    + "Lon 2: "
+                    + htmlInput(request, ARG_LON2 + displayIdx, "", 6)));
 
 
             misc.append(HtmlUtil.formEntry(msgLabel("Vector/Barb Size"),
@@ -1460,7 +1489,9 @@ public class IdvOutputHandler extends OutputHandler {
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
             publishSB.append(HtmlUtil.formTable());
-            addPublishWidget(request, entry, publishSB,msg("Select a folder to publish the product to"));
+            addPublishWidget(
+                request, entry, publishSB,
+                msg("Select a folder to publish the product to"));
             publishSB.append(HtmlUtil.formEntry("",
                     HtmlUtil.submit(msg("Publish image"),
                                     ARG_SUBMIT_PUBLISH)));
@@ -1494,7 +1525,7 @@ public class IdvOutputHandler extends OutputHandler {
 
 
         sb.append(OutputHandler.makeTabs(tabLabels, tabContents, true,
-                                    "tab_content"));
+                                         "tab_content"));
 
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Make image"), ARG_SUBMIT));
@@ -1678,10 +1709,11 @@ public class IdvOutputHandler extends OutputHandler {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
-        if (request.exists(ARG_SUBMIT_PUBLISH)  && doingPublish(request)) {
+        if (request.exists(ARG_SUBMIT_PUBLISH) && doingPublish(request)) {
             File imageFile = (File) generateGridImage(request, entry,
-                                                      dataSource);
-            return getEntryManager().processEntryPublish(request, imageFile, null, entry, "derived product");
+                                 dataSource);
+            return getEntryManager().processEntryPublish(request, imageFile,
+                    null, entry, "derived product");
         }
 
 
@@ -1745,7 +1777,8 @@ public class IdvOutputHandler extends OutputHandler {
             url = url + "/" + baseName + ".gif";
         } else if (product.equals(PRODUCT_MOV)) {
             url = url + "/" + baseName + ".mov";
-        } else if (product.equals(PRODUCT_KMZ)) {
+        } else if (product.equals(PRODUCT_KMZ)
+                   || product.equals(PRODUCT_GEPLUGIN)) {
             url = url + "/" + baseName + ".kmz";
         }
 
@@ -1809,9 +1842,41 @@ public class IdvOutputHandler extends OutputHandler {
         } else if (product.equals(PRODUCT_MOV)) {
             sb.append(HtmlUtil.href(url, "Click here to retrieve the movie"));
         } else if (product.equals(PRODUCT_KMZ)) {
-
             sb.append(HtmlUtil.href(url,
                                     "Click here to retrieve the KMZ file"));
+        } else if (product.equals(PRODUCT_GEPLUGIN)) {
+            String template =
+                getRepository().getResource(
+                    "/ucar/unidata/repository/resources/googleearth/geplugin.html");
+            template = template.replace("${kmzurl}", url);
+            // fill in the API keys for this machine
+            String geAPIKeys = getProperty(PROP_GOOGLEAPIKEYS, null);
+            String mapsKey   = "";
+            String otherOpts = "";
+            if (geAPIKeys != null) {
+                String hostname = getRepository().getHostname();
+                List   keys = StringUtil.split(geAPIKeys, "\n", true, false);
+                for (int i = 0; i < keys.size(); i++) {
+                    List serverKey = StringUtil.split(keys.get(0), ":", true,
+                                         false);
+                    if (serverKey.size() >= 2) {
+                        String server = (String) serverKey.get(0);
+                        // check to see if this matches me
+                        if (hostname.indexOf(server) >= 0) {  // match
+                            mapsKey = (String) serverKey.get(1);
+                            if (serverKey.size() > 2) {
+                                // , {"other_params":"client=clientName&sensor=true_or_false"}
+                                otherOpts = ", {\"other_params\":\""
+                                            + serverKey.get(2) + "\"}";
+                            }
+                        }
+                    }
+                }
+
+            }
+            template = template.replace("${gemapskey}", mapsKey);
+            template = template.replace("${geother_params}", otherOpts);
+            sb.append(template);
         }
 
 
@@ -1831,8 +1896,8 @@ public class IdvOutputHandler extends OutputHandler {
 
         sb.append("\n");
         sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Image Settings"), formSB.toString(),
-                                             showForm));
+        sb.append(HtmlUtil.makeShowHideBlock(msg("Image Settings"),
+                                             formSB.toString(), showForm));
 
         return new Result("Grid Displays", sb);
 
@@ -1937,7 +2002,8 @@ public class IdvOutputHandler extends OutputHandler {
         } else if (product.equals(PRODUCT_MOV)) {
             multipleTimes = true;
             suffix        = ".mov";
-        } else if (product.equals(PRODUCT_KMZ)) {
+        } else if (product.equals(PRODUCT_KMZ)
+                   || product.equals(PRODUCT_GEPLUGIN)) {
             multipleTimes = true;
             suffix        = ".kmz";
         }
@@ -1970,14 +2036,17 @@ public class IdvOutputHandler extends OutputHandler {
 
         }
 
-        viewProps.append(makeProperty("wireframe", ""+request.get(ARG_WIREFRAME,false)));
+        viewProps.append(makeProperty("wireframe",
+                                      "" + request.get(ARG_WIREFRAME,
+                                          false)));
 
 
 
-        if(request.get(ARG_LATLON_VISIBLE,false)) {
+        if (request.get(ARG_LATLON_VISIBLE, false)) {
             viewProps.append(makeProperty("initLatLonVisible", "true"));
-            if(request.defined(ARG_LATLON_SPACING)) {
-                viewProps.append(makeProperty("initLatLonSpacing", ""+request.get(ARG_LATLON_SPACING,15.0)));
+            if (request.defined(ARG_LATLON_SPACING)) {
+                viewProps.append(makeProperty("initLatLonSpacing",
+                        "" + request.get(ARG_LATLON_SPACING, 15.0)));
             }
         }
 
@@ -2260,28 +2329,24 @@ public class IdvOutputHandler extends OutputHandler {
                                            + displayIdx, "")));
 
 
-            if(display.equals(DISPLAY_XS_FILLEDCONTOUR) ||
-               display.equals(DISPLAY_XS_CONTOUR) ||
-               display.equals(DISPLAY_XS_COLOR)) {
-                propSB.append(makeProperty("lineVisible","false"));
-                if(request.defined(ARG_LAT1+displayIdx) && 
-                   request.defined(ARG_LON1+displayIdx) && 
-                   request.defined(ARG_LAT2+displayIdx) && 
-                   request.defined(ARG_LON2+displayIdx)) {
+            if (display.equals(DISPLAY_XS_FILLEDCONTOUR)
+                    || display.equals(DISPLAY_XS_CONTOUR)
+                    || display.equals(DISPLAY_XS_COLOR)) {
+                propSB.append(makeProperty("lineVisible", "false"));
+                if (request.defined(ARG_LAT1 + displayIdx)
+                        && request.defined(ARG_LON1 + displayIdx)
+                        && request.defined(ARG_LAT2 + displayIdx)
+                        && request.defined(ARG_LON2 + displayIdx)) {
                     propSB.append(makeProperty("initLat1",
-                                               request.getString(ARG_LAT1
-                                                                 + displayIdx, "")));
+                            request.getString(ARG_LAT1 + displayIdx, "")));
 
                     propSB.append(makeProperty("initLon1",
-                                               request.getString(ARG_LON1
-                                                                 + displayIdx, "")));
+                            request.getString(ARG_LON1 + displayIdx, "")));
                     propSB.append(makeProperty("initLat2",
-                                               request.getString(ARG_LAT2
-                                                                 + displayIdx, "")));
+                            request.getString(ARG_LAT2 + displayIdx, "")));
 
                     propSB.append(makeProperty("initLon2",
-                                               request.getString(ARG_LON2
-                                                                 + displayIdx, "")));
+                            request.getString(ARG_LON2 + displayIdx, "")));
                 }
             }
 
@@ -2315,8 +2380,8 @@ public class IdvOutputHandler extends OutputHandler {
                                 request.getString(
                                     ARG_ISOSURFACEVALUE + displayIdx, ""))));
                 }
-            } 
-            if(!vertControls.contains(display)) {
+            }
+            if ( !vertControls.contains(display)) {
                 String level = request.getString(ARG_LEVELS + displayIdx,
                                    "0");
                 attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_LEVEL_FROM,
@@ -2389,21 +2454,18 @@ public class IdvOutputHandler extends OutputHandler {
         isl.append("</datasource>\n");
         isl.append("<pause/>\n");
 
-        if(request.defined(ARG_AZIMUTH) && request.defined(ARG_TILT)) {
-            isl.append(
-                       XmlUtil.tag(
-                                   ImageGenerator.TAG_VIEWPOINT,
-                                   XmlUtil.attrs(
-                                                 ImageGenerator.ATTR_AZIMUTH, request.getString(ARG_AZIMUTH,""),
-                                                 ImageGenerator.ATTR_TILT, request.getString(ARG_TILT,""))));
+        if (request.defined(ARG_AZIMUTH) && request.defined(ARG_TILT)) {
+            isl.append(XmlUtil.tag(ImageGenerator.TAG_VIEWPOINT,
+                                   XmlUtil.attrs(ImageGenerator.ATTR_AZIMUTH,
+                                       request.getString(ARG_AZIMUTH, ""),
+                                       ImageGenerator.ATTR_TILT,
+                                       request.getString(ARG_TILT, ""))));
         }
 
-        if(request.defined(ARG_VIEWDIR)) {
-            isl.append(
-                       XmlUtil.tag(
-                                   ImageGenerator.TAG_VIEWPOINT,
-                                   XmlUtil.attrs(
-                                                 ImageGenerator.ATTR_VIEWDIR, request.getString(ARG_VIEWDIR,""))));
+        if (request.defined(ARG_VIEWDIR)) {
+            isl.append(XmlUtil.tag(ImageGenerator.TAG_VIEWPOINT,
+                                   XmlUtil.attrs(ImageGenerator.ATTR_VIEWDIR,
+                                       request.getString(ARG_VIEWDIR, ""))));
         }
 
 
@@ -2459,7 +2521,6 @@ public class IdvOutputHandler extends OutputHandler {
      * @param request _more_
      * @param outputType _more_
      * @param group _more_
-     * @param suGbroups _more_
      * @param subGroups _more_
      * @param entries _more_
      *
@@ -2468,15 +2529,15 @@ public class IdvOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result outputGroup(Request request, OutputType outputType,
-                                 Entry group, List<Entry> subGroups,
-                                 List<Entry> entries)
+                              Entry group, List<Entry> subGroups,
+                              List<Entry> entries)
             throws Exception {
 
-        if (group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if (group.getType().equals(
+                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return outputEntry(request, outputType, group);
         }
-        return super.outputGroup(request,  outputType,
-                                 group, subGroups,
+        return super.outputGroup(request, outputType, group, subGroups,
                                  entries);
 
         /*

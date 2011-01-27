@@ -1,0 +1,64 @@
+<script type="text/javascript" src="http://www.google.com/jsapi${gemapskey}"> </script>
+
+<script type="text/javascript">
+
+    //Example:  google.load("earth", "1", {"other_params":"client=gme-xxxx&sensor=true_or_false"});
+    google.load("earth", "1"${geother_params});
+
+    var ge;
+
+
+    function initge() {
+      google.earth.createInstance('map3d', initCallback, failureCallback);
+    }
+
+    function initCallback(instance) {
+      ge = instance;
+      ge.getWindow().setVisibility(true);
+
+      // add a navigation control
+      ge.getNavigationControl().setVisibility(ge.VISIBILITY_AUTO);
+
+      // add some layers
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, true);
+    
+      // in this sample we will attempt
+      // to fetch a  KML file and show it
+    
+      function finished(object) {
+        if (!object) {
+          // wrap alerts in API callbacks and event handlers
+          // in a setTimeout to prevent deadlock in some browsers
+          setTimeout(function() {
+            alert('Bad or null KML.');
+          }, 0);
+          return;
+        }
+        ge.getFeatures().appendChild(object);
+        var la = ge.createLookAt('');
+        la.set(38.0, -98, 10000000, ge.ALTITUDE_RELATIVE_TO_GROUND,
+              0,0,0);
+        ge.getView().setAbstractView(la);
+      }
+    
+      // fetch the KML
+      var url = '${kmzurl}';
+      google.earth.fetchKml(ge, url, finished);
+    
+      document.getElementById('installed-plugin-version').innerHTML =
+        ge.getPluginVersion().toString();
+    }
+    
+    function failureCallback(errorCode) {
+	    alert("Failure loading the Google Earth Plugin: " + errorCode);
+    }
+ </script>
+
+ <div id="map3d_container" style="border: 1px solid #000; width: 700px; height: 700px;">
+      <div id="map3d" style="height: 100%;"></div>
+ </div>
+<script type="text/javascript" language="javascript">
+    initge();
+</script> 
+ 
