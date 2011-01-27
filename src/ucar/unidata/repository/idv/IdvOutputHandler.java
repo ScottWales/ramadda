@@ -844,7 +844,7 @@ public class IdvOutputHandler extends OutputHandler {
     private void makeGridForm(Request request, StringBuffer sb, Entry entry,
                               DataSource dataSource)
             throws Exception {
-
+    	
         String formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
         sb.append(HtmlUtil.form(formUrl, ""));
         sb.append(HtmlUtil.submit(msg("Make image"), ARG_SUBMIT));
@@ -1857,17 +1857,22 @@ public class IdvOutputHandler extends OutputHandler {
                 String hostname = getRepository().getHostname();
                 List   keys = StringUtil.split(geAPIKeys, "\n", true, false);
                 for (int i = 0; i < keys.size(); i++) {
-                    List serverKey = StringUtil.split(keys.get(0), ":", true,
+                    List serverKey = StringUtil.split(keys.get(i), ":", true,
                                          false);
                     if (serverKey.size() >= 2) {
                         String server = (String) serverKey.get(0);
                         // check to see if this matches me
                         if (hostname.indexOf(server) >= 0) {  // match
                             mapsKey = (String) serverKey.get(1);
+                            if (!mapsKey.equals("")) {
+                            	mapsKey = "?key="+mapsKey;
+                            }
                             if (serverKey.size() > 2) {
                                 // , {"other_params":"client=clientName&sensor=true_or_false"}
                                 otherOpts = ", {\"other_params\":\""
                                             + serverKey.get(2) + "\"}";
+                            } else {  // clear out in case there was something else from a previous entry
+                            	otherOpts = "";
                             }
                         }
                     }
