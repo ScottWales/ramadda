@@ -38,5 +38,11 @@
      <column name="blogid" group="Blogger Information" type="string"     default="" label="Blogger Blog ID" columns="20"  showinhtml="true"/>
    </type>
 
+  <type name="gdata_sites"  super="gdata_base" description="Google Sites"  handler="org.ramadda.gdata.SitesTypeHandler">  
+     <property name="icon" value="/gdata/sites.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="site" group="Site Information" type="string"     default="" label="Site name" columns="20"  showinhtml="true"/>
+   </type>
+
 
 </types>
