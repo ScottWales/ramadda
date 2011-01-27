@@ -80,10 +80,12 @@
     </target>
 
     <target name="runserver" depends="init">
-      <java classname="ucar.unidata.repository.server.RepositoryServer" maxmemory="512mb">
+      <java classname="ucar.unidata.repository.server.RepositoryServer" maxmemory="512mb" fork="true">
           <arg value="-port"/>
           <arg value="8080"/>
+<!--
           <arg value="-Dramadda.db=mysql"/>
+-->
           <arg value="-Dramadda.cacheresources=false"/>
           <classpath>
              <pathelement path="${distdir}/${repositoryjar}"/>
