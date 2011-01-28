@@ -648,7 +648,28 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                             metadataList.add(metadata);
                         }
                     }
+                }
 
+
+                for (Attribute attr : var.getAttributes()) {
+                    String key = "metadata.variable." + var.getName()+"." + attr.getName();
+                    String metadataType =getRepository().getProperty(key,(String)null);
+                    //                    System.err.println ("Looking for:" + key);
+                    if(metadataType!=null) {
+                        System.err.println ("making variable level metadata:" + metadataType);
+                        metadata =
+                            new Metadata(getRepository().getGUID(),
+                                         entry.getId(), metadataType,
+                                         DFLT_INHERITED, 
+                                         var.getName(),
+                                         attr.getStringValue(),
+                                         Metadata.DFLT_ATTR,
+                                         Metadata.DFLT_ATTR,
+                                         Metadata.DFLT_EXTRA);
+                        if ( !entry.hasMetadata(metadata)) {
+                            metadataList.add(metadata);
+                        }
+                    }
                 }
 
             }
