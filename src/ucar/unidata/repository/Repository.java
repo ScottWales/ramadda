@@ -5722,7 +5722,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
         return xmlEncoder;
     }
 
-
     public static String encodeObject(Object object)  { 
         return xmlEncoder.toXml(object);
     }

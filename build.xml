@@ -93,15 +93,9 @@ used by the javadoc target
     </target>
 
     <target name="plugins" depends="init">
-      <echo message="Building RAMADDA plugins"/>
-      <ant antfile="${srcdir}/org/ramadda/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/wms/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/ontology/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/gdata/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/feed/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/map/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/db/build.xml" inheritAll="false"/>
-    </target>
+      <ant antfile="${srcdir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
+   </target>
+
 
 
 
