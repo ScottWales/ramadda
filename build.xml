@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <project basedir="." default="ramadda" name="RAMADDA">
 
     <target name="init">
@@ -26,6 +25,19 @@ used by the javadoc target
 <target name="commoninit">
       <mkdir dir="${distdir}"/>
 </target>
+
+
+    <target name="ramadda" depends="init">
+      <echo message="Building RAMADDA"/>
+      <ant antfile="${srcdir}/ucar/unidata/repository/build.xml" inheritAll="false"/>
+    </target>
+
+    <target name="plugins" depends="init">
+      <ant antfile="${srcdir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
+   </target>
+
+
+
 
 
 
@@ -85,16 +97,6 @@ used by the javadoc target
    <target name="purge" depends="init,clean" >
      <delete dir="${distdir}"/>
     </target>
-
-
-    <target name="ramadda" depends="init">
-      <echo message="Building RAMADDA"/>
-      <ant antfile="${srcdir}/ucar/unidata/repository/build.xml" inheritAll="false"/>
-    </target>
-
-    <target name="plugins" depends="init">
-      <ant antfile="${srcdir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
-   </target>
 
 
 
