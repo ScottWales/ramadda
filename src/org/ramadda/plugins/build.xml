@@ -65,7 +65,7 @@
      </copy>
 
       <copy overwrite="true"  todir="${plugindestdir}">
-          <fileset file="${srcdir}/org/ramadda/plugins/README.plugins"/>
+          <fileset file="${srcdir}/org/ramadda/plugins/README"/>
      </copy>
 
 
