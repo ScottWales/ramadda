@@ -1,6 +1,6 @@
 <types>
 
-  <type name="map.map"  description="Editable Map" handler="org.ramadda.map.MapTypeHandler" category="Geo Data">
+  <type name="map.map"  description="Editable Map" handler="org.ramadda.plugins.map.MapTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/map.png"/>
      <property name="form.show.resource" value="false"/>
      <property name="form.show.area" value="true"/>
@@ -11,22 +11,22 @@
    </type>
 
 
-  <type name="map.entry"  description="Map Item" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" category="Geo Data">
+  <type name="map.entry"  description="Map Item" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" category="Geo Data">
      <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
    </type>
 
 
 <!--
-  <type name="map.entry.image"  super="map.entry" description="Map Image" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" >
+  <type name="map.entry.image"  super="map.entry" description="Map Image" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
      <property name="icon" value="/icons/map.png"/>
    </type>
 
-  <type name="map.entry.polygon"  super="map.entry" description="Map Polygon" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" >
+  <type name="map.entry.polygon"  super="map.entry" description="Map Polygon" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
      <property name="icon" value="/icons/map.png"/>
    </type>
 -->
 
-  <type name="map.entry.marker"  super="map.entry" description="Map Marker" handler="org.ramadda.map.MapEntryTypeHandler" foruser="false" >
+  <type name="map.entry.marker"  super="map.entry" description="Map Marker" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
      <property name="icon" value="/icons/map.png"/>
    </type>
 

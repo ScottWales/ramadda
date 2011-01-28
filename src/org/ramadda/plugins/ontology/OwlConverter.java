@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.ontology;
+package org.ramadda.plugins.ontology;
 
 
 import org.w3c.dom.*;
@@ -140,11 +140,11 @@ public class OwlConverter extends ImportHandler {
         Properties topLevelMap = new Properties();
         topLevelMap.load(
             IOUtil.getInputStream(
-                "/org/ramadda/ontology/toplevel.properties",
+                "/org.ramadda.plugins.ontology/toplevel.properties",
                 OwlConverter.class));
         names.load(
             IOUtil.getInputStream(
-                "/org/ramadda/ontology/names.properties",
+                "/org.ramadda.plugins.ontology/names.properties",
                 OwlConverter.class));
 
         File         f   = new File("owl");
@@ -163,7 +163,7 @@ public class OwlConverter extends ImportHandler {
 
         List<String> files = StringUtil.split(
                                  IOUtil.readContents(
-                                     "/org/ramadda/ontology/sweetfiles.txt",
+                                     "/org.ramadda.plugins.ontology/sweetfiles.txt",
                                      OwlConverter.class), "\n", true, true);
         int             cnt             = 0;
         String          currentTopLevel = null;

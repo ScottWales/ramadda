@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.map;
+package org.ramadda.plugins.map;
 
 
 import org.w3c.dom.*;

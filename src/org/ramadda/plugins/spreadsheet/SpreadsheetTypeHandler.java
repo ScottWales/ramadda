@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.spreadsheet;
+package org.ramadda.plugins.spreadsheet;
 
 
 import org.w3c.dom.*;

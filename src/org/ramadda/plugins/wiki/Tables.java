@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.wiki;
+package org.ramadda.plugins.wiki;
 
 
 import ucar.unidata.sql.SqlUtil;

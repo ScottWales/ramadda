@@ -1,7 +1,7 @@
 <types>
 
 
-  <type name="weblog"  description="Weblog" handler="org.ramadda.blog.WeblogTypeHandler" category="Collaboration">
+  <type name="weblog"  description="Weblog" handler="org.ramadda.plugins.blog.WeblogTypeHandler" category="Collaboration">
      <property name="icon" value="/blog/blog_icon.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
@@ -11,7 +11,7 @@
 
 
 
-  <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.blog.BlogEntryTypeHandler" category="Collaboration">
+  <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.plugins.blog.BlogEntryTypeHandler" category="Collaboration">
      <property name="icon" value="/blog/blog_icon.png"/>
 
      <property name="form.name.label" value="Subject"/>

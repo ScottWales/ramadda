@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="../../../../" default="plugin" name="ramadda plugin">
+<project basedir="../../../../../" default="plugin" name="ramadda plugin">
     <target name="plugin">
       <property file="${basedir}/build.properties"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="feedplugin.jar"/>
-      <property name="plugindir" value="org/ramadda/feed"/>
+      <property name="plugindir" value="org/ramadda/plugins/feed"/>
       <ant antfile="${basedir}/build.xml" target="plugin"/>
       <ant antfile="${basedir}/build.xml" target="plugin_install"/>
     </target>

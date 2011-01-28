@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.calendar;
+package org.ramadda.plugins.calendar;
 
 
 import org.w3c.dom.*;

@@ -1,6 +1,6 @@
 <types>
 
-  <type name="calendar"  description="Calendar" handler="org.ramadda.calendar.CalendarTypeHandler" category="Collaboration">
+  <type name="calendar"  description="Calendar" handler="org.ramadda.plugins.calendar.CalendarTypeHandler" category="Collaboration">
      <property name="icon" value="/icons/calendar.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
@@ -9,7 +9,7 @@
 </type>
 
 
-  <type name="calendarentry"  description="Calendar Entry" handler="org.ramadda.calendar.CalendarEntryTypeHandler" category="Collaboration">
+  <type name="calendarentry"  description="Calendar Entry" handler="org.ramadda.plugins.calendar.CalendarEntryTypeHandler" category="Collaboration">
      <property name="icon" value="/icons/calendar.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>

@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.gdata;
+package org.ramadda.plugins.gdata;
 
 
 import com.google.gdata.client.GoogleService;

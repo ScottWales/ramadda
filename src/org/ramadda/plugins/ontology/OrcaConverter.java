@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.ontology;
+package org.ramadda.plugins.ontology;
 
 
 import org.w3c.dom.*;

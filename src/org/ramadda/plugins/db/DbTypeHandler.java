@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.db;
+package org.ramadda.plugins.db;
 
 
 import org.w3c.dom.*;

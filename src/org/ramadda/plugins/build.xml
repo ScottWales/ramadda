@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../" default="plugins" name="Ramadda">
+
+    <target name="init">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property  name="version" value="1.1"/>
+
+
+        <property name="srcdir" value="${basedir}/src"/>
+        <property name="libdir" value="${basedir}/lib"/>
+
+        <property name="distdir" value="${basedir}/dist"/>
+        <mkdir dir="${distdir}"/>
+
+        <property name="plugindestdir" value="${distdir}/plugins"/>
+        <mkdir dir="${plugindestdir}"/>
+
+
+        <property name="releasedir" value="${distdir}/repository" />
+        <property name="tmpjardir" value="${distdir}/tmpjardir" />
+
+
+        <property name="geoclasspath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/repositorytds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+        <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/repositorytds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+
+        <property name="pluginjar" value="${plugindestdir}/ramaddacollab.jar"/>
+        <property  name="build.sysclasspath" value="ignore"/>
+
+        <property name="compiledir" value="${srcdir}"/>
+        <property name="failonerror" value="true"/>
+        <property name="srcversion" value="1.6"/>
+
+    </target>
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compiledir}" includes="**/*.class"/>
+        </delete>
+<!--
+        <delete file="${pluginjar}"/>
+-->
+    </target>
+
+    <target name="plugins" depends="init">
+      <echo message="Building RAMADDA plugins"/>
+      <antcall target="collab"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/ontology/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/gdata/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/feed/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/db/build.xml" inheritAll="false"/>
+    </target>
+
+
+
+
+    <target name="collab" depends="clean,compile,plugin">
+    </target>
+
+    <target name="compile" depends="init">
+        <javac
+            classpath="${classpath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+	    fork="true"
+            memoryMaximumSize="512m"
+            target="1.6"
+        >
+            <include name="org/ramadda/plugins/blog/**/*.java"/>
+            <include name="org/ramadda/plugins/calendar/**/*.java"/>
+            <include name="org/ramadda/plugins/chat/**/*.java"/>
+            <include name="org/ramadda/plugins/slideshow/**/*.java"/>
+            <include name="org/ramadda/plugins/wiki/**/*.java"/>
+    </javac>
+  </target>
+
+
+
+
+
+
+    <target name="plugin" depends="init" >
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${pluginjar}">
+<!--
+            <include name="org/ramadda/**/*.class"/> 
+-->
+            <exclude name="org/ramadda/**/*.java"/> 
+            <exclude name="org/ramadda/plugins/spreadsheet/*"/> 
+            <exclude name="org/ramadda/plugins/spreadsheet/**/*"/> 
+            <include name="org/ramadda/plugins/blog/**/*"/>
+            <include name="org/ramadda/plugins/plugins/misctypes.xml"/>
+            <include name="org/ramadda/plugins/calendar/**/*"/>
+            <include name="org/ramadda/plugins/chat/**/*"/>
+            <include name="org/ramadda/plugins/slideshow/**/*"/>
+            <include name="org/ramadda/plugins/wiki/**/*"/>
+	    </jar>
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
+             <fileset file="${pluginjar}"/>
+        </copy>
+    </target>
+
+
+
+    <target name="plugin2" depends="init" >
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${pluginjar}">
+<!--
+
+            <include name="org/ramadda/**/*.class"/> 
+-->
+
+
+            <exclude name="org/ramadda/**/*.class"/> 
+
+            <exclude name="org/ramadda/plugins/spreadsheet/*"/> 
+            <exclude name="org/ramadda/plugins/spreadsheet/**/*"/> 
+
+            <include name="org/ramadda/**/*.xml"/> 
+            <include name="org/ramadda/**/*outputhandlers.xml"/> 
+            <include name="org/ramadda/**/*.properties"/> 
+            <include name="org/ramadda/**/*.css"/> 
+            <include name="org/ramadda/**/*.js"/> 
+            <include name="org/ramadda/**/*.sql"/> 
+            <include name="org/ramadda/**/*.png"/> 
+            <include name="org/ramadda/**/*.gif"/> 
+            <include name="org/ramadda/**/*.html"/> 
+            <include name="org/ramadda/**/*.js"/> 
+            <include name="org/ramadda/**/*.jar"/> 
+            <include name="org/ramadda/**/*.properties"/> 
+	    </jar>
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
+             <fileset file="${pluginjar}"/>
+        </copy>
+    </target>
+
+</project>

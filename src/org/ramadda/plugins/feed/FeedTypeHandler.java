@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.feed;
+package org.ramadda.plugins.feed;
 
 import ucar.unidata.util.DateUtil;
 

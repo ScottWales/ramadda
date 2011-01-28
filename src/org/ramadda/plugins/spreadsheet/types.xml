@@ -1,6 +1,6 @@
 <types>
 <!--
-  <type name="spreadsheet"  description="Spreadsheet" handler="org.ramadda.spreadsheet.SpreadsheetTypeHandler">
+  <type name="spreadsheet"  description="Spreadsheet" handler="org.ramadda.plugins.spreadsheet.SpreadsheetTypeHandler">
      <property name="icon" value="/icons/xls.png"/>
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>

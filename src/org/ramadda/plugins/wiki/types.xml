@@ -1,5 +1,5 @@
 <types>
-  <type name="wikipage"  description="Wiki Page" handler="org.ramadda.wiki.WikiPageTypeHandler" category="Collaboration">
+  <type name="wikipage"  description="Wiki Page" handler="org.ramadda.plugins.wiki.WikiPageTypeHandler" category="Collaboration">
      <property name="icon" value="/icons/wiki.gif"/>
      <property name="form.description.rows" value="50"/>
      <property name="form.date.show" value="false"/>

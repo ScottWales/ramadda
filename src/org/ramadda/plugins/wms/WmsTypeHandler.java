@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.wms;
+package org.ramadda.plugins.wms;
 
 
 import org.w3c.dom.*;

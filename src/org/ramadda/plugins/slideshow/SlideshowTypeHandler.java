@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.slideshow;
+package org.ramadda.plugins.slideshow;
 
 
 import org.w3c.dom.*;
@@ -584,7 +584,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         StringBuffer sb   = new StringBuffer();
         String template =
             getRepository().getResource(
-                "/org/ramadda/slideshow/htdocs/slideshow/template.html");
+                "/org.ramadda.plugins.slideshow/htdocs/slideshow/template.html");
 
         if (root != null) {
             WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {

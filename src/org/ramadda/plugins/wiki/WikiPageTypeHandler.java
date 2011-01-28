@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.wiki;
+package org.ramadda.plugins.wiki;
 
 
 import org.w3c.dom.*;
