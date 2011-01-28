@@ -29,7 +29,8 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlEncoder;
+
+
 
 import ucar.unidata.xml.XmlUtil;
 
@@ -301,7 +302,7 @@ public class MetadataElement extends MetadataTypeBase {
             (List<Hashtable<Integer,
                             String>>) (((value != null)
                                         && (value.length() > 0))
-                                       ? XmlEncoder.decodeXml(value)
+                                       ? Repository.decodeObject(value)
                                        : null);
         if (entries == null) {
             return result;
@@ -486,7 +487,7 @@ public class MetadataElement extends MetadataTypeBase {
                 }
                 entries.add(map);
             }
-            return XmlEncoder.encodeObject(entries);
+            return Repository.encodeObject(entries);
         }
 
 

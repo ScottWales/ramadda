@@ -31,7 +31,6 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
-import ucar.unidata.xml.XmlEncoder;
 
 import java.io.File;
 
@@ -61,9 +60,6 @@ public class Entry extends Entity {
 
     /** _more_ */
     public static final double NONGEO = -999999;
-
-    /** _more_          */
-    private static XmlEncoder xmlEncoder = new XmlEncoder();
 
 
     /** _more_ */
@@ -950,7 +946,7 @@ public class Entry extends Entity {
         if (properties == null) {
             if (propertiesString != null) {
                 properties =
-                    (Hashtable) xmlEncoder.toObject(propertiesString);
+                    (Hashtable) Repository.decodeObject(propertiesString);
                 propertiesString = null;
             }
             if ((properties == null) && force) {
@@ -970,7 +966,7 @@ public class Entry extends Entity {
      */
     public String getPropertiesString() throws Exception {
         if (properties != null) {
-            return xmlEncoder.toXml(properties);
+            return Repository.encodeObject(properties);
         }
         return null;
     }

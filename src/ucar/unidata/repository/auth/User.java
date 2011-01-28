@@ -30,7 +30,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 
-import ucar.unidata.xml.XmlEncoder;
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -49,9 +48,6 @@ public class User {
     /** _more_          */
     public static final String PROP_CAN_CHANGE_PASSWORD =
         "prop.changepassword";
-
-    /** _more_ */
-    private static XmlEncoder xmlEncoder = new XmlEncoder();
 
     /** _more_ */
     private String id = "";
@@ -190,7 +186,7 @@ public class User {
         this.isGuest  = isGuest;
         if ((propertiesBlob != null) && (propertiesBlob.length() > 0)) {
             try {
-                properties = (Hashtable) xmlEncoder.toObject(propertiesBlob);
+                properties = (Hashtable) Repository.decodeObject(propertiesBlob);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -204,7 +200,7 @@ public class User {
      */
     public String getPropertiesBlob() {
         if (properties != null) {
-            return xmlEncoder.toXml(properties);
+            return Repository.encodeObject(properties);
         }
         return null;
     }

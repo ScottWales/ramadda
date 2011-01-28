@@ -37,7 +37,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlEncoder;
+
 
 import ucar.unidata.xml.XmlUtil;
 
@@ -111,9 +111,8 @@ public class MonitorManager extends RepositoryManager {
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
                 String       xml        = results.getString(1);
-                XmlEncoder xmlEncoder = getRepository().getEncoder();
                 EntryMonitor monitor =
-                    (EntryMonitor) xmlEncoder.toObject(xml);
+                    (EntryMonitor) Repository.decodeObject(xml);
                 if (monitor != null) {
                     monitor.setRepository(getRepository());
                     monitors.add(monitor);
@@ -234,8 +233,7 @@ public class MonitorManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void insertMonitor(EntryMonitor monitor) throws Exception {
-        XmlEncoder xmlEncoder = getRepository().getEncoder();
-        String xml = xmlEncoder.toXml(monitor);
+        String xml = Repository.encodeObject(monitor);
         getDatabaseManager().executeInsert(Tables.MONITORS.INSERT,
                                            new Object[] {
             monitor.getId(), monitor.getName(), monitor.getUser().getId(),

@@ -281,6 +281,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
     /** _more_ */
     private Properties phraseMap;
 
+    private static XmlEncoder xmlEncoder;
 
 
     /** _more_ */
@@ -556,6 +557,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
      */
     public void init(String[] args, int port) throws Exception {
         setPort(port);
+        xmlEncoder = getEncoder();
         LogUtil.setTestMode(true);
         java.net.InetAddress localMachine =
             java.net.InetAddress.getLocalHost();
@@ -5717,8 +5719,16 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
     public XmlEncoder getEncoder() {
         XmlEncoder xmlEncoder = new XmlEncoder();
-
         return xmlEncoder;
+    }
+
+
+    public static String encodeObject(Object object)  { 
+        return xmlEncoder.toXml(object);
+    }
+
+    public static Object decodeObject(String xml) throws Exception {
+        return xmlEncoder.toObject(xml);
     }
 
 

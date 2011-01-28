@@ -27,7 +27,6 @@ import org.w3c.dom.*;
 
 import ucar.unidata.repository.*;
 
-import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
 
@@ -91,11 +90,10 @@ public class BlobTypeHandler extends GenericTypeHandler {
         Hashtable properties = null;
         if (properties == null) {
             Object[]   values     = entry.getValues();
-            XmlEncoder xmlEncoder = getRepository().getEncoder();
             if ((values != null) && (values.length > 0)
                     && (values[0] != null)) {
                 properties =
-                    (Hashtable) xmlEncoder.decodeXml((String) values[0]);
+                    (Hashtable) Repository.decodeObject((String) values[0]);
             }
             if (properties == null) {
                 properties = new Hashtable();
@@ -114,8 +112,7 @@ public class BlobTypeHandler extends GenericTypeHandler {
      */
     protected void setProperties(Entry entry, Hashtable properties)
             throws Exception {
-        XmlEncoder xmlEncoder = getRepository().getEncoder();
-        entry.setValues(new Object[] { xmlEncoder.encodeObject(properties) });
+        entry.setValues(new Object[] { Repository.encodeObject(properties) });
     }
 
 

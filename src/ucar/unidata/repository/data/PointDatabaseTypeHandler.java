@@ -105,7 +105,6 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
 import visad.FieldImpl;
