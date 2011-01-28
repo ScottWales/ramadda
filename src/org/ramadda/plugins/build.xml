@@ -55,6 +55,7 @@
       <ant antfile="${srcdir}/org/ramadda/plugins/feed/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/plugins/db/build.xml" inheritAll="false"/>
+
       <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
           <fileset file="${srcdir}/org/ramadda/plugins/misc/*"/>
      </copy>
@@ -62,6 +63,12 @@
       <copy overwrite="true"  todir="${plugindestdir}">
           <fileset file="${srcdir}/org/ramadda/plugins/misc/*"/>
      </copy>
+
+      <copy overwrite="true"  todir="${plugindestdir}">
+          <fileset file="${srcdir}/org/ramadda/plugins/README.plugins"/>
+     </copy>
+
+
 
 
     </target>
