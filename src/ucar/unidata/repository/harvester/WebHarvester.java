@@ -196,10 +196,14 @@ public class WebHarvester extends Harvester {
         urlEntries = new ArrayList<HarvesterEntry>();
         HarvesterEntry lastEntry = null;
         while (true) {
-            if ( !request.exists(ATTR_URL + cnt)) {
+            System.err.println("loop:" + cnt);
+            String urlArg = ATTR_URL+cnt;
+            if ( !request.exists(urlArg)) {
+                System.err.println("done cnt:" +cnt);
                 break;
             }
-            if ( !request.defined(ATTR_URL + cnt)) {
+            if ( !request.defined(urlArg)) {
+                System.err.println(urlArg + " not defined cnt = " +cnt);
                 cnt++;
                 continue;
             }
@@ -210,19 +214,13 @@ public class WebHarvester extends Harvester {
             groupName = groupName.replace(" > ", "/");
             groupName = groupName.replace(">", "/");
 
-
-            if ( !request.exists(ATTR_NAME + cnt) && (lastEntry != null)) {
-                lastEntry =
-                    new HarvesterEntry(request.getUnsafeString(ATTR_URL
-                        + cnt, ""), lastEntry.name, lastEntry.description,
-                                    lastEntry.group, lastEntry.baseGroupId);
-            } else {
-                lastEntry =
-                    new HarvesterEntry(request.getUnsafeString(ATTR_URL
-                        + cnt, ""), request.getUnsafeString(ATTR_NAME + cnt,
-                            ""), request.getUnsafeString(ATTR_DESCRIPTION
-                            + cnt, ""), groupName, baseGroupId);
-            }
+            System.err.println("cnt:" +cnt);
+            System.err.println(groupName + " " + baseGroupId);
+            lastEntry =
+                new HarvesterEntry(request.getUnsafeString(urlArg, ""), 
+                                   request.getUnsafeString(ATTR_NAME + cnt,
+                                                           ""), request.getUnsafeString(ATTR_DESCRIPTION
+                                                                                        + cnt, ""), groupName, baseGroupId);
             urlEntries.add(lastEntry);
             cnt++;
         }

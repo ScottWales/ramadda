@@ -660,6 +660,7 @@ public class Column implements Constants {
     protected int setValues(PreparedStatement statement, Object[] values,
                             int statementIdx)
             throws Exception {
+        if(offset>=values.length) return 0;
         if (isType(TYPE_INT)) {
             if (values[offset] != null) {
                 statement.setInt(statementIdx,

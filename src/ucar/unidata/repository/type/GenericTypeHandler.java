@@ -712,6 +712,11 @@ public class GenericTypeHandler extends TypeHandler {
         return values;
     }
 
+    public void  formatColumnHtmlValue(Request request, Entry entry, Column column, StringBuffer tmpSb,  Object[]values) throws Exception {
+        column.formatValue(entry, tmpSb, Column.OUTPUT_HTML,
+                           values);
+    }
+
 
     /**
      * _more_
@@ -740,8 +745,7 @@ public class GenericTypeHandler extends TypeHandler {
             if (values != null) {
                 for (Column column : columns) {
                     StringBuffer tmpSb = new StringBuffer();
-                    column.formatValue(entry, tmpSb, Column.OUTPUT_HTML,
-                                       values);
+                    formatColumnHtmlValue(request, entry, column, tmpSb,  values);
                     if ( !column.getCanShow()) {
                         continue;
                     }
