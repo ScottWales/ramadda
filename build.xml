@@ -27,9 +27,15 @@ used by the javadoc target
 </target>
 
 
+    <target name="all" depends="init">
+      <antcall target="ramadda"/>
+      <antcall target="plugins"/>
+    </target>
+
+
     <target name="ramadda" depends="init">
       <echo message="Building RAMADDA"/>
-      <ant antfile="${srcdir}/ucar/unidata/repository/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/repository/build.xml" inheritAll="false"/>
     </target>
 
     <target name="plugins" depends="init">
@@ -115,7 +121,7 @@ used by the javadoc target
             sourcepath="${srcdir}"
                  >
             <link href="http://java.sun.com/javase/6/docs/api/"/>
-            <package name="ucar.unidata.ramadda.*"/>
+            <package name="org.ramadda.repository.*"/>
 <!--
             <excludepackage name="org.unavco.???"/>
 -->

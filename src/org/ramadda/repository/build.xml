@@ -52,7 +52,6 @@
 
 
     <target name="initcore" if="core">
-       <echo message="initcore"/>
        <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
        <property name="manifestjars" value="repositorylib.jar  servlet-api.jar"/>
        <property name="includesrc1" value=""/>
@@ -63,7 +62,6 @@
     </target>
 
     <target name="initfull">
-       <echo message="initfull"/>
        <property name="classpath" value="${libdir}/idv.jar:${libdir}/repositorylib.jar:${libdir}/repositorytds.jar:${libdir}/servlet-api.jar"/>
        <property name="manifestjars" value="idv.jar repositorylib.jar  repositorytds.jar servlet-api.jar"/>
        <property name="includesrc1" value="${repositoryrelpath}/data/*.java"/>
@@ -97,9 +95,9 @@
 
 
     <target name="release" depends="init,clean">
+<!--
         <antcall target="repositorylib"/>
-        <antcall target="clean"/>
-        <antcall target="repositorysrczip"/>
+-->
         <antcall target="repositoryjar"/>
         <antcall target="repositoryzip"/>
         <antcall target="repositorywar"/>
@@ -135,8 +133,8 @@
             memoryMaximumSize="256m"
             target="${javatarget}"
         >
-        <include name="${repositorydir}/idv/RamaddaPublisher.java"/>
-        <include name="${repositorydir}/client/InteractiveRepositoryClient.java"/>
+        <include name="${repositoryrelpath}/idv/RamaddaPublisher.java"/>
+        <include name="${repositoryrelpath}/client/InteractiveRepositoryClient.java"/>
         </javac>
         <jar 
             basedir="${compiledir}"
@@ -177,8 +175,7 @@
             srcdir="${srcdir}"
             fork="true"
             memoryMaximumSize="256m"
-           target="${javatarget}"
-        >
+            target="${javatarget}">
         <include name="${repositorydir}/idv/RamaddaPublisher.java"/>
         </javac>
         <jar 
@@ -235,14 +232,14 @@
            <manifest>
               <attribute name="Implementation-Title" value="Unidata's Ramada Client"/>
               <attribute name="Implementation-Version" value="1.0"/>
-              <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="org.ramadda.repository.client.RepositoryClient"/>
               <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.3.jar"/>
             </manifest> 
 
 <!--            <include name="lib/tmpjardir/org/apache/xerces/impl/dv/util/Base64.class"/> -->
 
-            <include name="ucar/**/*.class"/>
+            <include name="org/**/*.class"/>
             <include name="${libdir}/unidatautil.jar"/>
             <include name="${repositorydir}/htdocs/icons/folderopen.png"/>
             <include name="${repositorydir}/htdocs/icons/folderclosed.png"/>
@@ -266,7 +263,6 @@
 
 
     <target name="jc" depends="init">
-        <echo message="${classpath}"/>
         <javac
             classpath="${classpath}"
             debug="true"
@@ -323,7 +319,7 @@
            <manifest>
               <attribute name="Implementation-Title" value="Unidata's Ramada"/>
               <attribute name="Implementation-Version" value="1.1"/>
-              <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="org.ramadd.repository.server.RepositoryServer"/>
               <attribute name="Class-Path" value="${manifestjars}"/>
             </manifest> 
@@ -476,9 +472,6 @@
             compress="true"
             jarfile="${libdir}/repositorylib.jar">
               <include name="**"/>
-<!--
-              <exclude name="ucar/netcdf/**"/>
--->
               <exclude name="ucar/multiarray/**"/>
         </jar>
 
@@ -486,38 +479,6 @@
     </target>
 
 
-    <target name="repositorysrczip" depends="init">
-        <zip  destfile="${distdir}/repository_src.zip"
-            update="false"
-            compress="true"
-            filesonly="true">
-          <zipfileset dir="" fullpath="${srcreleasedir}/README">
-            <include name="${repositorydir}/release/README.SRC"/>
-          </zipfileset>
-          <zipfileset dir="" prefix="${srcreleasedir}">
-            <include name="lib/repositorylib.jar"/>
-            <include name="lib/repositorytds.jar"/>
-            <include name="lib/idv.jar"/>
-            <include name="lib/servlet-api.jar"/>
-            <include name="${repositorydir}/**"/>
-            <exclude name="ucar/**/CVS/**"/>
-            <exclude name="ucar/**/.svn/**"/>
-            <exclude name="ucar/**/processed/**"/>
-            <exclude name="ucar/**/*.class"/>
-            <exclude name="ucar/**/*.map"/>
-            <exclude name="ucar/**/*.jar"/>            
-            <exclude name="ucar/**/*.dat"/>            
-            <exclude name="ucar/**/*.ascii"/>            
-            <exclude name="ucar/**/*.tml"/>            
-            <exclude name="ucar/**/*.bak"/>            
-            <exclude name="ucar/**/*.zip"/>            
-            <exclude name="ucar/**/*.shp"/>            
-            <exclude name="ucar/**/*.nc"/>            
-            <exclude name="ucar/**/*.xidv"/>
-            <exclude name="ucar/**/*.zidv"/>
-           </zipfileset>
-        </zip>
-    </target>
 
 
     <target name="javadoc" depends="init">
