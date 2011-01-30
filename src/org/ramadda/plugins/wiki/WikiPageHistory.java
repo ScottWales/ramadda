@@ -20,8 +20,8 @@
 package org.ramadda.plugins.wiki;
 
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
 
 import java.util.Date;
 

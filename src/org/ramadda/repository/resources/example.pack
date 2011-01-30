@@ -1,7 +1,7 @@
 #
 #This is an example language translation file. It is a .properties file. "#" are comments.
 #
-#RAMADDA looks in the ucar/unidata/repository/resources/languages package for
+#RAMADDA looks in the org/ramadda/repository/resources/languages package for
 #any file that ends with ".pack". It then looks in the repository plugins directory
 #for any .pack files. So, rename this file, (e.g., sp.pack) copy it to your plugins and put your 
 #translations in it below. If you see a phrase in RAMADDA that is not getting translated

@@ -18,8 +18,8 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.server;
-import ucar.unidata.repository.*;
+package org.ramadda.repository.server;
+import org.ramadda.repository.*;
 
 
 import org.apache.commons.fileupload.MultipartStream;

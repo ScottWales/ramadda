@@ -18,16 +18,16 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.harvester;
+package org.ramadda.repository.harvester;
 
 
 import org.w3c.dom.*;
 
 import org.apache.log4j.Logger;
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.output.OutputHandler;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.type.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -77,7 +77,7 @@ import java.util.regex.*;
  */
 public abstract class Harvester extends RepositoryManager {
 
-    private static final Logger LOG = Logger.getLogger("ucar.unidata.repository.harvester.Harvester");
+    private static final Logger LOG = Logger.getLogger("org.ramadda.repository.harvester.Harvester");
 
     /** _more_ */
 

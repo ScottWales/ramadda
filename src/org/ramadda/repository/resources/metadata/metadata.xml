@@ -30,7 +30,7 @@
   </handler>
 
 
-  <handler class="ucar.unidata.repository.metadata.ContentMetadataHandler"        category="Attachments, Contact, Etc.">
+  <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Attachments, Contact, Etc.">
     <type
        name="Thumbnail Image"
        id="content.thumbnail">
@@ -104,7 +104,7 @@
     </type>
   </handler>
 
-  <handler adminonly="true" class="ucar.unidata.repository.metadata.AdminMetadataHandler" category="Admin">
+  <handler adminonly="true" class="org.ramadda.repository.metadata.AdminMetadataHandler" category="Admin">
     <type name="Page Template" id="admin.template"/>
     <type name="Local File Pattern" id="admin.localfile.pattern"/>
     <type name="Anonymous Upload" id="admin.anonymousupload">
@@ -113,7 +113,7 @@
     </type>
   </handler>
 
-  <handler class="ucar.unidata.repository.metadata.JpegMetadataHandler"    >
+  <handler class="org.ramadda.repository.metadata.JpegMetadataHandler"    >
     <type
        name="Camera direction"
        id="camera.direction">
@@ -122,7 +122,7 @@
   </handler>
 
 
-  <handler class="ucar.unidata.repository.metadata.MetadataHandler"        category="Miscellaneous">
+  <handler class="org.ramadda.repository.metadata.MetadataHandler"        category="Miscellaneous">
     <type
        name="Contact Information"
        id="misc.contact">

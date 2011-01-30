@@ -26,8 +26,8 @@ import ucar.unidata.data.GeoLocationInfo;
 import ucar.unidata.data.gis.WmsSelection;
 
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.output.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.WmsUtil;

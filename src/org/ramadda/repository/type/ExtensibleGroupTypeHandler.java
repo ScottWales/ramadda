@@ -18,12 +18,12 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.type;
+package org.ramadda.repository.type;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 
 import ucar.unidata.sql.SqlUtil;

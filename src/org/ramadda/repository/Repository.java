@@ -19,20 +19,20 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
-import ucar.unidata.repository.database.*;
+import org.ramadda.repository.database.*;
 
-import ucar.unidata.repository.ftp.FtpManager;
-import ucar.unidata.repository.harvester.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.monitor.*;
+import org.ramadda.repository.ftp.FtpManager;
+import org.ramadda.repository.harvester.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.monitor.*;
 
-import ucar.unidata.repository.output.*;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
 
-import ucar.unidata.repository.util.*;
+import org.ramadda.repository.util.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -103,7 +103,7 @@ import org.w3c.dom.*;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.auth.*;
 
 
 
@@ -847,15 +847,15 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
         properties = new Properties();
         load(properties,
-             "/ucar/unidata/repository/resources/repository.properties");
+             "/org/ramadda/repository/resources/repository.properties");
 
         try {
             load(properties,
-                 "/ucar/unidata/repository/resources/georepository.properties");
+                 "/org/ramadda/repository/resources/georepository.properties");
         } catch (Exception exc) {}
         try {
             load(properties,
-                 "/ucar/unidata/repository/resources/build.properties");
+                 "/org/ramadda/repository/resources/build.properties");
         } catch (Exception exc) {}
 
         for (int i = 0; i < args.length; i++) {
@@ -1063,7 +1063,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 Element entryNode = (Element) children.get(i);
                 String classPath = XmlUtil.getAttribute(entryNode,
                                                         TypeHandler.TAG_HANDLER,
-                                                        "ucar.unidata.repository.type.GenericTypeHandler");
+                                                        "org.ramadda.repository.type.GenericTypeHandler");
 
                 //                System.err.println ("RAMADDA: loading type handler:" + classPath);
                 try {
@@ -3127,7 +3127,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if ( !request.get(ARG_DECORATE, true)) {
             if(true) return;
             template = getResource(
-                "/ucar/unidata/repository/resources/templates/plain.html");
+                "/org/ramadda/repository/resources/templates/plain.html");
         }
 
         /*
@@ -3518,7 +3518,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if (theTemplates == null) {
             String imports = "";
             try {
-                imports =  getStorageManager().readSystemResource("/ucar/unidata/repository/resources/imports.html");
+                imports =  getStorageManager().readSystemResource("/org/ramadda/repository/resources/imports.html");
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -3664,7 +3664,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if ( !cacheResources()) {
             try {
             load(properties,
-            "/ucar/unidata/repository/resources/repository.properties");
+            "/org/ramadda/repository/resources/repository.properties");
             } catch (Exception exc) {}
             }*/
 
@@ -4288,7 +4288,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
                 return null;
             }
             try {
-                Class c = Misc.findClass("ucar.unidata.repository." + type);
+                Class c = Misc.findClass("org.ramadda.repository." + type);
                 Constructor ctor = Misc.findConstructor(c,
                                        new Class[] { Repository.class,
                         String.class });
@@ -4459,7 +4459,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
         if (pluginHelp != null) {
             path = pluginHelp;
         } else {
-            path = "/ucar/unidata/repository/docs/userguide/processed" + path;
+            path = "/org/ramadda/repository/docs/userguide/processed" + path;
         }
         Result result = null;
         if (path.endsWith(".html")) {
@@ -5719,6 +5719,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
     public XmlEncoder getEncoder() {
         XmlEncoder xmlEncoder = new XmlEncoder();
+        xmlEncoder.addClassPatternReplacement("ucar.unidata.repository","org.ramadda.repository");
         return xmlEncoder;
     }
 

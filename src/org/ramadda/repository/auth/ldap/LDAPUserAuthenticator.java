@@ -2,14 +2,14 @@
  * Copyright 2010 ramadda.org 
  */
 
-package ucar.unidata.repository.auth.ldap;
+package org.ramadda.repository.auth.ldap;
 
 
-import ucar.unidata.repository.Repository;
-import ucar.unidata.repository.Request;
-import ucar.unidata.repository.auth.User;
-import ucar.unidata.repository.auth.UserAuthenticator;
-import ucar.unidata.repository.auth.UserAuthenticatorImpl;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.auth.User;
+import org.ramadda.repository.auth.UserAuthenticator;
+import org.ramadda.repository.auth.UserAuthenticatorImpl;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -25,7 +25,7 @@ import javax.naming.NamingException;
  * This is a user authenticator to implement LDAP authentication
  *
  *
- * @author Kristian Sebasti·n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
+ * @author Kristian Sebasti√°n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  * @autho Jeff McWhirter ramadda.org
  */
 public class LDAPUserAuthenticator extends UserAuthenticatorImpl {

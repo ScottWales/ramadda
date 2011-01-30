@@ -7,7 +7,7 @@
       <element
          name="Keyword"
          datatype="enumeration"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
     </type>
 

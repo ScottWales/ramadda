@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-  <handler category="DIF" class="ucar.unidata.repository.metadata.DifMetadataHandler">
+  <handler category="DIF" class="org.ramadda.repository.metadata.DifMetadataHandler">
 
     <type       name="Entry Title"       searchable="false"       id="dif.entry_title" dif.tag="Entry_Title">
       <element name="Title"/>
@@ -11,27 +11,27 @@
       <element
          dif.tag="Category" 
          datatype="enumeration"         name="Category"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
       <element
          dif.tag="Topic" 
          datatype="enumeration"         name="Topic"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
       <element
          dif.tag="Term" 
          datatype="enumeration"         name="Term"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
        <element
          dif.tag="Variable_Level_1" 
          datatype="enumeration"         name="Variable Level 1"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
        <element
          dif.tag="Variable_Level_2" 
          datatype="enumeration"         name="Variable Level 2"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
        <element
          dif.tag="Variable_Level_3" 
          datatype="enumeration"         name="Variable Level 3"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
        <element name="Detailed Variable"/>
       <template type="dif"><![CDATA[
 <Parameters>
@@ -47,7 +47,7 @@
     </type>
 
     <type       name="ISO Topic Category"       searchable="false"       id="dif.iso_topic_category" dif.tag="ISO_Topic_Category">
-      <element         datatype="enumeration"         name="Category"         values="file:/ucar/unidata/repository/resources/metadata/dif/isotopiccategories.txt"/>
+      <element         datatype="enumeration"         name="Category"         values="file:/org/ramadda/repository/resources/metadata/dif/isotopiccategories.txt"/>
       <template type="dif"><![CDATA[<ISO_Topic_Category>${Category}</ISO_Topic_Category>]]></template>
      </type>
 
@@ -79,7 +79,7 @@
       <element name="State or Province" dif.tag="Province_or_State"/>
       <element name="Postal Code" dif.tag="Postal_Code"/>
       <element name="Country" dif.tag="Country"/>
-      <template type="dif" file="/ucar/unidata/repository/resources/metadata/dif/template_dif_personnel.xml"/>
+      <template type="dif" file="/org/ramadda/repository/resources/metadata/dif/template_dif_personnel.xml"/>
 </element>
 
 <template type="dif"><![CDATA[
@@ -170,7 +170,7 @@ ${Personnel}
       <element name="State or Province"/>
       <element name="Postal Code"/>
       <element name="Country"/>
-      <template type="dif" file="/ucar/unidata/repository/resources/metadata/dif/template_dif_personnel.xml"/>
+      <template type="dif" file="/org/ramadda/repository/resources/metadata/dif/template_dif_personnel.xml"/>
     </type>
 
     <type
@@ -315,12 +315,12 @@ ${Chronostratigraphic_Unit}
       <element
          datatype="enumerationplus"
          name="Media"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/media.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/media.txt"/>
       <element columns="6" name="Size"/>
       <element
          datatype="enumerationplus"
          name="Format"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/formats.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/formats.txt"/>
       <element name="Fees"/>
       <template type="dif"><![CDATA[
 <Distribution>
@@ -339,7 +339,7 @@ ${Chronostratigraphic_Unit}
       <element
          datatype="enumerationplus"
          name="Language"
-         values="file:/ucar/unidata/repository/resources/metadata/dif/languages.txt"/>
+         values="file:/org/ramadda/repository/resources/metadata/dif/languages.txt"/>
       <template type="dif"><![CDATA[
 <Data_Set_Language>${Language}</Data_Set_Language>
 ]]></template>

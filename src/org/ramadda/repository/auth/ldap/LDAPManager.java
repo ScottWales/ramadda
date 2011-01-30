@@ -43,7 +43,7 @@
  */
 //jeffmc: change the package name to a ramadda package
 //package ldap;
-package ucar.unidata.repository.auth.ldap;
+package org.ramadda.repository.auth.ldap;
 
 import java.util.ArrayList;
 import java.util.HashMap;

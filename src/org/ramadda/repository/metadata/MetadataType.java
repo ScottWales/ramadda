@@ -18,12 +18,12 @@
  * 
  */
 
-package ucar.unidata.repository.metadata;
+package org.ramadda.repository.metadata;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 
 import ucar.unidata.ui.ImageUtils;
@@ -209,7 +209,7 @@ public class MetadataType extends MetadataTypeBase {
 
             Class c =
                 Misc.findClass(XmlUtil.getAttributeFromTree(node, ATTR_CLASS,
-                    "ucar.unidata.repository.metadata.MetadataHandler"));
+                    "org.ramadda.repository.metadata.MetadataHandler"));
 
             MetadataHandler handler      = manager.getHandler(c);
             String          id           = XmlUtil.getAttribute(node,

@@ -19,16 +19,16 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.database.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.database.*;
 
-import ucar.unidata.repository.harvester.*;
-import ucar.unidata.repository.metadata.*;
+import org.ramadda.repository.harvester.*;
+import org.ramadda.repository.metadata.*;
 
 
 

@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.ftp;
+package org.ramadda.repository.ftp;
 
 
 import org.apache.ftpserver.*;
@@ -30,7 +30,7 @@ import org.apache.ftpserver.usermanager.impl.*;
 
 
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 import java.io.IOException;
 
@@ -57,7 +57,7 @@ import java.util.TimeZone;
  * @version $Revision: 1.3 $
  */
 
-public class RepositoryFtpUserManager implements ucar.unidata.repository
+public class RepositoryFtpUserManager implements org.ramadda.repository
     .Constants, org.apache.ftpserver.ftplet.UserManager {
 
     /** _more_ */
@@ -114,14 +114,14 @@ public class RepositoryFtpUserManager implements ucar.unidata.repository
                         false)) {
                     return null;
                 }
-                name = ucar.unidata.repository.auth.UserManager
+                name = org.ramadda.repository.auth.UserManager
                     .USER_ANONYMOUS;
                 ftpManager.logInfo("Logging in user as anonymous");
             } else {
                 return null;
             }
 
-            ucar.unidata.repository.auth.User repositoryUser =
+            org.ramadda.repository.auth.User repositoryUser =
                 getRepository().getUserManager().findUser(name);
             if (repositoryUser == null) {
                 ftpManager.logInfo("Could not find user:" + name);

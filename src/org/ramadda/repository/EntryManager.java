@@ -18,19 +18,19 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.auth.*;
 
-import ucar.unidata.repository.database.*;
-import ucar.unidata.repository.harvester.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.output.*;
+import org.ramadda.repository.database.*;
+import org.ramadda.repository.harvester.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
 
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.type.*;
 
 
 import ucar.unidata.sql.Clause;
@@ -5041,8 +5041,8 @@ return new Result(title, sb);
                 String[] tuple = getRemoteEntryInfo(entryId);
                 return getRemoteEntry(request, tuple[0], tuple[1]);
             } else if (entryId.startsWith("catalog:")) {
-                ucar.unidata.repository.data.CatalogTypeHandler typeHandler =
-                    (ucar.unidata.repository.data
+                org.ramadda.repository.data.CatalogTypeHandler typeHandler =
+                    (org.ramadda.repository.data
                         .CatalogTypeHandler) getRepository()
                             .getTypeHandler(TypeHandler.TYPE_CATALOG);
                 entry = typeHandler.makeSynthEntry(request, null, entryId);
@@ -7234,12 +7234,12 @@ return new Result(title, sb);
                 if ( !newIconFile.exists()) {
                     if (remoteImage == null) {
                         remoteImage = ImageUtils.readImage(
-                            "/ucar/unidata/repository/htdocs/icons/arrow.png");
+                            "/org/ramadda/repository/htdocs/icons/arrow.png");
                     }
                     //                    System.err.println("    icon path:" + iconFile);
                     Image originalImage =
                         ImageUtils.readImage(
-                            "/ucar/unidata/repository/htdocs/icons/"
+                            "/org/ramadda/repository/htdocs/icons/"
                             + iconFile);
                     if (originalImage != null) {
                         int w = originalImage.getWidth(null);

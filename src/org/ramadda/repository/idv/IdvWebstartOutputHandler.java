@@ -18,15 +18,15 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.idv;
+package org.ramadda.repository.idv;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.data.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.output.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.data.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -175,7 +175,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
             }
             if (jnlpTemplate == null) {
                 jnlpTemplate = getRepository().getResource(
-                    "/ucar/unidata/repository/idv/template.jnlp");
+                    "/org/ramadda/repository/idv/template.jnlp");
             }
             //Replace the macros
             for (String macro :

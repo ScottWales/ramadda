@@ -18,16 +18,16 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.type;
+package org.ramadda.repository.type;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.data.gis.KmlUtil;
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
-import ucar.unidata.repository.output.OutputType;
+import org.ramadda.repository.output.OutputType;
 
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;

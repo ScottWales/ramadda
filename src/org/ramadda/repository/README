@@ -29,7 +29,7 @@ ant idvjar
 
 This makes the idv.jar in trunk/lib
 
-Secondly, create repositorylib.jar. From trunk/ucar/unidata/repository do:
+Secondly, create repositorylib.jar. From trunk/org/ramadda/repository do:
 ant repositorylib
 
 This unjars lots of jar files that RAMADDA depends on and creates one big jar:
@@ -58,7 +58,7 @@ then unjar the jar files contained in it. There are some jars that we skip. To c
 jar file get the latest thredds.war (from ftp://ftp.unidata.ucar.edu/pub/thredds) and copy it
 to the trunk/lib directory.  Then from the lib directory execute the tcl script:
 cd trunk/lib
-tclsh ../ucar/unidata/repository/release/makethredds.tcl
+tclsh ../org/ramadda/repository/release/makethredds.tcl
 
 
 ################# Making a release ################################

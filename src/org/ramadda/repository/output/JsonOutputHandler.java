@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.output;
+package org.ramadda.repository.output;
 
 
 import org.w3c.dom.*;
@@ -29,9 +29,9 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.data.gis.KmlUtil;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.metadata.Metadata;
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.auth.*;
 
 import java.text.DateFormat;
 
@@ -272,10 +272,10 @@ public class JsonOutputHandler extends OutputHandler {
 
     private static class EntryExclusionStrategy implements ExclusionStrategy {
         public boolean shouldSkipClass(Class<?> clazz) {
-            if(clazz.equals(ucar.unidata.repository.type.TypeHandler.class)) return false;
-            if(clazz.equals(ucar.unidata.repository.Repository.class)) return false;
-            if(clazz.equals(ucar.unidata.repository.RepositorySource.class)) return false;
-            if(clazz.equals(ucar.unidata.repository.RequestUrl.class)) return false;
+            if(clazz.equals(org.ramadda.repository.type.TypeHandler.class)) return false;
+            if(clazz.equals(org.ramadda.repository.Repository.class)) return false;
+            if(clazz.equals(org.ramadda.repository.RepositorySource.class)) return false;
+            if(clazz.equals(org.ramadda.repository.RequestUrl.class)) return false;
             System.err.println("class:" + clazz.getName());
             return false;
         }

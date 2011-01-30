@@ -18,7 +18,7 @@
  * 
  */
 
-package ucar.unidata.repository.metadata;
+package org.ramadda.repository.metadata;
 
 
 import com.drew.imaging.jpeg.*;
@@ -28,7 +28,7 @@ import com.drew.metadata.*;
 import com.drew.metadata.exif.*;
 
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 import ucar.unidata.ui.ImageUtils;
 
 import ucar.unidata.util.IOUtil;

@@ -19,14 +19,14 @@
  * 
  */
 
-package ucar.unidata.repository.examples;
+package org.ramadda.repository.examples;
 
 
-import ucar.unidata.repository.Repository;
-import ucar.unidata.repository.Request;
-import ucar.unidata.repository.auth.User;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.auth.User;
 
-import ucar.unidata.repository.auth.UserAuthenticatorImpl;
+import org.ramadda.repository.auth.UserAuthenticatorImpl;
 
 
 

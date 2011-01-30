@@ -9,7 +9,7 @@
   </type>
 
 
-  <type name="opendaplink"  description="OpenDAP Link" handler="ucar.unidata.repository.data.OpendapLinkTypeHandler" category="Geo Data">
+  <type name="opendaplink"  description="OpenDAP Link" handler="org.ramadda.repository.data.OpendapLinkTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/opendap.gif"/>
      <property name="form.date.show" value="false"/>
      <property name="form.file.show" value="false"/>
@@ -17,7 +17,7 @@
   </type>
 
 
-  <type name="gridaggregation"  description="Grid Aggregation" handler="ucar.unidata.repository.data.GridAggregationTypeHandler" category="Geo Data">
+  <type name="gridaggregation"  description="Grid Aggregation" handler="org.ramadda.repository.data.GridAggregationTypeHandler" category="Geo Data">
      <column name="coordinate" type="string" default="time"  label="Time Coordinate" cansearch="false" showinhtml="true"/>
      <column name="type" type="enumeration" values="JoinExisting,Union"  label="Aggregation type" cansearch="false" showinhtml="true"/>
      <property name="icon" value="/icons/aggregation.png"/>
@@ -33,7 +33,7 @@
 
 
 
-  <type name="catalog"  description="Catalog View" handler="ucar.unidata.repository.data.CatalogTypeHandler" category="Geo Data">
+  <type name="catalog"  description="Catalog View" handler="org.ramadda.repository.data.CatalogTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/book_open.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
@@ -67,7 +67,7 @@
   </type>
 -->
 
-  <type name="pointdatabase"  description="Point Database" handler="ucar.unidata.repository.data.PointDatabaseTypeHandler" category="Geo Data">
+  <type name="pointdatabase"  description="Point Database" handler="org.ramadda.repository.data.PointDatabaseTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/database.png"/>
      <property name="form.date.show" value="false"/>
 <!--     <property name="form.area.show" value="false"/> -->
@@ -81,11 +81,11 @@
 
 
 <!--
-  <type name="level3radar" datatype="radar" description="Level 3 Radar File" handler="ucar.unidata.repository.type.Level3RadarTypeHandler">
+  <type name="level3radar" datatype="radar" description="Level 3 Radar File" handler="org.ramadda.repository.type.Level3RadarTypeHandler">
 	<column name="station" group="Level 3 Things" type="string" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station" 
-                properties="/ucar/unidata/repository/resources/level3radar.station.properties"/>
+                properties="/org/ramadda/repository/resources/level3radar.station.properties"/>
 	<column name="product" type="string" group="Level 3 Things"  isindex="true" cansearch="true" canlist="true" searchtype="select" label="Product"  
-                properties="/ucar/unidata/repository/resources/level3radar.product.properties"/>
+                properties="/org/ramadda/repository/resources/level3radar.product.properties"/>
   </type>
 
 
@@ -106,7 +106,7 @@
 
   <type name="level2radar" description="Level 2 Radar File" datatype="radar" >
 	<column name="station" type="string" isindex="true" cansearch="true" searchtype="select" label="Station"
-                properties="/ucar/unidata/repository/resources/level3radar.station.properties"/>
+                properties="/org/ramadda/repository/resources/level3radar.station.properties"/>
   </type>
 
   <type name="satellite" description="Satellite File" datatype="satellite" >
@@ -128,7 +128,7 @@
 
 
   <type name="testit2" description="Test it2">
-	<column name="gcmd" type="enumeration"  values="file:/ucar/unidata/repository/resources/gcmdkeywords.txt" label="Gcmd Keyword" isindex="true" cansearch="true" canlist="true" />
+	<column name="gcmd" type="enumeration"  values="file:/org/ramadda/repository/resources/gcmdkeywords.txt" label="Gcmd Keyword" isindex="true" cansearch="true" canlist="true" />
   </type>
 -->
 

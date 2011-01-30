@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.idv;
+package org.ramadda.repository.idv;
 
 
 import org.w3c.dom.*;
@@ -64,13 +64,13 @@ import ucar.unidata.idv.VMManager;
 import ucar.unidata.idv.ViewState;
 import ucar.unidata.idv.ui.ImageGenerator;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.data.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.output.*;
-import ucar.unidata.repository.util.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.data.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.util.*;
 
 import ucar.unidata.sql.SqlUtil;
 
@@ -510,11 +510,11 @@ public class IdvOutputHandler extends OutputHandler {
             /*
             valueToAbbrev.load(
                                IOUtil.getInputStream(
-                                                     "/ucar/unidata/repository/idv/values.properties",
+                                                     "/org/ramadda/repository/idv/values.properties",
                                                      getClass()));
             keyToAbbrev.load(
                              IOUtil.getInputStream(
-                                                   "/ucar/unidata/repository/idv/keys.properties",
+                                                   "/org/ramadda/repository/idv/keys.properties",
                                                    getClass()));
             */
 
@@ -1847,7 +1847,7 @@ public class IdvOutputHandler extends OutputHandler {
         } else if (product.equals(PRODUCT_GEPLUGIN)) {
             String template =
                 getRepository().getResource(
-                    "/ucar/unidata/repository/resources/googleearth/geplugin.html");
+                    "/org/ramadda/repository/resources/googleearth/geplugin.html");
             template = template.replace("${kmzurl}", url);
             // fill in the API keys for this machine
             String geAPIKeys = getProperty(PROP_GOOGLEAPIKEYS, null);
@@ -2485,7 +2485,7 @@ public class IdvOutputHandler extends OutputHandler {
 
         if (forJnlp) {
             String jnlp = getRepository().getResource(
-                              "/ucar/unidata/repository/idv/template.jnlp");
+                              "/org/ramadda/repository/idv/template.jnlp");
             StringBuffer args = new StringBuffer();
             args.append("<argument>-b64isl</argument>");
             args.append("<argument>"
@@ -2958,7 +2958,7 @@ public class IdvOutputHandler extends OutputHandler {
             if (forJnlp) {
                 String jnlp =
                     getRepository().getResource(
-                        "/ucar/unidata/repository/idv/template.jnlp");
+                        "/org/ramadda/repository/idv/template.jnlp");
                 StringBuffer args = new StringBuffer();
                 args.append("<argument>-b64isl</argument>");
                 args.append("<argument>"

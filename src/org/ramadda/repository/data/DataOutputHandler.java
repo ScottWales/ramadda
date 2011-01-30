@@ -18,9 +18,9 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.data;
+package org.ramadda.repository.data;
 
-import ucar.unidata.repository.type.TypeHandler;
+import org.ramadda.repository.type.TypeHandler;
 
 
 import opendap.dap.DAP2Exception;
@@ -100,10 +100,10 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.geoloc.LatLonRect;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.output.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
 
 
 
@@ -1367,7 +1367,7 @@ public class DataOutputHandler extends OutputHandler {
                 StringBuffer buf = new StringBuffer();
                 String chartTemplate =
                     getRepository().getResource(
-                        "/ucar/unidata/repository/resources/chart/dycharts.html");
+                        "/org/ramadda/repository/resources/chart/dycharts.html");
                 chartTemplate = chartTemplate.replace("${urlroot}",
                         getRepository().getUrlBase());
                 //String title = request.getString(ARG_POINT_TIMESERIES_TITLE,

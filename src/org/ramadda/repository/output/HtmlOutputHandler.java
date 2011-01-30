@@ -18,15 +18,15 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.output;
+package org.ramadda.repository.output;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.type.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -1094,7 +1094,7 @@ public class HtmlOutputHandler extends OutputHandler {
             head = "<script>var Timeline_urlPrefix='${root}/timeline/timeline_js/';\nvar Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';\nTimeline_parameters='bundle=true';\n</script>\n<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>\n<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />";
             head = head.replace("${root}", getRepository().getUrlBase());
             String timelineApplet =
-                getRepository().getResource("/ucar/unidata/repository/resources/timeline.html");
+                getRepository().getResource("/org/ramadda/repository/resources/timeline.html");
             String url = request.getUrl();
             url = url+"&timelinexml=true";
             //            timelineApplet = timelineApplet.replace("${timelineurl}", "${root}/monet.xml");

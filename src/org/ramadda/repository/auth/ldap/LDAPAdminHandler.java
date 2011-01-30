@@ -2,10 +2,10 @@
  * Copyright 2010 ramadda.org 
  */
 
-package ucar.unidata.repository.auth.ldap;
+package org.ramadda.repository.auth.ldap;
 
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.xml.XmlUtil;

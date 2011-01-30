@@ -19,13 +19,13 @@
  * 
  */
 
-package ucar.unidata.repository.client;
+package org.ramadda.repository.client;
 
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 
 import ucar.unidata.util.GuiUtils;
@@ -217,11 +217,11 @@ public class InteractiveRepositoryClient extends RepositoryClient {
         groupTree.setShowsRootHandles(true);
         final ImageIcon iconOpen =
             GuiUtils.getImageIcon(
-                "/ucar/unidata/repository/htdocs/icons/folderopen.png",
+                "/org/ramadda/repository/htdocs/icons/folderopen.png",
                 getClass());
         final ImageIcon iconClosed =
             GuiUtils.getImageIcon(
-                "/ucar/unidata/repository/htdocs/icons/folderclosed.png",
+                "/org/ramadda/repository/htdocs/icons/folderclosed.png",
                 getClass());
 
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer() {

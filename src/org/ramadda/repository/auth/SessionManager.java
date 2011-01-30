@@ -19,13 +19,13 @@
  * 
  */
 
-package ucar.unidata.repository.auth;
+package org.ramadda.repository.auth;
 
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 
-import ucar.unidata.repository.database.*;
+import org.ramadda.repository.database.*;
 
 
 import ucar.unidata.sql.Clause;

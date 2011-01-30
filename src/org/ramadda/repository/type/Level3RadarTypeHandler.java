@@ -18,12 +18,12 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.type;
+package org.ramadda.repository.type;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -113,11 +113,11 @@ public class Level3RadarTypeHandler extends GenericTypeHandler {
         String station = (String) entry.getValues()[0];
         String lat =
             getRepository().getFieldDescription(station + ".lat",
-                "/ucar/unidata/repository/resources/level3radar.station.properties",
+                "/org/ramadda/repository/resources/level3radar.station.properties",
                 null);
         String lon =
             getRepository().getFieldDescription(station + ".lon",
-                "/ucar/unidata/repository/resources/level3radar.station.properties",
+                "/org/ramadda/repository/resources/level3radar.station.properties",
                 null);
 
 

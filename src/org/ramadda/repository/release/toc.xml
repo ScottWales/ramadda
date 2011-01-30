@@ -28,7 +28,7 @@ RAMADDA (<b>R</b>epository for <b>A</b>rchiving, <b>M</b>anaging and <b>A</b>cce
 
     <file url="ftp/repository_src.jar" name="Repository Source Release">
         <description>
-	Contains the source code for RAMADDA. See README in ucar/unidata/repository.
+	Contains the source code for RAMADDA. See README in org/ramadda/repository.
         </description>
     </file>
     </category>

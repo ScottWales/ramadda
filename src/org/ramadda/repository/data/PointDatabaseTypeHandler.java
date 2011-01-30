@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.data;
+package org.ramadda.repository.data;
 
 
 import org.jfree.chart.*;
@@ -85,13 +85,13 @@ import ucar.unidata.data.point.PointObFactory;
 
 import ucar.unidata.data.point.TextPointDataSource;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.database.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.output.OutputHandler;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.database.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.OutputHandler;
 
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.type.*;
 import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
@@ -1057,7 +1057,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 //  for amcharts flash
                 if (chartTemplate == null) {
                     chartTemplate = getRepository().getResource(
-                        "/ucar/unidata/repository/resources/chart/amline.html");
+                        "/org/ramadda/repository/resources/chart/amline.html");
                     chartTemplate = chartTemplate.replace("${urlroot}",
                             getRepository().getUrlBase());
                     chartTemplate = chartTemplate.replace("${urlroot}",
@@ -1069,7 +1069,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
                 //  for dycharts javascript
                 chartTemplate = getRepository().getResource(
-                    "/ucar/unidata/repository/resources/chart/dycharts.html");
+                    "/org/ramadda/repository/resources/chart/dycharts.html");
                 chartTemplate = chartTemplate.replace("${urlroot}",
                         getRepository().getUrlBase());
                 String title = request.getString(ARG_POINT_TIMESERIES_TITLE,

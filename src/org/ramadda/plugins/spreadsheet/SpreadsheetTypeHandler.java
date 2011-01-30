@@ -22,12 +22,12 @@ package org.ramadda.plugins.spreadsheet;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.output.OutputHandler;
-import ucar.unidata.repository.output.OutputType;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.type.*;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.xml.XmlUtil;

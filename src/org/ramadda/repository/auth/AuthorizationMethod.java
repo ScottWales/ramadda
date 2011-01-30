@@ -19,10 +19,10 @@
  * 
  */
 
-package ucar.unidata.repository.auth;
+package org.ramadda.repository.auth;
 
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 
 /**

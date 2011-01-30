@@ -18,10 +18,10 @@
  * 
  */
 
-package ucar.unidata.repository.test;
+package org.ramadda.repository.test;
 
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 
 /**

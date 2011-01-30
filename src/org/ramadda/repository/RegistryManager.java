@@ -19,13 +19,13 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
 import org.w3c.dom.*;
 
 
-import ucar.unidata.repository.database.*;
+import org.ramadda.repository.database.*;
 
 import ucar.unidata.sql.Clause;
 

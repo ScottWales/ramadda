@@ -19,7 +19,7 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
 /**
@@ -28,7 +28,7 @@ package ucar.unidata.repository;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class InteractiveRepositoryClient extends ucar.unidata.repository
+public class InteractiveRepositoryClient extends org.ramadda.repository
     .client.InteractiveRepositoryClient {
 
     /**

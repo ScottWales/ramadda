@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.database;
+package org.ramadda.repository.database;
 
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -31,10 +31,10 @@ import org.apache.log4j.Logger;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
-import ucar.unidata.repository.type.*;
-import ucar.unidata.repository.util.Log4jPrintWriter;
+import org.ramadda.repository.type.*;
+import org.ramadda.repository.util.Log4jPrintWriter;
 
 
 

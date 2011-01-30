@@ -19,18 +19,18 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.database.*;
-import ucar.unidata.repository.ftp.FtpManager;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.database.*;
+import org.ramadda.repository.ftp.FtpManager;
 
-import ucar.unidata.repository.harvester.*;
+import org.ramadda.repository.harvester.*;
 
-import ucar.unidata.repository.output.*;
+import org.ramadda.repository.output.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -285,7 +285,7 @@ public class Admin extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         String license =
             getStorageManager().readSystemResource(
-                "/ucar/unidata/repository/resources/license.txt");
+                "/org/ramadda/repository/resources/license.txt");
         sb.append(HtmlUtil.textArea("", license, 20, 50));
         sb.append("<p>");
         sb.append(HtmlUtil.checkbox("agree", "1"));

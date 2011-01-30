@@ -18,14 +18,14 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.auth.*;
 
 
-import ucar.unidata.repository.metadata.*;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.type.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;

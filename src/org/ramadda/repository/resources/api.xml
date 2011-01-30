@@ -144,7 +144,7 @@
   </group>
 
 
-  <group handler="ucar.unidata.repository.services.OaiManager">
+  <group handler="org.ramadda.repository.services.OaiManager">
       <api request="/oai/*"           method="processRequest"          admin="false" />
   </group>
 </api>

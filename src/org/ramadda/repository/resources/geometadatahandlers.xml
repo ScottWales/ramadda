@@ -1,14 +1,14 @@
 <metadatahandlers>
-  <metadatahandler class="ucar.unidata.repository.AdminMetadataHandler" />
-  <metadatahandler class="ucar.unidata.repository.ContentMetadataHandler" />
-  <metadatahandler class="ucar.unidata.repository.EnumeratedMetadataHandler" 
+  <metadatahandler class="org.ramadda.repository.AdminMetadataHandler" />
+  <metadatahandler class="org.ramadda.repository.ContentMetadataHandler" />
+  <metadatahandler class="org.ramadda.repository.EnumeratedMetadataHandler" 
                    name="Tag"
                    type="enum_tag"
                    />
-  <metadatahandler foruser="false" class="ucar.unidata.repository.EnumeratedMetadataHandler" 
+  <metadatahandler foruser="false" class="org.ramadda.repository.EnumeratedMetadataHandler" 
                    name="Wiki Category"
                    type="wikicategory"/>
-  <metadatahandler class="ucar.unidata.repository.EnumeratedMetadataHandler" file="/ucar/unidata/repository/resources/gcmdkeywords.txt" 
+  <metadatahandler class="org.ramadda.repository.EnumeratedMetadataHandler" file="/org/ramadda/repository/resources/gcmdkeywords.txt" 
                    name="GCMD Science Keyword"
                    type="enum_gcmdkeyword"
                    />

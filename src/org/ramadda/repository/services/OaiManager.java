@@ -19,18 +19,18 @@
  * 
  */
 
-package ucar.unidata.repository.services;
+package org.ramadda.repository.services;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
 
-import ucar.unidata.repository.metadata.*;
+import org.ramadda.repository.metadata.*;
 
-import ucar.unidata.repository.output.*;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
 import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
@@ -484,7 +484,7 @@ public class OaiManager extends RepositoryManager {
         try {
             String verb = request.getString(ARG_VERB, VERB_IDENTIFY);
             //            if(verb.equals(VERB_GETRECORD)) {
-            //                return new Result("",new StringBuffer(getRepository().getResource("/ucar/unidata/repository/resources/test.xml")),"text/xml");
+            //                return new Result("",new StringBuffer(getRepository().getResource("/org/ramadda/repository/resources/test.xml")),"text/xml");
             //            }
             processRequestInner(request, root);
         } catch (MyException myexc) {

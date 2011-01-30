@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.data;
+package org.ramadda.repository.data;
 
 
 import org.w3c.dom.*;
@@ -42,10 +42,10 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
 
-import ucar.unidata.repository.metadata.*;
+import org.ramadda.repository.metadata.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;

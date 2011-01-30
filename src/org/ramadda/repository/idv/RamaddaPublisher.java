@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.idv;
+package org.ramadda.repository.idv;
 
 
 import org.w3c.dom.Document;
@@ -32,7 +32,7 @@ import ucar.unidata.idv.*;
 
 import ucar.unidata.idv.publish.IdvPublisher;
 
-import ucar.unidata.repository.client.InteractiveRepositoryClient;
+import org.ramadda.repository.client.InteractiveRepositoryClient;
 
 import ucar.unidata.ui.DateTimePicker;
 import ucar.unidata.ui.HttpFormEntry;
@@ -81,7 +81,7 @@ import javax.swing.*;
  * @author IDV development team
  */
 public class RamaddaPublisher extends ucar.unidata.idv.publish
-    .IdvPublisher implements ucar.unidata.repository.Constants {
+    .IdvPublisher implements org.ramadda.repository.Constants {
 
 
     /** _more_ */

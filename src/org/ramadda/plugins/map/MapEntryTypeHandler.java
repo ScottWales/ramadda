@@ -22,9 +22,9 @@ package org.ramadda.plugins.map;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.output.*;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;

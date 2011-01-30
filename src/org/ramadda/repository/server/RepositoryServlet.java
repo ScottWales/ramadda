@@ -18,8 +18,8 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.server;
-import ucar.unidata.repository.*;
+package org.ramadda.repository.server;
+import org.ramadda.repository.*;
 
 
 import org.apache.commons.fileupload.FileItem;
@@ -173,7 +173,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         }
         String repositoryClassName =System.getProperty("repository.classname");
         if(repositoryClassName==null) {
-            repositoryClassName = "ucar.unidata.repository.Repository";
+            repositoryClassName = "org.ramadda.repository.Repository";
         }
         Class repositoryClass = Misc.findClass(repositoryClassName);
         Repository tmpRepository = (Repository)repositoryClass.newInstance();
@@ -287,7 +287,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     //                return;
                 }
 
-                // create a ucar.unidata.repository.Request object from the relevant info from the HttpServletRequest object
+                // create a org.ramadda.repository.Request object from the relevant info from the HttpServletRequest object
 
 
                 Request repositoryRequest = new Request(repository,
@@ -301,7 +301,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setOutputStream(response.getOutputStream());
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
-                // create a ucar.unidata.repository.Result object and transpose the relevant info into a HttpServletResponse object
+                // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
             } catch (Throwable e) {

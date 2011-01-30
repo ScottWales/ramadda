@@ -21,7 +21,7 @@
         <mkdir dir="${distdir}"/>
 
         <property name="libdir" value="${basedir}/lib"/>
-        <property name="repositoryrelpath" value="ucar/unidata/repository" />
+        <property name="repositoryrelpath" value="org/ramadda/repository" />
         <property name="repositorydir" value="${srcdir}/${repositoryrelpath}" />
 
         <property name="releasedir" value="${distdir}/${rname}" />
@@ -80,7 +80,7 @@
     </target>
 
     <target name="runserver" depends="init">
-      <java classname="ucar.unidata.repository.server.RepositoryServer" maxmemory="512mb" fork="true">
+      <java classname="org.ramadda.repository.server.RepositoryServer" maxmemory="512mb" fork="true">
           <arg value="-port"/>
           <arg value="8080"/>
 <!--
@@ -236,7 +236,7 @@
               <attribute name="Implementation-Title" value="Unidata's Ramada Client"/>
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-              <attribute name="Main-class" value="ucar.unidata.repository.client.RepositoryClient"/>
+              <attribute name="Main-class" value="org.ramadda.repository.client.RepositoryClient"/>
               <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.3.jar"/>
             </manifest> 
 
@@ -324,7 +324,7 @@
               <attribute name="Implementation-Title" value="Unidata's Ramada"/>
               <attribute name="Implementation-Version" value="1.1"/>
               <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-              <attribute name="Main-class" value="ucar.unidata.repository.server.RepositoryServer"/>
+              <attribute name="Main-class" value="org.ramadd.repository.server.RepositoryServer"/>
               <attribute name="Class-Path" value="${manifestjars}"/>
             </manifest> 
             <include name="**/*.class"/>
@@ -523,16 +523,16 @@
     <target name="javadoc" depends="init">
         <javadoc
             Author="true"
-            Doctitle="Unidata RAMADDA"
+            Doctitle="RAMADDA"
             Use="true"
             Version="true"
-            Windowtitle="Unidata RAMADDA"
+            Windowtitle="RAMADDA"
             classpath="${classpath}:/upc/share/junit/junit.jar"
             destdir="${docs_javadoc_dest}"
             maxmemory="256m"
             sourcepath="${srcdir}">
             <link href="http://java.sun.com/j2se/1.5.0/docs/api"/>
-            <package name="ucar.unidata.repository.*"/>
+            <package name="org.ramadda.repository.*"/>
             <package name="ucar.unidata.sql"/>
         </javadoc>
     </target>

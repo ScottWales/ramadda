@@ -23,10 +23,10 @@ package org.ramadda.plugins.ontology;
 import org.w3c.dom.*;
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.util.AssociationInfo;
+import org.ramadda.repository.*;
+import org.ramadda.repository.util.AssociationInfo;
 
-import ucar.unidata.repository.util.EntryInfo;
+import org.ramadda.repository.util.EntryInfo;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;

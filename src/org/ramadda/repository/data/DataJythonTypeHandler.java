@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.data;
+package org.ramadda.repository.data;
 
 
 import org.apache.commons.net.ftp.*;
@@ -35,12 +35,12 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.data.DataSource;
 
 import ucar.unidata.data.grid.GeoGridDataSource;
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.data.*;
-import ucar.unidata.repository.metadata.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.data.*;
+import org.ramadda.repository.metadata.*;
 
-import ucar.unidata.repository.output.*;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;

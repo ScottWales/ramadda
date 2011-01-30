@@ -17,13 +17,13 @@
 -->
 
 
-  <type name="homepage"  description="Home Page" handler="ucar.unidata.repository.type.ExtensibleGroupTypeHandler">
+  <type name="homepage"  description="Home Page" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
      <property name="icon" value="/icons/user.png"/>
    </type>
 
 
 
-  <type name="localfiles"  description="Local File View" handler="ucar.unidata.repository.type.LocalFileTypeHandler">
+  <type name="localfiles"  description="Local File View" handler="org.ramadda.repository.type.LocalFileTypeHandler">
      <property name="icon" value="/icons/folder_page.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
@@ -37,7 +37,7 @@
 
 
 
-  <type name="ftp"  description="Remote FTP File View" handler="ucar.unidata.repository.type.FtpTypeHandler">
+  <type name="ftp"  description="Remote FTP File View" handler="org.ramadda.repository.type.FtpTypeHandler">
      <property name="icon" value="/icons/server_go.png"/>
 
 

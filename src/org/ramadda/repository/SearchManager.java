@@ -20,18 +20,18 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.auth.*;
 
-import ucar.unidata.repository.metadata.*;
+import org.ramadda.repository.metadata.*;
 
-import ucar.unidata.repository.output.*;
-import ucar.unidata.repository.util.OpenSearchUtil;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.util.OpenSearchUtil;
+import org.ramadda.repository.type.*;
 
 import ucar.unidata.sql.Clause;
 

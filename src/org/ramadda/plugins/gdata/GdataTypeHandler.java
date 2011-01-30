@@ -31,9 +31,9 @@ import com.google.gdata.data.Person;
 import org.w3c.dom.*;
 
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.metadata.Metadata;
-import ucar.unidata.repository.type.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.type.*;
 
 import java.io.File;
 

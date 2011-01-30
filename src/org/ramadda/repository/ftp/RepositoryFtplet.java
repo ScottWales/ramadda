@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.ftp;
+package org.ramadda.repository.ftp;
 
 
 import org.apache.ftpserver.*;
@@ -28,20 +28,20 @@ import org.apache.ftpserver.usermanager.*;
 import org.apache.ftpserver.usermanager.impl.*;
 import org.apache.log4j.config.PropertyPrinter;
 
-import ucar.unidata.repository.Constants;
-import ucar.unidata.repository.Entry;
-import ucar.unidata.repository.EntryManager;
+import org.ramadda.repository.Constants;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.EntryManager;
 
 
 
 
-import ucar.unidata.repository.Repository;
-import ucar.unidata.repository.Request;
-import ucar.unidata.repository.Resource;
-import ucar.unidata.repository.Result;
-import ucar.unidata.repository.auth.Permission;
-import ucar.unidata.repository.auth.UserManager;
-import ucar.unidata.repository.type.TypeHandler;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Resource;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.auth.UserManager;
+import org.ramadda.repository.type.TypeHandler;
 import ucar.unidata.util.IOUtil;
 
 
@@ -330,7 +330,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         try {
             User   user = session.getUser();
             String name = ((user == null)
-                           ? ucar.unidata.repository.auth.UserManager
+                           ? org.ramadda.repository.auth.UserManager
                                .USER_ANONYMOUS
                            : user.getName());
             return new Request(

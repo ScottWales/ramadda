@@ -18,9 +18,9 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
-import ucar.unidata.repository.output.MapOutputHandler;
+import org.ramadda.repository.output.MapOutputHandler;
 
 
 

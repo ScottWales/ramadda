@@ -4,7 +4,7 @@
 * Code is from http://www.howardism.org/Technical/Java/SelfSignedCerts.html
 */
 
-package ucar.unidata.repository.util;
+package org.ramadda.repository.util;
 
 import java.security.*;
 import java.security.cert.*;

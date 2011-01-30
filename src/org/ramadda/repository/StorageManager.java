@@ -18,7 +18,7 @@
  * 
  */
 
-package ucar.unidata.repository;
+package org.ramadda.repository;
 
 
 
@@ -28,7 +28,7 @@ import org.python.util.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.repository.auth.*;
+import org.ramadda.repository.auth.*;
 
 
 
@@ -367,7 +367,7 @@ public class StorageManager extends RepositoryManager {
     public String localizePath(String path) {
         path = path.replace("%repositorydir%", getRepositoryDir().toString());
         path = path.replace("%resourcedir%",
-                            "/ucar/unidata/repository/resources");
+                            "/org/ramadda/repository/resources");
         return path;
     }
 
@@ -377,7 +377,7 @@ public class StorageManager extends RepositoryManager {
      * @return _more_
      */
     public String getSystemResourcePath() {
-        return "/ucar/unidata/repository/resources";
+        return "/org/ramadda/repository/resources";
     }
 
 
@@ -623,7 +623,7 @@ public class StorageManager extends RepositoryManager {
                 try {
                     String c =
                         IOUtil.readContents(
-                            "/ucar/unidata/repository/resources/log4j.properties",
+                            "/org/ramadda/repository/resources/log4j.properties",
                             getClass());
                     c = c.replace("${ramadda.logdir}", f.toString());
                     IOUtil.writeFile(log4JFile, c);

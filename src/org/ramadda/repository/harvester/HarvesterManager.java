@@ -18,18 +18,18 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.unidata.repository.harvester;
+package org.ramadda.repository.harvester;
 
 
 import org.w3c.dom.*;
 
 
 
-import ucar.unidata.repository.*;
-import ucar.unidata.repository.auth.*;
-import ucar.unidata.repository.database.*;
-import ucar.unidata.repository.type.*;
-import ucar.unidata.repository.data.CatalogHarvester;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.database.*;
+import org.ramadda.repository.type.*;
+import org.ramadda.repository.data.CatalogHarvester;
 
 import ucar.unidata.sql.Clause;
 
@@ -203,6 +203,11 @@ public class HarvesterManager extends RepositoryManager {
 
             Class  c         = null;
 
+            className = className.replace("ucar.unidata.repository",
+                                          "org.ramadda.repository");
+            className = className.replace("ucar/unidata/repository",
+                                          "org/ramadda/repository");
+            System.err.println ("Looking for:" + className);
             try {
                 c = Misc.findClass(className);
             } catch (ClassNotFoundException cnfe1) {
@@ -673,8 +678,8 @@ public class HarvesterManager extends RepositoryManager {
             sb = new StringBuffer();
             sb.append(msg("Catalog is being harvested"));
             sb.append(HtmlUtil.p());
-            ucar.unidata.repository.data.CatalogHarvester harvester =
-                new ucar.unidata.repository.data.CatalogHarvester(
+            org.ramadda.repository.data.CatalogHarvester harvester =
+                new org.ramadda.repository.data.CatalogHarvester(
                     getRepository(), group, catalog, request.getUser(),
                     recurse, download);
             harvester.setAddMetadata(addMetadata);

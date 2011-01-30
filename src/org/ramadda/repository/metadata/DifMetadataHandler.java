@@ -18,14 +18,14 @@
  * 
  */
 
-package ucar.unidata.repository.metadata;
+package org.ramadda.repository.metadata;
 
 
 import org.w3c.dom.*;
 
 
 
-import ucar.unidata.repository.*;
+import org.ramadda.repository.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
