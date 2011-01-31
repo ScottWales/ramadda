@@ -52,9 +52,13 @@
       <ant antfile="${srcdir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/plugins/ontology/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/plugins/gdata/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/poll/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/plugins/feed/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/plugins/db/build.xml" inheritAll="false"/>
+<!--
+      <ant antfile="${srcdir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/plugins/forum/build.xml" inheritAll="false"/>
+-->
 
       <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
           <fileset file="${srcdir}/org/ramadda/plugins/misc/*"/>
@@ -67,8 +71,6 @@
       <copy overwrite="true"  todir="${plugindestdir}">
           <fileset file="${srcdir}/org/ramadda/plugins/README"/>
      </copy>
-
-
 
 
     </target>
