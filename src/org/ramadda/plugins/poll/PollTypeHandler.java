@@ -36,6 +36,7 @@ import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.TwoFacedObject;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.HttpServer;
@@ -68,6 +69,8 @@ public class PollTypeHandler extends BlobTypeHandler {
 
     /** _more_          */
     public static final String ATTR_CHOICES = "choices";
+
+    public static final String ATTR_RESPONSETYPES = "responsetypes";
 
     /** _more_          */
     public static final String ATTR_SECRET = "secret";
@@ -126,10 +129,21 @@ public class PollTypeHandler extends BlobTypeHandler {
             if (choices == null) {
                 choices = new ArrayList<String>();
             }
-            String choicesString = StringUtil.join("\n", choices);
+
+            List<String> types = (List<String>) props.get(ATTR_RESPONSETYPES);
+            if (types == null) {
+                types = new ArrayList<String>();
+            }
+            if(types.size()==0) {
+                types.add("Yes");
+            }
             formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Choices"),
-                    HtmlUtil.textArea(ATTR_CHOICES, choicesString, 8, 60)
+                    HtmlUtil.textArea(ATTR_CHOICES, StringUtil.join("\n", choices), 8, 30)
                     + " " + msg("One choice per line")));
+
+            formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Responses"),
+                    HtmlUtil.textArea(ATTR_RESPONSETYPES, StringUtil.join("\n", types), 4, 30)
+                    + " " + msg("One type per line")));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
 
@@ -163,6 +177,10 @@ public class PollTypeHandler extends BlobTypeHandler {
         List<String> choices = StringUtil.split(choicesString, "\n", true,
                                    true);
 
+        String typesString = request.getString(ATTR_RESPONSETYPES, "");
+        List<String> types = StringUtil.split(typesString, "\n", true,
+                                   true);
+
         Hashtable props  = getProperties(entry);
         String    secret = (String) props.get(ATTR_SECRET);
         if (secret == null) {
@@ -170,6 +188,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             props.put(ATTR_SECRET, secret);
         }
         props.put(ATTR_CHOICES, choices);
+        props.put(ATTR_RESPONSETYPES, types);
         setProperties(entry, props);
     }
 
@@ -212,6 +231,14 @@ public class PollTypeHandler extends BlobTypeHandler {
         if (choices == null) {
             choices = new ArrayList<String>();
         }
+
+        List<String> types = (List<String>) props.get(ATTR_RESPONSETYPES);
+        if (types == null) {
+            types = new ArrayList<String>();
+        }
+
+
+
         List<PollResponse> responses =
             (List<PollResponse>) props.get(ATTR_RESPONSES);
         if (responses == null) {
@@ -228,6 +255,10 @@ public class PollTypeHandler extends BlobTypeHandler {
                         secret), msg("Edit Link")));
         }
 
+        sb.append(HtmlUtil.cssLink(getRepository().getUrlBase()
+                                   + "/poll/style.css"));
+
+        sb.append(HtmlUtil.p());
         sb.append(entry.getDescription());
         sb.append(HtmlUtil.p());
         boolean changed=  false;
@@ -242,8 +273,8 @@ public class PollTypeHandler extends BlobTypeHandler {
                                  request.getString(ARG_COMMENT, ""));
 
             for (String choice : choices) {
-                if (request.get("response." + choice, false)) {
-                    response.set(choice);
+                if (request.defined("response." + choice)) {
+                    response.set(choice,request.getString("response." + choice,""));
                 }
             }
             responses.add(response);
@@ -281,15 +312,17 @@ public class PollTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.hidden(ACTION_ADDRESPONSE, ""));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(
-            "\n<style type=\"text/css\">\n.poll-table td {padding:5px;padding-bottom:0px;}\n\n.poll-header {}\n.poll-input {border : 1px #ccc solid;}\n.poll-response-yes {background: #88C957;}\n.poll-response-no {background: #eee;}</style>\n");
+
+
+
+
         sb.append(
             "<table class=\"poll-table\" border=1 cellpadding=0 cellspacing=0>");
         StringBuffer headerRow = new StringBuffer();
 
         headerRow.append("<tr>");
         if (canEditEntry) {
-            headerRow.append(HtmlUtil.col("&nbsp;"));
+            headerRow.append(HtmlUtil.col("&nbsp;",HtmlUtil.cssClass("poll-header")));
         }
         headerRow.append(HtmlUtil.col(HtmlUtil.b(msg("What/Who")),
                                HtmlUtil.cssClass("poll-header")));
@@ -314,11 +347,11 @@ public class PollTypeHandler extends BlobTypeHandler {
             }
             sb.append(HtmlUtil.col(response.getWhat()+"&nbsp;"));
             for (String choice : choices) {
-                boolean selected = response.isSelected(choice);
-                if (selected) {
+                String selected = response.get(choice);
+                if (selected!=null) {
                     sb.append(
                         HtmlUtil.col(
-                            "yes", HtmlUtil.cssClass("poll-response-yes")));
+                            selected, HtmlUtil.cssClass("poll-response-yes")));
                 } else {
                     sb.append(
                         HtmlUtil.col(
@@ -343,14 +376,21 @@ public class PollTypeHandler extends BlobTypeHandler {
             sb.append(HtmlUtil.col("&nbsp;"));
         }
         sb.append(HtmlUtil.col(input));
+        List typesPlus = new ArrayList(types);
+        typesPlus.add(0, new TwoFacedObject("----",""));
         for (String choice : choices) {
-            sb.append(HtmlUtil.col(HtmlUtil.checkbox("response." + choice,
-                    "true", false), " align=center "));
+            if(types.size()==1) {
+                sb.append(HtmlUtil.col(HtmlUtil.checkbox("response." + choice,
+                                                         types.get(0), false)+" " + types.get(0)));
+            } else {
+                sb.append(HtmlUtil.col(HtmlUtil.select("response." + choice,
+                                                       typesPlus)));
+            }
         }
         sb.append(HtmlUtil.col(commentInput));
         sb.append("</tr>");
         if(responses.size()>0) {
-            sb.append(headerRow);
+            //            sb.append(headerRow);
         }
 
 

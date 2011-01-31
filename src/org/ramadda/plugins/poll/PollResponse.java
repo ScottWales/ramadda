@@ -74,8 +74,12 @@ public class PollResponse {
      *
      * @param value _more_
      */
-    public void set(String value) {
-        selected.put(value, "");
+    public void set(String key, String value) {
+        selected.put(key, value);
+    }
+
+    public String get(String key) {
+        return selected.get(key);
     }
 
 
@@ -182,18 +186,6 @@ public class PollResponse {
         return date;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        PollResponse r = new PollResponse("foo", "");
-        r.set("x");
-        r.set("y");
-        System.err.println(new XmlEncoder().toXml(r));
-    }
+
 
 }

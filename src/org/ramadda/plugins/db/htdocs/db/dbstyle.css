@@ -31,7 +31,22 @@
 }
 
 .dbtable {
+    border-color: #600;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
 }
+
+
+
+.dbtable td {
+    padding:7px;
+    padding-bottom:2px;
+    border-color: #600;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+}
+
 
 .dbgridon {
   background-color: #88C957;
@@ -42,7 +57,20 @@
 }
 
 
-.gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}
+.gridtable {
+    border-color: #600;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+}
+
+.gridtable td {
+   padding:5px;padding-bottom:0px;padding-top:8px;
+    border-color: #600;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+
+}
 
 .dbcategoryrow {
      padding-top: 3px;
