@@ -320,7 +320,7 @@
               <attribute name="Implementation-Title" value="Unidata's Ramada"/>
               <attribute name="Implementation-Version" value="1.1"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
-              <attribute name="Main-class" value="org.ramadd.repository.server.RepositoryServer"/>
+              <attribute name="Main-class" value="org.ramadda.repository.server.RepositoryServer"/>
               <attribute name="Class-Path" value="${manifestjars}"/>
             </manifest> 
             <include name="**/*.class"/>
