@@ -620,6 +620,12 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    public boolean canApplication1Entry(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_APP1);
+    }
+
+
 
     /**
      * _more_
@@ -832,15 +838,20 @@ public class AccessManager extends RepositoryManager {
             if (roles == null) {
                 roles = "";
             }
+            String actionName = Permission.ACTION_NAMES[i];
+            String action = Permission.ACTIONS[i];
+            if(action.equals(Permission.ACTION_APP1)) {
+                actionName = entry.getTypeHandler().getApplication1PermissionName();
+            }
             String label = HtmlUtil.href(
                                getRepository().getUrlBase()
                                + "/help/access.html#"
-                               + Permission.ACTIONS[i], HtmlUtil.img(
+                               + action, HtmlUtil.img(
                                    getRepository().iconUrl(
                                        ICON_HELP)), HtmlUtil.attr(
                                            HtmlUtil.ATTR_TARGET,
                                            "_help")) + HtmlUtil.space(1)
-                                               + Permission.ACTION_NAMES[i];
+                + actionName;
 
             sb.append(HtmlUtil.rowTop(HtmlUtil.cols(label,
                     HtmlUtil.textArea(ARG_ROLES + "."

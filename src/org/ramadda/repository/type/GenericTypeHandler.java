@@ -885,9 +885,6 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-
-
-
     public void addColumnToEntryForm(Request request, Column column,
                                       StringBuffer formBuffer, Entry entry,
                                      Object[] values, Hashtable state)

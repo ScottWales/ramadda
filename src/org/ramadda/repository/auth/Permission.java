@@ -98,17 +98,21 @@ public class Permission {
     /** _more_ */
     public static final String ACTION_FILE = "file";
 
+    public static final String ACTION_APP1 = "application1";
+    public static final String ACTION_APP2 = "application2";
+
 
     /** _more_ */
     public static final String[] ACTIONS = {
         ACTION_VIEW, ACTION_VIEWCHILDREN, ACTION_FILE, ACTION_EDIT,
-        ACTION_NEW, ACTION_UPLOAD, ACTION_DELETE, ACTION_COMMENT
+        ACTION_NEW, ACTION_UPLOAD, ACTION_DELETE, ACTION_COMMENT,
+        ACTION_APP1
     };
 
     /** _more_ */
     public static final String[] ACTION_NAMES = {
         "View", "View Children", "File", "Edit", "New", "Anon. Upload",
-        "Delete", "Comment"
+        "Delete", "Comment", "Application specific"
     };
 
 

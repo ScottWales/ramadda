@@ -1357,7 +1357,6 @@ return new Result(title, sb);
             }
 
 
-
             if (request.defined(ARG_URL)) {
                 entry.setResource(new Resource(request.getString(ARG_URL,
                         BLANK), Resource.TYPE_URL,

@@ -431,6 +431,11 @@ public class TypeHandler extends RepositoryManager {
     public void childEntryChanged(Entry entry, boolean isNew)
             throws Exception {}
 
+    public String getApplication1PermissionName() {
+        return "Application specific";
+    }
+
+
     /**
      * _more_
      *
