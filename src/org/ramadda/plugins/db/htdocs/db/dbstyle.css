@@ -34,11 +34,15 @@
 }
 
 .dbgridon {
-  background-color: #999;
+  background-color: #88C957;
 }
 
 .dbgridoff {
+  background-color: #efefef;
 }
+
+
+.gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}
 
 .dbcategoryrow {
      padding-top: 3px;

@@ -90,6 +90,16 @@
    <column name="description" type="string" label="Description"  canlist="true" rows="5" columns="40" size="10000" />
 </table>
 
+
+<table id="statusboard" name="Status Board">
+   <column name="what" type="string" label="What" cansearch="true"   canlist="true"/>
+   <column name="status" type="enumerationplus" values="" label="Status" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+</table>
+
+
+
 <table id="notes" name="Notes">
    <column name="note" type="string" label="Note"  canlist="true" rows="5" columns="40" size="10000" />
 </table>

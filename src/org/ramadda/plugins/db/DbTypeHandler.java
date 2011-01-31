@@ -2498,9 +2498,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                 (List<String>) tableHandler.getEnumValues(gridColumn, entry);
         }
         sb.append(
-            "<table cellspacing=0 cellpadding=0 border=1 width=100%>\n");
+            "\n<style type=\"text/css\">\n.gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}\n.gridon {background: #88C957;}\n.gridoff {background: #eee;}</style>\n");
+        sb.append(
+            "<table cellspacing=0 cellpadding=0 border=1 width=100% class=\"gridtable\">\n");
         sb.append("<tr>");
-        sb.append(HtmlUtil.col("&nbsp;", HtmlUtil.cssClass("dbtableheader")));
+        int width = 100/(enumValues.size()+1);
+        sb.append(HtmlUtil.col("&nbsp;", HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,width+"%")+HtmlUtil.cssClass("dbtableheader")));
         String key = tableHandler.getTableName() + "." + gridColumn.getName();
         for (String value : enumValues) {
             String searchUrl =
@@ -2511,7 +2514,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             sb.append(
                 HtmlUtil.col(
                     "&nbsp;" + HtmlUtil.href(searchUrl, value),
-                    HtmlUtil.cssClass("dbtableheader")));
+                    HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,""+width+"%") + HtmlUtil.cssClass("dbtableheader")));
         }
         for (Object[] valuesArray : valueList) {
             sb.append("<tr>\n");
