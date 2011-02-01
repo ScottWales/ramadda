@@ -1,7 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
+ * Copyright 2010- Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,11 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository.data;
-
-import org.ramadda.repository.type.TypeHandler;
 
 
 import opendap.dap.DAP2Exception;
@@ -38,6 +36,13 @@ import opendap.servlet.ReqState;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+
+import org.ramadda.repository.type.TypeHandler;
+
 import org.w3c.dom.*;
 
 
@@ -53,8 +58,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
-
-import ucar.nc2.ncml.NcMLWriter;
 
 import ucar.nc2.Attribute;
 
@@ -93,6 +96,8 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.*;
+
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateType;
 import ucar.nc2.util.DiskCache2;
@@ -101,11 +106,6 @@ import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.geoloc.LatLonRect;
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
 
 
 
@@ -157,6 +157,7 @@ import javax.servlet.http.*;
  */
 public class DataOutputHandler extends OutputHandler {
 
+    /** _more_          */
     public static final String FORMAT_NCML = "ncml";
 
     /** Variable prefix */
@@ -183,7 +184,8 @@ public class DataOutputHandler extends OutputHandler {
     /** chart format */
     private static final String FORMAT_TIMESERIES_CHART = "timeserieschart";
 
-    public static final String  GROUP_DATA = "Data";
+    /** _more_          */
+    public static final String GROUP_DATA = "Data";
 
 
     /** OPeNDAP Output Type */
@@ -681,7 +683,9 @@ public class DataOutputHandler extends OutputHandler {
 
         Entry entry = state.entry;
 
-        if(state.group!=null && state.group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if ((state.group != null)
+                && state.group.getType().equals(
+                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             entry = state.group;
         }
 
@@ -695,10 +699,10 @@ public class DataOutputHandler extends OutputHandler {
             return;
         }
 
-        long t1 = System.currentTimeMillis();
+        long    t1           = System.currentTimeMillis();
         boolean canLoadAsCdm = canLoadAsCdm(entry);
 
-        if (!canLoadAsCdm) {
+        if ( !canLoadAsCdm) {
             long t2 = System.currentTimeMillis();
             if ((t2 - t1) > 1) {
                 //                System.err.println("DataOutputHandler (cdm) getEntryLinks  "
@@ -830,10 +834,11 @@ public class DataOutputHandler extends OutputHandler {
             return true;
         }
 
-        if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if (entry.getType().equals(
+                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return true;
         }
-        if (!entry.getType().equals(
+        if ( !entry.getType().equals(
                 OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             if ( !entry.isFile()) {
                 return false;
@@ -1056,7 +1061,8 @@ public class DataOutputHandler extends OutputHandler {
      * @return _more_
      */
     public boolean canLoadAsGrid(Entry entry) {
-        if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if (entry.getType().equals(
+                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return true;
         }
 
@@ -1101,16 +1107,18 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputCdl(final Request request, Entry entry)
             throws Exception {
-        String        path    = getPath(request, entry);
-        if(request.getString(ARG_FORMAT,"").equals(FORMAT_NCML)) {
+        String path = getPath(request, entry);
+        if (request.getString(ARG_FORMAT, "").equals(FORMAT_NCML)) {
+
             /**
-               This gets hung up calling back into the repository
-               so for now don't do it and just use the file*/
+             *  This gets hung up calling back into the repository
+             *  so for now don't do it and just use the file
+             */
             String opendapUrl = getFullTdsUrl(entry);
             path = opendapUrl;
             NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
             NcMLWriter writer = new NcMLWriter();
-            String xml = writer.writeXML(ncFile);
+            String     xml    = writer.writeXML(ncFile);
             Result result = new Result("", new StringBuffer(xml), "text/xml");
             ncFile.close();
             return result;
@@ -1154,10 +1162,15 @@ public class DataOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.span("&nbsp;|&nbsp;",
                                     HtmlUtil.cssClass("separator")));
         }
-        String tail = IOUtil.stripExtension(getStorageManager().getFileTail(entry));
-        
-        sb.append(HtmlUtil.href(
-                                HtmlUtil.url(getRepository().URL_ENTRY_SHOW+"/" + tail+".ncml", new String[]{ARG_ENTRYID,entry.getId(),ARG_OUTPUT,OUTPUT_CDL.getId(),ARG_FORMAT,FORMAT_NCML}), "NCML"));
+        String tail =
+            IOUtil.stripExtension(getStorageManager().getFileTail(entry));
+
+        sb.append(HtmlUtil.href(HtmlUtil.url(getRepository().URL_ENTRY_SHOW
+                                             + "/" + tail
+                                             + ".ncml", new String[] {
+            ARG_ENTRYID, entry.getId(), ARG_OUTPUT, OUTPUT_CDL.getId(),
+            ARG_FORMAT, FORMAT_NCML
+        }), "NCML"));
 
 
         NetcdfDataset dataset = ncDatasetPool.get(path);
@@ -1207,14 +1220,18 @@ public class DataOutputHandler extends OutputHandler {
      * @param path _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public GridDataset getGridDataset(Entry entry, String path) throws Exception {
+    public GridDataset getGridDataset(Entry entry, String path)
+            throws Exception {
         if ( !canLoadAsGrid(entry)) {
             return null;
         }
         //Don't cache the aggregations
-        if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-            return  GridDataset.open(path);
+        if (entry.getType().equals(
+                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            return GridDataset.open(path);
         }
         return gridPool.get(path);
     }
@@ -1676,7 +1693,7 @@ public class DataOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb     = new StringBuffer();
         String       path   = getPath(request, entry);
-       
+
         GridDataset  gds    = getGridDataset(entry, path);
         OutputType   output = request.getOutput();
         try {
@@ -1772,10 +1789,12 @@ public class DataOutputHandler extends OutputHandler {
                 gridPool.put(path, gds);
 
                 if (doingPublish(request)) {
-                    TypeHandler typeHandler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
-                    Entry    newEntry = typeHandler.createEntry(getRepository().getGUID());
+                    TypeHandler typeHandler =
+                        getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+                    Entry newEntry =
+                        typeHandler.createEntry(getRepository().getGUID());
                     return getEntryManager().processEntryPublish(request, f,
-                                                                 newEntry, entry, "subset of");
+                            newEntry, entry, "subset of");
                 }
 
                 return new Result(entry.getName() + ".nc",
@@ -2561,18 +2580,30 @@ public class DataOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param outputType _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
-
-        throws Exception {
-        if (group.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            throws Exception {
+        if (group.getType().equals(
+                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return outputEntry(request, outputType, group);
         }
-        System.err.println("group:"+ group +" " + group.getType());
-        
-        return super.outputGroup(request,  outputType,
-                                 group, subGroups,
+        System.err.println("group:" + group + " " + group.getType());
+
+        return super.outputGroup(request, outputType, group, subGroups,
                                  entries);
     }
 
@@ -2655,6 +2686,15 @@ public class DataOutputHandler extends OutputHandler {
                                            + outputType);
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String getPath(Entry entry) throws Exception {
         return getPath(null, entry);
     }
@@ -2663,6 +2703,8 @@ public class DataOutputHandler extends OutputHandler {
     /**
      * Get the path for the Entry
      *
+     *
+     * @param request _more_
      * @param entry  the Entry
      *
      * @return   the path
@@ -2679,8 +2721,10 @@ public class DataOutputHandler extends OutputHandler {
                     || ext.equals(".dds")) {
                 location = IOUtil.stripExtension(location);
             }
-        }  else if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-            GridAggregationTypeHandler gridAggregation = (GridAggregationTypeHandler) entry.getTypeHandler();
+        } else if (entry.getType().equals(
+                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            GridAggregationTypeHandler gridAggregation =
+                (GridAggregationTypeHandler) entry.getTypeHandler();
             location = gridAggregation.getNcmlFile(request, entry).toString();
         } else {
             location = getStorageManager().getFastResourcePath(entry);
