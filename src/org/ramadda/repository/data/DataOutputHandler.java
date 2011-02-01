@@ -128,6 +128,7 @@ import java.io.*;
 
 import java.net.*;
 
+import java.util.regex.*;
 
 
 
@@ -532,6 +533,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
 
+    public DataOutputHandler(Repository repository, String name)
+            throws Exception {
+        super(repository, name);
+    }
+
     /**
      *     Create a DataOutputHandler
      *
@@ -844,14 +850,14 @@ public class DataOutputHandler extends OutputHandler {
                 return false;
             }
 
-            if (cannotLoad(entry, TYPE_CDM)) {
+            if (excludedByPattern(entry, TYPE_CDM)) {
                 return false;
             }
         }
 
         String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
         for (int i = 0; i < types.length; i++) {
-            if (canLoad(entry, types[i])) {
+            if (includedByPattern(entry, types[i])) {
                 return true;
             }
         }
@@ -894,10 +900,10 @@ public class DataOutputHandler extends OutputHandler {
      * @return _more_
      */
     public boolean canLoadAsPoint(Entry entry) {
-        if (cannotLoad(entry, TYPE_POINT)) {
+        if (excludedByPattern(entry, TYPE_POINT)) {
             return false;
         }
-        if (canLoad(entry, TYPE_POINT)) {
+        if (includedByPattern(entry, TYPE_POINT)) {
             return true;
         }
         if ( !canLoadAsCdm(entry)) {
@@ -928,10 +934,10 @@ public class DataOutputHandler extends OutputHandler {
      * @return _more_
      */
     public boolean canLoadAsTrajectory(Entry entry) {
-        if (cannotLoad(entry, TYPE_TRAJECTORY)) {
+        if (excludedByPattern(entry, TYPE_TRAJECTORY)) {
             return false;
         }
-        if (canLoad(entry, TYPE_TRAJECTORY)) {
+        if (includedByPattern(entry, TYPE_TRAJECTORY)) {
             return true;
         }
 
@@ -966,7 +972,10 @@ public class DataOutputHandler extends OutputHandler {
     public static final String TYPE_POINT = "point";
 
     /** _more_ */
-    private Hashtable prefixMap;
+    private HashSet<String> suffixSet;
+    private Hashtable<String,List<Pattern>> patterns;
+    private Hashtable<String,List<Pattern>> notPatterns;
+
 
     /**
      * _more_
@@ -976,21 +985,8 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private boolean cannotLoad(Entry entry, String type) {
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
-        //If this entry can be loaded by another type then we cannot
-        //load it for this type
-        /*        if(!type.equals(TYPE_CDM)) {
-            for(int i=0;i<types.length;i++) {
-                if(!types[i].equals(TYPE_CDM)) {
-                    continue;
-                }
-                if(type.equals(types[i])) continue;
-                if(canLoad(entry,types[i])) return true;
-            }
-            }*/
-
-        return hasPrefixForType(entry, type, true);
+    private boolean excludedByPattern(Entry entry, String type) {
+        return hasSuffixForType(entry, type, true);
     }
 
     /**
@@ -1001,9 +997,8 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private boolean canLoad(Entry entry, String type) {
-        //        System.err.println ("can load:" + type+ " " +hasPrefixForType(entry, type, false));        
-        return hasPrefixForType(entry, type, false);
+    private boolean includedByPattern(Entry entry, String type) {
+        return hasSuffixForType(entry, type, false);
     }
 
     /**
@@ -1015,42 +1010,96 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private boolean hasPrefixForType(Entry entry, String type,
+    private boolean hasSuffixForType(Entry entry, String type,
                                      boolean forNot) {
-        if (prefixMap == null) {
-            Hashtable tmp = new Hashtable();
+        String url = entry.getResource().getPath();
+        if (url == null) {
+            return false;
+        }
+        return hasSuffixForType(url, type, forNot);
+    }
+
+    private boolean hasSuffixForType(String url, String type,
+                                     boolean forNot) {
+        if (suffixSet == null) {
+            HashSet<String> tmpSuffixSet = new HashSet<String>();
+
+            Hashtable<String,List<Pattern>> tmpPatterns  = new Hashtable<String,List<Pattern>>();
+            Hashtable<String,List<Pattern>> tmpNotPatterns  = new Hashtable<String,List<Pattern>>();
+
+
+
+
             String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY,
                                TYPE_POINT };
             for (int i = 0; i < types.length; i++) {
                 List toks = StringUtil.split(
                                 getRepository().getProperty(
-                                    "ramadda.data." + types[i] + ".prefixes",
+                                    "ramadda.data." + types[i] + ".suffixes",
                                     ""), ",", true, true);
                 for (String tok : (List<String>) toks) {
                     if ((tok.length() == 0) || tok.equals("!")) {
                         continue;
                     }
                     String key = types[i] + "." + tok;
-                    tmp.put(key, "");
+                    tmpSuffixSet.add(key);
                 }
             }
-            prefixMap = tmp;
-        }
-        String url = entry.getResource().getPath();
-        if (url == null) {
-            return false;
+
+
+
+            for (int i = 0; i < types.length; i++) {
+                tmpPatterns.put(types[i], new ArrayList<Pattern>());
+                tmpNotPatterns.put(types[i], new ArrayList<Pattern>());
+                List patterns = StringUtil.split(
+                                getRepository().getProperty(
+                                    "ramadda.data." + types[i] + ".patterns",
+                                    ""), ",", true, true);
+                for (String pattern : (List<String>) patterns) {
+                    if ((pattern.length() == 0) || pattern.equals("!")) {
+                        continue;
+                    }
+                    Hashtable<String,List<Pattern>> tmp;
+                    if(pattern.startsWith("!")) {
+                        tmp = tmpNotPatterns;
+                        pattern = pattern.substring(1);
+                    } else {
+                        tmp = tmpPatterns;
+                    }
+                    tmp.get(types[i]).add(Pattern.compile(pattern));
+                }
+            }
+
+            patterns = tmpPatterns;
+            notPatterns = tmpNotPatterns;
+            suffixSet= tmpSuffixSet;
+
         }
 
-        String ext    = IOUtil.getFileExtension(url).toLowerCase();
+        url = url.toLowerCase();
+
+
+        
+        //First check the patterns
+        List<Pattern> patternList = (forNot?notPatterns.get(type):patterns.get(type));
+        for(Pattern pattern: patternList) {
+            if(pattern.matcher(url).find()) {
+                return true;
+            }
+        }
+
+
+        String ext    = IOUtil.getFileExtension(url);
         String key    = type + "." + ext;
         String notKey = type + ".!" + ext;
         if (forNot) {
-            return prefixMap.get(notKey) != null;
+            if(suffixSet.contains(notKey)) return true;
         } else {
-            return prefixMap.get(key) != null;
+            if(suffixSet.contains(key)) return true;
         }
 
 
+        return false;
     }
 
     /**
@@ -1065,12 +1114,10 @@ public class DataOutputHandler extends OutputHandler {
                 GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return true;
         }
-
-
-        if (cannotLoad(entry, TYPE_GRID)) {
+        if (excludedByPattern(entry, TYPE_GRID)) {
             return false;
         }
-        if (canLoad(entry, TYPE_GRID)) {
+        if (includedByPattern(entry, TYPE_GRID)) {
             return true;
         }
         if ( !canLoadAsCdm(entry)) {
@@ -2890,6 +2937,27 @@ public class DataOutputHandler extends OutputHandler {
          */
         public String getServerVersion() {
             return "opendap/3.7";
+        }
+    }
+
+
+    public static void main(String[]args) throws Exception {
+        Repository repository = new Repository(new String[]{},8080);
+        repository.initProperties(null);
+
+        DataOutputHandler dop = new DataOutputHandler(repository,"test");
+        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
+        for(String f: args) {
+            System.err.println ("file:" + f);
+            for(String type: types) {
+                boolean ok =  dop.hasSuffixForType(f, type, false);
+                boolean exclude =  dop.hasSuffixForType(f, type, true);
+                if(!ok && !exclude) {
+                    System.err.println("\t" +type+": " + "unknown");
+                } else {
+                    System.err.println("\t" +type+": " + "ok? " + ok +" exclude:" + exclude);
+                }
+            }
         }
     }
 

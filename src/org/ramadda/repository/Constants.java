@@ -740,6 +740,9 @@ public interface Constants {
         "file.preservedirectoryfile";
 
 
+    public static final String ARG_FORMAT = "format";
+
+
     /** _more_ */
     public static final String ARG_FORM_ADVANCED = "form.advanced";
 

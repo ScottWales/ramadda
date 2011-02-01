@@ -790,7 +790,6 @@ public class Repository extends RepositoryBase implements RequestHandler {
      */
     public void init(Properties properties) throws Exception {
 
-
         /*
         final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
@@ -832,7 +831,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
      * @param contextProperties _more_
      * @throws Exception _more_
      */
-    protected void initProperties(Properties contextProperties)
+    public void initProperties(Properties contextProperties)
             throws Exception {
         /*
           order in which we load properties files
