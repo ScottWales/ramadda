@@ -218,7 +218,8 @@ public class PollTypeHandler extends BlobTypeHandler {
             props.put(ATTR_SECRET, secret);
         }
 
-        boolean hasSecret = secret.equals(request.getString(ATTR_SECRET,""));
+        String secretFromUrl = request.getString(ATTR_SECRET,"none");
+        boolean hasSecret = secret.equals(secretFromUrl);
         
         boolean canEditEntry = getAccessManager().canEditEntry(request,
                                                                entry);
@@ -264,17 +265,18 @@ public class PollTypeHandler extends BlobTypeHandler {
         boolean changed=  false;
 
 
+        //NOTICE: Use getEncodedString below which does an entity encoding of the possibly anonymous input
         if (request.exists(ACTION_ADDRESPONSE)) {
             if (!canEditEntry && !hasSecret) {
                 return new Result("Poll", new StringBuffer(getRepository().showDialogError("No access to change poll")));
             }
             PollResponse response =
-                new PollResponse(request.getString(ARG_RESPONSE, ""),
-                                 request.getString(ARG_COMMENT, ""));
+                new PollResponse(request.getEncodedString(ARG_RESPONSE, ""),
+                                 request.getEncodedString(ARG_COMMENT, ""));
 
             for (String choice : choices) {
                 if (request.defined("response." + choice)) {
-                    response.set(choice,request.getString("response." + choice,""));
+                    response.set(choice,request.getEncodedString("response." + choice,""));
                 }
             }
             responses.add(response);
@@ -301,7 +303,10 @@ public class PollTypeHandler extends BlobTypeHandler {
 
         //If there was a change then redirect back to here
         if(changed) {
-            return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
+            if(hasSecret)
+                return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry, ATTR_SECRET, secretFromUrl));
+            else
+                return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
         }
 
         sb.append(request.form(getRepository().URL_ENTRY_SHOW,
@@ -312,14 +317,13 @@ public class PollTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.hidden(ACTION_ADDRESPONSE, ""));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-
-
-
+        if(hasSecret) {
+            sb.append(HtmlUtil.hidden(ATTR_SECRET, secretFromUrl));
+        }
 
         sb.append(
             "<table class=\"poll-table\" border=1 cellpadding=0 cellspacing=0>");
         StringBuffer headerRow = new StringBuffer();
-
         headerRow.append("<tr>");
         if (canEditEntry) {
             headerRow.append(HtmlUtil.col("&nbsp;",HtmlUtil.cssClass("poll-header")));
