@@ -54,6 +54,8 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 
+import ucar.nc2.ncml.NcMLWriter;
+
 import ucar.nc2.Attribute;
 
 import ucar.nc2.NetcdfFile;
@@ -154,6 +156,8 @@ import javax.servlet.http.*;
  * @version $Revision: 1.3 $
  */
 public class DataOutputHandler extends OutputHandler {
+
+    public static final String FORMAT_NCML = "ncml";
 
     /** Variable prefix */
     public static final String VAR_PREFIX = ARG_VARIABLE + ".";
@@ -1097,6 +1101,22 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputCdl(final Request request, Entry entry)
             throws Exception {
+        String        path    = getPath(request, entry);
+        if(request.getString(ARG_FORMAT,"").equals(FORMAT_NCML)) {
+            /**
+               This gets hung up calling back into the repository
+               so for now don't do it and just use the file*/
+            String opendapUrl = getFullTdsUrl(entry);
+            path = opendapUrl;
+            NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
+            NcMLWriter writer = new NcMLWriter();
+            String xml = writer.writeXML(ncFile);
+            Result result = new Result("", new StringBuffer(xml), "text/xml");
+            ncFile.close();
+            return result;
+        }
+
+
         StringBuffer sb = new StringBuffer();
         if (request.get(ARG_METADATA_ADD, false)) {
             if (getRepository().getAccessManager().canDoAction(request,
@@ -1131,8 +1151,15 @@ public class DataOutputHandler extends OutputHandler {
 
             sb.append(HtmlUtil.href(request.getUrl(),
                                     msg("Add full properties")));
+            sb.append(HtmlUtil.span("&nbsp;|&nbsp;",
+                                    HtmlUtil.cssClass("separator")));
         }
-        String        path    = getPath(request, entry);
+        String tail = IOUtil.stripExtension(getStorageManager().getFileTail(entry));
+        
+        sb.append(HtmlUtil.href(
+                                HtmlUtil.url(getRepository().URL_ENTRY_SHOW+"/" + tail+".ncml", new String[]{ARG_ENTRYID,entry.getId(),ARG_OUTPUT,OUTPUT_CDL.getId(),ARG_FORMAT,FORMAT_NCML}), "NCML"));
+
+
         NetcdfDataset dataset = ncDatasetPool.get(path);
         if (dataset == null) {
             sb.append("Could not open dataset");
