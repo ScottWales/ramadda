@@ -1,6 +1,7 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
  */
 
 package org.ramadda.repository.data;
@@ -35,6 +35,20 @@ import opendap.servlet.ReqState;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
+
+import org.jfree.chart.*;
+import org.jfree.chart.annotations.*;
+import org.jfree.chart.axis.*;
+import org.jfree.chart.entity.*;
+import org.jfree.chart.event.*;
+import org.jfree.chart.labels.*;
+import org.jfree.chart.plot.*;
+import org.jfree.chart.renderer.xy.*;
+import org.jfree.data.*;
+import org.jfree.data.general.*;
+import org.jfree.data.time.*;
+import org.jfree.data.xy.*;
+import org.jfree.ui.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -106,6 +120,7 @@ import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.ui.ImageUtils;
 
 
 
@@ -113,7 +128,8 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
 
-import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -124,13 +140,17 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
 
+import ucar.visad.Util;
+
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
 import java.io.*;
 
 import java.net.*;
 
-import java.util.regex.*;
-
-
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 
@@ -144,6 +164,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.*;
 
 import javax.servlet.*;
 
@@ -158,7 +179,7 @@ import javax.servlet.http.*;
  */
 public class DataOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String FORMAT_NCML = "ncml";
 
     /** Variable prefix */
@@ -182,10 +203,22 @@ public class DataOutputHandler extends OutputHandler {
     /** format */
     public static final String ARG_FORMAT = "format";
 
+    /** format */
+    public static final String ARG_IMAGE_WIDTH = "image_width";
+
+    /** format */
+    public static final String ARG_IMAGE_HEIGHT = "image_height";
+
+    /** chart format */
+    private static final String FORMAT_TIMESERIES_DATA = "timeseriesdata";
+
     /** chart format */
     private static final String FORMAT_TIMESERIES_CHART = "timeserieschart";
 
-    /** _more_          */
+    /** chart image format */
+    private static final String FORMAT_TIMESERIES_IMAGE = "timeseriesimage";
+
+    /** _more_ */
     public static final String GROUP_DATA = "Data";
 
 
@@ -533,6 +566,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param name _more_
+     *
+     * @throws Exception _more_
+     */
     public DataOutputHandler(Repository repository, String name)
             throws Exception {
         super(repository, name);
@@ -973,8 +1014,12 @@ public class DataOutputHandler extends OutputHandler {
 
     /** _more_ */
     private HashSet<String> suffixSet;
-    private Hashtable<String,List<Pattern>> patterns;
-    private Hashtable<String,List<Pattern>> notPatterns;
+
+    /** _more_          */
+    private Hashtable<String, List<Pattern>> patterns;
+
+    /** _more_          */
+    private Hashtable<String, List<Pattern>> notPatterns;
 
 
     /**
@@ -1019,13 +1064,24 @@ public class DataOutputHandler extends OutputHandler {
         return hasSuffixForType(url, type, forNot);
     }
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     * @param type _more_
+     * @param forNot _more_
+     *
+     * @return _more_
+     */
     private boolean hasSuffixForType(String url, String type,
                                      boolean forNot) {
         if (suffixSet == null) {
             HashSet<String> tmpSuffixSet = new HashSet<String>();
 
-            Hashtable<String,List<Pattern>> tmpPatterns  = new Hashtable<String,List<Pattern>>();
-            Hashtable<String,List<Pattern>> tmpNotPatterns  = new Hashtable<String,List<Pattern>>();
+            Hashtable<String, List<Pattern>> tmpPatterns =
+                new Hashtable<String, List<Pattern>>();
+            Hashtable<String, List<Pattern>> tmpNotPatterns =
+                new Hashtable<String, List<Pattern>>();
 
 
 
@@ -1052,16 +1108,16 @@ public class DataOutputHandler extends OutputHandler {
                 tmpPatterns.put(types[i], new ArrayList<Pattern>());
                 tmpNotPatterns.put(types[i], new ArrayList<Pattern>());
                 List patterns = StringUtil.split(
-                                getRepository().getProperty(
-                                    "ramadda.data." + types[i] + ".patterns",
-                                    ""), ",", true, true);
+                                    getRepository().getProperty(
+                                        "ramadda.data." + types[i]
+                                        + ".patterns", ""), ",", true, true);
                 for (String pattern : (List<String>) patterns) {
                     if ((pattern.length() == 0) || pattern.equals("!")) {
                         continue;
                     }
-                    Hashtable<String,List<Pattern>> tmp;
-                    if(pattern.startsWith("!")) {
-                        tmp = tmpNotPatterns;
+                    Hashtable<String, List<Pattern>> tmp;
+                    if (pattern.startsWith("!")) {
+                        tmp     = tmpNotPatterns;
                         pattern = pattern.substring(1);
                     } else {
                         tmp = tmpPatterns;
@@ -1070,20 +1126,22 @@ public class DataOutputHandler extends OutputHandler {
                 }
             }
 
-            patterns = tmpPatterns;
+            patterns    = tmpPatterns;
             notPatterns = tmpNotPatterns;
-            suffixSet= tmpSuffixSet;
+            suffixSet   = tmpSuffixSet;
 
         }
 
         url = url.toLowerCase();
 
 
-        
+
         //First check the patterns
-        List<Pattern> patternList = (forNot?notPatterns.get(type):patterns.get(type));
-        for(Pattern pattern: patternList) {
-            if(pattern.matcher(url).find()) {
+        List<Pattern> patternList = (forNot
+                                     ? notPatterns.get(type)
+                                     : patterns.get(type));
+        for (Pattern pattern : patternList) {
+            if (pattern.matcher(url).find()) {
                 return true;
             }
         }
@@ -1093,9 +1151,13 @@ public class DataOutputHandler extends OutputHandler {
         String key    = type + "." + ext;
         String notKey = type + ".!" + ext;
         if (forNot) {
-            if(suffixSet.contains(notKey)) return true;
+            if (suffixSet.contains(notKey)) {
+                return true;
+            }
         } else {
-            if(suffixSet.contains(key)) return true;
+            if (suffixSet.contains(key)) {
+                return true;
+            }
         }
 
 
@@ -1378,10 +1440,10 @@ public class DataOutputHandler extends OutputHandler {
         int    timeStride = 1;
         Date[] dates      = new Date[] { request.get(ARG_SUBSETTIME, false)
                                          ? request.getDate(ARG_FROMDATE, null)
-                                         : null, request.get(ARG_SUBSETTIME,
-                                             false)
-                ? request.getDate(ARG_TODATE, null)
-                : null };
+                                         : null,
+                                         request.get(ARG_SUBSETTIME, false)
+                                         ? request.getDate(ARG_TODATE, null)
+                                         : null };
         if ((dates[0] != null) && (dates[1] != null)
                 && (dates[0].getTime() > dates[1].getTime())) {
             sb.append(
@@ -1396,9 +1458,11 @@ public class DataOutputHandler extends OutputHandler {
             QueryParams qp = new QueryParams();
             String format  = request.getString(ARG_FORMAT,
                                  QueryParams.NETCDF);
-            qp.acceptType     = format.equals(FORMAT_TIMESERIES_CHART)
-                                ? QueryParams.CSV
-                                : format;
+            qp.acceptType = (format.equals(FORMAT_TIMESERIES_CHART)
+                             || format.equals(FORMAT_TIMESERIES_IMAGE)
+                             || format.equals(FORMAT_TIMESERIES_DATA))
+                            ? QueryParams.CSV
+                            : format;
 
             qp.vars           = varNames;
 
@@ -1423,7 +1487,9 @@ public class DataOutputHandler extends OutputHandler {
             }
             String suffix = ".nc";
             if (qp.acceptType.equals(QueryParams.CSV)
-                    || format.equals(FORMAT_TIMESERIES_CHART)) {
+                    || format.equals(FORMAT_TIMESERIES_CHART)
+                    || format.equals(FORMAT_TIMESERIES_IMAGE)
+                    || format.equals(FORMAT_TIMESERIES_DATA)) {
                 suffix = ".csv";
             } else if (qp.acceptType.equals(QueryParams.XML)) {
                 suffix = ".xml";
@@ -1459,7 +1525,7 @@ public class DataOutputHandler extends OutputHandler {
                 String chartTemplate =
                     getRepository().getResource(
                         "/org/ramadda/repository/resources/chart/dycharts.html");
-                chartTemplate = chartTemplate.replace("${urlroot}",
+                chartTemplate = chartTemplate.replaceAll("\\$\\{urlroot\\}",
                         getRepository().getUrlBase());
                 //String title = request.getString(ARG_POINT_TIMESERIES_TITLE,
                 //                   entry.getName());
@@ -1487,8 +1553,17 @@ public class DataOutputHandler extends OutputHandler {
                 html = html.replace("${dataurl}", dataUrl);
 
                 buf.append(html);
-                result = new Result("Search Results", buf);
+                result = new Result("Point As Grid Time Series", buf);
 
+            } else if (format.equals(FORMAT_TIMESERIES_DATA)) {
+                request.put(ARG_FORMAT, FORMAT_TIMESERIES_IMAGE);
+                String redirectUrl = request.getRequestPath() + "/"
+                                     + baseName + ".png" + "?"
+                                     + request.getUrlArgs();
+                sb.append(HtmlUtil.img(redirectUrl));
+                result = new Result("Point As Grid Time Series Image", sb);
+            } else if (format.equals(FORMAT_TIMESERIES_IMAGE)) {
+                result = outputTimeSeriesImage(request, entry, f);
             } else {
                 result =
                     new Result(getStorageManager().getFileInputStream(f),
@@ -1596,6 +1671,8 @@ public class DataOutputHandler extends OutputHandler {
         List formats = Misc.toList(new Object[] {
                            new TwoFacedObject("NetCDF", QueryParams.NETCDF),
                            new TwoFacedObject("Xml", QueryParams.XML),
+                           new TwoFacedObject("Time Series Image",
+                               FORMAT_TIMESERIES_DATA),
                            new TwoFacedObject("Interactive Time Series",
                                FORMAT_TIMESERIES_CHART),
                            new TwoFacedObject("Comma Separated Values (CSV)",
@@ -1808,10 +1885,10 @@ public class DataOutputHandler extends OutputHandler {
             int     timeStride    = 1;
             Date[]  dates = new Date[] { request.get(ARG_SUBSETTIME, false)
                                          ? request.getDate(ARG_FROMDATE, null)
-                                         : null, request.get(ARG_SUBSETTIME,
-                                             false)
-                    ? request.getDate(ARG_TODATE, null)
-                    : null };
+                                         : null,
+                                         request.get(ARG_SUBSETTIME, false)
+                                         ? request.getDate(ARG_TODATE, null)
+                                         : null };
             if ((dates[0] != null) && (dates[1] != null)
                     && (dates[0].getTime() > dates[1].getTime())) {
                 sb.append(
@@ -2941,24 +3018,329 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
-    public static void main(String[]args) throws Exception {
-        Repository repository = new Repository(new String[]{},8080);
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        Repository repository = new Repository(new String[] {}, 8080);
         repository.initProperties(null);
 
-        DataOutputHandler dop = new DataOutputHandler(repository,"test");
+        DataOutputHandler dop = new DataOutputHandler(repository, "test");
         String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
-        for(String f: args) {
-            System.err.println ("file:" + f);
-            for(String type: types) {
-                boolean ok =  dop.hasSuffixForType(f, type, false);
-                boolean exclude =  dop.hasSuffixForType(f, type, true);
-                if(!ok && !exclude) {
-                    System.err.println("\t" +type+": " + "unknown");
+        for (String f : args) {
+            System.err.println("file:" + f);
+            for (String type : types) {
+                boolean ok      = dop.hasSuffixForType(f, type, false);
+                boolean exclude = dop.hasSuffixForType(f, type, true);
+                if ( !ok && !exclude) {
+                    System.err.println("\t" + type + ": " + "unknown");
                 } else {
-                    System.err.println("\t" +type+": " + "ok? " + ok +" exclude:" + exclude);
+                    System.err.println("\t" + type + ": " + "ok? " + ok
+                                       + " exclude:" + exclude);
                 }
             }
         }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param columnsToUse _more_
+     * @param list _more_
+     * @param f _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result outputTimeSeriesImage(Request request, Entry entry, File f)
+            throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        //sb.append(getHeader(request, entry));
+        sb.append(header(msg("Chart")));
+
+        TimeSeriesCollection dummy  = new TimeSeriesCollection();
+        JFreeChart chart = createChart(request, entry, dummy);
+        XYPlot               xyPlot = (XYPlot) chart.getPlot();
+
+        Hashtable<String, MyTimeSeries> seriesMap = new Hashtable<String,
+                                                        MyTimeSeries>();
+        List<MyTimeSeries> allSeries = new ArrayList<MyTimeSeries>();
+        int     paramCount = 0;
+        int     colorCount = 0;
+        boolean axisLeft   = true;
+        Hashtable<String, List<ValueAxis>> axisMap = new Hashtable<String,
+                                                         List<ValueAxis>>();
+        Hashtable<String, double[]> rangeMap = new Hashtable<String,
+                                                   double[]>();
+        List<String> units      = new ArrayList<String>();
+        List<String> paramUnits = new ArrayList<String>();
+        List<String> paramNames = new ArrayList<String>();
+
+        long         t1         = System.currentTimeMillis();
+        String contents =
+            IOUtil.readContents(getStorageManager().getFileInputStream(f));
+        List<String> lines      = StringUtil.split(contents, "\n", true,
+                                      true);
+        String       header     = lines.get(0);
+        String[]     headerToks = header.split(",");
+        for (int i = 0; i < headerToks.length; i++) {
+            paramNames.add(getParamName(headerToks[i]));
+            paramUnits.add(getUnitFromName(headerToks[i]));
+        }
+        boolean hasLevel   = paramNames.get(3).equals("vertCoord");
+
+        boolean readHeader = false;
+        for (String line : lines) {
+            if ( !readHeader) {
+                readHeader = true;
+                continue;
+            }
+            String[] lineTokes = line.split(",");
+            Date     date      = DateUtil.parse(lineTokes[0]);
+            int      startIdx  = hasLevel
+                                 ? 4
+                                 : 3;
+            for (int i = startIdx; i < lineTokes.length; i++) {
+                double value = Double.parseDouble(lineTokes[i]);
+                if (value != value) {
+                    continue;
+                }
+                List<ValueAxis> axises     = null;
+                double[]        range      = null;
+                String          u          = paramUnits.get(i);
+                String          paramName  = paramNames.get(i);
+                String          formatName = paramName.replaceAll("_", " ");
+                String formatUnit = ((u == null) || (u.length() == 0))
+                                    ? ""
+                                    : "[" + u + "]";
+                if (u != null) {
+                    axises = axisMap.get(u);
+                    range  = rangeMap.get(u);
+                    if (axises == null) {
+                        axises = new ArrayList<ValueAxis>();
+                        range  = new double[] { value, value };
+                        rangeMap.put(u, range);
+                        axisMap.put(u, axises);
+                        units.add(u);
+                    }
+                    range[0] = Math.min(range[0], value);
+                    range[1] = Math.max(range[1], value);
+                }
+                MyTimeSeries series = seriesMap.get(paramName);
+                if (series == null) {
+                    paramCount++;
+                    TimeSeriesCollection dataset = new TimeSeriesCollection();
+                    series = new MyTimeSeries(formatName, Millisecond.class);
+                    allSeries.add(series);
+                    ValueAxis rangeAxis = new NumberAxis(formatName + " "
+                                              + formatUnit);
+                    if (axises != null) {
+                        axises.add(rangeAxis);
+                    }
+                    XYItemRenderer renderer =
+                        new XYAreaRenderer(XYAreaRenderer.LINES);
+                    if (colorCount >= GuiUtils.COLORS.length) {
+                        colorCount = 0;
+                    }
+                    renderer.setSeriesPaint(0, GuiUtils.COLORS[colorCount]);
+                    colorCount++;
+                    xyPlot.setRenderer(paramCount, renderer);
+                    xyPlot.setRangeAxis(paramCount, rangeAxis, false);
+                    AxisLocation side = (axisLeft
+                                         ? AxisLocation.TOP_OR_LEFT
+                                         : AxisLocation.BOTTOM_OR_RIGHT);
+                    axisLeft = !axisLeft;
+                    xyPlot.setRangeAxisLocation(paramCount, side);
+
+                    dataset.setDomainIsPointsInTime(true);
+                    dataset.addSeries(series);
+                    seriesMap.put(paramNames.get(i), series);
+                    xyPlot.setDataset(paramCount, dataset);
+                    xyPlot.mapDatasetToRangeAxis(paramCount, paramCount);
+                }
+                //series.addOrUpdate(new Millisecond(pointData.date),value);
+                TimeSeriesDataItem item =
+                    new TimeSeriesDataItem(new Millisecond(date), value);
+                series.addItem(item);
+            }
+        }
+
+
+
+        for (MyTimeSeries timeSeries : allSeries) {
+            timeSeries.finish();
+        }
+
+        for (String unit : units) {
+            List<ValueAxis> axises = axisMap.get(unit);
+            double[]        range  = rangeMap.get(unit);
+            for (ValueAxis rangeAxis : axises) {
+                rangeAxis.setRange(new org.jfree.data.Range(range[0],
+                        range[1]));
+            }
+        }
+
+
+        long t2 = System.currentTimeMillis();
+
+        BufferedImage newImage =
+            chart.createBufferedImage(request.get(ARG_IMAGE_WIDTH, 1000),
+                                      request.get(ARG_IMAGE_HEIGHT, 400));
+        long t3 = System.currentTimeMillis();
+        System.err.println("timeseries image time:" + (t2 - t1) + " "
+                           + (t3 - t2));
+
+        File file = getStorageManager().getTmpFile(request, "point.png");
+        ImageUtils.writeImageToFile(newImage, file);
+        InputStream is     = getStorageManager().getFileInputStream(file);
+        Result      result = new Result("", is, "image/png");
+        return result;
+
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public String getParamName(String name) {
+        int index = name.indexOf("[unit=");
+        if (index >= 0) {
+            name = name.substring(0, index);
+        }
+        return name;
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    private String getUnitFromName(String name) {
+        String unit  = null;
+        int    index = name.indexOf("[unit=");
+        if (index >= 0) {
+            unit = name.substring(index + 6, name.indexOf("]"));
+        }
+        return unit;
+    }
+
+
+    /**
+     * Class MyTimeSeries _more_
+     *
+     *
+     * @author IDV Development Team
+     */
+    private static class MyTimeSeries extends TimeSeries {
+
+        /** _more_ */
+        List<TimeSeriesDataItem> items = new ArrayList<TimeSeriesDataItem>();
+
+        /** _more_ */
+        HashSet<TimeSeriesDataItem> seen = new HashSet<TimeSeriesDataItem>();
+
+        /**
+         * _more_
+         *
+         * @param name _more_
+         * @param c _more_
+         */
+        public MyTimeSeries(String name, Class c) {
+            super(name, c);
+        }
+
+        /**
+         * _more_
+         *
+         * @param item _more_
+         */
+        public void addItem(TimeSeriesDataItem item) {
+            if (seen.contains(item)) {
+                return;
+            }
+            seen.add(item);
+            items.add(item);
+        }
+
+        /**
+         * _more_
+         */
+        public void finish() {
+            items = new ArrayList<TimeSeriesDataItem>(Misc.sort(items));
+
+            for (TimeSeriesDataItem item : items) {
+                this.data.add(item);
+            }
+            fireSeriesChanged();
+        }
+
+
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param dataset _more_
+     *
+     * @return _more_
+     */
+    private static JFreeChart createChart(Request request, Entry entry,
+                                          XYDataset dataset) {
+        JFreeChart chart = ChartFactory.createTimeSeriesChart(entry.getName(),  // title
+            "Date",   // x-axis label
+            "",       // y-axis label
+            dataset,  // data
+            true,     // create legend?
+            true,     // generate tooltips?
+            false     // generate URLs?
+                );
+
+        chart.setBackgroundPaint(Color.white);
+        ValueAxis rangeAxis = new NumberAxis("");
+        rangeAxis.setVisible(false);
+        XYPlot plot = (XYPlot) chart.getPlot();
+        if (request.get("gray", false)) {
+            plot.setBackgroundPaint(Color.lightGray);
+            plot.setDomainGridlinePaint(Color.white);
+            plot.setRangeGridlinePaint(Color.white);
+        } else {
+            plot.setBackgroundPaint(Color.white);
+            plot.setDomainGridlinePaint(Color.lightGray);
+            plot.setRangeGridlinePaint(Color.lightGray);
+        }
+        plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
+        plot.setDomainCrosshairVisible(true);
+        plot.setRangeCrosshairVisible(true);
+        plot.setRangeAxis(0, rangeAxis, false);
+
+
+        XYItemRenderer r    = plot.getRenderer();
+        DateAxis       axis = (DateAxis) plot.getDomainAxis();
+        //axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
+
+        return chart;
+
     }
 
 
