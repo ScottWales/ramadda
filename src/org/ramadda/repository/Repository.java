@@ -4942,7 +4942,7 @@ public class Repository extends RepositoryBase implements RequestHandler {
 
 
         sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE,
-                                HtmlUtil.attrs(HtmlUtil.ATTR_CELLSPACING,
+                                HtmlUtil.cssClass("calnavtable") +HtmlUtil.attrs(HtmlUtil.ATTR_CELLSPACING,
                                     "0", HtmlUtil.ATTR_CELLPADDING, "0",
                                     HtmlUtil.ATTR_WIDTH, "100%")));
         sb.append(HtmlUtil.open(HtmlUtil.TAG_TR));

@@ -294,6 +294,9 @@ a:hover {
     padding-left:20px;
 }
 
+
+
+
 .comment_date {
    font-style:italic;
 }
@@ -417,6 +420,32 @@ a:hover {
 	height:200px;
 }
 
+
+.calendartable,  .dategrid {
+    border-color: #666;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+
+}
+
+.calnavtable {
+    border-color: #666;
+    border-width: 1 1 1px 1px;
+    border-style: solid;
+
+}
+
+.calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
+    border-color: #666;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+}
+
+
+
+
+
 .calheader {
    padding-top:10px;
    padding-left:10px;
@@ -424,8 +453,12 @@ a:hover {
    font-weight: bold;
 }
 
+.calday, .calday a {
+     text-decoration: none;
+     color: #000;
+}
+
 .calday {
-   font-weight: bold;
    font-size: 8pt;
 }
 
@@ -442,11 +475,11 @@ a:hover {
 }
 
 .calnavmonthheader {
+   border-width: 0px 0px 0 0;
    text-align:center;
    background-color:#c3d9ff;
    font-weight: bold;
    font-size: 8pt;
-
 }
 
 .calnavdayheader {
@@ -462,7 +495,13 @@ a:hover {
    background-color:#c3d9ff;
    padding-left:20px;
    padding-top:5px;
+   padding-right:1px;
 }
+
+.calnavoffday a, .calnavtheday a {
+   font-size: 8pt;
+}
+
 
 .calnavtheday {
    text-align:right;
@@ -470,7 +509,9 @@ a:hover {
    background-color:#fff;
    padding-left:20px;
    padding-top:5px;
+   padding-right:1px;
 }
+
 
 .calnavoffday {
    text-align:right;
@@ -478,6 +519,9 @@ a:hover {
    background-color:#cccccc;
    padding-left:20px;
    padding-top:5px;
+   padding-right:1px;
+   border-width: 1px 1px 0 0;
+   border-style: solid;
 }
 
 

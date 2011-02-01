@@ -148,6 +148,7 @@ public class CalendarOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
+
         StringBuffer sb = new StringBuffer();
         //        sb.append(getRepository().getHtmlOutputHandler().getHtmlHeader(request, group));
         showNext(request, subGroups, entries, sb);
@@ -222,8 +223,9 @@ public class CalendarOutputHandler extends OutputHandler {
             colSB.append(getEntryManager().getAjaxLink(request, entry, time));
         }
 
+
         sb.append(
-            "<table border=\"1\" cellspacing=\"0\" cellpadding=\"3\" width=\"100%\">");
+            "<table class=\"dategrid\" border=\"1\" cellspacing=\"0\" cellpadding=\"3\" width=\"100%\">");
         days = Misc.sort(days);
         String currentMonth = "";
         for (int dayIdx = 0; dayIdx < days.size(); dayIdx++) {
@@ -244,7 +246,7 @@ public class CalendarOutputHandler extends OutputHandler {
                 String       key         = type + "_" + day;
                 StringBuffer cb          = (StringBuffer) contents.get(key);
                 if (cb == null) {
-                    sb.append("<td>" + HtmlUtil.space(1) + "</td>");
+                    sb.append("<td>&nbsp;</td>");
                 } else {
                     sb.append(
                         "<td><div style=\"max-height: 150px; overflow-y: auto;\">"
@@ -592,6 +594,7 @@ public class CalendarOutputHandler extends OutputHandler {
                                           navLabels[i], " border=\"0\"")));
         }
 
+
         if (doDay) {
             StringBuffer tmp = new StringBuffer();
             String link = getEntriesList(request, tmp, dayItems, true, true,
@@ -601,7 +604,7 @@ public class CalendarOutputHandler extends OutputHandler {
             request.remove(ARG_YEAR);
             request.remove(ARG_DAY);
             sb.append(HtmlUtil.p());
-            sb.append("<table cellpadding=10><tr valign=top><td>");
+            sb.append("<table  cellpadding=10><tr valign=top><td>");
             getRepository().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
@@ -628,7 +631,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append(
                 HtmlUtil.center(HtmlUtil.b(headerSdf.format(cal.getTime()))));
             sb.append(
-                "<table border=\"1\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
+                "<table class=\"calendartable\"  cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
             String[] dayNames = {
                 "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
             };
@@ -951,7 +954,7 @@ public class CalendarOutputHandler extends OutputHandler {
             request.remove(ARG_DAY);
             sb.append(HtmlUtil.p());
             sb.append(
-                "<table width=100% border=0 cellpadding=10><tr valign=top><td width=200>");
+                "<table  width=100% border=0 cellpadding=10><tr valign=top><td width=200>");
             getRepository().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
@@ -979,7 +982,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append(
                 HtmlUtil.center(HtmlUtil.b(headerSdf.format(cal.getTime()))));
             sb.append(
-                "<table border=\"1\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
+                "<table class=\"calendartable\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
             String[] dayNames = {
                 "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
             };

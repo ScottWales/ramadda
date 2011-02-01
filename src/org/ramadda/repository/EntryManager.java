@@ -3748,7 +3748,6 @@ return new Result(title, sb);
         request.appendMessage(sb);
 
 
-
         String subject = BLANK;
         String comment = BLANK;
         subject = request.getEncodedString(ARG_SUBJECT, BLANK).trim();
