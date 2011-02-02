@@ -1373,8 +1373,7 @@ public class Request implements Constants {
      *
      * @throws Exception  problem parsing the input
      */
-    public double getLatOrLonValue(String from, double dflt)
-            throws Exception {
+    public double getLatOrLonValue(String from, double dflt) {
         if ( !defined(from)) {
             return dflt;
         }
