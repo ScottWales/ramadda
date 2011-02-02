@@ -174,7 +174,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     private void initCertificates() {
         if(System.getProperty("javax.net.ssl.trustStore")==null) {
-            org.ramadda.repository.util.NaiveTrustProvider.setAlwaysTrust(true);
+            org.ramadda.util.NaiveTrustProvider.setAlwaysTrust(true);
         }
     }
 
