@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.ramadda.repository.util;
+package org.ramadda.util;
 
 
 import org.w3c.dom.*;
@@ -85,7 +85,7 @@ import java.util.zip.*;
 public class HtmlTemplate {
 
     /** _more_ */
-    private Repository repository;
+    private PropertyProvider propertyProvider;
 
     /** _more_ */
     private String name;
@@ -107,13 +107,13 @@ public class HtmlTemplate {
      * _more_
      *
      *
-     * @param repository _more_
      * @param path _more_
      * @param t _more_
      */
-    public HtmlTemplate(Repository repository, String path, String t) {
+    public HtmlTemplate(PropertyProvider propertyProvider, String path, String t) {
         try {
-            this.repository = repository;
+           
+            this.propertyProvider = propertyProvider;
             this.path       = path;
             Pattern pattern =
                 Pattern.compile("(?s)(.*)<properties>(.*)</properties>(.*)");
@@ -136,9 +136,7 @@ public class HtmlTemplate {
                 //                id = IOUtil.stripExtension(IOUtil.getFileTail(path));
             }
         } catch (Exception exc) {
-            repository.getLogManager().logError("Error processing template: "
-                    + path, exc);
-            this.template = t;
+            throw new RuntimeException(exc);
         }
 
     }
@@ -215,7 +213,7 @@ public class HtmlTemplate {
         if (value != null) {
             return value;
         }
-        return repository.getProperty(name, dflt);
+        return propertyProvider.getProperty(name, dflt);
 
     }
 

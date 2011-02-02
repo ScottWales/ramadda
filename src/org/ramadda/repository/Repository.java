@@ -32,6 +32,7 @@ import org.ramadda.repository.monitor.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.PropertyProvider;
 import org.ramadda.repository.util.*;
 
 import ucar.unidata.sql.Clause;
@@ -114,7 +115,7 @@ import org.ramadda.repository.auth.*;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class Repository extends RepositoryBase implements RequestHandler {
+public class Repository extends RepositoryBase implements RequestHandler, PropertyProvider  {
 
 
     /** _more_ */
