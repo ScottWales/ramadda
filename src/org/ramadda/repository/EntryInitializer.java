@@ -29,5 +29,4 @@ package org.ramadda.repository;
  */
 public interface EntryInitializer {
     public void initEntry(Entry entry);
-
 }

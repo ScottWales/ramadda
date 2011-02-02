@@ -76,6 +76,11 @@ import java.util.regex.*;
  * @version $Revision: 1.3 $
  */
 public class GridAggregationHarvester extends PatternHarvester {
+    
+    public static final String ATTR_AGGREGATIONTYPE = "aggregationtype";
+
+
+    private String aggregationType = GridAggregationTypeHandler.TYPE_JOINEXISTING;
 
     /**
      * _more_
@@ -112,6 +117,42 @@ public class GridAggregationHarvester extends PatternHarvester {
     public String getLastGroupType() {
         return GridAggregationTypeHandler.TYPE_GRIDAGGREGATION;
     }
+
+    protected void init(Element element) throws Exception {
+        super.init(element);
+
+        aggregationType = XmlUtil.getAttribute(element, ATTR_AGGREGATIONTYPE,
+                                               aggregationType);
+    }
+
+    public void applyState(Element element) throws Exception {
+        super.applyState(element);
+        element.setAttribute(ATTR_AGGREGATIONTYPE,aggregationType);
+    }
+
+    public void applyEditForm(Request request) throws Exception {
+        super.applyEditForm(request);
+        aggregationType = request.getString(ATTR_AGGREGATIONTYPE,aggregationType);
+    }
+
+    public void createEditForm(Request request, StringBuffer sb)
+            throws Exception {
+        super.createEditForm(request, sb);
+        List<String> types = (List<String>)Misc.newList(GridAggregationTypeHandler.TYPE_JOINEXISTING, GridAggregationTypeHandler.TYPE_UNION);
+        sb.append(HtmlUtil.formEntry(msgLabel("Aggregation type"),
+                                     HtmlUtil.select(ATTR_AGGREGATIONTYPE, types, aggregationType)));
+    }
+
+
+    public void initEntry(Entry entry) {
+        super.initEntry(entry);
+        if(entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            entry.setValues(new Object[]{null,aggregationType});
+        }
+
+    }
+    
+
 
     /**
      * _more_

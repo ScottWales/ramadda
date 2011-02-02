@@ -6785,9 +6785,18 @@ return new Result(title, sb);
      *
      * @throws Exception _more_
      */
-    private Entry findEntryFromName(String name, User user,
+    public Entry findEntryFromName(String name, User user,
                                     boolean createIfNeeded,
                                     String lastGroupType)
+            throws Exception {
+        return  findEntryFromName(name, user, createIfNeeded,  lastGroupType, null);
+    }
+
+
+    public Entry findEntryFromName(String name, User user,
+                                   boolean createIfNeeded,
+                                   String lastGroupType, 
+                                   EntryInitializer initializer)
             throws Exception {
         if (name == null) {
             return null;
@@ -6839,12 +6848,13 @@ return new Result(title, sb);
                 if ( !createIfNeeded) {
                     return null;
                 }
+
                 if (lastOne) {
-                    currentEntry = makeNewGroup((Entry) currentEntry,
-                            childName, user, null, lastGroupType);
+                    currentEntry = makeNewGroup(currentEntry,
+                                                childName, user, null, lastGroupType, initializer);
                 } else {
-                    currentEntry = makeNewGroup((Entry) currentEntry,
-                            childName, user, null, groupType);
+                    currentEntry = makeNewGroup(currentEntry,
+                                                childName, user, null, groupType, initializer);
                 }
             }
         }
@@ -6907,6 +6917,12 @@ return new Result(title, sb);
     public Entry makeNewGroup(Entry parent, String name, User user,
                               Entry template, String type)
             throws Exception {
+        return makeNewGroup(parent, name, user, template, type, null);
+    }
+
+    public Entry makeNewGroup(Entry parent, String name, User user,
+                              Entry template, String type, EntryInitializer initializer)
+            throws Exception {
         //        synchronized (MUTEX_ENTRY) {
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
         Entry       group       = new Entry(getGroupId(parent), typeHandler);
@@ -6919,6 +6935,10 @@ return new Result(title, sb);
         }
         group.setParentEntry(parent);
         group.setUser(user);
+        if(initializer!=null) {
+
+            initializer.initEntry(group);
+        }
         addNewEntry(group);
         cacheEntry(group);
         return group;
@@ -7367,9 +7387,7 @@ return new Result(title, sb);
                                             entry.getResource().getPath(),
                                             entry.getResource().getType() });
             }
-            System.err.println("desc:" + entry);
             if ( !entry.isGroup()) {
-                System.err.println("not a group");
                 continue;
             }
 

@@ -79,7 +79,7 @@ import java.util.regex.*;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class PatternHarvester extends Harvester {
+public class PatternHarvester extends Harvester implements EntryInitializer {
 
     /** _more_ */
     public static final String ATTR_TYPE = "type";
@@ -177,6 +177,10 @@ public class PatternHarvester extends Harvester {
             groupTemplate = "${dirgroup}";
         }
         init();
+    }
+
+
+    public void initEntry(Entry entry) {
     }
 
     /**
@@ -1039,8 +1043,8 @@ public class PatternHarvester extends Harvester {
         }
 
         boolean createIfNeeded = !getTestMode();
-        Entry group = getEntryManager().findGroupFromName(groupName,
-                          getUser(), createIfNeeded, getLastGroupType());
+        Entry group = getEntryManager().findEntryFromName(groupName,
+                                                          getUser(), createIfNeeded, getLastGroupType(), this);
         Entry    entry = typeHandler.createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
