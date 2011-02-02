@@ -207,7 +207,6 @@ public class HarvesterManager extends RepositoryManager {
                                           "org.ramadda.repository");
             className = className.replace("ucar/unidata/repository",
                                           "org/ramadda/repository");
-            System.err.println ("Looking for:" + className);
             try {
                 c = Misc.findClass(className);
             } catch (ClassNotFoundException cnfe1) {

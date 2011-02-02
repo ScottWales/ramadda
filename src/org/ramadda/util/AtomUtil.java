@@ -156,12 +156,12 @@ public class AtomUtil {
     public static String makeLink(Link link) {
         if (link.title != null) {
             return XmlUtil.tag(TAG_LINK,
-                               XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
+                               XmlUtil.attrs(ATTR_TYPE, link.rel, ATTR_HREF,
                                              link.url, ATTR_TITLE,
                                              link.title));
         }
         return XmlUtil.tag(TAG_LINK,
-                           XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
+                           XmlUtil.attrs(ATTR_TYPE, link.rel, ATTR_HREF,
                                          link.url));
     }
 
@@ -174,9 +174,9 @@ public class AtomUtil {
      *
      * @return _more_
      */
-    public static String makeLink(String rel, String href) {
+    public static String makeLink(String type, String href) {
         return XmlUtil.tag(TAG_LINK,
-                           XmlUtil.attrs(ATTR_REL, rel, ATTR_HREF, href));
+                           XmlUtil.attrs(ATTR_TYPE, type, ATTR_HREF, href));
     }
 
 
@@ -258,6 +258,8 @@ public class AtomUtil {
         sb.append(XmlUtil.openTag(TAG_ENTRY));
         sb.append(XmlUtil.tag(TAG_TITLE, "", title));
         sb.append(XmlUtil.tag(TAG_ID, "", id));
+
+
         if (updated != null) {
             sb.append(XmlUtil.tag(TAG_UPDATED, "", format(updated)));
         }
