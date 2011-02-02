@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.type.*;
-import org.ramadda.repository.util.Log4jPrintWriter;
+import org.ramadda.util.Log4jPrintWriter;
 
 
 
