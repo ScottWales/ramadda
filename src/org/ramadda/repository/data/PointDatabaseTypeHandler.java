@@ -1934,7 +1934,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     paramCount++;
                     TimeSeriesCollection dataset = new TimeSeriesCollection();
                     series = new MyTimeSeries(pdm.formatName(),
-                            Millisecond.class);
+                            FixedMillisecond.class);
                     allSeries.add(series);
                     ValueAxis rangeAxis = new NumberAxis(pdm.formatName()
                                               + " " + pdm.formatUnit());
@@ -1962,9 +1962,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     xyPlot.setDataset(paramCount, dataset);
                     xyPlot.mapDatasetToRangeAxis(paramCount, paramCount);
                 }
-                //series.addOrUpdate(new Millisecond(pointData.date),value);
+                //series.addOrUpdate(new FixedMillisecond(pointData.date),value);
                 TimeSeriesDataItem item =
-                    new TimeSeriesDataItem(new Millisecond(pointData.date),
+                    new TimeSeriesDataItem(new FixedMillisecond(pointData.date),
                                            value);
                 series.addItem(item);
             }

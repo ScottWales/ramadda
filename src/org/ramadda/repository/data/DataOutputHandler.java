@@ -210,10 +210,13 @@ public class DataOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_HEIGHT = "image_height";
 
     /** chart format */
-    private static final String FORMAT_TIMESERIES_DATA = "timeseriesdata";
+    private static final String FORMAT_TIMESERIES = "timeseries";
 
     /** chart format */
     private static final String FORMAT_TIMESERIES_CHART = "timeserieschart";
+
+    /** chart format */
+    private static final String FORMAT_TIMESERIES_CHART_DATA = "timeserieschartdata";
 
     /** chart image format */
     private static final String FORMAT_TIMESERIES_IMAGE = "timeseriesimage";
@@ -1459,8 +1462,7 @@ public class DataOutputHandler extends OutputHandler {
             String format  = request.getString(ARG_FORMAT,
                                  QueryParams.NETCDF);
             qp.acceptType = (format.equals(FORMAT_TIMESERIES_CHART)
-                             || format.equals(FORMAT_TIMESERIES_IMAGE)
-                             || format.equals(FORMAT_TIMESERIES_DATA))
+                             || format.equals(FORMAT_TIMESERIES_IMAGE))
                             ? QueryParams.CSV
                             : format;
 
@@ -1487,39 +1489,14 @@ public class DataOutputHandler extends OutputHandler {
             }
             String suffix = ".nc";
             if (qp.acceptType.equals(QueryParams.CSV)
-                    || format.equals(FORMAT_TIMESERIES_CHART)
-                    || format.equals(FORMAT_TIMESERIES_IMAGE)
-                    || format.equals(FORMAT_TIMESERIES_DATA)) {
+                    || format.equals(FORMAT_TIMESERIES_CHART_DATA)
+                    || format.equals(FORMAT_TIMESERIES_IMAGE)) {
                 suffix = ".csv";
             } else if (qp.acceptType.equals(QueryParams.XML)) {
                 suffix = ".xml";
             }
-
-            File tmpFile = getStorageManager().getTmpFile(request,
-                               "pointsubset" + suffix);
-
-            GridPointWriter writer =
-                new GridPointWriter(gds,
-                                    new DiskCache2(getRepository()
-                                        .getStorageManager().getTmpDir()
-                                        .toString(), false, 0, 0));
-            OutputStream outStream =
-                (qp.acceptType.equals(QueryParams.NETCDF))
-                ? System.out
-                : getStorageManager().getFileOutputStream(tmpFile);
-
-            PrintWriter pw = new PrintWriter(outStream);
-            File        f  = writer.write(qp, pw);
-            if (f == null) {
-                outStream.close();
-                f = tmpFile;
-            }
-            if (doingPublish(request)) {
-                return getEntryManager().processEntryPublish(request, f,
-                        (Entry) entry.clone(), entry, "point series of");
-            }
+        
             String baseName = IOUtil.stripExtension(entry.getName());
-            Result result   = null;
             if (format.equals(FORMAT_TIMESERIES_CHART)) {
                 StringBuffer buf = new StringBuffer();
                 String chartTemplate =
@@ -1553,16 +1530,34 @@ public class DataOutputHandler extends OutputHandler {
                 html = html.replace("${dataurl}", dataUrl);
 
                 buf.append(html);
-                result = new Result("Point As Grid Time Series", buf);
+                return new Result("Point As Grid Time Series", buf);
+            }
 
-            } else if (format.equals(FORMAT_TIMESERIES_DATA)) {
-                request.put(ARG_FORMAT, FORMAT_TIMESERIES_IMAGE);
-                String redirectUrl = request.getRequestPath() + "/"
-                                     + baseName + ".png" + "?"
-                                     + request.getUrlArgs();
-                sb.append(HtmlUtil.img(redirectUrl));
-                result = new Result("Point As Grid Time Series Image", sb);
-            } else if (format.equals(FORMAT_TIMESERIES_IMAGE)) {
+            File tmpFile = getStorageManager().getTmpFile(request,
+                               "pointsubset" + suffix);
+
+            GridPointWriter writer =
+                new GridPointWriter(gds,
+                                    new DiskCache2(getRepository()
+                                        .getStorageManager().getTmpDir()
+                                        .toString(), false, 0, 0));
+            OutputStream outStream =
+                (qp.acceptType.equals(QueryParams.NETCDF))
+                ? System.out
+                : getStorageManager().getFileOutputStream(tmpFile);
+
+            PrintWriter pw = new PrintWriter(outStream);
+            File        f  = writer.write(qp, pw);
+            if (f == null) {
+                outStream.close();
+                f = tmpFile;
+            }
+            if (doingPublish(request)) {
+                return getEntryManager().processEntryPublish(request, f,
+                        (Entry) entry.clone(), entry, "point series of");
+            }
+            Result result   = null;
+            if (format.equals(FORMAT_TIMESERIES_IMAGE)) {
                 result = outputTimeSeriesImage(request, entry, f);
             } else {
                 result =
@@ -1672,7 +1667,7 @@ public class DataOutputHandler extends OutputHandler {
                            new TwoFacedObject("NetCDF", QueryParams.NETCDF),
                            new TwoFacedObject("Xml", QueryParams.XML),
                            new TwoFacedObject("Time Series Image",
-                               FORMAT_TIMESERIES_DATA),
+                               FORMAT_TIMESERIES),
                            new TwoFacedObject("Interactive Time Series",
                                FORMAT_TIMESERIES_CHART),
                            new TwoFacedObject("Comma Separated Values (CSV)",
@@ -1815,6 +1810,15 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputGridAsPoint(Request request, Entry entry)
             throws Exception {
+        String format  = request.getString(ARG_FORMAT, QueryParams.NETCDF);
+        String baseName = IOUtil.stripExtension(entry.getName());
+        if (format.equals(FORMAT_TIMESERIES)) {
+            request.put(ARG_FORMAT, FORMAT_TIMESERIES_IMAGE);
+            String redirectUrl = request.getRequestPath() + "/"
+                                 + baseName + ".png" + "?"
+                                 + request.getUrlArgs();
+            return new Result("Point As Grid Time Series Image", new StringBuffer(HtmlUtil.img(redirectUrl)));
+        }
         StringBuffer sb     = new StringBuffer();
         String       path   = getPath(request, entry);
 
@@ -3049,17 +3053,15 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output the timeseries image
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param columnsToUse _more_
-     * @param list _more_
-     * @param f _more_
+     * @param request the request
+     * @param entry  the entry
+     * @param f  the file
      *
-     * @return _more_
+     * @return  the image
      *
-     * @throws Exception _more_
+     * @throws Exception  problem creating image
      */
     private Result outputTimeSeriesImage(Request request, Entry entry, File f)
             throws Exception {
@@ -3067,7 +3069,7 @@ public class DataOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         //sb.append(getHeader(request, entry));
         sb.append(header(msg("Chart")));
-
+        
         TimeSeriesCollection dummy  = new TimeSeriesCollection();
         JFreeChart chart = createChart(request, entry, dummy);
         XYPlot               xyPlot = (XYPlot) chart.getPlot();
@@ -3140,7 +3142,7 @@ public class DataOutputHandler extends OutputHandler {
                 if (series == null) {
                     paramCount++;
                     TimeSeriesCollection dataset = new TimeSeriesCollection();
-                    series = new MyTimeSeries(formatName, Millisecond.class);
+                    series = new MyTimeSeries(formatName, FixedMillisecond.class);
                     allSeries.add(series);
                     ValueAxis rangeAxis = new NumberAxis(formatName + " "
                                               + formatUnit);
@@ -3168,9 +3170,9 @@ public class DataOutputHandler extends OutputHandler {
                     xyPlot.setDataset(paramCount, dataset);
                     xyPlot.mapDatasetToRangeAxis(paramCount, paramCount);
                 }
-                //series.addOrUpdate(new Millisecond(pointData.date),value);
+                //series.addOrUpdate(new FixedMillisecond(pointData.date),value);
                 TimeSeriesDataItem item =
-                    new TimeSeriesDataItem(new Millisecond(date), value);
+                    new TimeSeriesDataItem(new FixedMillisecond(date), value);
                 series.addItem(item);
             }
         }
@@ -3197,8 +3199,8 @@ public class DataOutputHandler extends OutputHandler {
             chart.createBufferedImage(request.get(ARG_IMAGE_WIDTH, 1000),
                                       request.get(ARG_IMAGE_HEIGHT, 400));
         long t3 = System.currentTimeMillis();
-        System.err.println("timeseries image time:" + (t2 - t1) + " "
-                           + (t3 - t2));
+        //System.err.println("timeseries image time:" + (t2 - t1) + " "
+        //                   + (t3 - t2));
 
         File file = getStorageManager().getTmpFile(request, "point.png");
         ImageUtils.writeImageToFile(newImage, file);
@@ -3209,42 +3211,43 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * get the parameter name from the raw name
      *
-     * @param name _more_
+     * @param rawname the raw name
      *
-     * @return _more_
+     * @return  the parameter name
      */
-    public String getParamName(String name) {
-        int index = name.indexOf("[unit=");
+    public String getParamName(String rawname) {
+    	String name = rawname;
+        int index = rawname.indexOf("[unit=");
         if (index >= 0) {
-            name = name.substring(0, index);
+            name = rawname.substring(0, index);
         }
         return name;
     }
 
     /**
-     * _more_
+     * Get the parameter unit from the raw name
      *
-     * @param name _more_
+     * @param rawname  the raw name
      *
-     * @return _more_
+     * @return  the unit or null
      */
-    private String getUnitFromName(String name) {
+    private String getUnitFromName(String rawname) {
         String unit  = null;
-        int    index = name.indexOf("[unit=");
+        int    index = rawname.indexOf("[unit=");
         if (index >= 0) {
-            unit = name.substring(index + 6, name.indexOf("]"));
+            unit = rawname.substring(index + 6, rawname.indexOf("]"));
+            unit = unit.replaceAll("\"", "");
         }
         return unit;
     }
 
 
     /**
-     * Class MyTimeSeries _more_
+     * A wrapper for TimeSeries
      *
-     *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     private static class MyTimeSeries extends TimeSeries {
 
@@ -3296,18 +3299,26 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create the chart
      *
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param dataset _more_
+     * @param request  the request
+     * @param entry    the entry
+     * @param dataset  the dataset
      *
      * @return _more_
      */
     private static JFreeChart createChart(Request request, Entry entry,
                                           XYDataset dataset) {
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(entry.getName(),  // title
+        LatLonPointImpl llp = new LatLonPointImpl(
+                request.getLatOrLonValue(ARG_LOCATION + ".latitude", 0),
+                request.getLatOrLonValue(
+                    ARG_LOCATION + ".longitude", 0));
+        String title = entry.getName() + " at " + llp.toString();
+
+        JFreeChart chart = ChartFactory.createTimeSeriesChart(
+        		//entry.getName(),  // title
+        	title,    // title
             "Date",   // x-axis label
             "",       // y-axis label
             dataset,  // data
