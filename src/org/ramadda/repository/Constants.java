@@ -266,6 +266,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_RSS = "ramadda.icon.rss";
+    public static final String ICON_ATOM = "ramadda.icon.atom";
 
     /** _more_ */
     public static final String ICON_SEARCH = "ramadda.icon.search";

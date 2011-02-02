@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 ramadda.org
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -14,13 +14,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.util;
+
 
 /**
  */
 
 public interface PropertyProvider {
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getProperty(String name, String dflt);
 }

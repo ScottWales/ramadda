@@ -5,6 +5,7 @@
   <outputhandler class="org.ramadda.repository.output.ImageOutputHandler" name="Image"/>
   <outputhandler class="org.ramadda.repository.output.KmlOutputHandler" name="KML"/>
   <outputhandler class="org.ramadda.repository.output.RssOutputHandler" name="RSS"/>
+  <outputhandler class="org.ramadda.repository.output.AtomOutputHandler" name="ATOM"/>
   <outputhandler class="org.ramadda.repository.output.IcalOutputHandler" name="ICAL"/>
   <outputhandler class="org.ramadda.repository.output.JsonOutputHandler" name="JSON"/>
   <outputhandler class="org.ramadda.repository.output.XmlOutputHandler" name="XML"/>
