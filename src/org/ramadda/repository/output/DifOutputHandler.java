@@ -23,6 +23,7 @@ package org.ramadda.repository.output;
 
 import org.w3c.dom.*;
 
+import org.ramadda.util.DifUtil;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
