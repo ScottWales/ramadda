@@ -30,7 +30,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.output.*;
-import org.ramadda.repository.util.OpenSearchUtil;
+import org.ramadda.util.OpenSearchUtil;
 import org.ramadda.repository.type.*;
 
 import ucar.unidata.sql.Clause;

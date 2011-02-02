@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.repository.util;
+package org.ramadda.util;
 
 
 import ucar.unidata.xml.XmlUtil;
