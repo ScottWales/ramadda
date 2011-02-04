@@ -119,6 +119,7 @@
 
     <target name="idvplugin" depends="init,clean">
         <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <echo message="${repositorydir}/idv/RamaddaPublisher.java"/>
         <javac
             verbose="false"
             classpath="${pluginclasspath}"
@@ -141,11 +142,11 @@
             update="false"
             compress="true"
             jarfile="${distdir}/ramaddaplugin.jar">
-            <include name="${repositorydir}/**/*.class"/> 
-            <include name="${repositorydir}/idv/publishertypes.xml"/>
-            <include name="${repositorydir}/idv/publishers.xml"/>
-            <include name="${repositorydir}/htdocs/icons/folderopen.png"/>
-            <include name="${repositorydir}/htdocs/icons/folderclosed.png"/>
+            <include name="${repositoryrelpath}/**/*.class"/> 
+            <include name="${repositoryrelpath}/idv/publishertypes.xml"/>
+            <include name="${repositoryrelpath}/idv/publishers.xml"/>
+            <include name="${repositoryrelpath}/htdocs/icons/folderopen.png"/>
+            <include name="${repositoryrelpath}/htdocs/icons/folderclosed.png"/>
 	    </jar>
 
         <copy overwrite="true"  todir="${user.home}/.unidata/idv/DefaultIdv/plugins">

@@ -365,7 +365,7 @@ public class MetadataType extends MetadataTypeBase {
      *
      * @throws Exception _more_
      */
-    public void addMetadataToXml(Request request, String templateType,
+    public boolean addMetadataToXml(Request request, String templateType,
                                  Entry entry, Metadata metadata,
                                  Element parent)
             throws Exception {
@@ -373,7 +373,7 @@ public class MetadataType extends MetadataTypeBase {
 
         String xml = applyTemplate(templateType, entry, metadata, parent);
         if ((xml == null) || (xml.length() == 0)) {
-            return;
+            return false;
         }
         xml = "<tmp>" + xml + "</tmp>";
         Element root = null;
@@ -393,6 +393,7 @@ public class MetadataType extends MetadataTypeBase {
             node = (Element) parent.getOwnerDocument().importNode(node, true);
             parent.appendChild(node);
         }
+        return true;
     }
 
 

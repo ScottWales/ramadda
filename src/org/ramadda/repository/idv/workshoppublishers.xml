@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <object class="java.util.ArrayList">
     <method name="add">
-        <object class="ucar.unidata.repository.idv.RamaddaPublisher">
+        <object class="org.ramadda.repository.idv.RamaddaPublisher">
             <property name="RepositoryClient">
-                <object class="ucar.unidata.repository.InteractiveRepositoryClient">
+                <object class="org.ramadda.repository.InteractiveRepositoryClient">
                     <property name="User">
                         <string><![CDATA[workshop]]></string>
                     </property>

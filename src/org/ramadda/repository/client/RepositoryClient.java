@@ -943,7 +943,7 @@ public class RepositoryClient extends RepositoryBase {
             }
         } catch (java.io.IOException exc) {
             exc.printStackTrace();
-            msg[0] = "yyy Could not connect to server: " + getHostname();
+            msg[0] = "Could not connect to server: " + getHostname();
 
         } catch (Exception exc) {
             msg[0] = "An error occurred: " + exc + "\n";

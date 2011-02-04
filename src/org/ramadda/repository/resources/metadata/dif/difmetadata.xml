@@ -56,7 +56,7 @@
       <element name="Long Name" dif.tag="Long_Name"/>
       <element datatype="url" name="URL" dif.tag="Data_Center_URL"/>
       <element name="Set ID" dif.tag="Data_Set_ID"/>
-      <element         datatype="group"         name="Personnel"         subname="Personnel Record" dif.tag="Personnel">
+      <element  datatype="group"         name="Personnel"         subname="Personnel Record" dif.tag="Personnel">
         <element  datatype="group"         name="Roles"         subname="Role" dif.tag="Role">
           <element datatype="enumerationplus"           name="Role"
              values="investigator:Investigator,technicalcontact:Technical Contact,difauthor:DIF Author"/>
@@ -398,8 +398,7 @@ ${Chronostratigraphic_Unit}
        searchable="false"
        id="dif.originating_center">
       <element name="Center"/>
-      <template type="dif"><![CDATA[
-<Originating_Center>${Center.cdata}</Originating_Center>]]></template>
+      <template type="dif"><![CDATA[<Originating_Center>${Center.cdata}</Originating_Center>]]></template>
     </type>
 
     <type name="Multimedia Sample" id="dif.multimedia_sample">

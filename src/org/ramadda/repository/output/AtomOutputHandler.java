@@ -23,6 +23,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.metadata.*;
 
 import org.ramadda.util.AtomUtil;
 
@@ -188,13 +189,15 @@ public class AtomOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         sb.append(AtomUtil.openFeed());
+        sb.append("\n");
         sb.append(AtomUtil.makeTitle(parentEntry.getName()
                                      + " ATOM Site Feed"));
+        sb.append("\n");
         sb.append(
             AtomUtil.makeLink(
                 AtomUtil.REL_SELF,
                 getRepository().absoluteUrl(request.getUrl())));
-
+        sb.append("\n");
         for (Entry entry : entries) {
             List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
             String selfUrl =
@@ -222,10 +225,49 @@ public class AtomOutputHandler extends OutputHandler {
 
                 links.add(new AtomUtil.Link(type, url, name));
             }
-            sb.append(AtomUtil.makeEntry(entry.getName(), selfUrl,
+
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request,  entry,urls);
+
+            for(String url: urls) {
+                links.add(new AtomUtil.Link("thumbnail", getRepository().absoluteUrl(url), "Thumbnail"));
+            }
+
+            Document doc = XmlUtil.getDocument("<metadata></metadata>");
+            Element root = doc.getDocumentElement();
+            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+            List<MetadataHandler> metadataHandlers =
+                repository.getMetadataManager().getMetadataHandlers();
+            for (Metadata metadata : metadataList) {
+                for (MetadataHandler metadataHandler : metadataHandlers) {
+                    if (metadataHandler.canHandle(metadata)) {
+                        if(!metadataHandler.addMetadataToXml(request,
+                                                             "dif", entry,
+                                                             metadata, doc, root)){
+                            metadataHandler.addMetadataToXml(request,
+                                                             "atom", entry,
+                                                             metadata, doc, root);
+
+                        }
+                        break;
+                    }
+                }
+            }
+            StringBuffer extra =new StringBuffer();
+
+            if(entry.hasAreaDefined()) {
+                extra.append("<georss:box>" + entry.getSouth() + " " + entry.getWest() +" "  +
+                             entry.getNorth() +" " + entry.getEast() +"</georss:box>\n");
+            }
+
+
+            extra.append(XmlUtil.toString(root));
+
+            sb.append(AtomUtil.makeEntry(entry.getName(), 
+                                         selfUrl,
                                          new Date(entry.getEndDate()),
                                          entry.getDescription(), null,
-                                         links));
+                                         links, extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
         return new Result("", sb, MIME_ATOM);

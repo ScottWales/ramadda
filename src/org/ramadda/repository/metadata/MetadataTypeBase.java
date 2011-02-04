@@ -237,7 +237,9 @@ public class MetadataTypeBase extends RepositoryManager {
                                metadata,
                                metadata.getAttr(element.getIndex()), parent);
 
+            boolean print = value.indexOf("Pers")>=0;
             template = applyMacros(template, element, value);
+
         }
         return template;
     }
@@ -257,7 +259,7 @@ public class MetadataTypeBase extends RepositoryManager {
         if (value == null) {
             value = "";
         }
-        value = XmlUtil.encodeString(value);
+        //        value = XmlUtil.encodeString(value);
         String   label = element.getLabel(value);
         String   name  = element.getName();
         String[] keys  = {

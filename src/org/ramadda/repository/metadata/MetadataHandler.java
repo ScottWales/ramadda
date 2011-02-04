@@ -443,15 +443,15 @@ public class MetadataHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addMetadataToXml(Request request, String xmlType,
+    public boolean addMetadataToXml(Request request, String xmlType,
                                  Entry entry, Metadata metadata,
                                  Document doc, Element datasetNode)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
-            return;
+            return false;
         }
-        type.addMetadataToXml(request, xmlType, entry, metadata, datasetNode);
+        return type.addMetadataToXml(request, xmlType, entry, metadata, datasetNode);
     }
 
 

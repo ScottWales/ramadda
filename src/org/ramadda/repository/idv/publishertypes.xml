@@ -2,5 +2,5 @@
 <publishers>
   <publisher
      name="RAMADDA Publisher"
-     class="ucar.unidata.repository.idv.RamaddaPublisher"/>
+     class="org.ramadda.repository.idv.RamaddaPublisher"/>
 </publishers>

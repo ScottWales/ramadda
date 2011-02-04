@@ -814,7 +814,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
      *
      * @throws Exception _more_
      */
-    public void addMetadataToXml(Request request, String xmlType,
+    public boolean addMetadataToXml(Request request, String xmlType,
                                  Entry entry, Metadata metadata,
                                  Document doc, Element datasetNode)
             throws Exception {
@@ -831,8 +831,9 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             XmlUtil.create(doc, getTag(TYPE_VARIABLE), variablesNode,
                            metadata.getAttr2(), new String[] { ATTR_NAME,
                     metadata.getAttr1(), ATTR_UNITS, metadata.getAttr3() });
+            return true;
         } else {
-            super.addMetadataToXml(request, xmlType, entry, metadata, doc,
+            return super.addMetadataToXml(request, xmlType, entry, metadata, doc,
                                    datasetNode);
 
         }
