@@ -238,9 +238,10 @@ public class AtomUtil {
      *
      * @return _more_
      */
-    public static String makeEntry(String title, String id, Date updated,
+    public static String makeEntry(String title, 
+                                   String id, Date updated,
                                    String summary, String content,
-                                   List<Link> links) {
+                                   List<Link> links, String extraStuff) {
         StringBuffer sb = new StringBuffer();
         /* <entry>
    <title>Batman thoughts</title>
@@ -271,8 +272,10 @@ public class AtomUtil {
             sb.append(XmlUtil.getCdata(content));
         }
 
+        sb.append(extraStuff);
+
         for (Link link : links) {
-            sb.append(makeLink(link.rel, link.url));
+            sb.append(makeLink(link));
             sb.append("\n");
         }
         sb.append(XmlUtil.closeTag(TAG_ENTRY));
