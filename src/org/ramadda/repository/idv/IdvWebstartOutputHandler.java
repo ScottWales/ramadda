@@ -78,7 +78,7 @@ import java.util.zip.*;
 public class IdvWebstartOutputHandler extends OutputHandler {
 
     /** _more_ */
-    private String jnlpTemplate;
+    private static String jnlpTemplate;
 
 
 
@@ -115,10 +115,11 @@ public class IdvWebstartOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if (state.entry == null) {
+
+        Entry entry = state.getEntry();
+        if (entry == null) {
             return;
         }
-        Entry entry = state.entry;
         if (entry.getResource().getPath().endsWith(".xidv")
                 || entry.getResource().getPath().endsWith(".zidv")) {
             String fileTail = getStorageManager().getFileTail(entry);
@@ -145,6 +146,43 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
 
 
+    public Result outputGroup(Request request, OutputType outputType,
+                              Entry group, List<Entry> subGroups,
+                              List<Entry> entries)
+            throws Exception {
+        return outputEntry(request, outputType, group);
+    }
+
+
+    public static String getJnlpTemplate(Repository repository) throws Exception {
+        if (jnlpTemplate == null) {
+            String localPath = repository.getStorageManager().localizePath(
+                                   repository.getProperty(
+                                       "ramadda.idv.jnlp.template",
+                                       (String) null));
+            if (localPath != null) {
+                try {
+                    jnlpTemplate = IOUtil.readContents(
+                                                       repository.getStorageManager().getInputStream(localPath));
+                    repository.getLogManager().logInfo("IdvWebstartOutputHandler: using jnlp template: "
+                            + localPath);
+                } catch (Exception ignoreThis) {}
+            }
+            if (jnlpTemplate == null) {
+                jnlpTemplate = repository.getResource(
+                    "/org/ramadda/repository/idv/template.jnlp");
+            }
+            //Replace the macros
+            for (String macro :
+                    new String[] { "codebase", "href", "title", "description",
+                                   "maxheapsize" }) {
+                jnlpTemplate = jnlpTemplate.replace("${" + macro + "}",
+                                                    repository.getProperty("ramadda.idv.jnlp." + macro, ""));
+            }
+        }
+        return jnlpTemplate;
+    }
+
 
     /**
      * _more_
@@ -160,33 +198,8 @@ public class IdvWebstartOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        if (jnlpTemplate == null) {
-            String localPath = getStorageManager().localizePath(
-                                   getProperty(
-                                       "ramadda.idv.jnlp.template",
-                                       (String) null));
-            if (localPath != null) {
-                try {
-                    jnlpTemplate = IOUtil.readContents(
-                        getStorageManager().getInputStream(localPath));
-                    logInfo("IdvWebstartOutputHandler: using jnlp template: "
-                            + localPath);
-                } catch (Exception ignoreThis) {}
-            }
-            if (jnlpTemplate == null) {
-                jnlpTemplate = getRepository().getResource(
-                    "/org/ramadda/repository/idv/template.jnlp");
-            }
-            //Replace the macros
-            for (String macro :
-                    new String[] { "codebase", "href", "title", "description",
-                                   "maxheapsize" }) {
-                jnlpTemplate = jnlpTemplate.replace("${" + macro + "}",
-                        getProperty("ramadda.idv.jnlp." + macro, ""));
-            }
-        }
 
-        String       jnlp = jnlpTemplate;
+        String       jnlp = getJnlpTemplate(getRepository());
 
         StringBuffer args = new StringBuffer();
         if (entry.getResource().getPath().endsWith(".xidv")

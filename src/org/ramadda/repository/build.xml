@@ -142,7 +142,10 @@
             update="false"
             compress="true"
             jarfile="${distdir}/ramaddaplugin.jar">
+
+
             <include name="${repositoryrelpath}/**/*.class"/> 
+            <include name="org/ramadda/util/**/*.class"/> 
             <include name="${repositoryrelpath}/idv/publishertypes.xml"/>
             <include name="${repositoryrelpath}/idv/publishers.xml"/>
             <include name="${repositoryrelpath}/htdocs/icons/folderopen.png"/>

@@ -2484,8 +2484,7 @@ public class IdvOutputHandler extends OutputHandler {
 
 
         if (forJnlp) {
-            String jnlp = getRepository().getResource(
-                              "/org/ramadda/repository/idv/template.jnlp");
+            String jnlp = IdvWebstartOutputHandler.getJnlpTemplate(getRepository());
             StringBuffer args = new StringBuffer();
             args.append("<argument>-b64isl</argument>");
             args.append("<argument>"
