@@ -998,13 +998,22 @@ public class IdvOutputHandler extends OutputHandler {
 
         basic.append(HtmlUtil.formTableClose());
 
+
+
         StringBuffer bounds = new StringBuffer();
         String llb =
             getRepository().getMapManager().makeMapSelector(request,
                 ARG_VIEW_BOUNDS, false,
                 htmlCheckbox(request, ARG_VIEW_JUSTCLIP, false) + " "
-                + msg("Just subset data") + HtmlUtil.space(2), "");
+                                                            + msg("Just subset data") + HtmlUtil.space(2), "");
+
+
         bounds.append(llb);
+
+
+
+
+
 
         StringBuffer  mapSB = new StringBuffer();
         List<MapData> maps =
@@ -1107,8 +1116,22 @@ public class IdvOutputHandler extends OutputHandler {
         tabContents.add(basic.toString());
 
 
+        String mapVarName = "selectormap";
+        StringBuffer js = new StringBuffer();
+        js.append(mapVarName +".addBox(" + HtmlUtil.squote(entry.getId()) +"," +
+                  entry.getNorth() +"," +
+                  entry.getWest() +"," +
+                  entry.getSouth() +"," +
+                  entry.getEast()+");\n");
+        bounds.append(HtmlUtil.script(js.toString()));
+
+
         tabLabels.add(msg("View Bounds"));
         tabContents.add(bounds.toString());
+
+
+
+
 
 
         tabLabels.add(msg("Maps and Background"));

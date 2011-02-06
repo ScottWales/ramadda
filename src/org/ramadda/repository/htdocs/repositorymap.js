@@ -152,6 +152,7 @@ function RepositoryMap (mapId, params) {
             xxxmaxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
                                              20037508.34, 20037508.34)
         };
+
         this.map = new OpenLayers.Map( this.mapDivId, options );
         //        this.map = new OpenLayers.Map( this.mapDivId);
         //        this.map.minResolution = 0.0000001;
@@ -164,6 +165,10 @@ function RepositoryMap (mapId, params) {
         this.map.addControl(mousecontrols);
         this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
         this.map.addControl( new OpenLayers.Control.MousePosition() );
+
+        if(this.boxes) {
+            this.initBoxes();
+        }
 
         /*
         var options = {featureAdded:     
@@ -422,24 +427,25 @@ function RepositoryMap (mapId, params) {
         return marker;
     }
 
+    this.initBoxes = function() {
+        if(!this.map) {
+            alert('whoa, no map');
+        }
+        var theMap = this;
+        theMap.map.addLayer(theMap.boxes);
+        //Added this because I was getting an unknown method error
+        theMap.boxes.getFeatureFromEvent = function(evt) {return null;};
+        var sf = new OpenLayers.Control.SelectFeature(theMap.boxes);
+        theMap.map.addControl(sf);
+        sf.activate();
+    }
 
     this.addBox = function(id, north, west, south, east, attrs) {
         var theMap = this;
         if(!theMap.boxes) {
             theMap.boxes = new OpenLayers.Layer.Boxes("Boxes");
-            theMap.map.addLayer(theMap.boxes);
-
-            var t="";
-            for(var key in theMap.boxes) {
-                //                t = t +" " + theMap.boxes[key];
-                t = t +" " + key;
-            }
-            //            alert(t);
-            //Added this because I was getting an unknown method error
-            theMap.boxes.getFeatureFromEvent = function(evt) {return null;};
-            var sf = new OpenLayers.Control.SelectFeature(theMap.boxes);
-            theMap.map.addControl(sf);
-            sf.activate();
+            if(!theMap.map) return;
+            this.initBoxes(theMap.boxes);
         }
         var bounds = new OpenLayers.Bounds(west, south, east, north);
         box = new OpenLayers.Marker.Box(bounds);

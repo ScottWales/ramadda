@@ -2257,9 +2257,10 @@ public class TypeHandler extends RepositoryManager {
                                         false) + " "
                                             + msg("Set bounds from children");
             }
+
             String mapSelector =
                 getRepository().getMapManager().makeMapSelector(ARG_AREA,
-                    true, pts) + extraMapStuff;
+                                                                true, "","", pts, null) + extraMapStuff;
 
             sb.append(HtmlUtil.formEntry(msgLabel("Location"), mapSelector));
 
