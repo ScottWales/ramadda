@@ -1510,42 +1510,7 @@ function insertTags(id, tagOpen, tagClose, sampleText) {
 function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
     var selText, isSample = false;
 
-    alert('hello');
-    if (document.selection  && document.selection.createRange) { // IE/Opera
-
-        //save window scroll position
-        if (document.documentElement && document.documentElement.scrollTop)
-            var winScroll = document.documentElement.scrollTop
-            else if (document.body)
-                var winScroll = document.body.scrollTop;
-        //get current selection  
-        txtarea.focus();
-        var range = document.selection.createRange();
-        var x = "";
-        for(key in range) {
-            x = x+str(key) +"\n"
-        }
-        alert(x);
-        selText = range.text;
-        //insert tags
-        checkSelectedText();
-        range.text = tagOpen + selText + tagClose;
-        //mark sample text as selected
-        if (isSample && range.moveStart) {
-            if (window.opera)
-                tagClose = tagClose.replace(/\n/g,'');
-            range.moveStart('character', - tagClose.length - selText.length); 
-            range.moveEnd('character', - tagClose.length); 
-        }
-        range.select();   
-        //restore window scroll position
-        if (document.documentElement && document.documentElement.scrollTop)
-            document.documentElement.scrollTop = winScroll
-            else if (document.body)
-                document.body.scrollTop = winScroll;
-
-    } else if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla
-
+    if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla
         //save textarea scroll position
         var textScroll = txtarea.scrollTop;
         //get current selection
@@ -1554,7 +1519,7 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
         var endPos = txtarea.selectionEnd;
         selText = txtarea.value.substring(startPos, endPos);
         //insert tags
-        checkSelectedText();
+        checkSelectedText(selText, isSample, sampleText);
         txtarea.value = txtarea.value.substring(0, startPos)
             + tagOpen + selText + tagClose
             + txtarea.value.substring(endPos, txtarea.value.length);
@@ -1568,19 +1533,54 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
         }
         //restore textarea scroll position
         txtarea.scrollTop = textScroll;
-    } 
-
-    function checkSelectedText(){
-        if (!selText) {
-            selText = sampleText;
-            isSample = true;
-        } else if (selText.charAt(selText.length - 1) == ' ') { //exclude ending space char
-            selText = selText.substring(0, selText.length - 1);
-            tagClose += ' '
-		} 
+        return;
     }
 
+
+    if (document.selection  && document.selection.createRange) { // IE/Opera
+        //save window scroll position
+        if (document.documentElement && document.documentElement.scrollTop)
+            var winScroll = document.documentElement.scrollTop
+            else if (document.body)
+                var winScroll = document.body.scrollTop;
+        //get current selection  
+        txtarea.focus();
+        var range = document.selection.createRange();
+        selText = range.text;
+        //insert tags
+        checkSelectedText(selText, isSample, sampleText);
+        range.text = tagOpen + selText + tagClose;
+        //mark sample text as selected
+        if (isSample && range.moveStart) {
+            if (window.opera)
+                tagClose = tagClose.replace(/\n/g,'');
+            range.moveStart('character', - tagClose.length - selText.length); 
+            range.moveEnd('character', - tagClose.length); 
+        }
+        if(range.select) {
+            range.select();   
+        }
+        //restore window scroll position
+        if (document.documentElement && document.documentElement.scrollTop)
+            document.documentElement.scrollTop = winScroll
+            else if (document.body)
+                document.body.scrollTop = winScroll;
+    } 
+
+   }
+
+
+function checkSelectedText(selText, isSample, sampleText){
+    if (!selText) {
+        selText = sampleText;
+        isSample = true;
+    } else if (selText.charAt(selText.length - 1) == ' ') { //exclude ending space char
+        selText = selText.substring(0, selText.length - 1);
+        tagClose += ' ';
+    } 
 }
+
+
 
 
 
