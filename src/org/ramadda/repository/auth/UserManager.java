@@ -418,14 +418,14 @@ public class UserManager extends RepositoryManager {
                                           "")));
         }
         sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msgLabel("User"),
+        sb.append(formEntry(request,msgLabel("User"),
                                      HtmlUtil.input(ARG_USER_ID, id,
                                          HtmlUtil.cssClass("userfield"))));
-        sb.append(HtmlUtil.formEntry(msgLabel("Password"),
+        sb.append(formEntry(request,msgLabel("Password"),
                                      HtmlUtil.password(ARG_USER_PASSWORD)));
         sb.append(extra);
 
-        sb.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Login"))));
+        sb.append(formEntry(request,"", HtmlUtil.submit(msg("Login"))));
         sb.append(HtmlUtil.formClose());
         sb.append(HtmlUtil.formTableClose());
 
@@ -879,17 +879,17 @@ public class UserManager extends RepositoryManager {
             throws Exception {
         //        System.err.println ("User:" + user);
         sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msgLabel("Name"),
+        sb.append(formEntry(request,msgLabel("Name"),
                                      HtmlUtil.input(ARG_USER_NAME,
                                          user.getName(), HtmlUtil.SIZE_40)));
         if (includeAdmin) {
             if ( !request.getUser().getAdmin()) {
                 throw new IllegalArgumentException("Need to be admin");
             }
-            sb.append(HtmlUtil.formEntry(msgLabel("Admin"),
+            sb.append(formEntry(request,msgLabel("Admin"),
                                          HtmlUtil.checkbox(ARG_USER_ADMIN,
                                              "true", user.getAdmin())));
-            sb.append(HtmlUtil.formEntry(msgLabel("Guest"),
+            sb.append(formEntry(request,msgLabel("Guest"),
                                          HtmlUtil.checkbox(ARG_USER_ISGUEST,
                                              "true", user.getIsGuest())));
             String       userRoles = user.getRolesAsString("\n");
@@ -913,22 +913,22 @@ public class UserManager extends RepositoryManager {
             String roleEntry =
                 HtmlUtil.hbox(HtmlUtil.textArea(ARG_USER_ROLES, userRoles, 5,
                     20), allRoles.toString());
-            sb.append(HtmlUtil.formEntryTop(msgLabel("Roles"), roleEntry));
+            sb.append(formEntryTop(request,msgLabel("Roles"), roleEntry));
         }
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Email"),
+        sb.append(formEntry(request,msgLabel("Email"),
                                      HtmlUtil.input(ARG_USER_EMAIL,
                                          user.getEmail(), HtmlUtil.SIZE_40)));
 
         List<TwoFacedObject> templates =
             getRepository().getTemplateSelectList();
-        sb.append(HtmlUtil.formEntry(msgLabel("Page Template"),
+        sb.append(formEntry(request,msgLabel("Page Template"),
                                      HtmlUtil.select(ARG_TEMPLATE, templates,
                                          user.getTemplate())));
 
         List languages = new ArrayList(getRepository().getLanguages());
         languages.add(0, new TwoFacedObject("None", ""));
-        sb.append(HtmlUtil.formEntry(msgLabel("Language"),
+        sb.append(formEntry(request,msgLabel("Language"),
                                      HtmlUtil.select(ARG_USER_LANGUAGE,
                                          languages, user.getLanguage())));
         sb.append(HtmlUtil.formTableClose());
@@ -948,10 +948,10 @@ public class UserManager extends RepositoryManager {
     private void makePasswordForm(Request request, User user, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msgLabel("Password"),
+        sb.append(formEntry(request,msgLabel("Password"),
                                      HtmlUtil.password(ARG_USER_PASSWORD1)));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Password Again"),
+        sb.append(formEntry(request,msgLabel("Password Again"),
                                      HtmlUtil.password(ARG_USER_PASSWORD2)));
 
         sb.append(HtmlUtil.formTableClose());
@@ -1162,28 +1162,28 @@ public class UserManager extends RepositoryManager {
         StringBuffer formSB = new StringBuffer();
         formSB.append(msgHeader("Create a single user"));
         formSB.append(HtmlUtil.formTable());
-        formSB.append(HtmlUtil.formEntry(msgLabel("ID"),
+        formSB.append(formEntry(request,msgLabel("ID"),
                                          HtmlUtil.input(ARG_USER_ID, id,
                                              HtmlUtil.SIZE_40)));
-        formSB.append(HtmlUtil.formEntry(msgLabel("Name"),
+        formSB.append(formEntry(request, msgLabel("Name"),
                                          HtmlUtil.input(ARG_USER_NAME, name,
                                              HtmlUtil.SIZE_40)));
 
 
-        formSB.append(HtmlUtil.formEntry(msgLabel("Admin"),
+        formSB.append(formEntry(request, msgLabel("Admin"),
                                          HtmlUtil.checkbox(ARG_USER_ADMIN,
                                              "true", admin)));
 
-        formSB.append(HtmlUtil.formEntry(msgLabel("Email"),
+        formSB.append(formEntry(request, msgLabel("Email"),
                                          HtmlUtil.input(ARG_USER_EMAIL,
                                              email, HtmlUtil.SIZE_40)));
 
         formSB.append(
-            HtmlUtil.formEntry(
+                      formEntry(request, 
                 msgLabel("Password"), HtmlUtil.password(ARG_USER_PASSWORD1)));
 
         formSB.append(
-            HtmlUtil.formEntry(
+                      formEntry(request, 
                 msgLabel("Password Again"),
                 HtmlUtil.password(ARG_USER_PASSWORD2)));
 
@@ -2067,14 +2067,14 @@ public class UserManager extends RepositoryManager {
                         msg("Search for entries created by this user")));
 
         sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msgLabel("ID"),
+        sb.append(formEntry(request, msgLabel("ID"),
                                      user.getId() + HtmlUtil.space(2)
                                      + searchLink));
-        sb.append(HtmlUtil.formEntry(msgLabel("Name"), user.getLabel()));
+        sb.append(formEntry(request, msgLabel("Name"), user.getLabel()));
         String email = user.getEmail();
         if (email.length() > 0) {
             email = email.replace("@", " _AT_ ");
-            sb.append(HtmlUtil.formEntry(msgLabel("Email"), email));
+            sb.append(formEntry(request, msgLabel("Email"), email));
         }
         sb.append(HtmlUtil.formTableClose());
         return new Result(msg("User Profile"), sb);
@@ -2246,16 +2246,16 @@ public class UserManager extends RepositoryManager {
                 request.form(getRepositoryBase().URL_USER_RESETPASSWORD));
             sb.append(HtmlUtil.hidden(ARG_USER_PASSWORDKEY, key));
             sb.append(HtmlUtil.formTable());
-            sb.append(HtmlUtil.formEntry(msgLabel("User"), user.getId()));
+            sb.append(formEntry(request, msgLabel("User"), user.getId()));
             sb.append(
-                HtmlUtil.formEntry(
+                      formEntry(request, 
                     msgLabel("Password"),
                     HtmlUtil.password(ARG_USER_PASSWORD1)));
             sb.append(
-                HtmlUtil.formEntry(
+                      formEntry(request, 
                     msgLabel("Password Again"),
                     HtmlUtil.password(ARG_USER_PASSWORD2)));
-            sb.append(HtmlUtil.formEntry("", HtmlUtil.submit("Submit")));
+            sb.append(formEntry(request, "", HtmlUtil.submit("Submit")));
 
             sb.append(HtmlUtil.formTableClose());
             sb.append(HtmlUtil.formClose());
@@ -2888,7 +2888,7 @@ public class UserManager extends RepositoryManager {
         }
 
         sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntryTop(msgLabel("Roles"), roles));
+        sb.append(formEntryTop(request, msgLabel("Roles"), roles));
         sb.append(HtmlUtil.formTableClose());
 
         return makeResult(request, msg("User Settings"), sb);

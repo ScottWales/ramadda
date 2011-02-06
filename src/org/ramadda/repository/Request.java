@@ -146,6 +146,8 @@ public class Request implements Constants {
     /** _more_ */
     private ApiMethod apiMethod;
 
+    private boolean isMobile = true;
+
 
 
     /**
@@ -211,6 +213,8 @@ public class Request implements Constants {
         this.httpServletRequest  = httpServletRequest;
         this.httpServletResponse = httpServletResponse;
         this.httpServlet         = httpServlet;
+        isMobile =  getUserAgent("").toLowerCase().indexOf("iphone")>=0;
+        isMobile = true;
     }
 
 
@@ -1777,7 +1781,18 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getUserAgent() {
-        return getHeaderArg("User-Agent");
+        return getUserAgent(null);
+    }
+
+
+    public boolean isMobile() {
+        return isMobile;
+    }
+
+    public String getUserAgent(String dflt) {
+        String value =  getHeaderArg("User-Agent");
+        if(value == null) return dflt;
+        return value;
     }
 
     /**

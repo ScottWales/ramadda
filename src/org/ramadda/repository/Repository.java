@@ -476,6 +476,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     private List<HtmlTemplate> templates;
 
+    private HtmlTemplate mobileTemplate;
     private HtmlTemplate defaultTemplate;
 
     /** _more_ */
@@ -3104,6 +3105,21 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         return null;
     }
 
+    public HtmlTemplate getMobileTemplate() {
+        if(mobileTemplate==null) {
+            for(HtmlTemplate htmlTemplate: getTemplates()) {
+                if(htmlTemplate.getId().equals("mobile")) {
+                    //xxx
+                    if(true) return htmlTemplate;
+                    mobileTemplate = htmlTemplate;
+                    break;
+                }
+            }
+        }
+        return mobileTemplate;
+    }
+
+
     /**
      * _more_
      *
@@ -3138,6 +3154,9 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         //                ? request.getCollectionEntry()
         //                : topGroup, AdminMetadataHandler.TYPE_TEMPLATE, true);
         */
+        if(request.isMobile()) {
+            template = getMobileTemplate().getTemplate();
+        }
         if (template == null) {
             if (metadata != null) {
                 template = metadata.getAttr1();
@@ -3595,6 +3614,9 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      * @return _more_
      */
     public HtmlTemplate getTemplate(Request request) {
+        if(request.isMobile()) {
+            return  getMobileTemplate();
+        }
         List<HtmlTemplate> theTemplates = getTemplates();
         if(request == null && defaultTemplate!=null) {
             return defaultTemplate;

@@ -122,6 +122,22 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    public String formEntry(Request request, String label, String contents) {
+        if(request.isMobile()) {
+            return "<tr><td><div class=\"formlabel\">"+ label +"</div>" + contents +"</td></tr>";
+        } else {
+            return HtmlUtil.formEntry(label, contents);
+        }
+    }
+
+    public String formEntryTop(Request request, String label, String contents) {
+        if(request.isMobile()) {
+            return "<tr><td><div class=\"formlabel\">"+ label +"</div>" + contents +"</td></tr>";
+        } else {
+            return HtmlUtil.formEntryTop(label, contents);
+        }
+    }
+
     public boolean getActive() {
         if(repository == null || !repository.getActive()) return false;
         return true;

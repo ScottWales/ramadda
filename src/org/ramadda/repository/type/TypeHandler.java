@@ -1465,11 +1465,11 @@ public class TypeHandler extends RepositoryManager {
                         request.url(getRepository().URL_ENTRY_SHOW),
                         ARG_ENTRYID, entry.getId()), nameString);
 
-                sb.append(HtmlUtil.formEntry(msgLabel("Name"), nameString));
+                sb.append(formEntry(request, msgLabel("Name"), nameString));
 
                 String desc = entry.getDescription();
                 if ((desc != null) && (desc.length() > 0) && (!isWikiText(desc))) {
-                    sb.append(HtmlUtil.formEntry(msgLabel("Description"),
+                    sb.append(formEntry(request, msgLabel("Description"),
                             getEntryManager().getEntryText(request, entry,
                                 desc)));
                 }
@@ -1482,7 +1482,7 @@ public class TypeHandler extends RepositoryManager {
                         entry.getUser().getId()), entry.getUser().getLabel(),
                             "title=\"View user profile\"");
 
-            sb.append(HtmlUtil.formEntry(msgLabel("Created by"),
+            sb.append(formEntry(request, msgLabel("Created by"),
                                          userSearchLink + " @ "
                                          + formatDate(request,
                                              entry.getCreateDate(), entry)));
@@ -1524,11 +1524,11 @@ public class TypeHandler extends RepositoryManager {
                                    + resourceLink;
 
                 }
-                sb.append(HtmlUtil.formEntry(msgLabel("Resource"),
+                sb.append(formEntry(request, msgLabel("Resource"),
                                              resourceLink));
 
                 if (entry.isFile()) {
-                    //                    sb.append(HtmlUtil.formEntry(msgLabel("Size"),
+                    //                    sb.append(formEntry(request, msgLabel("Size"),
                     //                            entry.getResource().getFileSize()
                     //                            + HtmlUtil.space(1) + msg("bytes")));
                 }
@@ -1554,13 +1554,13 @@ public class TypeHandler extends RepositoryManager {
                                 getRepository().iconUrl(ICON_SEARCH),
                                 "Search for entries with this date range",
                                 " border=0 "));
-                    sb.append(HtmlUtil.formEntry(msgLabel("Date Range"),
+                    sb.append(formEntry(request, msgLabel("Date Range"),
                             searchLink + HtmlUtil.space(1) + startDate
                             + HtmlUtil.space(1)
                             + HtmlUtil.img(iconUrl(ICON_RANGE))
                             + HtmlUtil.space(1) + endDate));
                 } else {
-                    sb.append(HtmlUtil.formEntry(msgLabel("Date"),
+                    sb.append(formEntry(request, msgLabel("Date"),
                             formatDate(request, entry.getStartDate(),
                                        entry)));
                 }
@@ -1570,20 +1570,20 @@ public class TypeHandler extends RepositoryManager {
                 typeDesc = entry.getTypeHandler().getType();
             }
             if ( !showImage) {
-                sb.append(HtmlUtil.formEntry(msgLabel("Type"), typeDesc));
+                sb.append(formEntry(request, msgLabel("Type"), typeDesc));
             }
 
             String datatype = entry.getDataType();
             if ( !entry.getTypeHandler().hasDefaultDataType()
                     && (datatype != null) && (datatype.length() > 0)) {
-                sb.append(HtmlUtil.formEntry(msgLabel("Data Type"),
+                sb.append(formEntry(request, msgLabel("Data Type"),
                                              entry.getDataType()));
             }
 
             boolean showMap = true;
             if (showMap) {
                 if (entry.hasLocationDefined()) {
-                    sb.append(HtmlUtil.formEntry(msgLabel("Location"),
+                    sb.append(formEntry(request, msgLabel("Location"),
                             entry.getSouth() + "/" + entry.getEast()));
                 } else if (entry.hasAreaDefined()) {
                     /*
@@ -1610,13 +1610,13 @@ public class TypeHandler extends RepositoryManager {
             if (showResource && entry.getResource().isImage()) {
                 if (entry.getResource().isFile()
                         && getAccessManager().canDownload(request, entry)) {
-                    sb.append(HtmlUtil.formEntryTop(msgLabel("Image"),
+                    sb.append(formEntryTop(request, msgLabel("Image"),
                             HtmlUtil.img(getEntryResourceUrl(request, entry),
                                          "", "width=600")));
 
 
                 } else if (entry.getResource().isUrl()) {
-                    sb.append(HtmlUtil.formEntryTop(msgLabel("Image"),
+                    sb.append(formEntryTop(request,msgLabel("Image"),
                             HtmlUtil.img(entry.getResource().getPath())));
                 }
             }
@@ -1952,11 +1952,11 @@ public class TypeHandler extends RepositoryManager {
 
         if (forUpload) {
             sb.append(
-                HtmlUtil.formEntry(
+                      formEntry(request,
                     msgLabel("Your Name"),
                     HtmlUtil.input(ARG_CONTRIBUTION_FROMNAME, "", size)));
             sb.append(
-                HtmlUtil.formEntry(
+                      formEntry(request,
                     msgLabel("Your Email"),
                     HtmlUtil.input(ARG_CONTRIBUTION_FROMEMAIL, "", size)));
         }
@@ -1964,7 +1964,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
-            sb.append(HtmlUtil.formEntry( 
+            sb.append(formEntry(request,
                                          msgLabel(getFormLabel(entry,ARG_NAME, "Name")),
                                          HtmlUtil.input(ARG_NAME,
                                              ((entry != null)
@@ -1995,7 +1995,7 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
             sb.append(
-                HtmlUtil.formEntryTop(
+                      formEntryTop(request,
                                       msgLabel(getFormLabel(entry,ARG_DESCRIPTION,  "Description")),
                     buttons
                     + HtmlUtil.textArea(
@@ -2005,7 +2005,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
         if (request.getUser().getAdmin()) {
-            sb.append(HtmlUtil.formEntry(msgLabel("User"),
+            sb.append(formEntry(request,msgLabel("User"),
                                          HtmlUtil.input(ARG_USER_ID,
                                              ((entry != null)
                     ? entry.getUser().getId()
@@ -2089,36 +2089,36 @@ public class TypeHandler extends RepositoryManager {
 
             if (entry == null) {
                 if (tabTitles.size() > 1) {
-                    sb.append(HtmlUtil.formEntryTop(msgLabel("Resource"),
+                    sb.append(formEntryTop(request, msgLabel("Resource"),
                             OutputHandler.makeTabs(tabTitles, tabContent, true,
                                 "tab_content",
                                 "tab_contents_noborder") + extra));
                 } else if (tabTitles.size() == 1) {
-                    sb.append(HtmlUtil.formEntry(tabTitles.get(0) + ":",
+                    sb.append(formEntry(request,tabTitles.get(0) + ":",
                             tabContent.get(0) + extra));
                 }
             } else {
                 //                if (entry.getResource().isFile()) {
                 //If its the admin then show the full path
                 if (request.getUser().getAdmin()) {
-                    sb.append(HtmlUtil.formEntryTop(msgLabel("Resource"),
+                    sb.append(formEntryTop(request,msgLabel("Resource"),
                             entry.getResource().getPath()));
                 } else {
-                    sb.append(HtmlUtil.formEntry(msgLabel("Resource"),
+                    sb.append(formEntry(request,msgLabel("Resource"),
                             getStorageManager().getFileTail(entry)));
                 }
 
                 if (tabTitles.size() > 1) {
-                    sb.append(HtmlUtil.formEntry("",
+                    sb.append(formEntry(request,"",
                             msg("Upload new resource")));
-                    sb.append(HtmlUtil.formEntryTop(msgLabel("Resource"),
+                    sb.append(formEntryTop(request,msgLabel("Resource"),
                             OutputHandler.makeTabs(tabTitles, tabContent, true,
                                 "tab_content",
                                 "tab_contents_noborder") + extra));
                 } else if (tabTitles.size() == 1) {
-                    sb.append(HtmlUtil.formEntry("",
+                    sb.append(formEntry(request,"",
                             msg("Upload new resource")));
-                    sb.append(HtmlUtil.formEntry(tabTitles.get(0) + ":",
+                    sb.append(formEntry(request,tabTitles.get(0) + ":",
                             tabContent.get(0) + extra));
                 }
 
@@ -2128,13 +2128,13 @@ public class TypeHandler extends RepositoryManager {
                         String formContent = HtmlUtil.fileInput(ARG_FILE,
                                                  size);
                         /*                            sb.append(
-                                  HtmlUtil.formEntry(
+                                  formEntry(request,
                                                      msgLabel("Upload new file"), formContent));
                         */
                     }
                 }
                 /*                } else {
-                sb.append(HtmlUtil.formEntry(msgLabel("Resource"),
+                sb.append(formEntry(request,msgLabel("Resource"),
                         entry.getResource().getPath()));
                         }*/
             }
@@ -2152,7 +2152,7 @@ public class TypeHandler extends RepositoryManager {
                                      types, selected) + HtmlUtil.space(1)
                                          + msgLabel("Or")
                                  : "") + HtmlUtil.input(ARG_DATATYPE);
-                sb.append(HtmlUtil.formEntry(msgLabel("Data Type"), widget));
+                sb.append(formEntry(request,msgLabel("Data Type"), widget));
             }
 
         }
@@ -2184,7 +2184,7 @@ public class TypeHandler extends RepositoryManager {
         if (okToShowInForm(entry,ARG_DATE)) {
             if ( !okToShowInForm(entry,ARG_TODATE)) {
                 sb.append(
-                    HtmlUtil.formEntry(
+                    formEntry(request,
                         "Date:",
                         getRepository().makeDateInput(
                             request, ARG_FROMDATE, "entryform", fromDate,
@@ -2192,7 +2192,7 @@ public class TypeHandler extends RepositoryManager {
 
             } else {
                 sb.append(
-                    HtmlUtil.formEntry(
+                    formEntry(request,
                                        msgLabel("Date Range"),
                         getRepository().makeDateInput(
                             request, ARG_FROMDATE, "entryform", fromDate,
@@ -2224,7 +2224,7 @@ public class TypeHandler extends RepositoryManager {
                 + HtmlUtil.input(ARG_LOCATION_LONGITUDE, lon,
                                  HtmlUtil.SIZE_6);
 
-            sb.append(HtmlUtil.formEntry(msgLabel("Location"), locationWidget));
+            sb.append(formEntry(request,msgLabel("Location"), locationWidget));
         } else if (okToShowInForm(entry,ARG_AREA)) {
             StringBuffer mapSB = new StringBuffer();
             MapOutputHandler mapOutputHandler =
@@ -2262,7 +2262,7 @@ public class TypeHandler extends RepositoryManager {
                 getRepository().getMapManager().makeMapSelector(ARG_AREA,
                                                                 true, "","", pts, null) + extraMapStuff;
 
-            sb.append(HtmlUtil.formEntry(msgLabel("Location"), mapSelector));
+            sb.append(formEntry(request,msgLabel("Location"), mapSelector));
 
         }
 
@@ -2273,7 +2273,7 @@ public class TypeHandler extends RepositoryManager {
             if ((entry != null) && entry.hasAltitude()) {
                 altitude = "" + entry.getAltitude();
             }
-            sb.append(HtmlUtil.formEntry("Altitude:",
+            sb.append(formEntry(request,"Altitude:",
                                          HtmlUtil.input(ARG_ALTITUDE,
                                              altitude, HtmlUtil.SIZE_10)));
         } else if (okToShowInForm(entry,ARG_ALTITUDE_TOP, false)) {
@@ -2288,7 +2288,7 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
             sb.append(
-                HtmlUtil.formEntry(
+                formEntry(request,
                     "Altitude Range:",
                     HtmlUtil.input(
                         ARG_ALTITUDE_BOTTOM, altitudeBottom,
@@ -2382,7 +2382,7 @@ public class TypeHandler extends RepositoryManager {
                                      + msg("Match exactly");
         String extra = HtmlUtil.p() + searchExact + searchMetaData;
         extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
-        sb.append(HtmlUtil.formEntryTop(msgLabel("Text"),
+        sb.append(formEntryTop(request,msgLabel("Text"),
                                         HtmlUtil.input(ARG_TEXT, name,
                                             HtmlUtil.SIZE_50
                                             + " autofocus ") + " " + extra));
@@ -2447,7 +2447,7 @@ public class TypeHandler extends RepositoryManager {
 
         addTextSearch(request, basicSB);
         if (request.defined(ARG_USER_ID)) {
-            basicSB.append(HtmlUtil.formEntry(msgLabel("User"),
+            basicSB.append(formEntry(request,msgLabel("User"),
                     HtmlUtil.input(ARG_USER_ID,
                                    request.getString(ARG_USER_ID, ""))));
         }
@@ -2481,7 +2481,7 @@ public class TypeHandler extends RepositoryManager {
                                            + msg("Exclude")
                                : "");
             basicSB.append(
-                HtmlUtil.formEntry(
+                formEntry(request,
                     msgLabel("Type"),
                     typeSelect + HtmlUtil.space(1)
                     + HtmlUtil.submitImage(
@@ -2492,7 +2492,7 @@ public class TypeHandler extends RepositoryManager {
         } else if (typeHandlers.size() == 1) { 
            basicSB.append(HtmlUtil.hidden(ARG_TYPE,
                                            typeHandlers.get(0).getType()));
-            basicSB.append(HtmlUtil.formEntry(msgLabel("Type"),
+            basicSB.append(formEntry(request,msgLabel("Type"),
                     typeHandlers.get(0).getDescription()));
         }
 
@@ -2517,7 +2517,7 @@ public class TypeHandler extends RepositoryManager {
          *       : null), 100);
          *
          * if (collection == null) {
-         *   basicSB.append(HtmlUtil.formEntry(msgLabel("Collection"),
+         *   basicSB.append(formEntry(request,msgLabel("Collection"),
          *           collectionSelect));
          * }
          */
@@ -2593,7 +2593,7 @@ public class TypeHandler extends RepositoryManager {
             }
 
             basicSB.append(
-                           HtmlUtil.formEntryTop(
+                           formEntryTop(request,
                                                  msgLabel(arg.label),
                                                  getRepository().makeDateInput(
                                                                                request, arg.from, "searchform",
@@ -2621,7 +2621,7 @@ public class TypeHandler extends RepositoryManager {
                 basicSB.append(HtmlUtil.hidden(ARG_GROUP, groupArg));
                 Entry group = getEntryManager().findGroup(request, groupArg);
                 if (group != null) {
-                    basicSB.append(HtmlUtil.formEntry(msgLabel("Folder"),
+                    basicSB.append(formEntry(request,msgLabel("Folder"),
                             group.getFullName() + "&nbsp;" + searchChildren));
 
                 }
@@ -2646,12 +2646,12 @@ public class TypeHandler extends RepositoryManager {
                  *   }
                  *   String groupSelect = HtmlUtil.select(ARG_GROUP,
                  *                            groupList, null, 100);
-                 *   advancedSB.append(HtmlUtil.formEntry(msgLabel("Folder"),
+                 *   advancedSB.append(formEntry(request,msgLabel("Folder"),
                  *           groupSelect + searchChildren));
                  * } else if (groups.size() == 1) {
                  *   advancedSB.append(HtmlUtil.hidden(ARG_GROUP,
                  *           groups.get(0).getId()));
-                 *   advancedSB.append(HtmlUtil.formEntry(msgLabel("Folder"),
+                 *   advancedSB.append(formEntry(request,msgLabel("Folder"),
                  *           groups.get(0).getFullName() + searchChildren));
                  * }
                  */
@@ -2686,7 +2686,7 @@ public class TypeHandler extends RepositoryManager {
                 getRepository().getMapManager().makeMapSelector(request,
                     ARG_AREA, true, "", radio);
 
-            basicSB.append(HtmlUtil.formEntry(msgLabel("Area"), mapSelector));
+            basicSB.append(formEntry(request,msgLabel("Area"), mapSelector));
             basicSB.append("\n");
 
             addSearchField(request, ARG_FILESUFFIX, basicSB);
@@ -2698,7 +2698,7 @@ public class TypeHandler extends RepositoryManager {
 
         /*
         if (collection != null) {
-            basicSB.append(HtmlUtil.formEntry(msgLabel("Collection"),
+            basicSB.append(formEntry(request,msgLabel("Collection"),
                     collectionSelect));
                     }*/
 
@@ -2725,7 +2725,7 @@ public class TypeHandler extends RepositoryManager {
     public void addSearchField(Request request, String what,
                                StringBuffer sb) {
         if (what.equals(ARG_FILESUFFIX)) {
-            sb.append(HtmlUtil.formEntry(msgLabel("File Suffix"),
+            sb.append(formEntry(request,msgLabel("File Suffix"),
                                          HtmlUtil.input(ARG_FILESUFFIX, "",
                                              " size=\"8\" ")));
         }

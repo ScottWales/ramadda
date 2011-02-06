@@ -1428,6 +1428,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         sb.append(extra);
         //        sb.append(crumbs);
         sb.append(link.getLink());
+        sb.append("</td>");
 
 
         /*
@@ -1450,7 +1451,11 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
 
         }
 
-        sb.append("<td align=right width=200><div class=entryrowlabel>");
+        if(request.isMobile()) {
+            sb.append("<td align=right><div class=entryrowlabel>");
+        } else {
+            sb.append("<td align=right width=200><div class=entryrowlabel>");
+        }
         sb.append(getRepository().formatDateShort(request,
                 new Date(entry.getStartDate()),
                 getEntryManager().getTimezone(entry), extraAlt.toString()));
