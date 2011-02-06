@@ -230,6 +230,8 @@ public class MetadataTypeBase extends RepositoryManager {
         if ((template == null) || (template.length() == 0)) {
             return null;
         }
+        //Remove newlines??
+        template = template.replaceAll("\n","");
         template = template.replace("${root}", getRepository().getUrlBase());
 
         for (MetadataElement element : getChildren()) {
@@ -237,7 +239,6 @@ public class MetadataTypeBase extends RepositoryManager {
                                metadata,
                                metadata.getAttr(element.getIndex()), parent);
 
-            boolean print = value.indexOf("Pers")>=0;
             template = applyMacros(template, element, value);
 
         }

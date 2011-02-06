@@ -1504,11 +1504,13 @@ function insertTags(id, tagOpen, tagClose, sampleText) {
 }
 
 
+
 // apply tagOpen/tagClose to selection in textarea,
 // use sampleText instead of selection if there is none
 function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
     var selText, isSample = false;
 
+    alert('hello');
     if (document.selection  && document.selection.createRange) { // IE/Opera
 
         //save window scroll position
@@ -1519,6 +1521,11 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
         //get current selection  
         txtarea.focus();
         var range = document.selection.createRange();
+        var x = "";
+        for(key in range) {
+            x = x+str(key) +"\n"
+        }
+        alert(x);
         selText = range.text;
         //insert tags
         checkSelectedText();

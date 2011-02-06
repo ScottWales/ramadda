@@ -2989,6 +2989,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      */
     protected Result getHtdocsFile(Request request) throws Exception {
         String path = request.getRequestPath();
+
+
         if ( !path.startsWith(getUrlBase())) {
             path = getUrlBase() + path;
         }
@@ -3022,7 +3024,6 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         //        path = StringUtil.replace(path, getUrlBase(), BLANK);
         path = path.substring(length);
 
-
         String pluginPath = pluginHtdocsMap.get(path);
         if (pluginPath != null) {
             InputStream inputStream =
@@ -3039,8 +3040,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
 
 
-
         String type = getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
+
 
         //Go through all of the htdoc roots
         for (String root : htdocRoots) {
@@ -3055,7 +3056,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                     inputStream = new ByteArrayInputStream(js.getBytes());
                 }
                 Result result = new Result(BLANK, inputStream, type);
-                result.setCacheOk(true);
+                //                result.setCacheOk(false);
                 return result;
             } catch (IOException fnfe) {
                 //noop
