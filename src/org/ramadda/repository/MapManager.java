@@ -85,14 +85,14 @@ public class MapManager extends RepositoryManager {
             sb.append("\n");
             sb.append(HtmlUtil.importJS(fileUrl("/openlayers/OpenLayers.js")));
             sb.append("\n");
-            sb.append(HtmlUtil.importJS(fileUrl("/repositorymap.js")));
+            sb.append(HtmlUtil.importJS(fileUrl("/ramaddamap.js")));
             sb.append("\n");
-            //            sb.append(HtmlUtil.importJS("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
-            //            sb.append("\n");
+            sb.append(HtmlUtil.importJS("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
+            sb.append("\n");
             //            sb.append(HtmlUtil.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
             //            sb.append("\n");
             //            sb.append(HtmlUtil.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
-            sb.append("\n");
+            //            sb.append("\n");
             request.putExtraProperty("initmap", "");
         }
 
@@ -270,7 +270,7 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        return HtmlUtil.table(new Object[] { widget, rightSide }) + "\nSCRIPT "
+        return HtmlUtil.table(new Object[] { widget, rightSide }) + "\n"
             + HtmlUtil.script(script.toString());
 
     }

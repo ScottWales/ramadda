@@ -60,6 +60,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
+import java.awt.geom.Rectangle2D;
 
 
 import java.util.regex.*;
@@ -228,15 +229,18 @@ public class MapOutputHandler extends OutputHandler {
             }
         }
 
+        Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
+
         boolean makeRectangles = cnt <= 20;
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
             if (entry.hasAreaDefined()) {
+                js.append("var args = {\"color\":\"blue\",\"selectable\": true};\n");
                 js.append(mapVarName +".addBox(" + sqt(entry.getId()) +"," +
                            entry.getNorth() +"," +
                            entry.getWest() +"," +
                            entry.getSouth() +"," +
-                           entry.getEast()+");\n");
+                           entry.getEast()+", args);\n");
             }
 
             if(makeRectangles) {
@@ -296,7 +300,15 @@ public class MapOutputHandler extends OutputHandler {
                            ");\n");
             }
         }
-        js.append(mapVarName+".centerOnMarkers();\n");
+
+        if(bounds!=null) {
+            js.append("var bounds = new OpenLayers.Bounds(" +
+                      bounds.getX() +"," + bounds.getY() +"," + (bounds.getX()+bounds.getWidth()) +"," +
+                      (bounds.getY() + bounds.getHeight())+");\n");
+        } else {
+            js.append("var bounds = null;\n");
+        }
+        js.append(mapVarName+".centerOnMarkers(bounds);\n");
         //        js.append(mapVarName+".getMap().zoomToMaxExtent();\n");
         sb.append(HtmlUtil.script(js.toString()));
         return mapVarName;

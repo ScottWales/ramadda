@@ -1118,13 +1118,13 @@ public class IdvOutputHandler extends OutputHandler {
 
         String mapVarName = "selectormap";
         StringBuffer js = new StringBuffer();
+        js.append(mapVarName+".initMap(true);\n");
         js.append(mapVarName +".addBox(" + HtmlUtil.squote(entry.getId()) +"," +
                   entry.getNorth() +"," +
                   entry.getWest() +"," +
                   entry.getSouth() +"," +
                   entry.getEast()+");\n");
         bounds.append(HtmlUtil.script(js.toString()));
-
 
         tabLabels.add(msg("View Bounds"));
         tabContents.add(bounds.toString());

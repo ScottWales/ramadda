@@ -2964,7 +2964,6 @@ return new Result(title, sb);
 
         for (Entry child : children) {
             if ( !child.hasAreaDefined()) {
-                System.err.println("no bounds:" + child);
                 continue;
             }
             if (rect == null) {

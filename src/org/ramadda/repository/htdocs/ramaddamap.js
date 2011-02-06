@@ -3,6 +3,7 @@
  */
 
 
+
 var mapLayers = null;
 var map_google_terrain = "google.terrain";
 var map_google_streets = "google.streets";
@@ -20,35 +21,6 @@ var defaultZoomLevel = 3;
 
 
 
-
-
-function loadjscssfile(filename, filetype){
-    if (filetype=="js") { 
-        var fileref=document.createElement('script');
-        fileref.setAttribute("type","text/javascript");
-        fileref.setAttribute("src", filename);
-    } else if (filetype=="css") {
-        var fileref=document.createElement("link");
-        fileref.setAttribute("rel", "stylesheet");
-        fileref.setAttribute("type", "text/css");
-        fileref.setAttribute("href", filename);
-    }
-    if (typeof fileref!="undefined") {
-        alert("loading " +filename);
-        document.getElementsByTagName("head")[0].appendChild(fileref);
-    }
-}
-
-
-/*
-var yahooJS= "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers";
-var msJS= "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1";
-var googleJS= "http://maps.google.com/maps/api/js?v=3.2&sensor=false";
-
-loadjscssfile(yahooJS, "js")
-//loadjscssfile(msJS, "js")
-//loadjscssfile(googleJS, "js")
-*/
 
 
 function RepositoryMap (mapId, params) {
@@ -69,6 +41,7 @@ function RepositoryMap (mapId, params) {
         this.map.addLayer(layer);
     }
 
+
     this.addBaseLayers = function() {
         if(!this.mapLayers) {
             this.mapLayers = [
@@ -77,7 +50,7 @@ function RepositoryMap (mapId, params) {
                               map_yahoo,
                               map_wms_topographic,
                               //                              map_ms_shaded,
-                              map_ms_aerial,
+                              //                              map_ms_aerial,
                               //map_ms_hybrid,
                               //map_google_terrain,
                               //map_google_streets,
@@ -276,10 +249,13 @@ function RepositoryMap (mapId, params) {
         }
     }
 
+
+
     this.setSelectionBox = function(north, west, south, east) {
         if(north == "" || west == "" || south == "" || east == "") return;
         if(!this.selectorBox) {
-            this.selectorBox = this.addBox(north, west, south, east);
+            var args = {"color":"red","selectable": false};
+            this.selectorBox = this.addBox("",north,  west, south, east, args);
         } else {
             var bounds = new OpenLayers.Bounds(west, south, east, north);
             this.selectorBox.bounds = bounds;
@@ -389,12 +365,26 @@ function RepositoryMap (mapId, params) {
         this.showMarkerPopup(marker);
     }
 
-    this.centerOnMarkers = function()  {
+    this.centerOnMarkers = function(bounds)  {
+        if(!this.markers) return;
+        //        bounds = this.boxes.getDataExtent();
+        if(!bounds) {
+            bounds = this.markers.getDataExtent();
+        }
+        //        bounds = this.markers.getDataExtent();
+        this.map.setCenter(bounds.getCenterLonLat());
+        this.map.zoomToExtent(bounds);
+    }
+
+
+    this.zoomToMarkers = function()  {
         if(!this.markers) return;
         bounds = this.markers.getDataExtent();
         this.map.setCenter(bounds.getCenterLonLat());
         this.map.zoomToExtent(bounds);
     }
+
+
 
     this.addMarker = function(id, location, iconUrl, text) {
         var theMap = this;
@@ -429,7 +419,7 @@ function RepositoryMap (mapId, params) {
 
     this.initBoxes = function() {
         if(!this.map) {
-            alert('whoa, no map');
+            //            alert('whoa, no map');
         }
         var theMap = this;
         theMap.map.addLayer(theMap.boxes);
@@ -440,25 +430,51 @@ function RepositoryMap (mapId, params) {
         sf.activate();
     }
 
-    this.addBox = function(id, north, west, south, east, attrs) {
+
+
+    this.addBox = function(id, north, west, south, east, params) {
+        var args =  {"color": "blue",
+                     "selectable": true};
+
+        for( a in params) {
+            args[a] = params[a];
+        }
+
         var theMap = this;
         if(!theMap.boxes) {
             theMap.boxes = new OpenLayers.Layer.Boxes("Boxes");
-            if(!theMap.map) return;
+            if(!theMap.map) {
+                alert("no map");
+                return;
+            }
             this.initBoxes(theMap.boxes);
         }
+
         var bounds = new OpenLayers.Bounds(west, south, east, north);
+        //        var bounds = new OpenLayers.Bounds(north, west, south, east);
+        //        alert("adding box "+ north +" " + bounds);
+
         box = new OpenLayers.Marker.Box(bounds);
-        box.events.register("click", box, function (e) {
-                theMap.showMarkerPopup(box);
-                OpenLayers.Event.stop(evt); 
-                //                alert("box click");
-            });
-        box.setBorder("blue");
+        if(args["selectable"]) {
+            box.events.register("click", box, function (e) {
+                    theMap.showMarkerPopup(box);
+                    OpenLayers.Event.stop(evt); 
+                });
+        }
+        box.setBorder(args["color"]);
         box.id = id;
         theMap.boxes.addMarker(box);
+
+       //        if(zoomToExtent) {
+        //            this.map.zoomToExtent(bounds);
+        //        }
+        //        lonlat = new OpenLayers.LonLat(west+(east-west)/2,south+(north-south)/2);
+        //        this.map.setOptions({restrictedExtent: bounds});
+        //        this.map.setCenter(lonlat);
+        //        this.map.zoomTo(4);
         return box;
     }
+
 
 
     this.addRectangle = function(id, north, west, south, east, attrs) {
@@ -525,6 +541,7 @@ function RepositoryMap (mapId, params) {
         line.id = id;
         return line;
     }
+
 
     this.showMarkerPopup =function(marker) {
         if(this.currentPopup) {
@@ -605,7 +622,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 zoomFld.obj.value = this.theMap.getMap().getZoom();
             }
         }
-
     });
 
 
