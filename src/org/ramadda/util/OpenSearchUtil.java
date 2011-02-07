@@ -33,82 +33,114 @@ import java.util.List;
  */
 public class OpenSearchUtil {
 
-    /** _more_          */
+    /** _more_ */
     public static final String XMLNS = "http://a9.com/-/spec/opensearch/1.1/";
 
     /** _more_          */
+    public static final String XMLNS_GEO =
+        "http://a9.com/-/opensearch/extensions/geo/1.0/";
+
+    /** _more_          */
+    public static final String XMLNS_TIME =
+        "http://a9.com/-/opensearch/extensions/time/1.0/";
+
+
+    /** _more_ */
     public static final String MIMETYPE =
         "application/opensearchdescription+xml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_OPENSEARCHDESCRIPTION =
         "OpenSearchDescription";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SHORTNAME = "ShortName";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_DESCRIPTION = "Description";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TAGS = "Tags";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_CONTACT = "Contact";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_URL = "Url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_LONGNAME = "LongName";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_IMAGE = "Image";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_QUERY = "Query";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_DEVELOPER = "Developer";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ATTRIBUTION = "Attribution";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SYNDICATIONRIGHT = "SyndicationRight";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ADULTCONTENT = "AdultContent";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_LANGUAGE = "Language";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_OUTPUTENCODING = "OutputEncoding";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_INPUTENCODING = "InputEncoding";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_XMLNS = "xmlns";
 
+    /** _more_ */
+    public static final String ATTR_XMLNS_GEO = "xmlns:geo";
+
     /** _more_          */
+    public static final String ATTR_XMLNS_TIME = "xmlns:time";
+
+    /** _more_          */
+    public static final String ATTR_BBOX = "bbox";
+
+    /** _more_ */
     public static final String ATTR_TEMPLATE = "template";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_HEIGHT = "height";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_WIDTH = "width";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ROLE = "role";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCHTERMS = "searchTerms";
+
+    /** _more_          */
+    public static final String MACRO_TEXT = "{searchTerms}";
+
+    /** _more_          */
+    public static final String MACRO_BBOX = "{geo:box?}";
+
+    /** _more_          */
+    public static final String MACRO_TIME_START = "{time:start?}";
+
+    /** _more_          */
+    public static final String MACRO_TIME_END = "{time:end?}";
+
+
 
     /**
      * _more_
@@ -117,11 +149,15 @@ public class OpenSearchUtil {
      *
      * @throws Exception _more_
      */
+
+
     public static Element getRoot() throws Exception {
         Document doc = XmlUtil.makeDocument();
         Element root = XmlUtil.create(doc, TAG_OPENSEARCHDESCRIPTION, null,
-                                      new String[] { ATTR_XMLNS,
-                XMLNS });
+                                      new String[] {
+            ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEO, XMLNS_GEO, ATTR_XMLNS_TIME,
+            XMLNS_TIME,
+        });
         return root;
     }
 
