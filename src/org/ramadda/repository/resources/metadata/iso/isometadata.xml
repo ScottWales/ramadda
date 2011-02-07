@@ -2,57 +2,6 @@
 <metadata>
   <handler category="ISO 19115" class="org.ramadda.repository.metadata.IsoMetadataHandler">
 
-<!--
-    <type       name="Entry Title"       searchable="false"       id="dif.entry_title" dif.tag="Entry_Title">
-      <element name="Title"/>
-      <template type="dif"><![CDATA[<Entry_Title>${Title}</Entry_Title>]]></template>
-    </type>
--->
-
-    <type       name="Parameters"       searchable="false"       id="dif.parameters" dif.tag="Parameters" >
-      <element
-         dif.tag="Category" 
-         datatype="enumeration"         name="Category"
-         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
-      <element
-         dif.tag="Topic" 
-         datatype="enumeration"         name="Topic"
-         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
-      <element
-         dif.tag="Term" 
-         datatype="enumeration"         name="Term"
-         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
-       <element
-         dif.tag="Variable_Level_1" 
-         datatype="enumeration"         name="Variable Level 1"
-         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
-       <element
-         dif.tag="Variable_Level_2" 
-         datatype="enumeration"         name="Variable Level 2"
-         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
-       <element
-         dif.tag="Variable_Level_3" 
-         datatype="enumeration"         name="Variable Level 3"
-         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
-       <element name="Detailed Variable"/>
-      <template type="dif"><![CDATA[
-<Parameters>
-<Category>${Category}</Category>
-<Topic>${Topic}</Topic>
-<Term>${Term}</Term>
-<Variable_Level_1>${Variable_Level_1}</Variable_Level_1>
-<Variable_Level_2>${Variable_Level_2}</Variable_Level_2>
-<Variable_Level_3>${Variable_Level_3}</Variable_Level_3>
-<Detailed_Variable>${Detailed_Variable}</Detailed_Variable>
-</Parameters> 
-]]></template>
-    </type>
-
-    <type       name="ISO Topic Category"       searchable="false"       id="dif.iso_topic_category" dif.tag="ISO_Topic_Category">
-      <element         datatype="enumeration"         name="Category"         values="file:/org/ramadda/repository/resources/metadata/dif/isotopiccategories.txt"/>
-      <template type="dif"><![CDATA[<ISO_Topic_Category>${Category}</ISO_Topic_Category>]]></template>
-     </type>
-
     <type       name="Data Center"       searchable="false"       id="dif.data_center" dif.tag="Data_Center">
       <element name="Short Name" dif.tag="Short_Name"/>
       <element name="Long Name" dif.tag="Long_Name"/>
@@ -82,7 +31,7 @@
       <element name="Postal Code" dif.tag="Postal_Code"/>
       <element name="Country" dif.tag="Country"/>
       <template type="dif" file="/org/ramadda/repository/resources/metadata/dif/template_dif_personnel.xml"/>
-</element>
+      </element>
 
 <template type="dif"><![CDATA[
 <Data_Center>

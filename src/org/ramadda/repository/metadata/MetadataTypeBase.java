@@ -97,6 +97,10 @@ public class MetadataTypeBase extends RepositoryManager {
 
 
     /** _more_ */
+    public static final String TEMPLATETYPE_ISO = "iso";
+
+
+    /** _more_ */
     public static final String TEMPLATETYPE_OAIDC = "oai_dc";
 
     /** _more_ */
