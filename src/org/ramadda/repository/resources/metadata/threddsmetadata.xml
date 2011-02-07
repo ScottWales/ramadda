@@ -20,8 +20,8 @@
       <element name="URL" datatype="url"/>
       <template type="html"><![CDATA[<a href="${URL}">${Label}</a>]]></template>
       <template type="thredds"><![CDATA[<documentation xlink:href="${URL}" xlink:title="${Label}"/>]]></template>
-      <template type="dif"><![CDATA[<Related_URL><URL_Content_Type><Type>GET</Type></URL_Content_Type><URL>${URL}</URL>
-                             <Description>${Label}</Description></Related_URL>]]></template>
+      <template type="dif"><![CDATA[<Related_URL><URL_Content_Type><Type>GET</Type></URL_Content_Type><URL>${URL.cdata}</URL>
+                             <Description>${Label.cdata}</Description></Related_URL>]]></template>
     </type>
 
 

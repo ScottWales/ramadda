@@ -368,12 +368,12 @@ ${Chronostratigraphic_Unit}
       <element name="Sub Type"/>
       <template type="dif"><![CDATA[
 <Related_URL><URL_Content_Type>
-      <Type>${Type}</Type>
-      <Subtype>${Sub_Type}</Subtype>
-    </URL_Content_Type>
-    <URL>${URL}</URL>
-    <Description>${Description.cdata}</Description>
-  </Related_URL>
+<Type>${Type}</Type>
+<Subtype>${Sub_Type}</Subtype>
+</URL_Content_Type>
+<URL>${URL.cdata}</URL>
+<Description>${Description.cdata}</Description>
+</Related_URL>
 ]]></template>
     </type>
 
