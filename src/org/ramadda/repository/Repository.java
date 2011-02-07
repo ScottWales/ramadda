@@ -3028,23 +3028,6 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         int length = getUrlBase().length();
         //        path = StringUtil.replace(path, getUrlBase(), BLANK);
         path = path.substring(length);
-
-        String pluginPath = pluginHtdocsMap.get(path);
-        if (pluginPath != null) {
-            InputStream inputStream =
-                getStorageManager().getInputStream(pluginPath);
-            if (pluginPath.endsWith(".js") || pluginPath.endsWith(".css")) {
-                String js = IOUtil.readInputStream(inputStream);
-                js          = js.replace("${urlroot}", getUrlBase());
-                inputStream = new ByteArrayInputStream(js.getBytes());
-            }
-            String type =
-                getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
-            return new Result(BLANK, inputStream, type);
-        }
-
-
-
         String type = getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
 
 
@@ -3067,6 +3050,25 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 //noop
             }
         }
+
+
+        String pluginPath = pluginHtdocsMap.get(path);
+
+        if (pluginPath != null) {
+            InputStream inputStream =
+                getStorageManager().getInputStream(pluginPath);
+            if (pluginPath.endsWith(".js") || pluginPath.endsWith(".css")) {
+                String js = IOUtil.readInputStream(inputStream);
+                js          = js.replace("${urlroot}", getUrlBase());
+                inputStream = new ByteArrayInputStream(js.getBytes());
+            }
+            String mimeType =
+                getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
+            return new Result(BLANK, inputStream, mimeType);
+        }
+
+
+
         String userAgent = request.getHeaderArg(HtmlUtil.HTTP_USER_AGENT);
         if (userAgent == null) {
             userAgent = "Unknown";
