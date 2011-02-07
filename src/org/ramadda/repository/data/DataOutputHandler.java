@@ -1817,7 +1817,8 @@ public class DataOutputHandler extends OutputHandler {
             String redirectUrl = request.getRequestPath() + "/"
                                  + baseName + ".png" + "?"
                                  + request.getUrlArgs();
-            return new Result("Point As Grid Time Series Image", new StringBuffer(HtmlUtil.img(redirectUrl)));
+            return new Result("Point As Grid Time Series Image", 
+            		new StringBuffer(HtmlUtil.img(redirectUrl, "Image is being processed...")));
         }
         StringBuffer sb     = new StringBuffer();
         String       path   = getPath(request, entry);

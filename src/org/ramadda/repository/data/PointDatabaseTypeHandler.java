@@ -1051,7 +1051,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                      + baseName + ".png" + "?"
                                      + request.getUrlArgs(null,
                                          getSet(OP_LT));
-                sb.append(HtmlUtil.img(redirectUrl));
+                sb.append(HtmlUtil.img(redirectUrl, "Image is being processed..."));
             } else {
                 /*
                 //  for amcharts flash
@@ -1992,8 +1992,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             chart.createBufferedImage(request.get(ARG_POINT_IMAGE_WIDTH,
                 1000), request.get(ARG_POINT_IMAGE_HEIGHT, 400));
         long t3 = System.currentTimeMillis();
-        System.err.println("timeseries image time:" + (t2 - t1) + " "
-                           + (t3 - t2));
+        //System.err.println("timeseries image time:" + (t2 - t1) + " "
+        //                   + (t3 - t2));
 
         File file = getStorageManager().getTmpFile(request, "point.png");
         ImageUtils.writeImageToFile(newImage, file);
