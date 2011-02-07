@@ -21,6 +21,15 @@
 package org.ramadda.repository.idv;
 
 
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.data.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.util.*;
+
+
 import org.w3c.dom.*;
 
 
@@ -39,7 +48,6 @@ import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.ft.FeatureDatasetPoint;
 
 import ucar.unidata.data.*;
-import ucar.unidata.data.DataCategory;
 
 import ucar.unidata.data.DataManager;
 import ucar.unidata.data.DataSourceDescriptor;
@@ -53,8 +61,6 @@ import ucar.unidata.geoloc.projection.*;
 
 import ucar.unidata.gis.maps.MapData;
 import ucar.unidata.idv.*;
-import ucar.unidata.idv.ControlDescriptor;
-import ucar.unidata.idv.DisplayConventions;
 
 
 import ucar.unidata.idv.IdvBase;
@@ -63,14 +69,7 @@ import ucar.unidata.idv.IntegratedDataViewer;
 import ucar.unidata.idv.VMManager;
 import ucar.unidata.idv.ViewState;
 import ucar.unidata.idv.ui.ImageGenerator;
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.data.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.util.*;
+import ucar.unidata.idv.ui.ImageSequenceGrabber;
 
 import ucar.unidata.sql.SqlUtil;
 
@@ -350,6 +349,9 @@ public class IdvOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final String ARG_IMAGE_HEIGHT = "height";
+
+    /** _more_ */
+    public static final String ARG_BACKGROUND_TRANSPARENT = "bgTrans";
 
 
     /** _more_ */
@@ -844,7 +846,7 @@ public class IdvOutputHandler extends OutputHandler {
     private void makeGridForm(Request request, StringBuffer sb, Entry entry,
                               DataSource dataSource)
             throws Exception {
-    	
+
         String formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
         sb.append(HtmlUtil.form(formUrl, ""));
         sb.append(HtmlUtil.submit(msg("Make image"), ARG_SUBMIT));
@@ -883,15 +885,17 @@ public class IdvOutputHandler extends OutputHandler {
                             + htmlSelect(request, ARG_VIEW_VIEWPOINT,
                                          viewPoints);
         }
+        String imageTrans =
+            HtmlUtil.space(3)
+            + htmlCheckbox(request, ARG_BACKGROUND_TRANSPARENT, false)
+            + HtmlUtil.space(2) + msg("Background Transparent");
 
-        basic.append(HtmlUtil.formEntry(msgLabel("Image Size"),
-                                        htmlInput(request, ARG_IMAGE_WIDTH,
-                                            "600") + HtmlUtil.space(1) + "X"
-                                                + HtmlUtil.space(1)
-                                                    + htmlInput(request,
-                                                        ARG_IMAGE_HEIGHT,
-                                                            "400")));
-
+        basic.append(
+            HtmlUtil.formEntry(
+                msgLabel("Image Size"),
+                htmlInput(request, ARG_IMAGE_WIDTH, "600")
+                + HtmlUtil.space(1) + "X" + HtmlUtil.space(1)
+                + htmlInput(request, ARG_IMAGE_HEIGHT, "400") + imageTrans));
 
 
         basic.append(HtmlUtil.formEntry(msgLabel("Make globe"),
@@ -1005,7 +1009,7 @@ public class IdvOutputHandler extends OutputHandler {
             getRepository().getMapManager().makeMapSelector(request,
                 ARG_VIEW_BOUNDS, false,
                 htmlCheckbox(request, ARG_VIEW_JUSTCLIP, false) + " "
-                                                            + msg("Just subset data") + HtmlUtil.space(2), "");
+                + msg("Just subset data") + HtmlUtil.space(2), "");
 
 
         bounds.append(llb);
@@ -1116,14 +1120,12 @@ public class IdvOutputHandler extends OutputHandler {
         tabContents.add(basic.toString());
 
 
-        String mapVarName = "selectormap";
-        StringBuffer js = new StringBuffer();
-        js.append(mapVarName+".initMap(true);\n");
-        js.append(mapVarName +".addBox(" + HtmlUtil.squote(entry.getId()) +"," +
-                  entry.getNorth() +"," +
-                  entry.getWest() +"," +
-                  entry.getSouth() +"," +
-                  entry.getEast()+");\n");
+        String       mapVarName = "selectormap";
+        StringBuffer js         = new StringBuffer();
+        js.append(mapVarName + ".initMap(true);\n");
+        js.append(mapVarName + ".addBox(" + HtmlUtil.squote(entry.getId())
+                  + "," + entry.getNorth() + "," + entry.getWest() + ","
+                  + entry.getSouth() + "," + entry.getEast() + ");\n");
         bounds.append(HtmlUtil.script(js.toString()));
 
         tabLabels.add(msg("View Bounds"));
@@ -1887,15 +1889,15 @@ public class IdvOutputHandler extends OutputHandler {
                         // check to see if this matches me
                         if (hostname.indexOf(server) >= 0) {  // match
                             mapsKey = (String) serverKey.get(1);
-                            if (!mapsKey.equals("")) {
-                            	mapsKey = "?key="+mapsKey;
+                            if ( !mapsKey.equals("")) {
+                                mapsKey = "?key=" + mapsKey;
                             }
                             if (serverKey.size() > 2) {
                                 // , {"other_params":"client=clientName&sensor=true_or_false"}
                                 otherOpts = ", {\"other_params\":\""
                                             + serverKey.get(2) + "\"}";
                             } else {  // clear out in case there was something else from a previous entry
-                            	otherOpts = "";
+                                otherOpts = "";
                             }
                         }
                     }
@@ -1904,6 +1906,12 @@ public class IdvOutputHandler extends OutputHandler {
             }
             template = template.replace("${gemapskey}", mapsKey);
             template = template.replace("${geother_params}", otherOpts);
+            template = template.replace("${image_width}",
+                                        request.getString(ARG_IMAGE_WIDTH,
+                                            "500"));
+            template = template.replace("${image_height}",
+                                        request.getString(ARG_IMAGE_HEIGHT,
+                                            "500"));
             sb.append(template);
         }
 
@@ -2131,6 +2139,15 @@ public class IdvOutputHandler extends OutputHandler {
             clip = XmlUtil.tag("clip", "");
         }
 
+        // TODO:  When the IDV selects png automatically for kmz, then there is no need for
+        // the bgSuffix
+        String bgTrans  = "";
+        String bgSuffix = "";
+        if (request.get(ARG_BACKGROUND_TRANSPARENT, false)) {
+            bgTrans = XmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
+            bgSuffix = XmlUtil.attr(ImageSequenceGrabber.ATTR_IMAGESUFFIX,
+                                    "png");
+        }
 
         String       dataSourceExtra = "";
         StringBuffer dataSourceProps = new StringBuffer();
@@ -2500,14 +2517,18 @@ public class IdvOutputHandler extends OutputHandler {
         if ( !forIsl) {
             isl.append(XmlUtil.tag((multipleTimes
                                     ? "movie"
-                                    : "image"), XmlUtil.attr("file",
-                                    imageFile.toString()), clip));
+                                    : "image"), XmlUtil.attr(
+                                        "file", imageFile.toString()) + " "
+                                            + bgSuffix, clip + bgTrans));
         }
         isl.append("</isl>\n");
+        //System.out.println(isl);
+
 
 
         if (forJnlp) {
-            String jnlp = IdvWebstartOutputHandler.getJnlpTemplate(getRepository());
+            String jnlp =
+                IdvWebstartOutputHandler.getJnlpTemplate(getRepository());
             StringBuffer args = new StringBuffer();
             args.append("<argument>-b64isl</argument>");
             args.append("<argument>"
