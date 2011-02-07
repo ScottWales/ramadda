@@ -2083,8 +2083,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      */
     public void initRequestUrl(RequestUrl requestUrl) {
         try {
-            if ( !initializedUrls.contains(requestUrl)) {
-                initializedUrls.add(requestUrl);
+            synchronized(initializedUrls) {
+                if (!initializedUrls.contains(requestUrl)) {
+                    initializedUrls.add(requestUrl);
+                }
             }
             Request request = new Request(this, null,
                                           getUrlBase()
@@ -2108,8 +2110,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      * _more_
      */
     protected void reinitializeRequestUrls() {
-        for (RequestUrl requestUrl : initializedUrls) {
-            initRequestUrl(requestUrl);
+        synchronized(initializedUrls) {
+            for (RequestUrl requestUrl : initializedUrls) {
+                initRequestUrl(requestUrl);
+            }
         }
     }
 
