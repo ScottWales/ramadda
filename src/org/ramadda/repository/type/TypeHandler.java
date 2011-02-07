@@ -3013,66 +3013,85 @@ public class TypeHandler extends RepositoryManager {
 
 
         List<Clause> areaExpressions = new ArrayList<Clause>();
-        String[]     areaNames       = { "South", "North", "East", "West" };
-        String[]     areaSuffixes = { "_south", "_north", "_east", "_west" };
-        String[] areaCols = { Tables.ENTRIES.COL_SOUTH,
-                              Tables.ENTRIES.COL_NORTH,
-                              Tables.ENTRIES.COL_EAST,
-                              Tables.ENTRIES.COL_WEST };
-        boolean[] areaLE = { false, true, true, false };
+        String[]     areaNames       = { "West", "South",  "East", "North" };
+        String[]     areaSuffixes = {"west",  "south", "east", "north"   };
+        String[] areaCols = {Tables.ENTRIES.COL_WEST,
+                             Tables.ENTRIES.COL_SOUTH,
+                             Tables.ENTRIES.COL_EAST,
+                             Tables.ENTRIES.COL_NORTH,
+        };
+        double[] areaValues = {Double.NaN,Double.NaN,Double.NaN,Double.NaN};
+        boolean[] areaLE = { false, false, true, true };
         Clause    areaClause;
-        if ( !contains) {
-            boolean gotThemAll = true;
-            for (int i = 0; i < 4; i++) {
-                String areaArg = ARG_AREA + areaSuffixes[i];
-                if ( !request.defined(areaArg)) {
-                    gotThemAll = false;
-                    break;
+        String[] argPrefixes = {ARG_AREA, ARG_BBOX};
+        String[] delimiters = {"_","."};
+
+        int argCnt = 0;
+        for(String argPrefix: argPrefixes) {
+            if (request.defined(argPrefix)) {
+                List<String> toks = StringUtil.split(request.getString(argPrefix,""), ",",true,true);
+                if(toks.size()==4) {
+                    for (int i = 0; i < 4; i++) {
+                        areaValues[i] = Double.parseDouble(toks.get(i));
+                    }
                 }
             }
+            for(String delimiter: delimiters) {
+                for (int i = 0; i < 4; i++) {
+                    if(!Double.isNaN(areaValues[i])) continue;
+                    String areaArg = argPrefix + delimiter+ areaSuffixes[i];
+                    if (request.defined(areaArg)) {
+                        areaValues [i] =  request.get(areaArg,0.0);
+                        argCnt++;
+                    }
+                }
+            }
+        }
+
+
+        boolean gotThemAll = (argCnt == 4);
+        double west = areaValues[0];
+        double south = areaValues[1];
+        double east = areaValues[2];
+        double north = areaValues[3];
+
+        if (!contains) {
             if (gotThemAll) {
-                areaClause = Clause.le(Tables.ENTRIES.COL_SOUTH,
-                                       request.get(ARG_AREA_NORTH, 0.0));
+                areaClause = Clause.le(Tables.ENTRIES.COL_SOUTH, north);
                 areaExpressions.add(
                     Clause.and(
                         Clause.neq(
                             Tables.ENTRIES.COL_SOUTH,
                             new Double(Entry.NONGEO)), areaClause));
-                areaClause = Clause.ge(Tables.ENTRIES.COL_NORTH,
-                                       request.get(ARG_AREA_SOUTH, 0.0));
+                areaClause = Clause.ge(Tables.ENTRIES.COL_NORTH, south);
                 areaExpressions.add(
                     Clause.and(
                         Clause.neq(
                             Tables.ENTRIES.COL_SOUTH,
                             new Double(Entry.NONGEO)), areaClause));
 
-                areaClause = Clause.ge(Tables.ENTRIES.COL_EAST,
-                                       request.get(ARG_AREA_WEST, 0.0));
+                areaClause = Clause.ge(Tables.ENTRIES.COL_EAST,west);
                 areaExpressions.add(
                     Clause.and(
                         Clause.neq(
                             Tables.ENTRIES.COL_EAST,
                             new Double(Entry.NONGEO)), areaClause));
 
-                areaClause = Clause.le(Tables.ENTRIES.COL_WEST,
-                                       request.get(ARG_AREA_EAST, 0.0));
+                areaClause = Clause.le(Tables.ENTRIES.COL_WEST, east);
                 areaExpressions.add(
                     Clause.and(
                         Clause.neq(
                             Tables.ENTRIES.COL_WEST,
                             new Double(Entry.NONGEO)), areaClause));
-                //                System.err.println (areaExpressions);
             }
-
         } else {
             for (int i = 0; i < 4; i++) {
-                String areaArg = ARG_AREA + areaSuffixes[i];
-                if (request.defined(areaArg)) {
+                if (!Double.isNaN(areaValues[i])) {
+                    double areaValue = areaValues[i];
                     addCriteria(request, searchCriteria,
                                 areaNames[i] + (areaLE[i]
-                            ? "<="
-                            : ">="), request.getString(areaArg, ""));
-                    double areaValue = request.get(areaArg, 0.0);
+                            ? "&lt;="
+                                                : "&gt;="), ""+areaValue);
                     areaClause = areaLE[i]
                                  ? Clause.le(areaCols[i], areaValue)
                                  : Clause.ge(areaCols[i], areaValue);
@@ -3081,6 +3100,8 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
         }
+
+        //        System.err.println (areaExpressions);
 
         if (areaExpressions.size() > 0) {
             Clause areaExpr = Clause.and(areaExpressions);
