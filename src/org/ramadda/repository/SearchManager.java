@@ -141,16 +141,26 @@ public class SearchManager extends RepositoryManager {
                                                                                                     getRepository().getLogoImage(null), false));
         
 
+        
+
         String url = getRepository().absoluteUrl(getRepository().URL_ENTRY_SEARCH.toString());
         url = HtmlUtil.url(url, new String[]{
-                ARG_OUTPUT, RssOutputHandler.OUTPUT_RSS_FULL.getId(),
-                ARG_TEXT,"{searchTerms}"
+                ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(),
+                ARG_TEXT,
+                OpenSearchUtil.MACRO_TEXT,
+                ARG_BBOX,
+                OpenSearchUtil.MACRO_BBOX,
+                Constants.dataDate.getFromArg(),
+                OpenSearchUtil.MACRO_TIME_START,
+                Constants.dataDate.getToArg(),
+                OpenSearchUtil.MACRO_TIME_END,
             }, false);
+
 
         XmlUtil.create( OpenSearchUtil.TAG_URL,root,"",
                         new String[]{
                             OpenSearchUtil.ATTR_TYPE,
-                                  "application/rss+xml",
+                                  "application/atom+xml",
                             OpenSearchUtil.ATTR_TEMPLATE,url});
         return new Result(XmlUtil.toString(root), OpenSearchUtil.MIMETYPE);
     }
