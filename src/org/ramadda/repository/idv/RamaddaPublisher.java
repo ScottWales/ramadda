@@ -716,7 +716,8 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                                              + result[0]);
                     return;
                 }
-                //                System.out.println(result[1]);
+
+                //                System.out.println("results:" + result[1]);
                 Element response = XmlUtil.getRoot(result[1]);
 
                 if (repositoryClient.responseOk(response)) {
