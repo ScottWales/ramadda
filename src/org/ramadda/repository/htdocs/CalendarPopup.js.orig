@@ -673,40 +673,42 @@ function PopupWindow_hidePopup() {
 	}
 // Pass an event and return whether or not it was the popup DIV that was clicked
 function PopupWindow_isClicked(e) {
-	if (this.divName != null) {
-		if (this.use_layers) {
-			var clickX = e.pageX;
-			var clickY = e.pageY;
-			var t = document.layers[this.divName];
-			if ((clickX > t.left) && (clickX < t.left+t.clip.width) && (clickY > t.top) && (clickY < t.top+t.clip.height)) {
-				return true;
-				}
-			else { return false; }
-			}
-		else if (document.all) { // Need to hard-code this to trap IE for error-handling
-			var t = window.event.srcElement;
-			while (t.parentElement != null) {
-				if (t.id==this.divName) {
-					return true;
-					}
-				t = t.parentElement;
-				}
-			return false;
-			}
-		else if (this.use_gebi && e) {
-			var t = e.originalTarget;
-			while (t.parentNode != null) {
-				if (t.id==this.divName) {
-					return true;
-					}
-				t = t.parentNode;
-				}
-			return false;
-			}
-		return false;
-		}
-	return false;
-	}
+    if (this.divName != null) {
+        if (this.use_layers) {
+            var clickX = e.pageX;
+            var clickY = e.pageY;
+            var t = document.layers[this.divName];
+            if ((clickX > t.left) && (clickX < t.left+t.clip.width) && (clickY > t.top) && (clickY < t.top+t.clip.height)) {
+                return true;
+            }
+            else { return false; }
+        }
+        else if (document.all) { // Need to hard-code this to trap IE for error-handling
+            var t = window.event.srcElement;
+            while (t.parentElement != null) {
+                if (t.id==this.divName) {
+                    return true;
+                }
+                t = t.parentElement;
+            }
+            return false;
+        }
+        else if (this.use_gebi && e) {
+            var t = e.originalTarget;
+            if(t) {
+                while (t.parentNode != null) {
+                    if (t.id==this.divName) {
+                        return true;
+                    }
+                    t = t.parentNode;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+    return false;
+}
 
 // Check an onMouseDown event to see if we should hide
 function PopupWindow_hideIfNotClicked(e) {
