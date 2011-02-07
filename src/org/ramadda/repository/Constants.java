@@ -791,6 +791,15 @@ public interface Constants {
             DateArg that = (DateArg) o;
             return this.suffix.equals(that.suffix);
         }
+
+        public String getFromArg() {
+            return from;
+        }
+        public String getToArg() {
+            return to;
+        }
+
+
     }
 
     public static final DateArg dataDate = new DateArg(ARG_DATA_DATE,"Data Date", true);

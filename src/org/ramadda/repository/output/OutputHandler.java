@@ -1024,6 +1024,9 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             "Sort by date descending"
         };
 
+        if(request.isMobile()) {
+            sb.append(HtmlUtil.br());
+        }
         sb.append(HtmlUtil.span(msgLabel("Sort"),
                                 HtmlUtil.cssClass("sortlinkoff")));
         String entryIds = request.getString(ARG_ENTRYIDS, (String) null);

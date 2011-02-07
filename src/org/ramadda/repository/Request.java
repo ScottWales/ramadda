@@ -146,7 +146,7 @@ public class Request implements Constants {
     /** _more_ */
     private ApiMethod apiMethod;
 
-    private boolean isMobile = true;
+    private boolean isMobile = false;
 
 
 
@@ -213,8 +213,8 @@ public class Request implements Constants {
         this.httpServletRequest  = httpServletRequest;
         this.httpServletResponse = httpServletResponse;
         this.httpServlet         = httpServlet;
+        //TODO: be smarter about this
         isMobile =  getUserAgent("").toLowerCase().indexOf("iphone")>=0;
-        isMobile = true;
     }
 
 

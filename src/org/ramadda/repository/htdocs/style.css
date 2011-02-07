@@ -1,3 +1,4 @@
+
 body {
    font-family:  Arial, Helvetica, sans-serif;
    color: black;
@@ -34,6 +35,8 @@ body, a, td {
 .input:focus, .textarea:focus {
 	background: #fffeec;
 }
+
+
 
 .userfield {
        PADDING-LEFT: 18px;
@@ -101,18 +104,7 @@ a:hover {
    text-align:center;
 }
 
-.entryrowlabel {
-    font-style:italic;
-    white-space:nowrap;
-}
 
-.time {
-	font-size:8px;
-        color:#666;
-	font-style:italic;
-	margin:0;
-	white-space:nowrap;
-}
 
 
 .entryrow {
@@ -120,10 +112,35 @@ a:hover {
   border:1px #fff solid;
 }
 
-.inline {
-	max-height: 300px; 
-	overflow-y: auto;
+.left-element {
+   position: absolute;
+   left: 0;
 }
+
+.right-element {
+   position: absolute;
+   right:0;
+   text-align: right;
+}
+
+.entrymenuarrow {
+  padding-left:5px;
+  padding-right:5px;
+}
+
+.entryrowlabel {
+    font-style:italic;
+    white-space:nowrap;
+}
+
+.time {
+   font-size:9px;
+   color:#666;
+   font-style:italic;
+   margin:0;
+   white-space:nowrap;
+}
+
 
 .folderblock {
    border : 0px;
@@ -132,18 +149,12 @@ a:hover {
    padding-left:12px;
 }
 
-
-
-
-
-
-.entrylistform {
+.inline {
+   max-height: 300px; 
+   overflow-y: auto;
 }
 
-.stack {
-  background-color : #eee;
-  border: 1px #666666 solid;
-  margin-left:10px;
+.entrylistform {
 }
 
 .sortlinkon  {
@@ -166,6 +177,12 @@ a:hover {
    text-decoration: none;
 }
 
+
+.stack {
+  background-color : #eee;
+  border: 1px #666666 solid;
+  margin-left:10px;
+}
 
 .smalllink {
   font-size:80%;
@@ -290,8 +307,6 @@ a:hover {
 .comment_inner {
     padding-left:20px;
 }
-
-
 
 
 .comment_date {
@@ -738,10 +753,7 @@ ul {
    text-decoration: underline;
 }
 
-.entrymenuarrow {
-  padding-left:5px;
-  padding-right:5px;
-}
+
 
 .menurow {
 }
