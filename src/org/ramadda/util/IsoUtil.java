@@ -20,20 +20,29 @@
 package org.ramadda.util;
 
 
+import org.w3c.dom.*;
+import ucar.unidata.xml.XmlUtil;
+
+import java.util.Date;
+
+import java.text.SimpleDateFormat;
+
+
 /**
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public class IsoUtil {
+    public static final String METADATA_STANDARD_NAME ="ISO 19115 Geographic Information - Metadata First Edition";
+    public static final String METADATA_STANDARD_VERSION ="ISO 19115:2003";
 
-    public static final String XMLNS_XMLNS_GCO = "http://www.isotc211.org/2005/gco";
-    public static final String XMLNS_XMLNS_GMD = "http://www.isotc211.org/2005/gmd";
-    public static final String XMLNS_XMLNS_GMI = "http://eden.ign.fr/xsd/isotc211/isofull/20090316/gmi/";
-    public static final String XMLNS_XMLNS_GML = "http://www.opengis.net/gml";
-    public static final String XMLNS_XMLNS_GTS = "http://www.isotc211.org/2005/gts";
-    public static final String XMLNS_XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+
+    public static final String HEADER =  "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+
+    public static final String XMLNS_GCO = "http://www.isotc211.org/2005/gco";
+    public static final String XMLNS_GMD = "http://www.isotc211.org/2005/gmd";
+    public static final String XMLNS_GMI = "http://eden.ign.fr/xsd/isotc211/isofull/20090316/gmi/";
+    public static final String XMLNS_GML = "http://www.opengis.net/gml";
+    public static final String XMLNS_GTS = "http://www.isotc211.org/2005/gts";
+    public static final String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
 
     public static final String TAG_GMI_MI_METADATA = "gmi:MI_Metadata";
     public static final String TAG_GMD_LANGUAGE = "gmd:language";
@@ -69,6 +78,7 @@ public class IsoUtil {
     public static final String TAG_GMD_CI_ROLECODE = "gmd:CI_RoleCode";
     public static final String TAG_GMD_DATESTAMP = "gmd:dateStamp";
     public static final String TAG_GCO_DATE = "gco:Date";
+    public static final String TAG_GCO_DATETIME = "gco:DateTime";
     public static final String TAG_GMD_METADATASTANDARDNAME = "gmd:metadataStandardName";
     public static final String TAG_GMD_METADATASTANDARDVERSION = "gmd:metadataStandardVersion";
     public static final String TAG_GMD_DATASETURI = "gmd:dataSetURI";
@@ -164,16 +174,94 @@ public class IsoUtil {
     public static final String TAG_GMI_DESCRIPTION = "gmi:description";
 
     public static final String ATTR_VERSION = "version";
-    public static final String ATTR_XMLNS_GCO = "xmlns_gco";
-    public static final String ATTR_XMLNS_GMD = "xmlns_gmd";
-    public static final String ATTR_XMLNS_GMI = "xmlns_gmi";
-    public static final String ATTR_XMLNS_GML = "xmlns_gml";
-    public static final String ATTR_XMLNS_GTS = "xmlns_gts";
-    public static final String ATTR_XMLNS_XSI = "xmlns_xsi";
+    public static final String ATTR_XMLNS_GCO = "xmlns:gco";
+    public static final String ATTR_XMLNS_GMD = "xmlns:gmd";
+    public static final String ATTR_XMLNS_GMI = "xmlns:gmi";
+    public static final String ATTR_XMLNS_GML = "xmlns:gml";
+    public static final String ATTR_XMLNS_GTS = "xmlns:gts";
+    public static final String ATTR_XMLNS_XSI = "xmlns:xsi";
+
     public static final String ATTR_CODELIST = "codeList";
     public static final String ATTR_CODELISTVALUE = "codeListValue";
     public static final String ATTR_ID = "id";
 
 
+    /*        <gmi:MI_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmi="http://eden.ign.fr/xsd/isotc211/isofull/20090316/gmi/" version="1.0">
+        
+     */
+
+
+
+    public static Element makeRoot() throws Exception {
+        return XmlUtil.getRoot(makeRootTag() +XmlUtil.closeTag(TAG_GMI_MI_METADATA));
+    }
+
+    public static String makeRootTag() {
+        return XmlUtil.openTag(TAG_GMI_MI_METADATA,
+                               XmlUtil.attrs(new String[]{
+                                   ATTR_XMLNS_GCO, XMLNS_GCO,
+                                   ATTR_XMLNS_GMD, XMLNS_GMD,
+                                   ATTR_XMLNS_GML, XMLNS_GML,
+                                   ATTR_XMLNS_GTS, XMLNS_GTS,
+                                   ATTR_XMLNS_XSI, XMLNS_XSI,
+                                   ATTR_XMLNS_GMI, XMLNS_GMI,
+                                   ATTR_VERSION,"1.0"
+                                   })
+                               );
+    }
+
+
+    public static String format(Date date) throws Exception  {
+        return ucar.unidata.util.DateUtil.getTimeAsISO8601(date);
+    }
+
+    
+
+
+    public static void  addDateStamp(Element parent, Date date) throws Exception  {
+        Element dateStamp = XmlUtil.create(TAG_GMD_DATESTAMP,parent);
+        Element dateTag = XmlUtil.create(TAG_GCO_DATETIME, dateStamp, format(date));
+    }
+
+    
+
+
+    public static void addMetadataStandardTag(Element parent) throws Exception  {
+        addTextTag(parent, TAG_GMD_METADATASTANDARDNAME,METADATA_STANDARD_NAME);
+        addTextTag(parent, TAG_GMD_METADATASTANDARDVERSION,METADATA_STANDARD_VERSION);
+        
+    }
+    
+
+
+    public static void xaddCharacterTag(Element parent, String contents) throws Exception  {
+        Element node =  XmlUtil.create(TAG_GCO_CHARACTERSTRING,parent,(String)null);
+        XmlUtil.createCDataNode(node, contents);
+    }
+
+
+  
+
+    public static String makeCharacterTag(String contents) {
+        return XmlUtil.tag(TAG_GCO_CHARACTERSTRING,XmlUtil.getCdata(contents));
+    }
+
+
+
+    public static Element addTextTag(Element parent, String tagName, String contents) throws Exception  {
+        Element node =  XmlUtil.create(tagName,parent,(String)null);
+        addCharacterTag(node, contents);
+        return node;
+    }
+
+
+    public static void addCharacterTag(Element parent, String contents) throws Exception  {
+        Element node =  XmlUtil.create(TAG_GCO_CHARACTERSTRING,parent,(String)null);
+
+        node.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(), contents, false));
+    }
+
+
+    
 
 }
