@@ -696,11 +696,15 @@ function PopupWindow_isClicked(e) {
         else if (this.use_gebi && e) {
             var t = e.originalTarget;
             if(t) {
+                try {
                 while (t.parentNode != null) {
                     if (t.id==this.divName) {
                         return true;
                     }
                     t = t.parentNode;
+                }
+                } catch(err) {
+                    return false;
                 }
             }
             return false;
@@ -1000,6 +1004,18 @@ function CalendarPopup() {
 	c.currentDate = null;
 	c.todayText="Today";
 	c.cssPrefix="";
+        c.href = function(attrs, url, content) {
+            return  "<A "+ attrs +" HREF=\"" +url+"\">" + content +"</A>";
+        }
+        c.width = function (w) {
+            return " WIDTH=\"" +w +"\" ";
+        }
+        c.class = function(class) {
+            return " class=\"" + this.cssPrefix+ class +"\" ";
+        }
+        c.col = function(attrs, contents) {
+            return  "<TD " + attrs +">" + contents +"</td>"; 
+       }
 	c.isShowNavigationDropdowns=false;
 	c.isShowYearNavigationInput=false;
 	window.CP_calendarObject = null;
@@ -1244,7 +1260,7 @@ function CP_getCalendar() {
 		result += '<CENTER><TABLE WIDTH=100% BORDER=0 BORDERWIDTH=0 CELLSPACING=0 CELLPADDING=0>\n';
 		}
 	else {
-		result += '<TABLE CLASS="'+this.cssPrefix+'cpBorder" WIDTH=144 BORDER=1 BORDERWIDTH=1 CELLSPACING=0 CELLPADDING=1>\n';
+		result += '<TABLE CLASS="'+this.cssPrefix+'cpBorder" WIDTH=255 BORDER=0 CELLSPACING=0 CELLPADDING=0>\n';
 		result += '<TR><TD ALIGN=CENTER>\n';
 		result += '<CENTER>\n';
 		}
@@ -1281,9 +1297,9 @@ function CP_getCalendar() {
 		if (last_month < 1) { last_month=12; last_month_year--; }
 		var date_class;
 		if (this.type!="WINDOW") {
-			result += "<TABLE WIDTH=160 BORDER=0 BORDERWIDTH=0 CELLSPACING=0 CELLPADDING=0>";
-			}
-		result += '<TR>\n';
+			result += "<TABLE WIDTH=100% BORDER=0  CELLSPACING=0 CELLPADDING=0>";
+		}
+		result += '<TR CLASS="'+this.cssPrefix+'cpMonthNavigation">\n';
 		var refresh = windowref+'CP_refreshCalendar';
 		var refreshLink = 'javascript:' + refresh;
 		if (this.isShowNavigationDropdowns) {
@@ -1303,29 +1319,28 @@ function CP_getCalendar() {
 			result += '</select></TD>';
 			}
 		else {
-			if (this.isShowYearNavigation) {
-				result += '<TD CLASS="'+this.cssPrefix+'cpMonthNavigation" WIDTH="10"><A CLASS="'+this.cssPrefix+'cpMonthNavigation" HREF="'+refreshLink+'('+this.index+','+last_month+','+last_month_year+');">&lt;</A></TD>';
-				result += '<TD CLASS="'+this.cssPrefix+'cpMonthNavigation" WIDTH="58"><SPAN CLASS="'+this.cssPrefix+'cpMonthNavigation">'+this.monthNames[month-1]+'</SPAN></TD>';
-				result += '<TD CLASS="'+this.cssPrefix+'cpMonthNavigation" WIDTH="10"><A CLASS="'+this.cssPrefix+'cpMonthNavigation" HREF="'+refreshLink+'('+this.index+','+next_month+','+next_month_year+');">&gt;</A></TD>';
-				result += '<TD CLASS="'+this.cssPrefix+'cpMonthNavigation" WIDTH="10">&nbsp;</TD>';
+         		if (this.isShowYearNavigation) {
+                            var prevMonth = this.href(this.class("cpMonthNavigation"), refreshLink+"("+this.index+","+last_month+","+last_month_year+");", "&lt;");
+                            var nextMonth = this.href(this.class("cpMonthNavigation"), refreshLink+"("+this.index+","+next_month+","+next_month_year+");","&gt;");
 
-				result += '<TD CLASS="'+this.cssPrefix+'cpYearNavigation" WIDTH="10"><A CLASS="'+this.cssPrefix+'cpYearNavigation" HREF="'+refreshLink+'('+this.index+','+month+','+(year-1)+');">&lt;</A></TD>';
-				if (this.isShowYearNavigationInput) {
-					result += '<TD CLASS="'+this.cssPrefix+'cpYearNavigation" WIDTH="36"><INPUT NAME="cpYear" CLASS="'+this.cssPrefix+'cpYearNavigation" SIZE="4" MAXLENGTH="4" VALUE="'+year+'" onBlur="'+refresh+'('+this.index+','+month+',this.value-0);"></TD>';
-					}
-				else {
-					result += '<TD CLASS="'+this.cssPrefix+'cpYearNavigation" WIDTH="36"><SPAN CLASS="'+this.cssPrefix+'cpYearNavigation">'+year+'</SPAN></TD>';
-					}
-				result += '<TD CLASS="'+this.cssPrefix+'cpYearNavigation" WIDTH="10"><A CLASS="'+this.cssPrefix+'cpYearNavigation" HREF="'+refreshLink+'('+this.index+','+month+','+(year+1)+');">&gt;</A></TD>';
-				}
-			else {
+                            var prevYear = this.href(this.class("cpYearNavigation"), refreshLink+"("+this.index+","+month+","+(year-1)+");","&lt;&lt;");
+                            var nextYear = this.href(this.class("cpYearNavigation"),refreshLink+"("+this.index+","+month+","+(next_month_year+1)+");", "&gt;&gt;");
+                            var nowMonthYear = "<SPAN " + this.class('cpMonthNavigation') +" >" +this.monthNames[month-1]+"&nbsp;" + year +"</SPAN>";
+
+                            result += this.col(this.class("cpMonthNavigation") + " align=left width=10% ", prevYear+"&nbsp;" +prevMonth); 
+                            result += this.col(this.class("cpMonthNavigation") +"  align=center width=80%  ", nowMonthYear);
+                            result += this.col(this.class('cpMonthNavigation') + " align=right width=10%  ", nextMonth +"&nbsp;" + nextYear);
+                            if (this.isShowYearNavigationInput) {
+				result += '<TD CLASS="'+this.cssPrefix+'cpYearNavigation" WIDTH="36"><INPUT NAME="cpYear" CLASS="'+this.cssPrefix+'cpYearNavigation" SIZE="4" MAXLENGTH="4" VALUE="'+year+'" onBlur="'+refresh+'('+this.index+','+month+',this.value-0);"></TD>';
+                            }
+                        } else {
 				result += '<TD CLASS="'+this.cssPrefix+'cpMonthNavigation" WIDTH="22"><A CLASS="'+this.cssPrefix+'cpMonthNavigation" HREF="'+refreshLink+'('+this.index+','+last_month+','+last_month_year+');">&lt;&lt;</A></TD>\n';
 				result += '<TD CLASS="'+this.cssPrefix+'cpMonthNavigation" WIDTH="150"><SPAN CLASS="'+this.cssPrefix+'cpMonthNavigation">'+this.monthNames[month-1]+'&nbsp;'+year+'</SPAN></TD>\n';
 				result += '<TD CLASS="'+this.cssPrefix+'cpMonthNavigation" WIDTH="22"><A CLASS="'+this.cssPrefix+'cpMonthNavigation" HREF="'+refreshLink+'('+this.index+','+next_month+','+next_month_year+');">&gt;&gt;</A></TD>\n';
 				}
 			}
 		result += '</TR></TABLE>\n';
-		result += '<TABLE WIDTH=120 BORDER=0 CELLSPACING=0 CELLPADDING=1 ALIGN=CENTER>\n';
+		result += '<TABLE WIDTH=95% BORDER=0 CELLSPACING=0 CELLPADDING=0>\n';
 		result += '<TR>\n';
 		for (var j=0; j<7; j++) {
 
@@ -1351,7 +1366,7 @@ function CP_getCalendar() {
 					dateClass = "cpOtherMonthDate";
 					}
 				if (disabled || this.disabledWeekDays[col-1]) {
-					result += '	<TD CLASS="'+this.cssPrefix+dateClass+'"><SPAN CLASS="'+this.cssPrefix+dateClass+'Disabled">'+display_date+'</SPAN></TD>\n';
+					result += ' <TD CLASS="'+this.cssPrefix+dateClass+'"><SPAN CLASS="'+this.cssPrefix+dateClass+'Disabled">'+display_date+'</SPAN></TD>\n';
 					}
 				else {
 					var selected_date = display_date;

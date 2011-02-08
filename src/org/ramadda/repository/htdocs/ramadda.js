@@ -1407,6 +1407,7 @@ function findFormElement(form, id) {
 
 function selectDate(div,field,id,fmt) {
     var cal = new CalendarPopup(div);
+    cal.showYearNavigation();
     cal.select(field,id,fmt);
 }
 
