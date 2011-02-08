@@ -1217,7 +1217,7 @@ a.wiki-link-noexist {
 .cpMonthNavigation   {
   padding-left:5px;
   padding-right:5px;
-  padding-top:2px;
+  padding-top:4px;
   padding-bottom:2px;
   margin:0px;
 }
@@ -1245,9 +1245,8 @@ a.wiki-link-noexist {
 
 
 TD.cpDayColumnHeader {
-	text-align:right;
-	border:solid thin #6677DD;
-	border-width:0 0 1 0;
+	text-align:center;
+	border-bottom:solid thin #6677DD;
         padding-top:5px;
 }
 
@@ -1274,7 +1273,7 @@ TD.cpDayColumnHeader {
 }
 
 .cpCurrentDate	{
-    color: #FFFFFF;
+    color: #000;
     font-weight:bold;
 }
 
@@ -1297,8 +1296,7 @@ border:solid thin #FFAAAA;
 }
 
 TD.cpTodayText, TD.cpTodayTextDisabled {
-   border:solid thin #6677DD;
-   border-width:1 0 0 0;
+   border-top:solid thin #6677DD;
    padding-top:3px;
 }
 
