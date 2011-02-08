@@ -213,8 +213,6 @@ public class Request implements Constants {
         this.httpServletRequest  = httpServletRequest;
         this.httpServletResponse = httpServletResponse;
         this.httpServlet         = httpServlet;
-        //TODO: be smarter about this
-        isMobile =  getUserAgent("").toLowerCase().indexOf("iphone")>=0;
     }
 
 
@@ -1648,6 +1646,9 @@ public class Request implements Constants {
      */
     public void setHttpHeaderArgs(Hashtable value) {
         httpHeaderArgs = value;
+        //TODO: be smarter about this
+        String ua = getUserAgent("").toLowerCase();
+        isMobile =  ua.indexOf("iphone")>=0;
     }
 
     /**
@@ -1791,7 +1792,10 @@ public class Request implements Constants {
 
     public String getUserAgent(String dflt) {
         String value =  getHeaderArg("User-Agent");
-        if(value == null) return dflt;
+        if(value == null) {
+            System.err.println("no user agent");
+            return dflt;
+        }
         return value;
     }
 
