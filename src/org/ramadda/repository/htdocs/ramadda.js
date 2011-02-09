@@ -1114,10 +1114,12 @@ function Selector(event, id, allEntries, selecttype, localeId) {
 
         var link = util.getDomObject(this.id+'.selectlink');
         if(!link) {
+        //Don:  alert('Selector.handleClick can't find link'):
             return false;
         }
         this.div = util.getDomObject('selectdiv');
         if(!this.div) {
+        //Don:  alert('Selector.handleClick can't find div'):
             return false;
         }
 
@@ -1134,6 +1136,7 @@ function Selector(event, id, allEntries, selecttype, localeId) {
         if(localeId) {
             url = url+"&localeid=" + localeId;
         }
+        //Don:  alert('loading url '):
         util.loadXML( url, handleSelect,id);
         return false;
     }
@@ -1181,8 +1184,10 @@ function selectCancel() {
 
 function selectCreate(event, id,allEntries,selecttype, localeId) {
     if(!selectors[id]) {
+        //Don:  alert('creating selector'):
         selectors[id] = new Selector(event,id,allEntries,selecttype,localeId);
     } else {
+        //Don:  alert('have selector'):
         selectors[id].handleClick(event);
     }
 }
