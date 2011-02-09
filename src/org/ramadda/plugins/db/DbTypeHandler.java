@@ -525,10 +525,10 @@ public class DbTypeHandler extends BlobTypeHandler {
     public void init(List<Element> columnNodes) throws Exception {
 
         putProperty("icon", tableIcon);
-        putProperty("form.show.date", "false");
-        putProperty("form.show.area", "false");
-        putProperty("form.show.resource", "false");
-        putProperty("form.show.datatype", "false");
+        putProperty("form.date.show", "false");
+        putProperty("form.area.show", "false");
+        putProperty("form.resource.show", "false");
+        putProperty("form.datatype.show", "false");
 
 
         columns = tableHandler.getColumns();

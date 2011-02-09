@@ -155,9 +155,13 @@ public class PollTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    public String getApplication1PermissionName() {
-        return "Who can add to poll";
+    public String getTypePermissionName(String type) {
+        if(type.equals(Permission.ACTION_TYPE1)) 
+            return "Who can add to poll";
+        return "Who can view poll results";
     }
+
+
 
 
     /**

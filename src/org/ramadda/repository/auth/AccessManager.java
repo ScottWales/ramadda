@@ -620,9 +620,15 @@ public class AccessManager extends RepositoryManager {
     }
 
 
-    public boolean canApplication1Entry(Request request, Entry entry)
+    public boolean canDoType1Action(Request request, Entry entry)
             throws Exception {
-        return canDoAction(request, entry, Permission.ACTION_APP1);
+        return canDoAction(request, entry, Permission.ACTION_TYPE1);
+    }
+
+
+    public boolean canDoType2Action(Request request, Entry entry)
+            throws Exception {
+        return canDoAction(request, entry, Permission.ACTION_TYPE2);
     }
 
 
@@ -840,8 +846,10 @@ public class AccessManager extends RepositoryManager {
             }
             String actionName = Permission.ACTION_NAMES[i];
             String action = Permission.ACTIONS[i];
-            if(action.equals(Permission.ACTION_APP1)) {
-                actionName = entry.getTypeHandler().getApplication1PermissionName();
+            if(action.equals(Permission.ACTION_TYPE1)) {
+                actionName = entry.getTypeHandler().getTypePermissionName(Permission.ACTION_TYPE1);
+            } else  if(action.equals(Permission.ACTION_TYPE2)) {
+                actionName = entry.getTypeHandler().getTypePermissionName(Permission.ACTION_TYPE2);
             }
             String label = HtmlUtil.href(
                                getRepository().getUrlBase()
