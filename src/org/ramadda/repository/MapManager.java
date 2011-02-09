@@ -34,6 +34,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.PatternFileFilter;
 import ucar.unidata.util.PluginClassLoader;
 
+import ucar.unidata.geoloc.LatLonRect;
+
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
@@ -131,7 +133,6 @@ public class MapManager extends RepositoryManager {
      */
     public String makeMapSelector(Request request, String arg, boolean popup,
                                   String extraLeft, String extraTop) {
-
         return makeMapSelector(request, arg, popup, extraLeft, extraTop, null);
     }
 
@@ -203,10 +204,11 @@ public class MapManager extends RepositoryManager {
                                             snew[3]);
         } else {
             doRegion = false;
-            widget = " Latitude: "
+            widget = " " +
+                msgLabel("Latitude") +" " 
                      + HtmlUtil.input(arg + ".latitude", snew[0],
                                       HtmlUtil.SIZE_5 + " "
-                                      + HtmlUtil.id(arg + ".latitude")) + " Longitude: "
+                                      + HtmlUtil.id(arg + ".latitude")) + " " + msgLabel("Longitude") +" " 
                                           + HtmlUtil.input(arg + ".longitude",
                                               snew[1],
                                                   HtmlUtil.SIZE_5 + " "
@@ -220,16 +222,13 @@ public class MapManager extends RepositoryManager {
         sb.append(msg);
         sb.append(HtmlUtil.br());
 
-
         if(!shouldShowMaps()) {
             return widget;
         }
 
-
         if ((extraLeft != null) && (extraLeft.length() > 0)) {
             widget = widget + HtmlUtil.br() + extraLeft;
         }
-
 
         String mapVarName = "selectormap";
         String rightSide = null;
