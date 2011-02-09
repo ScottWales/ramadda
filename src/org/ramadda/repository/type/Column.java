@@ -1166,10 +1166,10 @@ public class Column implements Constants {
             state.put(group, group);
         }
         if (rows > 1) {
-            formBuffer.append(HtmlUtil.formEntryTop(getLabel() + ":",
+            formBuffer.append(typeHandler.formEntryTop(request, getLabel() + ":",
                     widget));
         } else {
-            formBuffer.append(HtmlUtil.formEntry(getLabel() + ":", widget));
+            formBuffer.append(typeHandler.formEntry(request, getLabel() + ":", widget));
         }
         formBuffer.append("\n");
     }
@@ -1685,7 +1685,7 @@ public class Column implements Constants {
             }
         }
         formBuffer.append(
-            HtmlUtil.formEntry(
+                          typeHandler.formEntry(request, 
                 getLabel() + ":",
                 "<table>" + HtmlUtil.row(HtmlUtil.cols(widget, suffix))
                 + "</table>"));

@@ -385,7 +385,8 @@ public class CalendarOutputHandler extends OutputHandler {
                 label = label.substring(0, 19) + "...";
             }
             String url = HtmlUtil.nobr(getEntryManager().getAjaxLink(request,
-                             entry, label).toString());
+                                                                     entry, label, null, true,null,false).toString());
+
 
             calEntries.add(new CalendarEntry(entryDate, url, entry));
         }
@@ -595,6 +596,8 @@ public class CalendarOutputHandler extends OutputHandler {
         }
 
 
+
+
         if (doDay) {
             StringBuffer tmp = new StringBuffer();
             String link = getEntriesList(request, tmp, dayItems, true, true,
@@ -604,10 +607,14 @@ public class CalendarOutputHandler extends OutputHandler {
             request.remove(ARG_YEAR);
             request.remove(ARG_DAY);
             sb.append(HtmlUtil.p());
-            sb.append("<table  cellpadding=10><tr valign=top><td>");
+            sb.append("<table  cellpadding=10 border=0><tr valign=top><td>");
             getRepository().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
+            if(request.isMobile()) {
+                sb.append("</td></tr><tr valign=top><td>");
+            }
+
             request.put(ARG_MONTH, "" + selected[IDX_MONTH]);
             request.put(ARG_YEAR, "" + selected[IDX_YEAR]);
             String monthUrl = request.getUrl();
@@ -938,6 +945,7 @@ public class CalendarOutputHandler extends OutputHandler {
                                           navLabels[i], " border=\"0\"")));
         }
 
+
         if (doDay) {
             StringBuffer tmp  = new StringBuffer();
             String       link = "";
@@ -958,6 +966,9 @@ public class CalendarOutputHandler extends OutputHandler {
             getRepository().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
+            if(request.isMobile()) {
+                sb.append("</td></tr><tr valign=top><td>");
+            }
             request.put(ARG_MONTH, "" + selected[IDX_MONTH]);
             request.put(ARG_YEAR, "" + selected[IDX_YEAR]);
             String monthUrl = request.getUrl();

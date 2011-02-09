@@ -1,53 +1,43 @@
 <html xmlns:fb="http://www.facebook.com/2008/fbml">
 <head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=1;" />
 <properties>
 name=For Mobile
 id=mobile
-
 ramadda.template.link.wrapper =<span class="navlink"><a href="${url}">${label}</a></span>
 ramadda.template.link.separator=&nbsp;|&nbsp;
-
 ramadda.template.userlink.wrapper =<span class="navlink"><a class="navlink" href="${url}">${label}</a></span>
 ramadda.template.userlink.separator=&nbsp;|&nbsp;
-
 ramadda.template.sublink.wrapper=${sublinks}
 ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
 ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
-
 ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
 ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
 ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
-
 ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
 ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
-
 </properties>
 
 ${html.imports}
 
-
 <style type="text/css">
+body, html, a, div, span, h1, h2, h3, h4, h5, h6, p, ul, ol, li, blockquote, form, input, fieldset { 
+    font-size:11px;
+}
 
 .navlinks {
   padding-top:5px;
   border-bottom : 1px #444 solid;
 }
-
 .breadcrumbs a {
    text-decoration: none;
 }
-
 .breadcrumbs {
    margin-left:5px;
 }
 .linkslabel {
    font-weight: bold;
-}
-.topbox {
-   padding:0px;
-   margin-top: 5px;
 }
 .innercontent {
   margin-left:5px;
@@ -63,21 +53,23 @@ ${html.imports}
 }
 
 body {
-margin:0px;
-padding:0px;
+  margin:0px;
+  padding:0px;
   font-size: 12px;
 }
 .header {
   text-align:center;
   margin:0px;
-  padding:3px;
+  padding:0px;
+  padding-top:2px;
+  padding-right:3px;
   background-color:#eee;
   border-bottom: 1px #000 solid;
 }
 
 
 .header-title  {
-  font-size: 14px;
+  font-size: 12px;
   color: black;
   margin-top:5px;
 
@@ -101,27 +93,6 @@ padding:0px;
 .navlink a:hover {
    color:red;
 }
-
-
-.header-leftcolumn a:hover  {
-    color:red;
-}
-
-
-
-
-
-.header-leftcolumn a {
-	color:black;
-}
-
-.nav-leftcolumn {
-   font-weight: bold;
-   color: black;
-}
-
-
-
 
 </style>
 

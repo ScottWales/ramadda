@@ -4005,6 +4005,14 @@ return new Result(title, sb);
                                  boolean forTreeNavigation,
                                  String textBeforeEntryLink)
             throws Exception {
+        return getAjaxLink(request, entry, linkText, url, forTreeNavigation, textBeforeEntryLink, true);
+    }
+
+    public EntryLink getAjaxLink(Request request, Entry entry,
+                                 String linkText, String url,
+                                 boolean forTreeNavigation,
+                                 String textBeforeEntryLink, boolean decorateMetadata)
+            throws Exception {
 
 
 
@@ -4142,7 +4150,9 @@ return new Result(title, sb);
         if (textBeforeEntryLink != null) {
             sb.append(textBeforeEntryLink);
         }
-        getMetadataManager().decorateEntry(request, entry, sb, true);
+        if(decorateMetadata) {
+            getMetadataManager().decorateEntry(request, entry, sb, true);
+        }
         if (showLink) {
             sb.append(getTooltipLink(request, entry, linkText, url));
         } else {

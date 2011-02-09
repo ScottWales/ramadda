@@ -952,8 +952,8 @@ public class DbTypeHandler extends BlobTypeHandler {
             String theColumn = request.getString(ARG_DB_COLUMN,
                                    categoryColumns.get(0).getName());
             for (Column column : categoryColumns) {
-                String label = column.getLabel() + " - "
-                               + msg("Category View");
+                String label = column.getLabel();
+                // + " - " + msg("Category View");
                 if (view.equals(VIEW_CATEGORY + column.getName())) {
                     headerToks.add(HtmlUtil.b(label));
                 } else {
@@ -1194,7 +1194,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             stickyLabelString = "";
         }
         formBuffer.append(
-            HtmlUtil.formEntry(
+                          formEntry(request,
                 msg("Labels"),
                 HtmlUtil.textArea(
                     PROP_STICKY_LABELS, stickyLabelString, 5, 30)));
@@ -1250,16 +1250,16 @@ public class DbTypeHandler extends BlobTypeHandler {
         for (Column column : columns) {
             column.addToSearchForm(request, sb, where, entry);
         }
-        sb.append(HtmlUtil.formEntry(msgLabel("View Results As"),
+        sb.append(formEntry(request,msgLabel("View Results As"),
                                      HtmlUtil.select(ARG_DB_VIEW, viewList,
                                          request.getString(ARG_DB_VIEW,
                                              ""))));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Count"),
+        sb.append(formEntry(request,msgLabel("Count"),
                                      HtmlUtil.input(ARG_MAX,
                                          request.get(ARG_MAX, 100),
                                          HtmlUtil.SIZE_5)));
-        sb.append(HtmlUtil.formEntry("",
+        sb.append(formEntry(request,"",
                                      HtmlUtil.submit(msg("Search"),
                                          ARG_DB_SEARCH) + HtmlUtil.space(2)
                                              + HtmlUtil.submit(msg("Cancel"),
@@ -1653,11 +1653,11 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.formEntry(msgLabel("From name"),
+        sb.append(formEntry(request, msgLabel("From name"),
                                      HtmlUtil.input(ARG_EMAIL_FROMNAME,
                                          request.getUser().getName(),
                                          HtmlUtil.SIZE_40)));
-        sb.append(HtmlUtil.formEntry(msgLabel("From email"),
+        sb.append(formEntry(request, msgLabel("From email"),
                                      HtmlUtil.input(ARG_EMAIL_FROMADDRESS,
                                          request.getUser().getEmail(),
                                          HtmlUtil.SIZE_40)));
@@ -1665,13 +1665,13 @@ public class DbTypeHandler extends BlobTypeHandler {
                      + HtmlUtil.space(1) + msg("Send as BCC");
 
         sb.append(
-            HtmlUtil.formEntry(
-                msgLabel("Subject"),
+            formEntry(
+                      request, msgLabel("Subject"),
                 HtmlUtil.input(ARG_EMAIL_SUBJECT, "", HtmlUtil.SIZE_40)
                 + HtmlUtil.space(2) + bcc));
         sb.append(HtmlUtil.formEntryTop(msgLabel("Message"),
                                         HtmlUtil.textArea(ARG_EMAIL_MESSAGE,
-                                            "", 30, 60)));
+                                                          "", 30, 60)));
         sb.append(HtmlUtil.formTableClose());
         sb.append(HtmlUtil.submit(msg("Send Message")));
 
@@ -3468,7 +3468,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             StringBuffer tmpSb = new StringBuffer();
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
-            sb.append(HtmlUtil.formEntry(column.getLabel() + ":",
+            sb.append(formEntry(request, column.getLabel() + ":",
                                          tmpSb.toString()));
         }
         sb.append(HtmlUtil.formTableClose());
@@ -3564,7 +3564,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             StringBuffer tmpSb = new StringBuffer();
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
-            sb.append(HtmlUtil.formEntry(column.getLabel() + ":",
+            sb.append(formEntry(request, column.getLabel() + ":",
                                          tmpSb.toString()));
         }
         sb.append(HtmlUtil.formTableClose());

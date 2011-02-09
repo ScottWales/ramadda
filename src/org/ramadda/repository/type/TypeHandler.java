@@ -1608,16 +1608,21 @@ public class TypeHandler extends RepositoryManager {
             }
 
             if (showResource && entry.getResource().isImage()) {
+                String width = "600";
+                if(request.isMobile()) {
+                    width = "250";
+                }
                 if (entry.getResource().isFile()
                         && getAccessManager().canDownload(request, entry)) {
                     sb.append(formEntryTop(request, msgLabel("Image"),
                             HtmlUtil.img(getEntryResourceUrl(request, entry),
-                                         "", "width=600")));
+                                         "", "width=" + width)));
 
 
                 } else if (entry.getResource().isUrl()) {
                     sb.append(formEntryTop(request,msgLabel("Image"),
-                            HtmlUtil.img(entry.getResource().getPath())));
+                            HtmlUtil.img(entry.getResource().getPath(),
+                                         "", "width=" + width)));
                 }
             }
 
