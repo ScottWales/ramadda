@@ -1091,6 +1091,10 @@ function Selector(event, id, allEntries, selecttype, localeId) {
     this.allEntries = allEntries;
     this.selecttype = selecttype;
     this.textComp = util.getDomObject(id);
+     if (!this.textComp) {
+//	alert("cannot find text comp " + id);
+	return false;
+    }
     this.hiddenComp = util.getDomObject(id+"_hidden");
 
     this.clearInput = function() {
@@ -1103,40 +1107,39 @@ function Selector(event, id, allEntries, selecttype, localeId) {
     }
 
 
-    if (!this.textComp) {
-//	alert("cannot find text comp " + id);
-	return false;
+    this.handleClick = function(event) {
+        event = util.getEvent(event);
+        x = util.getEventX(event);
+        y = util.getEventY(event);
+
+        var link = util.getDomObject(this.id+'.selectlink');
+        if(!link) {
+            return false;
+        }
+        this.div = util.getDomObject('selectdiv');
+        if(!this.div) {
+            return false;
+        }
+
+        if(link && link.obj.offsetLeft && link.obj.offsetWidth) {
+            x= util.getLeft(link.obj);
+            y = link.obj.offsetHeight+util.getTop(link.obj) + 2;
+        } else {
+            x+=20;
+        }
+        
+        util.setPosition(this.div, x+10,y);
+        showObject(this.div);
+        url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + id+"&noredirect=true";
+        if(localeId) {
+            url = url+"&localeid=" + localeId;
+        }
+        util.loadXML( url, handleSelect,id);
+        return false;
     }
 
-    event = util.getEvent(event);
-    x = util.getEventX(event);
-    y = util.getEventY(event);
 
-
-    var link = util.getDomObject(id+'.selectlink');
-    if(!link) {
-	return false;
-    }
-    this.div = util.getDomObject('selectdiv');
-    if(!this.div) {
-	return false;
-    }
-
-    if(link && link.obj.offsetLeft && link.obj.offsetWidth) {
-        x= util.getLeft(link.obj);
-        y = link.obj.offsetHeight+util.getTop(link.obj) + 2;
-    } else {
-        x+=20;
-    }
-
-    util.setPosition(this.div, x+10,y);
-    showObject(this.div);
-    url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + id+"&noredirect=true";
-    if(localeId) {
-        url = url+"&localeid=" + localeId;
-    }
-    util.loadXML( url, handleSelect,id);
-    return false;
+    this.handleClick(event);
 }
 
 
@@ -1179,6 +1182,8 @@ function selectCancel() {
 function selectCreate(event, id,allEntries,selecttype, localeId) {
     if(!selectors[id]) {
         selectors[id] = new Selector(event,id,allEntries,selecttype,localeId);
+    } else {
+        selectors[id].handleClick(event);
     }
 }
 
