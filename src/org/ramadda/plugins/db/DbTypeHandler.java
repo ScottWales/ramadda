@@ -20,6 +20,7 @@
 package org.ramadda.plugins.db;
 
 
+
 import org.w3c.dom.*;
 
 import ucar.unidata.data.gis.KmlUtil;
@@ -27,6 +28,7 @@ import ucar.unidata.data.gis.KmlUtil;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.CalendarOutputHandler;
@@ -2174,7 +2176,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
 
             if (bbox) {
-                map.addBox("", "red", false,  north, west , south,east);
+                map.addBox("", new MapProperties("red", false),  north, west , south,east);
             }
             rightSide.append("\n");
             if (canEdit) {
