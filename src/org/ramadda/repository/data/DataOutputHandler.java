@@ -1467,9 +1467,9 @@ public class DataOutputHandler extends OutputHandler {
 
         if (request.get(ARG_LOCATION, true)) {
             llp = new LatLonPointImpl(
-                request.getLatOrLonValue(ARG_LOCATION + ".latitude", deflat),
+                request.getLatOrLonValue(ARG_AREA + ".latitude", deflat),
                 request.getLatOrLonValue(
-                    ARG_LOCATION + ".longitude", deflon));
+                    ARG_AREA + ".longitude", deflon));
         }
         double levelVal   = request.get(ARG_LEVEL, Double.NaN);
 
@@ -3294,9 +3294,9 @@ public class DataOutputHandler extends OutputHandler {
     private static JFreeChart createChart(Request request, Entry entry,
                                           XYDataset dataset) {
         LatLonPointImpl llp = new LatLonPointImpl(
-                request.getLatOrLonValue(ARG_LOCATION + ".latitude", 0),
+                request.getLatOrLonValue(ARG_AREA + ".latitude", 0),
                 request.getLatOrLonValue(
-                    ARG_LOCATION + ".longitude", 0));
+                    ARG_AREA + ".longitude", 0));
         String title = entry.getName() + " at " + llp.toString();
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
