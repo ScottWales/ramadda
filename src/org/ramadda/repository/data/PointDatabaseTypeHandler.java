@@ -86,6 +86,7 @@ import ucar.unidata.data.point.PointObFactory;
 import ucar.unidata.data.point.TextPointDataSource;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.metadata.*;

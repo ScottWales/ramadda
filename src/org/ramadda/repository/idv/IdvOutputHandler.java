@@ -22,6 +22,7 @@ package org.ramadda.repository.idv;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.data.*;

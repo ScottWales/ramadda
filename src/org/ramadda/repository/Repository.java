@@ -23,6 +23,7 @@ package org.ramadda.repository;
 
 
 import org.ramadda.repository.database.*;
+import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.ftp.FtpManager;
 import org.ramadda.repository.harvester.*;

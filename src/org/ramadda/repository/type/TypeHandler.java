@@ -25,6 +25,7 @@ package org.ramadda.repository.type;
 
 import org.w3c.dom.Element;
 
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;

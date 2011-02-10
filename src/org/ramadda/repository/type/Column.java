@@ -27,6 +27,7 @@ import ucar.unidata.data.gis.KmlUtil;
 
 import org.ramadda.repository.*;
 
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.OutputType;
 
 import ucar.unidata.sql.Clause;
