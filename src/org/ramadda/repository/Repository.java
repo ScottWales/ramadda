@@ -484,8 +484,6 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     private List<File> localFilePaths = new ArrayList<File>();
 
 
-
-
     /** _more_ */
     Hashtable<String, ApiMethod> requestMap = new Hashtable();
 
@@ -5297,6 +5295,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             IOUtil.toFiles(
                 (List<String>) StringUtil.split(
                     getProperty(PROP_LOCALFILEPATHS, ""), "\n", true, true)));
+        //Add the ramadda dir as well
+        localFilePaths.add(0,getStorageManager().getRepositoryDir());
     }
 
     /**
