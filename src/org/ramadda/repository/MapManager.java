@@ -115,164 +115,35 @@ public class MapManager extends RepositoryManager {
 
 
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param popup _more_
-     * @param extraLeft _more_
-     * @param extraTop _more_
-     *
-     * @return _more_
-     */
-    public String makeMapSelector(Request request, String arg, boolean popup,
-                                  String extraLeft, String extraTop) {
-        return makeMapSelector(request, arg, popup, extraLeft, extraTop, null);
-    }
-
-    /*
-
-    public String makeMapSelector(Request request, String arg, boolean popup,
-                                  String extraLeft, String extraTop, Entry entry) {
-
-        return makeMapSelector(request, arg, popup, extraLeft, extraTop, null);
+    public MapInfo createMap(Request request, boolean forSelection) {
+        return createMap(request, MapInfo.DFLT_WIDTH, MapInfo.DFLT_HEIGHT, forSelection);
     }
 
 
-    */
-
-    public String makeMapSelector(Request request, String arg, boolean popup,
-                                  String extraLeft, String extraTop, double[][]marker) {
-        return makeMapSelector(arg, popup, extraLeft, extraTop,
-                               new String[]{
-                                   request.getString(arg + "_south", ""),
-                                   request.getString(arg + "_north", ""),
-                                   request.getString(arg + "_east", ""),
-                                   request.getString(arg + "_west", "")},marker);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param popup _more_
-     *
-     * @return _more_
-     */
-    public String makeMapSelector(String arg, boolean popup, 
-                                  String[] snew) {
-        return makeMapSelector(arg, popup, "", "", snew);
-    }
-
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param popup _more_
-     * @param extraLeft _more_
-     * @param extraTop _more_
-     *
-     * @return _more_
-     */
-    public String makeMapSelector(String arg, boolean popup,
-                                  String extraLeft, String extraTop,
-                                  String[]snew) {
-
-        return makeMapSelector(arg,popup, extraLeft, extraTop, snew, null);
-    }
-
-
-    public String makeMapSelector(String arg, boolean popup,
-                                  String extraLeft, String extraTop,
-                                  String[]snew,
-                                  double[][]markerLatLons) {
-
-        StringBuffer sb = new StringBuffer();
-        String       widget;
-        boolean doRegion = true;
-        if (snew==null) {
-            widget = HtmlUtil.makeLatLonBox(arg, "","","","");
-        } else if (snew.length == 4) {
-            widget = HtmlUtil.makeLatLonBox(arg, snew[0], snew[1], snew[2],
-                                            snew[3]);
-        } else {
-            doRegion = false;
-            widget = " " +
-                msgLabel("Latitude") +" " 
-                     + HtmlUtil.input(arg + ".latitude", snew[0],
-                                      HtmlUtil.SIZE_5 + " "
-                                      + HtmlUtil.id(arg + ".latitude")) + " " + msgLabel("Longitude") +" " 
-                                          + HtmlUtil.input(arg + ".longitude",
-                                              snew[1],
-                                                  HtmlUtil.SIZE_5 + " "
-                                                      + HtmlUtil.id(arg
-                                                          + ".longitude"))+" ";
-        }
-
-        String msg = HtmlUtil.italics(doRegion?
-                                      msg("Shift-drag to select region"):
-                                      msg("Click to select point"));
-        sb.append(msg);
-        sb.append(HtmlUtil.br());
-
+    public MapInfo createMap(Request request, int width, int height,
+                             boolean forSelection) {
         if(!shouldShowMaps()) {
-            return widget;
+            //            return null;
         }
 
-        if ((extraLeft != null) && (extraLeft.length() > 0)) {
-            widget = widget + HtmlUtil.br() + extraLeft;
+        MapInfo mapInfo = new MapInfo(getRepository(), width, height, forSelection);
+        
+        if (request.getExtraProperty("initmap") == null) {
+            mapInfo.addHtml(HtmlUtil.cssLink(fileUrl("/openlayers/theme/default/style.css")));
+            mapInfo.addHtml("\n");
+            mapInfo.addHtml(HtmlUtil.importJS(fileUrl("/openlayers/OpenLayers.js")));
+            mapInfo.addHtml("\n");
+            mapInfo.addHtml(HtmlUtil.importJS(fileUrl("/ramaddamap.js")));
+            mapInfo.addHtml("\n");
+            mapInfo.addHtml(HtmlUtil.importJS("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
+            mapInfo.addHtml("\n");
+            //mapInfo.addHtml(HtmlUtil.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
+            //mapInfo.addHtml("\n");
+            //mapInfo.addHtml(HtmlUtil.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
+            request.putExtraProperty("initmap", "");
         }
 
-        String mapVarName = "selectormap";
-        String rightSide = null;
-        String clearLink = HtmlUtil.mouseClickHref(mapVarName + ".selectionClear();",
-                               msg("Clear"));
-        String initParams = HtmlUtil.squote(arg) + "," + doRegion +"," +
-            (popup
-                ? "1"
-                : "0");
-
-        try {
-            initMap(getRepository().getTmpRequest(), mapVarName, sb, 500, 300,true);
-        } catch(Exception exc) {}
-
-        if (popup) {
-            rightSide = HtmlUtil.space(2)+getRepository().makeStickyPopup(msg("Select"),
-                                                        sb.toString(),
-                                                        mapVarName + ".selectionPopupInit();") + HtmlUtil.space(2) + clearLink
-                                      + HtmlUtil.space(2)
-                                      + HtmlUtil.space(2) + extraTop;
-        } else {
-            rightSide = clearLink + HtmlUtil.space(2) 
-                + HtmlUtil.br() + sb.toString();
-        }
-
-        StringBuffer script = new StringBuffer();
-        script.append(mapVarName+".setSelection(" + initParams+ ");\n");
-        if(markerLatLons!=null) {
-            script.append("var markerLine = [");
-            for(int i=0;i<markerLatLons[0].length;i++) {
-                if(i>0)
-                    script.append(",");
-                script.append(MapOutputHandler.llp(markerLatLons[0][i],
-                                                   markerLatLons[1][i]));
-            }
-            script.append("];\n");
-            script.append(mapVarName +".addPolyline(markerLine);\n");
-        }
-
-
-        return HtmlUtil.table(new Object[] { widget, rightSide }) + "\n"
-            + HtmlUtil.script(script.toString());
-
+        return mapInfo;
     }
-
 
 }

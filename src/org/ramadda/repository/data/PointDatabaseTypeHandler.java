@@ -2447,9 +2447,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(getHeader(request, entry));
         String       icon       = iconUrl("/icons/pointdata.gif");
-        String       mapVarName = "mapstraction" + HtmlUtil.blockCnt++;
-        StringBuffer js         = new StringBuffer();
-        js.append("var marker;\n");
+        MapInfo map = getRepository().getMapManager().createMap(request,  request.get(ARG_WIDTH, 800), request.get(ARG_HEIGHT, 500), false);
         int cnt = 0;
         for (PointData pointData : list) {
             StringBuffer info = new StringBuffer("");
@@ -2463,25 +2461,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 info.append("<br>");
             }
 
-            js.append("marker = new Marker("
-                      + DataOutputHandler.llp(pointData.lat, pointData.lon)
-                      + ");\n");
-
-            js.append("marker.setIcon(" + HtmlUtil.quote(icon) + ");\n");
-
-            js.append("marker.setInfoBubble(\"" + info.toString() + "\");\n");
-            js.append("initMarker(marker," + HtmlUtil.quote("" + cnt) + ","
-                      + mapVarName + ");\n");
-
-
+            map.addMarker(HtmlUtil.quote("" + cnt), pointData.lat, pointData.lon, icon, info.toString());
         }
-        js.append(mapVarName + ".autoCenterAndZoom();\n");
-        //        js.append(mapVarName+".resizeTo(" + width + "," + height + ");\n");
-        getRepository().getMapManager().initMap(request, mapVarName, sb,
-                request.get(ARG_WIDTH, 800), request.get(ARG_HEIGHT, 500),
-                true);
-        sb.append(HtmlUtil.script(js.toString()));
-
+        map.center();
+        sb.append(map.getHtml());
         return new Result("Point Search Results", sb);
     }
 
@@ -2840,16 +2823,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                             request.getString(ARG_POINT_HOUR, ""))));
 
 
+        MapInfo map = getRepository().getMapManager().createMap(request,  true);
+        map.addBox(entry, "blue", false);
+        map.centerOn(entry);
 
-
-
-        String llb = getRepository().getMapManager().makeMapSelector(request,
-                         ARG_POINT_BBOX, true, "", "");
-
+        String llb =  map.makeSelector(ARG_POINT_BBOX, true, null);
         basicSB.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
-
         basicSB.append(HtmlUtil.hidden(ARG_POINT_REDIRECT, "true"));
-
         basicSB.append(HtmlUtil.formTableClose());
 
 

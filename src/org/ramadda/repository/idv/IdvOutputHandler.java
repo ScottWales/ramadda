@@ -1003,22 +1003,6 @@ public class IdvOutputHandler extends OutputHandler {
         basic.append(HtmlUtil.formTableClose());
 
 
-
-        StringBuffer bounds = new StringBuffer();
-        String llb =
-            getRepository().getMapManager().makeMapSelector(request,
-                ARG_VIEW_BOUNDS, false,
-                htmlCheckbox(request, ARG_VIEW_JUSTCLIP, false) + " "
-                + msg("Just subset data") + HtmlUtil.space(2), "");
-
-
-        bounds.append(llb);
-
-
-
-
-
-
         StringBuffer  mapSB = new StringBuffer();
         List<MapData> maps =
             idvServer.getIdv().getResourceManager().getMaps();
@@ -1119,14 +1103,14 @@ public class IdvOutputHandler extends OutputHandler {
         tabLabels.add(msg("Basic"));
         tabContents.add(basic.toString());
 
+        StringBuffer bounds = new StringBuffer();
+        MapInfo map = getRepository().getMapManager().createMap(request,  true);
+        map.addBox(entry, "blue", false);
+        map.centerOn(entry);
+        String llb =  map.makeSelector(ARG_VIEW_BOUNDS, true,null,
+                                             htmlCheckbox(request, ARG_VIEW_JUSTCLIP, false) + " " + msg("Just subset data") + HtmlUtil.space(2), "");
+        bounds.append(llb);
 
-        String       mapVarName = "selectormap";
-        StringBuffer js         = new StringBuffer();
-        js.append(mapVarName + ".initMap(true);\n");
-        js.append(mapVarName + ".addBox(" + HtmlUtil.squote(entry.getId())
-                  + "," + entry.getNorth() + "," + entry.getWest() + ","
-                  + entry.getSouth() + "," + entry.getEast() + ");\n");
-        bounds.append(HtmlUtil.script(js.toString()));
 
         tabLabels.add(msg("View Bounds"));
         tabContents.add(bounds.toString());
@@ -1553,7 +1537,7 @@ public class IdvOutputHandler extends OutputHandler {
                                          "tab_content"));
 
         sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.submit(msg("Make image"), ARG_SUBMIT));
+        sb.append(HtmlUtil.submit(msg("Select Fields"), ARG_SUBMIT));
         sb.append(HtmlUtil.formClose());
     }
 

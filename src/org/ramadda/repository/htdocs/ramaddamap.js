@@ -142,6 +142,10 @@ function RepositoryMap (mapId, params) {
         if(this.boxes) {
             this.initBoxes();
         }
+        if(this.initialBounds) {
+            this.map.setCenter(this.initialBounds.getCenterLonLat());
+            this.map.zoomToExtent(this.initialBounds);
+        }
 
         /*
         var options = {featureAdded:     
@@ -366,12 +370,15 @@ function RepositoryMap (mapId, params) {
     }
 
     this.centerOnMarkers = function(bounds)  {
-        if(!this.markers) return;
         //        bounds = this.boxes.getDataExtent();
         if(!bounds) {
+            if(!this.markers) return;
             bounds = this.markers.getDataExtent();
         }
-        //        bounds = this.markers.getDataExtent();
+        if(!this.map) {
+            this.initialBounds = bounds;
+            return;
+        }
         this.map.setCenter(bounds.getCenterLonLat());
         this.map.zoomToExtent(bounds);
     }
@@ -444,10 +451,11 @@ function RepositoryMap (mapId, params) {
         if(!theMap.boxes) {
             theMap.boxes = new OpenLayers.Layer.Boxes("Boxes");
             if(!theMap.map) {
-                alert("no map");
-                return;
+                //                alert("no map");
+                //                return;
+            } else  {
+                this.initBoxes(theMap.boxes);
             }
-            this.initBoxes(theMap.boxes);
         }
 
         var bounds = new OpenLayers.Bounds(west, south, east, north);

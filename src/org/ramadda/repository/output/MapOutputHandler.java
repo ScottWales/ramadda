@@ -77,7 +77,6 @@ import java.util.zip.*;
 public class MapOutputHandler extends OutputHandler {
 
 
-
     /** _more_ */
     public static final OutputType OUTPUT_MAP =
         new OutputType("Map", "map.map",
@@ -145,7 +144,7 @@ public class MapOutputHandler extends OutputHandler {
         List<Entry> entriesToUse = new ArrayList<Entry>();
         entriesToUse.add(entry);
         StringBuffer sb = new StringBuffer();
-        getMap(request, entriesToUse, sb, 700, 500, true,new boolean[]{false});
+        MapInfo map = getMap(request, entriesToUse, sb, 700, 500, true,new boolean[]{false});
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
     }
 
@@ -180,7 +179,7 @@ public class MapOutputHandler extends OutputHandler {
         sb.append(
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td width=700>");
         boolean [] haveBearingLines = {false};
-        String mapVarName = getMap(request, entriesToUse, sb, 700, 500, true,haveBearingLines);
+        MapInfo map =  getMap(request, entriesToUse, sb, 700, 500, true, haveBearingLines);
         sb.append("</td><td>");
 
 
@@ -189,7 +188,7 @@ public class MapOutputHandler extends OutputHandler {
                 sb.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
                         entry)));
                 sb.append(HtmlUtil.space(1));
-                sb.append("<a href=\"javascript:" + mapVarName +".hiliteMarker("+sqt(entry.getId()) + ");\">"
+                sb.append("<a href=\"javascript:" + map.getVariableName() +".hiliteMarker("+sqt(entry.getId()) + ");\">"
                           + entry.getName() + "</a><br>");
             }
         }
@@ -214,14 +213,13 @@ public class MapOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public String getMap(Request request, List<Entry> entriesToUse,
+    public MapInfo getMap(Request request, List<Entry> entriesToUse,
                          StringBuffer sb, int width, int height,
                          boolean normalControls, boolean []haveBearingLines)
             throws Exception {
-        StringBuffer js         = new StringBuffer();
-        String       mapVarName = "map" + HtmlUtil.blockCnt++;
-        getRepository().getMapManager().initMap(request, mapVarName, sb,
-                width, height, false);
+        MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
+        if(map == null) return map;
+
         int cnt = 0;
         for (Entry entry : entriesToUse) {
             if (entry.hasAreaDefined()) {
@@ -235,16 +233,12 @@ public class MapOutputHandler extends OutputHandler {
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
             if (entry.hasAreaDefined()) {
-                js.append("var args = {\"color\":\"blue\",\"selectable\": true};\n");
-                js.append(mapVarName +".addBox(" + sqt(entry.getId()) +"," +
-                           entry.getNorth() +"," +
-                           entry.getWest() +"," +
-                           entry.getSouth() +"," +
-                           entry.getEast()+", args);\n");
+                map.addBox(entry, "blue", true);
             }
 
             if(makeRectangles) {
-                entry.getTypeHandler().addToMap(request, entry, mapVarName, js);
+                //TODO
+                //               entry.getTypeHandler().addToMap(request, entry, mapVarName, js);
             }
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 String info =
@@ -276,9 +270,7 @@ public class MapOutputHandler extends OutputHandler {
                             double dir = Double.parseDouble(metadata.getAttr1());
                             LatLonPointImpl fromPt = new LatLonPointImpl(location[0],location[1]);
                             LatLonPointImpl pt = Bearing.findPoint(fromPt,dir,0.25,null);
-                            js.append(mapVarName +".addLine(" + sqt(entry.getId()) +"," +
-                                      location[0]+"," + location[1] +"," +
-                                      pt.getLatitude()+"," + pt.getLongitude()+");\n");
+                            map.addLine(entry.getId(), fromPt, pt);
                             haveBearingLines[0] = true;
                             break;
                         } 
@@ -289,29 +281,13 @@ public class MapOutputHandler extends OutputHandler {
                 info = info.replace("\n", " ");
                 info = info.replace("\"", "\\\"");
                 String icon = getEntryManager().getIconUrl(request, entry);
-                js.append(mapVarName+".addMarker(" +
-                           qt(entry.getId()) +
-                           "," +
-                          llp(location[0], location[1]) +
-                           "," +
-                           qt(icon)+ 
-                           "," +
-                           qt(info) +
-                           ");\n");
+                map.addMarker(entry.getId(), new LatLonPointImpl(location[0],location[1]), icon, info);
             }
         }
 
-        if(bounds!=null) {
-            js.append("var bounds = new OpenLayers.Bounds(" +
-                      bounds.getX() +"," + bounds.getY() +"," + (bounds.getX()+bounds.getWidth()) +"," +
-                      (bounds.getY() + bounds.getHeight())+");\n");
-        } else {
-            js.append("var bounds = null;\n");
-        }
-        js.append(mapVarName+".centerOnMarkers(bounds);\n");
-        //        js.append(mapVarName+".getMap().zoomToMaxExtent();\n");
-        sb.append(HtmlUtil.script(js.toString()));
-        return mapVarName;
+        map.centerOn(bounds);
+        sb.append(map.getHtml());
+        return map;
     }
 
     /**

@@ -441,6 +441,7 @@ public class DataOutputHandler extends OutputHandler {
         }
     };
 
+    private boolean doGridPool = true;
 
     /** grid pool */
     private Pool<String, GridDataset> gridPool = new Pool<String,
@@ -484,6 +485,26 @@ public class DataOutputHandler extends OutputHandler {
         }
 
     };
+
+
+    private  GridDataset createGrid(String path) {
+        try {
+            getStorageManager().dirTouched(nj22Dir, null);
+            //            gridOpenCounter.incr();
+            
+            GridDataset gds = GridDataset.open(path);
+            if (gds.getGrids().iterator().hasNext()) {
+                return gds;
+            } else {
+                //                gridCloseCounter.incr();
+                gds.close();
+                return null;
+            }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
 
 
     /** point pool */
@@ -1197,7 +1218,11 @@ public class DataOutputHandler extends OutputHandler {
                 ok = false;
             } else {
                 try {
-                    ok = gridPool.containsOrCreate(getPath(entry));
+                    if(doGridPool) {
+                        ok = gridPool.containsOrCreate(getPath(entry));
+                    } else {
+                        ok = (createGrid(getPath(entry))!=null);
+                    }
                 } catch (Exception ignoreThis) {}
             }
             b = new Boolean(ok);
@@ -1345,7 +1370,11 @@ public class DataOutputHandler extends OutputHandler {
                 GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return GridDataset.open(path);
         }
-        return gridPool.get(path);
+        if(doGridPool) {
+            return gridPool.get(path);
+        } else {
+            return createGrid(path);
+        }
     }
 
     /**
@@ -1355,7 +1384,9 @@ public class DataOutputHandler extends OutputHandler {
      * @param ncd _more_
      */
     public void returnGridDataset(String path, GridDataset ncd) {
-        gridPool.put(path, ncd);
+        if(doGridPool) {
+            gridPool.put(path, ncd);
+        }
     }
 
 
@@ -1622,21 +1653,8 @@ public class DataOutputHandler extends OutputHandler {
             lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
             lon = Misc.format(llr.getCenterLon());
         }
-
-        String llb = " Latitude: "
-                     + HtmlUtil.input(
-                         ARG_LOCATION_LATITUDE, lat,
-                         HtmlUtil.SIZE_5 + " "
-                         + HtmlUtil.id(
-                             ARG_LOCATION_LATITUDE)) + " Longitude: "
-                                 + HtmlUtil.input(
-                                     ARG_LOCATION_LONGITUDE, lon,
-                                     HtmlUtil.SIZE_5 + " "
-                                     + HtmlUtil.id(ARG_LOCATION_LONGITUDE));
-
-        llb = getRepository().getMapManager().makeMapSelector(ARG_LOCATION,
-                true, "", "", new String[] { lat,
-                                             lon }, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,  true);
+        String llb =  map.makeSelector(ARG_AREA, true, new String[] { lat, lon });
         sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
 
         if ((dates != null) && (dates.size() > 0)) {
@@ -1835,7 +1853,8 @@ public class DataOutputHandler extends OutputHandler {
             }
             return outputGridAsPointForm(request, entry, gds, sb);
         } finally {
-            gridPool.put(path, gds);
+            returnGridDataset(path, gds);
+            //gridPool.put(path, gds);
         }
     }
 
@@ -1915,7 +1934,8 @@ public class DataOutputHandler extends OutputHandler {
                                  : new ucar.nc2.units.DateRange(dates[0],
                                  dates[1])), includeLatLon, hStride, zStride,
                                              timeStride);
-                gridPool.put(path, gds);
+                returnGridDataset(path, gds);
+                //                gridPool.put(path, gds);
 
                 if (doingPublish(request)) {
                     TypeHandler typeHandler =
@@ -2068,13 +2088,13 @@ public class DataOutputHandler extends OutputHandler {
 
         LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
-            String llb =
-                getRepository().getMapManager().makeMapSelector(ARG_AREA,
-                    true, new String[] { "" + llr.getLatMin(),
-                                         "" + llr.getLatMax(),
-                                         "" + llr.getLonMax(),
-                                         "" + llr.getLonMin() });
-
+            MapInfo map = getRepository().getMapManager().createMap(request,  true);
+            map.addBox("", llr, "blue", false);
+            String llb =  map.makeSelector(ARG_AREA, true, 
+                                                 new String[]{"" + llr.getLatMax(),
+                                                              "" + llr.getLonMin(),
+                                                              "" + llr.getLatMin(),
+                                                              "" + llr.getLonMax(),});
             sb.append(
                 HtmlUtil.formEntryTop(
                     msgLabel("Subset Spatially"),
@@ -2104,7 +2124,8 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.submit(msg("Subset Grid")));
         sb.append(HtmlUtil.formClose());
-        gridPool.put(path, dataset);
+        returnGridDataset(path, dataset);
+        //        gridPool.put(path, dataset);
         return makeLinksResult(request, msg("Grid Subset"), sb,
                                new State(entry));
     }
@@ -2186,7 +2207,8 @@ public class DataOutputHandler extends OutputHandler {
     public Result outputPointMap(Request request, Entry entry)
             throws Exception {
 
-        String              mapVarName = "map" + HtmlUtil.blockCnt++;
+
+        MapInfo map = getRepository().getMapManager().createMap(request,  false);
         String              path       = getPath(request, entry);
         FeatureDatasetPoint pod        = pointPool.get(path);
 
@@ -2195,8 +2217,6 @@ public class DataOutputHandler extends OutputHandler {
         int                 skip       = request.get(ARG_SKIP, 0);
         int                 max        = request.get(ARG_MAX, 200);
 
-        StringBuffer        js         = new StringBuffer();
-        js.append("var marker;\n");
         int                  cnt            = 0;
         int                  total          = 0;
         String               icon           = iconUrl("/icons/pointdata.gif");
@@ -2228,10 +2248,6 @@ public class DataOutputHandler extends OutputHandler {
             cnt++;
             List          columnData = new ArrayList();
             StructureData structure  = po.getData();
-            js.append("marker = new Marker("
-                      + llp(el.getLatitude(), el.getLongitude()) + ");\n");
-
-            js.append("marker.setIcon(" + HtmlUtil.quote(icon) + ");\n");
             StringBuffer info = new StringBuffer("");
             info.append("<b>Date:</b> " + po.getNominalTimeAsDate() + "<br>");
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
@@ -2256,15 +2272,11 @@ public class DataOutputHandler extends OutputHandler {
             }
             columnDataList.add("{" + StringUtil.join(",", columnData)
                                + "}\n");
-            js.append("marker.setInfoBubble(\"" + info.toString() + "\");\n");
-            js.append("initMarker(marker," + HtmlUtil.quote("" + cnt) + ","
-                      + mapVarName + ");\n");
+            map.addMarker("", new LatLonPointImpl(el.getLatitude(), el.getLongitude()), icon, info.toString());
         }
 
-        js.append(mapVarName + ".autoCenterAndZoom();\n");
-        //        js.append(mapVarName+".resizeTo(" + width + "," + height + ");\n");
 
-        StringBuffer yui         = new StringBuffer();
+
         List         columnDefs  = new ArrayList();
         List         columnNames = new ArrayList();
         for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
@@ -2319,19 +2331,8 @@ public class DataOutputHandler extends OutputHandler {
 
             }
         }
-        //        sb.append("<table width=\"100%\"><tr valign=top><td>\n");
-        getRepository().getMapManager().initMap(request, mapVarName, sb,
-                request.get(ARG_WIDTH, 800), request.get(ARG_HEIGHT, 500),
-                true);
-        /*        sb.append("</td><td>");
-                  sb.append(HtmlUtil.div("",HtmlUtil.id("datatable")+HtmlUtil.cssClass(" yui-skin-sam")));
-                  sb.append("</td></tr></table>");
-                  sb.append("\n<link rel=\"stylesheet\" type=\"text/css\" href=\"http://yui.yahooapis.com/2.5.2/build/fonts/fonts-min.css\" />\n<link rel=\"stylesheet\" type=\"text/css\" href=\"http://yui.yahooapis.com/2.5.2/build/datatable/assets/skins/sam/datatable.css\" />\n<script type=\"text/javascript\" src=\"http://yui.yahooapis.com/2.5.2/build/yahoo-dom-event/yahoo-dom-event.js\"></script>\n<script type=\"text/javascript\" src=\"http://yui.yahooapis.com/2.5.2/build/dragdrop/dragdrop-min.js\"></script>\n<script type=\"text/javascript\" src=\"http://yui.yahooapis.com/2.5.2/build/element/element-beta-min.js\"></script>\n<script type=\"text/javascript\" src=\"http://yui.yahooapis.com/2.5.2/build/datasource/datasource-beta-min.js\"></script>\n<script type=\"text/javascript\" src=\"http://yui.yahooapis.com/2.5.2/build/datatable/datatable-beta-min.js\"></script>\n");
-
-                  sb.append(HtmlUtil.script(yui.toString()));
-        */
-
-        sb.append(HtmlUtil.script(js.toString()));
+        map.center();
+        sb.append(map.getHtml());
         pointPool.put(path, pod);
 
         return new Result(msg("Point Data Map"), sb);
@@ -2411,8 +2412,8 @@ public class DataOutputHandler extends OutputHandler {
         String               path         = getPath(request, entry);
         TrajectoryObsDataset tod          = trajectoryPool.get(path);
         StringBuffer         sb           = new StringBuffer();
-        String               mapVarName   = "map" + HtmlUtil.blockCnt++;
-        StringBuffer         js           = new StringBuffer();
+
+        MapInfo map = getRepository().getMapManager().createMap(request, 800, 600, false);
         List                 trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
         for (int i = 0; i < trajectories.size(); i++) {
@@ -2421,36 +2422,18 @@ public class DataOutputHandler extends OutputHandler {
                 (TrajectoryObsDatatype) trajectories.get(i);
             float[]      lats     = toFloatArray(todt.getLatitude(null));
             float[]      lons     = toFloatArray(todt.getLongitude(null));
-            StringBuffer markerSB = new StringBuffer();
-            js.append("line = new Polyline([");
             for (int ptIdx = 0; ptIdx < lats.length; ptIdx++) {
                 if (ptIdx > 0) {
-                    js.append(",");
                     if (ptIdx == lats.length - 1) {
-                        markerSB.append("var endMarker = new Marker("
-                                        + MapOutputHandler.llp(lats[ptIdx],
-                                            lons[ptIdx]) + ");\n");
-                        markerSB.append("endMarker.setInfoBubble(\"End time:"
-                                        + todt.getEndDate() + "\");\n");
-                        markerSB.append("initMarker(endMarker,\"endMarker\","
-                                        + mapVarName + ");\n");
+                        map.addMarker("", lats[ptIdx], lons[ptIdx], null, "End time:" + todt.getEndDate()); 
                     }
+                    //#FF0000
+                    map.addLine("", lats[ptIdx-1], lons[ptIdx-1],lats[ptIdx], lons[ptIdx]);
                 } else {
-                    markerSB.append("var startMarker = new Marker("
-                                    + MapOutputHandler.llp(lats[ptIdx],
-                                        lons[ptIdx]) + ");\n");
-                    markerSB.append("startMarker.setInfoBubble(\"Start time:"
-                                    + todt.getStartDate() + "\");\n");
-                    markerSB.append("initMarker(startMarker,\"startMarker\","
-                                    + mapVarName + ");\n");
+                    map.addMarker("", lats[ptIdx], lons[ptIdx], null, "Start time:" + todt.getEndDate()); 
                 }
-                js.append(MapOutputHandler.llp(lats[ptIdx], lons[ptIdx]));
+
             }
-            js.append("]);\n");
-            js.append("line.setWidth(2);\n");
-            js.append("line.setColor(\"#FF0000\");\n");
-            js.append(mapVarName + ".addPolyline(line);\n");
-            js.append(markerSB);
             StructureData    structure = todt.getData(0);
             VariableSimpleIF theVar    = null;
             for (int varIdx = 0; varIdx < allVariables.size(); varIdx++) {
@@ -2467,11 +2450,8 @@ public class DataOutputHandler extends OutputHandler {
             }
         }
 
-
-        js.append(mapVarName + ".autoCenterAndZoom();\n");
-        getRepository().getMapManager().initMap(request, mapVarName, sb, 800,
-                500, true);
-        sb.append(HtmlUtil.script(js.toString()));
+        map.center();
+        sb.append(map.getHtml());
         trajectoryPool.put(path, tod);
         return new Result(msg("Trajectory Map"), sb);
 

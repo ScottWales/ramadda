@@ -629,8 +629,8 @@ public class Column implements Constants {
         } else {
             String s = toString(values, offset);
             if (rows > 1) {
-                s = typeHandler.getRepository().getHtmlOutputHandler()
-                    .wikifyEntry(typeHandler.getRepository().getTmpRequest(),
+                s = getRepository().getHtmlOutputHandler()
+                    .wikifyEntry(getRepository().getTmpRequest(),
                                  entry, s, false, null, null);
             }
             sb.append(s);
@@ -689,7 +689,7 @@ public class Column implements Constants {
             statementIdx++;
         } else if (isDate()) {
             Date dttm = (Date) values[offset];
-            typeHandler.getRepository().getDatabaseManager().setDate(
+            getRepository().getDatabaseManager().setDate(
                 statement, statementIdx, dttm);
             statementIdx++;
         } else if (isType(TYPE_LATLON)) {
@@ -844,7 +844,7 @@ public class Column implements Constants {
             defineColumn(statement, name, "varchar(" + size + ") ");
         } else if (isType(TYPE_CLOB)) {
             String clobType =
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "clob", size);
             defineColumn(statement, name, clobType);
         } else if (isType(TYPE_ENUMERATION) || isType(TYPE_ENUMERATIONPLUS)) {
@@ -854,7 +854,7 @@ public class Column implements Constants {
         } else if (isDouble()) {
             defineColumn(
                 statement, name,
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "double"));
         } else if (isType(TYPE_BOOLEAN)) {
             //use int as boolean for database compatibility
@@ -868,28 +868,28 @@ public class Column implements Constants {
         } else if (isType(TYPE_LATLON)) {
             defineColumn(
                 statement, name + "_lat",
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "double"));
             defineColumn(
                 statement, name + "_lon",
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "double"));
         } else if (isType(TYPE_LATLONBBOX)) {
             defineColumn(
                 statement, name + "_north",
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "double"));
             defineColumn(
                 statement, name + "_west",
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "double"));
             defineColumn(
                 statement, name + "_south",
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "double"));
             defineColumn(
                 statement, name + "_east",
-                typeHandler.getRepository().getDatabaseManager().convertType(
+                getRepository().getDatabaseManager().convertType(
                     "double"));
 
         } else {
@@ -1198,29 +1198,19 @@ public class Column implements Constants {
                 lat = ((Double) values[offset]).doubleValue();
                 lon = ((Double) values[offset + 1]).doubleValue();
             }
-            widget =
-                typeHandler.getRepository().getMapManager().makeMapSelector(
-                    id, true, "", "", new String[] { latLonOk(lat)
-                    ? lat + ""
-                    : "", latLonOk(lon)
-                          ? lon + ""
-                          : "" });
+            MapInfo map = getRepository().getMapManager().createMap(request, true);
+            widget = map.makeSelector(id, true, new String[] { latLonOk(lat)    ? lat + "" : "", latLonOk(lon)  ? lon + "" : "" });
         } else if (isType(TYPE_LATLONBBOX)) {
+            String[] nwse=null;
             if (values != null) {
-                String[] snew = {
-                    latLonOk(values[offset + 2]) ? values[offset + 2] + "" : "", 
+                nwse = new String[]{
                     latLonOk(values[offset + 0]) ? values[offset + 0] + "" : "", 
-                    latLonOk(values[offset + 3]) ? values[offset + 3] + "" : "", 
-                    latLonOk(values[offset + 1]) ? values[offset + 1] + "" : ""
-                };
-                widget =
-                    typeHandler.getRepository().getMapManager()
-                        .makeMapSelector(id, true, "", "", snew);
-            } else {
-                widget =
-                    typeHandler.getRepository().getMapManager()
-                        .makeMapSelector(request, id, true, "", "");
-            }
+                    latLonOk(values[offset + 1]) ? values[offset + 1] + "" : "",
+                    latLonOk(values[offset + 2]) ? values[offset + 2] + "" : "", 
+                    latLonOk(values[offset + 3]) ? values[offset + 3] + "" : "",};
+            } 
+            MapInfo map = getRepository().getMapManager().createMap(request, true);
+            widget = map.makeSelector(id, true, nwse,  "", "");
         } else if (isType(TYPE_BOOLEAN)) {
             String value = "True";
             if (values != null) {
@@ -1239,7 +1229,7 @@ public class Column implements Constants {
             } else {
                 date = new Date();
             }
-            widget = typeHandler.getRepository().makeDateInput(request, id,
+            widget = getRepository().makeDateInput(request, id,
                     "", date, null);
         } else if (isType(TYPE_DATE)) {
             Date date;
@@ -1248,7 +1238,7 @@ public class Column implements Constants {
             } else {
                 date = new Date();
             }
-            widget = typeHandler.getRepository().makeDateInput(request, id,
+            widget = getRepository().makeDateInput(request, id,
                     "", date, null, false);
         } else if (isType(TYPE_ENUMERATION)) {
             String value = ((dflt != null)
@@ -1343,7 +1333,7 @@ public class Column implements Constants {
             }
             if (searchType.equals(SEARCHTYPE_SELECT)) {
                 Hashtable props =
-                    typeHandler.getRepository().getFieldProperties(
+                    getRepository().getFieldProperties(
                         propertiesFile);
                 List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
                 if (props != null) {
@@ -1554,13 +1544,12 @@ public class Column implements Constants {
         List<Clause> tmp    = new ArrayList<Clause>(where);
         String       widget = "";
         if (isType(TYPE_LATLON)) {
-            widget =
-                typeHandler.getRepository().getMapManager().makeMapSelector(
-                    request, id, true, "", "");
+            //TODO: Use point selector
+            MapInfo map = getRepository().getMapManager().createMap(request, true);
+            widget = map.makeSelector(id, true, null, "", "");
         } else if (isType(TYPE_LATLONBBOX)) {
-            widget =
-                typeHandler.getRepository().getMapManager().makeMapSelector(
-                    request, id, true, "", "");
+            MapInfo map = getRepository().getMapManager().createMap(request, true);
+            widget = map.makeSelector(id, true, null, "", "");
         } else if (isDate()) {
             List dateSelect = new ArrayList();
             dateSelect.add(new TwoFacedObject(msg("Relative Date"), "none"));
@@ -1703,7 +1692,7 @@ public class Column implements Constants {
      * @throws Exception _more_
      */
     protected String getLabel(String value) throws Exception {
-        String desc = typeHandler.getRepository().getFieldDescription(value
+        String desc = getRepository().getFieldDescription(value
                           + ".label", propertiesFile);
         if (desc == null) {
             desc = value;
@@ -1975,5 +1964,6 @@ public class Column implements Constants {
     public int getRows() {
         return rows;
     }
+
 
 }

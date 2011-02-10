@@ -2960,7 +2960,6 @@ return new Result(title, sb);
      */
     public Rectangle2D.Double getBounds(List<Entry> children) {
         Rectangle2D.Double rect = null;
-        System.err.println("children:" + children);
 
         for (Entry child : children) {
             if ( !child.hasAreaDefined()) {
@@ -2971,7 +2970,7 @@ return new Result(title, sb);
             } else {
                 rect.add(child.getBounds());
             }
-            System.err.println(" rect:" + rect);
+
         }
         return rect;
     }

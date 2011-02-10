@@ -2244,17 +2244,15 @@ public class TypeHandler extends RepositoryManager {
                 }
                 //                mapOutputHandler.getMap( request, entries,mapSB, 300,200,false);
             }
-            String[] pts = null;
+            String[] nwse = null;
             if (entry != null) {
-                pts = new String[] { entry.hasSouth()
-                                     ? "" + entry.getSouth()
-                                     : "", entry.hasNorth()
-                                           ? "" + entry.getNorth()
-                                           : "", entry.hasEast()
-                        ? "" + entry.getEast()
-                        : "", entry.hasWest()
-                              ? "" + entry.getWest()
-                              : "" };
+                nwse = new String[] { 
+                    entry.hasNorth() ? "" + entry.getNorth(): "", 
+                    entry.hasWest()? "" + entry.getWest() : "",
+                    entry.hasSouth()? "" + entry.getSouth(): "", 
+                    entry.hasEast() ? "" + entry.getEast() : "", 
+                };
+
             }
             String extraMapStuff = "";
             if ((entry != null) && entry.isGroup()) {
@@ -2265,10 +2263,8 @@ public class TypeHandler extends RepositoryManager {
                                             + msg("Set bounds from children");
             }
 
-            String mapSelector =
-                getRepository().getMapManager().makeMapSelector(ARG_AREA,
-                                                                true, "","", pts, null) + extraMapStuff;
-
+            MapInfo map = getRepository().getMapManager().createMap(request, true);
+            String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "") +extraMapStuff;
             sb.append(formEntry(request,msgLabel("Location"), mapSelector));
 
         }
@@ -2689,10 +2685,8 @@ public class TypeHandler extends RepositoryManager {
                                                    VALUE_AREA_CONTAINS)) + msg(
                                                        "Contained by");
 
-            String mapSelector =
-                getRepository().getMapManager().makeMapSelector(request,
-                    ARG_AREA, true, "", radio);
-
+            MapInfo map = getRepository().getMapManager().createMap(request, true);
+            String mapSelector = map.makeSelector(ARG_AREA, true, null, "", radio);
             basicSB.append(formEntry(request,msgLabel("Area"), mapSelector));
             basicSB.append("\n");
 
