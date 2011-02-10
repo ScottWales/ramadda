@@ -201,7 +201,7 @@ public class MapInfo {
 
 
     public void addBox(String id, MapProperties properties,  double north, double west, double south, double east) {
-        getJS().append("var mapBoxAttributes = {\"color\":\""+ properties.color +"\",\"selectable\": "+ properties.selectable +"};\n");
+        getJS().append("var mapBoxAttributes = {\"color\":\""+ properties.getColor() +"\",\"selectable\": "+ properties.getSelectable() +"};\n");
         getJS().append(mapVarName +".addBox(" + HtmlUtil.squote(id) +"," +
                        north +"," +
                        west +"," +
@@ -368,18 +368,6 @@ public class MapInfo {
     **/
     public String getVariableName () {
 	return mapVarName;
-    }
-
-
-    public static class MapProperties {
-        String color = DFLT_BOX_COLOR;
-        boolean selectable = false;
-        
-        public MapProperties(String color, boolean selectable) {
-            this.color = color;
-            this.selectable = selectable;
-        }
-
     }
 
 }

@@ -1106,7 +1106,7 @@ public class IdvOutputHandler extends OutputHandler {
 
         StringBuffer bounds = new StringBuffer();
         MapInfo map = getRepository().getMapManager().createMap(request,  true);
-        map.addBox(entry, new MapInfo.MapProperties("blue", false));
+        map.addBox(entry, new MapProperties("blue", false));
         map.centerOn(entry);
         String llb =  map.makeSelector(ARG_VIEW_BOUNDS, true,null,
                                              htmlCheckbox(request, ARG_VIEW_JUSTCLIP, false) + " " + msg("Just subset data") + HtmlUtil.space(2), "");

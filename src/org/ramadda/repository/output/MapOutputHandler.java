@@ -231,7 +231,7 @@ public class MapOutputHandler extends OutputHandler {
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
 
         boolean makeRectangles = cnt <= 20;
-        MapInfo.MapProperties mapProperties = new MapInfo.MapProperties("blue", true);
+        MapProperties mapProperties = new MapProperties("blue", true);
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
             if (entry.hasAreaDefined()) {

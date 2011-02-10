@@ -2091,7 +2091,7 @@ public class DataOutputHandler extends OutputHandler {
         LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,  true);
-            map.addBox("", llr,  new MapInfo.MapProperties("blue", false));
+            map.addBox("", llr,  new MapProperties("blue", false));
             String llb =  map.makeSelector(ARG_AREA, true, 
                                                  new String[]{"" + llr.getLatMax(),
                                                               "" + llr.getLonMin(),
