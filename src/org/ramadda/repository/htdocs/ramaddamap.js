@@ -139,12 +139,16 @@ function RepositoryMap (mapId, params) {
         this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
         this.map.addControl( new OpenLayers.Control.MousePosition() );
 
-        if(this.boxes) {
-            this.initBoxes();
+        if(this.initialBoxes) {
+            this.initBoxes(this.initialBoxes);
         }
         if(this.initialBounds) {
             this.map.setCenter(this.initialBounds.getCenterLonLat());
             this.map.zoomToExtent(this.initialBounds);
+            this.initialBounds = null;
+        }
+        if(this.initialLines) {
+            this.map.addLayer(this.initalLines);
         }
 
         /*
@@ -394,14 +398,13 @@ function RepositoryMap (mapId, params) {
 
 
     this.addMarker = function(id, location, iconUrl, text) {
-        var theMap = this;
-        if(!theMap.markers) {
-            theMap.markers = new OpenLayers.Layer.Markers("Markers");
+        if(!this.markers) {
+            this.markers = new OpenLayers.Layer.Markers("Markers");
             //Added this because I was getting an unknown method error
-            theMap.markers.getFeatureFromEvent = function(evt) {return null;};
-            theMap.map.addLayer(theMap.markers);
-            var sf = new OpenLayers.Control.SelectFeature(theMap.markers);
-            theMap.map.addControl(sf);
+            this.markers.getFeatureFromEvent = function(evt) {return null;};
+            this.map.addLayer(this.markers);
+            var sf = new OpenLayers.Control.SelectFeature(this.markers);
+            this.map.addControl(sf);
             sf.activate();
         }
         if(!iconUrl) {
@@ -416,24 +419,24 @@ function RepositoryMap (mapId, params) {
         marker.id = id;
         marker.text = text;
         marker.location = location;
+        var theMap = this;
         marker.events.register('click', marker, function(evt) { 
-                theMap.showMarkerPopup(marker);
+                this.showMarkerPopup(marker);
                 OpenLayers.Event.stop(evt); 
             });
-        theMap.markers.addMarker(marker);
+        this.markers.addMarker(marker);
         return marker;
     }
 
-    this.initBoxes = function() {
+    this.initBoxes = function(theBoxes) {
         if(!this.map) {
             //            alert('whoa, no map');
         }
-        var theMap = this;
-        theMap.map.addLayer(theMap.boxes);
+        this.map.addLayer(theBoxes);
         //Added this because I was getting an unknown method error
-        theMap.boxes.getFeatureFromEvent = function(evt) {return null;};
-        var sf = new OpenLayers.Control.SelectFeature(theMap.boxes);
-        theMap.map.addControl(sf);
+        theBoxes.getFeatureFromEvent = function(evt) {return null;};
+        var sf = new OpenLayers.Control.SelectFeature(theBoxes);
+        this.map.addControl(sf);
         sf.activate();
     }
 
@@ -447,14 +450,12 @@ function RepositoryMap (mapId, params) {
             args[a] = params[a];
         }
 
-        var theMap = this;
-        if(!theMap.boxes) {
-            theMap.boxes = new OpenLayers.Layer.Boxes("Boxes");
-            if(!theMap.map) {
-                //                alert("no map");
-                //                return;
+        if(!this.boxes) {
+            this.boxes = new OpenLayers.Layer.Boxes("Boxes");
+            if(!this.map) {
+                this.initialBoxes = this.boxes;
             } else  {
-                this.initBoxes(theMap.boxes);
+                this.initBoxes(this.boxes);
             }
         }
 
@@ -465,13 +466,13 @@ function RepositoryMap (mapId, params) {
         box = new OpenLayers.Marker.Box(bounds);
         if(args["selectable"]) {
             box.events.register("click", box, function (e) {
-                    theMap.showMarkerPopup(box);
+                    this.showMarkerPopup(box);
                     OpenLayers.Event.stop(evt); 
                 });
         }
         box.setBorder(args["color"]);
         box.id = id;
-        theMap.boxes.addMarker(box);
+        this.boxes.addMarker(box);
 
        //        if(zoomToExtent) {
         //            this.map.zoomToExtent(bounds);
@@ -513,7 +514,6 @@ function RepositoryMap (mapId, params) {
     }
 
     this.addPolygon = function(id, points,attrs) {
-        var theMap = this;
         var base_style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
         var style = OpenLayers.Util.extend({}, base_style);
         style.strokeColor = "blue";
@@ -523,17 +523,24 @@ function RepositoryMap (mapId, params) {
                 style[key] = attrs[key];
             }
         }
+
+
+
         if(!this.lines) {
             //            this.lines = new OpenLayers.Layer.Vector("Lines", {style: base_style});
             this.lines = new OpenLayers.Layer.PointTrack("Lines", {style: base_style});
-            this.map.addLayer(this.lines);
+            if(this.map) {
+                this.map.addLayer(this.lines);
+            } else {
+                this.initialLines  = this.lines;
+           }
             /*
-            var sf = new OpenLayers.Control.SelectFeature(theMap.lines,{
+            var sf = new OpenLayers.Control.SelectFeature(this.lines,{
                     onSelect: function(o) {
                         alert(o)
                     }
                 });
-            theMap.map.addControl(sf);
+            this.map.addControl(sf);
             sf.activate();*/
         }
         var lineString = new OpenLayers.Geometry.LineString(points);
@@ -541,7 +548,7 @@ function RepositoryMap (mapId, params) {
                                                         style);
         /*        line.events.register("click", line, function (e) {
                 alert("box click");
-                theMap.showMarkerPopup(box);
+                this.showMarkerPopup(box);
                 OpenLayers.Event.stop(evt); 
                 });*/
 
@@ -557,12 +564,11 @@ function RepositoryMap (mapId, params) {
             this.currentPopup.destroy();
         }
         this.hiliteBox(marker.id);
-        theMap = this;
         popup = new OpenLayers.Popup.FramedCloud("popup", 
                                                  marker.location,
                                                  null,
                                                  marker.text,
-                                                 null, true, function() {theMap.onPopupClose()});
+                                                 null, true, function() {this.onPopupClose()});
         marker.popup = popup;
         popup.marker= marker;
         this.map.addPopup(popup);
