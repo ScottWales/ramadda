@@ -850,7 +850,7 @@ public class IdvOutputHandler extends OutputHandler {
 
         String formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
         sb.append(HtmlUtil.form(formUrl, ""));
-        sb.append(HtmlUtil.submit(msg("Make image"), ARG_SUBMIT));
+        sb.append(HtmlUtil.submit(msg("Make Image"), ARG_SUBMIT));
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
@@ -1538,7 +1538,7 @@ public class IdvOutputHandler extends OutputHandler {
                                          "tab_content"));
 
         sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.submit(msg("Select Fields"), ARG_SUBMIT));
+        sb.append(HtmlUtil.submit(msg("Make Image"), ARG_SUBMIT));
         sb.append(HtmlUtil.formClose());
     }
 
@@ -1609,7 +1609,7 @@ public class IdvOutputHandler extends OutputHandler {
         fields.append(HtmlUtil.p());
 
         sb.append(HtmlUtil.insetLeft(fields.toString(), 10));
-        sb.append(HtmlUtil.submit(msg("Make image"), ARG_SUBMIT));
+        sb.append(HtmlUtil.submit(msg("Select Fields"), ARG_SUBMIT));
         sb.append(HtmlUtil.formClose());
 
 
@@ -1858,6 +1858,7 @@ public class IdvOutputHandler extends OutputHandler {
             String template =
                 getRepository().getResource(
                     "/org/ramadda/repository/resources/googleearth/geplugin.html");
+            url = url.replace(PRODUCT_GEPLUGIN, PRODUCT_KMZ);
             template = template.replace("${kmzurl}", url);
             // fill in the API keys for this machine
             String geAPIKeys = getProperty(PROP_GOOGLEAPIKEYS, null);
@@ -1898,6 +1899,8 @@ public class IdvOutputHandler extends OutputHandler {
                                         request.getString(ARG_IMAGE_HEIGHT,
                                             "500"));
             sb.append(template);
+            //sb.append(HtmlUtil.href(url,
+            //                        "Click here to retrieve the KMZ file"));
         }
 
 
@@ -2724,7 +2727,7 @@ public class IdvOutputHandler extends OutputHandler {
         StringBuffer formSB  = new StringBuffer();
 
         formSB.append(HtmlUtil.form(formUrl, ""));
-        formSB.append(HtmlUtil.submit(msg("Make image"), ARG_SUBMIT));
+        formSB.append(HtmlUtil.submit(msg("Make Image"), ARG_SUBMIT));
         formSB.append(HtmlUtil.p());
         formSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         formSB.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_POINT));
