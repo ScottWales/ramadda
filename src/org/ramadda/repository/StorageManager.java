@@ -1298,6 +1298,7 @@ public class StorageManager extends RepositoryManager {
      */
     public void checkLocalFile(File file) throws Exception {
         if ( !isLocalFileOk(file)) {
+            System.err.println("StorageManager.checkLocalFile bad file location:" + file);
             throw new AccessException(
                 "The specified file is not under one of the allowable file system directories<br>These need to be set by the site administrator",
                 null);
