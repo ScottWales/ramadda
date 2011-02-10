@@ -274,6 +274,11 @@ public class MapInfo {
     }
 
 
+    public String getHiliteHref(String id, String label) {
+        return "<a href=\"javascript:" +getVariableName() +".hiliteMarker(" +HtmlUtil.squote(id) + ");\">"
+            + label + "</a>";
+    }
+
     public static String llp(double lat, double lon) {
         if (lat < -90) {
             lat = -90;

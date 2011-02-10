@@ -1414,21 +1414,39 @@ public class Column implements Constants {
         String id = getFullName();
 
         if (isType(TYPE_LATLON)) {
-            if (request.exists(id + "_lat")) {
-                values[offset] = new Double(request.getString(id + "_lat",
+            if (request.exists(id + "_latitude")) {
+                values[offset] = new Double(request.getString(id + "_latitude",
                         "0").trim());
                 values[offset + 1] = new Double(request.getString(id
-                        + "_lon", "0").trim());
+                        + "_longitude", "0").trim());
+            } else if (request.exists(id + ".latitude")) {
+                values[offset] = new Double(request.getString(id + ".latitude",
+                        "0").trim());
+                values[offset + 1] = new Double(request.getString(id
+                        + ".longitude", "0").trim());
             }
+
         } else if (isType(TYPE_LATLONBBOX)) {
-            values[offset] = new Double(request.get(id + "_north",
-                    Entry.NONGEO));
-            values[offset + 1] = new Double(request.get(id + "_west",
-                    Entry.NONGEO));
-            values[offset + 2] = new Double(request.get(id + "_south",
-                    Entry.NONGEO));
-            values[offset + 3] = new Double(request.get(id + "_east",
-                    Entry.NONGEO));
+            if (request.exists(id + "_north")) {
+                values[offset] = new Double(request.get(id + "_north",
+                                                        Entry.NONGEO));
+                values[offset + 1] = new Double(request.get(id + "_west",
+                                                            Entry.NONGEO));
+                values[offset + 2] = new Double(request.get(id + "_south",
+                                                            Entry.NONGEO));
+                values[offset + 3] = new Double(request.get(id + "_east",
+                                                            Entry.NONGEO));
+            } else {
+                values[offset] = new Double(request.get(id + ".north",
+                                                        Entry.NONGEO));
+                values[offset + 1] = new Double(request.get(id + ".west",
+                                                            Entry.NONGEO));
+                values[offset + 2] = new Double(request.get(id + ".south",
+                                                            Entry.NONGEO));
+                values[offset + 3] = new Double(request.get(id + ".east",
+                                                            Entry.NONGEO));
+
+            }
         } else if (isDate()) {
             values[offset] = request.getDate(id, new Date());
         } else if (isType(TYPE_BOOLEAN)) {

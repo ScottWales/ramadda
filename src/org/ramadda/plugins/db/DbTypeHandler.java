@@ -2144,7 +2144,6 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-
         int          width      = 700;
         int          height     = 500;
         MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
@@ -2195,9 +2194,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         getRepository().getUrlBase() + "/db/database_go.png",
                         msg("View entry"))));
             rightSide.append(" ");
-            rightSide.append("<a href=\"javascript:hiliteEntry(" + map.getVariableName()
-                             + "," + HtmlUtil.squote(dbid) + ");\">"
-                             + getLabel(entry, values) + "</a>");
+            rightSide.append(map.getHiliteHref(dbid, getLabel(entry, values)));
 
             rightSide.append(HtmlUtil.br());
             String info = getHtml(request, entry, dbid, columns, values);
@@ -2205,12 +2202,12 @@ public class DbTypeHandler extends BlobTypeHandler {
             info = info.replace("\n", " ");
             info = info.replace("\"", "\\\"");
             if ( !bbox) {
-                map.addMarker("",  new LatLonPointImpl(south, east), icon, info);
+                map.addMarker(dbid,  new LatLonPointImpl(lat,lon), icon, info);
             } else {
                 if ( !makeRectangles) {
-                    map.addMarker("", new LatLonPointImpl(south, east), icon, info);
+                    map.addMarker(dbid, new LatLonPointImpl(south, east), icon, info);
                 } else {
-                    map.addMarker("", new LatLonPointImpl(south+ (north - south) / 2, west + (east - west) / 2), icon, info);
+                    map.addMarker(dbid, new LatLonPointImpl(south+ (north - south) / 2, west + (east - west) / 2), icon, info);
                 }
             }
         }
@@ -2218,7 +2215,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append(
             "<table cellpadding=5 border=\"0\" width=\"100%\"><tr valign=\"top\"><td width="
             + width + ">");
-        map.centerOn(null);
+        map.center();
         sb.append(map.getHtml());
         sb.append("</td><td>");
         sb.append(rightSide);
