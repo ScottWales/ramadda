@@ -1467,9 +1467,9 @@ public class DataOutputHandler extends OutputHandler {
 
         if (request.get(ARG_LOCATION, true)) {
             llp = new LatLonPointImpl(
-                request.getLatOrLonValue(ARG_AREA + ".latitude", deflat),
+                request.getLatOrLonValue(ARG_LOCATION + ".latitude", deflat),
                 request.getLatOrLonValue(
-                    ARG_AREA + ".longitude", deflon));
+                    ARG_LOCATION + ".longitude", deflon));
         }
         double levelVal   = request.get(ARG_LEVEL, Double.NaN);
 
@@ -1656,7 +1656,7 @@ public class DataOutputHandler extends OutputHandler {
             lon = Misc.format(llr.getCenterLon());
         }
         MapInfo map = getRepository().getMapManager().createMap(request,  true);
-        String llb =  map.makeSelector(ARG_AREA, true, new String[] { lat, lon });
+        String llb =  map.makeSelector(ARG_LOCATION, true, new String[] { lat, lon });
         sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
 
         if ((dates != null) && (dates.size() > 0)) {
@@ -1979,115 +1979,6 @@ public class DataOutputHandler extends OutputHandler {
         Date[]       dateRange = null;
         List<Date>   dates     = getGridDates(dataset);
         StringBuffer varSB     = getVariableForm(dataset, false);
-
-        /*
-        List<GridDatatype> grids     = dataset.getGrids();
-        StringBuffer varSB     = new StringBuffer();
-        HashSet<Date>      dateHash  = new HashSet<Date>();
-        List<CoordinateAxis1DTime> timeAxes =
-            new ArrayList<CoordinateAxis1DTime>();
-
-        for (GridDatatype grid : grids) {
-            GridCoordSystem      gcs      = grid.getCoordinateSystem();
-            CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-            if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
-                timeAxes.add(timeAxis);
-
-                Date[] timeDates = timeAxis.getTimeDates();
-                for (Date timeDate : timeDates) {
-                    dateHash.add(timeDate);
-                }
-            }
-        }
-        dates = Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
-        Collections.sort(dates);
-        */
-        /*
-        for (VariableSimpleIF var : dataset.getDataVariables()) {
-            //            System.err.println("var:" + var.getName() + " type:"
-            //                               + var.getClass().getName());
-            if (var instanceof CoordinateAxis) {
-                CoordinateAxis ca       = (CoordinateAxis) var;
-                AxisType       axisType = ca.getAxisType();
-                if (axisType == null) {
-                    continue;
-                }
-                if (axisType.equals(AxisType.Time)) {
-                    dates = (List<Date>) Misc.sort(
-                        ThreddsMetadataHandler.getDates(var, ca));
-                }
-                continue;
-            }
-        }
-        */
-        /*
-        int varCnt = 0;
-
-        for (GridDatatype grid : sortGrids(dataset)) {
-            String cbxId = "varcbx_" + (varCnt++);
-            String call = HtmlUtil.attr(
-                              HtmlUtil.ATTR_ONCLICK,
-                              HtmlUtil.call(
-                                  "checkboxClicked",
-                                  HtmlUtil.comma(
-                                      "event", HtmlUtil.squote(ARG_VARIABLE),
-                                      HtmlUtil.squote(cbxId))));
-
-
-            VariableEnhanced var = grid.getVariable();
-            varSB.append(
-                HtmlUtil.row(
-                    HtmlUtil.cols(
-                        HtmlUtil.checkbox(
-                            ARG_VARIABLE + "." + var.getShortName(),
-                            HtmlUtil.VALUE_TRUE, false,
-                            HtmlUtil.id(cbxId) + call) + HtmlUtil.space(1)
-                                + var.getName() + HtmlUtil.space(1)
-                                + ((var.getUnitsString() != null)
-                                   ? "(" + var.getUnitsString() + ")"
-                                   : ""), "<i>" + var.getDescription()
-                                          + "</i>")));
-
-        }
-
-        if ((dates != null) && (dates.size() > 0)) {
-            List formattedDates = new ArrayList();
-            for (Date date : dates) {
-                formattedDates.add(getRepository().formatDate(request, date));
-            }
-            String fromDate = request.getUnsafeString(ARG_FROMDATE,
-                                  getRepository().formatDate(request,
-                                      dates.get(0)));
-            String toDate = request.getUnsafeString(ARG_TODATE,
-                                getRepository().formatDate(request,
-                                    dates.get(dates.size() - 1)));
-            sb.append(
-                HtmlUtil.formEntry(
-                    msgLabel("Time Range"),
-                    HtmlUtil.checkbox(
-                        ARG_SUBSETTIME, HtmlUtil.VALUE_TRUE,
-                        request.get(ARG_SUBSETTIME, true)) + HtmlUtil.space(
-                            1) + HtmlUtil.select(
-                            ARG_FROMDATE, formattedDates,
-                            fromDate) + HtmlUtil.img(iconUrl(ICON_ARROW))
-                                      + HtmlUtil.select(
-                                          ARG_TODATE, formattedDates,
-                                          toDate)));
-        }
-        */
-
-
-        /*
-          for (CoordinateSystem coordSys : (List<CoordinateSystem>)dataset
-          .getCoordinateSystems()) {
-          ProjectionImpl proj = coordSys.getProjection();
-          if (proj == null) {
-          continue;
-          }
-          break;
-          }
-        */
-
         LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,  true);
@@ -3294,9 +3185,9 @@ public class DataOutputHandler extends OutputHandler {
     private static JFreeChart createChart(Request request, Entry entry,
                                           XYDataset dataset) {
         LatLonPointImpl llp = new LatLonPointImpl(
-                request.getLatOrLonValue(ARG_AREA + ".latitude", 0),
+                request.getLatOrLonValue(ARG_LOCATION + ".latitude", 0),
                 request.getLatOrLonValue(
-                    ARG_AREA + ".longitude", 0));
+                    ARG_LOCATION + ".longitude", 0));
         String title = entry.getName() + " at " + llp.toString();
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
