@@ -1315,11 +1315,15 @@ public class StorageManager extends RepositoryManager {
      */
     public boolean isLocalFileOk(File file) {
         boolean ok = false;
+        //        System.err.println ("StorageManager: isLocalFileOk:" +file);
         for (File parent : getRepository().getLocalFilePaths()) {
+            //            System.err.println ("      Checking:" +parent);
             if (IOUtil.isADescendent(parent, file)) {
+                //                System.err.println ("      OK");
                 return true;
             }
         }
+        //        System.err.println ("      NOT OK");
         return false;
     }
 
