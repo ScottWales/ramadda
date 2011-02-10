@@ -101,7 +101,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
         String unit = null;
         if (sourceFile.indexOf("ppt") > 0) { // precip
                 param = "Precipitation";
-                unit = "%";
+                unit = "mm";
         } else {   // some sort of temp
                 unit = "degC";
                 if (sourceFile.indexOf("tmx") > 0) {

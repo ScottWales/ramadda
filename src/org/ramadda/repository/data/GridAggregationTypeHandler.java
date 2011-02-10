@@ -42,6 +42,8 @@ import java.io.File;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -114,6 +116,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             //TODO: figure this out.
 
         }
+        List<String> sortedChillens = new ArrayList<String>();
         for (Entry child :
                 getRepository().getEntryManager().getChildren(request,
                     entry)) {
@@ -121,8 +124,13 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 //TODO: aggregation of aggregations
                 continue;
             }
+            sortedChillens.add(child.getResource().getPath());
+        }
+        if (typeToUse.equals(TYPE_JOINEXISTING)) {
+        	Collections.sort(sortedChillens);
+        }
+        for (String s : sortedChillens) {
 
-            String s = child.getResource().getPath();
             sb.append(XmlUtil.tag("netcdf",
                                   XmlUtil.attrs("location",
                                       IOUtil.getURL(s,
