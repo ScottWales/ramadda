@@ -38,6 +38,7 @@ import org.ramadda.repository.type.*;
 import ucar.unidata.sql.*;
 import ucar.unidata.util.DateUtil;
 
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -2144,13 +2145,9 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
 
-        StringBuffer js         = new StringBuffer();
-        String       mapVarName = "mapstraction" + HtmlUtil.blockCnt++;
         int          width      = 700;
         int          height     = 500;
-
-        //        js.append(mapVarName + ".resizeTo(" + width + "," + height + ");\n");
-
+        MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
         boolean      makeRectangles = valueList.size() <= 20;
 
         String       icon           = getRepository().getUrlBase()
@@ -2178,7 +2175,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
 
             if (bbox) {
-                js.append(mapVarName +".addBox('', " + north +"," +west +"," + south +"," +east +");\n");
+                map.addBox("", "red", false,  north, west , south,east);
             }
             rightSide.append("\n");
             if (canEdit) {
@@ -2198,7 +2195,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         getRepository().getUrlBase() + "/db/database_go.png",
                         msg("View entry"))));
             rightSide.append(" ");
-            rightSide.append("<a href=\"javascript:hiliteEntry(" + mapVarName
+            rightSide.append("<a href=\"javascript:hiliteEntry(" + map.getVariableName()
                              + "," + HtmlUtil.squote(dbid) + ");\">"
                              + getLabel(entry, values) + "</a>");
 
@@ -2208,37 +2205,21 @@ public class DbTypeHandler extends BlobTypeHandler {
             info = info.replace("\n", " ");
             info = info.replace("\"", "\\\"");
             if ( !bbox) {
-                js.append(mapVarName+".addMarker(''," +
-                          MapOutputHandler.llp(south, east) + 
-                          "," + HtmlUtil.squote(icon) +
-                          "," + HtmlUtil.squote(info) +
-                          ");\n");
+                map.addMarker("",  new LatLonPointImpl(south, east), icon, info);
             } else {
                 if ( !makeRectangles) {
-                    js.append(mapVarName+".addMarker(''," +
-                              MapOutputHandler.llp(south, east) + 
-                              "," + HtmlUtil.squote(icon) +
-                              "," + HtmlUtil.squote(info) +
-                              ");\n");
-
+                    map.addMarker("", new LatLonPointImpl(south, east), icon, info);
                 } else {
-                    js.append(mapVarName+".addMarker(''," +
-                              MapOutputHandler.llp(south+ (north - south) / 2, 
-                                                        west + (east - west) / 2) + 
-                              "," + HtmlUtil.squote(icon) +
-                              "," + HtmlUtil.squote(info) +
-                              ");\n");
+                    map.addMarker("", new LatLonPointImpl(south+ (north - south) / 2, west + (east - west) / 2), icon, info);
                 }
             }
         }
-        js.append(mapVarName + ".autoCenterAndZoom();\n");
 
         sb.append(
             "<table cellpadding=5 border=\"0\" width=\"100%\"><tr valign=\"top\"><td width="
             + width + ">");
-        getRepository().getMapManager().initMap(request, mapVarName, sb,
-                width, height, true);
-        sb.append(HtmlUtil.script(js.toString()));
+        map.centerOn(null);
+        sb.append(map.getHtml());
         sb.append("</td><td>");
         sb.append(rightSide);
         sb.append("</td></tr></table>");
