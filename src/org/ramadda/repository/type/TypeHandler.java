@@ -409,11 +409,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-     * @param mapVarName _more_
-     * @param jsBuff _more_
      */
-    public void addToMap(Request request, Entry entry, String mapVarName,
-                         StringBuffer jsBuff) {}
+    public void addToMap(Request request, Entry entry, MapInfo map) {}
 
     public String getEntryText(Entry entry) {
         return entry.getDescription();

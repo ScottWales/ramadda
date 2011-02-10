@@ -33,6 +33,8 @@ import java.util.List;
 /**
  */
 public class MapInfo {
+    public static final String DFLT_BOX_COLOR = "blue";
+
     public static final int DFLT_WIDTH = 600;
     public static final int DFLT_HEIGHT = 450;
 
@@ -184,20 +186,20 @@ public class MapInfo {
 
 
 
-    public void addBox(Entry entry, String color, boolean selectable) {
-        addBox(entry.getId(), color, selectable,  entry.getNorth(),
+    public void addBox(Entry entry, MapProperties properties) {
+        addBox(entry.getId(), properties,  entry.getNorth(),
                entry.getWest(),
                entry.getSouth(),
                entry.getEast());
     }
 
-    public void addBox(String id, LatLonRect llr, String color, boolean selectable) {
-        addBox(id, color, selectable,  llr.getLatMax(), llr.getLonMin(), llr.getLatMin(),  llr.getLonMax());
+    public void addBox(String id, LatLonRect llr, MapProperties properties) {
+        addBox(id, properties,  llr.getLatMax(), llr.getLonMin(), llr.getLatMin(),  llr.getLonMax());
     }
 
 
-    public void addBox(String id, String color, boolean selectable,  double north, double west, double south, double east) {
-        getJS().append("var mapBoxAttributes = {\"color\":\""+ color +"\",\"selectable\": "+ selectable +"};\n");
+    public void addBox(String id, MapProperties properties,  double north, double west, double south, double east) {
+        getJS().append("var mapBoxAttributes = {\"color\":\""+ properties.color +"\",\"selectable\": "+ properties.selectable +"};\n");
         getJS().append(mapVarName +".addBox(" + HtmlUtil.squote(id) +"," +
                        north +"," +
                        west +"," +
@@ -206,11 +208,23 @@ public class MapInfo {
     }
 
 
-
     public void addLine(String id, LatLonPointImpl fromPt, LatLonPointImpl toPt) {
         addLine(id, fromPt.getLatitude(),fromPt.getLongitude(),
                 toPt.getLatitude(),toPt.getLongitude());
     }
+
+    public void addLines(String id, double[][]pts) {
+        for(int i=1;i<pts.length;i++) {
+            addLine(id, pts[i-1][0], pts[i-1][1], pts[i][0],pts[i][1]);
+        }
+    }
+
+    public void addLines(String id, List<double[]>pts) {
+        for(int i=1;i<pts.size();i++) {
+            addLine(id, pts.get(i-1)[0], pts.get(i-1)[1], pts.get(i)[0],pts.get(i)[1]);
+        }
+    }
+
 
     public void addLine(String id, double fromLat, double fromLon,
                         double toLat, double toLon) {
@@ -355,6 +369,15 @@ public class MapInfo {
     }
 
 
+    public static class MapProperties {
+        String color = DFLT_BOX_COLOR;
+        boolean selectable = false;
+        
+        public MapProperties(String color, boolean selectable) {
+            this.color = color;
+            this.selectable = selectable;
+        }
 
+    }
 
 }

@@ -230,15 +230,15 @@ public class MapOutputHandler extends OutputHandler {
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
 
         boolean makeRectangles = cnt <= 20;
+        MapInfo.MapProperties mapProperties = new MapInfo.MapProperties("blue", true);
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
             if (entry.hasAreaDefined()) {
-                map.addBox(entry, "blue", true);
+                map.addBox(entry, mapProperties);
             }
 
             if(makeRectangles) {
-                //TODO
-                //               entry.getTypeHandler().addToMap(request, entry, mapVarName, js);
+                entry.getTypeHandler().addToMap(request, entry, map);
             }
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 String info =
