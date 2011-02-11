@@ -50,7 +50,7 @@ import java.util.List;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class Entry extends Entity {
+public class Entry  implements Cloneable { 
 
     /** _more_ */
     public static final String IDDELIMITER = ":";
@@ -61,6 +61,54 @@ public class Entry extends Entity {
     /** _more_ */
     public static final double NONGEO = -999999;
 
+
+
+    /** _more_ */
+    List<Comment> comments;
+
+    /** _more_ */
+    List<Permission> permissions = null;
+
+    /** _more_ */
+    Hashtable permissionMap = new Hashtable();
+
+    /** _more_ */
+    List<Association> associations;
+
+
+    /** _more_ */
+    List<Metadata> metadata;
+
+    /** _more_ */
+    private String id;
+
+    /** _more_ */
+    private String name = "";
+
+    /** _more_ */
+    private String description = "";
+
+    /** _more_ */
+    private Entry parentEntry;
+
+    /** _more_ */
+    private String parentEntryId;
+
+    /** _more_ */
+    private String treeId;
+
+
+    /** _more_ */
+    private User user;
+
+    /** _more_ */
+    private long createDate;
+
+    private long changeDate;
+
+
+    /** _more_ */
+    boolean isDummy = false;
 
     /** _more_ */
     Object[] values;
@@ -136,9 +184,11 @@ public class Entry extends Entity {
     public Entry() {}
 
     public Entry(Entry that) {
-        super(that);
+        //        super(that);
         initWith(that);
     }
+
+
     /**
      * _more_
      *
@@ -220,6 +270,7 @@ public class Entry extends Entity {
      */
     public Object clone() throws CloneNotSupportedException {
         Entry that = (Entry) super.clone();
+        that.associations = null;
         return that;
     }
 
@@ -311,7 +362,16 @@ public class Entry extends Entity {
                           User user, Resource resource, String dataType,
                           long createDate, long changeDate, long startDate, long endDate,
                           Object[] values) {
-        super.init(name, description, parentEntry, user, createDate,changeDate);
+        //        super.init(name, description, parentEntry, user, createDate,changeDate);
+        this.id          = id;
+        this.name        = name;
+        this.description = description;
+        this.parentEntry = parentEntry;
+        this.user        = user;
+        this.createDate  = createDate;
+        this.changeDate  = changeDate;
+
+
         this.resource = resource;
         this.dataType = dataType;
         if ((dataType == null) || (dataType.length() == 0)) {
@@ -324,6 +384,12 @@ public class Entry extends Entity {
         this.endDate   = endDate;
         this.values    = values;
     }
+
+
+
+
+
+
 
 
     /**
@@ -372,8 +438,8 @@ public class Entry extends Entity {
      * @param value _more_
      */
     public void setDate(long value) {
-        super.setCreateDate(value);
-        super.setChangeDate(value);
+        setCreateDate(value);
+        setChangeDate(value);
         setStartDate(value);
         setEndDate(value);
     }
@@ -504,7 +570,7 @@ public class Entry extends Entity {
     }
 
     public String toString() {
-        return super.toString() +"  type:" + getTypeHandler();
+        return name + " id:" + id +"  type:" + getTypeHandler();
     }
 
     /**
@@ -582,12 +648,25 @@ public class Entry extends Entity {
      * @return _more_
      */
     public String getLabel() {
-        String label = super.getLabel();
+        String label = getBaseLabel();
         if (label.length() > 0) {
             return label;
         }
         return getTypeHandler().getLabel() + ": " + new Date(startDate);
     }
+
+    public String getBaseLabel() {
+        if ((name != null) && (name.trim().length() > 0)) {
+            return name;
+        }
+        if ((description != null) && (description.trim().length() > 0)) {
+            return description;
+        }
+        return "";
+
+    }
+
+
 
     public void setLocation(Entry that) {
         this.north = that.north;
@@ -1007,6 +1086,418 @@ public class Entry extends Entity {
     public List<Entry> getSubEntries() {
         return subEntries;
     }
+
+    public void init(String name, String description, Entry parentEntry,
+                     User user, long createDate, long changeDate) {
+        this.name        = name;
+        this.description = description;
+        this.parentEntry = parentEntry;
+        this.user        = user;
+        this.createDate  = createDate;
+        this.changeDate  = changeDate;
+    }
+
+
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param o _more_
+     *
+     * @return _more_
+     */
+    public boolean equals(Object o) {
+        if ( !o.getClass().equals(getClass())) {
+            return false;
+        }
+        Entry that = (Entry) o;
+        return Misc.equals(this.id, that.id);
+    }
+
+
+
+    /**
+     * Set the CreateDate property.
+     *
+     * @param value The new value for CreateDate
+     */
+    public void setCreateDate(long value) {
+        createDate = value;
+    }
+
+    /**
+     * Get the CreateDate property.
+     *
+     * @return The CreateDate
+     */
+    public long getCreateDate() {
+        return createDate;
+    }
+
+
+
+    /**
+     * Set the ChangeDate property.
+     *
+     * @param value The new value for ChangeDate
+     */
+    public void setChangeDate(long value) {
+        changeDate = value;
+    }
+
+    /**
+     * Get the ChangeDate property.
+     *
+     * @return The ChangeDate
+     */
+    public long getChangeDate() {
+        return changeDate;
+    }
+
+    /**
+     * Set the Group property.
+     *
+     * @param value The new value for Group
+     * @deprecated use setParentEntry
+     */
+    public void setParentEntry(Entry value) {
+        parentEntry = value;
+        if (parentEntry != null) {
+            parentEntryId = parentEntry.getId();
+        } else {
+            parentEntryId = null;
+        }
+    }
+
+
+
+    public Entry getParentEntry() {
+        return parentEntry;
+    }
+
+
+
+    /**
+     * Set the ParentId property.
+     *
+     * @param value The new value for ParentId
+     */
+    public void setParentGroupId(String value) {
+        setParentEntryId(value);
+    }
+
+    public void setParentEntryId(String value) {
+        parentEntryId = value;
+    }
+
+    /**
+     * Get the ParentId property.
+     *
+     * @return The ParentId
+     * @deprecated use getParentEntryId
+     */
+    public String xxxgetParentGroupId() {
+        return getParentEntryId();
+    }
+
+    public String getParentEntryId() {
+        return ((parentEntry != null)
+                ? parentEntry.getId()
+                : parentEntryId);
+    }
+
+
+
+
+    /**
+     * Set the Name property.
+     *
+     * @param value The new value for Name
+     */
+    public void setName(String value) {
+        name = value;
+    }
+
+    /**
+     * Get the Name property.
+     *
+     * @return The Name
+     */
+    public String getName() {
+        return name;
+    }
+
+
+
+    /**
+     * Set the Description property.
+     *
+     * @param value The new value for Description
+     */
+    public void setDescription(String value) {
+        description = value;
+    }
+
+    /**
+     * Get the Description property.
+     *
+     * @return The Description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Set the Id property.
+     *
+     * @param value The new value for Id
+     */
+    public void setId(String value) {
+        id = value;
+    }
+
+    /**
+     * Get the Id property.
+     *
+     * @return The Id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     *  Set the User property.
+     *
+     *  @param value The new value for User
+     */
+    public void setUser(User value) {
+        user = value;
+    }
+
+    /**
+     *  Get the User property.
+     *
+     *  @return The User
+     */
+    public User getUser() {
+        return user;
+    }
+
+
+
+    /**
+     * _more_
+     */
+    public void clearMetadata() {
+        metadata = null;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public boolean addMetadata(Metadata value) {
+        return addMetadata(value, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public boolean hasMetadata(Metadata value) {
+        if (metadata == null) {
+            return false;
+        }
+        return metadata.contains(value);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     * @param checkUnique _more_
+     *
+     * @return _more_
+     */
+    public boolean addMetadata(Metadata value, boolean checkUnique) {
+        if (metadata == null) {
+            metadata = new ArrayList<Metadata>();
+        }
+        if (checkUnique && metadata.contains(value)) {
+            return false;
+        }
+        metadata.add(value);
+        return true;
+    }
+
+
+    /**
+     * Set the Metadata property.
+     *
+     * @param value The new value for Metadata
+     */
+    public void setMetadata(List<Metadata> value) {
+        metadata = value;
+    }
+
+    /**
+     * Get the Metadata property.
+     *
+     * @return The Metadata
+     */
+    public List<Metadata> getMetadata() {
+        return metadata;
+    }
+
+
+
+    public void clearAssociations() {
+        associations = null;
+    }
+
+
+    /**
+     * Set the Associations property.
+     *
+     * @param value The new value for Associations
+     */
+    public void setAssociations(List<Association> value) {
+        associations = value;
+    }
+
+    /**
+     * Get the Associations property.
+     *
+     * @return The Associations
+     */
+    public List<Association> getAssociations() {
+        return associations;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void addAssociation(Association value) {
+        if (associations == null) {
+            associations = new ArrayList<Association>();
+        }
+        associations.add(value);
+
+    }
+
+
+    /**
+     * Set the Comments property.
+     *
+     * @param value The new value for Comments
+     */
+    public void setComments(List<Comment> value) {
+        comments = value;
+    }
+
+    /**
+     * Get the Comments property.
+     *
+     * @return The Comments
+     */
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void addComment(Comment value) {
+        if (comments == null) {
+            comments = new ArrayList<Comment>();
+        }
+        comments.add(value);
+
+    }
+
+
+
+    /**
+     * Set the Permissions property.
+     *
+     * @param value The new value for Permissions
+     */
+    public void setPermissions(List<Permission> value) {
+        permissions   = value;
+        permissionMap = new Hashtable();
+        if (permissions != null) {
+            for (Permission permission : permissions) {
+                permissionMap.put(permission.getAction(),
+                                  permission.getRoles());
+            }
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param action _more_
+     *
+     * @return _more_
+     */
+    public List getRoles(String action) {
+        return (List) permissionMap.get(action);
+    }
+
+
+    /**
+     * Get the Permissions property.
+     *
+     * @return The Permissions
+     */
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void addPermission(Permission value) {
+        if (permissions == null) {
+            permissions = new ArrayList<Permission>();
+        }
+        permissions.add(value);
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isDummy() {
+        return isDummy;
+    }
+
+
+
 
 
 }
