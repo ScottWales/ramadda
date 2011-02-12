@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../" default="plugins" name="Ramadda Plugins">
+
+    <target name="init">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property  name="version" value="1.1"/>
+
+
+        <property name="srcdir" value="${basedir}/src"/>
+        <property name="libdir" value="${basedir}/lib"/>
+
+        <property name="distdir" value="${basedir}/dist"/>
+        <mkdir dir="${distdir}"/>
+
+        <property name="plugindestdir" value="${distdir}/plugins"/>
+        <mkdir dir="${plugindestdir}"/>
+
+
+        <property name="releasedir" value="${distdir}/repository" />
+
+
+        <property name="geoclasspath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/repositorytds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+        <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/repositorytds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+
+        <property  name="build.sysclasspath" value="ignore"/>
+        <property name="compiledir" value="${srcdir}"/>
+        <property name="failonerror" value="true"/>
+        <property name="srcversion" value="1.6"/>
+
+    </target>
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compiledir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+    <target name="plugins" depends="init">
+      <echo message="Building RAMADDA plugins"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/dif/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/iso/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/thredds/build.xml" inheritAll="false"/>
+    </target>
+
+
+
+
+</project>
