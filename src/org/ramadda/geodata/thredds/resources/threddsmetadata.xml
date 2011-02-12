@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
 
-  <handler class="org.ramadda.repository.data.ThreddsMetadataHandler" category="THREDDS">
+  <handler class="org.ramadda.geodata.thredds.ThreddsMetadataHandler" category="THREDDS">
 
     <type name="Project" id="thredds.project"  searchable="true" browsable="true">
       <element name="Value" />

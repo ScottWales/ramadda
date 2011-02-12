@@ -344,24 +344,6 @@ public class EntryManager extends RepositoryManager {
          *                             CatalogTypeHandler.getCatalogId(url)));
          *
          */
-        /*
-
-Element root = XmlUtil.getRoot(url, getClass());
-if (root == null) {
-sb.append("Could not load catalog: " + url);
-return new Result(title, sb);
-}
-Element child = (Element)XmlUtil.findChild(root,
-                     CatalogOutputHandler.TAG_DATASET);
-
-if(child!=null) root = child;
-String name = XmlUtil.getAttribute(root, ATTR_NAME,"");
-sb.append(name);
-sb.append("<ul>");
-recurseCatalog(request, root,sb);
-sb.append("</ul>");
-return new Result(title, sb);
-        */
     }
 
     /**
