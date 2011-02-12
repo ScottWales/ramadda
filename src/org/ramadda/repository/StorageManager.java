@@ -619,7 +619,7 @@ public class StorageManager extends RepositoryManager {
             File f = new File(logDir);
             IOUtil.makeDirRecursive(f);
 
-            if(!getRepository().isReadOnly()) {
+            if(getRepository().isReadOnly()) {
                 System.err.println("RAMADDA: skipping log4j");
                 return logDir;
             }

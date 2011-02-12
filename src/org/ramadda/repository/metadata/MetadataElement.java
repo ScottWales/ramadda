@@ -336,6 +336,8 @@ public class MetadataElement extends MetadataTypeBase {
         if (dataType.equals(TYPE_FILE)) {
             return null;
         }
+        String tab = StringUtil.padLeft(" ", depth);
+        System.err.println(tab + "getHtml " + getName() + " " + getDataType());
         String html = null;
         if (getDataType().equals(TYPE_GROUP)) {
             boolean debug = getName().indexOf("Phone")>=0;
@@ -348,6 +350,8 @@ public class MetadataElement extends MetadataTypeBase {
             List<StringBuffer> subEntries = new ArrayList<StringBuffer>();
             boolean anyChildrenGroups = false;
             int childCnt = 0;
+
+            System.err.println(tab + getName() + " " + groupMetadata.size());
             for (Metadata metadata : groupMetadata) {
                 entryCnt++;
                 StringBuffer subEntrySB = null;
@@ -356,46 +360,48 @@ public class MetadataElement extends MetadataTypeBase {
                     if (subValue == null) {
                         continue;
                     }
-                    boolean isGroup = element.getDataType().equals(TYPE_GROUP);
-                    if(isGroup) {
+                    boolean childIsGroup = element.getDataType().equals(TYPE_GROUP);
+                    if(childIsGroup) {
                         anyChildrenGroups = true;
                     }
-                    StringBuffer childSB = new StringBuffer();
-                    FormInfo formInfo = element.getHtml(/*childSB,*/ subValue, depth+1);
+                    FormInfo formInfo = element.getHtml(subValue, depth+1);
                     if(formInfo==null) {
                         continue;
                     }
-                     if(isGroup || formInfo.content.length()>0) {
-                        childSB.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
-                        if(childSB.length()>0) {
-                            childCnt++;
-                            if(subEntrySB==null) {
-                                subEntrySB = new StringBuffer();
-                                subEntries.add(subEntrySB);
-                            }
-                            if(isGroup) {
-                                subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
-                            }
-                            subEntrySB.append(childSB);
-                            if(isGroup) {
-                                subEntrySB.append("</td></tr>\n");
-                            }
+                    System.err.println (tab+"formInfo:" + formInfo.content.length());
+                    if(!childIsGroup || formInfo.content.length()>0) {
+                        childCnt++;
+                        if(subEntrySB==null) {
+                            subEntrySB = new StringBuffer();
+                            subEntries.add(subEntrySB);
+                        }
+                        if(childIsGroup) {
+                            subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
+                        }
+                        subEntrySB.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
+                        if(childIsGroup) {
+                            subEntrySB.append("</td></tr>\n");
                         }
                     }
                 }
-                //                subEntrySB.append("</table>");
             }
-            if(childCnt==0) return null;
+
+            System.err.println (tab + "after " + getName() +    subEntries.size());
+            if(subEntries.size()==0) {
+                System.err.println (tab + getName() +" no subEntries");
+                //                return new FormInfo(getName(),"n/a");
+                //                return null;
+            }
             boolean haveSubEntries = subEntries.size()!=0;
             StringBuffer entriesSB = new StringBuffer();
             if(haveSubEntries && !anyChildrenGroups) {
-                entriesSB.append("<table border=0 width=100% cellpadding=2 cellspacing=2>");
+                entriesSB.append("<table border=1 width=100% cellpadding=2 cellspacing=2>");
             }
-            //                if (!justOne) {
-                    //                    subEntrySB.append("<tr><td colspan=2><hr></td></tr>\n");
-            //                }
+            //if (!justOne) {
+            //subEntrySB.append("<tr><td colspan=2><hr></td></tr>\n");
+            //}
             if(debug) {
-                System.err.println(getName() + " sub:" + subEntries);
+                //                System.err.println(getName() + " sub:" + subEntries);
             }
             for(StringBuffer subEntrySB: subEntries) {
                 if(anyChildrenGroups) {
@@ -432,6 +438,7 @@ public class MetadataElement extends MetadataTypeBase {
         } else {
             html = value;
         }
+        //        System.err.println("   html = " + html);
         if (html != null) {
             String name = getName();
             if (name.length() > 0) {
@@ -452,6 +459,9 @@ public class MetadataElement extends MetadataTypeBase {
         public FormInfo(String label,  String content) {
             this.label = label;
             this.content = content;
+        }
+        public String toString() {
+            return "formInfo:" + label +" " + content;
         }
     }
 
@@ -480,7 +490,7 @@ public class MetadataElement extends MetadataTypeBase {
      *
      * @return _more_
      */
-    public boolean isGroup() {
+    public boolean chidisGroup() {
         return getDataType().equals(TYPE_GROUP);
     }
 
