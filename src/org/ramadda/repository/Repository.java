@@ -392,6 +392,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     private List<String> pluginFiles = new ArrayList<String>();
 
+    private List<PluginClassLoader>  pluginClassLoaders = new ArrayList<PluginClassLoader>();
 
     /** _more_ */
     private List<User> cmdLineUsers = new ArrayList();
@@ -1822,7 +1823,23 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         }
 
 
-
+        public Class loadClass(String name) throws ClassNotFoundException {
+            try {
+                Class clazz =  super.loadClass(name);
+                if(clazz!=null) {
+                    return clazz;
+                }
+                return clazz;            
+            } catch(ClassNotFoundException cnfe) {
+                for(PluginClassLoader loader:pluginClassLoaders) {
+                    Class clazz =  loader.getClassFromPlugin(name);
+                    if(clazz!=null) {
+                        return clazz;
+                    }
+                }
+                throw cnfe;
+            }
+        }
                                    
 
         /**
@@ -1910,6 +1927,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     protected void initPlugins() throws Exception {
         File   dir     = new File(getStorageManager().getPluginsDir());
         File[] plugins = dir.listFiles();
+        Arrays.sort(plugins);
         for (int i = 0; i < plugins.length; i++) {
             if (plugins[i].isDirectory()) {
                 continue;
@@ -1920,6 +1938,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 PluginClassLoader cl = new MyClassLoader(pluginFile,
                                            getClass().getClassLoader());
 
+                pluginClassLoaders.add(cl);
                 Misc.addClassLoader(cl);
                 List entries = cl.getEntryNames();
                 for (int entryIdx = 0; entryIdx < entries.size();
@@ -2390,15 +2409,14 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
 
 
-
     /**
      * _more_
      *
      * @throws Exception _more_
      */
     protected void initOutputHandlers() throws Exception {
-
         for (String file : outputDefFiles) {
+            
             file = getStorageManager().localizePath(file);
             Element root = XmlUtil.getRoot(file, getClass());
             if (root == null) {
@@ -2420,7 +2438,6 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                         (OutputHandler) ctor.newInstance(new Object[] { this,
                             node });
                     addOutputHandler(outputHandler);
-
 
                 } catch (Exception exc) {
                     if ( !required) {
@@ -4015,6 +4032,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             OutputType outputType = link.getOutputType();
             if (isOutputTypeOK(outputType)) {
                 okLinks.add(link);
+            } else {
+                System.err.println ("NOT OK: " + outputType);
             }
         }
         return okLinks;

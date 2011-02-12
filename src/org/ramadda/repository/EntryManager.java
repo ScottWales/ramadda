@@ -4367,6 +4367,7 @@ public class EntryManager extends RepositoryManager {
                                   String rightSide)
             throws Exception {
         List<Link> links = getEntryLinks(request, entry);
+
         String fileMenu = getEntryActionsTable(request, entry,
                                                     OutputType.TYPE_FILE, links,true);
         String editMenu = getEntryActionsTable(request, entry,
@@ -4374,40 +4375,39 @@ public class EntryManager extends RepositoryManager {
         String feedMenu = getEntryActionsTable(request, entry,
                                                     OutputType.TYPE_NONHTML, links,true);
         String viewMenu = getEntryActionsTable(request, entry,
-                                                    //                OutputType.TYPE_HTML | OutputType.TYPE_NONHTML, links,true));
                                                     OutputType.TYPE_HTML, links,true);
 
-        StringBuffer categoryMenuInner = null;
-        String       categoryMenu      = null;
 
+        String       categoryMenu      = null;
+        List<String> menuItems = new ArrayList<String>();
+        String sep = HtmlUtil.div("&nbsp;|&nbsp;",
+                                  HtmlUtil.cssClass("menuseparator"));
+
+
+
+        String menuClass = HtmlUtil.cssClass("entrymenulink");
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_CATEGORY)) {
-                categoryMenuInner =
-                    new StringBuffer(getEntryActionsTable(request, entry,
-                        OutputType.TYPE_CATEGORY, links));
+                categoryMenu =
+                    getEntryActionsTable(request, entry,
+                        OutputType.TYPE_CATEGORY, links);
                 String categoryName = link.getOutputType().getCategory();
                 categoryMenu =
                     getRepository()
                         .makePopupLink(HtmlUtil
-                            .span(msg(categoryName), HtmlUtil
-                                .cssClass("entrymenulink")), categoryMenuInner
+                            .span(msg(categoryName), menuClass), categoryMenu
                                     .toString(), false, true);
                 break;
             }
         }
 
-        List<String> menuItems = new ArrayList<String>();
-        String sep = HtmlUtil.div("&nbsp;|&nbsp;",
-                                  HtmlUtil.cssClass("menuseparator"));
 
         if(fileMenu!=null)  {
             if(menuItems.size()>0)
                 menuItems.add(sep);
             menuItems.add(getRepository().makePopupLink(
                                                         HtmlUtil.span(
-                                                                      msg("File"),
-                                                                      HtmlUtil.cssClass(
-                                                                                        "entrymenulink")), fileMenu, false,  true));
+                                                                      msg("File"), menuClass), fileMenu, false,  true));
 
         }
 
@@ -4416,9 +4416,7 @@ public class EntryManager extends RepositoryManager {
                 menuItems.add(sep);
             menuItems.add(getRepository().makePopupLink(
                                                         HtmlUtil.span(
-                                                                      msg("Edit"),
-                                                                      HtmlUtil.cssClass(
-                                                                                        "entrymenulink")), editMenu, false, true));
+                                                                      msg("Edit"),menuClass), editMenu, false, true));
         }
 
         if(feedMenu!=null)  {
@@ -4427,8 +4425,7 @@ public class EntryManager extends RepositoryManager {
             menuItems.add(getRepository().makePopupLink(
                 HtmlUtil.span(
                     msg("Feeds"),
-                    HtmlUtil.cssClass(
-                        "entrymenulink")), feedMenu, false,true));
+                    menuClass), feedMenu, false,true));
         }
         
         if(viewMenu!=null)  {
@@ -4437,9 +4434,15 @@ public class EntryManager extends RepositoryManager {
             menuItems.add(getRepository().makePopupLink(
                                                         HtmlUtil.span(
                                                                       msg("View"),
-                                                                      HtmlUtil.cssClass(
-                                                                                        "entrymenulink")), viewMenu, false,true));
+                                                                      menuClass), viewMenu, false,true));
         }
+
+        if(categoryMenu!=null)  {
+            if(menuItems.size()>0)
+                menuItems.add(sep);
+            menuItems.add(categoryMenu);
+        }
+
 
         String leftTable;
         leftTable =

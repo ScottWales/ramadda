@@ -200,7 +200,7 @@ public class KmlOutputHandler extends OutputHandler {
 
 
         for (Entry entry : (List<Entry>) entries) {
-            if (WmsImageOutputHandler.isLatLonImage(entry)) {
+            if (isLatLonImage(entry)) {
                 String fileTail = getStorageManager().getFileTail(entry);
                 String url =
                     HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET)
@@ -300,7 +300,10 @@ public class KmlOutputHandler extends OutputHandler {
     }
 
 
-
+    public static boolean isLatLonImage(Entry entry) {
+        return entry.getType().equals("latlonimage")
+               && entry.getResource().isImage();
+    }
 
 
 
