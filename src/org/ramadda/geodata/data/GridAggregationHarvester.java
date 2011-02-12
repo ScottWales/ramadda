@@ -17,7 +17,7 @@
  * 
  */
 
-package org.ramadda.repository.data;
+package org.ramadda.geodata.data;
 
 
 import org.w3c.dom.*;

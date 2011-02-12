@@ -1,6 +1,6 @@
 <types>
 
-  <type name="jythonscript"  description="Repository Script for Data" handler="org.ramadda.repository.data.DataJythonTypeHandler" category="Geo Data">
+  <type name="jythonscript"  description="Repository Script for Data" handler="org.ramadda.geodata.data.DataJythonTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/python.png"/>
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>

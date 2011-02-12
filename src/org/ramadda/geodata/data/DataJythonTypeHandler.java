@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.ramadda.repository.data;
+package org.ramadda.geodata.data;
 
 
 import org.apache.commons.net.ftp.*;
@@ -36,7 +36,7 @@ import ucar.unidata.data.DataSource;
 
 import ucar.unidata.data.grid.GeoGridDataSource;
 import org.ramadda.repository.*;
-import org.ramadda.repository.data.*;
+import org.ramadda.geodata.data.*;
 import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.output.*;

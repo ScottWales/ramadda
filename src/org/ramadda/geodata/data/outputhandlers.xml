@@ -1,12 +1,8 @@
 <outputhandlers>
-  <outputhandler class="org.ramadda.repository.output.WmsImageOutputHandler" name="WMS"/>
-  <outputhandler class="org.ramadda.repository.output.DifOutputHandler" name="GCMD DIF"/>
-  <outputhandler class="org.ramadda.repository.output.IsoOutputHandler" name="ISO 19115"/>
-
+  <outputhandler class="org.ramadda.geodata.data.WmsImageOutputHandler" name="WMS"/>
 <!--
-  <outputhandler class="org.ramadda.repository.data.LasOutputHandler" name="LAS XML"/>
+  <outputhandler class="org.ramadda.geodata.data.LasOutputHandler" name="LAS XML"/>
 -->
-
-  <outputhandler class="org.ramadda.repository.data.DataOutputHandler" name="Data" required="true"/>
-  <outputhandler class="org.ramadda.repository.data.LdmOutputHandler" name="LDM Insert"/>
+  <outputhandler class="org.ramadda.geodata.data.DataOutputHandler" name="Data" required="true"/>
+  <outputhandler class="org.ramadda.geodata.data.LdmOutputHandler" name="LDM Insert"/>
 </outputhandlers>

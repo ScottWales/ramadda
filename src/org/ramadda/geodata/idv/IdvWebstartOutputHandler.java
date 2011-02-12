@@ -24,7 +24,7 @@ package org.ramadda.geodata.idv;
 import org.w3c.dom.*;
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.data.*;
+import org.ramadda.geodata.data.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 

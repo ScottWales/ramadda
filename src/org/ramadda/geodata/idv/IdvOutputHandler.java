@@ -25,7 +25,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.auth.*;
-import org.ramadda.repository.data.*;
+import org.ramadda.geodata.data.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.util.*;
