@@ -75,6 +75,7 @@ used by the javadoc target
             jarfile="${plugindestdir}/${jarfile}">
             <include name="${plugindir}/**/*.class"/>
             <include name="${plugindir}/htdocs/**/*"/>
+            <include name="${plugindir}/resources/**/*"/>
             <include name="${plugindir}/*.xml"/>
             <include name="${plugindir}/*.properties"/>
 	    </jar>
