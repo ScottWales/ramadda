@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project basedir="../../../.." default="all" name="Ramadda">
+<project basedir="../../../../.." default="publisherplugin" name="Ramadda">
 
-    <target name="all" depends="repositoryjar,repositorywar,repositoryzip">
-    </target>
-
-
-    <target name="initbasic">
+    <target name="init">
        <tstamp>
          <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
        </tstamp>
@@ -23,48 +19,11 @@
         <property name="libdir" value="${basedir}/lib"/>
         <property name="repositoryrelpath" value="org/ramadda/repository" />
         <property name="repositorydir" value="${srcdir}/${repositoryrelpath}" />
-
-        <property name="releasedir" value="${distdir}/${rname}" />
-        <property name="tmpjardir" value="${distdir}/tmpjardir" />
-        <property name="srcreleasedir" value="${rname}src${_version}" />
-
-        <property name="repositoryzip" value="${rname}.zip"/>
-        <property name="repositoryjar" value="${rname}.jar"/>
-
-
-	<property name="docsdir" value="${distdir}/${rname}docs"/>
-        <mkdir dir="${docsdir}"/>
-
-        <property name="docs_javadoc_dest" value="${docsdir}/javadoc" />
-        <mkdir dir="${docs_javadoc_dest}"/>
-
         <property name="compiledir" value="${srcdir}"/>
         <property  name="build.sysclasspath" value="ignore"/>
         <property name="failonerror" value="true"/>
         <property name="srcversion" value="1.6"/>
         <property name="javatarget" value="1.6"/>
-
-
-    </target>
-
-    <target name="init" depends="initbasic,initcore,initfull">
-    </target>
-
-
-    <target name="initcore" if="core">
-       <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
-       <property name="manifestjars" value="repositorylib.jar  servlet-api.jar"/>
-       <property name="includesrc1" value=""/>
-       <property name="lib1" value="${libdir}/dummy.jar"/>
-       <property name="lib2" value="${libdir}/dummy.jar"/>
-    </target>
-
-    <target name="initfull">
-       <property name="classpath" value="${libdir}/idv.jar:${libdir}/repositorylib.jar:${libdir}/repositorytds.jar:${libdir}/servlet-api.jar"/>
-       <property name="manifestjars" value="idv.jar repositorylib.jar  repositorytds.jar servlet-api.jar"/>
-       <property name="includesrc1" value="${repositoryrelpath}/data/*.java"/>
-       <property name="lib1" value="${libdir}/visad.jar" />
-       <property name="lib2" value="${libdir}/local-visad.jar"/>
     </target>
 
 
@@ -73,53 +32,94 @@
             <fileset dir="${compiledir}" includes="**/*.class"/>
         </delete>
     </target>
-
-    <target name="runserver" depends="init">
-      <java classname="org.ramadda.repository.server.RepositoryServer" maxmemory="512mb" fork="true">
-          <arg value="-port"/>
-          <arg value="8080"/>
-<!--
-          <arg value="-Dramadda.db=mysql"/>
--->
-          <arg value="-Dramadda.cacheresources=false"/>
-          <classpath>
-             <pathelement path="${distdir}/${repositoryjar}"/>
-             <pathelement path="${classpath}"/>
-             <pathelement location=""/>
-         </classpath>
-     </java>
-   </target>
-
-
-    <target name="release" depends="init,clean">
-<!--
-        <antcall target="repositorylib"/>
--->
-        <antcall target="repositoryjar"/>
-        <antcall target="repositoryzip"/>
-        <antcall target="repositorywar"/>
-        <antcall target="clientjar"/>
-    </target>
-
-
-    <target name="download" depends="init">
-        <scp
-            todir="${user.name}@conan:/web/ftp/pub/ramadda/ramadda1.1"
-            keyfile="${user.home}/.ssh/id_dsa"
-            passphrase=""
+    <target name="publisherplugin" depends="init,clean">
+        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <javac
+            verbose="false"
+            classpath="${pluginclasspath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            fork="true"
+            memoryMaximumSize="256m"
+            target="${javatarget}"
         >
-        <fileset  dir="${libdir}" includes="repository.war,repository_src.jar,${repositoryzip},repositoryclient.jar,repositoryclient.zip"/>
-        </scp>
+        <include name="org/ramadda/geodata/publisher/RamaddaPublisher.java"/>
+        <include name="${repositoryrelpath}/client/InteractiveRepositoryClient.java"/>
+        </javac>
+        <jar 
+            basedir="${compiledir}"
+            update="false"
+            compress="true"
+            jarfile="${distdir}/ramaddaplugin.jar">
+
+            <include name="org/ramadda/geodata/publisher/**/*.class"/> 
+            <include name="${repositoryrelpath}/**/*.class"/> 
+            <include name="org/ramadda/util/**/*.class"/> 
+            <include name="org/ramadda/geodata/publisher/publishertypes.xml"/>
+            <include name="org/ramadda/geodata/publisher/publishers.xml"/>
+            <include name="${repositoryrelpath}/htdocs/icons/folderopen.png"/>
+            <include name="${repositoryrelpath}/htdocs/icons/folderclosed.png"/>
+	    </jar>
+
+        <copy overwrite="true"  todir="${user.home}/.unidata/idv/DefaultIdv/plugins">
+             <fileset file="${distdir}/ramaddaplugin.jar"/>
+        </copy>
+
+
     </target>
 
 
 
 
 
+
+
+    <target name="workshopplugin" depends="init,clean">
+        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <javac
+            verbose="false"
+            classpath="${pluginclasspath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            fork="true"
+            memoryMaximumSize="256m"
+            target="${javatarget}">
+        <include name="${repositorydir}/idv/RamaddaPublisher.java"/>
+        </javac>
+        <jar 
+            update="false"
+            compress="true"
+            jarfile="${distdir}/usersworkshop.jar">
+            <include name="${repositorydir}/**/*.class"/> 
+            <include name="${repositorydir}/idv/workshop.properties"/>
+            <include name="${repositorydir}/idv/workshoplogo.jpg"/>
+            <include name="${repositorydir}/idv/publishertypes.xml"/>
+            <include name="${repositorydir}/idv/workshoppublishers.xml"/>
+            <include name="${repositorydir}/htdocs/icons/folderopen.png"/>
+            <include name="${repositorydir}/htdocs/icons/folderclosed.png"/>
+	    </jar>
+
+        <copy overwrite="true"  todir="${user.home}/.unidata/idv/DefaultIdv/plugins">
+             <fileset file="${distdir}/usersworkshop.jar"/>
+        </copy>
+
+
+    </target>
 
 
 
     <target name="clientjar" depends="init,clean">
+        <property name="xclasspath" value="${libdir}/unidatautil.jar:${libdir}/commons-httpclient-3.1.jar:${libdir}/extra.jar:${libdir}/idv.jar:${srcdir}"/>
         <javac
             verbose="false"
             classpath="${xclasspath}"
@@ -212,6 +212,7 @@
 -->
 
         <include name="${includesrc1}"/>
+        <include name="${includesrc2}"/>
 
 <!--
 
@@ -477,6 +478,46 @@
              <fileset file="${distdir}/ldapplugin.jar"/>
         </copy>
     </target>
+
+<!-- TODO: Fix this -->
+
+    <target name="workshopplugin" depends="init,clean">
+        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <javac
+            verbose="false"
+            classpath="${pluginclasspath}"
+            debug="true"
+            source="${srcversion}"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            nowarn="true"
+            srcdir="${srcdir}"
+            fork="true"
+            memoryMaximumSize="256m"
+            target="${javatarget}">
+        <include name="${repositorydir}/idv/RamaddaPublisher.java"/>
+        </javac>
+        <jar 
+            update="false"
+            compress="true"
+            jarfile="${distdir}/usersworkshop.jar">
+            <include name="${repositorydir}/**/*.class"/> 
+            <include name="${repositorydir}/idv/workshop.properties"/>
+            <include name="${repositorydir}/idv/workshoplogo.jpg"/>
+            <include name="${repositorydir}/idv/publishertypes.xml"/>
+            <include name="${repositorydir}/idv/workshoppublishers.xml"/>
+            <include name="${repositorydir}/htdocs/icons/folderopen.png"/>
+            <include name="${repositorydir}/htdocs/icons/folderclosed.png"/>
+	    </jar>
+
+        <copy overwrite="true"  todir="${user.home}/.unidata/idv/DefaultIdv/plugins">
+             <fileset file="${distdir}/usersworkshop.jar"/>
+        </copy>
+
+
+    </target>
+
 
 
 

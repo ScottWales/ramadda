@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <object class="java.util.ArrayList">
     <method name="add">
-        <object class="org.ramadda.repository.idv.RamaddaPublisher">
+        <object class="org.ramadda.geodata.publisher.RamaddaPublisher">
             <property name="RepositoryClient">
                 <object class="org.ramadda.repository.InteractiveRepositoryClient">
                     <property name="User">

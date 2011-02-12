@@ -2,5 +2,5 @@
 <publishers>
   <publisher
      name="RAMADDA Publisher"
-     class="org.ramadda.repository.idv.RamaddaPublisher"/>
+     class="org.ramadda.geodata.publisher.RamaddaPublisher"/>
 </publishers>
