@@ -1310,12 +1310,21 @@ public class TypeHandler extends RepositoryManager {
         if (downloadLink != null) {
             links.add(downloadLink);
         }
-        links.add(
-            new Link(
-                request.entryUrl(getRepository().URL_COMMENTS_SHOW, entry),
-                getRepository().iconUrl(ICON_COMMENTS),
-                "Add/View Comments",
-                OutputType.TYPE_EDIT | OutputType.TYPE_TOOLBAR));
+        if(getRepository().isReadOnly()) {
+            links.add(
+                      new Link(
+                               request.entryUrl(getRepository().URL_COMMENTS_SHOW, entry),
+                               getRepository().iconUrl(ICON_COMMENTS),
+                               "View Comments",
+                               OutputType.TYPE_HTML));
+        } else {
+            links.add(
+                      new Link(
+                               request.entryUrl(getRepository().URL_COMMENTS_SHOW, entry),
+                               getRepository().iconUrl(ICON_COMMENTS),
+                               "Add/View Comments",
+                               OutputType.TYPE_EDIT | OutputType.TYPE_TOOLBAR));
+        }
 
         if ((request.getUser() != null)
                 && !request.getUser().getAnonymous()) {

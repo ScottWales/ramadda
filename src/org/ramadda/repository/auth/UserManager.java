@@ -176,6 +176,9 @@ public class UserManager extends RepositoryManager {
      * @return can do login
      */
     public boolean canDoLogin(Request request) {
+        if(getRepository().isReadOnly()) {
+            return false;
+        }
         if (allowedIpsForLogin == null) {
             allowedIpsForLogin =
                 StringUtil.split(getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
@@ -2395,6 +2398,8 @@ public class UserManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public Result processLogin(Request request) throws Exception {
+
+        
 
         if ( !canDoLogin(request)) {
             return new Result(

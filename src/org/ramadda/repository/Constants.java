@@ -936,6 +936,9 @@ public interface Constants {
     public static final String PROP_MONITOR_ENABLE_EXEC =
         "ramadda.monitor.enable.exec";
 
+
+    public static final String PROP_READ_ONLY = "ramadda.readonly";
+
     /** _more_ */
     public static final String ARG_MONITOR_CHANGE = "monitorchange";
 

@@ -196,8 +196,13 @@ public class ApiMethod {
     public boolean isRequestOk(Request request, Repository repository)
             throws Exception {
         User user = request.getUser();
-        if (mustBeAdmin && !user.getAdmin()) {
-            return false;
+        if (mustBeAdmin) {
+            if(repository.isReadOnly()) {
+                return false;
+            }
+            if(!user.getAdmin()) {
+                return false;
+            }
         }
         if (actions.size() > 0) {
             for (int i = 0; i < actions.size(); i++) {

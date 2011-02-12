@@ -615,10 +615,19 @@ public class StorageManager extends RepositoryManager {
     public String getLogDir() {
         if (logDir == null) {
             logDir = IOUtil.joinDir(getRepositoryDir(), DIR_LOGS);
+
             File f = new File(logDir);
             IOUtil.makeDirRecursive(f);
+
+            if(!getRepository().isReadOnly()) {
+                System.err.println("RAMADDA: skipping log4j");
+                return logDir;
+            }
+
             File log4JFile = new File(f + "/" + "log4j.properties");
             //For now always write out the log from the jar
+            System.err.println("log4j file=" + log4JFile);
+
             if (true || !log4JFile.exists()) {
                 try {
                     String c =
@@ -632,12 +641,9 @@ public class StorageManager extends RepositoryManager {
                 }
             }
             try {
-
-                //              System.err.println("RAMADDA: Configuring log4j. Note: this may print out a stack trace. If");
-
-                org.apache.log4j.PropertyConfigurator.configure(
-                    log4JFile.toString());
-
+                    System.err.println("RAMADDA: Configuring log4j. Note: this may print out a stack trace. If");
+                    org.apache.log4j.PropertyConfigurator.configure(
+                                                                    log4JFile.toString());
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error configuring log4j:" + exc);
                 exc.printStackTrace();
@@ -1348,6 +1354,9 @@ public class StorageManager extends RepositoryManager {
      * @return _more_
      */
     public File checkWriteFile(File file) {
+        if(getRepository().isReadOnly()) {
+            throw new IllegalArgumentException("Unable to write to file");
+        }
         getStorageDir();
         if (IOUtil.isADescendent(getRepositoryDir(), file)) {
             return file;

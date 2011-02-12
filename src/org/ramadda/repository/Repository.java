@@ -526,6 +526,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
     private boolean active = true;
 
+    private boolean readOnly = false;
 
     /**
      * _more_
@@ -747,6 +748,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
 
 
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
     public boolean getActive() {
         return active;
     }
@@ -951,6 +956,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         } catch (Exception exc) {}
 
         //create the log dir
+
         getStorageManager().getLogDir();
 
         initPlugins();
@@ -967,6 +973,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
         debug = getProperty(PROP_DEBUG, false);
         //        System.err.println ("debug:" + debug);
+
+        readOnly = getProperty(PROP_READ_ONLY, false);
 
         setUrlBase((String) properties.get(PROP_HTML_URLBASE));
         if (getUrlBase() == null) {

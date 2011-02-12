@@ -155,9 +155,16 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, String action)
             throws Exception {
 
-        User user = request.getUser();
-        //The admin can do anything
+        if(getRepository().isReadOnly()) {
+            if(!(action.equals(Permission.ACTION_VIEW) ||
+                 action.equals(Permission.ACTION_VIEWCHILDREN))) {
+                   return false;
+               }
+        }
 
+        User user = request.getUser();
+
+        //The admin can do anything
         if (user.getAdmin()) {
             return true;
         }
@@ -266,6 +273,14 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, Entry entry, String action,
                                boolean log)
             throws Exception {
+        if(getRepository().isReadOnly()) {
+            if(!(action.equals(Permission.ACTION_VIEW) ||
+                 action.equals(Permission.ACTION_VIEWCHILDREN))) {
+                   return false;
+               }
+        }
+
+
         if (entry == null) {
             return false;
         }

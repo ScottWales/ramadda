@@ -90,7 +90,7 @@ public class JettyServer extends RepositoryServlet implements Constants {
 
 
         RepositoryServlet repositoryServlet = new RepositoryServlet(this,
-                                                  args, port);
+                                                                    args, port);
 
         Server                   server   = new Server(port);
         Repository repository             = repositoryServlet.getRepository();
@@ -102,18 +102,24 @@ public class JettyServer extends RepositoryServlet implements Constants {
 
 
         RequestLogHandler requestLogHandler = new RequestLogHandler();
-        NCSARequestLog logger =
-            new NCSARequestLog(repository.getStorageManager().getLogDir()
-                               + "/" + "requests.log");
-        logger.setExtended(false);
-        logger.setRetainDays(90);
-        logger.setAppend(true);
-        logger.setLogTimeZone("GMT");
+        System.err.println("JettyServlet repository:" + repository.isReadOnly());
 
-        requestLogHandler.setRequestLog(logger);
+        if(!repository.isReadOnly()) {
+            NCSARequestLog logger =
+                new NCSARequestLog(repository.getStorageManager().getLogDir()
+                                   + "/" + "requests.log");
+            logger.setExtended(false);
+            logger.setRetainDays(90);
+            logger.setAppend(true);
+            logger.setLogTimeZone("GMT");
 
-        handlers.setHandlers(new Handler[] { contexts, new DefaultHandler(),
-                                             requestLogHandler });
+            requestLogHandler.setRequestLog(logger);
+
+            handlers.setHandlers(new Handler[] { contexts, new DefaultHandler(),
+                                                 requestLogHandler });
+        } else {
+            handlers.setHandlers(new Handler[] { contexts, new DefaultHandler()});
+        }
         server.setHandler(handlers);
 
         try {

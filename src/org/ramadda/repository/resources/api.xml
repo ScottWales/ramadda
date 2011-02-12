@@ -93,7 +93,7 @@
   <property name="cancache" value="false"/>
 
   <group handler="usermanager">
-      <api request="/user/login"              method="processLogin"    needs_ssl="true"/>
+      <api request="/user/login"              method="processLogin"    needs_ssl="true" />
       <api request="/user/logout"             method="processLogout"   />
       <api request="/user/home"               method="processHome"     />
       <api request="/user/profile"            method="processProfile" />
