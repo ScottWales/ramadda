@@ -433,22 +433,21 @@ public class IdvOutputHandler extends OutputHandler {
     public static final String DISPLAY_ISOSURFACE = "isosurface";
 
 
-
-    //    public static void processScript(String scriptFile) throws Exception {
+    public static final String GROUP_DATA = "Data";
 
 
     /** _more_ */
     public static final OutputType OUTPUT_IDV_GRID =
         new OutputType("Grid Displays", "idv.grid", OutputType.TYPE_CATEGORY,
                        OutputType.SUFFIX_NONE, ICON_PLANVIEW,
-                       DataOutputHandler.GROUP_DATA);
+                       GROUP_DATA);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_IDV_POINT =
         new OutputType("Point Displays", "idv.point",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
-                       ICON_PLANVIEW, DataOutputHandler.GROUP_DATA);
+                       ICON_PLANVIEW, GROUP_DATA);
 
 
     /** _more_ */
@@ -563,9 +562,9 @@ public class IdvOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public DataOutputHandler getDataOutputHandler() throws Exception {
-        return (DataOutputHandler) getRepository().getOutputHandler(
-            DataOutputHandler.OUTPUT_OPENDAP.toString());
+    public OutputHandler getDataOutputHandler() throws Exception {
+        return getRepository().getOutputHandler(
+                                                DataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
@@ -580,7 +579,6 @@ public class IdvOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-
         if ( !idvOk) {
             return;
         }
@@ -594,8 +592,8 @@ public class IdvOutputHandler extends OutputHandler {
 
         List<Entry> theEntries = null;
         if (entry != null) {
-            if ( !getDataOutputHandler().canLoadAsGrid(entry)) {
-                if (getDataOutputHandler().canLoadAsPoint(entry)) {
+            if ( !((DataOutputHandler)getDataOutputHandler()).canLoadAsGrid(entry)) {
+                if (((DataOutputHandler)getDataOutputHandler()).canLoadAsPoint(entry)) {
                     links.add(makeLink(request, entry, OUTPUT_IDV_POINT));
                 }
                 return;
@@ -707,7 +705,7 @@ public class IdvOutputHandler extends OutputHandler {
      */
     public Result outputGrid(final Request request, Entry entry)
             throws Exception {
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        DataOutputHandler dataOutputHandler = (DataOutputHandler)getDataOutputHandler();
         String action = request.getString(ARG_ACTION, ACTION_MAKEINITFORM);
         String            path = dataOutputHandler.getPath(request, entry);
         if (path == null) {
@@ -1970,7 +1968,7 @@ public class IdvOutputHandler extends OutputHandler {
                                      DataSource dataSource)
             throws Exception {
 
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        DataOutputHandler dataOutputHandler =(DataOutputHandler) getDataOutputHandler();
         //      Trace.addNot(".*ShadowFunction.*");
         //      Trace.addNot(".*GeoGrid.*");
         //      Trace.addOnly(".*MapProjection.*");
@@ -2851,7 +2849,7 @@ public class IdvOutputHandler extends OutputHandler {
 
 
 
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        DataOutputHandler dataOutputHandler = (DataOutputHandler)getDataOutputHandler();
         String action = request.getString(ARG_ACTION, ACTION_POINT_MAKEPAGE);
         String            path              =
             dataOutputHandler.getPath(entry);

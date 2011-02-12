@@ -10,26 +10,24 @@
         <property name="dist_javadoc" value="${distdir}/javadoc"/>
         <mkdir dir="${dist_javadoc}"/>
 
+
         <property name="lib" value="${basedir}/lib"/>
         <property name="srcdir" value="${basedir}/src"/>
-
-<!--
-used by the javadoc target
--->
-        <property name="classpath" value="${lib}/servlet-api.jar:${lib}/unidatacommon.jar:${lib}/idv.jar:${lib}/repository.jar"/>
+        <property name="classpath" value="${lib}/servlet-api.jar:${lib}/unidatacommon.jar:${lib}/idv.jar"/>
+        <property  name="build.sysclasspath" value="ignore"/>
 
     </target>
 
 
 
-<target name="commoninit">
+    <target name="commoninit">
       <mkdir dir="${distdir}"/>
-</target>
+    </target>
 
 
     <target name="all" depends="init">
-      <antcall target="ramadda"/>
       <antcall target="plugins"/>
+      <antcall target="ramadda"/>
     </target>
 
 
@@ -40,18 +38,21 @@ used by the javadoc target
 
     <target name="plugins" depends="init">
       <ant antfile="${srcdir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
    </target>
 
 
 
+    <target name="pluginclean">
+      <delete>
+          <fileset dir="${srcdir}/${plugindir}" includes="**/*.class"/>
+      </delete>
+    </target>
 
 
-
-    <target name="plugin" depends="init,clean">
+    <target name="plugin" depends="init,pluginclean">
         <property name="plugindestdir" value="${distdir}/plugins"/>
         <mkdir dir="${plugindestdir}"/>
-
-        <echo message="Building plugin ${plugindir}"/>
         <javac
             classpath="${classpath}"
             verbose="false"
@@ -59,11 +60,11 @@ used by the javadoc target
             deprecation="false" 
             nowarn="true"
             srcdir="${srcdir}"
+            destdir="${srcdir}"
             failonerror="${javac.failonerror}"
             fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
-            target="1.5"
-        >
+            target="1.5">
         <include name="${plugindir}/*.java"/>
         </javac>
 
