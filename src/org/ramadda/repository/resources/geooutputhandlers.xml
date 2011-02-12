@@ -1,6 +1,5 @@
 <outputhandlers>
   <outputhandler class="org.ramadda.repository.output.WmsImageOutputHandler" name="WMS"/>
-  <outputhandler class="org.ramadda.repository.data.CatalogOutputHandler" name="THREDDS Catalog"/>
   <outputhandler class="org.ramadda.repository.output.DifOutputHandler" name="GCMD DIF"/>
   <outputhandler class="org.ramadda.repository.output.IsoOutputHandler" name="ISO 19115"/>
 

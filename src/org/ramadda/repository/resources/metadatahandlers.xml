@@ -12,5 +12,4 @@
                    name="GCMD Science Keyword"
                    type="enum_gcmdkeyword"
                    />
-  <metadatahandler class="org.ramadda.repository.data.ThreddsMetadataHandler"/>
 </metadatahandlers>

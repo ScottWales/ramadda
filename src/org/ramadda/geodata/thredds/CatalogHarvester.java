@@ -19,7 +19,8 @@
  * 
  */
 
-package org.ramadda.repository.data;
+package org.ramadda.geodata.thredds;
+
 
 
 import org.w3c.dom.*;

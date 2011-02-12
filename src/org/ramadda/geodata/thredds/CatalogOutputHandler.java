@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.ramadda.repository.data;
+package org.ramadda.geodata.thredds;
 
 
 import org.w3c.dom.*;
@@ -27,6 +27,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.repository.data.*;
 
 
 import ucar.unidata.sql.SqlUtil;

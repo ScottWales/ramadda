@@ -65,8 +65,7 @@ import java.util.Properties;
 public class KmlOutputHandler extends OutputHandler {
 
     /** _more_ */
-    public static final String KML_ATTRS =
-        " xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
+    public static final String KML_ATTRS =  "  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
 
     /** _more_ */
     public static final OutputType OUTPUT_KML =

@@ -1,14 +1,6 @@
 <types>
 
 
-  <type name="cataloglink"  description="Catalog Link" category="Geo Data" >
-     <property name="icon" value="/icons/book_link.png"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.file.show" value="false"/>
-  </type>
-
-
   <type name="opendaplink"  description="OpenDAP Link" handler="org.ramadda.repository.data.OpendapLinkTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/opendap.gif"/>
      <property name="form.date.show" value="false"/>
@@ -28,24 +20,6 @@
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
    </type>
-
-
-
-
-
-  <type name="catalog"  description="Catalog View" handler="org.ramadda.repository.data.CatalogTypeHandler" category="Geo Data">
-     <property name="icon" value="/icons/book_open.png"/>
-     <property name="form.file.show" value="false"/>
-     <property name="form.url.show" value="true"/>
-     <property name="form.url.label" value="Catalog URL"/>
-     <property name="form.resource.download.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-  </type>
-
-
-
 
 
   <type name="latlonimage"  description="Lat/Lon Image" datatype="latlonimage" category="Geo Data">

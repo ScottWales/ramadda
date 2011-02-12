@@ -29,7 +29,6 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.repository.data.CatalogHarvester;
 
 import ucar.unidata.sql.Clause;
 
@@ -74,7 +73,6 @@ import java.util.Properties;
 public class HarvesterManager extends RepositoryManager {
 
 
-
     /** _more_ */
     public RequestUrl URL_HARVESTERS_IMPORTCATALOG =
         new RequestUrl(this, "/harvester/importcatalog", "Import Catalog");
@@ -113,7 +111,6 @@ public class HarvesterManager extends RepositoryManager {
         addHarvesterType(PatternHarvester.class);
         addHarvesterType(WebHarvester.class);
         addHarvesterType(DirectoryHarvester.class);
-        addHarvesterType(CatalogHarvester.class);
     }
 
     
@@ -677,8 +674,8 @@ public class HarvesterManager extends RepositoryManager {
             sb = new StringBuffer();
             sb.append(msg("Catalog is being harvested"));
             sb.append(HtmlUtil.p());
-            org.ramadda.repository.data.CatalogHarvester harvester =
-                new org.ramadda.repository.data.CatalogHarvester(
+            org.ramadda.geodata.thredds.CatalogHarvester harvester =
+                new org.ramadda.geodata.thredds.CatalogHarvester(
                     getRepository(), group, catalog, request.getUser(),
                     recurse, download);
             harvester.setAddMetadata(addMetadata);

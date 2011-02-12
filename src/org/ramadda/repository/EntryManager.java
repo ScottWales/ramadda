@@ -5039,11 +5039,11 @@ public class EntryManager extends RepositoryManager {
                 String[] tuple = getRemoteEntryInfo(entryId);
                 return getRemoteEntry(request, tuple[0], tuple[1]);
             } else if (entryId.startsWith("catalog:")) {
-                org.ramadda.repository.data.CatalogTypeHandler typeHandler =
-                    (org.ramadda.repository.data
-                        .CatalogTypeHandler) getRepository()
-                            .getTypeHandler(TypeHandler.TYPE_CATALOG);
-                entry = typeHandler.makeSynthEntry(request, null, entryId);
+                //                org.ramadda.repository.data.CatalogTypeHandler typeHandler =
+                //                    (org.ramadda.repository.data
+                //                        .CatalogTypeHandler) getRepository()
+                //                            .getTypeHandler(TypeHandler.TYPE_CATALOG);
+                //                entry = typeHandler.makeSynthEntry(request, null, entryId);
             } else if (isSynthEntry(entryId)) {
                 String[] pair          = getSynthId(entryId);
                 String   parentEntryId = pair[0];
