@@ -86,32 +86,35 @@ public class CatalogHarvester extends Harvester {
 
 
     /** Should we follow catalog refs */
-    boolean recurse = false;
+    private     boolean recurse = false;
 
     /** Should we download files */
-    boolean download = false;
+    private     boolean download = false;
 
     /** _more_ */
-    HashSet seenCatalog;
+    private     HashSet seenCatalog;
 
     /** _more_ */
-    List<String> groups;
+    private     List<String> groups;
 
     /** _more_ */
-    int catalogCnt = 0;
+    private     int catalogCnt = 0;
 
     /** _more_ */
-    int entryCnt = 0;
+    private     int entryCnt = 0;
 
     /** _more_ */
-    int groupCnt = 0;
+    private     int groupCnt = 0;
 
 
     /** _more_ */
-    String topUrl;
+    private     String topUrl;
 
     /** _more_ */
-    List<Entry> entries = new ArrayList<Entry>();
+    private     List<Entry> entries = new ArrayList<Entry>();
+
+    private Object jobId;
+
 
     /**
      * _more_
@@ -152,8 +155,9 @@ public class CatalogHarvester extends Harvester {
      * @param download _more_
      */
     public CatalogHarvester(Repository repository, Entry group, String url,
-                            User user, boolean recurse, boolean download) {
+                            User user, boolean recurse, boolean download, Object jobId) {
         super(repository);
+        this.jobId = jobId;
         setName("Catalog harvester");
         this.recurse  = recurse;
         this.download = download;
@@ -415,6 +419,12 @@ public class CatalogHarvester extends Harvester {
         if (getTestMode() && (entryCnt >= getTestCount())) {
             return false;
         }
+        if ((jobId != null)
+            && !getActionManager().getActionOk(jobId)) {
+            getActionManager().setActionMessage(jobId,
+                                                "Catalog import canceled");
+            return false;
+        }
         return true;
     }
 
@@ -639,6 +649,13 @@ public class CatalogHarvester extends Harvester {
                 : TypeHandler.TYPE_FILE));
 
         entryCnt++;
+        if (jobId != null) {
+            getActionManager().setActionMessage(jobId,
+                                                "Loaded " + catalogCnt + " catalogs<br>" +
+                                                "Created " + entryCnt + " entries<br>"+
+                                                "Created " + groupCnt + " groups<br>");
+        }
+
         Entry entry      = typeHandler.createEntry(repository.getGUID());
         long  createDate = new Date().getTime();
 
@@ -682,6 +699,7 @@ public class CatalogHarvester extends Harvester {
                             Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
                             Metadata.DFLT_EXTRA);
     }
+
 
     /**
      * _more_

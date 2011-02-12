@@ -182,7 +182,7 @@ public class ActionManager extends RepositoryManager {
      *
      * @return _more_
      */
-    protected boolean getActionOk(Object id) {
+    public  boolean getActionOk(Object id) {
         ActionInfo action = getAction(id);
         if (action == null) {
             return false;

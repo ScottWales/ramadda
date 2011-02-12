@@ -4071,6 +4071,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      * @return _more_
      */
     public boolean isOutputTypeOK(OutputType outputType) {
+        if(outputType == null || outputType.getId() == null) return true;
         String prop = getProperty(outputType.getId() + ".ok");
         if ((prop == null) || prop.equals("true")) {
             return true;
@@ -5759,6 +5760,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     public XmlEncoder getEncoder() {
         XmlEncoder xmlEncoder = new XmlEncoder();
         xmlEncoder.addClassPatternReplacement("ucar.unidata.repository","org.ramadda.repository");
+        xmlEncoder.addClassPatternReplacement("ucar.unidata.repository.data.Catalog","org.ramadda.geodata.thredds.Catalog");
         return xmlEncoder;
     }
 
