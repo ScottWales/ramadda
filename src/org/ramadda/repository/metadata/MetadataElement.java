@@ -329,55 +329,98 @@ public class MetadataElement extends MetadataTypeBase {
      *
      * @throws Exception _more_
      */
-    public boolean getHtml(StringBuffer sb, String value) throws Exception {
+    public FormInfo getHtml(/*StringBuffer sb,*/ String value, int depth) throws Exception {
         if (dataType.equals(TYPE_SKIP)) {
-            return false;
+            return null;
         }
         if (dataType.equals(TYPE_FILE)) {
-            return false;
+            return null;
         }
         String html = null;
         if (getDataType().equals(TYPE_GROUP)) {
-            StringBuffer entriesSB = new StringBuffer();
-            //            entriesSB.append("<table border=0 width=100% cellpadding=2 cellspacing=2>");
+            boolean debug = getName().indexOf("Phone")>=0;
             List<Metadata> groupMetadata = getGroupData(value);
             if (groupMetadata.size() == 0) {
-                return false;
+                return null;
             }
             boolean justOne  = getChildren().size() == 1;
             int     entryCnt = 0;
+            List<StringBuffer> subEntries = new ArrayList<StringBuffer>();
+            boolean anyChildrenGroups = false;
+            int childCnt = 0;
             for (Metadata metadata : groupMetadata) {
                 entryCnt++;
-                StringBuffer subEntrySB = new StringBuffer();
-                subEntrySB.append(
-                    "<table border=0 width=100% cellpadding=2 cellspacing=2>");
-                if (subName.length() > 0) {
-                    //                    subEntrySB.append("<tr valign=\"top\"><td align=center colspan=2><b>" + subName+"</td></tr>");
-                }
+                StringBuffer subEntrySB = null;
                 for (MetadataElement element : getChildren()) {
                     String subValue = metadata.getAttr(element.getIndex());
                     if (subValue == null) {
                         continue;
                     }
-                    subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
-                    //                    subEntrySB.append("<table width=100% cellpadding=0 cellspacing=0>");
-                    element.getHtml(subEntrySB, subValue);
-                    //                    subEntrySB.append("</table>");
-                    subEntrySB.append("</td></tr>\n");
+                    boolean isGroup = element.getDataType().equals(TYPE_GROUP);
+                    if(isGroup) {
+                        anyChildrenGroups = true;
+                    }
+                    StringBuffer childSB = new StringBuffer();
+                    FormInfo formInfo = element.getHtml(/*childSB,*/ subValue, depth+1);
+                    if(formInfo==null) {
+                        continue;
+                    }
+                     if(isGroup || formInfo.content.length()>0) {
+                        childSB.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
+                        if(childSB.length()>0) {
+                            childCnt++;
+                            if(subEntrySB==null) {
+                                subEntrySB = new StringBuffer();
+                                subEntries.add(subEntrySB);
+                            }
+                            if(isGroup) {
+                                subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
+                            }
+                            subEntrySB.append(childSB);
+                            if(isGroup) {
+                                subEntrySB.append("</td></tr>\n");
+                            }
+                        }
+                    }
                 }
-                if ( !justOne) {
-                    subEntrySB.append("<tr><td colspan=2><hr></td></tr>\n");
-                }
-                subEntrySB.append("</table>");
-                entriesSB.append(HtmlUtil.makeShowHideBlock(entryCnt + ") "
-                        + subName, subEntrySB.toString(), true));
+                //                subEntrySB.append("</table>");
             }
-            html = HtmlUtil.makeToggleInline(
-                "",
-                HtmlUtil.div(
-                    entriesSB.toString(),
-                    HtmlUtil.cssClass("metadatagroup")), true);
-
+            if(childCnt==0) return null;
+            boolean haveSubEntries = subEntries.size()!=0;
+            StringBuffer entriesSB = new StringBuffer();
+            if(haveSubEntries && !anyChildrenGroups) {
+                entriesSB.append("<table border=0 width=100% cellpadding=2 cellspacing=2>");
+            }
+            //                if (!justOne) {
+                    //                    subEntrySB.append("<tr><td colspan=2><hr></td></tr>\n");
+            //                }
+            if(debug) {
+                System.err.println(getName() + " sub:" + subEntries);
+            }
+            for(StringBuffer subEntrySB: subEntries) {
+                if(anyChildrenGroups) {
+                    StringBuffer tmp  = new StringBuffer();
+                    tmp.append("<table border=0 width=100% cellpadding=2 cellspacing=2>");
+                    tmp.append(subEntrySB);
+                    tmp.append("</table>");
+                    entriesSB.append(HtmlUtil.makeToggleInline(entryCnt + ") "
+                                                               + subName, tmp.toString(), depth!=0));
+                } else {
+                    entriesSB.append(subEntrySB);
+                }
+            }
+            if(haveSubEntries && !anyChildrenGroups) {
+                entriesSB.append("</table>");
+            }
+            if(haveSubEntries) {
+                html = HtmlUtil.makeToggleInline(
+                                                 "",
+                                                 HtmlUtil.div(
+                                                              entriesSB.toString(),
+                                                              HtmlUtil.cssClass("metadatagroup")), true);
+            } else {
+                html = "none";
+            }
         } else if (dataType.equals(TYPE_ENUMERATION)
                    || dataType.equals(TYPE_ENUMERATIONPLUS)) {
             String label = getLabel(value);
@@ -396,10 +439,20 @@ public class MetadataElement extends MetadataTypeBase {
             } else {
                 name = HtmlUtil.space(1);
             }
-            sb.append(HtmlUtil.formEntryTop(name, html));
-            return true;
+            //            sb.append(HtmlUtil.formEntryTop(name, html));
+            return new FormInfo(name,html);
         }
-        return false;
+        return null;
+    }
+
+
+    public static class FormInfo {
+        public String label;
+        public String content;
+        public FormInfo(String label,  String content) {
+            this.label = label;
+            this.content = content;
+        }
     }
 
 

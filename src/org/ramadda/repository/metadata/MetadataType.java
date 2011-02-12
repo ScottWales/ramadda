@@ -682,7 +682,9 @@ public class MetadataType extends MetadataTypeBase {
             boolean didOne = false;
             content.append("<table cellpadding=2 cellspacing=2>");
             for (MetadataElement element : getChildren()) {
-                if (element.getHtml(content, metadata.getAttr(cnt))) {
+                MetadataElement.FormInfo formInfo = element.getHtml(/*content,*/ metadata.getAttr(cnt),0);
+                if (formInfo!=null) {
+                    content.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
                     didOne = true;
                 }
                 cnt++;
