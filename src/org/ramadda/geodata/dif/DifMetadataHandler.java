@@ -18,7 +18,7 @@
  * 
  */
 
-package org.ramadda.repository.metadata;
+package org.ramadda.repository.geodata.dif;
 
 
 import org.w3c.dom.*;
@@ -26,6 +26,7 @@ import org.w3c.dom.*;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
