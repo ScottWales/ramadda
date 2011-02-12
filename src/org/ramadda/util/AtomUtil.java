@@ -44,6 +44,8 @@ public class AtomUtil {
 
     /** _more_          */
     public static final String XMLNS = "http://www.w3.org/2005/Atom";
+    public static final String XMLNS_GEORSS = "http://www.georss.org/georss";
+
 
     /** _more_          */
     public static final String REL_SELF = "self";
@@ -97,6 +99,8 @@ public class AtomUtil {
 
     /** _more_          */
     public static final String ATTR_XMLNS = "xmlns";
+    public static final String ATTR_XMLNS_GEORSS = "xmlns:georss";
+
 
     /** _more_          */
     public static final String ATTR_HREF = "href";
@@ -199,7 +203,7 @@ public class AtomUtil {
      * @return _more_
      */
     public static String openFeed() {
-        return XmlUtil.openTag(TAG_FEED, XmlUtil.attrs(ATTR_XMLNS, XMLNS));
+        return XmlUtil.openTag(TAG_FEED, XmlUtil.attrs(ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEORSS, XMLNS_GEORSS));
     }
 
     /**
