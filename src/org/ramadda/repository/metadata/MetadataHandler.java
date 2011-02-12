@@ -458,18 +458,6 @@ public class MetadataHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param child _more_
-     *
-     * @return _more_
-     */
-    public Metadata makeMetadataFromCatalogNode(Element child) {
-        return null;
-    }
-
-
-    /**
-     * _more_
-     *
      * @param metadata _more_
      *
      * @return _more_
@@ -906,16 +894,6 @@ public class MetadataHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param metadata _more_
-     *
-     * @return _more_
-     */
-    public String getCatalogXml(Metadata metadata) {
-        return "";
-    }
 
 
 

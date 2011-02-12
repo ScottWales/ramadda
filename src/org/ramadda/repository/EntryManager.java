@@ -39,7 +39,6 @@ import ucar.unidata.sql.SqlUtil;
 
 
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.HtmlUtil;
@@ -303,72 +302,6 @@ public class EntryManager extends RepositoryManager {
         synchronized (MUTEX_ENTRY) {
             entryCache.remove(id);
         }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processCatalog(Request request) throws Exception {
-        return null;
-
-        /**
-         * StringBuffer sb    = new StringBuffer();
-         * String       title = msg("Catalog View");
-         *
-         * String       url   = request.getString(ARG_CATALOG, (String) null);
-         * if (url == null) {
-         *   sb.append(HtmlUtil.p());
-         *   sb.append(HtmlUtil.form("/repository/catalog"));
-         *   sb.append(msgLabel("Catalog URL"));
-         *   sb.append(HtmlUtil.space(1));
-         *   sb.append(
-         *       HtmlUtil.input(
-         *           ARG_CATALOG,
-         *           "http://dataportal.ucar.edu/metadata/browse/human_dimensions.thredds.xml",
-         *           HtmlUtil.SIZE_60));
-         *   sb.append(HtmlUtil.submit("View"));
-         *   sb.append(HtmlUtil.formClose());
-         *   //            sb.append("No catalog argument given");
-         *   return new Result(title, sb);
-         * }
-         * return new Result(request.url(getRepository().URL_ENTRY_SHOW,
-         *                             ARG_ENTRYID,
-         *                             CatalogTypeHandler.getCatalogId(url)));
-         *
-         */
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param node _more_
-     * @param sb _more_
-     */
-    private void recurseCatalog(Request request, Element node,
-                                StringBuffer sb) {
-        NodeList elements = XmlUtil.getElements(node);
-        for (int i = 0; i < elements.getLength(); i++) {
-            Element child = (Element) elements.item(i);
-            if (child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
-                String name = XmlUtil.getAttribute(child, ATTR_NAME, "");
-                sb.append("<li>");
-                sb.append(name);
-                sb.append("<ul>");
-                recurseCatalog(request, child, sb);
-                sb.append("</ul>");
-            }
-        }
-
-
     }
 
 
@@ -2271,20 +2204,6 @@ public class EntryManager extends RepositoryManager {
                         catMap.get(cat).toString(), 3, 15, 0, 0)));
         }
         sb.append("</tr></table>");
-
-
-        /*
-        sb.append(request.form(getRepository().URL_ENTRY_FORM));
-        sb.append(msgLabel("Or create a"));
-        sb.append(HtmlUtil.space(1));
-        sb.append(getRepository().makeTypeSelect(request, false, "", true,
-                exclude));
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.submit("Go"));
-        sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
-        sb.append(HtmlUtil.formClose());
-        sb.append(makeNewGroupForm(request, group, BLANK));
-        */
         return makeEntryEditResult(request, group, "Create Entry", sb);
         //        return new Result("New Form", sb, Result.TYPE_HTML);
     }
@@ -2961,28 +2880,6 @@ public class EntryManager extends RepositoryManager {
         return rect;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param name _more_
-     *
-     * @return _more_
-     */
-    protected String makeNewGroupForm(Request request, Entry parentEntry,
-                                      String name) {
-        StringBuffer sb = new StringBuffer();
-        if ((parentEntry != null) && request.getUser().getAdmin()) {
-            sb.append(
-                request.form(
-                    getHarvesterManager().URL_HARVESTERS_IMPORTCATALOG));
-            sb.append(HtmlUtil.hidden(ARG_GROUP, parentEntry.getId()));
-        }
-        return sb.toString();
-    }
 
 
 

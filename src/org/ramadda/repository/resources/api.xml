@@ -28,9 +28,6 @@
       <api request="/entry/comments/show"    method="processCommentsShow"/>
       <api request="/entry/comments/add"     method="processCommentsAdd"      actions="comment"/>
       <api request="/entry/comments/edit"    method="processCommentsEdit"     actions="edit"/>
-<!--
-      <api request="/catalog"                method="processCatalog"/>
--->
   </group>
 
 
@@ -138,7 +135,6 @@
   <group handler="harvestermanager">
       <api request="/harvester/processfile"    method="processFile"           admin="true" cancache="false"/>
       <api request="/harvester/list"           method="processList"           admin="true" />
-      <api request="/harvester/importcatalog"  method="processImportCatalog"  admin="true" />
       <api request="/harvester/new"            method="processNew"            admin="true" />
       <api request="/harvester/edit/*"           method="processEdit"           admin="true" />
   </group>

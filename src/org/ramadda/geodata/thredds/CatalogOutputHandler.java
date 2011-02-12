@@ -76,6 +76,9 @@ import java.util.zip.*;
 public class CatalogOutputHandler extends OutputHandler {
 
     /** _more_ */
+    public static final String ICON_CATALOG = "ramadda.icon.catalog";
+
+    /** _more_ */
     public static final String SERVICE_HTTP = "http";
 
     /** _more_ */
@@ -213,8 +216,10 @@ public class CatalogOutputHandler extends OutputHandler {
                 }
             } else {
                 for (MetadataHandler metadataHandler : metadataHandlers) {
-                    Metadata metadata =
-                        metadataHandler.makeMetadataFromCatalogNode(child);
+                    Metadata metadata = null;
+                    if(metadataHandler instanceof ThreddsMetadataHandler) {
+                        metadata = ((ThreddsMetadataHandler)metadataHandler).makeMetadataFromCatalogNode(child);
+                    }
                     if (metadata != null) {
                         metadataList.add(metadata);
                         break;

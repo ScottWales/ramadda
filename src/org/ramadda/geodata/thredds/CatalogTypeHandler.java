@@ -74,8 +74,11 @@ import java.util.Properties;
 public class CatalogTypeHandler extends GenericTypeHandler {
 
     /** _more_ */
-    public static final String TYPE_CATALOG = Constants.TYPE_CATALOG;
+    public static final String ARG_CATALOG = "catalog";
 
+
+    /** _more_ */
+    public static final String TYPE_CATALOG = "catalog";
 
 
     /** _more_ */

@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
 
-  <handler category="Tags">
-
-    <type name="GCMD Science Keyword" id="enum_gcmdkeyword" searchable="true" browsable="true">
-      <element
-         name="Keyword"
-         datatype="enumeration"
-         values="file:/org/ramadda/repository/resources/metadata/dif/gcmdkeywords.txt"/>
-      <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
-      <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
-    </type>
-
-
-  </handler>
-
-
     <type name="Data Visualization" id="data.visualization"  foruser="false">
       <element name="Name" />
       <element name="Content" />

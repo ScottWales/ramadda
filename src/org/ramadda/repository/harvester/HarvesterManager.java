@@ -74,10 +74,6 @@ public class HarvesterManager extends RepositoryManager {
 
 
     /** _more_ */
-    public RequestUrl URL_HARVESTERS_IMPORTCATALOG =
-        new RequestUrl(this, "/harvester/importcatalog", "Import Catalog");
-
-    /** _more_ */
     public RequestUrl URL_HARVESTERS_LIST = new RequestUrl(this,
                                                 "/harvester/list",
                                                 "Harvesters");
@@ -582,120 +578,6 @@ public class HarvesterManager extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processImportCatalog(Request request) throws Exception {
-
-        Entry group = getEntryManager().findGroup(request);
-        if ( !request.exists(ARG_CATALOG)) {
-            StringBuffer sb = new StringBuffer();
-            sb.append(
-                request.form(
-                    getHarvesterManager().URL_HARVESTERS_IMPORTCATALOG));
-            sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
-            sb.append(msgHeader("Import a THREDDS catalog"));
-            sb.append(HtmlUtil.formTable());
-            sb.append(HtmlUtil.formEntry(msgLabel("URL"),
-                                         HtmlUtil.input(ARG_CATALOG, BLANK,
-                                             HtmlUtil.SIZE_70)));
-
-            sb.append(
-                HtmlUtil.formEntry(
-                    "",
-                    HtmlUtil.checkbox(ARG_RECURSE, "true", false)
-                    + HtmlUtil.space(1) + msg("Recurse") + HtmlUtil.space(1)
-                    + HtmlUtil.checkbox(ATTR_ADDMETADATA, "true", false)
-                    + HtmlUtil.space(1) + msg("Add full metadata")
-                    + HtmlUtil.space(1)
-                    + HtmlUtil.checkbox(ATTR_ADDSHORTMETADATA, "true", false)
-                    + HtmlUtil.space(1)
-                    + msg("Just add spatial/temporal metadata")
-                    + HtmlUtil.space(1)
-                    + HtmlUtil.checkbox(ARG_RESOURCE_DOWNLOAD, "true", false)
-                    + HtmlUtil.space(1) + msg("Download URLS")));
-            sb.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Go"))));
-            sb.append(HtmlUtil.formTableClose());
-            sb.append(HtmlUtil.formClose());
-
-
-
-            return getEntryManager().makeEntryEditResult(request, group,
-                    "Catalog Import", sb);
-        }
-
-
-
-        boolean      recurse     = request.get(ARG_RECURSE, false);
-        boolean      addMetadata = request.get(ATTR_ADDMETADATA, false);
-        boolean addShortMetadata = request.get(ATTR_ADDSHORTMETADATA, false);
-        boolean      download    = request.get(ARG_RESOURCE_DOWNLOAD, false);
-        StringBuffer sb          = new StringBuffer();
-        //        sb.append(getEntryManager().makeEntryHeader(request, group));
-        sb.append("<p>");
-        String catalog = request.getString(ARG_CATALOG, "").trim();
-        sb.append(request.form(URL_HARVESTERS_IMPORTCATALOG));
-        sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
-        sb.append(HtmlUtil.submit(msgLabel("Import catalog")));
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.input(ARG_CATALOG, catalog, " size=\"75\""));
-
-        sb.append(HtmlUtil.checkbox(ARG_RECURSE, "true", recurse));
-        sb.append(HtmlUtil.space(1));
-        sb.append(msg("Recurse"));
-
-
-
-        sb.append(HtmlUtil.checkbox(ATTR_ADDMETADATA, "true", addMetadata));
-        sb.append(HtmlUtil.space(1));
-        sb.append(msg("Add Metadata"));
-
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.checkbox(ATTR_ADDSHORTMETADATA, "true",
-                                    addShortMetadata));
-        sb.append(HtmlUtil.space(1));
-        sb.append(msg("Just add spatial/temporal metadata"));
-
-
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.checkbox(ARG_RESOURCE_DOWNLOAD, "true", download));
-        sb.append(HtmlUtil.space(1));
-        sb.append(msg("Download URLs"));
-        sb.append("</form>");
-
-        if (catalog.length() > 0) {
-            sb = new StringBuffer();
-            sb.append(msg("Catalog is being harvested"));
-            sb.append(HtmlUtil.p());
-            org.ramadda.geodata.thredds.CatalogHarvester harvester =
-                new org.ramadda.geodata.thredds.CatalogHarvester(
-                    getRepository(), group, catalog, request.getUser(),
-                    recurse, download);
-            harvester.setAddMetadata(addMetadata);
-            harvester.setAddShortMetadata(addShortMetadata);
-            harvesters.add(harvester);
-            Misc.run(harvester, "run");
-            //            makeHarvestersList(request, (List<Harvester>)Misc.newList(harvester),  sb);
-            //            return  getEntryManager().addEntryHeader(request, group,
-            //                                                     new Result("",sb));
-            return getEntryManager().addEntryHeader(request, group,
-                    new Result(request.url(URL_HARVESTERS_LIST, ARG_MESSAGE,
-                                           "Catalog is being harvested")));
-        }
-
-
-        Result result = getEntryManager().addEntryHeader(request, group,
-                            new Result(request.url(URL_HARVESTERS_LIST)));
-        return result;
-
-    }
 
 
     /**

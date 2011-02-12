@@ -608,11 +608,11 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
     /**
-     * Get the CatalogTemplate property.
+     * Get the Template property.
      *
      *
      * @param type _more_
-     * @return The CatalogTemplate
+     * @return The Template
      */
     public String getTemplate(String type) {
         return templates.get(type);

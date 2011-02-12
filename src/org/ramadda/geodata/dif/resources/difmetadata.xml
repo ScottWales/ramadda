@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
+
+  <handler category="Tags">
+    <type name="GCMD Science Keyword" id="enum_gcmdkeyword" searchable="true" browsable="true">
+      <element
+         name="Keyword"
+         datatype="enumeration"
+         values="file:/org/ramadda/geodata/dif/resources/gcmdkeywords.txt"/>
+      <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
+      <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
+    </type>
+  </handler>
+
+
+
   <handler category="DIF" class="org.ramadda.repository.geodata.dif.DifMetadataHandler">
 
     <type       name="Entry Title"       searchable="false"       id="dif.entry_title" dif.tag="Entry_Title">
@@ -11,7 +25,7 @@
       <element
          dif.tag="Category" 
          datatype="enumeration"         name="Category"
-         values="file:/org/ramadda/geodata/dif/repository/resources/gcmdkeywords.txt"/>
+         values="file:/org/ramadda/geodata/dif/resources/gcmdkeywords.txt"/>
       <element
          dif.tag="Topic" 
          datatype="enumeration"         name="Topic"

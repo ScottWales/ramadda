@@ -72,7 +72,8 @@ import java.util.Properties;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class DifHarvester extends Harvester {
+//public class DifHarvester extends Harvester {
+public class DifHarvester  {
 
     /*
 <?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
@@ -311,6 +312,12 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
     /** _more_ */
     String url;
 
+    public DifHarvester(Repository repository, String id)
+        throws Exception {
+        //        super(repository, id);
+    }
+
+
     /**
      * _more_
      *
@@ -321,11 +328,11 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
      */
     public DifHarvester(Repository repository, Entry group, String url,
                         User user) {
-        super(repository);
-        setName("DIF harvester");
+        //        super(repository);
+        //        setName("DIF harvester");
         this.topGroup = group;
         this.url      = url;
-        setUserName(user.getId());
+        //        setUserName(user.getId());
     }
 
 

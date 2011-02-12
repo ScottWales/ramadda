@@ -96,10 +96,6 @@ public class Admin extends RepositoryManager {
                                           "SQL");
 
 
-    /** _more_ */
-    public RequestUrl URL_ADMIN_IMPORT_CATALOG = new RequestUrl(this,
-                                                     "/admin/import/catalog",
-                                                     "Import Catalog");
 
     /** _more_ */
     public RequestUrl URL_ADMIN_CLEANUP = new RequestUrl(this,

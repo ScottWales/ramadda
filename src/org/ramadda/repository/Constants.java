@@ -69,8 +69,6 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_CART_DELETE = "ramadda.icon.cart.delete";
 
-    /** _more_ */
-    public static final String ICON_CATALOG = "ramadda.icon.catalog";
 
     /** _more_ */
     public static final String ICON_CHAT = "ramadda.icon.chat";
@@ -599,8 +597,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CANCEL_DELETE = "canceldelete";
 
-    /** _more_ */
-    public static final String ARG_CATALOG = "catalog";
 
     /** _more_ */
     public static final String ARG_CHANGE = "change";
@@ -1691,8 +1687,6 @@ public interface Constants {
     /** _more_ */
     public static final String TYPE_ASSOCIATION = "association";
 
-    /** _more_ */
-    public static final String TYPE_CATALOG = "catalog";
 
     /** _more_ */
     public static final String TYPE_FILE = "file";

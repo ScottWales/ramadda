@@ -1224,12 +1224,6 @@ public class TypeHandler extends RepositoryManager {
                             entry.getId()), getRepository().iconUrl(
                                 ICON_IMPORT), "Import Entries",
                                     OutputType.TYPE_FILE));
-
-                links.add(new Link(request
-                    .url(getHarvesterManager().URL_HARVESTERS_IMPORTCATALOG,
-                        ARG_GROUP, entry.getId()), getRepository()
-                            .iconUrl(ICON_CATALOG), "Import THREDDS Catalog",
-                                OutputType.TYPE_FILE));
             }
             Link hr = new Link(true);
             hr.setLinkType(OutputType.TYPE_FILE);
