@@ -24,7 +24,7 @@ package org.ramadda.geodata.idv;
 import org.w3c.dom.*;
 
 import org.ramadda.repository.*;
-import org.ramadda.geodata.data.*;
+import org.ramadda.geodata.data.DataOutputHandler;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
@@ -86,7 +86,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_WEBSTART =
         new OutputType("View in IDV", "idv.webstart",
                        OutputType.TYPE_CATEGORY, "", "/icons/idv.gif",
-                       DataOutputHandler.GROUP_DATA);
+                       IdvOutputHandler.GROUP_DATA);
 
 
 
@@ -128,9 +128,8 @@ public class IdvWebstartOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_WEBSTART,
                                suffix));
         } else {
-            DataOutputHandler data =
-                (DataOutputHandler) getRepository().getOutputHandler(
-                    DataOutputHandler.OUTPUT_OPENDAP);
+            DataOutputHandler data = (DataOutputHandler) getRepository().getOutputHandler(
+                                                                                          DataOutputHandler.OUTPUT_OPENDAP);
             if (data != null) {
                 if (data.canLoadAsCdm(entry)) {
                     String suffix = "/" + entry.getId() + ".jnlp";
@@ -141,9 +140,6 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
         }
     }
-
-
-
 
 
     public Result outputGroup(Request request, OutputType outputType,

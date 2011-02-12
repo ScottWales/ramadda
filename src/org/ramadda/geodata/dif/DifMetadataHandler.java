@@ -18,7 +18,7 @@
  * 
  */
 
-package org.ramadda.repository.geodata.dif;
+package org.ramadda.geodata.dif;
 
 
 import org.w3c.dom.*;

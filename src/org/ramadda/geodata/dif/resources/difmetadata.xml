@@ -14,7 +14,7 @@
 
 
 
-  <handler category="DIF" class="org.ramadda.repository.geodata.dif.DifMetadataHandler">
+  <handler category="DIF" class="org.ramadda.geodata.dif.DifMetadataHandler">
 
     <type       name="Entry Title"       searchable="false"       id="dif.entry_title" dif.tag="Entry_Title">
       <element name="Title"/>

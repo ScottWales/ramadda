@@ -34,6 +34,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.PropertyProvider;
+import org.ramadda.util.MultiJarClassLoader;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.repository.util.*;
 
@@ -392,7 +393,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     private List<String> pluginFiles = new ArrayList<String>();
 
-    private List<PluginClassLoader>  pluginClassLoaders = new ArrayList<PluginClassLoader>();
+    private List<MultiJarClassLoader>  pluginClassLoaders = new ArrayList<MultiJarClassLoader>();
 
     /** _more_ */
     private List<User> cmdLineUsers = new ArrayList();
@@ -1807,7 +1808,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      * @author IDV Development Team
      * @version $Revision: 1.3 $
      */
-    private class MyClassLoader extends PluginClassLoader {
+    private class MyClassLoader extends MultiJarClassLoader {
 
         /**
          * _more_
@@ -1817,13 +1818,13 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
          *
          * @throws Exception _more_
          */
-        public MyClassLoader(String path, ClassLoader parent)
+        public MyClassLoader(ClassLoader parent)
                 throws Exception {
-            super(path, parent);
+            super(parent);
         }
 
 
-        public Class loadClass(String name) throws ClassNotFoundException {
+        public Class xxxloadClass(String name) throws ClassNotFoundException {
             try {
                 Class clazz =  super.loadClass(name);
                 if(clazz!=null) {
@@ -1831,7 +1832,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 }
                 return clazz;            
             } catch(ClassNotFoundException cnfe) {
-                for(PluginClassLoader loader:pluginClassLoaders) {
+                for(MultiJarClassLoader loader:pluginClassLoaders) {
                     Class clazz =  loader.getClassFromPlugin(name);
                     if(clazz!=null) {
                         return clazz;
@@ -1895,8 +1896,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
          *
          * @return _more_
          */
-        protected String defineResource(JarEntry jarEntry) {
-            String path = super.defineResource(jarEntry);
+        protected String defineResource(String jarFilePath, JarEntry jarEntry) {
+            String path = super.defineResource(jarFilePath, jarEntry);
             checkFile(path, true);
             String entryName = jarEntry.getName();
             int    idx       = entryName.indexOf("htdocs/");
@@ -1928,6 +1929,9 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         File   dir     = new File(getStorageManager().getPluginsDir());
         File[] plugins = dir.listFiles();
         Arrays.sort(plugins);
+        MultiJarClassLoader cl = new MyClassLoader(getClass().getClassLoader());
+        pluginClassLoaders.add(cl);
+        Misc.addClassLoader(cl);
         for (int i = 0; i < plugins.length; i++) {
             if (plugins[i].isDirectory()) {
                 continue;
@@ -1935,11 +1939,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             String pluginFile = plugins[i].toString();
             pluginSB.append("<tr><td><b>Plugin file</b></td><td colspan=2><i>" +pluginFile +"</i></td></tr>");
             if (pluginFile.toLowerCase().endsWith(".jar")) {
-                PluginClassLoader cl = new MyClassLoader(pluginFile,
-                                           getClass().getClassLoader());
-
-                pluginClassLoaders.add(cl);
-                Misc.addClassLoader(cl);
+                cl.addJar(pluginFile);
                 List entries = cl.getEntryNames();
                 for (int entryIdx = 0; entryIdx < entries.size();
                         entryIdx++) {
