@@ -84,6 +84,24 @@
 
 
 
+    <target name="pluginnocode" depends="init,pluginclean">
+        <property name="plugindestdir" value="${distdir}/plugins"/>
+        <mkdir dir="${plugindestdir}"/>
+        <echo message="Making jar ${plugindestdir}/${jarfile}"/>
+        <jar 
+            basedir="${srcdir}"
+            update="false"
+            compress="true"
+            jarfile="${plugindestdir}/${jarfile}">
+            <include name="${plugindir}/htdocs/**/*"/>
+            <include name="${plugindir}/resources/**/*"/>
+            <include name="${plugindir}/*.xml"/>
+            <include name="${plugindir}/*.properties"/>
+	    </jar>
+    </target>
+
+
+
     <target name="plugin_install">
         <property name="plugindestdir" value="${distdir}/plugins"/>
         <mkdir dir="${plugindestdir}"/>
