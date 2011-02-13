@@ -1,0 +1,16 @@
+binocular.png
+building.png
+burn.png
+calendar.png
+camera.png
+car.png
+film.png
+glass.png
+globe.png
+home.png
+paper-plane.png
+question.png
+shopping-basket.png
+smiley.png
+star.png
+sticky-note.png
