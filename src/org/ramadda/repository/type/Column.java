@@ -468,6 +468,17 @@ public class Column implements Constants {
                || isType(TYPE_EMAIL) || isType(TYPE_URL);
     }
 
+
+    public String getString(Object[] values) {
+        if(values ==null) return null;
+        int idx = getOffset();
+        if (values[idx] == null) {
+            return null;
+        }
+        return values[idx].toString();
+    }
+
+
     /**
      * _more_
      *

@@ -122,7 +122,7 @@
     <target name="clientjar" depends="init,clean">
         <javac
             verbose="false"
-            classpath="${xclasspath}"
+            classpath="${classpath}"
             debug="true"
             source="${srcversion}"
             deprecation="false" 

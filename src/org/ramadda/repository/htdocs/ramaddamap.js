@@ -421,7 +421,7 @@ function RepositoryMap (mapId, params) {
         marker.location = location;
         var theMap = this;
         marker.events.register('click', marker, function(evt) { 
-                this.showMarkerPopup(marker);
+                theMap.showMarkerPopup(marker);
                 OpenLayers.Event.stop(evt); 
             });
         this.markers.addMarker(marker);
@@ -464,9 +464,12 @@ function RepositoryMap (mapId, params) {
         //        alert("adding box "+ north +" " + bounds);
 
         box = new OpenLayers.Marker.Box(bounds);
+        var theMap = this;
+
         if(args["selectable"]) {
+
             box.events.register("click", box, function (e) {
-                    this.showMarkerPopup(box);
+                    theMap.showMarkerPopup(box);
                     OpenLayers.Event.stop(evt); 
                 });
         }
@@ -546,9 +549,10 @@ function RepositoryMap (mapId, params) {
         var lineString = new OpenLayers.Geometry.LineString(points);
         var line = new OpenLayers.Feature.Vector(lineString, null,
                                                         style);
+        var theMap = this;
         /*        line.events.register("click", line, function (e) {
                 alert("box click");
-                this.showMarkerPopup(box);
+                theMap.showMarkerPopup(box);
                 OpenLayers.Event.stop(evt); 
                 });*/
 
@@ -558,17 +562,18 @@ function RepositoryMap (mapId, params) {
     }
 
 
-    this.showMarkerPopup =function(marker) {
+    this.showMarkerPopup = function(marker) {
         if(this.currentPopup) {
             this.map.removePopup(this.currentPopup);
             this.currentPopup.destroy();
         }
         this.hiliteBox(marker.id);
+        var theMap = this;
         popup = new OpenLayers.Popup.FramedCloud("popup", 
                                                  marker.location,
                                                  null,
                                                  marker.text,
-                                                 null, true, function() {this.onPopupClose()});
+                                                 null, true, function() {theMap.onPopupClose()});
         marker.popup = popup;
         popup.marker= marker;
         this.map.addPopup(popup);

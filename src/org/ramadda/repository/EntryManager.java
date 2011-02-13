@@ -1763,7 +1763,7 @@ public class EntryManager extends RepositoryManager {
             HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            group), "Continue");
         return getActionManager().doAction(request, action, "Deleting entry",
-                                           "Continue: " + href);
+                                           "Continue: " + href, group);
     }
 
 

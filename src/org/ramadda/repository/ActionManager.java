@@ -152,7 +152,11 @@ public class ActionManager extends RepositoryManager {
                 sb.append(HtmlUtil.formClose());
             }
         }
-        return new Result(msg("Status"), sb);
+        Result result = new Result(msg("Status"), sb);
+        if(action.entry!=null) {
+            return getEntryManager().addEntryHeader(request, action.entry, result);
+        }
+        return result;
     }
 
 
@@ -241,9 +245,10 @@ public class ActionManager extends RepositoryManager {
      *
      * @return _more_
      */
-    private Object addAction(String msg, String continueHtml) {
+    private Object addAction(String msg, String continueHtml, Entry entry) {
+
         String id = getRepository().getGUID();
-        actions.put(id, new ActionInfo(msg, continueHtml));
+        actions.put(id, new ActionInfo(msg, continueHtml, entry));
         return id;
     }
 
@@ -260,7 +265,12 @@ public class ActionManager extends RepositoryManager {
      */
     public Result doAction(Request request, final Action runnable,
                               String name, String continueHtml) {
-        Object actionId = runAction(runnable, name, continueHtml);
+        return doAction(request, runnable, name, continueHtml, null);
+    }
+
+    public Result doAction(Request request, final Action runnable,
+                           String name, String continueHtml, Entry entry) {
+        Object actionId = runAction(runnable, name, continueHtml, entry);
         return new Result(request.url(URL_STATUS, ARG_ACTION_ID,
                                       "" + actionId));
     }
@@ -277,7 +287,12 @@ public class ActionManager extends RepositoryManager {
      */
     protected Object runAction(final Action runnable, String name,
                                String continueHtml) {
-        final Object actionId = addAction(name, continueHtml);
+        return runAction(runnable, name, continueHtml, null);
+    }
+
+    protected Object runAction(final Action runnable, String name,
+                               String continueHtml, Entry entry) {
+        final Object actionId = addAction(name, continueHtml, entry);
         Misc.run(new Runnable() {
             public void run() {
                 try {
@@ -344,6 +359,7 @@ public class ActionManager extends RepositoryManager {
 
         private String extraHtml;
 
+        private Entry entry;
 
         /**
          * _more_
@@ -351,10 +367,11 @@ public class ActionManager extends RepositoryManager {
          * @param name _more_
          * @param continueHtml _more_
          */
-        public ActionInfo(String name, String continueHtml) {
+        public ActionInfo(String name, String continueHtml, Entry entry) {
             this.name         = name;
             this.continueHtml = continueHtml;
             this.id = getRepository().getGUID();
+            this.entry = entry;
         }
 
 
