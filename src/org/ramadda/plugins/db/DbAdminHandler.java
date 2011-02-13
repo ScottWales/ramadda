@@ -88,7 +88,6 @@ public class DbAdminHandler extends AdminHandlerImpl {
                                           "name"));
 
 
-
                 List<Element> columnNodes =
                     (List<Element>) XmlUtil.findChildren(tableNode, "column");
                 Element idNode = XmlUtil.create("column", tableNode,

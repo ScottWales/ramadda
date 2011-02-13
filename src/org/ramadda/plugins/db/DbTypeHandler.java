@@ -24,6 +24,7 @@ package org.ramadda.plugins.db;
 import org.w3c.dom.*;
 
 import ucar.unidata.data.gis.KmlUtil;
+import ucar.unidata.util.IOUtil;
 
 
 
@@ -129,6 +130,10 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     /** _more_          */
     public static final String ARG_DB_VIEW = "db.view";
+
+
+    public static final String ARG_ENUM_ICON = "db.icon";
+    public static final String ARG_ENUM_COLOR = "db.color";
 
 
     /** _more_          */
@@ -249,6 +254,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_          */
     public static final String PROP_STICKY_LABELS = "sticky.labels";
 
+
     /** _more_          */
     public static final String PROP_STICKY_POSX = "sticky.posx";
 
@@ -256,7 +262,11 @@ public class DbTypeHandler extends BlobTypeHandler {
     public static final String PROP_STICKY_POSY = "sticky.posy";
 
     /** _more_          */
-    public static final String PROP_CATEGORY_COLOR = "cat.color";
+    public static final String PROP_CAT_COLOR = "cat.color";
+
+    public static final String PROP_CAT_ICON = "cat.icon";
+
+
 
     /** _more_          */
     public static final String COL_DBID = "db_id";
@@ -298,6 +308,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_          */
     private boolean hasEmail = false;
 
+    private List<String> icons;
+
     /** _more_          */
     private boolean[] doSums;
 
@@ -318,6 +330,8 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     /** _more_          */
     private List<Column> categoryColumns = new ArrayList<Column>();
+
+    private List<Column> enumColumns = new ArrayList<Column>();
 
     /** _more_          */
     private List<Column> columns;
@@ -546,6 +560,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         int cnt = 0;
         numberColumns   = new ArrayList<Column>();
         categoryColumns = new ArrayList<Column>();
+        enumColumns = new ArrayList<Column>();
         dateColumns     = new ArrayList<Column>();
         hasDate         = false;
         labelColumn     = null;
@@ -596,6 +611,10 @@ public class DbTypeHandler extends BlobTypeHandler {
                 numberColumns.add(column);
                 hasNumber = true;
             }
+            if (column.isEnumeration()) {
+                enumColumns.add(column);
+            }
+
             if (column.isEnumeration()
                     && Misc.equals(column.getProperty("iscategory"),
                                    "true")) {
@@ -953,10 +972,9 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         if (categoryColumns.size() > 0) {
             String theColumn = request.getString(ARG_DB_COLUMN,
-                                   categoryColumns.get(0).getName());
+                                                 categoryColumns.get(0).getName());
             for (Column column : categoryColumns) {
                 String label = column.getLabel();
-                // + " - " + msg("Category View");
                 if (view.equals(VIEW_CATEGORY + column.getName())) {
                     headerToks.add(HtmlUtil.b(label));
                 } else {
@@ -1132,6 +1150,10 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
 
+
+
+
+
     /**
      * _more_
      *
@@ -1180,9 +1202,9 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         super.addToEntryForm(request, formBuffer, entry);
         Hashtable props = getProperties(entry);
-
-
-
+        if(entry!=null) {
+            addEnumerationAttributes(request, entry, formBuffer);
+        }
 
         formBuffer.append(
             HtmlUtil.row(
@@ -1205,6 +1227,100 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     }
 
+    private void addEnumerationAttributes(Request request, Entry entry, StringBuffer formBuffer) throws Exception {
+        if(enumColumns.size()==0) {
+            return;
+        }
+        Hashtable props = getProperties(entry);
+            
+        String[] colors = {
+            "#fff",
+            "#000",
+            "#444",
+            "#888",
+            "#eee",
+            "red",
+            "orange",
+            "yellow",
+            "green",
+            "blue",
+            "cyan",
+            "purple",
+        };
+
+        //        if(icons == null) {
+            icons = StringUtil.split(getRepository().getResource("/org/ramadda/plugins/db/icons.txt"),"\n",true, true);
+            //        }
+
+        for(Column col: enumColumns) {
+            formBuffer.append(
+                              HtmlUtil.row(
+                                           HtmlUtil.colspan(
+                                                            HtmlUtil.div(
+                                                                         msg("Settings for") + " " + col.getName(),
+                                                                         HtmlUtil.cssClass("formgroupheader")), 2)));
+
+            String colorID = PROP_CAT_COLOR+"." + col.getName();
+            String iconID = PROP_CAT_ICON+"." + col.getName();
+            Hashtable<String,String> colorMap = (Hashtable<String,String>) props.get(colorID);
+            if(colorMap==null) {
+                colorMap = new Hashtable<String,String>();
+            }
+            Hashtable<String,String> iconMap = (Hashtable<String,String>) props.get(iconID);
+            if(iconMap==null) {
+                iconMap = new Hashtable<String,String>();
+            }
+            StringBuffer sb = new StringBuffer("");
+            for(String value:   getEnumValues(entry, col)) {
+                String currentColor = colorMap.get(value);
+                String currentIcon = iconMap.get(value);
+                if(currentColor==null) currentColor="";
+                if(currentIcon==null) currentIcon="";
+                String colorArg = colorID +"." + value;
+                String iconArg = iconID +"." + value;
+                StringBuffer colorSB = new StringBuffer();
+                colorSB.append(HtmlUtil.radio(colorArg,"",currentColor.equals("")));
+                colorSB.append(msg("None"));
+                colorSB.append(" ");
+                for(String c: colors) {
+                    colorSB.append(HtmlUtil.span(HtmlUtil.radio(colorArg,c,currentColor.equals(c)), HtmlUtil.style("margin-left:2px; margin-right:2px; padding-left:5px; padding-right:7px; border:1px solid #000; background-color:" + c)));
+                }
+                StringBuffer iconSB = new StringBuffer();
+                iconSB.append(HtmlUtil.radio(iconArg,"", currentIcon.equals("")));
+                iconSB.append(msg("None"));
+                iconSB.append(" ");
+                for(String icon: icons) {
+                    if(icon.startsWith("#")) {
+                        continue;
+                    }
+                    if(icon.equals("br")) {
+                        iconSB.append("<br>");
+                        continue;
+                    }
+                    iconSB.append(HtmlUtil.radio(iconArg,icon,currentIcon.equals(icon)));
+                    iconSB.append(HtmlUtil.img(getIconUrl(icon), IOUtil.getFileTail(icon)));
+                }
+                formBuffer.append(HtmlUtil.formEntry(msgLabel("Value"), value));
+                formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Color"), colorSB.toString()));
+                String iconMsg = "";
+                if(currentIcon.length()>0) {
+                    iconMsg = HtmlUtil.img(getIconUrl(currentIcon));
+                }
+                formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Icon"), HtmlUtil.makeShowHideBlock(iconMsg,
+                                                                                                        iconSB.toString(),false)));
+            }
+            formBuffer.append(HtmlUtil.formEntry("", sb.toString()));
+        }
+
+    }
+
+
+    private String getIconUrl(String icon) {
+        if(icon.startsWith("http:")) return icon;
+        return getRepository().getUrlBase()+ "/db/icons/" + icon;
+    }
+
+
     /**
      * _more_
      *
@@ -1225,6 +1341,45 @@ public class DbTypeHandler extends BlobTypeHandler {
                   StringUtil.join("\n",
                                   StringUtil.split(stickyLabelString, "\n",
                                       true, true)));
+
+        for(Column col: enumColumns) {
+            String colorID = PROP_CAT_COLOR+"." + col.getName();
+            Hashtable<String,String> colorMap = (Hashtable<String,String>) props.get(colorID);
+            if(colorMap==null) {
+                colorMap = new Hashtable<String,String>();
+            }
+
+            String iconID = PROP_CAT_ICON+"." + col.getName();
+            Hashtable<String,String> iconMap = (Hashtable<String,String>) props.get(iconID);
+            if(iconMap==null) {
+                iconMap = new Hashtable<String,String>();
+            }
+            List<String> enumValues = getEnumValues(entry, col);
+            for(String value:   enumValues) {
+                String iconArg = iconID +"." + value;
+                String iconValue = request.getString(iconArg, "");
+                if(iconValue.equals("")) {
+                    iconMap.remove(value);
+                } else {
+                    iconMap.put(value, iconValue);
+                }
+
+            }
+            for(String value:   enumValues) {
+                String colorArg = colorID +"." + value;
+                String colorValue = request.getString(colorArg, "");
+                if(colorValue.equals("")) {
+                    colorMap.remove(value);
+                } else {
+                    colorMap.put(value, colorValue);
+                }
+            }
+            props.put(colorID,colorMap);
+            props.put(iconID,iconMap);
+        }
+
+
+
         setProperties(entry, props);
 
     }
@@ -1875,6 +2030,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                           StringBuffer sb, boolean doForm)
             throws Exception {
 
+        Hashtable entryProps     = getProperties(entry);
+
         if (doForm) {
             String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
             sb.append(HtmlUtil.form(formUrl));
@@ -1913,7 +2070,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
             sb.append(HtmlUtil.p());
             sb.append(
-                "<table class=\"dbtable\"  border=1 cellspacing=\"0\" cellpadding=\"2\" width=\"100%\">");
+                "<table class=\"dbtable\"  border=1 cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
             sb.append("<tr>");
             sb.append("<td class=dbtableheader>&nbsp;</td>");
             for (int i = 1; i < columns.size(); i++) {
@@ -2023,11 +2180,38 @@ public class DbTypeHandler extends BlobTypeHandler {
                     sums.put(column.getName(), d);
                 }
                 if (column.isString()) {
-                    sb.append("<td>&nbsp;");
+                    sb.append("<td>");
                 } else {
-                    sb.append("<td align=\"right\">&nbsp;");
+                    sb.append("<td align=\"right\">");
                 }
 
+
+                if (column.isEnumeration()) {
+                    StringBuffer prefix = new StringBuffer();
+                    String iconID = PROP_CAT_ICON+"." + column.getName();
+                    Hashtable<String,String> iconMap = (Hashtable<String,String>) entryProps.get(iconID);
+                    if(iconMap!=null) {
+                        String icon = iconMap.get((String)values[column.getOffset()]);
+                        if(icon!=null) {
+                            prefix.append(HtmlUtil.img(getIconUrl(icon)));
+                            prefix.append(" ");
+                        }
+                    }
+                    String style = "";
+                    String content = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                    String colorID = PROP_CAT_COLOR+"." + column.getName();
+                    Hashtable<String,String> colorMap = (Hashtable<String,String>) entryProps.get(colorID);
+                    if(colorMap!=null) {
+                        String bgColor = colorMap.get((String)values[column.getOffset()]);
+                        if(bgColor!=null) {
+                            style = style+"background-color:" + bgColor;
+                            prefix.append(HtmlUtil.span(content, HtmlUtil.style(style)));
+                        }
+                    }
+                    sb.append(prefix.toString());
+                }
+
+                sb.append("&nbsp;");
                 column.formatValue(entry, sb, Column.OUTPUT_HTML, values);
                 sb.append("</td>\n");
             }
@@ -2071,6 +2255,39 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         }
         sb.append(HtmlUtil.formClose());
+    }
+
+
+    private String getIconFor(Entry entry, Hashtable entryProps, Object[] values) {
+        for(Column column: enumColumns) {
+            String value  = column.getString(values);
+            String attrIcon = getIconFor(entry, entryProps, column,  value);
+            if(attrIcon!=null) return attrIcon;
+        }
+        return null;
+    }
+
+
+
+    private String getIconFor(Entry entry, Hashtable entryProps, Column column, String value) {
+        return getAttributeFor(entry, entryProps, column, value, PROP_CAT_ICON);
+    }
+
+    private String getColorFor(Entry entry, Hashtable entryProps, Column column, String value) {
+        return getAttributeFor(entry, entryProps, column, value, PROP_CAT_COLOR);
+    }
+
+
+    private String getAttributeFor(Entry entry, Hashtable entryProps, Column column, String value, String type) {
+        if (!column.isEnumeration() || value == null) {
+            return null;
+        }
+        String iconID = type+"." + column.getName();
+        Hashtable<String,String> map = (Hashtable<String,String>) entryProps.get(iconID);
+        if(map!=null) {
+            return  map.get(value);
+        }
+        return null;
     }
 
 
@@ -2123,6 +2340,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                 List<Object[]> valueList, boolean fromSearch)
             throws Exception {
 
+        Hashtable entryProps     = getProperties(entry);
         boolean      canEdit = getAccessManager().canEditEntry(request,
                                    entry);
         StringBuffer sb      = new StringBuffer();
@@ -2146,7 +2364,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-        int          width      = 700;
+        int          width      = 800;
         int          height     = 500;
         MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
         boolean      makeRectangles = valueList.size() <= 20;
@@ -2179,6 +2397,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                 map.addBox("", new MapProperties("red", false),  north, west , south,east);
             }
             rightSide.append("\n");
+            String iconToUse = icon;
+            String attrIcon  = getIconFor(entry, entryProps, values);
+            if(attrIcon!=null) {
+                iconToUse =  getIconUrl(attrIcon);
+                rightSide.append(HtmlUtil.img(iconToUse));
+            }
             if (canEdit) {
                 String editUrl = getEditUrl(request, entry, dbid);
                 rightSide.append(
@@ -2198,16 +2422,17 @@ public class DbTypeHandler extends BlobTypeHandler {
             rightSide.append(" ");
             rightSide.append(map.getHiliteHref(dbid, getLabel(entry, values)));
 
+
             rightSide.append(HtmlUtil.br());
             String info = getHtml(request, entry, dbid, columns, values);
             info = info.replace("\r", " ");
             info = info.replace("\n", " ");
             info = info.replace("\"", "\\\"");
             if ( !bbox) {
-                map.addMarker(dbid,  new LatLonPointImpl(lat,lon), icon, info);
+                map.addMarker(dbid,  new LatLonPointImpl(lat,lon), iconToUse, info);
             } else {
                 if ( !makeRectangles) {
-                    map.addMarker(dbid, new LatLonPointImpl(south, east), icon, info);
+                    map.addMarker(dbid, new LatLonPointImpl(south, east), iconToUse, info);
                 } else {
                     map.addMarker(dbid, new LatLonPointImpl(south+ (north - south) / 2, west + (east - west) / 2), icon, info);
                 }
@@ -2470,13 +2695,9 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
 
-        List<String> enumValues;
-        if (gridColumn.getType().equals(Column.TYPE_ENUMERATION)) {
-            enumValues = (List<String>) gridColumn.getValues();
-        } else {
-            enumValues =
-                (List<String>) tableHandler.getEnumValues(gridColumn, entry);
-        }
+        List<String> enumValues = getEnumValues(entry, gridColumn);
+        
+
         sb.append(
             "\n<style type=\"text/css\">\n.gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}\n.gridon {background: #88C957;}\n.gridoff {background: #eee;}</style>\n");
         sb.append(
@@ -2526,6 +2747,15 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append("</table>");
         return new Result(getTitle(), sb);
     }
+
+
+        private List<String> getEnumValues(Entry entry, Column column) throws Exception {
+            if (column.getType().equals(Column.TYPE_ENUMERATION)) {
+                return (List<String>) column.getValues();
+            } else {
+                return  (List<String>) tableHandler.getEnumValues(column, entry);
+            }
+        }
 
 
     /**
@@ -3284,6 +3514,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtil.formPost(formUrl));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
     }
+
+
 
 
     /**

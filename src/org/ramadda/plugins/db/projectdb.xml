@@ -68,8 +68,6 @@
 
 
 
-
-
 <table id="devtasks" name="Development Tasks">
    <column name="title" type="string" label="Title" cansearch="true"   canlist="true"/>
    <column name="package" type="enumerationplus" label="Package" cansearch="true"   canlist="true">
@@ -161,10 +159,7 @@
 </table>
 
 
-<table id="locations" name="Locations">
-   <column name="name" type="string"   label="Name"  cansearch="true" canlist="true" />
-   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="true" />
-</table>
+
 
 
 <!--
