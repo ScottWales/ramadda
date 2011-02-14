@@ -895,6 +895,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 } else if (toks.size() == 1) {
                     cmdLineProperties.put(toks.get(0), "");
                 } else {
+                    System.err.println("-D property:" + toks.get(0) +"=" + toks.get(1));
                     cmdLineProperties.put(toks.get(0), toks.get(1));
                 }
             } else {
@@ -977,6 +978,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         //        System.err.println ("debug:" + debug);
 
         readOnly = getProperty(PROP_READ_ONLY, false);
+        System.err.println("readonly property:" +PROP_READ_ONLY +" = " + readOnly); 
 
         setUrlBase((String) properties.get(PROP_HTML_URLBASE));
         if (getUrlBase() == null) {
