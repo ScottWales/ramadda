@@ -156,6 +156,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                                    repository.getProperty(
                                        "ramadda.idv.jnlp.template",
                                        (String) null));
+            System.err.println ("getJnlpTemplate local path =" + localPath);
             if (localPath != null) {
                 try {
                     jnlpTemplate = IOUtil.readContents(
@@ -165,8 +166,9 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                 } catch (Exception ignoreThis) {}
             }
             if (jnlpTemplate == null) {
+                System.err.println ("getJnlpTemplate using internal path");
                 jnlpTemplate = repository.getResource(
-                    "/org/ramadda/repository/idv/template.jnlp");
+                    "/org/ramadda/geodata/idv/template.jnlp");
             }
             //Replace the macros
             for (String macro :
