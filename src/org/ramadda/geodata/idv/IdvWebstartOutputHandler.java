@@ -152,10 +152,12 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
     public static String getJnlpTemplate(Repository repository) throws Exception {
         if (jnlpTemplate == null) {
-            String localPath = repository.getStorageManager().localizePath(
-                                   repository.getProperty(
+            String jnlpProperty = repository.getProperty(
                                        "ramadda.idv.jnlp.template",
-                                       (String) null));
+                                       (String) null);
+            String localPath = repository.getStorageManager().localizePath(jnlpProperty);
+
+            System.err.println ("getJnlpTemplate jnlp property =" + jnlpProperty);
             System.err.println ("getJnlpTemplate local path =" + localPath);
             if (localPath != null) {
                 try {
