@@ -1653,6 +1653,8 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String WIKIPROP_DESCRIPTION = "description";
 
+    public static final String WIKIPROP_PROPERTIES = "properties";
+
     /** _more_ */
     public static final String WIKIPROP_LINKS = "links";
 
@@ -1675,6 +1677,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String[] WIKIPROPS = {
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
+        WIKIPROP_PROPERTIES,
         WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR,
         WIKIPROP_IMAGE, WIKIPROP_LINKS  /*,
                           WIKIPROP_CHILDREN_GROUPS,
@@ -2010,6 +2013,24 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                 getRepository().getHtmlOutputHandler().getInformationTabs(
                                                                           request, entry, false, true);
             blockTitle = Misc.getProperty(props, "title", msg("Information"));
+        } else if (include.equals(WIKIPROP_PROPERTIES)) {
+            List   tabTitles   = new ArrayList<String>();
+            List   tabContents = new ArrayList<String>();
+            for (TwoFacedObject tfo : getRepository().getHtmlOutputHandler().getMetadataHtml(request, entry, true,
+                                                      false)) {
+                tabTitles.add(tfo.toString());
+                tabContents.add(tfo.getId());
+            }
+            if(tabTitles.size()==0) {
+                return "none";
+            }
+            if(tabTitles.size()>1 || true) {
+                return OutputHandler.makeTabs(tabTitles, tabContents, true, (true
+                                                                             ? "tab_content_fixedheight"
+                                                                             : "tab_content"));
+
+            }
+            return tabContents.get(0).toString();
         } else if (include.equals(WIKIPROP_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);
         } else if (include.equals(WIKIPROP_URL)) {

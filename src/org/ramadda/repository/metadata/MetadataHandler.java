@@ -517,6 +517,16 @@ public class MetadataHandler extends RepositoryManager {
         return type.getHtml(request, entry, metadata);
     }
 
+    public boolean isSimple(Metadata metadata)
+            throws Exception {
+        MetadataType type = getType(metadata.getType());
+        if ((type == null) || !type.hasElements()) {
+            return false;
+        }
+        return type.isSimple();
+    }
+
+
     /**
      * _more_
      *

@@ -304,6 +304,12 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+    public boolean isSimple() {
+        if(getChildren().size()>1) return false;
+        return !getChildren().get(0).getDataType().equals(TYPE_GROUP);
+    }
+
+
     /**
      * _more_
      *

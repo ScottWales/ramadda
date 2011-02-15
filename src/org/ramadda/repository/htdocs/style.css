@@ -218,10 +218,10 @@ a:hover {
 }
 
 .metadatagroup {
-  border : 1px #888888 solid;
-  background-color : #eeeeee;
+  xborder : 1px #888888 solid;
+  xbackground-color : #eeeeee;
   padding-right: 5px;
-  margin-left: 20px;
+  xmargin-left: 20px;
 }
 
 

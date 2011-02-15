@@ -2,7 +2,29 @@
 <metadata>
 
   <handler category="Tags">
+<!--
 
+    <type name="Test 1" id="test_it" searchable="true" browsable="true">
+      <element name="Simple string 1" />
+      <element  datatype="group"     name="Group 1"         subname="Sub name group 1">
+        <element name="Text"/>
+      </element>
+      <element  datatype="group"     name="Group 2"         subname="Sub name group 2">
+        <element name="Text 1"/>
+        <element name="Text 2"/>
+      </element>
+
+      <element  datatype="group"     name="Group 3"         subname="Sub name group 3">
+        <element name="Text 1"/>
+        <element name="Text 2" datatype="group">
+           <element name="Text 3"/>
+           <element name="Text 4"/>
+        </element>
+      </element>
+
+      <element name="Simple string 2" />
+    </type>
+-->
 
     <type name="Tag" id="enum_tag" searchable="true" browsable="true">
       <element name="Tag Value" />

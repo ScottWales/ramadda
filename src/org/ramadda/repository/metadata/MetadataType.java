@@ -680,11 +680,21 @@ public class MetadataType extends MetadataTypeBase {
         } else {
             int     cnt    = 1;
             boolean didOne = false;
-            content.append("<table cellpadding=2 cellspacing=2>");
-            for (MetadataElement element : getChildren()) {
-                MetadataElement.FormInfo formInfo = element.getHtml(/*content,*/ metadata.getAttr(cnt),0);
+
+            List<MetadataElement> children = getChildren();
+            if(children.size()>1)
+                content.append("<table border=0 cellpadding=2 cellspacing=2>");
+            else
+                content.append("<table border=0 cellpadding=0 cellspacing=0>");
+            for (MetadataElement element : children) {
+                MetadataElement.FormInfo formInfo = element.getHtml(metadata.getAttr(cnt),0);
                 if (formInfo!=null) {
-                    content.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
+                    //xxxx
+                    if(!element.isGroup()&& children.size()==1) {
+                        content.append(HtmlUtil.row(HtmlUtil.colspan(formInfo.content, 2)));
+                    } else  {
+                        content.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
+                    }
                     didOne = true;
                 }
                 cnt++;

@@ -418,7 +418,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      * @throws Exception _more_
      */
-    private List<TwoFacedObject> getMetadataHtml(Request request,
+    public List<TwoFacedObject> getMetadataHtml(Request request,
             Entry entry, boolean decorate, boolean addLink)
             throws Exception {
 
@@ -450,6 +450,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (html == null) {
                 continue;
             }
+            boolean isSimple = metadataHandler.isSimple(metadata);
             String cat = type.getDisplayCategory();
             if ( !decorate) {
                 cat = "Properties";
@@ -494,12 +495,12 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
             String theClass = HtmlUtil.cssClass("listrow" + rowNum);
-            if (decorate) {
+            if (decorate && !isSimple) {
                 String row =
                     " <tr  " + theClass
                     + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
                     + html[0] + "</nobr></td><td>"
-                    + HtmlUtil.makeToggleInline("", html[1], true)
+                    + HtmlUtil.makeToggleInline("", html[1], false)
                     + "</td></tr>";
                 sb.append(row);
             } else {
