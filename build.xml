@@ -79,6 +79,7 @@
             <include name="${plugindir}/resources/**/*"/>
             <include name="${plugindir}/*.xml"/>
             <include name="${plugindir}/*.properties"/>
+            <include name="${plugindir}/*.jnlp"/>
 	    </jar>
     </target>
 
