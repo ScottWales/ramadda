@@ -2671,20 +2671,8 @@ public class TypeHandler extends RepositoryManager {
                                       true)) + " Include non-geographic";
 
 
-            String radio = HtmlUtil.radio(
-                               ARG_AREA_MODE, VALUE_AREA_OVERLAPS,
-                               request.getString(
-                                   ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
-                                   VALUE_AREA_OVERLAPS)) + msg("Overlaps")
-                                       + HtmlUtil.space(3)
-                                       + HtmlUtil.radio(
-                                           ARG_AREA_MODE,
-                                           VALUE_AREA_CONTAINS,
-                                           request.getString(
-                                               ARG_AREA_MODE,
-                                               VALUE_AREA_OVERLAPS).equals(
-                                                   VALUE_AREA_CONTAINS)) + msg(
-                                                       "Contained by");
+            String radio = getSpatialSearchTypeWidget(request);
+
 
             MapInfo map = getRepository().getMapManager().createMap(request, true);
             String mapSelector = map.makeSelector(ARG_AREA, true, null, "", radio);
@@ -2714,6 +2702,26 @@ public class TypeHandler extends RepositoryManager {
         //        formBuffer.append(HtmlUtil.makeShowHideBlock(msg("Advanced"),
         //                advancedSB.toString(), false));
 
+    }
+
+
+    public static String getSpatialSearchTypeWidget(Request request) {
+        String radio = HtmlUtil.radio(
+                                      ARG_AREA_MODE, VALUE_AREA_OVERLAPS,
+                                      request.getString(
+                                                        ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
+                                                                                                   VALUE_AREA_OVERLAPS)) + msg("Overlaps")
+            + HtmlUtil.space(3)
+            + HtmlUtil.radio(
+                             ARG_AREA_MODE,
+                             VALUE_AREA_CONTAINS,
+                             request.getString(
+                                               ARG_AREA_MODE,
+                                               VALUE_AREA_OVERLAPS).equals(
+                                                                           VALUE_AREA_CONTAINS)) + msg(
+                                                                                                       "Contained by");
+
+        return radio;
     }
 
 
