@@ -92,6 +92,9 @@ public class MapInfo {
 
 
     public String getHtml() {
+        if(!repository.getMapManager().showMaps()) {
+            return "Maps not available";
+        }
         StringBuffer result = new StringBuffer();
         result.append(html);
         result.append(getMapDiv());
@@ -122,10 +125,65 @@ public class MapInfo {
     }
 
     public String makeSelector(String arg, 
-                                     boolean popup,
-                                     String[]nwse,
-                                     String extraLeft,
-                                     String extraTop) {
+                               boolean popup,
+                               String[]nwse,
+                               String extraLeft,
+                               String extraTop) {
+        boolean doRegion = true;
+        if (nwse==null) {
+            nwse = new String[]{"","","",""};
+        }
+
+        if(nwse.length==2) doRegion = false;
+        String widget = getSelectorWidget(arg, nwse);
+        if(!repository.getMapManager().showMaps()) {
+            return widget;
+        }
+
+        String msg = HtmlUtil.italics(doRegion?
+                                      repository.msg("Shift-drag to select region"):
+                                      repository.msg("Click to select point"));
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(msg);
+        sb.append(HtmlUtil.br());
+        sb.append(getMapDiv());
+        if ((extraLeft != null) && (extraLeft.length() > 0)) {
+            widget = widget + HtmlUtil.br() + extraLeft;
+        }
+
+        String rightSide = null;
+        String clearLink =   getSelectorClearLink(repository.msg("Clear"));
+        String initParams = HtmlUtil.squote(arg) + "," + doRegion +"," +
+            (popup
+                ? "1"
+                : "0");
+
+        if (popup) {
+            rightSide = HtmlUtil.space(2)+repository.makeStickyPopup(repository.msg("Select"),
+                                                                     sb.toString(),
+                                                                     getVariableName() + ".selectionPopupInit();") + HtmlUtil.space(2) + clearLink
+                                      + HtmlUtil.space(2)
+                                      + HtmlUtil.space(2) + extraTop;
+        } else {
+            rightSide = clearLink + HtmlUtil.space(2) 
+                + HtmlUtil.br() + sb.toString();
+        }
+
+        addJS(getVariableName()+".setSelection(" + initParams+ ");\n");
+        return HtmlUtil.table(new Object[] { widget, rightSide }) +
+            html +
+            HtmlUtil.script(getJS().toString());
+    }
+
+    public String getSelectorClearLink(String msg) {
+        return  HtmlUtil.mouseClickHref(getVariableName()+ ".selectionClear();",
+                                        msg);
+    }
+
+
+    public String getSelectorWidget(String arg, 
+                                    String[]nwse) {
         boolean doRegion = true;
         if (nwse==null) {
             nwse = new String[]{"","","",""};
@@ -149,43 +207,9 @@ public class MapInfo {
                                                           + ".longitude"))+" ";
 
         }
-        String msg = HtmlUtil.italics(doRegion?
-                                      repository.msg("Shift-drag to select region"):
-                                      repository.msg("Click to select point"));
 
-        StringBuffer sb = new StringBuffer();
-        sb.append(msg);
-        sb.append(HtmlUtil.br());
-        sb.append(getMapDiv());
-        if ((extraLeft != null) && (extraLeft.length() > 0)) {
-            widget = widget + HtmlUtil.br() + extraLeft;
-        }
-
-        String rightSide = null;
-        String clearLink = HtmlUtil.mouseClickHref(getVariableName()+ ".selectionClear();",
-                                                   repository.msg("Clear"));
-        String initParams = HtmlUtil.squote(arg) + "," + doRegion +"," +
-            (popup
-                ? "1"
-                : "0");
-
-        if (popup) {
-            rightSide = HtmlUtil.space(2)+repository.makeStickyPopup(repository.msg("Select"),
-                                                                     sb.toString(),
-                                                                     getVariableName() + ".selectionPopupInit();") + HtmlUtil.space(2) + clearLink
-                                      + HtmlUtil.space(2)
-                                      + HtmlUtil.space(2) + extraTop;
-        } else {
-            rightSide = clearLink + HtmlUtil.space(2) 
-                + HtmlUtil.br() + sb.toString();
-        }
-
-        addJS(getVariableName()+".setSelection(" + initParams+ ");\n");
-        return HtmlUtil.table(new Object[] { widget, rightSide }) +
-            html +
-            HtmlUtil.script(getJS().toString());
+        return widget;
     }
-
 
 
     public void addBox(Entry entry, MapProperties properties) {
@@ -222,8 +246,19 @@ public class MapInfo {
     }
 
     public void addLines(String id, List<double[]>pts) {
+        if(pts.size()==0) return;
+        double[] lastGoodPoint = pts.get(0);
         for(int i=1;i<pts.size();i++) {
-            addLine(id, pts.get(i-1)[0], pts.get(i-1)[1], pts.get(i)[0],pts.get(i)[1]);
+            double[] currentPoint = pts.get(i);
+            if(Double.isNaN(currentPoint[0])
+               ||Double.isNaN(currentPoint[0])) {
+                lastGoodPoint = null;
+                continue;
+            }
+            if(lastGoodPoint!=null) {
+                addLine(id, lastGoodPoint[0],lastGoodPoint[1], currentPoint[0],currentPoint[1]);
+            }
+            lastGoodPoint = currentPoint;
         }
     }
 

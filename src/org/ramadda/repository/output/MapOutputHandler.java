@@ -96,7 +96,9 @@ public class MapOutputHandler extends OutputHandler {
     public MapOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(OUTPUT_MAP);
+        if(getRepository().getMapManager().showMaps()) {
+            addType(OUTPUT_MAP);
+        }
     }
 
 
@@ -220,7 +222,17 @@ public class MapOutputHandler extends OutputHandler {
             throws Exception {
         MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
         if(map == null) return map;
+        addToMap(request, map, entriesToUse, haveBearingLines, true);
 
+        Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
+        map.centerOn(bounds);
+        sb.append(map.getHtml());
+        return map;
+    }
+
+    public void addToMap(Request request, MapInfo map, List<Entry> entriesToUse,
+                         boolean []haveBearingLines, boolean screenBigRects)
+            throws Exception {
         int cnt = 0;
         for (Entry entry : entriesToUse) {
             if (entry.hasAreaDefined()) {
@@ -228,18 +240,19 @@ public class MapOutputHandler extends OutputHandler {
             }
         }
 
-        Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
 
         boolean makeRectangles = cnt <= 20;
         MapProperties mapProperties = new MapProperties("blue", true);
+
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
-            if (entry.hasAreaDefined()) {
-                map.addBox(entry, mapProperties);
-            }
-
             if(makeRectangles) {
                 entry.getTypeHandler().addToMap(request, entry, map);
+                if (entry.hasAreaDefined()) {
+                    if(!screenBigRects || Math.abs(entry.getEast()-entry.getWest()) < 90) {
+                        map.addBox(entry, mapProperties);
+                    }
+                }
             }
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 String info =
@@ -272,7 +285,7 @@ public class MapOutputHandler extends OutputHandler {
                             LatLonPointImpl fromPt = new LatLonPointImpl(location[0],location[1]);
                             LatLonPointImpl pt = Bearing.findPoint(fromPt,dir,0.25,null);
                             map.addLine(entry.getId(), fromPt, pt);
-                            haveBearingLines[0] = true;
+                            if(haveBearingLines!=null)haveBearingLines[0] = true;
                             break;
                         } 
                     }
@@ -285,10 +298,6 @@ public class MapOutputHandler extends OutputHandler {
                 map.addMarker(entry.getId(), new LatLonPointImpl(location[0],location[1]), icon, info);
             }
         }
-
-        map.centerOn(bounds);
-        sb.append(map.getHtml());
-        return map;
     }
 
     /**

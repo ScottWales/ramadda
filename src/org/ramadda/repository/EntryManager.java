@@ -541,7 +541,6 @@ public class EntryManager extends RepositoryManager {
                                     OutputType outputType, Entry group)
             throws Exception {
         boolean      doLatest    = request.get(ARG_LATEST, false);
-
         TypeHandler  typeHandler = getRepository().getTypeHandler(request);
         List<Clause> where       = typeHandler.assembleWhereClause(request);
         List<Entry>  entries     = new ArrayList<Entry>();
@@ -583,7 +582,6 @@ public class EntryManager extends RepositoryManager {
 
         return result;
     }
-
 
 
 
@@ -5087,7 +5085,6 @@ public class EntryManager extends RepositoryManager {
 
         entries = getAccessManager().filterEntries(request, entries);
         groups  = getAccessManager().filterEntries(request, groups);
-
 
         return new List[] { groups, entries };
     }

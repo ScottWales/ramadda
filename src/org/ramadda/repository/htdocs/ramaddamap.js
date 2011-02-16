@@ -110,11 +110,11 @@ function RepositoryMap (mapId, params) {
         return this.map;
     }
 
-
     this.initMap = function(forSelection) {
-        var theMap = this;
-        this.name  = "map";
+        if(this.inited) return;
         this.inited = true;
+        this.name  = "map";
+        var theMap = this;
         var mousecontrols = new OpenLayers.Control.Navigation();
         var options = {
             xxxprojection: new OpenLayers.Projection("EPSG:900913"),
@@ -132,12 +132,18 @@ function RepositoryMap (mapId, params) {
         //        this.map.minScale = 0.0000001;
         this.vectors = new OpenLayers.Layer.Vector("Drawing");
         this.map.addLayer(this.vectors);
-
         this.addBaseLayers();
         this.map.setCenter(this.initialLocation, defaultZoomLevel);
         this.map.addControl(mousecontrols);
         this.map.addControl( new OpenLayers.Control.LayerSwitcher() );
         this.map.addControl( new OpenLayers.Control.MousePosition() );
+
+        if(this.markers) {
+            this.map.addLayer(this.markers);
+            var sf = new OpenLayers.Control.SelectFeature(this.markers);
+            this.map.addControl(sf);
+            sf.activate();
+        }
 
         if(this.initialBoxes) {
             this.initBoxes(this.initialBoxes);
@@ -150,32 +156,6 @@ function RepositoryMap (mapId, params) {
         if(this.initialLines) {
             this.map.addLayer(this.initalLines);
         }
-
-        /*
-        var options = {featureAdded:     
-                       function(feature) {
-                           theMap.drawingFeatureAdded(feature);
-                       }
-        }; 
-
-        controls = {
-            point: new OpenLayers.Control.DrawFeature(this.vectors,
-                                                      OpenLayers.Handler.Point, options)
-                        line: new OpenLayers.Control.DrawFeature(this.vectors,
-                                                     OpenLayers.Handler.Path),
-            polygon: new OpenLayers.Control.DrawFeature(this.vectors,
-                                                        OpenLayers.Handler.Polygon),
-                                                        drag: new OpenLayers.Control.DragFeature(this.vectors)
-            
-        };
-       for(var key in controls) {
-            //            this.map.addControl(controls[key]);
-        }
-//        var control = controls["point"];
-//        control.activate();
-        */
-        //        var draw = new OpenLayers.Control.DrawFeature(this.drawingLayer,
-        //                                                      OpenLayers.Handler.Point);
        if(forSelection) {
             this.addRegionSelectorControl();
         }
@@ -272,8 +252,14 @@ function RepositoryMap (mapId, params) {
     }
 
 
+    this.findSelectionFields = function() {
+        if(this.argBase && !this.fldNorth) {
+            this.setSelection(this.argBase);
+        }
+    }
 
     this.selectionClear = function() {
+        this.findSelectionFields();
         if(this.fldNorth) {
             this.fldNorth.obj.value = "";
             this.fldSouth.obj.value = "";
@@ -283,6 +269,11 @@ function RepositoryMap (mapId, params) {
             this.fldLon.obj.value = "";
             this.fldLat.obj.value = "";
         }
+        if(this.selectorBox && this.boxes) {
+            this.boxes.removeMarker(this.selectorBox);
+            this.selectorBox = null;
+        }
+
     }
 
 
@@ -305,8 +296,7 @@ function RepositoryMap (mapId, params) {
                     var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
                     var ur = this.map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
                     theMap.setSelectionBox(ur.lat, ll.lon, ll.lat,ur.lon);
-                    if(theMap.argBase && util) {
-                    }
+                    theMap.findSelectionFields();
                     if(theMap.fldNorth) {
                         theMap.fldNorth.obj.value = ur.lat;
                         theMap.fldSouth.obj.value = ll.lat;
@@ -396,16 +386,18 @@ function RepositoryMap (mapId, params) {
     }
 
 
-
     this.addMarker = function(id, location, iconUrl, text) {
         if(!this.markers) {
             this.markers = new OpenLayers.Layer.Markers("Markers");
             //Added this because I was getting an unknown method error
             this.markers.getFeatureFromEvent = function(evt) {return null;};
-            this.map.addLayer(this.markers);
-            var sf = new OpenLayers.Control.SelectFeature(this.markers);
-            this.map.addControl(sf);
-            sf.activate();
+
+            if(this.map) {
+                this.map.addLayer(this.markers);
+                var sf = new OpenLayers.Control.SelectFeature(this.markers);
+                this.map.addControl(sf);
+                sf.activate();
+            }
         }
         if(!iconUrl) {
             iconUrl = 'http://www.openlayers.org/dev/img/marker.png';
@@ -436,8 +428,8 @@ function RepositoryMap (mapId, params) {
         //Added this because I was getting an unknown method error
         theBoxes.getFeatureFromEvent = function(evt) {return null;};
         var sf = new OpenLayers.Control.SelectFeature(theBoxes);
-        this.map.addControl(sf);
-        sf.activate();
+        this.map.addControl(sf); 
+       sf.activate();
     }
 
 
@@ -467,7 +459,6 @@ function RepositoryMap (mapId, params) {
         var theMap = this;
 
         if(args["selectable"]) {
-
             box.events.register("click", box, function (e) {
                     theMap.showMarkerPopup(box);
                     OpenLayers.Event.stop(evt); 

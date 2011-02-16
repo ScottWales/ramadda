@@ -67,8 +67,11 @@ public class MapManager extends RepositoryManager {
     }
 
 
+    public boolean shouldShowMaps() {    
+        return showMaps();
+    }
 
-    public boolean shouldShowMaps() {
+    public boolean showMaps() {
         return  getRepository().getProperty(PROP_SHOWMAP, true);
     }
 
@@ -76,7 +79,7 @@ public class MapManager extends RepositoryManager {
     public void initMap(Request request, String mapVarName,
                           StringBuffer sb, int width, int height,
                           boolean forSelection) {
-        if(!shouldShowMaps()) {
+        if(!showMaps()) {
             return;
         }
 
@@ -123,7 +126,7 @@ public class MapManager extends RepositoryManager {
 
     public MapInfo createMap(Request request, int width, int height,
                              boolean forSelection) {
-        if(!shouldShowMaps()) {
+        if(!showMaps()) {
             //            return null;
         }
 
