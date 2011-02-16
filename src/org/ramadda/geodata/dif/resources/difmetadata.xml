@@ -83,11 +83,11 @@
       <element name="Last Name" searchable="false" dif.tag="Last_Name"/>
       <element datatype="email" name="Email" dif.tag="Email"/>
       <element  datatype="group"         name="Phone Numbers"  subname="Phone Number" dif.tag="Phone">
-        <element name="" id="number"/>
+        <element name="Phone Number" id="number"/>
 	<template type="dif"><![CDATA[<Phone>${number}</Phone>]]></template>
       </element>
       <element  datatype="group"         name="Fax Numbers"         subname="Fax Number" dif.tag="Fax">
-        <element name="" id="number"/>
+        <element name="FAX" id="number"/>
         <template type="dif"><![CDATA[<Fax>${number}</Fax>]]></template>
       </element>
       <element group="Address" name="Address"         rows="3" dif.tag="Address"/>
