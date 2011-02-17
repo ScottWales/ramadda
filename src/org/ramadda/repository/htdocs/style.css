@@ -211,21 +211,30 @@ a:hover {
 }
 
 .subheader {
-   border-bottom: 1px #000 solid;
-   display:block;
+   xborder-bottom: 1px #666 solid;
+   display:inline;
 }
 
 .subheader-sep {
-   display:none;
+   xdisplay:none;
 }
 
 .subheader-on, .subheader-off  {
    margin-left:3px;
    margin-right:3px;
+   padding-top: 0px;
+   padding-left: 2px;
+   padding-right: 2px;
+}
+
+.xsubheader-on, .xsubheader-off  {
+   margin-left:3px;
+   margin-right:3px;
    padding-top: 2px;
    padding-left: 10px;
    padding-right: 10px;
-   border: 1px #666 solid;
+   border: 1px #ccc solid;
+   border-bottom: 1px #666 solid;
    border-top-left-radius: 6px;
    border-top-right-radius: 6px;
    -moz-border-radius-topleft: 6px;
@@ -235,15 +244,18 @@ a:hover {
 }
 
 .subheader-on {
+     font-weight: bold;
+}
+
+.xsubheader-on {
+   border: 1px #666 solid;
    border-bottom: 1px #fff solid;
 }
 
 .subheader-off a {
-   xtext-decoration: underline;
 }
 
-.subheader-off {
-   xfont-weight: bold;
+.xsubheader-off {
    background-color:#ececec;
 }
 
