@@ -842,6 +842,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      */
     public void initProperties(Properties contextProperties)
             throws Exception {
+        System.err.println ("RAMADDA: initializing properties");
+
         /*
           order in which we load properties files
           system
