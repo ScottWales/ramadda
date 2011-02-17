@@ -2,7 +2,7 @@
 
 
 
-<div id="timeline" class="timeline-default" style="height: 400px; overflow-x:hidden; overflow-y:scroll;"></div>
+<div id="timeline" class="timeline-default" style="${style}   overflow-x:hidden; overflow-y:scroll;"></div>
 
     <script>
         function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
@@ -27,6 +27,7 @@
             theme1.ether.backgroundColors[1] = theme1.ether.backgroundColors[0];
             theme1.mouseWheel='zoom'; 
             var bandInfos = [
+/*
                 Timeline.createBandInfo({
                     width:          "25%", 
                     intervalUnit:   nextInterval,
@@ -49,9 +50,9 @@
               {pixelsPerInterval: 100,  unit: nextInterval},
               {pixelsPerInterval: 50,  unit: nextInterval} // DEFAULT zoomIndex
             )
-                }),
+                }),*/
                 Timeline.createBandInfo({
-                    width:          "75%", 
+                    width:          "100%", 
                     intervalUnit:   timelineIntervalUnit, 
                     intervalPixels: 100,
                     eventSource:    eventSource,

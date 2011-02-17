@@ -71,6 +71,8 @@ public class ApiMethod {
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
+    public static final String ATTR_ID = "id";
+
     /** _more_ */
     public static final String ATTR_VALUE = "value";
 

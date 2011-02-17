@@ -2199,13 +2199,15 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
 
 
+
+
         String handlerName = XmlUtil.getAttributeFromTree(node,
                                  ApiMethod.ATTR_HANDLER,
                                  Misc.getProperty(props,
                                      ApiMethod.ATTR_HANDLER, defaultHandler));
 
-
-        RequestHandler handler = (RequestHandler) handlers.get(handlerName);
+        String handlerId = XmlUtil.getAttributeFromTree(node,ApiMethod.ATTR_ID,handlerName);
+        RequestHandler handler = (RequestHandler) handlers.get(handlerId);
 
         if (handler == null) {
             handler = this;
@@ -2239,11 +2241,21 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 handler = this;
             } else {
                 Class handlerClass = Misc.findClass(handlerName);
-                Constructor ctor =
-                    Misc.findConstructor(handlerClass,
-                                         new Class[] { Repository.class,
-                                                       Element.class });
-                Object[] params = new Object[] {this, node };
+                Constructor ctor=null;
+                Object[] params = null;
+
+                ctor =   Misc.findConstructor(handlerClass,
+                                              new Class[] { Repository.class,
+                                                            Element.class, Hashtable.class });
+                params = new Object[] {this, node,props };
+
+                if(ctor==null) {
+                    ctor =   Misc.findConstructor(handlerClass,
+                                                  new Class[] { Repository.class,
+                                                                Element.class });
+                    params = new Object[] {this, node };
+                }
+
                 if(ctor == null) {
                     ctor =
                         Misc.findConstructor(handlerClass,
@@ -2261,7 +2273,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                                         + handlerName + ":");
                 return;
             }
-            handlers.put(handlerName, handler);
+            handlers.put(handlerId, handler);
         }
 
 

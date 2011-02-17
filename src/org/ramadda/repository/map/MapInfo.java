@@ -38,7 +38,7 @@ public class MapInfo {
     public static final String DFLT_BOX_COLOR = "blue";
 
     public static final int DFLT_WIDTH = 600;
-    public static final int DFLT_HEIGHT = 450;
+    public static final int DFLT_HEIGHT = 300;
 
     private Repository repository;
 

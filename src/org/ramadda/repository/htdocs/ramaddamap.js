@@ -47,8 +47,7 @@ function RepositoryMap (mapId, params) {
             this.mapLayers = [
                               //                              map_google_terrain,
                               //                              map_ms_shaded,
-                              //                              map_wms_openlayers,
-
+                              map_wms_openlayers,
                               map_wms_topographic,
                               map_yahoo,
                               //                              map_ms_aerial,
@@ -370,6 +369,7 @@ function RepositoryMap (mapId, params) {
             if(!this.markers) return;
             bounds = this.markers.getDataExtent();
         }
+        //        alert(bounds);
         if(!this.map) {
             this.initialBounds = bounds;
             return;

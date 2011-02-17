@@ -255,12 +255,18 @@ public class MapOutputHandler extends OutputHandler {
                 }
             }
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                String info =
-                    "<table>"
-                    + entry.getTypeHandler().getInnerEntryContent(entry,
-                        request, OutputHandler.OUTPUT_HTML, true, false,
-                        false) + "</table>";
+                StringBuffer info = new StringBuffer("<table>");
+                info.append(entry.getTypeHandler().getInnerEntryContent(entry,
+                                                                        request, 
+                                                                        OutputHandler.OUTPUT_HTML, 
+                                                                        true, false,false));
 
+                List<String> urls = new ArrayList<String>();
+                getMetadataManager().getThumbnailUrls(request,  entry, urls);
+                if(urls.size()>0) {
+                    info.append("<tr><td colspan=2>" +HtmlUtil.img(urls.get(0), "", " width=300 ") +"</td></tr>");
+                } 
+                info.append("</table>");
 
                 double[]location;
                 if (makeRectangles || !entry.hasAreaDefined()) {
@@ -276,7 +282,7 @@ public class MapOutputHandler extends OutputHandler {
                                       + getStorageManager().getFileTail(
                                           entry), ARG_ENTRYID, entry.getId(),
                                       ARG_IMAGEWIDTH, "300"));
-                    info = info+HtmlUtil.img(thumbUrl,"","");
+                    info.append(HtmlUtil.img(thumbUrl,"",""));
 
                     List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
                     for(Metadata metadata: metadataList) {
@@ -291,11 +297,12 @@ public class MapOutputHandler extends OutputHandler {
                     }
                 }
 
-                info = info.replace("\r", " ");
-                info = info.replace("\n", " ");
-                info = info.replace("\"", "\\\"");
+                String infoHtml= info.toString();
+                infoHtml = infoHtml.replace("\r", " ");
+                infoHtml = infoHtml.replace("\n", " ");
+                infoHtml = infoHtml.replace("\"", "\\\"");
                 String icon = getEntryManager().getIconUrl(request, entry);
-                map.addMarker(entry.getId(), new LatLonPointImpl(location[0],location[1]), icon, info);
+                map.addMarker(entry.getId(), new LatLonPointImpl(location[0],location[1]), icon, infoHtml);
             }
         }
     }

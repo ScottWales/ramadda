@@ -840,25 +840,23 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
     public Result outputTimelineXml(Request request, 
-                              Entry group, List<Entry> subGroups,
-                              List<Entry> entries)
+                              Entry group, List<Entry> allEntries)
             throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         StringBuffer sb = new StringBuffer();
         sb.append(XmlUtil.openTag(TAG_DATA));
-        List<Entry> allEntries = new ArrayList<Entry>();
-        allEntries.addAll(subGroups);
-        allEntries.addAll(entries);
+
+
         for(Entry entry: allEntries) {
             String       icon     = getEntryManager().getIconUrl(request, entry);
-            StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE, entry.getName(),
+            StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE, " " + entry.getName(),
                                                                 ATTR_ICON,icon));
 
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request,  entry,urls);
             if(urls.size()>0) {
                 attrs.append(XmlUtil.attrs(ATTR_IMAGE, urls.get(0)));
-            }
+            } 
             String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
             attrs.append(XmlUtil.attrs(ATTR_LINK, entryUrl));
 
@@ -873,6 +871,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(XmlUtil.closeTag(TAG_EVENT));
             sb.append("\n");
         }
+        
         sb.append(XmlUtil.closeTag(TAG_DATA));
         //        System.err.println(sb);
         return new Result("", sb,"text/xml");
@@ -956,6 +955,57 @@ public class HtmlOutputHandler extends OutputHandler {
         
     }
 
+    public String makeTimeline(Request request, List<Entry> entries, StringBuffer sb, String style) throws Exception  {
+        String head = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
+        long minDate = 0;
+        long maxDate = 0;
+        for(Entry entry: (List<Entry>)entries) {
+            if(minDate==0 || entry.getStartDate()<minDate)
+                minDate = entry.getStartDate();
+            if(maxDate==0 || entry.getEndDate()>maxDate)
+                maxDate = entry.getEndDate();
+        }
+        long diffDays = (maxDate-minDate)/1000/3600/24;
+        //            System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
+        String interval = "Timeline.DateTime.MONTH";
+        if(diffDays<3)
+            interval = "Timeline.DateTime.HOUR";
+        else if(diffDays<7)
+            interval = "Timeline.DateTime.DAY";
+        else if(diffDays<30)
+            interval = "Timeline.DateTime.WEEK";
+        else if(diffDays<150)
+            interval = "Timeline.DateTime.MONTH";
+        else if(diffDays<10*365)
+            interval = "Timeline.DateTime.YEAR";
+        else
+            interval = "Timeline.DateTime.DECADE";
+
+        
+        //        System.err.println(diffDays+ " " + interval+" min date:" +sdf.format(new Date(minDate)));
+
+        //            sb.append(getTimelineApplet(request, allEntries));
+        head = "<script>var Timeline_urlPrefix='${root}/timeline/timeline_js/';\nvar Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';\nTimeline_parameters='bundle=true';\n</script>\n<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>\n<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />";
+        head = head.replace("${root}", getRepository().getUrlBase());
+        String timelineApplet =
+            getRepository().getResource("/org/ramadda/repository/resources/timeline.html");
+        String url = request.getUrl();
+        url = url+"&timelinexml=true";
+        //            timelineApplet = timelineApplet.replace("${timelineurl}", "${root}/monet.xml");
+
+        timelineApplet = timelineApplet.replace("${timelineurl}", url);
+        timelineApplet = timelineApplet.replace("${basedate}", sdf.format(new Date(minDate)));
+        timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
+        timelineApplet = timelineApplet.replace("${style}", style);
+
+
+        sb.append(timelineApplet);
+        return head;
+
+    }
+
+
 
     /**
      * _more_
@@ -1013,7 +1063,10 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if(request.get("timelinexml",false)) {
-            return outputTimelineXml(request, group, subGroups, entries);
+            List<Entry> allEntries = new ArrayList<Entry>();
+            allEntries.addAll(subGroups);
+            allEntries.addAll(entries);
+            return outputTimelineXml(request, group, allEntries);
         }
 
         //        Result typeResult = typeHandler.getHtmlDisplay(request, group, subGroups, entries);
@@ -1065,46 +1118,10 @@ public class HtmlOutputHandler extends OutputHandler {
             //            sb.append(getHtmlHeader(request,  group));
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
-            SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
-            long minDate = 0;
-            long maxDate = 0;
-            for(Entry entry: (List<Entry>)allEntries) {
-                if(minDate==0 || entry.getStartDate()<minDate)
-                    minDate = entry.getStartDate();
-                if(maxDate==0 || entry.getEndDate()>maxDate)
-                    maxDate = entry.getEndDate();
-            }
-            long diffDays = (maxDate-minDate)/1000/3600/24;
-            //            System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
-            String interval = "Timeline.DateTime.MONTH";
-            if(diffDays<3)
-                interval = "Timeline.DateTime.HOUR";
-            else if(diffDays<7)
-                interval = "Timeline.DateTime.DAY";
-            else if(diffDays<30)
-                interval = "Timeline.DateTime.WEEK";
-            else if(diffDays<150)
-                interval = "Timeline.DateTime.MONTH";
-            else if(diffDays<5*365)
-                interval = "Timeline.DateTime.YEAR";
-            else
-                interval = "Timeline.DateTime.DECADE";
+            
 
+            head =  makeTimeline(request, allEntries, sb,"height: 300px;");
 
-            //            sb.append(getTimelineApplet(request, allEntries));
-            head = "<script>var Timeline_urlPrefix='${root}/timeline/timeline_js/';\nvar Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';\nTimeline_parameters='bundle=true';\n</script>\n<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>\n<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />";
-            head = head.replace("${root}", getRepository().getUrlBase());
-            String timelineApplet =
-                getRepository().getResource("/org/ramadda/repository/resources/timeline.html");
-            String url = request.getUrl();
-            url = url+"&timelinexml=true";
-            //            timelineApplet = timelineApplet.replace("${timelineurl}", "${root}/monet.xml");
-
-
-            timelineApplet = timelineApplet.replace("${timelineurl}", url);
-            timelineApplet = timelineApplet.replace("${basedate}", sdf.format(new Date(minDate)));
-            timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
-            sb.append(timelineApplet);
             Result result =  makeLinksResult(request, msg("Timeline"), sb,
                                              new State(group, subGroups, entries));
             if(head!=null)
