@@ -577,17 +577,6 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getStorageManager();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param urls _more_
-     *
-     * @return _more_
-     */
-    protected List getSubNavLinks(Request request, RequestUrl[] urls) {
-        return repository.getSubNavLinks(request, urls);
-    }
 
     /**
      * _more_

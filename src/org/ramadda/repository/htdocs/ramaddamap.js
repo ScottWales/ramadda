@@ -45,14 +45,15 @@ function RepositoryMap (mapId, params) {
     this.addBaseLayers = function() {
         if(!this.mapLayers) {
             this.mapLayers = [
-
-                              map_wms_openlayers,
-                              map_yahoo,
-                              map_wms_topographic,
+                              //                              map_google_terrain,
                               //                              map_ms_shaded,
+                              //                              map_wms_openlayers,
+
+                              map_wms_topographic,
+                              map_yahoo,
                               //                              map_ms_aerial,
                               //map_ms_hybrid,
-                              //map_google_terrain,
+
                               //map_google_streets,
                               //map_google_hybrid,
                               //                              map_google_satellite

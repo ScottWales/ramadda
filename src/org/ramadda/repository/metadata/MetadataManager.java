@@ -837,15 +837,7 @@ public class MetadataManager extends RepositoryManager {
             }
         }
 
-
-
-
-        Result result = getRepository().makeResult(request,
-                            msg(type.getLabel() + " Cloud"), sb,
-                            getSearchManager().getSearchUrls());
-
-        return getEntryManager().addEntryHeader(request,
-                getEntryManager().getTopGroup(), result);
+        return getSearchManager().makeResult(request, msg(type.getLabel() + " Cloud"), sb);
     }
 
 

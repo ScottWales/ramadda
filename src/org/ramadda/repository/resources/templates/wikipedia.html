@@ -12,10 +12,6 @@ ramadda.template.link.separator=
 ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 ramadda.template.userlink.separator=
 
-ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
-ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
-ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
-
 ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
 ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 
@@ -153,7 +149,7 @@ ${favorites}
 
 <td>
 <div  class="header-leftcolumn-title">${header.title} - ${title}</div>
-<div class="content">${entry.header}${sublinks}<div class="innercontent">${content}</div></div>
+<div class="content">${entry.header}<div class="innercontent">${content}</div></div>
 </td></tr></table>
 <div class="footer">${footer}</div>
 ${bottom}

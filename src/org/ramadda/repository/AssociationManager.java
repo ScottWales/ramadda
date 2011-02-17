@@ -743,10 +743,7 @@ public class AssociationManager extends RepositoryManager {
                     associations, null, false));
         }
 
-        Result result =  getRepository().makeResult(request,
-                                          msg("Search Associations"), sb,
-                                          getSearchManager().getSearchUrls());
-        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
+        return getSearchManager().makeResult(request, msg("Search Associations"), sb);
     }
 
 
@@ -764,10 +761,7 @@ public class AssociationManager extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         getAssociationsSearchForm(request, sb);
-        Result result = getRepository().makeResult(request,
-                                          msg("Search Associations"), sb,
-                                          getSearchManager().getSearchUrls());
-        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
+        return getSearchManager().makeResult(request, msg("Search Associations"), sb);
     }
 
 

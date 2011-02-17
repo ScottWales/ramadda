@@ -544,12 +544,6 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
         if (state.getEntry().getDescription().indexOf("<nolinks>") >= 0) {
             return;
         }
-        /*        result.putProperty(
-            PROP_NAVSUBLINKS,
-            getHeader(
-                request, request.getOutput(),
-                getRepository().getLinksForHeader(request, state)));
-        */
     }
 
 

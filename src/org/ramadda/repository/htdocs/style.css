@@ -191,6 +191,7 @@ a:hover {
    font-size: 9pt;
 }
 
+
 .header-title {
   font-size: 200%;
 }
@@ -205,6 +206,46 @@ a:hover {
 }
 
 
+.subheader-container {
+   margin-top:10px;
+}
+
+.subheader {
+   border-bottom: 1px #000 solid;
+   display:block;
+}
+
+.subheader-sep {
+   display:none;
+}
+
+.subheader-on, .subheader-off  {
+   margin-left:3px;
+   margin-right:3px;
+   padding-top: 2px;
+   padding-left: 10px;
+   padding-right: 10px;
+   border: 1px #666 solid;
+   border-top-left-radius: 6px;
+   border-top-right-radius: 6px;
+   -moz-border-radius-topleft: 6px;
+   -moz-border-radius-topright: 6px;
+   -webkit-border-top-left-radius: 6px;
+   -webkit-border-top-right-radius: 6px;
+}
+
+.subheader-on {
+   border-bottom: 1px #fff solid;
+}
+
+.subheader-off a {
+   xtext-decoration: underline;
+}
+
+.subheader-off {
+   xfont-weight: bold;
+   background-color:#ececec;
+}
 
 .arrow {
       margin-right: 2px;

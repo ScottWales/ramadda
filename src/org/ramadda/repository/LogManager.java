@@ -512,12 +512,7 @@ public class LogManager extends RepositoryManager {
             getErrorLog(request, sb, theFile);
         }
 
-
-        Result result = new Result(msg("Log"), sb);
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getRepository().getSubNavLinks(request,
-                               getAdmin().adminUrls));
-        return result;
+        return getAdmin().makeResult(request, msg("Logs"), sb);
     }
 
     /**

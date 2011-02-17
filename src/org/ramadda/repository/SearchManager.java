@@ -214,10 +214,8 @@ public class SearchManager extends RepositoryManager {
             throws Exception {
         StringBuffer sb          = new StringBuffer();
         makeSearchForm(request, justText, typeSpecific, sb);
-        Result result =  getRepository().makeResult(request, msg("Search Form"), sb,
-                                                    getSearchUrls());
-        //        return result;
-        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
+
+        return makeResult(request, msg("Search Form"), sb);
     }
 
     public String getSearchUrl(Request request) {
@@ -499,8 +497,8 @@ public class SearchManager extends RepositoryManager {
         }
         sb.append(HtmlUtil.p());
         sb.append(header(msg("Search Results")));
-        return getRepository().makeResult(request, msg("Remote Search"), sb,
-                                          getSearchUrls());
+
+        return makeResult(request, msg("Remote Form"), sb);
 
     }
 
@@ -518,14 +516,18 @@ public class SearchManager extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         getMetadataManager().addToBrowseSearchForm(request, sb);
-        Result result =  getRepository().makeResult(request, msg("Search Form"), sb,
-                                          getSearchUrls());
-        return getEntryManager().addEntryHeader(request, getEntryManager().getTopGroup(), result);
+        return makeResult(request,  msg("Search Form"), sb);
     }
 
-
-
-
+    public Result makeResult(Request request, String title, StringBuffer sb)
+            throws Exception {
+        StringBuffer headerSB = new StringBuffer();
+        headerSB.append(getRepository().makeHeader(request, getSearchUrls(),""));
+        headerSB.append(sb);
+        sb = headerSB;
+        Result result = new Result(title, sb);
+        return getEntryManager().addEntryHeader(request, null,  result);
+    }
 
     /**
      * _more_

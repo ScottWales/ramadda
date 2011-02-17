@@ -859,11 +859,7 @@ public class UserManager extends RepositoryManager {
             sb.append(buttons);
         }
         sb.append(HtmlUtil.formClose());
-        Result result = new Result(msgLabel("User") + user.getLabel(), sb);
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getRepository().getSubNavLinks(request,
-                               getAdmin().adminUrls));
-        return addHeader(request, result); 
+        return getAdmin().makeResult(request, msgLabel("User") + user.getLabel(), sb);
     }
 
 
@@ -1021,12 +1017,7 @@ public class UserManager extends RepositoryManager {
 
         if ( !ok) {
             makeBulkForm(request, sb, request.getString(ARG_USER_BULK, ""));
-            Result result = new Result(msg("New User"), sb);
-            result.putProperty(PROP_NAVSUBLINKS,
-                               getRepository().getSubNavLinks(request,
-                                   getAdmin().adminUrls));
-
-            return addHeader(request, result); 
+            return getAdmin().makeResult(request, msg("New User"), sb);
         }
 
         String  id        = "";
@@ -1254,13 +1245,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.submit(msg("Create User"), ARG_USER_NEW));
         sb.append(HtmlUtil.formClose());
 
-
-        Result result = new Result(msg("New User"), sb);
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getRepository().getSubNavLinks(request,
-                               getAdmin().adminUrls));
-        return result;
-
+        return getAdmin().makeResult(request, msg("New User"), sb);
     }
 
     /**
@@ -1429,11 +1414,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.p());
         sb.append(OutputHandler.makeTabs(tabTitles, tabContent, true));
 
-        Result result = new Result(msg("Users"), sb);
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getRepository().getSubNavLinks(request,
-                               getAdmin().adminUrls));
-        return result;
+        return getAdmin().makeResult(request, msg("Users"), sb);
     }
 
 
@@ -1770,6 +1751,11 @@ public class UserManager extends RepositoryManager {
      * @return _more_
      */
     public Result makeResult(Request request, String title, StringBuffer sb) {
+        StringBuffer headerSB = new StringBuffer();
+        addUserHeader(request,  headerSB);
+        headerSB.append(sb);
+        sb = headerSB;
+        /*
         List<RequestUrl> links  =  !request.getUser().canEditSettings()
             ? anonUserUrls
             : userUrls;
@@ -1780,11 +1766,21 @@ public class UserManager extends RepositoryManager {
         User user = request.getUser();
         List list = getRepository().getSubNavLinks(request, links);
         sb.append(StringUtil.join("",list));
-
+        */
         //      Result result = getRepository().makeResult(request, title, sb,
         Result result = new Result(title, sb);
         //        if(true) return result;
         return addHeader(request,result);
+    }
+
+
+
+    public void addUserHeader(Request request, StringBuffer sb) {
+        List<RequestUrl> links  =  !request.getUser().canEditSettings()
+            ? anonUserUrls
+            : userUrls;
+
+        sb.append(getRepository().makeHeader(request, links,""));
     }
 
 
@@ -2037,6 +2033,7 @@ public class UserManager extends RepositoryManager {
                     + HtmlUtil.img(iconUrl(ICON_FAVORITE))
                     + " icon to add it to your list of favorites"));
         }
+        //        xxxx
         return makeResult(request, "User Home", sb);
     }
 
@@ -2707,12 +2704,7 @@ public class UserManager extends RepositoryManager {
         } else {
             sb.append(getUserActivities(request, user));
         }
-        Result result = new Result(msg("User Log"), sb);
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getRepository().getSubNavLinks(request,
-                               getAdmin().adminUrls));
-
-        return addHeader(request, result);
+        return getAdmin().makeResult(request, msg("User Log"), sb);
     }
 
 

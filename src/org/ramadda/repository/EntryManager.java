@@ -1784,13 +1784,6 @@ public class EntryManager extends RepositoryManager {
                                       String title, StringBuffer sb)
             throws Exception {
         Result result = new Result(title, sb);
-        /*
-        result.putProperty(PROP_NAVSUBLINKS,
-                           getRepository().getSubNavLinks(request,
-                               (entry.isGroup()
-                                ? getRepository().groupEditUrls
-                                : getRepository().entryEditUrls), "?"
-                                + ARG_ENTRYID + "=" + entry.getId()));*/
         return addEntryHeader(request, entry, result);
     }
 

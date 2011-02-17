@@ -3227,25 +3227,11 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         if (entryBreadcrumbs == null) {
             entryBreadcrumbs = "";
         }
-        List   sublinks     = (List) result.getProperty(PROP_NAVSUBLINKS);
-        String sublinksHtml = "";
-        if (sublinks != null) {
-            String sublinksTemplate = getTemplateProperty(request,
-                                          "ramadda.template.sublink.wrapper",
-                                          "");
-            sublinksHtml = StringUtil.join(getTemplateProperty(request,
-                    "ramadda.template.sublink.separator", ""), sublinks);
-            sublinksHtml = sublinksTemplate.replace("${sublinks}",
-                    sublinksHtml);
-        }
 
-        String header;
+        String header="";
         if(entryHeader.length()>0) {
             header = entryHeader;
-        } else {
-            header = sublinksHtml;
-        }
-        header = entryHeader+sublinksHtml;
+        } 
 
         String favoritesWrapper = getTemplateProperty(request,
                                       "ramadda.template.favorites.wrapper",
@@ -3348,13 +3334,9 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             html = html.replace("${" + macros[i] + "}", macros[i + 1]);
         }
 
-        if (sublinksHtml.length() > 0) {
-            html = StringUtil.replace(html, "${sublinks}", sublinksHtml);
-        } else {
-            html = StringUtil.replace(html, "${sublinks}", BLANK);
-        }
 
-
+        //cleanup old macro
+        html = StringUtil.replace(html, "${sublinks}", BLANK);
 
         html = translate(request, html);
         result.setContent(html.getBytes());
@@ -4716,69 +4698,12 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param urls _more_
-     *
-     * @return _more_
-     */
-    public List getSubNavLinks(Request request, RequestUrl[] urls) {
-        return getSubNavLinks(request, RepositoryUtil.toList(urls));
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param urls _more_
-     *
-     * @return _more_
-     */
-    public List getSubNavLinks(Request request, List<RequestUrl> urls) {
-        return getSubNavLinks(request, urls, BLANK);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param title _more_
-     * @param sb _more_
-     * @param links _more_
-     *
-     * @return _more_
-     */
-    public Result makeResult(Request request, String title, StringBuffer sb,
-                             List<RequestUrl> links) {
-        Result result = new Result(title, sb);
-        if (links != null) {
-            result.putProperty(PROP_NAVSUBLINKS,
-                               getSubNavLinks(request, links));
-        }
-        return result;
-    }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param urls _more_
-     * @param arg _more_
-     *
-     * @return _more_
-     */
-    public List getSubNavLinks(Request request, List<RequestUrl> urls,
-                               String arg) {
-        List   links = new ArrayList();
+    public String makeHeader(Request request, List<RequestUrl> urls,
+                             String arg) {
+        List<String>   links = new ArrayList();
         String type  = request.getRequestPath();
-        String onLinkTemplate = getTemplateProperty(request,
-                                    "ramadda.template.sublink.on", "");
-        String offLinkTemplate = getTemplateProperty(request,
-                                     "ramadda.template.sublink.off", "");
         for (RequestUrl requestUrl : urls) {
             String label = requestUrl.getLabel();
             label = msg(label);
@@ -4786,20 +4711,17 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 label = requestUrl.toString();
             }
             String url = request.url(requestUrl) + arg;
-            String template;
-
             if (type.endsWith(requestUrl.getPath())) {
-                template = onLinkTemplate;
+                links.add(HtmlUtil.span(label, HtmlUtil.cssClass("subheader-on")));
             } else {
-                template = offLinkTemplate;
+                links.add(HtmlUtil.span(HtmlUtil.href(url, label),HtmlUtil.cssClass("subheader-off")));
             }
-            String html = template.replace("${label}", label);
-            html = html.replace("${url}", url);
-            html = html.replace("${root}", getRepository().getUrlBase());
-            links.add(html);
         }
-        return links;
+        String header = StringUtil.join("<span class=\"subheader-sep\">|</span>", links);
+        return HtmlUtil.tag(HtmlUtil.TAG_CENTER, HtmlUtil.cssClass("subheader-container"), 
+                            HtmlUtil.tag(HtmlUtil.TAG_SPAN, HtmlUtil.cssClass("subheader"), header));
     }
+
 
 
 

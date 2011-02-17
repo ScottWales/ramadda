@@ -782,8 +782,19 @@ public class Admin extends RepositoryManager {
      */
     public Result makeResult(Request request, String title, StringBuffer sb)
             throws Exception {
-        return getRepository().makeResult(request, title, sb, adminUrls);
+        StringBuffer headerSB = new StringBuffer();
+        addHeader(request,  headerSB);
+        headerSB.append(sb);
+        sb = headerSB;
+        Result result = new Result(title, sb);
+        return getEntryManager().addEntryHeader(request, null,  result);
+        //        return getRepository().makeResult(request, title, sb, adminUrls);
     }
+
+    public void addHeader(Request request, StringBuffer sb) {
+        sb.append(getRepository().makeHeader(request, adminUrls,""));
+    }
+
 
 
 
