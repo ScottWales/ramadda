@@ -16,9 +16,6 @@
 To change the ramadda home dir use:
     <param-value>-Dramadda_home=/web/repository</param-value>
 -->
-    <description>
-Configure RAMADDA
-    </description>
   </context-param>
 
 
