@@ -310,7 +310,7 @@ public class StorageManager extends RepositoryManager {
         }
         repositoryDir = new File(repositoryDirProperty);
 
-        System.err.println ("RAMADDA: home directory = " + repositoryDir);
+        System.err.println ("**********  RAMADDA: home directory: " + repositoryDir +" ***********");
         if(!repositoryDir.exists()) {
             System.err.println ("RAMADDA: error: home directory does not exist");
             throw new IllegalStateException("RAMADDA: error: home directory does not exist");
