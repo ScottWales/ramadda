@@ -136,8 +136,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         Rectangle2D.Double bounds = getEntryManager().getBounds(entries);
 
         map.centerOn(bounds);
-        StringBuffer formSB  = new StringBuffer();
-        formSB.append(HtmlUtil.formTable());
+
 
         map.addJS(map.getVariableName()+".initMap(true);\n");
         if(request.defined(ARG_AREA_NORTH) &&
@@ -160,6 +159,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
 
 
 
+
+
+        StringBuffer formSB  = new StringBuffer();
+        formSB.append(HtmlUtil.br());
         formSB.append(HtmlUtil.formTable());
         formSB.append(HtmlUtil.formEntryTop(msgLabel("Text"),
                                             HtmlUtil.input(ARG_TEXT, request.getString(ARG_TEXT,""),
@@ -179,10 +182,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
             }
         }
 
-
         formSB.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Search"), ARG_SEARCH_SUBMIT)));
         formSB.append(HtmlUtil.formTableClose());
-        sb.append("<table><tr valign=top>");
+        sb.append("<table border=0 cellpadding=0 cellspacing=0><tr valign=top>");
 
         List<String> tabContents = new ArrayList<String>();
         List<String> tabTitles = new ArrayList<String>();

@@ -84,18 +84,15 @@ public class MapManager extends RepositoryManager {
         }
 
         if (request.getExtraProperty("initmap") == null) {
-            sb.append("\n");
             sb.append(HtmlUtil.cssLink(fileUrl("/openlayers/theme/default/google.css")));
-            //            sb.append("\n");
+            sb.append("\n");
             sb.append(HtmlUtil.cssLink(fileUrl("/openlayers/theme/default/style.css")));
             sb.append("\n");
             sb.append(HtmlUtil.importJS(fileUrl("/openlayers/OpenLayers.js")));
             sb.append("\n");
             sb.append(HtmlUtil.importJS(fileUrl("/ramaddamap.js")));
-            sb.append("\n");
-            sb.append(HtmlUtil.importJS("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
             /*
-
+            sb.append(HtmlUtil.importJS("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
             sb.append("\n");
             sb.append(HtmlUtil.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
             sb.append("\n");
@@ -141,12 +138,14 @@ public class MapManager extends RepositoryManager {
             mapInfo.addHtml(HtmlUtil.importJS(fileUrl("/openlayers/OpenLayers.js")));
             mapInfo.addHtml("\n");
             mapInfo.addHtml(HtmlUtil.importJS(fileUrl("/ramaddamap.js")));
+            /*
             mapInfo.addHtml("\n");
             mapInfo.addHtml(HtmlUtil.importJS("http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
             mapInfo.addHtml("\n");
             mapInfo.addHtml(HtmlUtil.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
             mapInfo.addHtml("\n");
             mapInfo.addHtml(HtmlUtil.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
+            */
             request.putExtraProperty("initmap", "");
         }
 
