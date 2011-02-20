@@ -31,7 +31,8 @@ The repository script entry allows an administrator to define arbitrary processi
 The idea is that the administrator specifies to bits of Jython - an initialization and an execution. 
 
 <h3>Initialization</h3>
-The initialization code is used to create a form that a user will see. This form is created by calling methods on a FormInfo object (ucar.unidata.repository.type.JythonTypeHandler.FormInfo). For example,
+The initialization code is used to create a form that a user will see. This form is created by calling methods on a FormInfo object 
+(org.ramadda.repository.type.JythonTypeHandler.FormInfo). For example,
 here is the code from an <a href="http://motherlode.ucar.edu/repository/entry/form?entryid=a93d0675-c0ba-40ce-a161-5441266ff1d7">example on our RAMADDA server</a>.
 
 The form is inside a 2 column html table. 
@@ -113,7 +114,7 @@ For the text and select inputs there will be Jython variables of the same name.
 <p>
 If the input was a file upload then the variable name will  be a string path to the file on the server.
 <p>
-If the input was a repository entry then the object the entry variable references is a ucar.unidata.repository.Entry object. If that entry is a file then there is also another variable set:
+If the input was a repository entry then the object the entry variable references is a org.ramadda.repository.Entry object. If that entry is a file then there is also another variable set:
 <pre>
   &lt;inputname&gt;_file
 </pre>

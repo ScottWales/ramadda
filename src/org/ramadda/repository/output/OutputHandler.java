@@ -26,6 +26,7 @@ package org.ramadda.repository.output;
 import org.w3c.dom.Element;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.repository.metadata.*;
@@ -42,9 +43,9 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.util.WikiUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import org.ramadda.util.WikiUtil;
 
 import java.io.*;
 
@@ -1372,8 +1373,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             entryLink.setLink(cbxSB + entryLink.getLink());
             decorateEntryRow(request, entry, sb, entryLink, rowId, "");
         }
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_UL));
-        sb.append("\n\n");
+        sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
         sb.append(HtmlUtil.script(jsSB.toString()));
         sb.append("\n\n");
         if (doFormClose) {
@@ -1644,6 +1644,8 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String WIKIPROP_NAME = "name";
 
+    public static final String WIKIPROP_MAP = "map";
+
     /** _more_ */
     public static final String WIKIPROP_DESCRIPTION = "description";
 
@@ -1671,7 +1673,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String[] WIKIPROPS = {
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
-        WIKIPROP_PROPERTIES,
+        WIKIPROP_PROPERTIES, WIKIPROP_MAP,
         WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR,
         WIKIPROP_IMAGE, WIKIPROP_LINKS  /*,
                           WIKIPROP_CHILDREN_GROUPS,
@@ -2007,6 +2009,22 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
                 getRepository().getHtmlOutputHandler().getInformationTabs(
                                                                           request, entry, false, true);
             blockTitle = Misc.getProperty(props, "title", msg("Information"));
+        } else if (include.equals(WIKIPROP_MAP)) {
+            StringBuffer mapSB = new StringBuffer();
+            int width    = Misc.getProperty(props, "width", 400);
+            int height    = Misc.getProperty(props, "height", 300);
+            MapOutputHandler mapOutputHandler = (MapOutputHandler) getRepository().getOutputHandler(MapOutputHandler.OUTPUT_MAP);
+            if(mapOutputHandler == null) return "No maps";
+
+            List<Entry> children =
+                (List<Entry>) wikiUtil.getProperty(entry.getId()
+                    + "_children");
+            if (children == null) {
+                children = getEntryManager().getChildren(request, entry);
+            }
+            boolean [] haveBearingLines = {false};
+            MapInfo map =  mapOutputHandler.getMap(request, children, mapSB, width, height, haveBearingLines);
+            return mapSB.toString();
         } else if (include.equals(WIKIPROP_PROPERTIES)) {
             List   tabTitles   = new ArrayList<String>();
             List   tabContents = new ArrayList<String>();
@@ -2018,7 +2036,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             if(tabTitles.size()==0) {
                 return "none";
             }
-            if(tabTitles.size()>1 || true) {
+            if(tabTitles.size()>1) {
                 return OutputHandler.makeTabs(tabTitles, tabContents, true, (true
                                                                              ? "tab_content_fixedheight"
                                                                              : "tab_content"));

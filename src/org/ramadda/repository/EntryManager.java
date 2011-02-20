@@ -4041,7 +4041,7 @@ public class EntryManager extends RepositoryManager {
                                ? ""
                                : HtmlUtil.div("",
                                    HtmlUtil.attrs(HtmlUtil.ATTR_STYLE,
-                                       "display:none;visibility:hidden",
+                                                  "display:none;visibility:hidden",
                                        HtmlUtil.ATTR_CLASS, "folderblock",
                                        HtmlUtil.ATTR_ID, uid)));
 

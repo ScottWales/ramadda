@@ -80,9 +80,9 @@ public class MapInfo {
     }
 
 
-    private String  getMapDiv() {
+    private String  getMapDiv(String contents) {
         StringBuffer result = new StringBuffer();
-        result.append(HtmlUtil.div("",
+        result.append(HtmlUtil.div(contents,
                                  HtmlUtil.style("border:2px #888888 solid; width:" + width
                                                 + "px; height:" + height + "px") + " "
                                  + HtmlUtil.id(mapVarName)));
@@ -93,11 +93,11 @@ public class MapInfo {
 
     public String getHtml() {
         if(!repository.getMapManager().showMaps()) {
-            return "Maps not available";
+            return getMapDiv("&nbsp;Maps not available");
         }
         StringBuffer result = new StringBuffer();
         result.append(html);
-        result.append(getMapDiv());
+        result.append(getMapDiv(""));
         result.append(HtmlUtil.script(getJS().toString()));
         result.append("\n");
         return result.toString();
@@ -147,7 +147,7 @@ public class MapInfo {
         StringBuffer sb = new StringBuffer();
         sb.append(msg);
         sb.append(HtmlUtil.br());
-        sb.append(getMapDiv());
+        sb.append(getMapDiv(""));
         if ((extraLeft != null) && (extraLeft.length() > 0)) {
             widget = widget + HtmlUtil.br() + extraLeft;
         }

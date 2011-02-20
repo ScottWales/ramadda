@@ -147,7 +147,7 @@ public class MapOutputHandler extends OutputHandler {
         List<Entry> entriesToUse = new ArrayList<Entry>();
         entriesToUse.add(entry);
         StringBuffer sb = new StringBuffer();
-        MapInfo map = getMap(request, entriesToUse, sb, 700, 500, true,new boolean[]{false});
+        MapInfo map = getMap(request, entriesToUse, sb, 700, 500, new boolean[]{false});
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
     }
 
@@ -182,7 +182,7 @@ public class MapOutputHandler extends OutputHandler {
         sb.append(
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td width=700>");
         boolean [] haveBearingLines = {false};
-        MapInfo map =  getMap(request, entriesToUse, sb, 700, 500, true, haveBearingLines);
+        MapInfo map =  getMap(request, entriesToUse, sb, 700, 500, haveBearingLines);
         sb.append("</td><td>");
 
 
@@ -210,7 +210,6 @@ public class MapOutputHandler extends OutputHandler {
      * @param sb _more_
      * @param width _more_
      * @param height _more_
-     * @param normalControls _more_
      *
      * @return _more_
      *
@@ -218,7 +217,7 @@ public class MapOutputHandler extends OutputHandler {
      */
     public MapInfo getMap(Request request, List<Entry> entriesToUse,
                          StringBuffer sb, int width, int height,
-                         boolean normalControls, boolean []haveBearingLines)
+                          boolean []haveBearingLines)
             throws Exception {
         MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
         if(map == null) return map;

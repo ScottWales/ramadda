@@ -28,8 +28,8 @@ Any &quot;.properties&quot; files are loaded as  system properties.
 Any .class file is loaded via a classloader. Some classes are special:
 <ul>
 <li>
- If the class is an instanceof a ucar.unidata.repository.auth.UserAuthenticator then the class is instantiated and it is used to handle user login and authentication.
-<li> If the class is an instanceof ucar.unidata.repository.AdminHandler then the class is instantiated. You can use this to add new apis into the repository and to add admin configuration options. Note: this is a work in progress.
+ If the class is an instanceof a org.ramadda.repository.auth.UserAuthenticator then the class is instantiated and it is used to handle user login and authentication.
+<li> If the class is an instanceof org.ramadda.repository.AdminHandler then the class is instantiated. You can use this to add new apis into the repository and to add admin configuration options. Note: this is a work in progress.
 </ul>
 
 <li><i>api.xml</i><br>

@@ -3,11 +3,9 @@
 <head>
    <title>Maps</title>
 </head>
-<body onload="createMap();">
-
-<div id="content"></div>
+<body>
 <div style="height: 500px; border:2px #888888 solid;" id="map"></div>
-<script type="text/javascript" src="http://proj4js.org/lib/proj4js-compressed.js"></script>
+
 <link href="/repository/openlayers/theme/default/style.css"  rel="stylesheet"  type="text/css" />
 <link href="/repository/openlayers/theme/default/google.css"  rel="stylesheet"  type="text/css" />
 <script src="/repository/openlayers/OpenLayers.js" ></script>
@@ -16,64 +14,25 @@
 <script src="http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1" ></script>
 <script src="http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false" ></script>
 
-
 <script type="text/JavaScript" >
-  function createMap() {
-  var form = "<form method=get action=map.html>" +
-    "Title: " +  htmlUtil.input("title", util.getUrlArg("title", "")) +
-    "  Marker: " +  htmlUtil.input("marker", util.getUrlArg("marker", "")) +
-    "  Lat: " +  htmlUtil.input("lat", util.getUrlArg("lat", ""), htmlUtil.attr("size","8")+ htmlUtil.attr("id","latfld")) +
-    "  Lon: " +  htmlUtil.input("lon", util.getUrlArg("lon", ""), htmlUtil.attr("size","8") + htmlUtil.attr("id","lonfld")) +
-    "  Zoom: " +  htmlUtil.input("zoom", util.getUrlArg("zoom", ""), htmlUtil.attr("size","8") + htmlUtil.attr("id","zoomfld")) +
-    "<input value='View Map' type=submit></form>"
-  content = util.getDomObject('content');
-  content.obj.innerHTML =form;
-
-  var lat = util.getUrlArg('lat', '40');
-  var lon = util.getUrlArg('lon','-105');
-  var initLocation = new OpenLayers.LonLat(lon, lat);
-//  var initLocation = new OpenLayers.LonLat(-107,40);
-//  var map = new RepositoryMap('map');
+  var lat = util.getUrlArg('lat');
+  var lon = util.getUrlArg('lon');
+  var initLocation = new OpenLayers.LonLat(-104, 40);
+  if(lat && lon) {
+       initLocation = new OpenLayers.LonLat(lon, lat);
+  }
   var map = new RepositoryMap('map',
-  {
-     'initialLocation': initLocation,
-     'xxxmapLayers': [map_ms_shaded, map_ms_aerial,  map_wms_topographic, map_wms_openlayers]
-   }
-  );
-
-
+  {'initialLocation': initLocation,
+  'mapLayers': [map_ms_shaded, map_ms_aerial,  map_wms_topographic, map_wms_openlayers]
+}
+);
   map.initMap(false);
-  map.name = "Test Repository Map";
-  var points = [new OpenLayers.Geometry.Point(-110,40),
-                new OpenLayers.Geometry.Point(-100,40),
-                new OpenLayers.Geometry.Point(-100,30),
-                new OpenLayers.Geometry.Point(-110,30),
-  new OpenLayers.Geometry.Point(-110,40)];
-
-  map.addRectangle("test points2", 41, -109,37, -102);
-//  map.addPolygon("test points", points, {strokeColor:"red",strokeWidth: 5});
-//  map.addLine("test points3", 60, -100, 50, -90);
-//  map.addRectangle("test points", 60, -100, 50, -90, {strokeColor:"green",strokeWidth: 5});
-//  map.addClickHandler("lonfld", "latfld", "zoomfld");
-  map.addMarker("marker", new OpenLayers.LonLat(-105,40), null, "text");
-
-
   var zoom = util.getUrlArg('zoom');
   if(zoom) {
       map.getMap().zoomTo(zoom);
   }
-  var title = util.getUrlArg("title", null);
-  if(title) {
-      document.title = title;
-  }
-  var marker = util.getUrlArg("marker", null);
-  if(marker) {
-      map.addMarker("marker", initLocation, null, marker);
-  }
-}
 
-
-
+  map.addMarker("marker", initLocation, null,"here");
 </script>
 
 </body>

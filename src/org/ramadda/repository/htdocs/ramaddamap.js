@@ -45,17 +45,19 @@ function RepositoryMap (mapId, params) {
     this.addBaseLayers = function() {
         if(!this.mapLayers) {
             this.mapLayers = [
+                             map_yahoo,
+                             map_wms_openlayers,
+                             map_wms_topographic,
+                             //                             map_ms_aerial,
+                             //                              map_google_satellite,
                               //                              map_google_terrain,
                               //                              map_ms_shaded,
-                              map_wms_openlayers,
-                              map_wms_topographic,
-                              map_yahoo,
-                              //                              map_ms_aerial,
+
+
                               //map_ms_hybrid,
 
                               //map_google_streets,
                               //map_google_hybrid,
-                              //                              map_google_satellite
                          ];
         }
 
@@ -366,7 +368,9 @@ function RepositoryMap (mapId, params) {
     this.centerOnMarkers = function(bounds)  {
         //        bounds = this.boxes.getDataExtent();
         if(!bounds) {
-            if(!this.markers) return;
+            if(!this.markers) {
+                return;
+            }
             bounds = this.markers.getDataExtent();
         }
         //        alert(bounds);
@@ -374,6 +378,7 @@ function RepositoryMap (mapId, params) {
             this.initialBounds = bounds;
             return;
         }
+        //        alert("map centerOn:" + bounds);
         this.map.setCenter(bounds.getCenterLonLat());
         this.map.zoomToExtent(bounds);
     }

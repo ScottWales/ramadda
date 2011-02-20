@@ -115,7 +115,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         }
 
         StringBuffer sb = new StringBuffer();
-        MapInfo map = getRepository().getMapManager().createMap(request,  tabWidth,tabHeight, true); 
         StringBuffer js = new StringBuffer();
         if(URL_SEARCH==null) {
             URL_SEARCH = new RequestUrl(this, searchUrl);
@@ -131,13 +130,20 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         };
 
 
+        MapInfo map = getRepository().getMapManager().createMap(request,  tabWidth,tabHeight, true); 
         MapOutputHandler mapOutputHandler = (MapOutputHandler) getRepository().getOutputHandler(MapOutputHandler.OUTPUT_MAP);
-        mapOutputHandler.addToMap(request, map, entries, null,true);
+        if(mapOutputHandler!=null) {
+            mapOutputHandler.addToMap(request, map, entries, null,true);
+        }
         Rectangle2D.Double bounds = getEntryManager().getBounds(entries);
 
+        if(bounds.getWidth()>180 && false) {
+            double cx = bounds.getX()+bounds.getWidth()/2;
+            double cy = bounds.getY()+bounds.getHeight()/2;
+            int f = 120;
+            bounds = new Rectangle2D.Double(cx-f, cy-f/2, f*2,f);
+        }
         map.centerOn(bounds);
-
-
         map.addJS(map.getVariableName()+".initMap(true);\n");
         if(request.defined(ARG_AREA_NORTH) &&
            request.defined(ARG_AREA_WEST) &&
@@ -148,6 +154,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
                                     request.get(ARG_AREA_WEST, 0.0) +"," +
                                     request.get(ARG_AREA_SOUTH, 0.0) +"," +
                                     request.get(ARG_AREA_EAST, 0.0)));
+
         }
 
 
