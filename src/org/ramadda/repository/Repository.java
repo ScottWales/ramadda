@@ -988,12 +988,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         }
 
         String derbyHome = (String) properties.get(PROP_DB_DERBY_HOME);
-        System.err.println("RAMADDA: derbyHome from properties:" + derbyHome);
         if (derbyHome != null) {
             derbyHome = getStorageManager().localizePath(derbyHome);
             File dir = new File(derbyHome);
             IOUtil.makeDirRecursive(dir);
-            System.err.println("RAMADDA: derbyHome =" + derbyHome);
             System.setProperty("derby.system.home", derbyHome);
         }
 
