@@ -42,8 +42,9 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.WikiUtil;
 import ucar.unidata.xml.XmlUtil;
+
+import org.ramadda.util.WikiUtil;
 
 import java.sql.PreparedStatement;
 
