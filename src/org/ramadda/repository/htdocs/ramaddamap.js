@@ -45,8 +45,8 @@ function RepositoryMap (mapId, params) {
     this.addBaseLayers = function() {
         if(!this.mapLayers) {
             this.mapLayers = [
-                             map_yahoo,
                              map_wms_openlayers,
+                             map_yahoo,
                              map_wms_topographic,
                              //                             map_ms_aerial,
                              //                              map_google_satellite,

@@ -101,6 +101,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         return result;
     }
 
+    public void makeHeader(Request request, StringBuffer sb) throws Exception {
+    }
+
+
     public Result processSearchRequest(Request request) throws Exception {
         int tabWidth = 700;
         int tabHeight = 350;
@@ -120,6 +124,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
             URL_SEARCH = new RequestUrl(this, searchUrl);
         }
 
+        makeHeader(request, sb);
         sb.append(request.form(URL_SEARCH,  HtmlUtil.attr(HtmlUtil.ATTR_NAME,"apisearchform")));
 
         String[]nwse = new String[] {

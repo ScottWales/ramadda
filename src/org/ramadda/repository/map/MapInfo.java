@@ -83,7 +83,7 @@ public class MapInfo {
     private String  getMapDiv(String contents) {
         StringBuffer result = new StringBuffer();
         result.append(HtmlUtil.div(contents,
-                                 HtmlUtil.style("border:2px #888888 solid; width:" + width
+                                 HtmlUtil.style("border:1px #888888 solid; background-color:#7391ad; width:" + width
                                                 + "px; height:" + height + "px") + " "
                                  + HtmlUtil.id(mapVarName)));
         result.append("\n");
