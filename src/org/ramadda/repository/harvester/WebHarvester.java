@@ -229,6 +229,10 @@ public class WebHarvester extends Harvester {
 
 
 
+    public void addToEditForm(Request request, StringBuffer superSB) throws Exception {
+
+    }
+
     /**
      * _more_
      *
@@ -257,6 +261,11 @@ public class WebHarvester extends Harvester {
                                               (getUserName() != null)
                 ? getUserName().trim()
                 : "", HtmlUtil.SIZE_30)));
+
+
+
+
+        addToEditForm(request, superSB);
 
 
         superSB.append(HtmlUtil.formTableClose());
@@ -389,7 +398,6 @@ public class WebHarvester extends Harvester {
                                                                  .id(baseGroupFieldId) + HtmlUtil
                                                                  .SIZE_60) + baseSelect));
 
-
     }
 
 
@@ -477,7 +485,9 @@ public class WebHarvester extends Harvester {
             if ( !getActive()) {
                 return;
             }
-            processEntry(urlEntry,entries);
+            if(!processEntry(urlEntry,entries)) {
+                break;
+            }
         }
         newEntryCnt += entries.size();
         if(entries.size()>0) {
@@ -486,7 +496,7 @@ public class WebHarvester extends Harvester {
     }
 
 
-    protected void processEntry(HarvesterEntry urlEntry, List<Entry> entries) throws Exception {
+    protected boolean processEntry(HarvesterEntry urlEntry, List<Entry> entries) throws Exception {
 
         Entry baseGroup = ((urlEntry.baseGroupId.length() == 0)
                            ? null
@@ -506,6 +516,7 @@ public class WebHarvester extends Harvester {
             statusMessages.add(crumbs);
             entryCnt++;
         }
+        return true;
     }
 
 

@@ -157,6 +157,11 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+
+    public boolean allowSpiders() {
+        return true;
+    }
+
     public String getHtmlHeader(Request request, Entry entry) {
         if(entry.isDummy() || !entry.isGroup()) {
             return "";

@@ -538,6 +538,10 @@ public class Admin extends RepositoryManager {
                     continue;
                 }
 
+                if (tableName.equals("BASE")|| tableName.equals("AGGGREGATION")) {
+                    continue;
+                }
+
 
                 ResultSet columns = dbmd.getColumns(null, null, tableName,
                                         null);

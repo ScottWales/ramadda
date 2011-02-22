@@ -942,10 +942,14 @@ public class TypeHandler extends RepositoryManager {
         DatabaseManager dbm        = getDatabaseManager();
         Date            createDate = null;
 
-        entry.initEntry(results.getString(col++), results.getString(col++), 
-                        getEntryManager().findGroup(null, results.getString(col++)), 
-                        getUserManager()
-            .findUser(results
+        String entryId = results.getString(col++);
+        String name = results.getString(col++);
+        String parentId = results.getString(col++);
+
+        Entry parent  = getEntryManager().findGroup(null, parentId);
+        entry.initEntry(entryId, name,
+                        parent, 
+                        getUserManager().findUser(results
                 .getString(col++), true), new Resource(getStorageManager()
                 .resourceFromDB(results.getString(col++)), results
                 .getString(col++), results.getString(col++), results

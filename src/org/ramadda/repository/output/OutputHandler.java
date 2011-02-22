@@ -134,6 +134,10 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     }
 
 
+    public boolean allowSpiders() {
+        return false;
+    }
+
     /**
      * _more_
      *

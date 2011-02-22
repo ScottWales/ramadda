@@ -4020,8 +4020,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     public List<Link> getOutputLinks(Request request,
                                      OutputHandler.State state)
             throws Exception {
+        boolean isSpider= request.isSpider();
         List<Link> links = new ArrayList<Link>();
         for (OutputHandler outputHandler : outputHandlers) {
+            if(isSpider && !outputHandler.allowSpiders()) continue;
             outputHandler.getEntryLinks(request, state, links);
         }
         List<Link> okLinks = new ArrayList<Link>();

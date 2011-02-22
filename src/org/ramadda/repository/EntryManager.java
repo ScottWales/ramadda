@@ -505,6 +505,14 @@ public class EntryManager extends RepositoryManager {
         //            getRepository().getOutputHandler(request, entry);
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
+
+        if(request.isSpider()) {
+            if(!outputHandler.allowSpiders()) {
+                return new Result("", new StringBuffer("no bots here"));
+            }
+        }
+
+
         outputHandler.incrNumberOfConnections();
         OutputType outputType = request.getOutput();
         outputType.incrNumberOfCalls();
@@ -4127,6 +4135,7 @@ public class EntryManager extends RepositoryManager {
         links.addAll(getRepository().getOutputLinks(request, state));
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
+
         if ( !entry.isTopEntry()) {
             links.addAll(outputHandler.getNextPrevLinks(request, entry,
                     request.getOutput()));
