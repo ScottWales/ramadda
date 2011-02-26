@@ -3,7 +3,7 @@
 
   <handler xxxclass="org.ramadda.geodata.echo.EchoMetadataHandler" category="ECHO">
 
-    <type name="Collection" id="echo.collection"  searchable="false" browsable="true">
+    <type name="ECHO Collection" id="echo.collection"  searchable="false" browsable="true">
       <element name="VersionId" label="Version Id"  datatype="string"/>
       <element name="LongName" label="Long Name"  datatype="string"/>
       <element name="Orderable"   datatype="boolean"/>
@@ -14,13 +14,8 @@
 
       <template type="echo">
         <![CDATA[ 
-      <ShortName>${entry.name}</ShortName>
       <VersionId>1</VersionId>
-      <InsertTime>${entry.publishdate}</InsertTime>
-      <LastUpdate>${entry.changedate}</LastUpdate>
       <LongName>${LongName}</LongName>
-      <DataSetId>${entry.id}</DataSetId>
-      <Description>${entry.description.cdata}</Description>
       <Orderable>${Orderable}</Orderable>
       <Visible>${Visible}</Visible>
       <ProcessingLevelId>${ProcessingLevelId}</ProcessingLevelId>
