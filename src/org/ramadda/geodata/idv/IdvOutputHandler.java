@@ -1114,11 +1114,6 @@ public class IdvOutputHandler extends OutputHandler {
         tabLabels.add(msg("View Bounds"));
         tabContents.add(bounds.toString());
 
-
-
-
-
-
         tabLabels.add(msg("Maps and Background"));
         tabContents.add(mapSB.toString());
 

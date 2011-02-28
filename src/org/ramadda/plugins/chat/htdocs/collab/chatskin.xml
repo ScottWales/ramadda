@@ -46,8 +46,6 @@ or by other components) using the idref="..." attribute.
       </panel>
 
 
-
-
     <!-- The very top panel. It contains a single child panel that is placed to the West -->
       <panel id="verytopx" layout="border" >
         <panel   place="West" layout="gridbag" cols="2">
