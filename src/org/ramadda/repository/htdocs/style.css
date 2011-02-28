@@ -954,27 +954,28 @@ code.menu {
 
 
 
-
-
-
-.pageheading, .formgroupheader {
+.formgroupheader {
    width:80%;
    margin-bottom:4px;
    border-top-left-radius: 7px;
    -moz-border-radius-topleft: 7px;
    -webkit-border-top-left-radius: 7px;
-
-
-   background-color : #d5ddf3;
-//   background-color : #DEF5FA;
-//   background-color : #eef6fa;
-   border-bottom: 1px #ccc solid;
-   border-bottom: 1px #888 solid;
-
+   background-color : #eef6fa;
+   border-bottom: 1px #aaa solid;
    font-weight: bold;
    padding-left: 10px;
    padding-top: 3px;
    padding-bottom: 0px;
+}
+
+.pageheading {
+   border-bottom: 2px #888 solid;
+   font-weight: bold;
+   padding-left: 10px;
+   padding-top: 3px;
+   padding-bottom: 0px;
+   margin-bottom:4px;
+   margin-top:4px;
 
 }
 

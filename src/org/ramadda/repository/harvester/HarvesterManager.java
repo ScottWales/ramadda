@@ -508,8 +508,7 @@ public class HarvesterManager extends RepositoryManager {
             return new Result(request.url(URL_HARVESTERS_LIST));
         }
 
-
-        sb.append(msgHeader("Harvesters"));
+        //        sb.append(msgHeader("Harvesters"));
         sb.append(request.formPost(URL_HARVESTERS_NEW));
         sb.append(HtmlUtil.submit(msg("New Harvester")));
         sb.append(HtmlUtil.formClose());

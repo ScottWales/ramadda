@@ -33,6 +33,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
+import java.text.SimpleDateFormat;
 import ucar.unidata.xml.XmlUtil;
 
 import java.awt.Image;
@@ -45,6 +46,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -57,6 +59,9 @@ import java.util.List;
  * @version $Revision: 1.3 $
  */
 public class MetadataTypeBase extends RepositoryManager {
+
+    /** _more_ */
+    private SimpleDateFormat sdf;
 
     /** _more_ */
     public static final String TAG_TYPE = "type";
@@ -79,6 +84,8 @@ public class MetadataTypeBase extends RepositoryManager {
 
     /** _more_ */
     public static final String ATTR_NAME = "name";
+
+    public static final String ATTR_LABEL = "label";
 
     /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
@@ -108,6 +115,8 @@ public class MetadataTypeBase extends RepositoryManager {
 
     /** _more_ */
     private String name;
+
+    private String label;
 
     /** _more_ */
     private boolean showInHtml = true;
@@ -238,6 +247,18 @@ public class MetadataTypeBase extends RepositoryManager {
         template = template.replaceAll("\n","");
         template = template.replace("${root}", getRepository().getUrlBase());
 
+
+        template = template.replace("${root}", getRepository().getUrlBase());
+
+
+        template = template.replace("${entry.id}", entry.getId());
+        template = template.replace("${entry.name}", entry.getName());
+        template = template.replace("${entry.name.cdata}", wrapCdata(entry.getName()));
+        template = template.replace("${entry.description}", entry.getDescription());
+        template = template.replace("${entry.description.cdata}", wrapCdata(entry.getDescription()));
+        template = template.replace("${entry.publishdate}", formatDate(entry.getCreateDate()));
+        template = template.replace("${entry.changedate}", formatDate(entry.getChangeDate()));
+
         for (MetadataElement element : getChildren()) {
             String value = element.getValueForXml(templateType, entry,
                                metadata,
@@ -248,6 +269,13 @@ public class MetadataTypeBase extends RepositoryManager {
         }
         return template;
     }
+
+
+    public String wrapCdata(String s) {
+        return "<![CDATA[" + s + "]]>";
+    }
+
+
 
 
     /**
@@ -270,7 +298,7 @@ public class MetadataTypeBase extends RepositoryManager {
         String[] keys  = {
             "attr" + element.getIndex(), name, name.toLowerCase(),
             name.replace(" ", "_"), name.toLowerCase().replace(" ", "_"),
-            element.getId()
+            element.getId(),
         };
         Hashtable macros = new Hashtable();
         macros.put("name", name);
@@ -286,8 +314,9 @@ public class MetadataTypeBase extends RepositoryManager {
             //                                        "<![CDATA[" + value + "]]>");
             macros.put(key, value);
             macros.put(key + ".label", label);
-            macros.put(key + ".cdata", "<![CDATA[" + value + "]]>");
+            macros.put(key + ".cdata", wrapCdata(value));
         }
+
         template = StringUtil.applyMacros(template, macros, false);
         template = template.replaceAll("\r\n\r\n", "<p>");
         template = template.replace("\n\n", "<p>");
@@ -330,6 +359,7 @@ public class MetadataTypeBase extends RepositoryManager {
      */
     public void init(Element node) throws Exception {
         setName(XmlUtil.getAttribute(node, ATTR_NAME, ""));
+        setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String)null));
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
         setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
                 false));
@@ -521,6 +551,16 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+    private String formatDate(long t) {
+        if (sdf == null) {
+            sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        }
+        synchronized(sdf) {
+            return sdf.format(new Date(t)) + "Z";
+        }
+    }
+
+
     /**
      * _more_
      *
@@ -592,7 +632,13 @@ public class MetadataTypeBase extends RepositoryManager {
      * @return _more_
      */
     public String getLabel() {
-        return name;
+        if(label!=null) return label;
+        return getName();
+    }
+
+
+    public void setLabel(String value) {
+        label = value;
     }
 
     /**

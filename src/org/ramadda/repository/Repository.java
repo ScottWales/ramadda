@@ -1134,7 +1134,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         initApi();
         getRegistryManager().checkApi();
 
-        getAdmin().addAdminHandler(new org.ramadda.plugins.db.DbAdminHandler());
+        //        getAdmin().addAdminHandler(new org.ramadda.plugins.db.DbAdminHandler());
         for (Class adminHandlerClass : adminHandlerClasses) {
             AdminHandler adminHandler =
                 (AdminHandler) adminHandlerClass.newInstance();

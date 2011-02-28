@@ -1608,6 +1608,8 @@ public class EntryManager extends RepositoryManager {
                 return asynchDeleteEntries(request, entries);
             } else {
                 deleteEntries(request, entries, null);
+
+                if(group == null)  group = getTopGroup();
                 return new Result(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, group));
             }
@@ -7247,6 +7249,14 @@ public class EntryManager extends RepositoryManager {
                                       Tables.ENTRIES.COL_PARENT_GROUP_ID));
 
         List<Entry> entries = readEntries(statement);
+        //        for(Entry entry: entries) {
+            //            System.err.println("TOP:" + entry);
+        //        }
+
+        if (entries.size() > 1) {
+            System.err.println("RAMADDA: + more than one top-level entries:" + entries);
+        }
+
         if (entries.size() > 0) {
             topEntry = (Entry) entries.get(0);
         }

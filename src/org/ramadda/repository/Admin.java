@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -130,7 +131,7 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public RequestUrl URL_ADMIN_STATS = new RequestUrl(this, "/admin/stats",
-                                            "Statistics");
+                                            "System");
 
     /** _more_ */
     public RequestUrl URL_ADMIN_ACCESS = new RequestUrl(this,
@@ -822,7 +823,7 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtil.href(request.url(URL_ADMIN_TABLES),
                                 "Show Tables"));
         sb.append("<li> ");
-        sb.append(HtmlUtil.href(request.url(URL_ADMIN_STATS), "Statistics"));
+        sb.append(HtmlUtil.href(request.url(URL_ADMIN_STATS), "System"));
         sb.append("<li> ");
         sb.append(HtmlUtil.href(request.url(URL_ADMIN_SQL), "Execute SQL"));
         sb.append("</ul>");
@@ -1070,7 +1071,7 @@ public class Admin extends RepositoryManager {
 
         asb.append(
             HtmlUtil.colspan(
-                "Enable Unidata Local Data Manager (LDM) Access", 2));
+                             msgHeader("Enable Unidata Local Data Manager (LDM) Access"), 2));
         String pqinsertPath = getProperty(PROP_LDM_PQINSERT, "");
         String ldmExtra1    = "";
         if ((pqinsertPath.length() > 0) && !new File(pqinsertPath).exists()) {
@@ -1607,7 +1608,7 @@ public class Admin extends RepositoryManager {
                                              stateSB.toString(), false));
         sb.append(HtmlUtil.makeShowHideBlock(msg("Database Statistics"),
                                              dbSB.toString(), false));
-        return makeResult(request, msg("Statistics"), sb);
+        return makeResult(request, msg("System"), sb);
     }
 
 
@@ -1647,7 +1648,7 @@ public class Admin extends RepositoryManager {
         }
 
         StringBuffer sb = new StringBuffer();
-        sb.append(msgHeader("SQL"));
+        //        sb.append(msgHeader("SQL"));
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.href(request.url(URL_ADMIN_TABLES),
                                 msg("View Schema")));
@@ -1848,7 +1849,9 @@ public class Admin extends RepositoryManager {
             cleanupTS++;
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_START)) {
-            Misc.run(this, "runDatabaseCleanUp", request);
+
+    //            Misc.run(this, "runDatabaseCleanUp", request);
+            Misc.run(this, "runDatabaseOrphanCheck", request);
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_DUMPDB)) {
             return adminDbDump(request);
@@ -1968,6 +1971,67 @@ public class Admin extends RepositoryManager {
                 cleanupStatus = new StringBuffer(msg("Done running cleanup")
                         + "<br>" + msg("Removed") + HtmlUtil.space(1)
                         + deleteCnt + " entries from database");
+            }
+        } catch (Exception exc) {
+            logError("Running cleanup", exc);
+            cleanupStatus.append("An error occurred running cleanup<pre>");
+            cleanupStatus.append(LogUtil.getStackTrace(exc));
+            cleanupStatus.append("</pre>");
+        }
+        runningCleanup = false;
+        long t2 = System.currentTimeMillis();
+    }
+
+
+
+    public void runDatabaseOrphanCheck(Request request) throws Exception {
+        if (runningCleanup) {
+            return;
+        }
+        runningCleanup = true;
+        cleanupStatus  = new StringBuffer();
+        int myTS = ++cleanupTS;
+        List<String[]> ids = new ArrayList<String[]>();
+        HashSet<String> idMap = new HashSet<String>();
+
+        try {
+            Statement statement =
+                getDatabaseManager().select(
+                    SqlUtil.comma(
+                                  Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_PARENT_GROUP_ID
+                                  ), Tables.ENTRIES.NAME,
+                    (Clause) null);
+            SqlUtil.Iterator iter =
+                getDatabaseManager().getIterator(statement);
+            ResultSet   results;
+            long        t1        = System.currentTimeMillis();
+            while ((results = iter.getNext()) != null) {
+                if ((cleanupTS != myTS) || !runningCleanup) {
+                    runningCleanup = false;
+                    break;
+                }
+                String id  = results.getString(1);
+                String parentId  = results.getString(2);
+                ids.add(new String[]{id,parentId});
+                idMap.add(id);
+            }
+
+            for(String[]tuples: ids) {
+                String id = tuples[0];
+                String parentId = tuples[1];
+                if(parentId ==null) {
+                    Entry entry = getEntryManager().getEntry(request, id);
+                    System.out.println("root:" + id +" " + entry);
+                    continue;
+                }
+                if(!idMap.contains(parentId)) {
+                    //                    System.out.println("bad parent:" + id +" " + parentId);
+                }
+            }
+
+
+            if (runningCleanup) {
+                cleanupStatus = new StringBuffer(msg("Done running cleanup"));
             }
         } catch (Exception exc) {
             logError("Running cleanup", exc);
