@@ -8,7 +8,13 @@
 <body>
 <a href="adminusers.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: User Administration" title="Previous: User Administration"></a> <a href="backups.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Backups" title="Next: Backups"></a>  <a href="toc.html#adminmisc.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
 <p>
-<div class="pagetitle">11.5 Miscellaneous Admin Settings</div>
+<div class="pagetitle">11.6 Miscellaneous Admin Settings</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
 
 
 
@@ -18,7 +24,7 @@ There are a number of other site administation tabs available.
 
 
 
-<a name="statistics"></a><div class="pagesubtitle">11.5.0 Statistics</div> 
+<a name="statistics"></a><div class="pagesubtitle">11.6.0 Statistics</div> 
 This shows statistics of the system and the database. Note: if there seems to be
 memory usage problems (e.g., excessive memory use from a memory leak) you can simply
 add a URL argument to any URL:<pre>
@@ -29,10 +35,10 @@ and the caches will be cleared and Java  garbage collector will run. Then, you c
 page and see if that has affected the memory usage (it should).
 
 
-<a name="access"></a><div class="pagesubtitle">11.5.1 Access</div> 
+<a name="access"></a><div class="pagesubtitle">11.6.1 Access</div> 
 This tab just shows an overview of all of the entry access control settings.
 
-<a name="logs"></a><div class="pagesubtitle">11.5.2 Logs</div> 
+<a name="logs"></a><div class="pagesubtitle">11.6.2 Logs</div> 
 You can view the last 200 accesses to the repository. Because the googlebot is so
 voracious we show its (and other bots) accesses highlighted.
 <p>
@@ -45,7 +51,7 @@ This view shows the last N lines of the log file. You cann show more or less of 
 Also, Java stack traces are shown hidden and can be expanded.
 
 
-<a name="cleanup"></a><div class="pagesubtitle">11.5.3 Clean Up</div> 
+<a name="cleanup"></a><div class="pagesubtitle">11.6.3 Clean Up</div> 
 This still needs work but the Clean Up facility will go through the
 resository database and remove all entries that are file used and the
 file does not exist. For example, if you are harvesting a real-time
@@ -56,7 +62,7 @@ be deleted from the database.
 <p>
 We are intending to do this automatically in the future.
 
-<a name="usermessage"></a><div class="pagesubtitle">11.5.4 User Message</div> 
+<a name="usermessage"></a><div class="pagesubtitle">11.6.4 User Message</div> 
 You can enter a message that is shown to all users one time in this tab.
 For example, you could announce that the repository will be unavailable
 for a certain time, etc.

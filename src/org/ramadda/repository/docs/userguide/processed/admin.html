@@ -8,7 +8,13 @@
 <body>
 <a href="plugins.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Plugins" title="Previous: Plugins"></a> <a href="adminusers.html"><img src="images/NextArrow.gif" border="0"   alt="Next: User Administration" title="Next: User Administration"></a>  <a href="toc.html#admin.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
 <p>
-<div class="pagetitle">11.3 Admin Settings</div>
+<div class="pagetitle">11.4 Admin Settings</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
 
 
 
@@ -20,7 +26,7 @@ of every page. This takes you to a set of Site Administration pages.
 <p>
 The main admin settings page consists of:
 
-<a name="contact"></a><div class="pagesubtitle">11.3.0 Site and Contact Information</div> 
+<a name="contact"></a><div class="pagesubtitle">11.4.0 Site and Contact Information</div> 
 
 Specify the RAMADDA administator email for when RAMADDA sends email to users.
 The Mail Server is the smtp mail server that RAMADDA can use to send email.
@@ -33,7 +39,7 @@ For information regarding SSL see the <a href="faq.html#ssl">FAQ</a>.
 For information on the Server Registry settings  see <a href="remoteservers.html">remoteservers.html</a>.
 
 
-<a name="access"></a><div class="pagesubtitle">11.3.1 Access</div> 
+<a name="access"></a><div class="pagesubtitle">11.4.1 Access</div> 
 Under Site Access you can specify that only registered users are allowe to access the site or only site Administrators.
 <p>
 The anonymous uploads Max Directory Size is the maximum size of the files that are uploaded through
@@ -47,7 +53,7 @@ The cache is in: &lt;ramadda home&gt;/tmp/cache
 If you are running the <a href="http://www.unidata.ucar.edu/software/ldm/">Unidata LDM system</a> on the server machine you 
 can allow RAMADDA services to inject files into the LDM queue by specifying the path to the pqinsert program and the queue location.
 
-<a name="filesystemaccess"></a><div class="pagesubtitle">11.3.2 Accessing files on your server</div> 
+<a name="filesystemaccess"></a><div class="pagesubtitle">11.4.2 Accessing files on your server</div> 
 The File System Access field under the Access admin section is the list of server directories that can RAMADDA can serve files from.
 For security any files that RAMADDA provides access to must be either in the locally managed storage area under the RAMADDA home directory or
 they must be under the directory tree or trees specified in this field.
@@ -57,7 +63,7 @@ be listed here. Likewise, any  <a href="configuration.html#localfiles">Local Fil
 
 
 
-<a name="display"></a><div class="pagesubtitle">11.3.3 Display</div> 
+<a name="display"></a><div class="pagesubtitle">11.4.3 Display</div> 
 The Display settings allow you to change the title of the repostitory, add a footer, etc.
 The Description is used when registering with external registry servers.
 While you can always change the HTML templates used the Logo Image Location and URL are a quick
@@ -72,7 +78,7 @@ If the Google Maps Key is defined then RAMADDA will use Google Maps (instead of 
 
 
 
-<a name="output"></a><div class="pagesubtitle">11.3.4 Available Output Types</div> 
+<a name="output"></a><div class="pagesubtitle">11.4.4 Available Output Types</div> 
 This section allows you to restrict the different entry outputs available.
 For example, you can hide the  Data views, the Calendar view, etc.
 
