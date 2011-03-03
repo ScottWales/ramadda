@@ -30,6 +30,7 @@ foreach jar [glob ../lib/*.jar] {
 ##unjar the common jar
 puts "Unjarring unidatacommon.jar"
 exec jar -xvf ../../../unidatacommon.jar
+exec jar -xvf ../../../ncIdv.jar
 
 puts "Making repositorytds.jar"
 puts "pwd: [pwd]"
