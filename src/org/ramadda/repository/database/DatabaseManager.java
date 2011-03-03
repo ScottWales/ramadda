@@ -263,39 +263,43 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @throws Exception _more_
      */
     private BasicDataSource doMakeDataSource() throws Exception {
-        scourMessages = new ArrayList<String>();
-        totalScours   = 0;
+        try {
+            scourMessages = new ArrayList<String>();
+            totalScours   = 0;
 
-        BasicDataSource ds = new BasicDataSource();
+            BasicDataSource ds = new BasicDataSource();
 
-        ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE,
-                100));
-        ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE, 100));
+            ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE,
+                                                        100));
+            ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE, 100));
 
-        ds.setRemoveAbandonedTimeout(60*10);
-        ds.setRemoveAbandoned(false);
+            ds.setRemoveAbandonedTimeout(60*10);
+            ds.setRemoveAbandoned(false);
 
-        String userName = (String) getRepository().getProperty(
-                              PROP_DB_USER.replace("${db}", db));
-        String password = (String) getRepository().getProperty(
-                              PROP_DB_PASSWORD.replace("${db}", db));
-        String connectionURL =
-            (String) getRepository().getProperty(PROP_DB_URL.replace("${db}",
-                db));
-        String driverClassName = (String) getRepository().getProperty(
-                                     PROP_DB_DRIVER.replace("${db}", db));
-        Misc.findClass(driverClassName);
+            String userName = (String) getRepository().getProperty(
+                                                                   PROP_DB_USER.replace("${db}", db));
+            String password = (String) getRepository().getProperty(
+                                                                   PROP_DB_PASSWORD.replace("${db}", db));
+            String connectionURL =
+                (String) getRepository().getProperty(PROP_DB_URL.replace("${db}",
+                                                                         db));
+            String driverClassName = (String) getRepository().getProperty(
+                                                                          PROP_DB_DRIVER.replace("${db}", db));
+            Misc.findClass(driverClassName);
 
-        System.err.println("RAMADDA: DatabaseManager connection url:"  + connectionURL+" user name:" + userName);
+            System.err.println("RAMADDA: DatabaseManager connection url:"  + connectionURL+" user name:" + userName);
 
-        ds.setDriverClassName(driverClassName);
-        ds.setUsername(userName);
-        ds.setPassword(password);
-        ds.setUrl(connectionURL);
-
-        ds.setLogWriter(new Log4jPrintWriter(LOG));
-
-        return ds;
+            ds.setDriverClassName(driverClassName);
+            ds.setUsername(userName);
+            ds.setPassword(password);
+            ds.setUrl(connectionURL);
+            ds.setLogWriter(new Log4jPrintWriter(LOG));
+            return ds;
+        } catch(Exception exc) {
+            System.err.println("RAMADDA: error initializing database connection:" + exc);
+            exc.printStackTrace();
+            throw exc;
+        }
     }
 
 

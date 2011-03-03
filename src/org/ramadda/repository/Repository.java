@@ -829,6 +829,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     private void load(Properties properties, String path) throws Exception {
         //        System.err.println ("RAMADDA:  loading " + path);
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
+        if(inputStream==null) {
+            System.err.println ("RAMADDA:  null properties: " + path);
+            return;
+        }
         properties.load(inputStream);
         IOUtil.close(inputStream);
     }
