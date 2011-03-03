@@ -1094,6 +1094,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                     addTypeHandler(typeHandler.getType(), typeHandler);
                 } catch(Exception exc) {
                     System.err.println ("RAMADDA: Error loading type handler:" + classPath);
+                    exc.printStackTrace();
                     throw exc;
                 }
             }
