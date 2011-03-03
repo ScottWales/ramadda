@@ -622,12 +622,11 @@ public class DataOutputHandler extends OutputHandler {
         nj22Dir.setMaxFiles(500);
 
         // Apply settings for the NetcdfDataset
-        ucar.nc2.dataset.NetcdfDataset.setHttpClient(
-            getRepository().getHttpClient());
+        //        ucar.nc2.dataset.NetcdfDataset.setHttpClient(getRepository().getHttpClient());
 
 
         // Apply settings for the opendap.dap
-        opendap.dap.DConnect2.setHttpClient(getRepository().getHttpClient());
+        //        opendap.dap.DConnect2.setHttpClient(getRepository().getHttpClient());
 
 
 
