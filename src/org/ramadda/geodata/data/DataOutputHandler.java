@@ -182,6 +182,14 @@ import javax.servlet.http.*;
 public class DataOutputHandler extends OutputHandler {
 
     /** _more_ */
+    public static final String FORMAT_CSV = "csv";
+
+    /** _more_ */
+    public static final String FORMAT_KML = "kml";
+
+    public static final String ARG_POINT_BBOX = "bbox";
+
+    /** _more_ */
     public static final String FORMAT_NCML = "ncml";
 
     /** Variable prefix */
@@ -251,15 +259,11 @@ public class DataOutputHandler extends OutputHandler {
                        ICON_MAP, GROUP_DATA);
 
     /** CSV Output Type */
-    public static final OutputType OUTPUT_POINT_CSV =
-        new OutputType("Point as CSV", "data.point.csv",
-                       OutputType.TYPE_NONHTML, OutputType.SUFFIX_NONE,
+    public static final OutputType OUTPUT_POINT_SUBSET =
+        new OutputType("Subset Point Data", "data.point.subset",
+                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_CSV, GROUP_DATA);
 
-    /** KML Output Type */
-    public static final OutputType OUTPUT_POINT_KML =
-        new OutputType("Point as KML", "data.point.kml",
-                       OutputType.TYPE_NONHTML, "", ICON_KML, GROUP_DATA);
 
     /** Trajectory map Output Type */
     public static final OutputType OUTPUT_TRAJECTORY_MAP =
@@ -654,8 +658,7 @@ public class DataOutputHandler extends OutputHandler {
         addType(OUTPUT_WCS);
         addType(OUTPUT_TRAJECTORY_MAP);
         addType(OUTPUT_POINT_MAP);
-        addType(OUTPUT_POINT_CSV);
-        addType(OUTPUT_POINT_KML);
+        addType(OUTPUT_POINT_SUBSET);
         addType(OUTPUT_GRIDSUBSET);
         addType(OUTPUT_GRIDSUBSET_FORM);
         addType(OUTPUT_GRIDASPOINT);
@@ -790,13 +793,7 @@ public class DataOutputHandler extends OutputHandler {
             addOutputLink(request, entry, links, OUTPUT_TRAJECTORY_MAP);
         } else if (canLoadAsPoint(entry)) {
             addOutputLink(request, entry, links, OUTPUT_POINT_MAP);
-            links.add(makeLink(request, entry, OUTPUT_POINT_CSV,
-                               "/" + IOUtil.stripExtension(entry.getName())
-                               + ".csv"));
-
-            links.add(makeLink(request, entry, OUTPUT_POINT_KML,
-                               "/" + IOUtil.stripExtension(entry.getName())
-                               + ".kml"));
+            addOutputLink(request, entry, links, OUTPUT_POINT_SUBSET);
         }
 
         Object oldOutput = request.getOutput();
@@ -2424,6 +2421,71 @@ public class DataOutputHandler extends OutputHandler {
         return "new LatLonPoint(" + lat + "," + lon + ")";
     }
 
+    private  Result makePointSubsetForm(Request request, Entry entry, 
+                                        String suffix) {
+        StringBuffer sb = new StringBuffer();
+        String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
+        sb.append(HtmlUtil.form(formUrl + suffix));
+        sb.append(HtmlUtil.submit("Subset Point Data", ARG_SUBMIT));
+        sb.append(HtmlUtil.hidden(ARG_OUTPUT, request.getString(ARG_OUTPUT,"")));
+        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtil.formTable());
+        List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
+        formats.add(new TwoFacedObject("CSV", FORMAT_CSV));
+        formats.add(new TwoFacedObject("KML", FORMAT_KML));
+        String format = request.getString(ARG_FORMAT, FORMAT_CSV);
+        sb.append(HtmlUtil.formEntry(msgLabel("Format"),
+                                     HtmlUtil.select(ARG_FORMAT, formats,
+                                         format)));
+
+        MapInfo map = getRepository().getMapManager().createMap(request,  true);
+        map.addBox(entry,  new MapProperties("blue", false));
+        map.centerOn(entry);
+        String llb =  map.makeSelector(ARG_POINT_BBOX, true, null);
+        sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
+
+
+        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtil.submit("Subset Point Data", ARG_SUBMIT));
+        sb.append(HtmlUtil.formClose());
+        return new Result("",sb);
+    }
+
+
+
+    public Result outputPointSubset(Request request, Entry entry)
+        throws Exception {
+        if(!request.defined(ARG_FORMAT)) {
+            return makePointSubsetForm(request, entry, "");
+        }
+        String format = request.getString(ARG_FORMAT,FORMAT_CSV);
+
+        if(format.equals(FORMAT_CSV)) {
+            request.getHttpServletResponse().setContentType("text/csv");
+            request.setReturnFilename(IOUtil.stripExtension(entry.getName())
+                                      + ".csv");
+        } else {
+            request.getHttpServletResponse().setContentType("application/vnd.google-earth.kml+xml");
+            request.setReturnFilename(IOUtil.stripExtension(entry.getName())
+                                      + ".kml");
+        }
+
+
+        OutputStream            os = request.getHttpServletResponse().getOutputStream();
+        PrintWriter pw = new PrintWriter(os);
+
+        if(format.equals(FORMAT_CSV)) {
+            outputPointCsv(request, entry, pw);
+        } else {
+            outputPointKml(request, entry,pw);
+        }
+
+        pw.close();
+        Result result = new Result();
+        result.setNeedToWrite(false);
+        return result;
+    }
+
 
     /**
      * _more_
@@ -2435,12 +2497,10 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result outputPointCsv(Request request, Entry entry)
+    private void  outputPointCsv(Request request, Entry entry, PrintWriter pw)
             throws Exception {
-
         String               path         = getPath(request, entry);
         FeatureDatasetPoint  pod          = pointPool.get(path);
-        StringBuffer         sb           = new StringBuffer();
         List                 vars         = pod.getDataVariables();
         PointFeatureIterator dataIterator = getPointIterator(pod);
         int                  cnt          = 0;
@@ -2457,49 +2517,47 @@ public class DataOutputHandler extends OutputHandler {
             StructureData structure = po.getData();
 
             if (cnt == 1) {
-                sb.append(HtmlUtil.quote("Time"));
-                sb.append(",");
-                sb.append(HtmlUtil.quote("Latitude"));
-                sb.append(",");
-                sb.append(HtmlUtil.quote("Longitude"));
+                pw.print(HtmlUtil.quote("Time"));
+                pw.print(",");
+                pw.print(HtmlUtil.quote("Latitude"));
+                pw.print(",");
+                pw.print(HtmlUtil.quote("Longitude"));
                 for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
-                    sb.append(",");
+                    pw.print(",");
                     String unit = var.getUnitsString();
                     if (unit != null) {
-                        sb.append(HtmlUtil.quote(var.getShortName() + " ("
+                        pw.print(HtmlUtil.quote(var.getShortName() + " ("
                                 + unit + ")"));
                     } else {
-                        sb.append(HtmlUtil.quote(var.getShortName()));
+                        pw.print(HtmlUtil.quote(var.getShortName()));
                     }
                 }
-                sb.append("\n");
+                pw.print("\n");
             }
 
-            sb.append(HtmlUtil.quote("" + po.getNominalTimeAsDate()));
-            sb.append(",");
-            sb.append(el.getLatitude());
-            sb.append(",");
-            sb.append(el.getLongitude());
+            pw.print(HtmlUtil.quote("" + po.getNominalTimeAsDate()));
+            pw.print(",");
+            pw.print(el.getLatitude());
+            pw.print(",");
+            pw.print(el.getLongitude());
 
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
                 StructureMembers.Member member =
                     structure.findMember(var.getShortName());
-                sb.append(",");
+                pw.print(",");
                 if ((var.getDataType() == DataType.STRING)
                         || (var.getDataType() == DataType.CHAR)) {
-                    sb.append(
+                    pw.print(
                         HtmlUtil.quote(structure.getScalarString(member)));
                 } else {
-                    sb.append(structure.convertScalarFloat(member));
+                    pw.print(structure.convertScalarFloat(member));
                 }
             }
-            sb.append("\n");
+            pw.print("\n");
         }
         pointPool.put(path, pod);
-        return new Result(msg("Point Data"), sb,
-                          getRepository().getMimeTypeFromSuffix(".csv"));
-    }
 
+    }
 
 
     /**
@@ -2512,15 +2570,16 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result outputPointKml(Request request, Entry entry)
+    private void outputPointKml(Request request, Entry entry, PrintWriter pw)
             throws Exception {
         String               path         = getPath(request, entry);
         FeatureDatasetPoint  pod          = pointPool.get(path);
+        List                 vars         = pod.getDataVariables();
+        PointFeatureIterator dataIterator = getPointIterator(pod);
+
         Element              root         = KmlUtil.kml(entry.getName());
         Element              docNode = KmlUtil.document(root,
                                            entry.getName());
-        List                 vars         = pod.getDataVariables();
-        PointFeatureIterator dataIterator = getPointIterator(pod);
 
         while (dataIterator.hasNext()) {
             PointFeature po = (PointFeature) dataIterator.next();
@@ -2555,11 +2614,8 @@ public class DataOutputHandler extends OutputHandler {
             KmlUtil.placemark(docNode, "" + po.getNominalTimeAsDate(),
                               info.toString(), lat, lon, alt, null);
         }
-        StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
+        pw.print(XmlUtil.toString(root));
         pointPool.put(path, pod);
-        return new Result(msg("Point Data"), sb,
-                          getRepository().getMimeTypeFromSuffix(".kml"));
-
     }
 
 
@@ -2662,15 +2718,10 @@ public class DataOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_POINT_MAP)) {
             return outputPointMap(request, entry);
         }
-        if (outputType.equals(OUTPUT_POINT_CSV)) {
-            return outputPointCsv(request, entry);
+
+        if (outputType.equals(OUTPUT_POINT_SUBSET)) {
+            return outputPointSubset(request, entry);
         }
-
-        if (outputType.equals(OUTPUT_POINT_KML)) {
-            return outputPointKml(request, entry);
-        }
-
-
         if (outputType.equals(OUTPUT_OPENDAP)) {
             //If its a head request then just return the content description
             if (request.isHeadRequest()) {
@@ -2778,6 +2829,7 @@ public class DataOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
 
+    int opendapCnt = 0;
     public Result outputOpendap(final Request request, final Entry entry)
             throws Exception {
         //jeffmc: this used to be synchronized and I just don't know why
@@ -2786,6 +2838,8 @@ public class DataOutputHandler extends OutputHandler {
         //if opening a file hangs. So, lets remove the synchronized
         //    public synchronized Result outputOpendap(final Request request,
 
+        opendapCnt++;
+        System.err.println("opendap #" + opendapCnt);
         String     location = getPath(request, entry);
         NetcdfFile ncFile   = ncFilePool.get(location);
         opendapCounter.incr();
