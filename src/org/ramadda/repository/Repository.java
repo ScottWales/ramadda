@@ -26,6 +26,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.ftp.FtpManager;
+import org.ramadda.repository.search.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.monitor.*;

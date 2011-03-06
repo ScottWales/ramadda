@@ -3204,7 +3204,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected Entry processEntryXml(Request request, Element node,
+    public Entry processEntryXml(Request request, Element node,
                                     Hashtable<String, Entry> entries,
                                     Hashtable<String, String> files,
                                     boolean checkAccess, boolean internal)
@@ -3247,7 +3247,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected Entry processEntryXml(Request request, Element node,
+    public Entry processEntryXml(Request request, Element node,
                                     Entry parentEntry,
                                     Hashtable<String, String> files,
                                     boolean checkAccess, boolean internal)

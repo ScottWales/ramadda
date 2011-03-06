@@ -1,7 +1,6 @@
 /*
  * Copyright 1997-2010 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
  * Copyright 2010- ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
@@ -20,7 +19,8 @@
  * 
  */
 
-package org.ramadda.repository;
+package org.ramadda.repository.search;
+import org.ramadda.repository.*;
 
 
 import org.w3c.dom.*;
