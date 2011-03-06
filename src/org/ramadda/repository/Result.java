@@ -476,11 +476,6 @@ public class Result {
     }
 
 
-
-
-
-
-
     public void setReturnFilename(String filename) {
         addHttpHeader("Content-disposition","attachment; filename=" + filename);
     }

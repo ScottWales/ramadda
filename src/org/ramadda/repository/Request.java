@@ -273,6 +273,11 @@ public class Request implements Constants {
     }
 
 
+    public void setReturnFilename(String filename) {
+        httpServletResponse.setHeader("Content-disposition","attachment; filename=" + filename);
+    }
+
+
     /**
      * _more_
      *

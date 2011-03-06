@@ -204,6 +204,7 @@
         <include name="${repositoryrelpath}/ftp/*.java"/>
         <include name="${repositoryrelpath}/util/*.java"/>
         <include name="${repositoryrelpath}/monitor/*.java"/>
+        <include name="${repositoryrelpath}/search/*.java"/>
         <include name="${repositoryrelpath}/server/*.java"/>
         <include name="${repositoryrelpath}/services/*.java"/>
         <exclude name="${repositoryrelpath}/examples/*.java"/>
