@@ -1,4 +1,5 @@
 /*
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -13,17 +14,41 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository;
 
+
 import java.util.List;
 
-public interface EntryMonitor {
 
+/**
+ * Interface description
+ *
+ *
+ * @author         Enter your name here...    
+ */
+public interface EntryChecker {
+
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     */
     public void entriesCreated(List<Entry> entries);
+
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     */
     public void entriesModified(List<Entry> entries);
+
+    /**
+     * _more_
+     *
+     * @param ids _more_
+     */
     public void entriesDeleted(List<String> ids);
 }
-
-

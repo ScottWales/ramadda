@@ -301,7 +301,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     private List<Class> adminHandlerClasses = new ArrayList<Class>();
 
-    private List<EntryMonitor> entryMonitors = new ArrayList<EntryMonitor>();
+    private List<EntryChecker> entryMonitors = new ArrayList<EntryChecker>();
 
     /** _more_ */
     private String dumpFile;
@@ -2643,7 +2643,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         outputHandlers.add(outputHandler);
     }
 
-    public void addEntryMonitor(EntryMonitor entryMonitor) {
+    public void addEntryChecker(EntryChecker entryMonitor) {
         entryMonitors.add(entryMonitor);
     }
 
@@ -5461,20 +5461,20 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      * @param entries _more_
      */
     public void checkNewEntries(List<Entry> entries) {
-        for(EntryMonitor entryMonitor: entryMonitors) {
+        for(EntryChecker entryMonitor: entryMonitors) {
             entryMonitor.entriesCreated(entries);
         }
     }
 
     public void checkDeletedEntries(List<String> ids) {
-        for(EntryMonitor entryMonitor: entryMonitors) {
+        for(EntryChecker entryMonitor: entryMonitors) {
             entryMonitor.entriesDeleted(ids);
         }
     }
 
 
     public void checkModifiedEntries(List<Entry> entries) {
-        for(EntryMonitor entryMonitor: entryMonitors) {
+        for(EntryChecker entryMonitor: entryMonitors) {
             entryMonitor.entriesModified(entries);
         }
     }

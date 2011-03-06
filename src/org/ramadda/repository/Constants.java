@@ -1089,6 +1089,13 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SEARCHMETADATA = "searchmetadata";
 
+    public static final String ARG_SEARCH_TYPE = "search.type";
+
+    public static final String SEARCH_TYPE_TEXT = "search.type.text";
+
+    public static final String SEARCH_TYPE_ADVANCED = "search.type.advanced";
+
+
     /** _more_ */
     public static final String ARG_SELECTTYPE = "selecttype";
 

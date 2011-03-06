@@ -604,7 +604,7 @@ public class MetadataHandler extends RepositoryManager {
         //        args.add(type.toString());
         args.add(ARG_METADATA_ATTR1 + "." + type.getId());
         args.add(value);
-        return HtmlUtil.url(request.url(getRepository().URL_ENTRY_SEARCH),
+        return HtmlUtil.url(request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
                             args);
     }
 
@@ -689,7 +689,7 @@ public class MetadataHandler extends RepositoryManager {
                     getRepository().getMetadataManager().URL_METADATA_LIST,
                     ARG_METADATA_TYPE, type.toString()), HtmlUtil.img(
                         getRepository().iconUrl(ICON_LIST), "View Listing"));
-        String url = request.url(getRepository().URL_ENTRY_SEARCH);
+        String url = request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH);
         String[] values = getMetadataManager().getDistinctValues(request,
                               this, type);
         if ((values == null) || (values.length == 0)) {

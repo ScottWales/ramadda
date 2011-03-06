@@ -409,7 +409,7 @@ public class AssociationManager extends RepositoryManager {
         }
         String search = HtmlUtil.href(
                             request.url(
-                                getRepository().URL_SEARCH_FORM,
+                                        getRepository().getSearchManager().URL_SEARCH_FORM,
                                 ARG_ASSOCIATION,
                                 HtmlUtil.urlEncode(
                                     association)), HtmlUtil.img(
@@ -779,7 +779,7 @@ public class AssociationManager extends RepositoryManager {
         sb.append(
             HtmlUtil.form(
                 request.url(
-                    getRepository().URL_SEARCH_ASSOCIATIONS, ARG_NAME,
+                    getRepository().getSearchManager().URL_SEARCH_ASSOCIATIONS, ARG_NAME,
                     WHAT_ENTRIES), " name=\"searchform\" "));
 
         sb.append(HtmlUtil.formTable());

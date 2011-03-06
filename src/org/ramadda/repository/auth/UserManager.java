@@ -2061,7 +2061,7 @@ public class UserManager extends RepositoryManager {
         String searchLink =
             HtmlUtil.href(
                 HtmlUtil.url(
-                    request.url(getRepository().URL_ENTRY_SEARCH),
+                    request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
                     ARG_USER_ID, user.getId()), HtmlUtil.img(
                         getRepository().iconUrl(ICON_SEARCH),
                         msg("Search for entries created by this user")));

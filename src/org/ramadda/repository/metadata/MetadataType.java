@@ -622,7 +622,7 @@ public class MetadataType extends MetadataTypeBase {
 
         try {
             return HtmlUtil.url(
-                request.url(handler.getRepository().URL_ENTRY_SEARCH), args);
+                                request.url(handler.getRepository().getSearchManager().URL_ENTRY_SEARCH), args);
         } catch (Exception exc) {
             System.err.println("ARGS:" + args);
             throw new RuntimeException(exc);

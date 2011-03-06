@@ -473,7 +473,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             String url =
                 HtmlUtil.href(
                     request.url(
-                        getRepository().URL_SEARCH_FORM, ARG_TYPE,
+                        getRepository().getSearchManager().URL_SEARCH_FORM, ARG_TYPE,
                         typeHandler.getType()), typeHandler.getLabel());
             dbSB.append(HtmlUtil.row(HtmlUtil.cols("" + cnt, url)));
         }

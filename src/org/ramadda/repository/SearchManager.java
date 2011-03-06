@@ -119,7 +119,7 @@ import org.apache.lucene.document.Field;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class SearchManager extends RepositoryManager implements EntryMonitor {
+public class SearchManager extends RepositoryManager implements EntryChecker {
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
@@ -129,6 +129,54 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
 
     /** _more_ */
     public static final String ARG_SEARCH_SERVERS = "search.servers";
+
+
+
+    /** _more_ */
+    public final RequestUrl URL_SEARCH_FORM = new RequestUrl(this,
+                                                  "/search/form", "Advanced Search");
+
+    /** _more_ */
+    public final RequestUrl URL_SEARCH_ASSOCIATIONS =
+        new RequestUrl(this, "/search/associations/do",
+                       "Search Associations");
+
+    /** _more_ */
+    public final RequestUrl URL_SEARCH_ASSOCIATIONS_FORM =
+        new RequestUrl(this, "/search/associations/form",
+                       "Search Associations");
+
+    /** _more_ */
+    public final RequestUrl URL_SEARCH_TEXTFORM = new RequestUrl(this,
+                                                      "/search/textform",
+                                                      "Text Search");
+
+    /** _more_ */
+    public final RequestUrl URL_SEARCH_BROWSE = new RequestUrl(this,
+                                                    "/search/browse",
+                                                    "Browse");
+
+
+
+    /** _more_ */
+    public final RequestUrl URL_SEARCH_REMOTE_DO =
+        new RequestUrl(this, "/search/remote/do", "Search Remote Servers");
+
+    /** _more_ */
+    public final RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this,
+                                                   "/search/do", "Search");
+
+    /** _more_ */
+    public final List<RequestUrl> searchUrls =
+        RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
+            URL_SEARCH_FORM, URL_SEARCH_BROWSE,
+            URL_SEARCH_ASSOCIATIONS_FORM });
+
+    /** _more_ */
+    public final List<RequestUrl> remoteSearchUrls =
+        RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
+            URL_SEARCH_FORM, URL_SEARCH_BROWSE,
+            URL_SEARCH_ASSOCIATIONS_FORM });
 
 
 
@@ -149,7 +197,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
      */
     public SearchManager(Repository repository) {
         super(repository);
-        repository.addEntryMonitor(this);
+        repository.addEntryChecker(this);
     }
 
 
@@ -299,7 +347,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
 
         
 
-        String url = getRepository().absoluteUrl(getRepository().URL_ENTRY_SEARCH.toString());
+        String url = getRepository().absoluteUrl(URL_ENTRY_SEARCH.toString());
         url = HtmlUtil.url(url, new String[]{
                 ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(),
                 ARG_TEXT,
@@ -346,9 +394,10 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
      */
     public List<RequestUrl> getSearchUrls() throws Exception {
         if (getRegistryManager().getSelectedRemoteServers().size() > 0) {
-            return getRepository().remoteSearchUrls;
+            //            return getRepository().remoteSearchUrls;
+            return remoteSearchUrls;
         }
-        return getRepository().searchUrls;
+        return searchUrls;
     }
 
 
@@ -376,7 +425,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
 
     public String getSearchUrl(Request request) {
         return request.url(
-                           getRepository().URL_ENTRY_SEARCH, ARG_NAME,
+                           URL_ENTRY_SEARCH, ARG_NAME,
                            WHAT_ENTRIES);
     } 
 
@@ -388,6 +437,10 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
         sb.append(
             HtmlUtil.form(
                           getSearchUrl(request), " name=\"searchform\" "));
+
+        if(justText) {
+            sb.append(HtmlUtil.hidden(ARG_SEARCH_TYPE, SEARCH_TYPE_TEXT));
+        }
 
         //Put in an empty submit button so when the user presses return 
         //it acts like a regular submit (not a submit to change the type)
@@ -762,7 +815,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
                 for (ServerInfo server : servers) {
                     String remoteSearchUrl =
                         server.getUrl()
-                        + getRepository().URL_ENTRY_SEARCH.getPath() + "?"
+                        + URL_ENTRY_SEARCH.getPath() + "?"
                         + linkUrl;
                     sb.append("\n");
                     sb.append(HtmlUtil.p());
@@ -770,7 +823,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
                                       server.getUrl());
                     String fullUrl =
                         server.getUrl()
-                        + getRepository().URL_ENTRY_SEARCH.getPath() + "?"
+                        + URL_ENTRY_SEARCH.getPath() + "?"
                         + embeddedUrl;
                     String content =
                         HtmlUtil.tag(
@@ -817,7 +870,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
         //        if (s.length() > 0) {
             StringBuffer searchForm          = new StringBuffer();
             request.remove(ARG_SEARCH_SUBMIT);
-            String url = request.getUrl(getRepository().URL_SEARCH_FORM);
+            String url = request.getUrl(URL_SEARCH_FORM);
             String searchLink = HtmlUtil.href(
                                 url,
                                 HtmlUtil.img(
@@ -893,7 +946,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
                 public void run() {
                     String remoteSearchUrl =
                         theServer.getUrl()
-                        + getRepository().URL_ENTRY_SEARCH.getPath() + "?"
+                        + URL_ENTRY_SEARCH.getPath() + "?"
                         + linkUrl;
 
                     try {
@@ -1015,7 +1068,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
             } else {
                 item = HtmlUtil.href(
                     request.url(
-                        getRepository().URL_SEARCH_FORM, ARG_WHAT, whats[i],
+                        URL_SEARCH_FORM, ARG_WHAT, whats[i],
                         ARG_FORM_TYPE, formType), names[i], extra2);
             }
             if (i == 0) {
@@ -1033,7 +1086,7 @@ public class SearchManager extends RepositoryManager implements EntryMonitor {
                 links.add(
                     HtmlUtil.href(
                         request.url(
-                            getRepository().URL_SEARCH_FORM, ARG_WHAT,
+                            URL_SEARCH_FORM, ARG_WHAT,
                             BLANK + tfo.getId(), ARG_TYPE,
                             typeHandler.getType()), tfo.toString(), extra2));
             }

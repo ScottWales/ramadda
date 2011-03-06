@@ -72,7 +72,7 @@ import java.util.Properties;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class MonitorManager extends RepositoryManager implements EntryMonitor {
+public class MonitorManager extends RepositoryManager implements EntryChecker {
 
     /** _more_ */
     private List<EntryMonitor> monitors = new ArrayList<EntryMonitor>();
@@ -87,7 +87,7 @@ public class MonitorManager extends RepositoryManager implements EntryMonitor {
      */
     public MonitorManager(Repository repository) {
         super(repository);
-        repository.addEntryMonitor(this);
+        repository.addEntryChecker(this);
         try {
             initMonitors();
         } catch (Exception exc) {

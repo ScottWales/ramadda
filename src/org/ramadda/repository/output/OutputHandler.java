@@ -2516,7 +2516,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             name = name.trim();
             if (name.startsWith("Category:")) {
                 String category = name.substring("Category:".length());
-                String url = request.url(getRepository().URL_ENTRY_SEARCH,
+                String url = request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH,
                                          ARG_METADATA_TYPE + ".wikicategory",
                                          "wikicategory",
                                          ARG_METADATA_ATTR1

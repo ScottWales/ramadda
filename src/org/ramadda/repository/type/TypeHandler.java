@@ -1550,7 +1550,7 @@ public class TypeHandler extends RepositoryManager {
                                          entry);
                     String searchUrl =
                         HtmlUtil.url(
-                            request.url(getRepository().URL_ENTRY_SEARCH),
+                                     request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
                             Misc.newList(
                                 ARG_FROMDATE, startDate, ARG_TODATE,
                                 endDate));
@@ -2390,6 +2390,7 @@ public class TypeHandler extends RepositoryManager {
                                      + msg("Match exactly");
         String extra = HtmlUtil.p() + searchExact + searchMetaData;
         extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
+        extra = "";
         sb.append(formEntryTop(request,msgLabel("Text"),
                                         HtmlUtil.input(ARG_TEXT, name,
                                             HtmlUtil.SIZE_50

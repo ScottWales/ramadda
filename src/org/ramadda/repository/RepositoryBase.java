@@ -84,51 +84,6 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                     "/registry/info");
 
 
-    /** _more_ */
-    public final RequestUrl URL_SEARCH_FORM = new RequestUrl(this,
-                                                  "/search/form", "Advanced");
-
-    /** _more_ */
-    public final RequestUrl URL_SEARCH_ASSOCIATIONS =
-        new RequestUrl(this, "/search/associations/do",
-                       "Search Associations");
-
-    /** _more_ */
-    public final RequestUrl URL_SEARCH_ASSOCIATIONS_FORM =
-        new RequestUrl(this, "/search/associations/form",
-                       "Search Associations");
-
-    /** _more_ */
-    public final RequestUrl URL_SEARCH_TEXTFORM = new RequestUrl(this,
-                                                      "/search/textform",
-                                                      "Search");
-
-    /** _more_ */
-    public final RequestUrl URL_SEARCH_BROWSE = new RequestUrl(this,
-                                                    "/search/browse",
-                                                    "Browse");
-
-
-
-    /** _more_ */
-    public final RequestUrl URL_SEARCH_REMOTE_DO =
-        new RequestUrl(this, "/search/remote/do", "Search Remote Servers");
-
-    /** _more_ */
-    public final RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this,
-                                                   "/search/do", "Search");
-
-    /** _more_ */
-    public final List<RequestUrl> searchUrls =
-        RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-            URL_SEARCH_FORM, URL_SEARCH_BROWSE,
-            URL_SEARCH_ASSOCIATIONS_FORM });
-
-    /** _more_ */
-    public final List<RequestUrl> remoteSearchUrls =
-        RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-            URL_SEARCH_FORM, URL_SEARCH_BROWSE,
-            URL_SEARCH_ASSOCIATIONS_FORM });
 
     /** _more_ */
     public final RequestUrl URL_COMMENTS_SHOW = new RequestUrl(this,
