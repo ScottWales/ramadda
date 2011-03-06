@@ -86,6 +86,31 @@ import java.util.regex.*;
 import java.util.zip.*;
 
 
+import  org.apache.lucene.index.Term;
+
+import org.apache.lucene.index.FilterIndexReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopScoreDocCollector;
+
+
+import org.apache.lucene.document.DateTools;
+
+import org.apache.lucene.document.Field;
+
+
 
 
 /**
@@ -94,7 +119,7 @@ import java.util.zip.*;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class SearchManager extends RepositoryManager {
+public class SearchManager extends RepositoryManager implements EntryMonitor {
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
@@ -106,6 +131,17 @@ public class SearchManager extends RepositoryManager {
     public static final String ARG_SEARCH_SERVERS = "search.servers";
 
 
+
+    private static final String FIELD_ENTRYID = "entryid";
+    private static final String FIELD_PATH = "path";
+    private static final String FIELD_CONTENTS = "contents";
+    private static final String FIELD_MODIFIED = "modified";
+    private static final String FIELD_DESCRIPTION = "description";
+    private static final String FIELD_METADATA = "metadata";
+
+    private IndexSearcher luceneSearcher;    
+    private IndexReader luceneReader;    
+
     /**
      * _more_
      *
@@ -113,13 +149,133 @@ public class SearchManager extends RepositoryManager {
      */
     public SearchManager(Repository repository) {
         super(repository);
+        repository.addEntryMonitor(this);
+    }
+
+
+    public boolean isLuceneEnabled() {
+        return true;
+    }
+
+
+    private IndexWriter getLuceneWriter() throws Exception {
+        File indexFile = new File(getStorageManager().getIndexDir());
+        IndexWriter writer = new IndexWriter(FSDirectory.open(indexFile), new StandardAnalyzer(Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.LIMITED);
+        return writer;
+    }
+
+    public synchronized void indexEntries(List<Entry> entries) throws Exception {
+        IndexWriter writer = getLuceneWriter();
+        for(Entry entry: entries) {
+            indexEntry(writer, entry);
+        }
+        writer.optimize();
+        writer.close();
+        luceneReader = null;
+        luceneSearcher = null;
+    }
+
+
+    private void indexEntry(IndexWriter writer, Entry entry) throws Exception {
+
+        org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document();
+        String path = entry.getResource().getPath();
+        doc.add(new Field(FIELD_ENTRYID, entry.getId(),Field.Store.YES, Field.Index.NOT_ANALYZED));
+        if(path!=null && path.length()>0) {
+            doc.add(new Field(FIELD_PATH, path, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        }
+
+        doc.add(new Field(FIELD_DESCRIPTION, entry.getName() +" " + entry.getDescription(), Field.Store.NO, Field.Index.ANALYZED));
+
+        doc.add(new Field(FIELD_MODIFIED,
+                          DateTools.timeToString(entry.getStartDate(), DateTools.Resolution.MINUTE),
+                          Field.Store.YES, Field.Index.NOT_ANALYZED));
+
+        if(entry.isFile()) {
+            doc.add(new Field(FIELD_CONTENTS, new FileReader(path)));
+        }
+        writer.addDocument(doc);
+    }
+
+
+    private IndexReader getLuceneReader() throws Exception {
+        if(true) return IndexReader.open(FSDirectory.open(new File(getStorageManager().getIndexDir())), false); 
+        if(luceneReader==null) {
+            luceneReader = IndexReader.open(FSDirectory.open(new File(getStorageManager().getIndexDir())), false); 
+        }
+        return luceneReader;
+    }
+
+
+    private IndexSearcher getLuceneSearcher() throws Exception {
+        if(luceneSearcher==null) {
+            luceneSearcher = new IndexSearcher(getLuceneReader());       
+        }
+        return luceneSearcher;
+    }
+
+
+    public void processLuceneSearch(Request request, List<Entry> groups,  List<Entry> entries) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);          
+        QueryParser qp = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{FIELD_DESCRIPTION, FIELD_METADATA, FIELD_CONTENTS}, analyzer);
+        Query query = qp.parse(request.getString(ARG_TEXT,"")); 
+        IndexSearcher searcher = getLuceneSearcher();
+        TopDocs hits = searcher.search(query, 100);
+        ScoreDoc[] docs = hits.scoreDocs;
+        for(int i=0;i<docs.length;i++) {
+            org.apache.lucene.document.Document doc = searcher.doc(docs[i].doc);  
+            String id = doc.get(FIELD_ENTRYID);
+            if(id ==null) continue;
+            Entry entry = getEntryManager().getEntry(request, id);
+            if(entry == null) continue;
+            if(entry.isGroup()) groups.add(entry);
+            else entries.add(entry);
+        }
+    }
+
+
+    public void entriesCreated(List<Entry> entries) {
+        if(!isLuceneEnabled()) return;
+        try {
+            indexEntries(entries);
+        } catch(Exception exc) {
+            logError("Error indexing entries", exc);
+        }
     }
 
 
 
+    public void entriesModified(List<Entry> entries) {
+        if(!isLuceneEnabled()) return;
+        try {
+            List<String> ids = new ArrayList<String>();
+            for(Entry entry: entries) {
+                ids.add(entry.getId());
+               
+            }
+            entriesDeleted(ids);
+            indexEntries(entries);
+        } catch(Exception exc) {
+            logError("Error adding entries to Lucene index", exc);
+        }
+    }
+
+
+    public synchronized void entriesDeleted(List<String> ids)  {
+        if(!isLuceneEnabled()) return;
+        try {
+            IndexWriter writer = getLuceneWriter();
+            for(String id: ids) {
+                writer.deleteDocuments (new Term (FIELD_ENTRYID, id));
+            }
+            writer.close();
+        } catch(Exception exc) {
+            logError("Error deleting entries from Lucene index", exc);
+        }
+    }
 
     public Result processCapabilities(Request request) throws Exception {
-        
         return new Result("", "text/xml");
     }
 
@@ -581,7 +737,9 @@ public class SearchManager extends RepositoryManager {
         List<Entry> groups  = new ArrayList<Entry>();
         List<Entry> entries = new ArrayList<Entry>();
 
-        if (searchThis) {
+        if(isLuceneEnabled() && request.defined(ARG_TEXT)) {
+            processLuceneSearch(request, groups, entries);
+        } else   if (searchThis) {
             List[] pair = getEntryManager().getEntries(request,
                               searchCriteriaSB);
             groups.addAll((List<Entry>) pair[0]);

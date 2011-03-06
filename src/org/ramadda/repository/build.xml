@@ -351,6 +351,7 @@
         <unjar src="${libdir}/twitter4j-1.1.4.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/jetty.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/jetty-util.jar" dest="${tmpjardir}"/>
+        <unjar src="${libdir}/lucene-core-3.0.3.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/mailapi.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/javadiff.jar" dest="${tmpjardir}"/>
         <unjar src="${libdir}/smtp.jar" dest="${tmpjardir}"/>

@@ -122,6 +122,8 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String DIR_LOGS = "logs";
 
+    public static final String DIR_INDEX = "index";
+
     /** _more_ */
     public static final String DIR_CACHE = "cache";
 
@@ -202,6 +204,8 @@ public class StorageManager extends RepositoryManager {
 
     /** _more_ */
     private File storageDir;
+
+    private File indexDir;
 
     /** _more_ */
     private TemporaryDir thumbDir;
@@ -759,6 +763,15 @@ public class StorageManager extends RepositoryManager {
             addDownloadDirectory(storageDir);
         }
         return storageDir.toString();
+    }
+
+    public String getIndexDir() {
+        if (indexDir == null) {
+            indexDir = new File(IOUtil.joinDir(getRepositoryDir(),
+                    DIR_INDEX));
+            IOUtil.makeDirRecursive(indexDir);
+        }
+        return indexDir.toString();
     }
 
     /**

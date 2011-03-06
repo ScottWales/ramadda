@@ -1942,6 +1942,7 @@ public class EntryManager extends RepositoryManager {
             for (String id : allIds) {
                 getStorageManager().deleteEntryDir(id);
             }
+            Misc.run(getRepository(), "checkDeletedEntries", allIds);
         } finally {
             getDatabaseManager().closeStatement(extraStmt);
             for (PreparedStatement stmt : statements) {
@@ -4896,7 +4897,8 @@ public class EntryManager extends RepositoryManager {
         }
         entry.setStartDate(fileTime);
         entry.setEndDate(fileTime);
-        updateEntry(entry);
+        storeEntry(entry);
+        //        updateEntry(entry);
     }
 
 
@@ -5425,6 +5427,10 @@ public class EntryManager extends RepositoryManager {
         Connection connection = getDatabaseManager().getConnection();
         try {
             insertEntriesInner(entries, connection, isNew, canBeBatched);
+            if(!isNew) {
+                Misc.run(getRepository(), "checkModifiedEntries", entries);
+            }
+
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
@@ -5609,8 +5615,6 @@ public class EntryManager extends RepositoryManager {
                 (PreparedStatement) typeStatements.get(keys.nextElement());
             getDatabaseManager().closeStatement(typeStatement);
         }
-
-
 
 
         Misc.run(getRepository(), "checkNewEntries", entries);

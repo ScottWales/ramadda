@@ -301,6 +301,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     private List<Class> adminHandlerClasses = new ArrayList<Class>();
 
+    private List<EntryMonitor> entryMonitors = new ArrayList<EntryMonitor>();
+
     /** _more_ */
     private String dumpFile;
 
@@ -341,9 +343,6 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     private Hashtable<String, OutputType> outputTypeMap =
         new Hashtable<String, OutputType>();
 
-    /** _more_ */
-    private List<Class> entryMonitorClasses = new ArrayList<Class>();
-
 
     /** _more_ */
     private List<OutputHandler> allOutputHandlers =
@@ -371,8 +370,6 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     private List<String> outputDefFiles = new ArrayList<String>();
 
-    /** _more_ */
-    private List<String> entryMonitorDefFiles = new ArrayList<String>();
 
     /** _more_ */
     private List<String> metadataDefFiles = new ArrayList<String>();
@@ -2644,6 +2641,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      */
     public void addOutputHandler(OutputHandler outputHandler) {
         outputHandlers.add(outputHandler);
+    }
+
+    public void addEntryMonitor(EntryMonitor entryMonitor) {
+        entryMonitors.add(entryMonitor);
     }
 
 
@@ -5454,18 +5455,29 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     }
 
 
-
-
     /**
      * _more_
      *
      * @param entries _more_
      */
     public void checkNewEntries(List<Entry> entries) {
-        getMonitorManager().checkNewEntries(entries);
+        for(EntryMonitor entryMonitor: entryMonitors) {
+            entryMonitor.entriesCreated(entries);
+        }
+    }
+
+    public void checkDeletedEntries(List<String> ids) {
+        for(EntryMonitor entryMonitor: entryMonitors) {
+            entryMonitor.entriesDeleted(ids);
+        }
     }
 
 
+    public void checkModifiedEntries(List<Entry> entries) {
+        for(EntryMonitor entryMonitor: entryMonitors) {
+            entryMonitor.entriesModified(entries);
+        }
+    }
 
 
     /**

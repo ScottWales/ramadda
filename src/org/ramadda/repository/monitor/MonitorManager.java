@@ -72,7 +72,7 @@ import java.util.Properties;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class MonitorManager extends RepositoryManager {
+public class MonitorManager extends RepositoryManager implements EntryMonitor {
 
     /** _more_ */
     private List<EntryMonitor> monitors = new ArrayList<EntryMonitor>();
@@ -87,6 +87,7 @@ public class MonitorManager extends RepositoryManager {
      */
     public MonitorManager(Repository repository) {
         super(repository);
+        repository.addEntryMonitor(this);
         try {
             initMonitors();
         } catch (Exception exc) {
@@ -169,12 +170,19 @@ public class MonitorManager extends RepositoryManager {
     }
 
 
+    public void entriesModified(final List<Entry> entries) {
+    }
+
+    public void entriesDeleted(List<String> entryIds) {
+    }
+
+
     /**
      * _more_
      *
      * @param entries _more_
      */
-    public void checkNewEntries(final List<Entry> entries) {
+    public void entriesCreated(final List<Entry> entries) {
         Misc.run(new Runnable() {
             public void run() {
                 checkNewEntriesInner(entries);
