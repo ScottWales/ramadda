@@ -1,7 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * Copyright 2010- ramadda.org
+ * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
+ * Copyright 2010- Jeff McWhirter
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -20,18 +19,46 @@
  */
 
 package org.ramadda.repository.search;
+
+
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+
+
+import org.apache.lucene.document.DateTools;
+
+import org.apache.lucene.document.Field;
+
+import org.apache.lucene.index.FilterIndexReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
+
 import org.ramadda.repository.*;
-
-
-import org.w3c.dom.*;
 
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.output.*;
-import org.ramadda.util.OpenSearchUtil;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.OpenSearchUtil;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -86,31 +113,6 @@ import java.util.regex.*;
 import java.util.zip.*;
 
 
-import  org.apache.lucene.index.Term;
-
-import org.apache.lucene.index.FilterIndexReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TopScoreDocCollector;
-
-
-import org.apache.lucene.document.DateTools;
-
-import org.apache.lucene.document.Field;
-
-
 
 
 /**
@@ -134,7 +136,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_FORM = new RequestUrl(this,
-                                                  "/search/form", "Advanced Search");
+                                                  "/search/form",
+                                                  "Advanced Search");
 
     /** _more_ */
     public final RequestUrl URL_SEARCH_ASSOCIATIONS =
@@ -180,15 +183,32 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
 
 
 
+    /** _more_          */
     private static final String FIELD_ENTRYID = "entryid";
+
+    /** _more_          */
     private static final String FIELD_PATH = "path";
+
+    /** _more_          */
     private static final String FIELD_CONTENTS = "contents";
+
+    /** _more_          */
     private static final String FIELD_MODIFIED = "modified";
+
+    /** _more_          */
     private static final String FIELD_DESCRIPTION = "description";
+
+    /** _more_          */
     private static final String FIELD_METADATA = "metadata";
 
-    private IndexSearcher luceneSearcher;    
-    private IndexReader luceneReader;    
+    /** _more_          */
+    private IndexSearcher luceneSearcher;
+
+    /** _more_          */
+    private IndexReader luceneReader;
+
+    /** _more_          */
+    private boolean isLuceneEnabled = true;
 
     /**
      * _more_
@@ -201,171 +221,289 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isLuceneEnabled() {
-        return true;
+        return isLuceneEnabled;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private IndexWriter getLuceneWriter() throws Exception {
         File indexFile = new File(getStorageManager().getIndexDir());
-        IndexWriter writer = new IndexWriter(FSDirectory.open(indexFile), new StandardAnalyzer(Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer =
+            new IndexWriter(FSDirectory.open(indexFile),
+                            new StandardAnalyzer(Version.LUCENE_CURRENT),
+                            IndexWriter.MaxFieldLength.LIMITED);
         return writer;
     }
 
-    public synchronized void indexEntries(List<Entry> entries) throws Exception {
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     *
+     * @throws Exception _more_
+     */
+    public synchronized void indexEntries(List<Entry> entries)
+            throws Exception {
         IndexWriter writer = getLuceneWriter();
-        for(Entry entry: entries) {
+        for (Entry entry : entries) {
             indexEntry(writer, entry);
         }
         writer.optimize();
         writer.close();
-        luceneReader = null;
+        luceneReader   = null;
         luceneSearcher = null;
     }
 
 
-    private void indexEntry(IndexWriter writer, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param writer _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    private void indexEntry(IndexWriter writer, Entry entry)
+            throws Exception {
 
-        org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document();
+        org.apache.lucene.document.Document doc =
+            new org.apache.lucene.document.Document();
         String path = entry.getResource().getPath();
-        doc.add(new Field(FIELD_ENTRYID, entry.getId(),Field.Store.YES, Field.Index.NOT_ANALYZED));
-        if(path!=null && path.length()>0) {
-            doc.add(new Field(FIELD_PATH, path, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field(FIELD_ENTRYID, entry.getId(), Field.Store.YES,
+                          Field.Index.NOT_ANALYZED));
+        if ((path != null) && (path.length() > 0)) {
+            doc.add(new Field(FIELD_PATH, path, Field.Store.YES,
+                              Field.Index.NOT_ANALYZED));
         }
 
-        doc.add(new Field(FIELD_DESCRIPTION, entry.getName() +" " + entry.getDescription(), Field.Store.NO, Field.Index.ANALYZED));
+        doc.add(new Field(FIELD_DESCRIPTION,
+                          entry.getName() + " " + entry.getDescription(),
+                          Field.Store.NO, Field.Index.ANALYZED));
 
         doc.add(new Field(FIELD_MODIFIED,
-                          DateTools.timeToString(entry.getStartDate(), DateTools.Resolution.MINUTE),
-                          Field.Store.YES, Field.Index.NOT_ANALYZED));
+                          DateTools.timeToString(entry.getStartDate(),
+                              DateTools.Resolution.MINUTE), Field.Store.YES,
+                                  Field.Index.NOT_ANALYZED));
 
-        if(entry.isFile()) {
+        if (entry.isFile()) {
             doc.add(new Field(FIELD_CONTENTS, new FileReader(path)));
         }
         writer.addDocument(doc);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private IndexReader getLuceneReader() throws Exception {
-        if(true) return IndexReader.open(FSDirectory.open(new File(getStorageManager().getIndexDir())), false); 
-        if(luceneReader==null) {
-            luceneReader = IndexReader.open(FSDirectory.open(new File(getStorageManager().getIndexDir())), false); 
+        if (true) {
+            return IndexReader.open(
+                FSDirectory.open(
+                    new File(getStorageManager().getIndexDir())), false);
+        }
+        if (luceneReader == null) {
+            luceneReader = IndexReader.open(
+                FSDirectory.open(
+                    new File(getStorageManager().getIndexDir())), false);
         }
         return luceneReader;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private IndexSearcher getLuceneSearcher() throws Exception {
-        if(luceneSearcher==null) {
-            luceneSearcher = new IndexSearcher(getLuceneReader());       
+        if (luceneSearcher == null) {
+            luceneSearcher = new IndexSearcher(getLuceneReader());
         }
         return luceneSearcher;
     }
 
 
-    public void processLuceneSearch(Request request, List<Entry> groups,  List<Entry> entries) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param groups _more_
+     * @param entries _more_
+     *
+     * @throws Exception _more_
+     */
+    public void processLuceneSearch(Request request, List<Entry> groups,
+                                    List<Entry> entries)
+            throws Exception {
         StringBuffer sb = new StringBuffer();
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);          
-        QueryParser qp = new MultiFieldQueryParser(Version.LUCENE_CURRENT, new String[]{FIELD_DESCRIPTION, FIELD_METADATA, FIELD_CONTENTS}, analyzer);
-        Query query = qp.parse(request.getString(ARG_TEXT,"")); 
+        StandardAnalyzer analyzer =
+            new StandardAnalyzer(Version.LUCENE_CURRENT);
+        QueryParser qp = new MultiFieldQueryParser(Version.LUCENE_CURRENT,
+                             new String[] { FIELD_DESCRIPTION,
+                                            FIELD_METADATA,
+                                            FIELD_CONTENTS }, analyzer);
+        Query         query    = qp.parse(request.getString(ARG_TEXT, ""));
         IndexSearcher searcher = getLuceneSearcher();
-        TopDocs hits = searcher.search(query, 100);
-        ScoreDoc[] docs = hits.scoreDocs;
-        for(int i=0;i<docs.length;i++) {
-            org.apache.lucene.document.Document doc = searcher.doc(docs[i].doc);  
+        TopDocs       hits     = searcher.search(query, 100);
+        ScoreDoc[]    docs     = hits.scoreDocs;
+        for (int i = 0; i < docs.length; i++) {
+            org.apache.lucene.document.Document doc =
+                searcher.doc(docs[i].doc);
             String id = doc.get(FIELD_ENTRYID);
-            if(id ==null) continue;
+            if (id == null) {
+                continue;
+            }
             Entry entry = getEntryManager().getEntry(request, id);
-            if(entry == null) continue;
-            if(entry.isGroup()) groups.add(entry);
-            else entries.add(entry);
+            if (entry == null) {
+                continue;
+            }
+            if (entry.isGroup()) {
+                groups.add(entry);
+            } else {
+                entries.add(entry);
+            }
         }
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     */
     public void entriesCreated(List<Entry> entries) {
-        if(!isLuceneEnabled()) return;
+        if ( !isLuceneEnabled()) {
+            return;
+        }
         try {
             indexEntries(entries);
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             logError("Error indexing entries", exc);
         }
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     */
     public void entriesModified(List<Entry> entries) {
-        if(!isLuceneEnabled()) return;
+        if ( !isLuceneEnabled()) {
+            return;
+        }
         try {
             List<String> ids = new ArrayList<String>();
-            for(Entry entry: entries) {
+            for (Entry entry : entries) {
                 ids.add(entry.getId());
-               
+
             }
             entriesDeleted(ids);
             indexEntries(entries);
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             logError("Error adding entries to Lucene index", exc);
         }
     }
 
 
-    public synchronized void entriesDeleted(List<String> ids)  {
-        if(!isLuceneEnabled()) return;
+    /**
+     * _more_
+     *
+     * @param ids _more_
+     */
+    public synchronized void entriesDeleted(List<String> ids) {
+        if ( !isLuceneEnabled()) {
+            return;
+        }
         try {
             IndexWriter writer = getLuceneWriter();
-            for(String id: ids) {
-                writer.deleteDocuments (new Term (FIELD_ENTRYID, id));
+            for (String id : ids) {
+                writer.deleteDocuments(new Term(FIELD_ENTRYID, id));
             }
             writer.close();
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             logError("Error deleting entries from Lucene index", exc);
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processCapabilities(Request request) throws Exception {
         return new Result("", "text/xml");
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processOpenSearch(Request request) throws Exception {
 
-        Document doc   = XmlUtil.makeDocument();
-        Element root = OpenSearchUtil.getRoot();
+        Document doc  = XmlUtil.makeDocument();
+        Element  root = OpenSearchUtil.getRoot();
         /*
    <ShortName>Web Search</ShortName>
    <Description>Use Example.com to search the Web.</Description>
    <Tags>example web</Tags>
    <Contact>admin@example.com</Contact>
         */
-        OpenSearchUtil.addBasicTags(root, getRepository().getRepositoryName(),
-                                    getRepository().getRepositoryDescription(),
-                                    getRepository().getRepositoryEmail());
-        ((Element)XmlUtil.create(OpenSearchUtil.TAG_IMAGE, root)).appendChild(XmlUtil.makeCDataNode(root.getOwnerDocument(),
-                                                                                                    getRepository().getLogoImage(null), false));
-        
+        OpenSearchUtil.addBasicTags(
+            root, getRepository().getRepositoryName(),
+            getRepository().getRepositoryDescription(),
+            getRepository().getRepositoryEmail());
+        ((Element) XmlUtil.create(
+            OpenSearchUtil.TAG_IMAGE, root)).appendChild(
+                XmlUtil.makeCDataNode(
+                    root.getOwnerDocument(),
+                    getRepository().getLogoImage(null), false));
 
-        
+
+
 
         String url = getRepository().absoluteUrl(URL_ENTRY_SEARCH.toString());
-        url = HtmlUtil.url(url, new String[]{
-                ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(),
-                ARG_TEXT,
-                OpenSearchUtil.MACRO_TEXT,
-                ARG_BBOX,
-                OpenSearchUtil.MACRO_BBOX,
-                Constants.dataDate.getFromArg(),
-                OpenSearchUtil.MACRO_TIME_START,
-                Constants.dataDate.getToArg(),
-                OpenSearchUtil.MACRO_TIME_END,
-            }, false);
+        url = HtmlUtil.url(url, new String[] {
+            ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(), ARG_TEXT,
+            OpenSearchUtil.MACRO_TEXT, ARG_BBOX, OpenSearchUtil.MACRO_BBOX,
+            Constants.dataDate.getFromArg(), OpenSearchUtil.MACRO_TIME_START,
+            Constants.dataDate.getToArg(), OpenSearchUtil.MACRO_TIME_END,
+        }, false);
 
 
-        XmlUtil.create( OpenSearchUtil.TAG_URL,root,"",
-                        new String[]{
-                            OpenSearchUtil.ATTR_TYPE,
-                                  "application/atom+xml",
-                            OpenSearchUtil.ATTR_TEMPLATE,url});
+        XmlUtil.create(OpenSearchUtil.TAG_URL, root, "",
+                       new String[] { OpenSearchUtil.ATTR_TYPE,
+                                      "application/atom+xml",
+                                      OpenSearchUtil.ATTR_TEMPLATE, url });
         return new Result(XmlUtil.toString(root), OpenSearchUtil.MIMETYPE);
     }
 
@@ -417,28 +555,42 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
     public Result makeSearchForm(Request request, boolean justText,
                                  boolean typeSpecific)
             throws Exception {
-        StringBuffer sb          = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         makeSearchForm(request, justText, typeSpecific, sb);
 
         return makeResult(request, msg("Search Form"), sb);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
     public String getSearchUrl(Request request) {
-        return request.url(
-                           URL_ENTRY_SEARCH, ARG_NAME,
-                           WHAT_ENTRIES);
-    } 
+        return request.url(URL_ENTRY_SEARCH, ARG_NAME, WHAT_ENTRIES);
+    }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param justText _more_
+     * @param typeSpecific _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     private void makeSearchForm(Request request, boolean justText,
                                 boolean typeSpecific, StringBuffer sb)
             throws Exception {
 
-        TypeHandler  typeHandler = getRepository().getTypeHandler(request);
-        sb.append(
-            HtmlUtil.form(
-                          getSearchUrl(request), " name=\"searchform\" "));
+        TypeHandler typeHandler = getRepository().getTypeHandler(request);
+        sb.append(HtmlUtil.form(getSearchUrl(request),
+                                " name=\"searchform\" "));
 
-        if(justText) {
+        if (justText) {
             sb.append(HtmlUtil.hidden(ARG_SEARCH_TYPE, SEARCH_TYPE_TEXT));
         }
 
@@ -725,17 +877,29 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
 
         StringBuffer sb = new StringBuffer();
         getMetadataManager().addToBrowseSearchForm(request, sb);
-        return makeResult(request,  msg("Search Form"), sb);
+        return makeResult(request, msg("Search Form"), sb);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param title _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result makeResult(Request request, String title, StringBuffer sb)
             throws Exception {
         StringBuffer headerSB = new StringBuffer();
-        headerSB.append(getRepository().makeHeader(request, getSearchUrls(),""));
+        headerSB.append(getRepository().makeHeader(request, getSearchUrls(),
+                ""));
         headerSB.append(sb);
         sb = headerSB;
         Result result = new Result(title, sb);
-        return getEntryManager().addEntryHeader(request, null,  result);
+        return getEntryManager().addEntryHeader(request, null, result);
     }
 
     /**
@@ -790,9 +954,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
         List<Entry> groups  = new ArrayList<Entry>();
         List<Entry> entries = new ArrayList<Entry>();
 
-        if(isLuceneEnabled() && request.defined(ARG_TEXT)) {
+        if (isLuceneEnabled() && request.defined(ARG_TEXT)) {
             processLuceneSearch(request, groups, entries);
-        } else   if (searchThis) {
+        } else if (searchThis) {
             List[] pair = getEntryManager().getEntries(request,
                               searchCriteriaSB);
             groups.addAll((List<Entry>) pair[0]);
@@ -813,18 +977,16 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
                 StringBuffer sb          = new StringBuffer();
                 sb.append(msgHeader("Remote Server Search Results"));
                 for (ServerInfo server : servers) {
-                    String remoteSearchUrl =
-                        server.getUrl()
-                        + URL_ENTRY_SEARCH.getPath() + "?"
-                        + linkUrl;
+                    String remoteSearchUrl = server.getUrl()
+                                             + URL_ENTRY_SEARCH.getPath()
+                                             + "?" + linkUrl;
                     sb.append("\n");
                     sb.append(HtmlUtil.p());
                     String link = HtmlUtil.href(remoteSearchUrl,
                                       server.getUrl());
-                    String fullUrl =
-                        server.getUrl()
-                        + URL_ENTRY_SEARCH.getPath() + "?"
-                        + embeddedUrl;
+                    String fullUrl = server.getUrl()
+                                     + URL_ENTRY_SEARCH.getPath() + "?"
+                                     + embeddedUrl;
                     String content =
                         HtmlUtil.tag(
                             HtmlUtil.TAG_IFRAME,
@@ -868,26 +1030,28 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
         }
 
         //        if (s.length() > 0) {
-            StringBuffer searchForm          = new StringBuffer();
-            request.remove(ARG_SEARCH_SUBMIT);
-            String url = request.getUrl(URL_SEARCH_FORM);
-            String searchLink = HtmlUtil.href(
-                                url,
-                                HtmlUtil.img(
-                                    iconUrl(ICON_SEARCH),
-                                    "Search Again"));
-            //            searchForm.append(searchLink);
-            if (s.length() > 0) {
-                searchForm.append(msg("Search Criteria") +"<br><table>" + s + "</table>");
-            }
-            String searchUrl = request.getUrl();
-            searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
-            searchForm.append(HtmlUtil.br());
-            makeSearchForm(request, false, true, searchForm);
-            String form = HtmlUtil.makeShowHideBlock(searchLink +msg("Search Again"), RepositoryUtil.inset(searchForm.toString(), 0 , 20, 0 ,0), false);
-            String heading =   msgHeader("Search Results") + form;
-            request.setLeftMessage(heading);
-            //        }
+        StringBuffer searchForm = new StringBuffer();
+        request.remove(ARG_SEARCH_SUBMIT);
+        String url = request.getUrl(URL_SEARCH_FORM);
+        String searchLink = HtmlUtil.href(url,
+                                          HtmlUtil.img(iconUrl(ICON_SEARCH),
+                                              "Search Again"));
+        //            searchForm.append(searchLink);
+        if (s.length() > 0) {
+            searchForm.append(msg("Search Criteria") + "<br><table>" + s
+                              + "</table>");
+        }
+        String searchUrl = request.getUrl();
+        searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
+        searchForm.append(HtmlUtil.br());
+        makeSearchForm(request, false, true, searchForm);
+        String form = HtmlUtil.makeShowHideBlock(
+                          searchLink + msg("Search Again"),
+                          RepositoryUtil.inset(
+                              searchForm.toString(), 0, 20, 0, 0), false);
+        String heading = msgHeader("Search Results") + form;
+        request.setLeftMessage(heading);
+        //        }
         if (theGroup == null) {
             theGroup = getEntryManager().getDummyGroup();
         }
@@ -944,10 +1108,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
             final ServerInfo theServer = server;
             Runnable         runnable  = new Runnable() {
                 public void run() {
-                    String remoteSearchUrl =
-                        theServer.getUrl()
-                        + URL_ENTRY_SEARCH.getPath() + "?"
-                        + linkUrl;
+                    String remoteSearchUrl = theServer.getUrl()
+                                             + URL_ENTRY_SEARCH.getPath()
+                                             + "?" + linkUrl;
 
                     try {
                         String entriesXml =
@@ -1066,10 +1229,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
             if (what.equals(whats[i])) {
                 item = HtmlUtil.span(names[i], extra1);
             } else {
-                item = HtmlUtil.href(
-                    request.url(
-                        URL_SEARCH_FORM, ARG_WHAT, whats[i],
-                        ARG_FORM_TYPE, formType), names[i], extra2);
+                item = HtmlUtil.href(request.url(URL_SEARCH_FORM, ARG_WHAT,
+                        whats[i], ARG_FORM_TYPE, formType), names[i], extra2);
             }
             if (i == 0) {
                 item = "<span " + extra1
@@ -1083,12 +1244,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
             if (tfo.getId().equals(what)) {
                 links.add(HtmlUtil.span(tfo.toString(), extra1));
             } else {
-                links.add(
-                    HtmlUtil.href(
-                        request.url(
-                            URL_SEARCH_FORM, ARG_WHAT,
-                            BLANK + tfo.getId(), ARG_TYPE,
-                            typeHandler.getType()), tfo.toString(), extra2));
+                links.add(HtmlUtil.href(request.url(URL_SEARCH_FORM,
+                        ARG_WHAT, BLANK + tfo.getId(), ARG_TYPE,
+                        typeHandler.getType()), tfo.toString(), extra2));
             }
         }
 
