@@ -201,7 +201,7 @@ public class CopyAction extends MonitorAction {
                 return;
             }
         } catch (Exception exc) {
-            monitor.handleError("Error posting to LDM", exc);
+            monitor.handleError("Error handling Copy Action", exc);
         }
     }
 
