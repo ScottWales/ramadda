@@ -23,6 +23,7 @@ package org.ramadda.plugins.db;
 import org.w3c.dom.*;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;

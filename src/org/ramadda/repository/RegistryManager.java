@@ -311,7 +311,7 @@ public class RegistryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected void addToInstallForm(Request request, StringBuffer sb)
+    public void addToInstallForm(Request request, StringBuffer sb)
             throws Exception {
         String msg = msg("Servers this server registers with:");
         msg = HtmlUtil.space(1)
@@ -339,7 +339,7 @@ public class RegistryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected void applyInstallForm(Request request) throws Exception {
+    public void applyInstallForm(Request request) throws Exception {
         List<String> newList =
             StringUtil.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,
                 ""), "\n", true, true);

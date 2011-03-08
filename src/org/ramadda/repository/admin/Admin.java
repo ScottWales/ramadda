@@ -19,7 +19,8 @@
  * 
  */
 
-package org.ramadda.repository;
+package org.ramadda.repository.admin;
+import  org.ramadda.repository.*;
 
 
 import org.w3c.dom.*;
@@ -202,7 +203,7 @@ public class Admin extends RepositoryManager {
     /**
      * _more_
      */
-    protected void doFinalInitialization() {
+    public void doFinalInitialization() {
         if (getRepository().getProperty(PROP_ADMIN_INCLUDESQL, false)) {
             adminUrls.add(URL_ADMIN_SQL);
         }
@@ -301,7 +302,7 @@ public class Admin extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected Result doInitialization(Request request) throws Exception {
+    public Result doInitialization(Request request) throws Exception {
 
         StringBuffer sb    = new StringBuffer();
         String       title = "";

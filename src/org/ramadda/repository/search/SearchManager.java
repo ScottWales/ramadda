@@ -48,6 +48,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.admin.*;
 
 import org.ramadda.repository.auth.*;
 

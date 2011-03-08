@@ -26,6 +26,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.ftp.FtpManager;
+import org.ramadda.repository.admin.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
@@ -2071,7 +2072,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      *
      * @throws Exception _more_
      */
-    protected void readGlobals() throws Exception {
+    public void readGlobals() throws Exception {
         Statement statement =
             getDatabaseManager().select(Tables.GLOBALS.COLUMNS,
                                         Tables.GLOBALS.NAME, new Clause[] {});
@@ -2103,7 +2104,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /**
      * _more_
      */
-    protected void clearCache() {
+    public void clearCache() {
         pageCache     = new Hashtable();
         pageCacheList = new ArrayList();
         getEntryManager().clearCache();

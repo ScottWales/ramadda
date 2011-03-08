@@ -215,7 +215,7 @@ public class ActionManager extends RepositoryManager {
      *
      * @param id _more_
      */
-    protected void actionComplete(Object id) {
+    public void actionComplete(Object id) {
         ActionInfo action = getAction(id);
         if (action == null) {
             return;
@@ -229,7 +229,7 @@ public class ActionManager extends RepositoryManager {
      * @param actionId _more_
      * @param exc _more_
      */
-    protected void handleError(Object actionId, Exception exc) {
+    public void handleError(Object actionId, Exception exc) {
         ActionInfo action = getAction(actionId);
         if (action == null) {
             return;

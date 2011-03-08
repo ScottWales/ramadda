@@ -1748,7 +1748,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    protected Result asynchDeleteEntries(Request request,
+    public Result asynchDeleteEntries(Request request,
                                          final List<Entry> entries) {
         final Request theRequest = request;
         Entry         entry      = entries.get(0);
@@ -1809,7 +1809,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected void deleteEntries(Request request, List<Entry> entries,
+    public void deleteEntries(Request request, List<Entry> entries,
                                  Object asynchId)
             throws Exception {
 
@@ -7083,7 +7083,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @param sb _more_
      */
-    protected void addStatusInfo(StringBuffer sb) {
+    public void addStatusInfo(StringBuffer sb) {
         sb.append(HtmlUtil.formEntry(msgLabel("Entry Cache"),
                                      entryCache.size() / 2 + ""));
     }
