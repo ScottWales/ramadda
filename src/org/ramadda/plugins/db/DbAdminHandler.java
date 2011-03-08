@@ -50,20 +50,11 @@ public class DbAdminHandler extends AdminHandlerImpl {
      *
      * @throws Exception _more_
      */
-    public DbAdminHandler() {}
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     *
-     * @throws Exception _more_
-     */
-    public void setRepository(Repository repository) throws Exception {
-        super.setRepository(repository);
+    public DbAdminHandler(Repository repository) throws Exception {
+        super(repository);
         init();
     }
+
 
     /**
      * _more_

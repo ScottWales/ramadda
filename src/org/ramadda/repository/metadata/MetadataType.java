@@ -630,6 +630,15 @@ public class MetadataType extends MetadataTypeBase {
     }
 
 
+    public void getTextCorpus(Entry entry, StringBuffer sb, Metadata metadata)
+        throws Exception {
+        for (MetadataElement element : getChildren()) {
+            String value = metadata.getAttr(element.getIndex());
+            element.getTextCorpus(value, sb);
+        }
+    }
+
+
 
 
     /**

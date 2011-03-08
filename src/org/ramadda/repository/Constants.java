@@ -1380,6 +1380,8 @@ public interface Constants {
 
     public static final String PROP_SHOWMAP = "ramadda.showmap";
 
+    public static final String PROP_SEARCH_LUCENE_ENABLED = "ramadda.search.lucene.enabled";
+
     public static final String PROP_PROPERTIES = "ramadda.properties";
 
 

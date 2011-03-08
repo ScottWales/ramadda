@@ -35,15 +35,6 @@ public interface AdminHandler {
     /**
      * _more_
      *
-     * @param repository _more_
-     *
-     * @throws Exception _more_
-     */
-    public void setRepository(Repository repository) throws Exception;
-
-    /**
-     * _more_
-     *
      * @return _more_
      */
     public String getId();
@@ -54,15 +45,15 @@ public interface AdminHandler {
      * @param blockId _more_
      * @param sb _more_
      */
-    public void addToSettingsForm(String blockId, StringBuffer sb);
+    public void addToAdminSettingsForm(String blockId, StringBuffer sb);
 
 
-    public void applySettingsForm(Request request) throws Exception;
+    public void applyAdminSettingsForm(Request request) throws Exception;
 
     /**
      * _more_
      *
      * @return _more_
      */
-    public List<RequestUrl> getUrls();
+    public List<RequestUrl> getAdminUrls();
 }

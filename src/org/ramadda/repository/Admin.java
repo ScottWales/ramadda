@@ -224,17 +224,16 @@ public class Admin extends RepositoryManager {
      *
      * @param adminHandler _more_
      */
-    public void addAdminHandler(AdminHandler adminHandler) throws Exception {
+    public void addAdminHandler(AdminHandler adminHandler) {
         if (adminHandlers.contains(adminHandler)) {
             return;
         }
         if (adminHandlerMap.get(adminHandler.getId()) != null) {
             return;
         }
-        adminHandler.setRepository(getRepository());
         adminHandlers.add(adminHandler);
         adminHandlerMap.put(adminHandler.getId(), adminHandler);
-        List<RequestUrl> urls = adminHandler.getUrls();
+        List<RequestUrl> urls = adminHandler.getAdminUrls();
         if (urls != null) {
             adminUrls.addAll(urls);
         }
@@ -1033,7 +1032,7 @@ public class Admin extends RepositoryManager {
 
         asb.append(HtmlUtil.colspan(msgHeader("Anonymous Uploads"), 2));
         asb.append(
-            HtmlUtil.formEntryTop(
+            HtmlUtil.formEntry(
                 msgLabel("Max directory size"),
                 HtmlUtil.input(
                     PROP_UPLOAD_MAXSIZEGB,
@@ -1044,7 +1043,7 @@ public class Admin extends RepositoryManager {
 
         asb.append(HtmlUtil.colspan(msgHeader("Cache Size"), 2));
         asb.append(
-            HtmlUtil.formEntryTop(
+            HtmlUtil.formEntry(
                 msgLabel("Size"),
                 HtmlUtil.input(
                     PROP_CACHE_MAXSIZEGB,
@@ -1065,6 +1064,8 @@ public class Admin extends RepositoryManager {
                                          "<table><tr valign=top><td>"
                                          + fileWidget + "</td><td>"
                                          + fileLabel + "</td></tr></table>"));
+
+
 
 
 
@@ -1101,9 +1102,9 @@ public class Admin extends RepositoryManager {
 
 
         for (AdminHandler adminHandler : adminHandlers) {
-            adminHandler.addToSettingsForm(BLOCK_SITE, csb);
-            adminHandler.addToSettingsForm(BLOCK_DISPLAY, dsb);
-            adminHandler.addToSettingsForm(BLOCK_ACCESS, asb);
+            adminHandler.addToAdminSettingsForm(BLOCK_SITE, csb);
+            adminHandler.addToAdminSettingsForm(BLOCK_DISPLAY, dsb);
+            adminHandler.addToAdminSettingsForm(BLOCK_ACCESS, asb);
         }
         csb.append(HtmlUtil.formTableClose());
         dsb.append(HtmlUtil.formTableClose());
@@ -1401,7 +1402,7 @@ public class Admin extends RepositoryManager {
 
 
         for (AdminHandler adminHandler : adminHandlers) {
-            adminHandler.applySettingsForm(request);
+            adminHandler.applyAdminSettingsForm(request);
         }
 
         return new Result(request.url(URL_ADMIN_SETTINGS));

@@ -1139,9 +1139,12 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
 
         //        getAdmin().addAdminHandler(new org.ramadda.plugins.db.DbAdminHandler());
         for (Class adminHandlerClass : adminHandlerClasses) {
-            AdminHandler adminHandler =
-                (AdminHandler) adminHandlerClass.newInstance();
-            getAdmin().addAdminHandler(adminHandler);
+            Constructor ctor = Misc.findConstructor(adminHandlerClass, new Class[]{Repository.class});
+            if(ctor!=null) {
+                getAdmin().addAdminHandler(((AdminHandler) ctor.newInstance(new Object[]{Repository.this})));
+            } else {
+                getAdmin().addAdminHandler((AdminHandler) adminHandlerClass.newInstance());
+            }
         }
         //        getAdmin().addAdminHandler(new LdapAdminHandler());
 

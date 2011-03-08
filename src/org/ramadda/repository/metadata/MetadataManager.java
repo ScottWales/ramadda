@@ -211,6 +211,15 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    public void getTextCorpus(Entry entry, StringBuffer sb)
+            throws Exception {
+        for (Metadata metadata : getMetadata(entry)) {
+            MetadataHandler handler = findMetadataHandler(metadata.getType());
+            handler.getTextCorpus(entry, sb, metadata);
+        }
+    }
+
+
     /**
      * _more_
      *
@@ -722,6 +731,7 @@ public class MetadataManager extends RepositoryManager {
                 }
             }
             entry.setMetadata(null);
+            Misc.run(getRepository(), "checkModifiedEntries", Misc.newList(entry));
             return new Result(request.url(URL_METADATA_FORM, ARG_ENTRYID,
                                           entry.getId()));
         }
@@ -1081,6 +1091,7 @@ public class MetadataManager extends RepositoryManager {
                 insertMetadata(metadata);
             }
             entry.setMetadata(null);
+            Misc.run(getRepository(), "checkModifiedEntries", Misc.newList(entry));
             return new Result(request.url(URL_METADATA_FORM, ARG_ENTRYID,
                                           entry.getId()));
 

@@ -121,7 +121,7 @@ import java.util.zip.*;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class SearchManager extends RepositoryManager implements EntryChecker {
+public class SearchManager extends RepositoryManager implements EntryChecker, AdminHandler {
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
@@ -218,6 +218,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
     public SearchManager(Repository repository) {
         super(repository);
         repository.addEntryChecker(this);
+        isLuceneEnabled = getProperty(PROP_SEARCH_LUCENE_ENABLED, false);
+        getAdmin().addAdminHandler(this);
     }
 
 
@@ -245,6 +247,33 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
                             new StandardAnalyzer(Version.LUCENE_CURRENT),
                             IndexWriter.MaxFieldLength.LIMITED);
         return writer;
+    }
+
+
+    public List<RequestUrl> getAdminUrls() {
+        return null;
+    }
+
+    public void addToAdminSettingsForm(String block, StringBuffer asb) {
+        if(!block.equals(Admin.BLOCK_ACCESS)) return;
+        asb.append(HtmlUtil.colspan(msgHeader("Search"), 2));
+        asb.append(HtmlUtil.formEntry("",
+                                      HtmlUtil.checkbox(PROP_SEARCH_LUCENE_ENABLED,
+                                          "true",
+                                                        isLuceneEnabled())
+                                      + HtmlUtil.space(2)
+                                      + msg("Enable Lucene Indexing and Search")));
+    }
+
+
+    public void applyAdminSettingsForm(Request request) throws Exception {
+        getRepository().writeGlobal(PROP_SEARCH_LUCENE_ENABLED,
+                                    isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, false));
+
+    }
+
+    public String getId() {
+        return "searchmanager";
     }
 
     /**
@@ -288,9 +317,17 @@ public class SearchManager extends RepositoryManager implements EntryChecker {
                               Field.Index.NOT_ANALYZED));
         }
 
+        StringBuffer metadataSB = new StringBuffer();
+        getRepository().getMetadataManager().getTextCorpus(entry, metadataSB);
         doc.add(new Field(FIELD_DESCRIPTION,
                           entry.getName() + " " + entry.getDescription(),
                           Field.Store.NO, Field.Index.ANALYZED));
+
+        if(metadataSB.length()>0) {
+            System.err.println(metadataSB);
+            doc.add(new Field(FIELD_METADATA, metadataSB.toString(),
+                              Field.Store.NO, Field.Index.ANALYZED));
+        }
 
         doc.add(new Field(FIELD_MODIFIED,
                           DateTools.timeToString(entry.getStartDate(),

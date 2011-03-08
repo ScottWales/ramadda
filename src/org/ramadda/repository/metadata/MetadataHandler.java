@@ -233,6 +233,18 @@ public class MetadataHandler extends RepositoryManager {
     }
 
 
+
+    public void getTextCorpus(Entry entry, StringBuffer sb,
+                              Metadata metadata)
+            throws Exception {
+        MetadataType type = getType(metadata.getType());
+        if (type == null) {
+            return;
+        }
+        type.getTextCorpus(entry, sb, metadata);
+    }
+
+
     /**
      * _more_
      *

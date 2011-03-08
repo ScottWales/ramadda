@@ -441,6 +441,41 @@ public class MetadataElement extends MetadataTypeBase {
     }
 
 
+
+    public void getTextCorpus(String value, StringBuffer sb) throws Exception {
+        if(value == null  || dataType.equals(TYPE_SKIP)) {
+            return;
+        }
+        //For now skip showing files
+        if (dataType.equals(TYPE_FILE)) {
+            return;
+        }
+        String name = getName();
+        if (getDataType().equals(TYPE_GROUP)) {
+            List<Metadata> childMetadata = getGroupData(value);
+            if (childMetadata.size() == 0) {
+                return;
+            }
+            for (Metadata metadata : childMetadata) {
+                for (MetadataElement element : getChildren()) {
+                    element.getTextCorpus(metadata.getAttr(element.getIndex()), sb);
+                }
+            }
+            return;
+        } else if (dataType.equals(TYPE_ENUMERATION)
+                   || dataType.equals(TYPE_ENUMERATIONPLUS)) {
+            sb.append(getLabel(value));
+        } else if (dataType.equals(TYPE_EMAIL)) {
+            sb.append("email:" + value);
+        } else if (dataType.equals(TYPE_URL)) {
+            sb.append("url:" + value);
+        } else {
+            sb.append(value);
+        }
+        sb.append(" ");
+    }
+
+
     public static class FormInfo {
         public String label;
         public String content;
