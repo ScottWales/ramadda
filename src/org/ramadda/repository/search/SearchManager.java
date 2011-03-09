@@ -336,9 +336,42 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
                                   Field.Index.NOT_ANALYZED));
 
         if (entry.isFile()) {
-            doc.add(new Field(FIELD_CONTENTS, new FileReader(path)));
+            addContentField(entry, doc, new File(path));
         }
         writer.addDocument(doc);
+    }
+
+
+    private void addContentField(Entry entry, org.apache.lucene.document.Document doc, File f) throws Exception {
+        //org.apache.lucene.document.Document doc
+        InputStream stream = getStorageManager().getFileInputStream(f);
+        try {
+            org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
+            org.apache.tika.parser.AutoDetectParser parser = new org.apache.tika.parser.AutoDetectParser();
+            org.apache.tika.sax.BodyContentHandler handler = new org.apache.tika.sax.BodyContentHandler();
+            parser.parse(stream, handler, metadata);
+            String contents = handler.toString();
+            //            System.err.println("contents: " + contents);
+            if(contents!=null && contents.length()>0) {
+                doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
+                                  Field.Index.ANALYZED));
+            }
+ 
+            /*
+            String[] names = metadata.names();
+            for (String name : names) {
+                String value = metadata.get(name);
+                System.err.println(name +"=" + value);
+                doc.add(new Field(name, value, Field.Store.YES,
+                                  Field.Index.ANALYZED));
+            }
+            */
+        } catch(Exception exc) {
+            System.err.println("error harvesting corpus from:" + f);
+            exc.printStackTrace();
+        } finally {
+            IOUtil.close(stream);
+        }
     }
 
 
