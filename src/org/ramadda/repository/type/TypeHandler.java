@@ -2113,7 +2113,7 @@ public class TypeHandler extends RepositoryManager {
                 //                if (entry.getResource().isFile()) {
                 //If its the admin then show the full path
                 if (request.getUser().getAdmin()) {
-                    sb.append(formEntryTop(request,msgLabel("Resource"),
+                    sb.append(formEntry(request,msgLabel("Resource"),
                             entry.getResource().getPath()));
                 } else {
                     sb.append(formEntry(request,msgLabel("Resource"),
@@ -2391,7 +2391,7 @@ public class TypeHandler extends RepositoryManager {
         String extra = HtmlUtil.p() + searchExact + searchMetaData;
         extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
         extra = "";
-        sb.append(formEntryTop(request,msgLabel("Text"),
+        sb.append(formEntry(request,msgLabel("Text"),
                                         HtmlUtil.input(ARG_TEXT, name,
                                             HtmlUtil.SIZE_50
                                             + " autofocus ") + " " + extra));

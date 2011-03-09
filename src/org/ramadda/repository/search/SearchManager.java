@@ -694,17 +694,23 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             buttons = HtmlUtil.submit(msg("Search"), ARG_SEARCH_SUBMIT);
         }
         sb.append(HtmlUtil.p());
-        if ( !justText) {
+        if (!justText) {
             sb.append(buttons);
             sb.append(HtmlUtil.p());
         }
 
         if (justText) {
-            sb.append(
+            String value           = (String) request.getString(ARG_TEXT, "");
+            sb.append(HtmlUtil.span(msgLabel("Text"), HtmlUtil.cssClass("formlabel")) + " " + 
+                      HtmlUtil.input(ARG_TEXT, value,
+                                     HtmlUtil.SIZE_50
+                                     + " autofocus ") + " " + buttons);
+            /*            sb.append(
                 "<table width=\"100%\" border=\"0\"><tr><td width=\"60\">");
             typeHandler.addTextSearch(request, sb);
             sb.append("</table>");
             sb.append(HtmlUtil.p());
+            */
         } else {
             Object       oldValue = request.remove(ARG_RELATIVEDATE);
             List<Clause> where    = typeHandler.assembleWhereClause(request);
@@ -812,9 +818,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
 
 
 
-        sb.append(HtmlUtil.p());
-        sb.append(buttons);
-        sb.append(HtmlUtil.p());
+        if(!justText) {
+            sb.append(HtmlUtil.p());
+            sb.append(buttons);
+            sb.append(HtmlUtil.p());
+        }
         sb.append(HtmlUtil.formClose());
 
 
@@ -998,6 +1006,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
         }
 
 
+        boolean textSearch = isLuceneEnabled() && request.getString(ARG_SEARCH_TYPE,"").equals(SEARCH_TYPE_TEXT);
+
         StringBuffer     searchCriteriaSB = new StringBuffer();
         boolean          searchThis       = true;
         List<ServerInfo> servers          = null;
@@ -1025,7 +1035,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
         List<Entry> groups  = new ArrayList<Entry>();
         List<Entry> entries = new ArrayList<Entry>();
 
-        if (isLuceneEnabled() && request.defined(ARG_TEXT)) {
+        if (textSearch) {
             processLuceneSearch(request, groups, entries);
         } else if (searchThis) {
             List[] pair = getEntryManager().getEntries(request,
@@ -1100,6 +1110,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             s = "";
         }
 
+
         //        if (s.length() > 0) {
         StringBuffer searchForm = new StringBuffer();
         request.remove(ARG_SEARCH_SUBMIT);
@@ -1115,13 +1126,19 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
         String searchUrl = request.getUrl();
         searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
         searchForm.append(HtmlUtil.br());
-        makeSearchForm(request, false, true, searchForm);
+
+
+
+        makeSearchForm(request, textSearch, true, searchForm);
         String form = HtmlUtil.makeShowHideBlock(
                           searchLink + msg("Search Again"),
                           RepositoryUtil.inset(
                               searchForm.toString(), 0, 20, 0, 0), false);
-        String heading = msgHeader("Search Results") + form;
-        request.setLeftMessage(heading);
+        StringBuffer header = new StringBuffer();
+        header.append(getRepository().makeHeader(request, getSearchUrls(),
+                ""));
+        header.append(msgHeader("Search Results") + form);
+        request.setLeftMessage(header.toString());
         //        }
         if (theGroup == null) {
             theGroup = getEntryManager().getDummyGroup();
@@ -1130,6 +1147,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             getRepository().getOutputHandler(request).outputGroup(request,
                                              request.getOutput(), theGroup,
                                              groups, entries);
+        //        return makeResult(request, msg("Search Results"), sb);
         return getEntryManager().addEntryHeader(request, theGroup, result);
     }
 
