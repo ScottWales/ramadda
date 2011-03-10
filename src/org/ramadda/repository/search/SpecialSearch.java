@@ -141,7 +141,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         }
         Rectangle2D.Double bounds = getEntryManager().getBounds(entries);
 
-        if(bounds.getWidth()>180 && false) {
+        if(bounds != null && bounds.getWidth()>180 && false) {
             double cx = bounds.getX()+bounds.getWidth()/2;
             double cy = bounds.getY()+bounds.getHeight()/2;
             int f = 120;
