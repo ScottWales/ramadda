@@ -3810,6 +3810,12 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public String getEntryURL(Request request, Entry entry) {
+        return request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                entry);
+    }
+
+
 
 
 
