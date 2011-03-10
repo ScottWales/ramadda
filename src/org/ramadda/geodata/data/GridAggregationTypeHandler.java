@@ -20,11 +20,13 @@
 package org.ramadda.geodata.data;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
 
@@ -57,15 +59,20 @@ import java.util.List;
  */
 public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_GRIDAGGREGATION = "gridaggregation";
 
 
-    public static final String TYPE_JOINEXISTING ="joinExisting";
-    public static final String TYPE_JOINNEW ="joinNew";
-    public static final String TYPE_UNION ="union";
+    /** _more_          */
+    public static final String TYPE_JOINEXISTING = "joinExisting";
 
-    
+    /** _more_          */
+    public static final String TYPE_JOINNEW = "joinNew";
+
+    /** _more_          */
+    public static final String TYPE_UNION = "union";
+
+
     /**
      * _more_
      *
@@ -93,44 +100,84 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public File getNcmlFile(Request request, Entry entry) throws Exception {
-        if(request == null) {
+        if (request == null) {
             request = getRepository().getTmpRequest();
         }
-        StringBuffer sb = new StringBuffer();
-        String type = entry.getValue(1, TYPE_JOINEXISTING);
-        String typeToUse = TYPE_JOINEXISTING;
-        if(type.equalsIgnoreCase(TYPE_UNION)) 
+        String ncml = getNcmlString(request, entry);
+        //MATIAS: 
+        //        if (ncml != "") {
+        if (ncml.length() != 0) {
+            System.err.println(ncml);
+            File tmpFile =
+                getRepository().getStorageManager().getTmpFile(request,
+                    "grid.ncml");
+            IOUtil.writeFile(tmpFile, ncml);
+            return tmpFile;
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return String containing the NCML with the NCML of its childrens
+     *
+     * @throws Exception _more_
+     */
+    public String getNcmlString(Request request, Entry entry)
+            throws Exception {
+        if (request == null) {
+            request = getRepository().getTmpRequest();
+        }
+        StringBuffer sb        = new StringBuffer();
+        String       type      = entry.getValue(1, TYPE_JOINEXISTING);
+        String       typeToUse = TYPE_JOINEXISTING;
+        if (type.equalsIgnoreCase(TYPE_UNION)) {
             typeToUse = TYPE_UNION;
-        else if(type.equalsIgnoreCase(TYPE_JOINNEW)) 
+        } else if (type.equalsIgnoreCase(TYPE_JOINNEW)) {
             typeToUse = TYPE_JOINNEW;
+        }
 
         sb.append(
             "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
-        if(typeToUse.equals(TYPE_JOINEXISTING)) {
+        if (typeToUse.equals(TYPE_JOINEXISTING)) {
             sb.append("<aggregation type=\"joinExisting\" dimName=\""
                       + entry.getValue(0, "time")
                       + "\" timeUnitsChange=\"true\">\n");
-        } else if(typeToUse.equals(TYPE_UNION)) {
+        } else if (typeToUse.equals(TYPE_UNION)) {
             sb.append("<aggregation type=\"union\" >");
         } else {
             //TODO: figure this out.
 
         }
-        List<String> sortedChillens = new ArrayList<String>();
+        List<String> sortedChillens      = new ArrayList<String>();
+        boolean      childrenAggregation = false;
         for (Entry child :
                 getRepository().getEntryManager().getChildren(request,
                     entry)) {
-            if (child.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-                //TODO: aggregation of aggregations
+            if (child.getType().equals(
+                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+                String ncml = getNcmlString(request, child);
+                //MATIAS:
+                if (ncml!=null) {
+                //                if (ncml!=""){
+                    sb.append(ncml);
+                    childrenAggregation = true;
+                }
                 continue;
             }
             sortedChillens.add(child.getResource().getPath());
         }
+
         if (typeToUse.equals(TYPE_JOINEXISTING)) {
-        	Collections.sort(sortedChillens);
+            Collections.sort(sortedChillens);
         }
         for (String s : sortedChillens) {
-
             sb.append(XmlUtil.tag("netcdf",
                                   XmlUtil.attrs("location",
                                       IOUtil.getURL(s,
@@ -138,14 +185,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                               "true"), ""));
         }
         sb.append("</aggregation>\n</netcdf>\n");
+        //if (sortedChillens.size()> 0){
         System.err.println(sb);
-
-        File tmpFile =
-            getRepository().getStorageManager().getTmpFile(request,
-                "grid.ncml");
-        IOUtil.writeFile(tmpFile, sb.toString());
-        return tmpFile;
+        return sb.toString();
+        //}else return "";     
     }
+
 
     /**
      * _more_
