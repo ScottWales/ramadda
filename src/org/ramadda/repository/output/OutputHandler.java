@@ -1500,7 +1500,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
      *
      * @throws Exception _more_
      */
-    protected String getEntryLink(Request request, Entry entry)
+    public String getEntryLink(Request request, Entry entry)
             throws Exception {
         return getEntryManager().getTooltipLink(request, entry,
                 entry.getLabel(), null);

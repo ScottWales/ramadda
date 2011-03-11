@@ -1123,13 +1123,18 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             searchForm.append(msg("Search Criteria") + "<br><table>" + s
                               + "</table>");
         }
-        String searchUrl = request.getUrl();
-        searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
-        searchForm.append(HtmlUtil.br());
+        boolean foundAny = groups.size()>0 || entries.size()>0;
+        if(foundAny) {
+            String searchUrl = request.getUrl();
+            searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
+            searchForm.append(HtmlUtil.br());
+        }
 
 
 
         makeSearchForm(request, textSearch, true, searchForm);
+
+
         String form = HtmlUtil.makeShowHideBlock(
                           searchLink + msg("Search Again"),
                           RepositoryUtil.inset(
@@ -1137,7 +1142,14 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
         StringBuffer header = new StringBuffer();
         header.append(getRepository().makeHeader(request, getSearchUrls(),
                 ""));
-        header.append(msgHeader("Search Results") + form);
+        header.append(msgHeader("Search Results"));
+
+        if(foundAny) {
+            header.append(form);
+        } else {
+            header.append(searchForm);
+        }
+
         request.setLeftMessage(header.toString());
         //        }
         if (theGroup == null) {
