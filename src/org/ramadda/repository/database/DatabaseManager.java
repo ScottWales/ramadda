@@ -1846,10 +1846,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             throws Exception {
         Connection connection = getConnection();
         try {
-            connection.setAutoCommit(false);
+            //            connection.setAutoCommit(false);
             loadSql(connection, sql, ignoreErrors, printStatus);
-            connection.commit();
-            connection.setAutoCommit(true);
+            //            connection.commit();
+            //            connection.setAutoCommit(true);
         } finally {
             closeConnection(connection);
         }
@@ -1937,8 +1937,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 return "mediumtext";
             }
             if (db.equals(DB_POSTGRES)) {
-                //TODO:
-                return "clob";
+                return "text";
             }
 
         }
