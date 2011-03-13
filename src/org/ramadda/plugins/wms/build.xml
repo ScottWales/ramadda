@@ -4,7 +4,7 @@
       <property file="${basedir}/build.properties"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="wmsplugin.jar"/>
-      <property name="plugindir" value="org/ramadda/plugins/wms"/>
+      <property name="plugin_dir" value="org/ramadda/plugins/wms"/>
       <ant antfile="${basedir}/build.xml" target="plugin"/>
       <ant antfile="${basedir}/build.xml" target="plugin_install"/>
     </target>

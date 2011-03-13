@@ -4,7 +4,7 @@
       <property file="${basedir}/build.properties"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="dbplugin.jar"/>
-      <property name="plugindir" value="org/ramadda/plugins/db"/>
+      <property name="plugin_dir" value="org/ramadda/plugins/db"/>
       <ant antfile="${basedir}/build.xml" target="plugin"/>
       <ant antfile="${basedir}/build.xml" target="plugin_install"/>
     </target>
@@ -13,7 +13,7 @@
       <property file="${basedir}/build.properties"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="dbplugin.jar"/>
-      <property name="plugindir" value="org/ramadda/plugins/db"/>
+      <property name="plugin_dir" value="org/ramadda/plugins/db"/>
       <ant antfile="${basedir}/build.xml" target="pluginnocode"/>
       <ant antfile="${basedir}/build.xml" target="plugin_install"/>
     </target>

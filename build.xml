@@ -44,7 +44,7 @@
 
     <target name="pluginclean">
       <delete>
-          <fileset dir="${src_dir}/${plugindir}" includes="**/*.class"/>
+          <fileset dir="${src_dir}/${plugin_dir}" includes="**/*.class"/>
       </delete>
     </target>
 
@@ -64,7 +64,7 @@
             fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
             target="1.5">
-        <include name="${plugindir}/*.java"/>
+        <include name="${plugin_dir}/*.java"/>
         </javac>
 
         <echo message="Making jar ${plugindestdir}/${jarfile}"/>
@@ -73,12 +73,12 @@
             update="false"
             compress="true"
             jarfile="${plugindestdir}/${jarfile}">
-            <include name="${plugindir}/**/*.class"/>
-            <include name="${plugindir}/htdocs/**/*"/>
-            <include name="${plugindir}/resources/**/*"/>
-            <include name="${plugindir}/*.xml"/>
-            <include name="${plugindir}/*.properties"/>
-            <include name="${plugindir}/*.jnlp"/>
+            <include name="${plugin_dir}/**/*.class"/>
+            <include name="${plugin_dir}/htdocs/**/*"/>
+            <include name="${plugin_dir}/resources/**/*"/>
+            <include name="${plugin_dir}/*.xml"/>
+            <include name="${plugin_dir}/*.properties"/>
+            <include name="${plugin_dir}/*.jnlp"/>
 	    </jar>
     </target>
 
@@ -93,10 +93,10 @@
             update="false"
             compress="true"
             jarfile="${plugindestdir}/${jarfile}">
-            <include name="${plugindir}/htdocs/**/*"/>
-            <include name="${plugindir}/resources/**/*"/>
-            <include name="${plugindir}/*.xml"/>
-            <include name="${plugindir}/*.properties"/>
+            <include name="${plugin_dir}/htdocs/**/*"/>
+            <include name="${plugin_dir}/resources/**/*"/>
+            <include name="${plugin_dir}/*.xml"/>
+            <include name="${plugin_dir}/*.properties"/>
 	    </jar>
     </target>
 

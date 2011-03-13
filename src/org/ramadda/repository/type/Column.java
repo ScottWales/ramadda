@@ -328,7 +328,7 @@ public class Column implements Constants {
                 (String) null);
 
         description = XmlUtil.getAttribute(element, ATTR_DESCRIPTION, label);
-        type        = XmlUtil.getAttribute(element, ATTR_TYPE);
+        type        = XmlUtil.getAttribute(element, ATTR_TYPE, TYPE_STRING);
         changeType  = XmlUtil.getAttribute(element, ATTR_CHANGETYPE, false);
         dflt        = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
         isIndex     = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
