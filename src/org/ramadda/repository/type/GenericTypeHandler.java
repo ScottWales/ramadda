@@ -721,6 +721,7 @@ public class GenericTypeHandler extends TypeHandler {
     public void getTextCorpus(Entry entry, StringBuffer sb)
         throws Exception {
         super.getTextCorpus(entry, sb);
+        /*
         Object[] values = entry.getValues();
         if (values == null) { return;}
         for (Column column : columns) {
@@ -735,6 +736,7 @@ public class GenericTypeHandler extends TypeHandler {
             sb.append(tmpSb);
             sb.append(" ");
         }
+        */
     }
 
 
