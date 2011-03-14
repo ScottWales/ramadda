@@ -1152,6 +1152,14 @@ public class Request implements Constants {
     }
 
 
+    public String getAnonymousEncodedString(String key, String dflt) {
+        if (!isAnonymous()) {
+            return getString(key,dflt);
+        }
+        return getEncodedString(key, dflt);
+    }
+
+
 
 
     /**

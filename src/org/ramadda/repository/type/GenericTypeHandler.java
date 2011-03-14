@@ -718,6 +718,26 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
+    public void getTextCorpus(Entry entry, StringBuffer sb)
+        throws Exception {
+        super.getTextCorpus(entry, sb);
+        Object[] values = entry.getValues();
+        if (values == null) { return;}
+        for (Column column : columns) {
+            StringBuffer tmpSb = new StringBuffer();
+            formatColumnHtmlValue(request, entry, column, tmpSb,  values);
+            if ( !column.getCanShow()) {
+                continue;
+            }
+            sb.append(" ");
+            sb.append(column.getLabel());
+            sb.append(" ");
+            sb.append(tmpSb);
+            sb.append(" ");
+        }
+    }
+
+
     /**
      * _more_
      *

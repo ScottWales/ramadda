@@ -320,6 +320,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
 
         StringBuffer metadataSB = new StringBuffer();
         getRepository().getMetadataManager().getTextCorpus(entry, metadataSB);
+        entry.getTypeHandler().getTextCorpus(entry, metadataSB);
         doc.add(new Field(FIELD_DESCRIPTION,
                           entry.getName() + " " + entry.getDescription(),
                           Field.Store.NO, Field.Index.ANALYZED));

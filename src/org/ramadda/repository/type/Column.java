@@ -1468,7 +1468,7 @@ public class Column implements Constants {
             values[offset] = new Boolean(value);
         } else if (isType(TYPE_ENUMERATION)) {
             if (request.exists(id)) {
-                values[offset] = request.getString(id, ((dflt != null)
+                values[offset] = request.getAnonymousEncodedString(id, ((dflt != null)
                         ? dflt
                         : ""));
             } else {
@@ -1477,11 +1477,11 @@ public class Column implements Constants {
         } else if (isType(TYPE_ENUMERATIONPLUS)) {
             String theValue = "";
             if (request.defined(id + "_plus")) {
-                theValue = request.getString(id + "_plus", ((dflt != null)
+                theValue = request.getAnonymousEncodedString(id + "_plus", ((dflt != null)
                         ? dflt
                         : ""));
             } else if (request.defined(id)) {
-                theValue = request.getString(id, ((dflt != null)
+                theValue = request.getAnonymousEncodedString(id, ((dflt != null)
                         ? dflt
                         : ""));
 
@@ -1523,7 +1523,7 @@ public class Column implements Constants {
             values[offset] = request.getString(id + "_hidden", "");
         } else {
             if (request.exists(id)) {
-                values[offset] = request.getString(id, ((dflt != null)
+                values[offset] = request.getAnonymousEncodedString(id, ((dflt != null)
                         ? dflt
                         : ""));
             } else {

@@ -954,7 +954,7 @@ public class EntryManager extends RepositoryManager {
             List<String> origNames    = new ArrayList<String>();
 
             String       resource     = "";
-            String       urlArgument  = request.getString(ARG_URL, BLANK);
+            String       urlArgument  = request.getAnonymousEncodedString(ARG_URL, BLANK);
             String       filename     = request.getUploadedFile(ARG_FILE);
             boolean      unzipArchive = false;
 
@@ -1121,7 +1121,7 @@ public class EntryManager extends RepositoryManager {
 
 
 
-            String description = request.getString(ARG_DESCRIPTION, BLANK);
+            String description = request.getAnonymousEncodedString(ARG_DESCRIPTION, BLANK);
 
 
 
@@ -1157,7 +1157,7 @@ public class EntryManager extends RepositoryManager {
                 }
                 String name = (forUpload
                                ? ""
-                               : request.getString(ARG_NAME, BLANK));
+                               : request.getAnonymousEncodedString(ARG_NAME, BLANK));
                 if (name.indexOf("${") >= 0) {}
 
                 if (name.trim().length() == 0) {
@@ -1246,7 +1246,7 @@ public class EntryManager extends RepositoryManager {
                 newResourceName = localFileName;
                 newResourceType = Resource.TYPE_LOCAL_FILE;
             } else if (request.defined(ARG_URL)) {
-                newResourceName = request.getString(ARG_URL, null);
+                newResourceName = request.getAnonymousEncodedString(ARG_URL, null);
                 newResourceType = Resource.TYPE_URL;
             }
 

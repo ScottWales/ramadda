@@ -244,6 +244,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public void getTextCorpus(Entry entry, StringBuffer sb)
+            throws Exception {
+    }
+
+
+
     /**
      * _more_
      *
