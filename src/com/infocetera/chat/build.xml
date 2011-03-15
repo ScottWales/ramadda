@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../" default="chatjar" name="IDV">
+
+    <target name="init">
+        <!-- The directory  that contains the source trees (from cvs) -->
+        <property name="srcdir" value="${basedir}/src"/>
+
+
+        <!-- Where the .class files (and other files for the jars) go -->
+        <property  name="build.sysclasspath" value="ignore"/>
+
+        <property name="compiledir" value="${srcdir}"/>
+        <mkdir dir="${compiledir}"/>
+
+        <property name="dist_dir" value="${basedir}/dist"/>
+        <mkdir dir="${dist_dir}"/>
+
+    </target>
+
+
+    <target name="chat" depends="init">
+        <javac
+            classpath="${classpath}"
+            debug="true"
+            deprecation="false" 
+            destdir="${compiledir}"
+            failonerror="${failonerror}" 
+            srcdir="${srcdir}"
+            fork="false">
+            <include name="com/infocetera/chat/**"/>
+        </javac>
+    </target>
+
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compiledir}/com" includes="**/*.class"/>
+        </delete>
+    </target>
+
+
+
+    <target name="chatjar" depends="init">
+        <antcall target="chat"/>
+        <jar 
+            basedir="${srcdir}"
+            compress="true"
+            update="false"
+            jarfile="${dist_dir}/chat.jar">
+            <include name="com/**/*.class"/>
+            <include name="com/infocetera/chat/defaultskin.xml"/>
+            <include name="com/infocetera/chat/images/*"/>
+            <include name="com/infocetera/images/*"/>
+        </jar>
+
+    </target>
+
+</project>

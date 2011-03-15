@@ -1,9 +1,5 @@
 /*
  *
- * 
- * 
- * 
- *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
@@ -309,6 +305,8 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
     /** xml attribute name */
     public static final String ATTR_ORIENTATION = "orientation";
 
+    public static final String ATTR_BORDER = "border";
+
     /** xml attribute name */
     public static final String ATTR_DIVIDER = "divider";
 
@@ -441,9 +439,6 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
 
 
     /** _more_ */
-    public static final String ATTR_BORDER = "border";
-
-    /** _more_ */
     public static final String ATTR_IMAGE = "image";
 
     /** _more_ */
@@ -524,6 +519,8 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
 
     /** _more_ */
     public static final String VALUE_LAYOUTBORDER = "border";
+
+    public static final String VALUE_LAYOUTTAB = "tab";
 
     /** _more_ */
     public static final String VALUE_LAYOUTCARD = "card";
@@ -683,11 +680,15 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         Color bgColor = node.getAttribute(ATTR_BGCOLOR, (Color) null);
         if (bgColor != null) {
             comp.setBackground(bgColor);
+        } else {
+            //            comp.setBackground(Color.red);
         }
         Color fgColor = node.getAttribute(ATTR_FGCOLOR, (Color) null);
         if (fgColor != null) {
             comp.setForeground(fgColor);
         }
+
+
         int    fontsize  = node.getAttributeFromTree(ATTR_FONTSIZE, -1);
         String fontface  = node.getAttributeFromTree(ATTR_FONTFACE);
         String fontStyle = node.getAttributeFromTree(ATTR_FONTSTYLE);
@@ -711,6 +712,22 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
             }
             Font f = new Font(fontface, style, fontsize);
             comp.setFont(f);
+        }
+
+        int    margin = node.getAttribute(ATTR_MARGIN, 1);
+        int    top    = node.getAttribute(ATTR_MARGINTOP, margin);
+        int    left   = node.getAttribute(ATTR_MARGINLEFT, margin);
+        int    bottom = node.getAttribute(ATTR_MARGINBOTTOM, margin);
+        int    right  = node.getAttribute(ATTR_MARGINRIGHT, margin);
+        Color color = node.getAttribute("color", Color.black);
+        String border =  node.getAttribute(ATTR_BORDER, "");
+
+
+        if(comp instanceof JComponent) {
+            JComponent jcomp = (JComponent) comp;
+            if(border.equals("matte")) {
+                jcomp.setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, color));
+            }
         }
     }
 
@@ -948,7 +965,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
      *
      * @return _more_
      */
-    private Container layoutBorder(XmlNode node, Vector children) {
+   private Container layoutBorder(XmlNode node, Vector children) {
         if (children.size() == 0) {
             return new JPanel();
         }
@@ -1004,11 +1021,16 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         int    rows        = node.getAttribute(ATTR_ROWS, 0);
         int    cols        = node.getAttribute(ATTR_COLS, 1);
         String defaultComp = node.getAttribute(ATTR_DEFAULT, "nocomp");
+        JTabbedPane tabs=null;
 
         if (layout.equals(VALUE_LAYOUTBORDER)) {
             panel.setLayout(new BorderLayout());
         } else if (layout.equals(VALUE_LAYOUTCARD)) {
             panel.setLayout(new CardLayout());
+        } else if (layout.equals(VALUE_LAYOUTTAB)) {
+            tabs = new JTabbedPane();
+            panel.setLayout(new BorderLayout());
+            panel.add("Center", tabs);
         } else if (layout.equals(VALUE_LAYOUTFLOW)) {
             panel.setLayout(new FlowLayout(FlowLayout.LEFT, hspace, vspace));
         } else if (layout.equals(VALUE_LAYOUTGRID)) {
@@ -1029,8 +1051,10 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
             }
             if (layout.equals(VALUE_LAYOUTBORDER)) {
                 String place = childXmlNode.getAttribute(ATTR_PLACE,
-                                   "Center");
+                                   "Center");   
                 panel.add(place, childComponent);
+            } else if (layout.equals(VALUE_LAYOUTTAB)) {
+                tabs.add(childXmlNode.getAttribute(ATTR_LABEL), childComponent);
             } else if (layout.equals(VALUE_LAYOUTCARD)) {
                 String childId = childXmlNode.getAttribute(ATTR_ID);
                 panel.add(childId, childComponent);
