@@ -45,6 +45,8 @@ import ucar.unidata.util.WikiUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.io.File;
 
@@ -345,11 +347,12 @@ public class ChatOutputHandler extends OutputHandler {
                 Request      request = new Request(getRepository(),
                                            this.user);
                 StringBuffer sb      = new StringBuffer();
-                Entry parent  = (entry.isGroup()
-                                        ? (Entry) entry
-                                        : entry.getParentEntry());
-                for (Entry entry :
-                        getEntryManager().getChildren(request, parent)) {
+                List<Entry> entries = new ArrayList<Entry>();
+                if (entry.isGroup()) {
+                    entries.addAll(getEntryManager().getChildren(request, entry));
+                }
+                entries.addAll(getEntryManager().getChildren(request, entry.getParentEntry()));
+                for (Entry entry :entries) {
                     if (entry.isGroup()) {
                         continue;
                     }
@@ -603,12 +606,16 @@ public class ChatOutputHandler extends OutputHandler {
                               Entry entry)
             throws Exception {
 
+        //        cnt++;
         String chatAppletTemplate =
             getRepository().getResource("/org/ramadda/plugins/chat/chat.html");
 
         String params = "";
         chatAppletTemplate = chatAppletTemplate.replace("${root}",
                 getRepository().getUrlBase());
+
+        chatAppletTemplate = chatAppletTemplate.replace("${cnt}",
+                ""+System.currentTimeMillis());
         if (entry.getResource().isImage()) {
             String url = getEntryManager().getEntryResourceUrl(request,
                              entry);

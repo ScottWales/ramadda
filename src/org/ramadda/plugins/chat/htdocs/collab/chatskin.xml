@@ -10,7 +10,7 @@ which is the url pointing to the skin file to use.
 
 <skin>
   <ui>
-    <panel  hspace="4" vspace="4" layout="border" fontsize="12" fontface="Dialog">
+    <panel border="matte"  hspace="4" vspace="4" layout="border" fontsize="12" fontface="Dialog">
       <component idref="verytop" place="North"/>
       <splitpane orientation="v" place="Center">
         <component idref="toppanel" />    
@@ -34,14 +34,14 @@ or by other components) using the idref="..." attribute.
 -->
   <components>
       <panel id="verytop" layout="border" >
-        <menubar   place="West">
+        <menubar   place="North">
           <menu id="filemenu" label="File">
-           <menuitem label="Float/embed" action="ui.float" />
-        </menu>
-        <menu  label="View"  border="true" id="viewmenu">
-           <menuitem label="Clear text"  action="chat.cleartext" />
-           <menuitem label="Toggle text view" action="ui.flip(textpanel);" />      
-        </menu>
+             <menuitem label="Float/embed" action="ui.float" />
+           </menu>
+           <menu  label="View"  border="true" id="viewmenu">
+              <menuitem label="Clear text"  action="chat.cleartext" />
+             <menuitem label="Toggle text view" action="ui.flip(textpanel);" />      
+          </menu>
         </menubar>
       </panel>
 
@@ -81,10 +81,12 @@ or by other components) using the idref="..." attribute.
             <component idref="usersfiles" place="West"/>
             <panel layout="border" place="Center">
               <panel layout="inset" hspace="2" vspace="2" place="Center">
-                 <panel id="textpanel" layout="card" default="chattext_wrapper">
-                   <component id="chattext_wrapper" />
-                   <component id="chatavatar_wrapper"/>
-                   <component id="chattextarea"/>		   
+                 <panel id="textpanel" layout="tab" default="chattext_wrapper">
+                   <component id="chattext_wrapper" label="Chat Text"/>
+                   <component id="chatavatar_wrapper" label="Avatar"/>
+<!--
+                   <component id="chattextarea" label="/>		   
+-->
                   </panel>
               </panel>
               <component idref="textinput"/>
