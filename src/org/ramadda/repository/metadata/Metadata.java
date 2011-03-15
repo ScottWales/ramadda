@@ -75,11 +75,15 @@ public class Metadata implements Constants {
     /** _more_ */
     public static final int MAX_LENGTH = 10000;
 
+    public static final int INDEX_BASE=1;
+
     /** _more_ */
     public static String TAG_EXTRA = "extra";
 
     /** _more_ */
     public static String TAG_ATTRIBUTES = "attributes";
+
+    public static String TAG_ATTR = "attr";
 
     /** _more_ */
     public static String ATTR_INDEX = "index";
@@ -357,7 +361,7 @@ public class Metadata implements Constants {
      * @param value _more_
      */
     public void setAttr(int idx, String value) {
-        if ((idx >= 1) && (idx <= 4)) {
+        if ((idx >= INDEX_BASE) && (idx <= 4)) {
             checkLength(value);
         }
         if (idx == 1) {

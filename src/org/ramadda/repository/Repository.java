@@ -3056,6 +3056,11 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             path = "/repository/applets/graph.jar";
         }
 
+        if(path.indexOf("/chat")>=0 && path.endsWith(".jar")) {
+            path = "/repository/collab/chat.jar";
+            //            System.err.println ("new path:" + path);
+        }
+
         if(path.indexOf("/gantt")>=0 && path.endsWith(".jar")) {
             path = "/repository/applets/gantt/gantt.jar";
         }

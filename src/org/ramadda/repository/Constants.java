@@ -334,18 +334,17 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_ATTR = "attr";
 
+    /** _more_ */
+    public static final String ATTR_ATTR1 = ATTR_ATTR +"1";
 
     /** _more_ */
-    public static final String ATTR_ATTR1 = "attr1";
+    public static final String ATTR_ATTR2 = ATTR_ATTR +"2";
 
     /** _more_ */
-    public static final String ATTR_ATTR2 = "attr2";
+    public static final String ATTR_ATTR3 = ATTR_ATTR +"3";
 
     /** _more_ */
-    public static final String ATTR_ATTR3 = "attr3";
-
-    /** _more_ */
-    public static final String ATTR_ATTR4 = "attr4";
+    public static final String ATTR_ATTR4 = ATTR_ATTR+"4";
 
     /** _more_ */
     public static final String ATTR_CANDONEW = "candonew";

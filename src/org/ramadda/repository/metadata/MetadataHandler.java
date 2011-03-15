@@ -40,6 +40,10 @@ import ucar.unidata.xml.XmlUtil;
 
 
 
+import java.io.*;
+import java.util.zip.*;
+
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -176,13 +180,28 @@ public class MetadataHandler extends RepositoryManager {
         Metadata metadata =
             new Metadata(getRepository().getGUID(), entry.getId(), type,
                          XmlUtil.getAttribute(node, ATTR_INHERITED,
-                             DFLT_INHERITED), XmlUtil.getAttribute(node,
-                                 ATTR_ATTR1, ""), XmlUtil.getAttribute(node,
-                                     ATTR_ATTR2,
-                                     ""), XmlUtil.getAttribute(node,
-                                         ATTR_ATTR3,
-                                         ""), XmlUtil.getAttribute(node,
-                                             ATTR_ATTR4, ""), extra);
+                                              DFLT_INHERITED));
+        int attrIndex = Metadata.INDEX_BASE-1;
+        while(true) {
+            attrIndex++;
+            if(!XmlUtil.hasAttribute(node, ATTR_ATTR+attrIndex)) {
+                break;
+            }
+            metadata.setAttr(attrIndex,XmlUtil.getAttribute(node,
+                                                            ATTR_ATTR+attrIndex, ""));
+        }
+        metadata.setExtra(extra);
+
+        NodeList      children = XmlUtil.getElements(node);
+        for (int i = 0; i < children.getLength(); i++) {
+            Element childNode = (Element) children.item(i);
+            if(!childNode.getTagName().equals(Metadata.TAG_ATTR)) {
+                continue;
+            }
+            int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX, -1);
+            String value = new String(XmlUtil.decodeBase64(XmlUtil.getChildText(childNode)));
+            metadata.setAttr(index, value);
+        }
 
         MetadataType metadataType = findType(type);
         if (metadataType == null) {
@@ -441,6 +460,44 @@ public class MetadataHandler extends RepositoryManager {
     public void getInitialMetadata(Request request, Entry entry,
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {}
+
+
+
+    public void addMetadata(Request request, 
+                            Entry entry, ZipOutputStream zos,
+                            Metadata metadata,
+                            Element node)
+            throws Exception {
+        Document doc = node.getOwnerDocument();
+        Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node, new String[] {
+                ATTR_TYPE, metadata.getType()});
+        for(int i=Metadata.INDEX_BASE;true;i++) {
+            String value  = metadata.getAttr(i);
+            if(value== null) break;
+            Element attrNode = XmlUtil.create(doc, Metadata.TAG_ATTR, metadataNode, new String[] {Metadata.ATTR_INDEX,""+i});
+            //true means to base encode the text
+            attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, true));
+        }
+
+
+
+
+        String fileName = null;
+        //TODO: add the file
+        if(zos!=null && fileName!=null) {
+            zos.putNextEntry(new ZipEntry(fileName));
+            InputStream fis =
+                getStorageManager().getFileInputStream(fileName);
+            try {
+                IOUtil.writeTo(fis, zos);
+                zos.closeEntry();
+            } finally {
+                IOUtil.close(fis);
+                zos.closeEntry();
+            }
+        }
+
+    }
 
 
     /**

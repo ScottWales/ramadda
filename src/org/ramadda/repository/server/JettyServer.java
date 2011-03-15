@@ -102,7 +102,6 @@ public class JettyServer extends RepositoryServlet implements Constants {
 
 
         RequestLogHandler requestLogHandler = new RequestLogHandler();
-        System.err.println("JettyServlet repository:" + repository.isReadOnly());
 
         if(!repository.isReadOnly()) {
             NCSARequestLog logger =

@@ -452,6 +452,23 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    public void addMetadata(Request request, Entry entry, ZipOutputStream zos, Document doc, Element parent)
+            throws Exception {
+        List<Metadata> metadataList = getMetadata(entry);
+        for (Metadata metadata : metadataList) {
+            MetadataHandler metadataHandler  = findMetadataHandler(metadata);
+            if(metadataHandler == null) continue;
+            metadataHandler.addMetadata(request,entry, zos,
+                                        metadata,  parent);
+
+        }
+    }
+
+
+
+
+
+
 
 
 

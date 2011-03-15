@@ -406,7 +406,7 @@ public class ZipOutputHandler extends OutputHandler {
             if (forExport && (entriesRoot != null)) {
                 entryNode =
                     getRepository().getXmlOutputHandler().getEntryTag(null,
-                        entry, entriesRoot.getOwnerDocument(), entriesRoot,
+                                                                      entry, zos, entriesRoot.getOwnerDocument(), entriesRoot,
                         true, level != 0);
             }
 
@@ -461,8 +461,7 @@ public class ZipOutputHandler extends OutputHandler {
 
                 } else {
                     ZipEntry zipEntry = new ZipEntry(name);
-                    System.err.println("putting:" + zipEntry);
-
+                    //                    System.err.println("putting:" + zipEntry);
                     zos.putNextEntry(zipEntry);
                 }
                 InputStream fis =

@@ -142,7 +142,7 @@ public class XmlOutputHandler extends OutputHandler {
                               Entry entry)
             throws Exception {
         Document  doc = XmlUtil.makeDocument();
-        Element root     = getEntryTag(request, entry, doc, null, false,
+        Element root     = getEntryTag(request, entry, null, doc, null, false,
                                        true);
         StringBuffer sb  = new StringBuffer(XmlUtil.toString(root));
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
@@ -178,26 +178,12 @@ public class XmlOutputHandler extends OutputHandler {
             getGroupTag(request, subgroup, doc, root);
         }
         for (Entry entry : entries) {
-            getEntryTag(request, entry, doc, root, false, true);
+            getEntryTag(request, entry, null, doc, root, false, true);
         }
         StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param doc _more_
-     * @param parent _more_
-     *
-     * @throws Exception _more_
-     */
-    private void addMetadata(Entry entry, Document doc, Element parent)
-            throws Exception {}
 
 
     /**
@@ -215,7 +201,8 @@ public class XmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Element getEntryTag(Request request, Entry entry, Document doc,
+    public Element getEntryTag(Request request, Entry entry, ZipOutputStream zos,
+                               Document doc,
                                Element parent, boolean forExport,
                                boolean includeParentId)
             throws Exception {
@@ -300,10 +287,11 @@ public class XmlOutputHandler extends OutputHandler {
 
         if ((entry.getDescription() != null)
                 && (entry.getDescription().length() > 0)) {
-            XmlUtil.create(doc, TAG_DESCRIPTION, node,
-                           entry.getDescription(), null);
+            Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, node);
+            descNode.appendChild(XmlUtil.makeCDataNode(doc, entry.getDescription(),
+                                                       true));
         }
-        addMetadata(entry, doc, node);
+        getMetadataManager().addMetadata(request, entry, zos, doc, node);
         entry.getTypeHandler().addToEntryNode(entry, node);
         return node;
     }
@@ -325,7 +313,7 @@ public class XmlOutputHandler extends OutputHandler {
     private Element getGroupTag(Request request, Entry group, Document doc,
                                 Element parent)
             throws Exception {
-        Element node = getEntryTag(request, group, doc, parent, false, true);
+        Element node = getEntryTag(request, group, null, doc, parent, false, true);
         boolean canDoNew = getAccessManager().canDoAction(request, group,
                                Permission.ACTION_NEW);
         boolean canDoUpload = getAccessManager().canDoAction(request, group,

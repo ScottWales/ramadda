@@ -1847,8 +1847,19 @@ public class EntryManager extends RepositoryManager {
                                     Connection connection, Object actionId)
             throws Exception {
 
+        //Exclude the synthetic entries
+        List<Entry> okEntries = new ArrayList<Entry>();
+        for(Entry entry: entries) {
+            if (entry.getTypeHandler().isSynthType()
+                || isSynthEntry(entry.getId())) {
+                continue;
+            }
+            okEntries.add(entry);
+        }
+        entries = okEntries;
+
         List<String[]> found = getDescendents(request, entries, connection,
-                                   true);
+                                              true, true);
         String query;
 
         query =
@@ -2689,7 +2700,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry> newEntries = new ArrayList<Entry>();
         try {
             List<String[]> ids = getDescendents(request, entries, connection,
-                                     true);
+                                                true, true);
             Hashtable<String, Entry> oldIdToNewEntry = new Hashtable<String,
                                                            Entry>();
             for (int i = 0; i < ids.size(); i++) {
@@ -3265,6 +3276,9 @@ public class EntryManager extends RepositoryManager {
                                  (String) null);
         if (description == null) {
             description = XmlUtil.getGrandChildText(node, TAG_DESCRIPTION);
+            if(description!=null) {
+                description = new String(XmlUtil.decodeBase64(description));
+            }
         }
         if (description == null) {
             description = "";
@@ -6214,6 +6228,8 @@ public class EntryManager extends RepositoryManager {
 
 
 
+
+
     /**
      * _more_
      *
@@ -7296,7 +7312,8 @@ public class EntryManager extends RepositoryManager {
     protected List<String[]> getDescendents(Request request,
                                             List<Entry> entries,
                                             Connection connection,
-                                            boolean firstCall)
+                                            boolean firstCall,
+                                            boolean ignoreSynth)
             throws Exception {
         List<String[]> children = new ArrayList();
         for (Entry entry : entries) {
@@ -7312,6 +7329,7 @@ public class EntryManager extends RepositoryManager {
 
             if (entry.getTypeHandler().isSynthType()
                     || isSynthEntry(entry.getId())) {
+                if(ignoreSynth) continue;
                 for (String childId :
                         getChildIds(request, (Entry) entry, null)) {
                     Entry childEntry = getEntry(request, childId);
@@ -7324,7 +7342,7 @@ public class EntryManager extends RepositoryManager {
                     if (childEntry.isGroup()) {
                         children.addAll(getDescendents(request,
                                 (List<Entry>) Misc.newList(childEntry),
-                                connection, false));
+                                                       connection, false,ignoreSynth));
                     }
                 }
                 return children;
@@ -7362,7 +7380,7 @@ public class EntryManager extends RepositoryManager {
 
                 children.addAll(getDescendents(request,
                         (List<Entry>) Misc.newList(childEntry), connection,
-                        false));
+                                               false, ignoreSynth));
             }
             getDatabaseManager().closeStatement(stmt);
         }

@@ -31,6 +31,7 @@ import org.ramadda.repository.auth.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.BufferMapList;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -57,6 +58,7 @@ import java.net.*;
 
 import java.text.SimpleDateFormat;
 
+import java.util.GregorianCalendar;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -1634,6 +1636,9 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     public static final String WIKIPROP_COMMENTS = "comments";
 
     /** _more_ */
+    public static final String WIKIPROP_RECENT = "recent";
+
+    /** _more_ */
     public static final String WIKIPROP_TOOLBAR = "toolbar";
 
     /** _more_ */
@@ -1649,6 +1654,7 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
     public static final String WIKIPROP_NAME = "name";
 
     public static final String WIKIPROP_MAP = "map";
+    public static final String WIKIPROP_MAPENTRY = "mapentry";
 
     /** _more_ */
     public static final String WIKIPROP_DESCRIPTION = "description";
@@ -2029,6 +2035,18 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             boolean [] haveBearingLines = {false};
             MapInfo map =  mapOutputHandler.getMap(request, children, mapSB, width, height, haveBearingLines);
             return mapSB.toString();
+        } else if (include.equals(WIKIPROP_MAPENTRY)) {
+            StringBuffer mapSB = new StringBuffer();
+            int width    = Misc.getProperty(props, "width", 400);
+            int height    = Misc.getProperty(props, "height", 300);
+            MapOutputHandler mapOutputHandler = (MapOutputHandler) getRepository().getOutputHandler(MapOutputHandler.OUTPUT_MAP);
+            if(mapOutputHandler == null) return "No maps";
+
+            List<Entry> children = new ArrayList<Entry>();
+            children.add(entry);
+            boolean [] haveBearingLines = {false};
+            MapInfo map =  mapOutputHandler.getMap(request, children, mapSB, width, height, haveBearingLines);
+            return mapSB.toString();
         } else if (include.equals(WIKIPROP_PROPERTIES)) {
             List   tabTitles   = new ArrayList<String>();
             List   tabContents = new ArrayList<String>();
@@ -2055,6 +2073,76 @@ public class OutputHandler extends RepositoryManager implements WikiUtil
             blockTitle = Misc.getProperty(props, "title", msg(LABEL_LINKS));
             blockContent = getEntryManager().getEntryActionsTable(request,
                     entry, OutputType.TYPE_ALL);
+        } else if (include.equals(WIKIPROP_RECENT)) {
+            List<Entry> children =
+                (List<Entry>) wikiUtil.getProperty(entry.getId()
+                    + "_children");
+            if (children == null) {
+                children = getEntryManager().getChildren(request, entry);
+            }
+            List<Entry> grandChildren = new ArrayList<Entry>();
+            for(Entry child: children) {
+                if(!child.isGroup()) {
+                    grandChildren.add(child);
+                }
+            }
+
+            for(Entry child: children) {
+                if(child.isGroup()) {
+                    grandChildren.addAll(getEntryManager().getChildren(request, child));
+                }
+            }
+            grandChildren = getEntryManager().sortEntriesOnDate(grandChildren, true);
+            int numDays = Misc.getProperty(props, "days", 3);
+            StringBuffer sb  = new StringBuffer();
+            BufferMapList<Date> map = new BufferMapList<Date>();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEE MMMMM d");
+            dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
+            Date firstDay = (grandChildren.size()>0? new Date(grandChildren.get(0).getChangeDate()):new Date());
+            GregorianCalendar cal1 = new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+            cal1.setTime(new Date(firstDay.getTime()));
+            cal1.set(cal1.MILLISECOND,0);
+            cal1.set(cal1.SECOND,0);
+            cal1.set(cal1.MINUTE,0);
+            cal1.set(cal1.HOUR,0);
+            GregorianCalendar cal2 = new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+            cal2.setTime(cal1.getTime());
+            cal2.roll(cal2.DAY_OF_YEAR,1);
+
+            for(int i=0;i<numDays;i++) {
+                Date date1 = cal1.getTime();
+                Date date2 = cal2.getTime();
+                cal2 = cal1;
+                cal1.roll(cal1.DAY_OF_YEAR, -1);
+                for(Entry e: grandChildren) {
+                    Date changeDate = new Date(e.getChangeDate());
+                    if(changeDate.getTime()<date1.getTime() ||
+                       changeDate.getTime()>date2.getTime()) {
+                        continue;
+                    }
+                    StringBuffer buff = map.get(date1);
+                    buff.append("<tr><td width=75%>&nbsp;&nbsp;&nbsp;");
+                    buff.append(getEntryManager().getAjaxLink(request, e,e.getLabel()));
+                    buff.append("</td><td width=25% align=right><i>");
+                    buff.append(formatDate(request, changeDate));
+                    buff.append("</i></td></tr>");
+                }
+            }
+            for(Date date: map.getKeys()) {
+                StringBuffer tmp = new StringBuffer();
+                String msg = msg("New on") + " " +
+                    dateFormat.format(date);
+                //                tmp.append("<b>");
+                //                tmp.append(msg("New on"));
+                //                tmp.append(" ");
+                //                tmp.append(dateFormat.format(date));
+                tmp.append("</b></br>");
+                tmp.append("<table width=100%>");
+                tmp.append(map.get(date));
+                tmp.append("</table>");
+                sb.append(HtmlUtil.makeShowHideBlock(msg, tmp.toString(), true));
+            }
+            return sb.toString();
         } else if (include.equals(WIKIPROP_COMMENTS)) {
             return getCommentBlock(request, entry, false).toString();
         } else if (include.equals(WIKIPROP_TOOLBAR)) {
