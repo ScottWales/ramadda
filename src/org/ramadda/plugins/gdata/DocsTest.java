@@ -17,6 +17,8 @@
  * 
  */
 
+package org.ramadda.plugins.gdata;
+
 import com.google.gdata.client.*;
 import com.google.gdata.client.*;
 import com.google.gdata.client.calendar.*;

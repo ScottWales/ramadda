@@ -3,20 +3,9 @@
 <project basedir="." default="ramadda" name="RAMADDA">
 
     <target name="init">
-        <property name="dist_dir" value="${basedir}/dist"/>
+        <property file="${basedir}/build.properties"/>
         <mkdir dir="${dist_dir}"/>
-
-
-        <property name="dist_javadoc" value="${dist_dir}/javadoc"/>
-        <mkdir dir="${dist_javadoc}"/>
-
-        <property name="lib_dir" value="${basedir}/lib"/>
-        <property name="src_dir" value="${basedir}/src"/>
-        <property name="classpath" value="${lib_dir}/tika-app-0.9.jar:${lib_dir}/servlet-api.jar:${lib_dir}/unidatacommon.jar:${lib_dir}/idv.jar"/>
-        <property  name="build.sysclasspath" value="ignore"/>
-
     </target>
-
 
 
     <target name="commoninit">
@@ -39,7 +28,6 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
    </target>
-
 
 
     <target name="pluginclean">
@@ -129,6 +117,7 @@
 
 
     <target name="javadoc" depends="init">
+        <mkdir dir="${dist_javadoc}"/>
         <javadoc
             Author="true"
             Doctitle="RAMADDA"

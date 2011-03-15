@@ -52,12 +52,11 @@
 
 <!--
     NOTE: tika.jar needs to be before repositorylib.jar because repositorylib.jar contains the unjarred idv external.jar
-    which contains an older version of tika.
+    from the idv which contains an older version of tika.
 -->
     <target name="initcore" if="core">
        <property name="classpath" value="${lib_dir}/tika-app-0.9.jar:${lib_dir}/repositorylib.jar:${lib_dir}/servlet-api.jar"/>
        <property name="manifestjars" value="tika-app-0.9.jar repositorylib.jar   servlet-api.jar"/>
-       <property name="includesrc1" value=""/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
     </target>
@@ -65,7 +64,6 @@
     <target name="initfull">
        <property name="classpath" value="${lib_dir}/idv.jar:${lib_dir}/tika-app-0.9.jar:${lib_dir}/repositorylib.jar:${lib_dir}/repositorytds.jar:${lib_dir}/servlet-api.jar"/>
        <property name="manifestjars" value="idv.jar tika-app-0.9.jar  repositorylib.jar   repositorytds.jar servlet-api.jar"/>
-       <property name="includesrc1" value="${repositoryrelpath}/data/*.java"/>
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/local-visad.jar"/>
     </target>
@@ -217,7 +215,6 @@
         <exclude name="${repositoryrelpath}/auth/ldap/*.java"/>
 -->
 
-        <include name="${includesrc1}"/>
 
 <!--
 
@@ -402,7 +399,6 @@
 
         <delete dir="${tmpjar_dir}"/>
     </target>
-
 
 
 
