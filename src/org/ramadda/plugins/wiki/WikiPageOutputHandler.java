@@ -191,7 +191,7 @@ public class WikiPageOutputHandler extends OutputHandler {
                                 request, OutputHandler.PROP_ENTRY, entry }));
         StringBuffer sb = new StringBuffer();
         sb.append(header);
-        sb.append(wikifyEntry(request, entry, wikiUtil, wikiText, true, null,
+        sb.append(getRepository().getWikiManager().wikifyEntry(request, entry, wikiUtil, wikiText, true, null,
                               null));
         Hashtable links = (Hashtable) wikiUtil.getProperty("wikilinks");
         if (links != null) {

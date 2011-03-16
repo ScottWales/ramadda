@@ -320,18 +320,19 @@ public class StorageManager extends RepositoryManager {
 
         System.err.println ("RAMADDA: home directory: " + repositoryDir);
         if(!repositoryDir.exists()) {
+	    IOUtil.makeDirRecursive(repositoryDir);
+	}
+
+        if(!repositoryDir.exists()) {
             System.err.println ("RAMADDA: error: home directory does not exist");
             throw new IllegalStateException("RAMADDA: error: home directory does not exist");
-            
         }
 
         if(!repositoryDir.canWrite()) {
             System.err.println ("RAMADDA: error: home directory is not writable");
             throw new IllegalStateException("RAMADDA: error: home directory is not writable");
-            
         }
 
-        IOUtil.makeDirRecursive(repositoryDir);
 
         htdocsDir = IOUtil.joinDir(repositoryDir, DIR_HTDOCS);
         IOUtil.makeDir(htdocsDir);

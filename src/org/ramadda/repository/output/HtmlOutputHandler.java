@@ -322,7 +322,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             String wikiTemplate = getWikiText(request, entry);
             if (wikiTemplate != null) {
-                String wiki = wikifyEntry(request, entry, wikiTemplate);
+                String wiki = getWikiManager().wikifyEntry(request, entry, wikiTemplate);
                 wiki = getRepository().translate(request, wiki);
                 StringBuffer xml = new StringBuffer("<content>\n");
                 XmlUtil.appendCdata(xml,
@@ -342,7 +342,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String       wikiTemplate = getWikiText(request, entry);
         if (wikiTemplate != null) {
-            sb.append(wikifyEntry(request, entry, wikiTemplate));
+            sb.append(getWikiManager().wikifyEntry(request, entry, wikiTemplate));
         } else {
             addDescription(request, entry, sb, true);
             String informationBlock = getInformationTabs(request, entry,
@@ -1038,7 +1038,7 @@ public class HtmlOutputHandler extends OutputHandler {
             /*
             String wikiTemplate = getWikiText(request, group);
             if (wikiTemplate != null) {
-                String wiki = wikifyEntry(request, group, wikiTemplate, true, subGroups,
+                String wiki = getWikiManager().wikifyEntry(request, group, wikiTemplate, true, subGroups,
                                           entries);
                 wiki = getRepository().translate(request, wiki);
                 StringBuffer xml = new StringBuffer("<content>\n");
@@ -1157,7 +1157,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (wikiTemplate != null) {
-            sb.append(wikifyEntry(request, group, wikiTemplate, true,
+            sb.append(getWikiManager().wikifyEntry(request, group, wikiTemplate, true,
                                   subGroups, entries));
         } else {
             List<Entry> allEntries = new ArrayList<Entry>();

@@ -2007,7 +2007,7 @@ public class TypeHandler extends RepositoryManager {
                 if (isWikiText(desc)) {
                     rows = 20;
                     buttons =
-                        getRepository().getHtmlOutputHandler()
+                        getRepository().getWikiManager()
                             .makeWikiEditBar(request, entry,
                                              ARG_DESCRIPTION) + HtmlUtil.br();
                 }

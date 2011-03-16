@@ -187,7 +187,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
                                     OutputHandler.PROP_REQUEST,
                                     request, OutputHandler.PROP_ENTRY,
                                     entry }));
-            getRepository().getHtmlOutputHandler().wikifyEntry(request,
+            getRepository().getWikiManager().wikifyEntry(request,
                     entry, wikiUtil, newText, true, null, null);
 
             List categories = (List) wikiUtil.getProperty("wikicategories");
@@ -338,7 +338,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
 
 
         String buttons =
-            getRepository().getHtmlOutputHandler().makeWikiEditBar(request,
+            getRepository().getWikiManager().makeWikiEditBar(request,
                 entry, ARG_WIKI_TEXT);
         String textWidget = buttons + HtmlUtil.br()
                             + HtmlUtil.textArea(ARG_WIKI_TEXT, wikiText, 250,

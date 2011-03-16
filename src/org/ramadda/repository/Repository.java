@@ -415,6 +415,9 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     private SessionManager sessionManager;
 
+
+    private WikiManager wikiManager;
+
     /** _more_ */
     private LogManager logManager;
 
@@ -1226,6 +1229,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         return new SessionManager(this);
     }
 
+    protected WikiManager doMakeWikiManager() {
+        return new WikiManager(this);
+    }
+
     /**
      * _more_
      *
@@ -1364,6 +1371,13 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             sessionManager.init();
         }
         return sessionManager;
+    }
+
+   public WikiManager getWikiManager() {
+        if (wikiManager == null) {
+            wikiManager = doMakeWikiManager();
+        }
+        return wikiManager;
     }
 
 
@@ -4146,9 +4160,13 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
      *
      * @throws Exception _more_
      */
-    public HtmlOutputHandler getHtmlOutputHandler() throws Exception {
+    public HtmlOutputHandler getHtmlOutputHandler()  {
+	try {
         return (HtmlOutputHandler) getOutputHandler(
             OutputHandler.OUTPUT_HTML);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
 

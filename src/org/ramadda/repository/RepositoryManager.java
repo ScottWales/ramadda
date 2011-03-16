@@ -29,10 +29,9 @@ import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.search.*;
-
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
-
+import org.ramadda.repository.output.WikiManager;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -558,6 +557,10 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public MetadataManager getMetadataManager() {
         return repository.getMetadataManager();
+    }
+
+    public WikiManager getWikiManager() {
+        return repository.getWikiManager();
     }
 
 

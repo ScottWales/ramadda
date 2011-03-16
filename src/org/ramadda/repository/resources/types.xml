@@ -2,8 +2,10 @@
 
   <type name="link"  description="Link" >
      <property name="icon" value="/icons/link.png"/>
+<!--
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
+-->
      <property name="form.file.show" value="false"/>
   </type>
 

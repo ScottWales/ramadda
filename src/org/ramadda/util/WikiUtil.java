@@ -59,6 +59,7 @@ public class WikiUtil {
     private List floatBoxes = new ArrayList();
 
     private boolean makeHeadings = true;
+
     private boolean replaceNewlineWithP = true;
 
 
@@ -429,16 +430,20 @@ public class WikiUtil {
             }
             sb.append(s.substring(baseIdx, idx1));
             String property = s.substring(idx1 + 2, idx2);
-            //            System.err.println("property:" + property);
-            baseIdx = idx2 + 2;
-            String value = null;
-            if (handler != null) {
-                value = handler.getWikiPropertyValue(this, property);
-            }
-            if (value == null) {
-                value = "Unknown property:" + property;
-            }
-            sb.append(value);
+	    baseIdx = idx2 + 2;
+
+	    if(property.equals("noheading")) {
+		makeHeadings = false;
+	    } else {
+		String value = null;
+		if (handler != null) {
+		    value = handler.getWikiPropertyValue(this, property);
+		}
+		if (value == null) {
+		    value = "Unknown property:" + property;
+		}
+		sb.append(value);
+	    }
         }
         s       = sb.toString();
 

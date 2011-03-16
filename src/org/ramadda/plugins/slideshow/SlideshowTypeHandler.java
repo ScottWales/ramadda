@@ -393,7 +393,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         //        slideBlock.append(msgLabel("Slide Contents"));
         //        slideBlock.append(HtmlUtil.br());
         slideBlock.append(
-            getRepository().getHtmlOutputHandler().makeWikiEditBar(
+            getRepository().getWikiManager().makeWikiEditBar(
                 request, entry, ARG_SLIDE_CONTENT + i));
         slideBlock.append(HtmlUtil.br());
         slideBlock.append(HtmlUtil.textArea(ARG_SLIDE_CONTENT + i, contents,
@@ -620,7 +620,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                         || type.equals(TYPE_INCREMENTALSHOWFIRST)) {
                     wikiUtil.putProperty("image.class", "incremental");
                 }
-                contents = getRepository().getHtmlOutputHandler().wikifyEntry(
+                contents = getRepository().getWikiManager().wikifyEntry(
                     request, entry, wikiUtil, contents, false, null, null);
                 if (type.equals(TYPE_PLAIN)) {
                     sb.append(HtmlUtil.p(contents));

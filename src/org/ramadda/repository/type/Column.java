@@ -641,7 +641,7 @@ public class Column implements Constants {
         } else {
             String s = toString(values, offset);
             if (rows > 1) {
-                s = getRepository().getHtmlOutputHandler()
+                s = getRepository().getWikiManager()
                     .wikifyEntry(getRepository().getTmpRequest(),
                                  entry, s, false, null, null);
             }
