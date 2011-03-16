@@ -100,6 +100,8 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String DIR_ENTRIES = "entries";
 
+    public static final String DIR_USERS = "users";
+
     /** _more_ */
     public static final String DIR_STORAGE = "storage";
 
@@ -201,6 +203,8 @@ public class StorageManager extends RepositoryManager {
 
     /** _more_ */
     private String entriesDir;
+
+    private String usersDir;
 
     /** _more_ */
     private File storageDir;
@@ -891,6 +895,29 @@ public class StorageManager extends RepositoryManager {
             IOUtil.makeDirRecursive(entryDir);
         }
         return entryDir;
+    }
+
+
+    public File getUserDir(String id, boolean createIfNeeded) {
+        id = IOUtil.cleanFileName(id);
+        if (usersDir == null) {
+            usersDir = IOUtil.joinDir(getRepositoryDir(), DIR_USERS);
+            IOUtil.makeDirRecursive(new File(usersDir));
+        }
+
+        String dir1 = "user_" + ((id.length() >= 2)
+                                  ? id.substring(0, 2)
+                                  : "");
+        String dir2 = "user_" + ((id.length() >= 4)
+                                  ? id.substring(2, 4)
+                                  : "");
+        File userDir = new File(IOUtil.joinDir(usersDir,
+                                           IOUtil.joinDir(dir1,
+                                               IOUtil.joinDir(dir2, id))));
+        if (createIfNeeded) {
+            IOUtil.makeDirRecursive(userDir);
+        }
+        return userDir;
     }
 
 
