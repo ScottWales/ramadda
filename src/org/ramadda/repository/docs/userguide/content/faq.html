@@ -32,6 +32,15 @@ See <a href="installing.html#ssljetty">here</a> if you are running stand-alone.
 </faqitem>
 
 
+<faqitem cat="Administration" id="permgen" q="I got an out of memory error saying something about PermGen size. Whats up with that?" >
+Change your PermGen size with:<pre>
+java ... -XX:MaxPermSize=256m ...
+</pre>
+</faqitem>
+
+
+
+
 
 <faqitem cat="Administration" id="allowedlogin" q="I want to restrict where users can login from" >
 For security reasons you can configure what IP addresses users are allowed to login from.

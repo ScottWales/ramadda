@@ -27,11 +27,12 @@ pre {
 <div class="faq"><div class="faq-top"><div class="faq-category-title"><a class="faq-category-link" href="#faq1_cat1_">1.0 Administration</a></div><div class="faq-category"><div class="faq-question"> <b>1.1.</b> <a class="faq-question-link" href="#faq1_cat1_0">I forgot my user id. How do I retrieve it?</a></div>
 <div class="faq-question"> <b>1.2.</b> <a class="faq-question-link" href="#checkbox">How do I select multiple checkboxes at once?</a></div>
 <div class="faq-question"> <b>1.3.</b> <a class="faq-question-link" href="#ssl">How do I configure SSL access to RAMADDA?</a></div>
-<div class="faq-question"> <b>1.4.</b> <a class="faq-question-link" href="#allowedlogin">I want to restrict where users can login from</a></div>
-<div class="faq-question"> <b>1.5.</b> <a class="faq-question-link" href="#fixssl">Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</a></div>
-<div class="faq-question"> <b>1.6.</b> <a class="faq-question-link" href="#faq1_cat1_5">I forgot the administrator password and cannot access RAMADDA. How do I login?</a></div>
-<div class="faq-question"> <b>1.7.</b> <a class="faq-question-link" href="#email">How do I configure RAMADDA to send email?</a></div>
-<div class="faq-question"> <b>1.8.</b> <a class="faq-question-link" href="#template">I want to change the html design of RAMADDA</a></div>
+<div class="faq-question"> <b>1.4.</b> <a class="faq-question-link" href="#permgen">I got an out of memory error saying something about PermGen size. Whats up with that?</a></div>
+<div class="faq-question"> <b>1.5.</b> <a class="faq-question-link" href="#allowedlogin">I want to restrict where users can login from</a></div>
+<div class="faq-question"> <b>1.6.</b> <a class="faq-question-link" href="#fixssl">Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</a></div>
+<div class="faq-question"> <b>1.7.</b> <a class="faq-question-link" href="#faq1_cat1_6">I forgot the administrator password and cannot access RAMADDA. How do I login?</a></div>
+<div class="faq-question"> <b>1.8.</b> <a class="faq-question-link" href="#email">How do I configure RAMADDA to send email?</a></div>
+<div class="faq-question"> <b>1.9.</b> <a class="faq-question-link" href="#template">I want to change the html design of RAMADDA</a></div>
 </div></div>
 <div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-question"><h4> 1.1.  I forgot my user id. How do I retrieve it?</h4></div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -51,7 +52,13 @@ checkbox clicked. Doing a Control-Click on a checkbox toggles all of them on or 
 To configure SSL access see <a href="installing.html#ssl">here</a> if you are running under Tomcat.
 See <a href="installing.html#ssljetty">here</a> if you are running stand-alone.
 </div>
-<p><hr align="center" width="10%"><p><a name="allowedlogin"></a><div class="faq-question"><h4> 1.4.  I want to restrict where users can login from</h4></div>
+<p><hr align="center" width="10%"><p><a name="permgen"></a><div class="faq-question"><h4> 1.4.  I got an out of memory error saying something about PermGen size. Whats up with that?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+Change your PermGen size with:<pre>
+java ... -XX:MaxPermSize=256m ...
+</pre>
+</div>
+<p><hr align="center" width="10%"><p><a name="allowedlogin"></a><div class="faq-question"><h4> 1.5.  I want to restrict where users can login from</h4></div>
 </a><div class="faq-answer"><b>A.</b> 
 For security reasons you can configure what IP addresses users are allowed to login from.
 In your <i>repository.properties</i> file in your local RAMADDA directory, e.g.,<pre>
@@ -65,13 +72,13 @@ ramadda.login.allowedips=
 ##ramadda.login.allowedips=127.0.0,201.43.72.5
 </pre>
 </div>
-<p><hr align="center" width="10%"><p><a name="fixssl"></a><div class="faq-question"><h4> 1.5.  Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</h4></div>
+<p><hr align="center" width="10%"><p><a name="fixssl"></a><div class="faq-question"><h4> 1.6.  Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</h4></div>
 </a><div class="faq-answer"><b>A.</b> 
 You need to comment out the ramadda.ssl.port property in your .properties file.
 Alternatively, you can run RAMADDA with the command line argument:
 <pre>-Dramadda.ssl.ignore=true</pre>
 </div>
-<p><hr align="center" width="10%"><p><a name="faq1_cat1_5"></a><div class="faq-question"><h4> 1.6.  I forgot the administrator password and cannot access RAMADDA. How do I login?</h4></div>
+<p><hr align="center" width="10%"><p><a name="faq1_cat1_6"></a><div class="faq-question"><h4> 1.7.  I forgot the administrator password and cannot access RAMADDA. How do I login?</h4></div>
 </a><div class="faq-answer"><b>A.</b> 
 You can specify an administrator user id and password from the command line when starting RAMADDA.
 If you are running RAMADDA stand alone then just provide the arguments:<pre>
@@ -94,13 +101,13 @@ ramadda.admin=userid:password
 and then restart RAMADDA. This sets the password for the given userid.
 Note: you should remove this entry once you have reset your password.
 </div>
-<p><hr align="center" width="10%"><p><a name="email"></a><div class="faq-question"><h4> 1.7.  How do I configure RAMADDA to send email?</h4></div>
+<p><hr align="center" width="10%"><p><a name="email"></a><div class="faq-question"><h4> 1.8.  How do I configure RAMADDA to send email?</h4></div>
 </a><div class="faq-answer"><b>A.</b> 
 RAMADDA can send email for both the password reset process and for monitoring new entries.
 On the main Site Administration  page under the &quot;Contact&quot; area you can specify
 a SMTP server that RAMADDA will use to send email.
 </div>
-<p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question"><h4> 1.8.  I want to change the html design of RAMADDA</h4></div>
+<p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question"><h4> 1.9.  I want to change the html design of RAMADDA</h4></div>
 </a><div class="faq-answer"><b>A.</b> 
 The HTML pages that RAMADDA generates are based on a template mechanism.
 Here is an example template: <a href="template.html.txt">template.html.txt</a>.

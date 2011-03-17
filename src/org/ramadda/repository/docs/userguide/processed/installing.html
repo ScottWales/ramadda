@@ -38,6 +38,14 @@ RAMADDA what this path is. You do that in a properties file (see below) with:
 ramadda.html.urlbase=/repository
 </pre>
 
+Depending on what plugins are loaded  (especially the IDV plugin) 
+you may need to change the Java configuration in your Tomcat 
+start up. (especially the IDV plugin)
+Add this argument to your Java properties:<pre>
+java ... -XX:MaxPermSize=256m ...
+</pre>
+
+
 
 <a name="jetty"></a>
 <h2>Running Standalone</h2>
@@ -52,7 +60,7 @@ To run RAMADDA run the ramadda.sh in the release directory. This just does:<pre>
 
 
 By default the server is on port 8080.  To change the port do:<pre>
-    java -Xmx512m -jar repository.jar -port &lt;some port&gt;
+    java ...  -jar repository.jar -port &lt;some port&gt;
 </pre>
 
 
