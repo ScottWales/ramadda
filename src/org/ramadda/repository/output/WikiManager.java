@@ -595,7 +595,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 cal1.roll(cal1.DAY_OF_YEAR, -1);
                 for (Entry e : children) {
                     Date changeDate = new Date(e.getChangeDate());
-                    changeDate = new Date(e.getStartDate());
                     if ((changeDate.getTime() < date1.getTime())
                             || (changeDate.getTime() > date2.getTime())) {
                         continue;
