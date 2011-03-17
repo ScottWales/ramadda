@@ -1,0 +1,18 @@
+<types>
+
+  <type name="twittersearch"  description="Twitter Search" handler="org.ramadda.plugins.twittersearch.TwitterSearchTypeHandler" category="Collaboration">
+     <property name="icon" value="/twittersearch/twitter_icon.gif"/>
+     <property name="form.description.rows" value="1"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="searchstring" type="string" label="Search String"  showinhtml="true"/>
+     <column name="width" type="string" label="Width"  default="250" showinhtml="false"/>
+     <column name="height" type="string" label="Width"  default="300" showinhtml="false"/>
+</type>
+
+
+
+
+</types>
