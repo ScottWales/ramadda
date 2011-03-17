@@ -144,6 +144,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_          */
     public static final String WIKIPROP_MAP = "map";
 
+    public static final String WIKIPROP_HTML = "html";
+
     /** _more_          */
     public static final String WIKIPROP_MAPENTRY = "mapentry";
 
@@ -175,7 +177,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String[] WIKIPROPS = {
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
-        WIKIPROP_PROPERTIES, WIKIPROP_MAP, WIKIPROP_COMMENTS,
+        WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, WIKIPROP_COMMENTS,
         WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR, WIKIPROP_IMAGE,
         WIKIPROP_LINKS, WIKIPROP_RECENT, WIKIPROP_MAPENTRY, WIKIPROP_MAPENTRY,
         WIKIPROP_GALLERY, 
@@ -488,6 +490,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 getRepository().getHtmlOutputHandler().getInformationTabs(
                     request, entry, false, true);
             blockTitle = Misc.getProperty(props, "title", msg("Information"));
+        } else if (include.equals(WIKIPROP_HTML)) {
+            Result result = getHtmlOutputHandler().getHtmlResult(request, OutputHandler.OUTPUT_HTML,
+                                                                 entry);
+            return new String(result.getContent());
         } else if (include.equals(WIKIPROP_MAP)) {
             StringBuffer mapSB = new StringBuffer();
             int          width = Misc.getProperty(props, "width", 400);

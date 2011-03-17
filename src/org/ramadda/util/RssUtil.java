@@ -112,10 +112,18 @@ public class RssUtil {
 
 
     /** _more_ */
-    public static final String TAG_GEOLAT = "georss:lat";
+    public static final String TAG_GEORSSLAT = "georss:lat";
 
     /** _more_ */
-    public static final String TAG_GEOLON = "georss:lon";
+    public static final String TAG_GEORSSLON = "georss:lon";
+
+
+    /** _more_ */
+    public static final String TAG_GEOLAT = "geo:lat";
+
+    /** _more_ */
+    public static final String TAG_GEOLON = "geo:long";
+
 
     /** _more_          */
     public static final String TAG_GEOBOX = "georss:box";

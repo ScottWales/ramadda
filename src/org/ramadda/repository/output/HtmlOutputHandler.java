@@ -333,6 +333,17 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMetadataXml(request, entry);
         }
 
+        return getHtmlResult(request, outputType, entry);
+    }
+
+
+    public Result getHtmlResult(Request request, OutputType outputType,
+                              Entry entry)
+            throws Exception {
+        TypeHandler typeHandler =
+            getRepository().getTypeHandler(entry.getType());
+
+
         Result typeResult = typeHandler.getHtmlDisplay(request, entry);
         if (typeResult != null) {
             return typeResult;

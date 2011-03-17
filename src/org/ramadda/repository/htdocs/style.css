@@ -1090,6 +1090,11 @@ code.menu {
    margin-top: 2px;
 }
 
+.navlink a:link, .navlink a:visited {
+   color:black;
+}
+
+
 .navlink a:link {
    color:black;
 }
