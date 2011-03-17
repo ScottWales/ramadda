@@ -27,6 +27,7 @@ import org.ramadda.repository.type.*;
 
 
 import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.StringUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -73,14 +74,35 @@ public class TwitterSearchTypeHandler extends GenericTypeHandler {
         String string = entry.getValue(0,"");
         String width = entry.getValue(1,"350");
         String height = entry.getValue(2,"300");
+        String orientation = entry.getValue(3,"vertical");
 
+        String html = template;
 
-        template = template.replace("${string}", string);
-        template = template.replace("${title}", entry.getName());
-        template = template.replace("${caption}", entry.getDescription());
-        template = template.replace("${width}", width);
-        template = template.replace("${height}", height);
-        sb.append(template);
+        if(orientation.equals("horizontal")) {
+            sb.append("<table><tr valign=top>");
+        }
+        for(String tok: StringUtil.split(string,"\n",true,true)) {
+            html = html.replace("${string}", tok);
+            html = html.replace("${title}", entry.getName());
+            html = html.replace("${caption}", entry.getDescription());
+            html = html.replace("${width}", width);
+            html = html.replace("${height}", height);
+            if(orientation.equals("horizontal")) {
+                sb.append("<td>");
+            }
+
+            sb.append(HtmlUtil.href("http://twitter.com/#search?q=" + HtmlUtil.urlEncode(tok),tok));
+            sb.append(HtmlUtil.br());
+            sb.append(html);
+            if(orientation.equals("horizontal")) {
+                sb.append("</td>");
+            } else {
+                sb.append(HtmlUtil.p());
+            }
+        }
+        if(orientation.equals("horizontal")) {
+            sb.append("</table>");
+        }
         return new Result(msg("Twitter Search"), sb);
     }
 

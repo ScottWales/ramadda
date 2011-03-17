@@ -7,9 +7,10 @@
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
-     <column name="searchstring" type="string" label="Search String"  showinhtml="true"/>
+     <column name="searchstring" type="string" label="Search String"  showinhtml="true" suffix="One search string per line" rows="5"/>
      <column name="width" type="string" label="Width"  default="250" showinhtml="false"/>
      <column name="height" type="string" label="Width"  default="300" showinhtml="false"/>
+     <column name="orientation" type="enumeration" label="Orientation"  values="vertical,horizontal" default="vertical" showinhtml="false"/>
 </type>
 
 

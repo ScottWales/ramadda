@@ -142,6 +142,14 @@ public class FeedTypeHandler extends GenericTypeHandler {
             String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,"");
             String desc = XmlUtil.getGrandChildText(item, RssUtil.TAG_DESCRIPTION,"");
             String pubDate = XmlUtil.getGrandChildText(item, RssUtil.TAG_PUBDATE,"").trim();
+
+            String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,"").trim();
+            if(lat.length()==0)
+                lat = XmlUtil.getGrandChildText(item, "lat","").trim();
+            String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,"").trim();
+            if(lon.length()==0)
+                lon = XmlUtil.getGrandChildText(item, "long","").trim();
+
             Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
             Date dttm = new Date();
             try {
@@ -150,6 +158,10 @@ public class FeedTypeHandler extends GenericTypeHandler {
                 dttm  =DateUtil.parse(pubDate);
             }
 
+            if(lat.length()>0  && lon.length()>0 ) {
+                entry.setLocation(Double.parseDouble(lat),
+                                  Double.parseDouble(lon),0);
+            }
             //Tue, 25 Jan 2011 05:00:00 GMT
             Resource resource = new Resource(link);
             entry.initEntry(title, desc, null, mainEntry.getUser(),
@@ -158,6 +170,7 @@ public class FeedTypeHandler extends GenericTypeHandler {
                                dttm.getTime(), null);
 
             items.add(entry);
+            getEntryManager().cacheEntry(entry);
         }
     }
 
@@ -165,7 +178,6 @@ public class FeedTypeHandler extends GenericTypeHandler {
         List<Entry> items = new ArrayList<Entry>();
         String url =  mainEntry.getResource().getPath();
         if(url==null || url.trim().length()==0) return items;
-
 
         Element root = XmlUtil.getRoot(url, getClass());
         if(root.getTagName().equals(RssUtil.TAG_RSS)) {
