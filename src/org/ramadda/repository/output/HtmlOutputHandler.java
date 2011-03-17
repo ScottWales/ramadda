@@ -889,14 +889,20 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        //        sb.append(getHtmlHeader(request,  group));
-        int cols = request.get(ARG_COLUMNS,4);
-        sb.append("<table width=100% border=0 cellpadding=10>");
-
         List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
+        makeGrid(request, allEntries, sb);
+        return makeLinksResult(request, msg("Grid"), sb,
+                               new State(group, subGroups, entries));
+    }
 
+
+
+    public void makeGrid(Request request,  List<Entry> allEntries, StringBuffer sb)
+            throws Exception {
+        int cols = request.get(ARG_COLUMNS,4);
+        sb.append("<table width=100% border=0 cellpadding=10>");
         int col=0;
         boolean  needToOpenRow= true;
         int width = (int)(100*1.0/(float)cols);
@@ -952,12 +958,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         sb.append("</table>");
-
-
-        return makeLinksResult(request, msg("Grid"), sb,
-                               new State(group, subGroups, entries));
-
-        
+       
     }
 
     public String makeTimeline(Request request, List<Entry> entries, StringBuffer sb, String style) throws Exception  {

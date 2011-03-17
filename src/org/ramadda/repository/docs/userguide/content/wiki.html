@@ -127,18 +127,29 @@ It can take the form:
 {{children title="Links" showtoggle="false"}}
 </pre>
 
-The title attribute is used in place of "Children". Of showtoggle="false" then the show/hide toggle link is not shown.
+The title attribute is used in place of "Children". 
+If showtoggle="false" then the show/hide toggle link is not shown.
+
+You can specifiy another entry:
+<pre>
+{{children entry="some other entry id"}}
+</pre>
+
 
 <p>
 Other tags include:
 <p>
+
 Display a map:
 <pre>{{map}} </pre>
 
 Display a map just for a group:
 <pre>{{mapentry}} </pre>
 
+If you used the {{map}} tag with a folder then the children get mapped. The mapentry tag
+says to make a map for just the entry.
 
+<p>
 Show  the most recent 3 days in a list organized by day:
 <pre>{{recent days="3"}} </pre>
 
@@ -148,6 +159,17 @@ Show a vertical listing of the children entry images:
 Show a vertical listing of the grand children entry images:
 <pre>{{gallery level="2"}} </pre>
 
+Set the image width and only show up to 5 images:
+<pre>{{gallery level="2" width="300" count="5"}} </pre>
+
+Show the children as tabs:
+<pre>{{tabs}} </pre>
+
+Show the children in a grid:
+<pre>{{grid}} </pre>
+
+Show the grandchildren in a grid:
+<pre>{{grid level="2"}} </pre>
 
 
 [ht::foot]
