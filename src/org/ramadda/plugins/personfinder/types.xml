@@ -1,6 +1,6 @@
 <types>
 
-  <type name="pfif_person"  description="Missing Person" handler="org.ramadda.plugins.personfinder.PersonTypeHandler" xcategory="Collaboration">
+  <type name="pfif_person"  description="Missing Person" handler="org.ramadda.plugins.personfinder.PersonTypeHandler" category="Events">
      <property name="xxxicon" value="/faq/faq.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
@@ -27,7 +27,7 @@
 </type>
 
 
-<type name="pfif_note"  description="Person Note" xxxhandler="org.ramadda.plugins.personfinder.PersonTypeHandler" xcategory="Collaboration">
+<type name="pfif_note"  description="Person Note" xxxhandler="org.ramadda.plugins.personfinder.PersonTypeHandler" category="Events">
      <property name="xxxicon" value="/faq/faq.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>

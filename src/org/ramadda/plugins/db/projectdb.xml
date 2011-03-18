@@ -50,7 +50,7 @@
 
 
 
-<table id="tasks" name="Tasks">
+<table id="tasks" name="Tasks" icon="/db/tasks.gif">
    <column name="title" type="string" label="Title" cansearch="true"   canlist="true"/>
    <column name="priority" type="enumeration" label="Priority" values="High,Medium,Low" cansearch="true"   canlist="true"/>
    <column name="status" type="enumeration" label="Status" values="Not Started,In Progress,Completed,Deferred,Waiting" cansearch="true"   canlist="true">
@@ -98,13 +98,13 @@
 
 
 
-<table id="notes" name="Notes">
+<table id="notes" name="Notes" icon="/icons/note.gif">
    <column name="note" type="string" label="Note"  canlist="true" rows="5" columns="40" size="10000" />
 </table>
 
 
 
-<table id="bookmarks" name="Bookmarks">
+<table id="bookmarks" name="Bookmarks" icon="/db/bookmarks.gif">
    <column name="title"  type="string" label="Title" cansearch="true"   canlist="true" columns="60" size="500" >
        <property name="label" value="true"/>
    </column>
@@ -118,7 +118,7 @@
 
 
 
-<table id="contact" name="Contact List">
+<table id="contact" name="Contact List" icon="/db/phone.png">
    <column name="name" type="string" label="Name" cansearch="true"   canlist="true"/>
    <column name="institution" type="string" label="Institution" cansearch="true"   canlist="true"/>
    <column name="email" type="email" label="Email" cansearch="true"   canlist="true"/>

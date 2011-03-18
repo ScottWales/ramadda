@@ -1,6 +1,6 @@
 <types>
 
-  <type name="slideshow"  description="Slide Show" handler="org.ramadda.plugins.slideshow.SlideshowTypeHandler" category="Collaboration">
+  <type name="slideshow"  description="Slide Show" handler="org.ramadda.plugins.slideshow.SlideshowTypeHandler" category="Information">
      <property name="icon" value="/icons/slideshow.jpg"/>
      <property name="form.date.show" value="false"/>
      <property name="form.description.show" value="true"/>
