@@ -851,7 +851,7 @@ public class Column implements Constants {
      */
     public void createTable(Statement statement) throws Exception {
         if (isType(TYPE_STRING) || isType(TYPE_PASSWORD)
-                || isType(TYPE_EMAIL) || isType(TYPE_URL)
+                || isType(TYPE_EMAIL) || isType(TYPE_URL) || isType(TYPE_FILE)
                 || isType(TYPE_ENTRY)) {
             defineColumn(statement, name, "varchar(" + size + ") ");
         } else if (isType(TYPE_CLOB)) {
@@ -1311,6 +1311,14 @@ public class Column implements Constants {
                 value = "" + toString(values, offset);
             }
             widget = HtmlUtil.password(id, value, HtmlUtil.SIZE_10);
+        } else if (isType(TYPE_FILE)) {
+            String value = ((dflt != null)
+                            ? dflt
+                            : "");
+            if (values != null) {
+                value = "" + toString(values, offset);
+            }
+            widget = HtmlUtil.fileInput(id, "");
         } else if (isType(TYPE_ENTRY)) {
             String value = "";
             if (values != null) {
