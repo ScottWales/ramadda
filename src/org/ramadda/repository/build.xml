@@ -345,7 +345,6 @@
             <fileset dir="${tmpjar_dir}" includes="**/*"/>
 
         </delete>
-        <unjar src="${lib1}" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/unidatacommon.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/idvmaps.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/extra.jar" dest="${tmpjar_dir}"/>
@@ -387,6 +386,8 @@
         <unjar src="${lib_dir}/servlet-api.jar" dest="${tmpjar_dir}"/>
 -->
 
+<echo message="Unjarring ${lib1}"/>
+        <unjar src="${lib1}" dest="${tmpjar_dir}"/>
 
         <jar 
             basedir="${tmpjar_dir}"
