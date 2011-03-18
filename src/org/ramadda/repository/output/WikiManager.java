@@ -491,6 +491,25 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     request, entry, false, true);
             blockTitle = Misc.getProperty(props, "title", msg("Information"));
         } else if (include.equals(WIKIPROP_HTML)) {
+            if(Misc.getProperty(props, "children", false)) {
+                List<Entry> children =
+                    (List<Entry>) wikiUtil.getProperty(entry.getId()
+                                                       + "_children");
+                if (children == null) {
+                    children = getEntryManager().getChildren(request, entry);
+                }
+                StringBuffer sb = new StringBuffer();
+                for(Entry child: children) {
+                    Result result = getHtmlOutputHandler().getHtmlResult(request, OutputHandler.OUTPUT_HTML,
+                                                                         child);
+                    sb.append(getEntryManager().getEntryLink(request, child));
+                    sb.append(HtmlUtil.br());
+                    sb.append(new String(result.getContent()));
+                    sb.append(HtmlUtil.p());
+                }
+                return sb.toString();
+            }
+
             Result result = getHtmlOutputHandler().getHtmlResult(request, OutputHandler.OUTPUT_HTML,
                                                                  entry);
             return new String(result.getContent());
@@ -622,16 +641,40 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKIPROP_GALLERY)) {
             int count = Misc.getProperty(props, PROP_COUNT, -1);
             int width = Misc.getProperty(props, PROP_WIDTH, -1);
+            boolean random = Misc.getProperty(props, "random", false);
+
             List<Entry> children =  getEntries(request,  wikiUtil,  entry, props);
             StringBuffer sb  = new StringBuffer();
-            int          num = 0;
+
+
+
+            List<Entry> onesToUse = new ArrayList<Entry>();
             for (Entry child : children) {
                 if ( !child.getResource().isImage()) {
                     continue;
                 }
+                onesToUse.add(child);
+            }
+            int size = onesToUse.size();
+            if(random && size>1) {
+                int randomIdx = (int)(Math.random()*size);
+                if(randomIdx>=size) {
+                    randomIdx = size;
+                }
+                Entry randomEntry = onesToUse.get(randomIdx);
+                onesToUse  = new ArrayList<Entry>();
+                onesToUse.add(randomEntry);
+            }
+
+
+            int          num = 0;
+            for (Entry child : onesToUse) {
                 num++;
                 if ((count > 0) && (num > count)) {
                     break;
+                }
+                if(num>1) {
+                    sb.append(HtmlUtil.br());
                 }
                 String url = HtmlUtil.url(
                                  request.url(repository.URL_ENTRY_GET) + "/"
@@ -645,11 +688,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                                "" + width)));
                 }
                 sb.append(HtmlUtil.br());
-                sb.append("<b>");
-                sb.append(msg("Figure"));
-                sb.append(" " + num);
-                sb.append(" - ");
-                sb.append("</b>");
+                if(!random) {
+                    sb.append("<b>");
+                    sb.append(msg("Figure"));
+                    sb.append(" " + num);
+                    sb.append(" - ");
+                    sb.append("</b>");
+                }
                 sb.append(getEntryManager().getAjaxLink(request, child,
                         child.getLabel()));
                 //              sb.append(HtmlUtil.br());

@@ -2209,12 +2209,18 @@ public class EntryManager extends RepositoryManager {
             buffer.append(HtmlUtil.br());
         }
         sb.append("<table cellpadding=10><tr valign=top>");
+        int colCnt= 0;
         for (String cat : categories) {
             sb.append(
                 HtmlUtil.col(
                     HtmlUtil.b(cat)
                     + HtmlUtil.insetDiv(
                         catMap.get(cat).toString(), 3, 15, 0, 0)));
+            colCnt++;
+            if(colCnt>3) {
+                sb.append("</tr><tr valign=top>");
+                colCnt=0;
+            }
         }
         sb.append("</tr></table>");
         return makeEntryEditResult(request, group, "Create Entry", sb);
