@@ -979,7 +979,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
         headerSB.append(sb);
         sb = headerSB;
         Result result = new Result(title, sb);
-        return getEntryManager().addEntryHeader(request, null, result);
+        return  addHeaderToAncillaryPage(request, result);
     }
 
     /**
@@ -1161,6 +1161,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
                                              request.getOutput(), theGroup,
                                              groups, entries);
         //        return makeResult(request, msg("Search Results"), sb);
+        if(theGroup.isDummy()) {
+            return addHeaderToAncillaryPage(request, result);
+        } 
         return getEntryManager().addEntryHeader(request, theGroup, result);
     }
 

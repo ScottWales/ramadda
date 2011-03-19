@@ -208,7 +208,7 @@ public class UserManager extends RepositoryManager {
     private Result addHeader(Request request, Result result)  {
         //        if(true) return result;
         try {
-            return getEntryManager().addEntryHeader(request, null,  result);
+            return addHeaderToAncillaryPage(request, result);
         } catch(Exception exc) {
             throw new RuntimeException(exc);
         }

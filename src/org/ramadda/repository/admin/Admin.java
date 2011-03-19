@@ -792,8 +792,7 @@ public class Admin extends RepositoryManager {
         headerSB.append(sb);
         sb = headerSB;
         Result result = new Result(title, sb);
-        return getEntryManager().addEntryHeader(request, null,  result);
-        //        return getRepository().makeResult(request, title, sb, adminUrls);
+        return addHeaderToAncillaryPage(request, result);
     }
 
     public void addHeader(Request request, StringBuffer sb) {

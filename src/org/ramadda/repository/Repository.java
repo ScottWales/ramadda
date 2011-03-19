@@ -2695,6 +2695,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     }
 
 
+
+
     /**
      * _more_
      *
@@ -4581,7 +4583,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                                     + helpText;
             }
 
-            result = getEntryManager().addEntryHeader(request, null, new Result(BLANK, new StringBuffer(helpText)));
+            result = getEntryManager().addHeaderToAncillaryPage(request, new Result(BLANK, new StringBuffer(helpText)));
         } else {
             InputStream inputStream =
                 getStorageManager().getInputStream(path);

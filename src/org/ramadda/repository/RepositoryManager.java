@@ -146,6 +146,12 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    public Result addHeaderToAncillaryPage(Request request, Result result) {
+        return result;
+        //        return getEntryManager().addEntryHeader(request, null, result);
+    
+    }
+
     /**
      * _more_
      *
