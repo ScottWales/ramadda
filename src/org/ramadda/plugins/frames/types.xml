@@ -1,0 +1,17 @@
+<types>
+
+  <type name="frames"  description="IFrames" handler="org.ramadda.plugins.frames.FramesTypeHandler" category="Information">
+     <property name="icon" value="/frames/application_split.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="urls" type="string" label="URLS"  showinhtml="true" suffix="One URL per line" rows="5"/>
+     <column name="height" type="string" label="Height"  default="300" showinhtml="false"/>
+     <column name="cols" type="enumeration" label="Number of columns"  values="1,2,3,4" default="1" showinhtml="false"/>
+</type>
+
+
+
+
+</types>

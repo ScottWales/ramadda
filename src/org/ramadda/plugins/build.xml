@@ -26,6 +26,7 @@
 
     <target name="plugins" depends="init">
       <echo message="Building RAMADDA plugins"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/beforeafter/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/blog/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/calendar/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/chat/build.xml" inheritAll="false"/>

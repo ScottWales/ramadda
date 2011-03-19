@@ -27,7 +27,7 @@
 </type>
 
 
-<type name="pfif_note"  description="Person Note" xxxhandler="org.ramadda.plugins.personfinder.PersonTypeHandler" category="Events">
+<type name="pfif_note"  description="Person Note" xxxhandler="org.ramadda.plugins.personfinder.PersonTypeHandler" category="Events"  foruser="false">
      <property name="xxxicon" value="/faq/faq.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
