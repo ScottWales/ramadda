@@ -128,7 +128,8 @@ public class RepositoryManager implements RepositorySource, Constants,
         if(request.isMobile()) {
             return "<tr><td><div class=\"formlabel\">"+ label +"</div>" + contents +"</td></tr>";
         } else {
-            return HtmlUtil.formEntry(label, contents);
+            return "<tr><td><div class=\"formlabel\">"+ label +"</div></td><td>" + contents +"</td></tr>";
+            //            return HtmlUtil.formEntry(label, contents);
         }
     }
 

@@ -1696,6 +1696,10 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
+    public String getUploadedFile(Request request) {
+        return request.getUploadedFile(ARG_FILE);
+    }
+
     /**
      * _more_
      *
@@ -3744,7 +3748,13 @@ public class TypeHandler extends RepositoryManager {
      *  @return The ForUser
      */
     public boolean getForUser() {
-        return forUser;
+        if(!forUser) {
+            return false;
+        }
+        if (getParent() != null) {
+            return getParent().getForUser();
+        }
+        return true;
     }
 
 

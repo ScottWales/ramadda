@@ -1988,6 +1988,9 @@ public class Request implements Constants {
         return this.apiMethod;
     }
 
+    public boolean responseInXml() {
+        return getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
+    }
 
 
 }

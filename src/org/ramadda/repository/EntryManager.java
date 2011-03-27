@@ -953,9 +953,10 @@ public class EntryManager extends RepositoryManager {
             List<Entry>  parents      = new ArrayList<Entry>();
             List<String> origNames    = new ArrayList<String>();
 
+
             String       resource     = "";
             String       urlArgument  = request.getAnonymousEncodedString(ARG_URL, BLANK);
-            String       filename     = request.getUploadedFile(ARG_FILE);
+            String       filename     = typeHandler.getUploadedFile(request);
             boolean      unzipArchive = false;
 
             boolean      isFile       = false;
