@@ -182,6 +182,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             throw new IllegalStateException("Must have a " + PROP_DB
                                             + " property defined");
         }
+	db = db.trim();
     }
 
 
@@ -281,10 +282,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             String password = (String) getRepository().getProperty(
                                                                    PROP_DB_PASSWORD.replace("${db}", db));
             String connectionURL =
-                (String) getRepository().getProperty(PROP_DB_URL.replace("${db}",
-                                                                         db));
-            String driverClassName = (String) getRepository().getProperty(
-                                                                          PROP_DB_DRIVER.replace("${db}", db));
+                (String) getRepository().getProperty(PROP_DB_URL.replace("${db}",db));
+
+	    String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}", db);
+	    //	    System.err.println("JDBC Property:" + driverClassPropertyName);
+	    String driverClassName = (String) getRepository().getProperty(driverClassPropertyName);
+	    //	    System.err.println("JDBC driver class:" + driverClassName);
             Misc.findClass(driverClassName);
 
             System.err.println("RAMADDA: DatabaseManager connection url:"  + connectionURL+" user name:" + userName);
