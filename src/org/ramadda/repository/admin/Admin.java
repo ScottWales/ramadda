@@ -843,7 +843,7 @@ public class Admin extends RepositoryManager {
     public Result adminSettings(Request request) throws Exception {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(request.form(URL_ADMIN_SETTINGS_DO));
+        sb.append(request.formPost(URL_ADMIN_SETTINGS_DO));
         String size = HtmlUtil.SIZE_60;
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Change Settings")));
