@@ -22,31 +22,14 @@ This compiles the local ramadda source and runs the server on port 8080
 
 
 ################# Running from SVN ################################
-If you are doing development here you need to create a couple of jar files.
-
-First, create idv.jar. From trunk/ucar do:
-ant idvjar
-
-This makes the idv.jar in trunk/lib
-
-Secondly, create repositorylib.jar. From trunk/org/ramadda/repository do:
-ant repositorylib
-
-This unjars lots of jar files that RAMADDA depends on and creates one big jar:
-trunk/lib/repositorylib.jar
-
-To build RAMADDA then just do:
-have the src dir in your classpath
-run:
+To build RAMADDA just do:
 ant compile
-java -Xmx1024m -server   org.ramadda.repository.server.RepositoryServer
-
 
 The required classpath is:
-${libsdir}/idv.jar:${libsdir}/repositorylib.jar:${libsdir}/repositorytds.jar:${libsdir}/servlet-api.jar
-where libsdir is trunk/lib
+${lib_dir}/repositorylib.jar:${lib_dir}/servlet-api.jar
+where lib_dir is ramadda/lib
 
-If you have the ucar directory in your classpath and the requisite jar files you can run RAMADDA stand-alone with:
+If you have the ramadda/src directory in your classpath and the requisite jar files you can run RAMADDA stand-alone with:
 java -Xmx1024m -server   org.ramadda.repository.server.RepositoryServer
 
 
@@ -56,8 +39,8 @@ java -Xmx1024m -server   org.ramadda.repository.server.RepositoryServer
 repositorytds.jar holds the classes that we use from the thredds.war.  We unjar the war and 
 then unjar the jar files contained in it. There are some jars that we skip. To create this
 jar file get the latest thredds.war (from ftp://ftp.unidata.ucar.edu/pub/thredds) and copy it
-to the trunk/lib directory.  Then from the lib directory execute the tcl script:
-cd trunk/lib
+to the ramadda/lib directory.  Then from the lib directory execute the tcl script:
+cd ramadda/lib
 tclsh ../org/ramadda/repository/release/makethredds.tcl
 
 
@@ -71,13 +54,11 @@ ant release
 This creates the following files in trunk/lib. The *'ed files are those that get released
 
 repository.jar
+repositorylib.jar
 *repository.war  - The war to be used by Tomcat
-*repository.zip  - The zip file that holds the stand-alone RAMADDA release (which uses Jetty)
-*repository_src.jar - Holds the sources needed to build RAMADDA
+*ramadda1.3b.zip  - The zip file that holds the stand-alone RAMADDA release (which uses Jetty)
 *repositoryclient.jar  - Used by 3rd party clients (e.g., IDV, JGRASS) 
 *repositoryclient.zip  - To run the stand-alone command line client
-repositorylib.jar
-repositorytds.jar
 
 
 

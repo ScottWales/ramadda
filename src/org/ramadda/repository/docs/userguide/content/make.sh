@@ -1,1 +1,1 @@
-tclsh ~/unidata/src/idv/trunk/auxdata/docs/build/generate.tcl 
+tclsh ~/source/idv/trunk/auxdata/docs/build/generate.tcl 
