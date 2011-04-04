@@ -1224,16 +1224,17 @@ public class Column implements Constants {
             MapInfo map = getRepository().getMapManager().createMap(request, true);
             widget = map.makeSelector(id, true, nwse,  "", "");
         } else if (isType(TYPE_BOOLEAN)) {
-            String value = "True";
+            boolean value = true;
             if (values != null) {
                 if (toBoolean(values, offset)) {
-                    value = "True";
+                    value = true;
                 } else {
-                    value = "False";
+                    value = false;
                 }
             }
-            widget = HtmlUtil.select(id, Misc.newList("True", "False"),
-                                     value);
+            widget = HtmlUtil.checkbox(id, "true",value);
+            //            widget = HtmlUtil.select(id, Misc.newList("True", "False"),
+                                                               //                                     value);
         } else if (isType(TYPE_DATETIME)) {
             Date date;
             if (values != null) {

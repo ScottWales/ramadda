@@ -83,8 +83,11 @@
 </table>
 
 <table id="todo" name="Todo">
+   <column name="checked" type="boolean" label="Done" cansearch="true"   canlist="true" default="false"/>
    <column name="title" type="string" label="What" cansearch="true"   canlist="true"/>
-   <column name="category" type="enumerationplus" values="" label="Category" cansearch="true"   canlist="true"/>
+   <column name="category" type="enumerationplus" values="" label="Category" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
    <column name="description" type="string" label="Description"  canlist="true" rows="5" columns="40" size="10000" />
 </table>
 

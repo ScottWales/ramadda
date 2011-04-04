@@ -82,7 +82,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
 
 
     /** _more_ */
-    static Hashtable<String, DomHolder> domCache = new Hashtable();
+    private    static Hashtable<String, DomHolder> domCache = new Hashtable();
 
     /** _more_ */
     private Hashtable childIdToParent = new Hashtable();
@@ -130,14 +130,10 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     private String[] parseId(String id) {
-        if (id.startsWith("catalog:")) {
-            id = id.substring("catalog:".length());
-        }
-        if (id.startsWith("b64:")) {
-            id = id.substring("b64:".length());
+        if (id.startsWith(ID_PREFIX_SYNTH)) {
+            id = id.substring(ID_PREFIX_SYNTH.length());
             id = new String(XmlUtil.decodeBase64(id));
         }
-
         int idx = id.indexOf(":id:");
         if (idx < 0) {
             return new String[] { id, null };
@@ -241,9 +237,9 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      *
      * @return _more_
      */
-    public static String getCatalogId(String id) {
+    private String getCatalogId(Entry mainEntry, String id) {
         id = XmlUtil.encodeBase64(id.getBytes());
-        return "catalog:b64:" + id;
+        return ID_PREFIX_SYNTH + id;
     }
 
     /**
@@ -254,11 +250,11 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      *
      * @return _more_
      */
-    public static String getId(String url, String subid) {
+    private  String getId(Entry mainEntry, String url, String subid) {
         if (subid == null) {
-            return getCatalogId(url);
+            return getCatalogId(mainEntry, url);
         }
-        return getCatalogId(url + ":id:" + subid);
+        return getCatalogId(mainEntry, url + ":id:" + subid);
     }
 
 
@@ -280,12 +276,14 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         if (id == null) {
             id = mainEntry.getId();
         }
+
+
         String[]     loc        = parseId(id);
         String       catalogUrl = request.getString(ARG_CATALOG, null);
         List<String> ids        = new ArrayList<String>();
         String       url        = loc[0];
         String       nodeId     = loc[1];
-        if ( !id.startsWith("catalog:")) {
+        if ( !id.startsWith(ID_PREFIX_SYNTH)) {
             url    = mainEntry.getResource().getPath();
             nodeId = null;
         }
@@ -296,13 +294,19 @@ public class CatalogTypeHandler extends GenericTypeHandler {
             throw new IllegalArgumentException("Could not load catalog:"
                     + url);
         }
+
+
+
+
         Element dataset = (Element) XmlUtil.findChild(root,
                               CatalogUtil.TAG_DATASET);
         if (dataset != null) {
             root = dataset;
         }
 
-        String    parentId = getId(url, nodeId);
+        System.err.println("got root");
+
+        String    parentId = getId(mainEntry, url, nodeId);
 
         Hashtable idMap    = new Hashtable();
         walkTree(dataset, idMap);
@@ -319,8 +323,8 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
             if (child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
-                String datasetId = getId(child);
-                String entryId   = getCatalogId(url + ":id:" + datasetId);
+                String datasetId = getId(mainEntry, child);
+                String entryId   = getCatalogId(mainEntry, url + ":id:" + datasetId);
                 childIdToParent.put(entryId, parentId);
                 ids.add(entryId);
             } else if (child.getTagName().equals(
@@ -328,11 +332,12 @@ public class CatalogTypeHandler extends GenericTypeHandler {
                 String href = XmlUtil.getAttribute(child,
                                   CatalogUtil.ATTR_XLINK_HREF);
                 String catUrl    = new URL(baseUrl, href).toString();
-                String datasetId = getCatalogId(catUrl);
+                String datasetId = getCatalogId(mainEntry, catUrl);
                 childIdToParent.put(datasetId, parentId);
                 ids.add(datasetId);
             }
         }
+        System.err.println("ids:" + ids);
         return ids;
     }
 
@@ -403,9 +408,10 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      */
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
             throws Exception {
+        System.err.println ("make synth entry:" + id);
         String[] loc   = parseId(id);
         String   url   = loc[0];
-        String   newId = getId(loc[0], loc[1]);
+        String   newId = getId(parentEntry, loc[0], loc[1]);
         if (parentEntry == null) {
             String parentId = (String) childIdToParent.get(newId);
             if (parentId != null) {
