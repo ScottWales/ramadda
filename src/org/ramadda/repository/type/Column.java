@@ -272,6 +272,8 @@ public class Column implements Constants {
     /** _more_ */
     private List enumValues;
 
+    private Hashtable<String,String> enumMap = new Hashtable<String,String>();
+
 
 
     /** _more_ */
@@ -357,8 +359,20 @@ public class Column implements Constants {
                     valueString =
                         typeHandler.getStorageManager().readSystemResource(
                             valueString.substring("file:".length()));
-                    enumValues = StringUtil.split(valueString, "\n", true,
+                    List<String> tmp = StringUtil.split(valueString, "\n", true,
                             true);
+                    enumValues = new ArrayList();
+                    for(String tok: tmp) {
+                        if(tok.indexOf(":")>=0) {
+                            List<String> toks = StringUtil.splitUpTo(tok, ":", 2);
+
+                            enumValues.add(new TwoFacedObject(toks.get(1),toks.get(0)));
+                            enumMap.put(toks.get(0),toks.get(1));
+                        } else {
+                            enumValues.add(tok);
+                        }
+                    }
+
                 } else {
                     enumValues = StringUtil.split(valueString, ",", true,
                             true);
@@ -644,7 +658,10 @@ public class Column implements Constants {
                 s = getRepository().getWikiManager()
                     .wikifyEntry(getRepository().getTmpRequest(),
                                  entry, s, false, null, null);
-            }
+            } else if (isType(TYPE_ENUMERATION) || isType(TYPE_ENUMERATIONPLUS)) {
+                String label =   enumMap.get(s);
+                if(label!=null) s = label;
+            } 
             sb.append(s);
         }
     }

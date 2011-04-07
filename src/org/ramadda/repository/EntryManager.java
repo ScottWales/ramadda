@@ -7240,8 +7240,6 @@ public class EntryManager extends RepositoryManager {
      */
     private String getIconUrlInner(Request request, Entry entry)
             throws Exception {
-
-
         if (entry.getIcon() != null) {
             return iconUrl(entry.getIcon());
         }
