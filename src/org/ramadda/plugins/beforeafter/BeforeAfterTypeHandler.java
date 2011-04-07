@@ -116,7 +116,7 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
         StringBuffer sb = new StringBuffer();
 	StringBuffer divs = new StringBuffer();
 	int col =1;
-	sb.append(HtmlUtil.importJS("/beforeandafter/jquery.beforeafter.js"));
+	sb.append(HtmlUtil.importJS(getRepository().getUrlBase()+"/beforeandafter/jquery.beforeafter.js"));
         String template = getRepository().getResource("/org/ramadda/plugins/beforeafter/template.html");
 	//	sb.append(template);
 
