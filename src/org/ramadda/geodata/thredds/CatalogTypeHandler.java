@@ -150,15 +150,15 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      * @param parent _more_
      * @param ids _more_
      */
-    private void walkTree(Element parent, Hashtable ids) {
+    private void walkTree(Entry mainEntry, Element parent, Hashtable ids) {
         NodeList elements = XmlUtil.getElements(parent);
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
             if ( !child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
                 continue;
             }
-            ids.put(getId(child), child);
-            walkTree(child, ids);
+            ids.put(getId(mainEntry, child), child);
+            walkTree(mainEntry,  child, ids);
         }
     }
 
@@ -169,7 +169,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      *
      * @return _more_
      */
-    private String getId(Element node) {
+    private String getId(Entry mainEntry, Element node) {
         String id = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (id == null) {
             id = getNamePath(node);
@@ -309,7 +309,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         String    parentId = getId(mainEntry, url, nodeId);
 
         Hashtable idMap    = new Hashtable();
-        walkTree(dataset, idMap);
+        walkTree(mainEntry, dataset, idMap);
         if (nodeId != null) {
             dataset = (Element) idMap.get(nodeId);
         }
@@ -438,7 +438,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         }
 
         Hashtable idMap = new Hashtable();
-        walkTree(root, idMap);
+        walkTree(parentEntry, root, idMap);
         if (loc[1] != null) {
             root = (Element) idMap.get(loc[1]);
         }
