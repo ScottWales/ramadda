@@ -15,7 +15,7 @@
 CREATE TABLE entries (id varchar(200),
                    type varchar(200),
 	           name varchar(200),
-                   description varchar(10000),
+                   description varchar(15000),
                    parent_group_id varchar(200),
    		   user_id varchar(200),
 	           resource varchar(500),	           
@@ -40,6 +40,7 @@ ALTER table entries add column md5 varchar(32);
 ALTER table entries add column filesize ramadda.bigint;
 ALTER table entries add column altitudetop ramadda.double;
 ALTER table entries add column altitudebottom ramadda.double;
+ALTER table entries alter column description set data type varchar(15000);
 
 
 
