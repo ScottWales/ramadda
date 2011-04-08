@@ -356,6 +356,23 @@ public class GenericTypeHandler extends TypeHandler {
         //Always call getEntryValues here so we get create the correct size array
         Object[]values = getEntryValues(entry);
         super.initializeEntryFromXml(request, entry, node);
+
+        Hashtable<String,Element> nodes = new Hashtable<String,Element>();
+
+        NodeList elements = XmlUtil.getElements(node);
+        for (int i = 0; i < elements.getLength(); i++) {
+            Element child = (Element) elements.item(i);
+            nodes.put(child.getTagName(), child);
+        }
+
+        for (Column column : columns) {
+            Element child = nodes.get(column.getName());
+            if(child == null) continue;
+            String value = XmlUtil.getChildText(child);
+            column.setValue(entry, values, value);
+        }
+
+
     }
 
 

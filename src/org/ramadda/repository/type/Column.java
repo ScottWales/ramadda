@@ -1560,6 +1560,31 @@ public class Column implements Constants {
 
 
 
+    public void setValue(Entry entry, Object[] values, String value)
+        throws Exception {
+
+        if (isType(TYPE_LATLON)) {
+        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isDate()) {
+            //            values[offset] = request.getDate(id, new Date());
+        } else if (isType(TYPE_BOOLEAN)) {
+            values[offset] = new Boolean(value);
+        } else if (isType(TYPE_ENUMERATION) ||
+                   isType(TYPE_ENUMERATIONPLUS)) {
+            values[offset] = value;
+        } else if (isType(TYPE_INT)) {
+            values[offset] = new Integer(value);
+        } else if (isType(TYPE_PERCENTAGE) || isDouble()) {
+            values[offset] = new Double(value);
+        } else if (isType(TYPE_ENTRY)) {
+            values[offset] = value;
+        } else {
+            values[offset] = value;
+        }
+    }
+
+
+
 
     /**
      * _more_
