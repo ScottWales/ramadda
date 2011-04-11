@@ -241,7 +241,7 @@ public class DataOutputHandler extends OutputHandler {
                        OutputType.SUFFIX_NONE, ICON_OPENDAP, GROUP_DATA);
 
     /** CDL Output Type */
-    public static final OutputType OUTPUT_CDL = new OutputType("CDL",
+    public static final OutputType OUTPUT_CDL = new OutputType("NCDump",
                                                     "data.cdl",
                                                     OutputType.TYPE_CATEGORY,
                                                     OutputType.SUFFIX_NONE,
@@ -254,13 +254,13 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Point map Output Type */
     public static final OutputType OUTPUT_POINT_MAP =
-        new OutputType("Point as Map", "data.point.map",
+        new OutputType("Plot points on a map", "data.point.map",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_MAP, GROUP_DATA);
 
     /** CSV Output Type */
     public static final OutputType OUTPUT_POINT_SUBSET =
-        new OutputType("Subset Point Data", "data.point.subset",
+        new OutputType("CSV, KML Output", "data.point.subset",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_CSV, GROUP_DATA);
 
@@ -273,7 +273,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
-        new OutputType("Grid Subset", "data.gridsubset.form",
+        new OutputType("Subset spatially", "data.gridsubset.form",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_SUBSET, GROUP_DATA);
 
@@ -283,7 +283,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Grid as point form Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
-        new OutputType("Grid As Point Data", "data.gridaspoint.form",
+        new OutputType("Extract time series", "data.gridaspoint.form",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_SUBSET, GROUP_DATA);
 
@@ -2778,6 +2778,7 @@ public class DataOutputHandler extends OutputHandler {
             GridAggregationTypeHandler gridAggregation =
                 (GridAggregationTypeHandler) entry.getTypeHandler();
             location = gridAggregation.getNcmlFile(request, entry).toString();
+            // Something must be fixed to check if its empty
         } else {
             location = getStorageManager().getFastResourcePath(entry);
         }
