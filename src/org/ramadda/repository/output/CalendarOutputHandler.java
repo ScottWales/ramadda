@@ -536,7 +536,7 @@ public class CalendarOutputHandler extends OutputHandler {
             cal = getCalendar(selected);
         } else {
             headerSdf = new SimpleDateFormat("MMMMM yyyy");
-            navLabels = new String[] { "Last Year", "Last Month",
+            navLabels = new String[] { "Previous Year", "Previous Month",
                                        "Current Month", "Next Month",
                                        "Next Year" };
             cal = getCalendar(1, selected[IDX_MONTH], selected[IDX_YEAR]);

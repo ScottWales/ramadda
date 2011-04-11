@@ -1385,6 +1385,8 @@ public interface Constants {
 
     public static final String PROP_SEARCH_LUCENE_ENABLED = "ramadda.search.lucene.enabled";
 
+    public static final String PROP_SEARCH_SHOW_METADATA = "ramadda.search.show.metadata";
+
     public static final String PROP_PROPERTIES = "ramadda.properties";
 
 
@@ -1502,6 +1504,10 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_ENTRY_HEADER = "ramadda.entryheader";
+
+    public static final String PROP_ENTRY_FOOTER = "ramadda.entryfooter";
+
+
 
     /** _more_ */
     public static final String PROP_ENTRY_BREADCRUMBS =
@@ -1777,7 +1783,11 @@ public interface Constants {
 
 
     /** _more_ */
-    public static final int DB_MAX_ROWS = 100;
+    public static final int DB_MAX_ROWS = 1000;
+
+    public static final int VIEW_MAX_ROWS = 50;
+
+
 
     /** _more_ */
     public static final String NODETYPE_ENTRY = "entry";

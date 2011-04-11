@@ -200,7 +200,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if (values == null) {
             return ids;
         }
-        int  max  = request.get(ARG_MAX, DB_MAX_ROWS);
+        int  max  = request.get(ARG_MAX, VIEW_MAX_ROWS);
         int  skip = request.get(ARG_SKIP, 0);
 
         long t1   = System.currentTimeMillis();

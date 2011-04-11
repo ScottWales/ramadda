@@ -102,12 +102,17 @@ public class OutputType {
 
     /** _more_ */
     public static final int TYPE_CATEGORY = 1 << 9;
+    
+    /** _more_ */
+    public static final int TYPE_CONNECT = 1 << 10;
 
-
+    /** _more_ */
+    public static final int TYPE_EXPORT = 1 << 11;
+    
     /** _more_ */
     public static final int TYPE_ALL = TYPE_HTML | TYPE_ACTION | TYPE_NONHTML
                                        | TYPE_FILE | TYPE_EDIT | TYPE_VIEW
-                                       | TYPE_TOOLBAR | TYPE_CATEGORY;
+                                       | TYPE_TOOLBAR | TYPE_CATEGORY | TYPE_CONNECT;
 
 
     /** _more_ */

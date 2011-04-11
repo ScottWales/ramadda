@@ -39,18 +39,16 @@ body, a, td {
 
 
 .userfield {
-       PADDING-LEFT: 18px;
-
-        border : 1px #888888 solid;
-	background: URL(${urlroot}/icons/user.png) no-repeat;
-	background-position: 1px 1px;
+   padding-left: 18px;
+   border : 1px #888888 solid;
+   background: URL(${urlroot}/icons/user.png) no-repeat;
+   background-position: 1px 1px;
 }
 
 
-
 .disabledinput {
-        border : 0px #888888 solid;
-	background: #dfdfdf;
+   border : 0px #888888 solid;
+   background: #dfdfdf;
 }
 
 
@@ -67,7 +65,8 @@ body, a, td {
 
 .logo {
    margin: 5px;
-   align:center;
+   margin-left: auto;
+   margin-right: auto;
    text-align:center;
 }
 
@@ -100,7 +99,8 @@ a:hover {
 
 .footer {
    margin:10px;
-   align:center;
+   margin-left: auto;
+   margin-right: auto;
    text-align:center;
 }
 
@@ -114,12 +114,12 @@ a:hover {
 
 .left-element {
    position: absolute;
-   left: 0;
+   left: 0px;
 }
 
 .right-element {
    position: absolute;
-   right:0;
+   right:0px;
    text-align: right;
 }
 
@@ -137,7 +137,7 @@ a:hover {
    font-size:9px;
    color:#666;
    font-style:italic;
-   margin:0;
+   margin:0px;
    white-space:nowrap;
 }
 
@@ -281,13 +281,13 @@ a:hover {
 
 
 
-################################################################################
+/*################################################################################
 ## Styles for the page templates
-################################################################################
+################################################################################*/
 .subnav {
-   margin:10;
-   margin-left:0;
-   padding:1;
+   margin:10px;
+   margin-left:0px;
+   padding:1px;
    min-height: 500px;
    font-weight: bold;  
 }
@@ -302,8 +302,8 @@ a:hover {
    background-color:#ffffff;
    border: 1px #000 solid; 
    border-bottom: 1px white solid; 
-   padding-left:5;   
-   padding-right:5;   
+   padding-left:5px;   
+   padding-right:5px;   
    padding-top:1px;   
    padding-bottom:0px;   
    font-weight: bold;  
@@ -316,8 +316,8 @@ a:hover {
    border-top: 1px #999 solid; 
    border-left: 1px #999 solid; 
    border-right: 1px #999 solid; 
-   padding-left:5;   
-   padding-right:5;   
+   padding-left:5px;   
+   padding-right:5px;   
    padding-top:2px;   
    padding-bottom:0px; 
    font-weight: bold;  
@@ -389,8 +389,8 @@ a:hover {
 
 .cimg {
     text-align:center;
-    margin-top: 20;
-    margin-bottom: 40;
+    margin-top: 20px;
+    margin-bottom: 40px;
 }
 
 .caption {
@@ -402,43 +402,38 @@ a:hover {
     font-size: 130%;
     font-weight: bold;
     color: #8080C0;
-    margin-top: 15;
-    margin-bottom: 5;
+    margin-top: 15px;
+    margin-bottom: 5px;
 }
 
 .pagesubtitle {
     font-size: 120%;
     font-weight: bold;
     color: #8080C0;
-    margin-top: 10;
-    margin-bottom: 5;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .childlist-level {
     font-weigt:bold;
     color: #8080C0;
-    margin-top: 10;
-    margin-bottom: 5;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .childlist {
-    margin: 10;
-    margin-left: 30;
+    margin: 10px;
+    margin-left: 30px;
 }
 
 
 
 .pagesubsubtitle {
-    xxxfont-size: 12pt;
     font-weight: bold;
     color: #8080C0;
-    margin-top: 5;
-    margin-bottom: 5;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
-
-
-
-
 
 
 .wiki-categories {
@@ -489,7 +484,7 @@ a:hover {
 
 .result-table {
    border-color: #666;
-   border-width: 0 0 1px 1px;
+   border-width: 0px 0px 1px 1px;
    border-style: solid;
 }
 
@@ -498,7 +493,7 @@ a:hover {
     padding:4px;
     padding-bottom:1px;
     border-color: #666;
-    border-width: 1px 1px 0 0;
+    border-width: 1px 1px 0px 0px;
     border-style: solid;
     margin: 0;
 }
@@ -517,23 +512,23 @@ a:hover {
 
 .calendartable,  .dategrid {
     border-color: #666;
-    border-width: 0 0 1px 1px;
+    border-width: 0px 0px 1px 1px;
     border-style: solid;
 
 }
 
 .calnavtable {
     border-color: #666;
-    border-width: 1 1 1px 1px;
+    border-width: 1px 1px 1px 1px;
     border-style: solid;
 
 }
 
 .calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
     border-color: #666;
-    border-width: 1px 1px 0 0;
+    border-width: 1px 1px 0px 0px;
     border-style: solid;
-    margin: 0;
+    margin: 0px;
 }
 
 
@@ -704,7 +699,7 @@ ul {
    min-height: 100px;
    max-height: 200px; 
    overflow-y: auto;
-   padding:5;
+   padding:5px;
 }
 
 
@@ -714,17 +709,17 @@ ul {
    min-height: 100px;
    max-height: 200px; 
    overflow-y: auto;
-   padding:5;
+   padding:5px;
 }
 
 
 .tab_content_off {
-   padding:5;
+   padding:5px;
 }
 
 .tab_content_on {
    background-color:#ffffff;
-   padding:5;
+   padding:5px;
 }
 
 
@@ -736,10 +731,10 @@ ul {
    margin-bottom:0px;
    margin-left:3px;
    margin-right:3px;
-   padding-bottom:0;
-   padding-top:2;
-   padding-left:6;
-   padding-right:6;
+   padding-bottom:0px;
+   padding-top:2px;
+   padding-left:6px;
+   padding-right:6px;
 }
 
 
@@ -755,10 +750,10 @@ ul {
    margin-right:3px;
    margin-bottom:1px;
 
-   padding-bottom:0;
-   padding-top:2;
-   padding-left:6;
-   padding-right:6;
+   padding-bottom:0px;
+   padding-top:2px;
+   padding-left:6px;
+   padding-right:6px;
 
 }
 
@@ -883,7 +878,7 @@ a.menulink {
    background-color : #FFFFFF;
    position: absolute; 
    visibility: hidden; 
-   z-index: 10;
+   z-index: 1;
 //Shadow effect
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
@@ -1006,7 +1001,7 @@ code.menu {
 .content {
   border: 1px #aaa solid;
   min-height:800px;
-  margin:0;
+  margin:0px;
   margin-right:5px;
   background-color:#ffffff;
 }
@@ -1217,8 +1212,8 @@ form {
 
 .admin-block {
    margin-top:5px;
-   padding-left:5;
-   padding-bottom:5;
+   padding-left:5px;
+   padding-bottom:5px;
 }
 
 .admin-block-inner {
@@ -1235,8 +1230,8 @@ form {
    margin-top:5px;
    border : 1px #aaaaaa solid;
    background-color:#f8f8f8;
-   padding-left:5;
-   padding-bottom:5;
+   padding-left:5px;
+   padding-bottom:5px;
 }
 
 .wiki-tocheader {
@@ -1247,8 +1242,8 @@ form {
    margin-top:5px;
    border : 1px #aaaaaa solid;
    background-color:#f8f8f8;
-   padding-left:5;
-   padding-bottom:5;
+   padding-left:5px;
+   padding-bottom:5px;
 }
 
 .wiki-blockheader {
@@ -1259,7 +1254,7 @@ form {
 	color: black;
 	background: none;
 	font-weight: normal;
-	margin: 0;
+	margin: 0px;
 	padding-top: .5em;
 	padding-bottom: .17em;
 	border-bottom: 1px solid #aaa;
@@ -1279,8 +1274,8 @@ form {
 	height: 1px;
 	color: #aaa;
 	background-color: #aaa;
-	border: 0;
-	margin: .2em 0 .2em 0;
+	border: 0px;
+	margin: .2em 0px .2em 0px;
 }
 
 
@@ -1387,12 +1382,12 @@ TD.cpCurrentDate {
 color:#FFFFFF;
 background-color: #6677DD;
 background-color: #ccc;
-border-width:1;
+border-width:1px;
 border:solid thin #000000;
 }
 
 TD.cpCurrentDateDisabled {
-border-width:1;
+border-width:1px;
 border:solid thin #FFAAAA;
 }
 
@@ -1402,23 +1397,22 @@ TD.cpTodayText, TD.cpTodayTextDisabled {
 }
 
 A.cpTodayText, SPAN.cpTodayTextDisabled {
-xheight:20px;
 }
 
 A.cpTodayText {
 color:#6677DD;
-xfont-weight:bold;
 }
 
 
 
 SPAN.cpTodayTextDisabled {
-color:#D0D0D0;
+   color:#D0D0D0;
 }
 
 .cpBorder {
   border:solid 1px #6677DD;
-  xxborder:solid 1px #000;
   margin:0px;
   padding:0px;
 }
+
+

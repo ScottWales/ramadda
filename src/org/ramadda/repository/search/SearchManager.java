@@ -224,6 +224,10 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
     }
 
 
+    public boolean includeMetadata() {
+        return getProperty(PROP_SEARCH_SHOW_METADATA, true);
+    }
+
     /**
      * _more_
      *
@@ -326,7 +330,6 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
                           Field.Store.NO, Field.Index.ANALYZED));
 
         if(metadataSB.length()>0) {
-            System.err.println(metadataSB);
             doc.add(new Field(FIELD_METADATA, metadataSB.toString(),
                               Field.Store.NO, Field.Index.ANALYZED));
         }
@@ -722,13 +725,14 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             typeHandler.addToSearchForm(request, sb, where, true);
 
 
-            StringBuffer metadataSB = new StringBuffer();
-            metadataSB.append(HtmlUtil.formTable());
-            getMetadataManager().addToSearchForm(request, metadataSB);
-            metadataSB.append(HtmlUtil.formTableClose());
-            sb.append(HtmlUtil.makeShowHideBlock(msg("Properties"),
-                    metadataSB.toString(), false));
-
+            if(includeMetadata()) {
+                StringBuffer metadataSB = new StringBuffer();
+                metadataSB.append(HtmlUtil.formTable());
+                getMetadataManager().addToSearchForm(request, metadataSB);
+                metadataSB.append(HtmlUtil.formTableClose());
+                sb.append(HtmlUtil.makeShowHideBlock(msg("Properties"),
+                                                     metadataSB.toString(), false));
+            }
 
             StringBuffer outputForm = new StringBuffer(HtmlUtil.formTable());
             /* Humm, we probably don't want to include this as it screws up setting the output in the form

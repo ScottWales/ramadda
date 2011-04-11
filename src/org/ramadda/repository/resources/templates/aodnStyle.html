@@ -1,5 +1,9 @@
-<html xmlns:fb="http://www.facebook.com/2008/fbml">
-<head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+<title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <properties>
@@ -52,6 +56,16 @@ body {
 	font-size: smaller;
 	padding-bottom:5px;
 }
+
+.entryFooter {
+   font-family: Arial;
+	font-size: smaller;
+	padding:5px;
+        padding-left:20px;
+	border-top:1px solid #dddddd;
+}
+
+
 .entrymenulink {
   color: white;
   font-weight: bold;
@@ -284,6 +298,8 @@ a.header-leftcolumn  {
    padding-top: 2px;
    padding-bottom:2px;
    background-color: #efefef;
+   width: 150px;
+   overflow:scroll;
 }
 
 .favorites , .favorites a ,.favorites a:hover ,.favorites a:visited {
@@ -306,6 +322,7 @@ a.header-leftcolumn  {
 	padding-left: 20px;
 	margin-left:-30px;
 	margin-right:-4px;
+	margin-top:-5px;
 	/* offset left, top, thickness, color with alpha */
     -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
     -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
@@ -352,6 +369,19 @@ hr {
 	color: #435e78;
 }
 
+
+
+.cpYearNavigation, .cpMonthNavigation {
+	background-color:transparent;
+}
+
+
+
+.cpDayColumnHeader, .cpYearNavigation, .cpMonthNavigation, .cpCurrentMonthDate, .cpCurrentMonthDateDisabled, .cpOtherMonthDate, .cpOtherMonthDateDisabled, .cpCurrentDate, .cpCurrentDateDisabled, .cpTodayText, .cpTodayTextDisabled, .cpText 
+{ 
+	color: #666666;
+}
+
 </style>
 ${headfinal}
 </head>
@@ -363,22 +393,26 @@ ${headfinal}
 		<td width="100">
 			<div class="leftside">
 				<div class="logo">
-					<a href="${logo.url}" target="external"><img border="0"  src="${logo.image}" align="center"></a>
+					<a href="${logo.url}" target="external"><img border="0" width="150px" src="${logo.image}" alt="${logo.url}" /></a>
 				</div>
 				<div class="leftcolumn">
-					<span class="linkslabel"><a href="${root}" ><img border="0"  src="${root}/icons/folderclosed.png" align="center" /> Home </a></span>
+					<span class="linkslabel"><a href="${root}" ><img border="0"  src="${root}/icons/folderclosed.png" alt="Home"  /> Home </a></span>
 					<div class="leftbox">${links}</div>
-<br>
+					<br />
 
-					<span class="linkslabel"><a href="${root}/user/login" ><img border="0"  src="${root}/icons/user.png" align="center" /> User <a href="${root}" > </span>
+					<span class="linkslabel"><a href="${root}/user/login" ><img border="0"  src="${root}/icons/user.png" alt="User Home" /> User </a> </span>
 					<div class="leftbox">${userlink}</div>
-					<br>
+					<br />
 					${favorites}
 				</div>
 			</div>
 		</td>
 		<td>	
-			<div class="content">${entry.header}<div class="innercontent">${content}</div></div>
+			<div class="content">
+				<div class="entryHeader">${entry.header}</div>
+				<div class="innercontent">${content}</div> 
+				<div class="entryFooter">${entry.footer}</div>
+			</div>
 			<div class="footer">${footer}</div>
 		</td>
 	</tr>

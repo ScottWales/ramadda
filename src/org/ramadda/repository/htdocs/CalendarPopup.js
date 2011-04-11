@@ -1010,8 +1010,8 @@ function CalendarPopup() {
         c.width = function (w) {
             return " WIDTH=\"" +w +"\" ";
         }
-        c.class = function(class) {
-            return " class=\"" + this.cssPrefix+ class +"\" ";
+        c.class1 = function (class1) {
+            return " class=\"" + this.cssPrefix+ class1 +"\" ";
         }
         c.col = function(attrs, contents) {
             return  "<TD " + attrs +">" + contents +"</td>"; 
@@ -1320,16 +1320,16 @@ function CP_getCalendar() {
 			}
 		else {
          		if (this.isShowYearNavigation) {
-                            var prevMonth = this.href(this.class("cpMonthNavigation"), refreshLink+"("+this.index+","+last_month+","+last_month_year+");", "&lt;");
-                            var nextMonth = this.href(this.class("cpMonthNavigation"), refreshLink+"("+this.index+","+next_month+","+next_month_year+");","&gt;");
+                            var prevMonth = this.href(this.class1("cpMonthNavigation"), refreshLink+"("+this.index+","+last_month+","+last_month_year+");", "&lt;");
+                            var nextMonth = this.href(this.class1("cpMonthNavigation"), refreshLink+"("+this.index+","+next_month+","+next_month_year+");","&gt;");
 
-                            var prevYear = this.href(this.class("cpYearNavigation"), refreshLink+"("+this.index+","+month+","+(year-1)+");","&lt;&lt;");
-                            var nextYear = this.href(this.class("cpYearNavigation"),refreshLink+"("+this.index+","+month+","+(next_month_year+1)+");", "&gt;&gt;");
-                            var nowMonthYear = "<SPAN " + this.class('cpMonthNavigation') +" >" +this.monthNames[month-1]+"&nbsp;" + year +"</SPAN>";
+                            var prevYear = this.href(this.class1("cpYearNavigation"), refreshLink+"("+this.index+","+month+","+(year-1)+");","&lt;&lt;");
+                            var nextYear = this.href(this.class1("cpYearNavigation"),refreshLink+"("+this.index+","+month+","+(next_month_year+1)+");", "&gt;&gt;");
+                            var nowMonthYear = "<SPAN " + this.class1('cpMonthNavigation') +" >" +this.monthNames[month-1]+"&nbsp;" + year +"</SPAN>";
 
-                            result += this.col(this.class("cpMonthNavigation") + " align=left width=10% ", prevYear+"&nbsp;" +prevMonth); 
-                            result += this.col(this.class("cpMonthNavigation") +"  align=center width=80%  ", nowMonthYear);
-                            result += this.col(this.class('cpMonthNavigation') + " align=right width=10%  ", nextMonth +"&nbsp;" + nextYear);
+                            result += this.col(this.class1("cpMonthNavigation") + " align=left width=10% ", prevYear+"&nbsp;" +prevMonth); 
+                            result += this.col(this.class1("cpMonthNavigation") +"  align=center width=80%  ", nowMonthYear);
+                            result += this.col(this.class1('cpMonthNavigation') + " align=right width=10%  ", nextMonth +"&nbsp;" + nextYear);
                             if (this.isShowYearNavigationInput) {
 				result += '<TD CLASS="'+this.cssPrefix+'cpYearNavigation" WIDTH="36"><INPUT NAME="cpYear" CLASS="'+this.cssPrefix+'cpYearNavigation" SIZE="4" MAXLENGTH="4" VALUE="'+year+'" onBlur="'+refresh+'('+this.index+','+month+',this.value-0);"></TD>';
                             }
