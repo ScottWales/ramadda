@@ -931,6 +931,14 @@ public class GenericTypeHandler extends TypeHandler {
         column.addToEntryForm(request, entry, formBuffer, values, state);
     }
 
+
+    public void addToSpecialSearchForm(Request request, StringBuffer formBuffer)
+        throws Exception {
+        super.addToSpecialSearchForm(request,  formBuffer);
+        addColumnsToSearchForm(request, formBuffer, new ArrayList<Clause>(), true,false);
+    }
+
+
     /**
      * _more_
      *
@@ -945,21 +953,25 @@ public class GenericTypeHandler extends TypeHandler {
                                 List<Clause> where, boolean advancedForm)
             throws Exception {
         super.addToSearchForm(request, formBuffer, where, advancedForm);
+        addColumnsToSearchForm(request, formBuffer, where, advancedForm, true);
+    }
 
-        StringBuffer typeSB = new StringBuffer();
+
+    public void addColumnsToSearchForm(Request request, StringBuffer formBuffer,
+                                       List<Clause> where, boolean advancedForm, boolean makeToggleBox)
+            throws Exception {
+        StringBuffer typeSB = (makeToggleBox?new StringBuffer():formBuffer);
         for (Column column : columns) {
             column.addToSearchForm(request, typeSB, where);
         }
 
-        if (typeSB.toString().length() > 0) {
+        if (makeToggleBox && typeSB.toString().length() > 0) {
             typeSB = new StringBuffer(HtmlUtil.formTable() + typeSB
                                       + HtmlUtil.formTableClose());
             formBuffer.append(HtmlUtil.p());
             formBuffer.append(HtmlUtil.makeShowHideBlock(msg(getLabel()),
                     typeSB.toString(), true));
         }
-
-
     }
 
 

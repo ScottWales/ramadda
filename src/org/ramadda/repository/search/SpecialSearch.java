@@ -50,6 +50,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
 
     private String theType;
 
+    private TypeHandler typeHandler;
+
     private String searchUrl;
 
     private String label;
@@ -78,6 +80,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         searchUrl = (String)props.get("searchurl");
         label = (String)props.get("label");
         theType = (String)props.get("type");
+        typeHandler = getRepository().getTypeHandler(theType);
     }
 
 
@@ -185,6 +188,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         String widget = map.getSelectorWidget(ARG_AREA, nwse);
         formSB.append(HtmlUtil.formEntry(msgLabel("Location"), HtmlUtil.table(new Object[]{widget,clearLink})));
         formSB.append(HtmlUtil.formEntry("", searchType));
+
+
+        typeHandler.addToSpecialSearchForm(request, formSB);
 
         for(String type: metadataTypes) {
             MetadataType metadataType = getRepository().getMetadataManager().findType(type);

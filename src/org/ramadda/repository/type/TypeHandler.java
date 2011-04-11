@@ -2408,6 +2408,14 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public void addToSpecialSearchForm(Request request, StringBuffer formBuffer)
+        throws Exception {
+        if (parent != null) {
+            parent.addToSpecialSearchForm(request, formBuffer);
+        }
+    }
+
+
     /**
      * _more_
      *
