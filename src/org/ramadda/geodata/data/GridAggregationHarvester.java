@@ -78,9 +78,10 @@ import java.util.regex.*;
 public class GridAggregationHarvester extends PatternHarvester {
     
     public static final String ATTR_AGGREGATIONTYPE = "aggregationtype";
-
+    public static final String ATTR_AGGREGATIONCOORDINATE = "aggregationcoordinate";
 
     private String aggregationType = GridAggregationTypeHandler.TYPE_JOINEXISTING;
+    private String aggregationCoordinate = "time";
 
     /**
      * _more_
@@ -121,17 +122,22 @@ public class GridAggregationHarvester extends PatternHarvester {
     protected void init(Element element) throws Exception {
         super.init(element);
 
+        aggregationCoordinate = XmlUtil.getAttribute(element, ATTR_AGGREGATIONCOORDINATE,
+        		aggregationCoordinate);
         aggregationType = XmlUtil.getAttribute(element, ATTR_AGGREGATIONTYPE,
                                                aggregationType);
+    
     }
 
     public void applyState(Element element) throws Exception {
         super.applyState(element);
+        element.setAttribute(ATTR_AGGREGATIONCOORDINATE,aggregationCoordinate);
         element.setAttribute(ATTR_AGGREGATIONTYPE,aggregationType);
     }
 
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
+        aggregationCoordinate = request.getString(ATTR_AGGREGATIONCOORDINATE,aggregationCoordinate);
         aggregationType = request.getString(ATTR_AGGREGATIONTYPE,aggregationType);
     }
 
@@ -139,6 +145,10 @@ public class GridAggregationHarvester extends PatternHarvester {
             throws Exception {
         super.createEditForm(request, sb);
         List<String> types = (List<String>)Misc.newList(GridAggregationTypeHandler.TYPE_JOINEXISTING, GridAggregationTypeHandler.TYPE_UNION);
+        
+        sb.append(HtmlUtil.formEntry(msgLabel("Time Coordinate:"),
+                HtmlUtil.input(ATTR_AGGREGATIONCOORDINATE,
+                    aggregationCoordinate, HtmlUtil.SIZE_60)));
         sb.append(HtmlUtil.formEntry(msgLabel("Aggregation type"),
                                      HtmlUtil.select(ATTR_AGGREGATIONTYPE, types, aggregationType)));
     }
@@ -147,9 +157,9 @@ public class GridAggregationHarvester extends PatternHarvester {
     public void initEntry(Entry entry) {
         super.initEntry(entry);
         if(entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-            entry.setValues(new Object[]{null,aggregationType});
+        	 entry.setValues(new Object[]{aggregationCoordinate,aggregationType});
+        	 
         }
-
     }
     
 
@@ -185,8 +195,5 @@ public class GridAggregationHarvester extends PatternHarvester {
     public String getDescription() {
         return "Grid Aggregation";
     }
-
-
-
 
 }
