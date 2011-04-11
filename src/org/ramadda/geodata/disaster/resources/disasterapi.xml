@@ -1,5 +1,5 @@
 
-<api handler="org.ramadda.repository.search.SpecialSearch" id="disaster">
+<api handler="org.ramadda.geodata.disaster.DisasterList" id="disaster">
       <property name="admin" value="false"/>
 <!--
       <property name="metadatatypes" value="nlas_platform,nlas_haswaveform"/>

@@ -5,8 +5,8 @@
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <column name="disaster" type="enumeration" label="Disaster Type"  showinhtml="true" values="file:/org/ramadda/geodata/disaster/resources/disasters.txt" cansearch="true" canlist="true"/>
-     <column name="country" type="enumeration" label="Country"  showinhtml="true" values="file:/org/ramadda/geodata/disaster/resources/countries.txt" cansearch="true" canlist="true"/>
-     <column name="glidenumber" type="string" label="Glide Number"  showinhtml="true" suffix="GLobal IDEntifier number" />
+     <column name="country" type="enumeration" label="Country"  showinhtml="true" values="file:/org/ramadda/geodata/disaster/resources/countries.txt" cansearch="true" canlist="true" />
+     <column name="glidenumber" type="string" label="Glide Number"  showinhtml="true" suffix="GLobal IDEntifier number" cansearch="true" />
   </type>
 
 
