@@ -220,13 +220,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
             sb.append(getRepository().showDialogNote("No entries found"));
         }
 
-        Result tmpResult =
-            getRepository().getHtmlOutputHandler().outputGroup(request,
-                                                               HtmlOutputHandler.OUTPUT_HTML,
-                                                               getRepository().getEntryManager().getDummyGroup(),
-                                                               entries, new ArrayList<Entry>());
+        makeEntryList(request, sb, entries);
 
-        sb.append(new String(tmpResult.getContent()));
         for(Entry entry: entries) {
             
         }
@@ -236,6 +231,18 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
 
         return getRepository().getEntryManager().addEntryHeader(request, getRepository().getEntryManager().getTopGroup(), result);
     }
+
+
+    public void makeEntryList(Request request, StringBuffer sb, List<Entry> entries) throws Exception {
+        Result tmpResult =
+            getRepository().getHtmlOutputHandler().outputGroup(request,
+                                                               HtmlOutputHandler.OUTPUT_HTML,
+                                                               getRepository().getEntryManager().getDummyGroup(),
+                                                               entries, new ArrayList<Entry>());
+
+        sb.append(new String(tmpResult.getContent()));
+    }
+
 
 
 }
