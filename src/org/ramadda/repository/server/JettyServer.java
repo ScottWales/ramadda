@@ -40,7 +40,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 
-import ucar.unidata.util.HttpServer;
+
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.LogUtil;
