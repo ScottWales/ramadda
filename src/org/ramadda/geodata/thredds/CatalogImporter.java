@@ -96,6 +96,9 @@ public class CatalogImporter extends OutputHandler {
 
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+        if ( !request.getUser().getAdmin()) {
+            return;
+        }
         if (state.group != null) {
             links.add(makeLink(request, state.group, OUTPUT_CATALOG_IMPORT));
             Link hr = new Link(true);
@@ -109,6 +112,12 @@ public class CatalogImporter extends OutputHandler {
                               final Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
+        if ( !getAccessManager().canDoAction(request, group, Permission.ACTION_NEW)) {
+            throw new IllegalArgumentException("No access to import a catalog");
+        }
+
+
+        request.ensureAdmin();
         if ( !request.exists(ARG_CATALOG)) {
             StringBuffer sb = new StringBuffer();
             sb.append(request.form(getRepository().URL_ENTRY_SHOW,""));
