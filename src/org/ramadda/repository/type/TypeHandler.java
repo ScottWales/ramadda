@@ -315,6 +315,10 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public int getDefaultQueryLimit(Request request, Entry entry) {
+        return DB_MAX_ROWS;
+    }
+
 
     /**
      * _more_
@@ -3263,6 +3267,25 @@ public class TypeHandler extends RepositoryManager {
         }            
         return where;
     }
+
+
+
+    public void getChildrenEntries(Request request, Entry group, List<Entry> entries, List<Entry> subGroups, List<Clause> where) throws Exception {
+        List<String> ids = getEntryManager().getChildIds(request, group, where);
+        for (String id : ids) {
+            Entry entry = getEntryManager().getEntry(request, id);
+            if (entry == null) {
+                continue;
+            }
+            if (entry.isGroup()) {
+                subGroups.add((Entry) entry);
+            } else {
+                entries.add(entry);
+            }
+        }
+    }
+
+
 
 
     public void addTextSearch(Request request, String textToSearch, StringBuffer searchCriteria, List<Clause> where) throws Exception {

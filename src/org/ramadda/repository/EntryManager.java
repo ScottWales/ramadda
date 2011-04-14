@@ -549,23 +549,14 @@ public class EntryManager extends RepositoryManager {
                                     OutputType outputType, Entry group)
             throws Exception {
         boolean      doLatest    = request.get(ARG_LATEST, false);
-        TypeHandler  typeHandler = getRepository().getTypeHandler(request);
+        //not sure why we asked the repository for the type
+        //TypeHandler  typeHandler = getRepository().getTypeHandler(request);
+        TypeHandler  typeHandler = group.getTypeHandler();
         List<Clause> where       = typeHandler.assembleWhereClause(request);
         List<Entry>  entries     = new ArrayList<Entry>();
         List<Entry>  subGroups   = new ArrayList<Entry>();
         try {
-            List<String> ids = getChildIds(request, group, where);
-            for (String id : ids) {
-                Entry entry = getEntry(request, id);
-                if (entry == null) {
-                    continue;
-                }
-                if (entry.isGroup()) {
-                    subGroups.add((Entry) entry);
-                } else {
-                    entries.add(entry);
-                }
-            }
+            typeHandler.getChildrenEntries(request, group, entries, subGroups, where);
         } catch (Exception exc) {
             exc.printStackTrace();
             request.put(ARG_MESSAGE,
@@ -3283,7 +3274,7 @@ public class EntryManager extends RepositoryManager {
                                  (String) null);
         if (description == null) {
             description = XmlUtil.getGrandChildText(node, TAG_DESCRIPTION);
-            if(description!=null) {
+            if(description!=null && XmlUtil.getAttribute(node, "encoded", false)) {
                 description = new String(XmlUtil.decodeBase64(description));
             }
         }

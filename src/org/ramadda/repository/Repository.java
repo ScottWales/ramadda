@@ -137,6 +137,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
+    public static final String MACRO_ENTRY_FOOTER = "entry.footer"; 
+
     public static final String MACRO_HEADER = "header";
 
     /** _more_ */
@@ -5354,7 +5356,13 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         String  order     = " DESC ";
         boolean haveOrder = request.exists(ARG_ASCENDING);
         String  by        = null;
-        int     max       = request.get(ARG_MAX, DB_MAX_ROWS);
+        int     max = DB_MAX_ROWS;
+
+        if(forEntry!=null) {
+            max = forEntry.getTypeHandler().getDefaultQueryLimit(request, forEntry);
+        }
+
+        max =  request.get(ARG_MAX, max);
         if (sortMetadata != null) {
             haveOrder = true;
             if (Misc.equals(sortMetadata.getAttr2(), "true")) {
@@ -5375,19 +5383,17 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         }
 
         String limitString = BLANK;
-
-
-
-
-
         limitString =
             getDatabaseManager().getLimitString(request.get(ARG_SKIP, 0),
                 max);
+
 
         String orderBy = BLANK;
         if (addOrderBy) {
             orderBy = " ORDER BY " + Tables.ENTRIES.COL_FROMDATE + order;
         }
+        //!!CAREFUL HERE!! - sql injection with the ARG_ORDERBY
+        //Don't just use the by.
         if (by != null) {
             if (by.equals("fromdate")) {
                 orderBy = " ORDER BY " + Tables.ENTRIES.COL_FROMDATE + order;
@@ -5403,12 +5409,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 orderBy = " ORDER BY " + Tables.ENTRIES.COL_NAME + order;
             }
         }
-
-        //        System.err.println(orderBy);
         return orderBy + limitString;
-        //            }
-        //        }
-
     }
 
 
