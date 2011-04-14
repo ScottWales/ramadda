@@ -80,7 +80,7 @@ public class MapOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_MAP =
-        new OutputType("Map", "map.map",
+        new OutputType("Coverage Map", "map.map",
                        OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 

@@ -90,12 +90,12 @@ public class OutputHandler extends RepositoryManager {
 
     /** _more_ */
     public static final OutputType OUTPUT_HTML =
-        new OutputType("Entry", "default.html",
+        new OutputType("Information", "default.html",
                        OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
                        ICON_INFORMATION);
 
     public static final OutputType OUTPUT_TREE =
-        new OutputType("Entry", "default.html",
+        new OutputType("Information", "default.html",
                        OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
                        ICON_TREE);
 
@@ -250,7 +250,7 @@ public class OutputHandler extends RepositoryManager {
     public boolean showingAll(Request request, List<Entry> subGroups,
                               List<Entry> entries) {
         int cnt = subGroups.size() + entries.size();
-        int max = request.get(ARG_MAX, DB_MAX_ROWS);
+        int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             return false;
         }
@@ -299,7 +299,7 @@ public class OutputHandler extends RepositoryManager {
     public void showNext(Request request, int cnt, StringBuffer sb)
             throws Exception {
 
-        int max = request.get(ARG_MAX, DB_MAX_ROWS);
+        int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
         //        System.err.println ("cnt:" + cnt + " " + max);
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
@@ -316,7 +316,7 @@ public class OutputHandler extends RepositoryManager {
                                        + ARG_SKIP + "="
                                        + (skip + max), msg("Next...")));
             }
-            request.put(ARG_MAX, "" + (max + 100));
+            request.put(ARG_MAX, "" + (max + VIEW_MAX_ROWS));
             if (cnt >= max) {
                 toks.add(HtmlUtil.href(request.getUrl(), msg("View More")));
                 request.put(ARG_MAX, "" + (max / 2));
@@ -1143,7 +1143,8 @@ public class OutputHandler extends RepositoryManager {
         }
 
         StringBuffer selectSB = new StringBuffer();
-        selectSB.append(msgLabel("Do"));
+        //        selectSB.append(msgLabel("Do"));
+        selectSB.append(msgLabel("Apply action to selected entries"));
         selectSB.append(HtmlUtil.select(ARG_OUTPUT, tfos));
         selectSB.append(HtmlUtil.submit(msg("Selected"), "getselected"));
         selectSB.append(HtmlUtil.submit(msg("All"), "getall"));

@@ -88,7 +88,7 @@ public class ZipOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
-        new OutputType("Zip Tree", "zip.tree", OutputType.TYPE_FILE, "",
+        new OutputType("Zip Folders", "zip.tree", OutputType.TYPE_FILE, "",
                        ICON_ZIP);
 
 
@@ -351,7 +351,7 @@ public class ZipOutputHandler extends OutputHandler {
                 getMimeType(OUTPUT_ZIP));
 
         }
-
+        getLogManager().logInfo("Zip File ended");  
         return result;
     }
 
@@ -397,11 +397,14 @@ public class ZipOutputHandler extends OutputHandler {
             counter[0]++;
             //We are getting some weirdness in the database connections so lets
             //sleep a bit every 100 entries we see
+            /*
+              For now comment this out
             if (counter[0] % 100 == 0) {
                 System.err.println("zip count:" + counter[0] + " "
                                    + new Date());
                 Misc.sleep(10);
             }
+            */
             Element entryNode = null;
             if (forExport && (entriesRoot != null)) {
                 entryNode =
@@ -425,6 +428,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
 
+            getLogManager().logInfo("Zip generated size ="+sizeProcessed); 
             if ( !getAccessManager().canDownload(request, entry)) {
                 continue;
             }
