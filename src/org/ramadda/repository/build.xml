@@ -76,7 +76,7 @@
     </target>
 
     <target name="runserver" depends="init">
-      <java classname="org.ramadda.repository.server.RepositoryServer" maxmemory="512mb" fork="true">
+      <java classname="org.ramadda.repository.server.JettyServer" maxmemory="512mb" fork="true">
           <arg value="-port"/>
           <arg value="8080"/>
 <!--
@@ -240,7 +240,7 @@
               <attribute name="Implementation-Title" value="Unidata's Ramada"/>
               <attribute name="Implementation-Version" value="1.1"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
-              <attribute name="Main-class" value="org.ramadda.repository.server.RepositoryServer"/>
+              <attribute name="Main-class" value="org.ramadda.repository.server.JettyServer"/>
               <attribute name="Class-Path" value="${manifestjars}"/>
             </manifest> 
             <include name="**/*.class"/>

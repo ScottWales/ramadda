@@ -30,7 +30,7 @@ ${lib_dir}/repositorylib.jar:${lib_dir}/servlet-api.jar
 where lib_dir is ramadda/lib
 
 If you have the ramadda/src directory in your classpath and the requisite jar files you can run RAMADDA stand-alone with:
-java -Xmx1024m -server   org.ramadda.repository.server.RepositoryServer
+java -Xmx1024m -server   org.ramadda.repository.server.JettyServer
 
 
 
