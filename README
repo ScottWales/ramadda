@@ -1,14 +1,38 @@
 
+###########################################################################
+Building
+###########################################################################
+
 To build RAMADDA run:
 ant
 This builds:
 dist/repository.war  - For Tomcat
-dist/ramadda1.2.zip  - Stand-alone release
+dist/ramadda1.3.zip  - Stand-alone release
 
 The war is created with the "repository" name so the context path for tomcat
 is /repository
 
+
+###########################################################################
+Plugins
+###########################################################################
 To build the ramadda.org plugins run:
 ant plugins
+This compiles all of the plugins and installs them in your local
+~/.ramadda/plugins
+directory
+
+
+###########################################################################
+Running stand-alone
+###########################################################################
+You can run RAMADDA stand-alone from the source tree. After building it
+you can hit:
+ant runserver
+or:
+cd  dist/ramadda1.3b/
+chmod 755 ramadda.sh
+./ramadda.sh
+
 
 

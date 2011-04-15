@@ -30,6 +30,10 @@
    </target>
 
 
+    <target name="runserver" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="runserver"/>
+    </target>
+
     <target name="pluginclean">
       <delete>
           <fileset dir="${src_dir}/${plugin_dir}" includes="**/*.class"/>
