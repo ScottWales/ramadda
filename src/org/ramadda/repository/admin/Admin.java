@@ -651,7 +651,8 @@ public class Admin extends RepositoryManager {
             }
         }
         sb.append("<p>");
-        sb.append(request.form(URL_ADMIN_STARTSTOP, " name=\"admin\""));
+        sb.append(request.formPost(URL_ADMIN_STARTSTOP, " name=\"admin\""));
+        getRepository().addAuthToken(request, sb);
         if ( !getDatabaseManager().hasConnection()) {
             sb.append(HtmlUtil.hidden(ARG_ADMIN_WHAT, "restart"));
             sb.append(HtmlUtil.submit("Restart Database"));
@@ -831,6 +832,8 @@ public class Admin extends RepositoryManager {
     }
 
 
+
+
     /**
      * _more_
      *
@@ -844,6 +847,7 @@ public class Admin extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         sb.append(request.formPost(URL_ADMIN_SETTINGS_DO));
+        getRepository().addAuthToken(request, sb);
         String size = HtmlUtil.SIZE_60;
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Change Settings")));
@@ -1309,9 +1313,9 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminSettingsDo(Request request) throws Exception {
+        request.ensureAuthToken();
 
         getRepository().getRegistryManager().applyAdminConfig(request);
-
 
         getRepository().writeGlobal(request, PROP_PROPERTIES, true);
         getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);

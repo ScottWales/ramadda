@@ -2216,6 +2216,11 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                             Misc.getProperty(props, ApiMethod.ATTR_ADMIN,
                                              true));
 
+        boolean requiresAuthToken = XmlUtil.getAttributeFromTree(node,
+                            ApiMethod.ATTR_REQUIRESAUTHTOKEN,
+                            Misc.getProperty(props, ApiMethod.ATTR_REQUIRESAUTHTOKEN,
+                                             false));
+
         boolean canCache = XmlUtil.getAttributeFromTree(node,
                                ApiMethod.ATTR_CANCACHE,
                                Misc.getProperty(props,
@@ -2320,7 +2325,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         ApiMethod apiMethod =
             new ApiMethod(this, handler, request,
                           XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
-                              request), method, admin, needsSsl, authMethod,
+                                               request), method, admin, requiresAuthToken, needsSsl, authMethod,
                                         checkAuthMethod, canCache,
                                         XmlUtil.getAttribute(node,
                                             ApiMethod.ATTR_TOPLEVEL, false));
@@ -3018,6 +3023,12 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         return result;
 
     }
+
+
+    public void addAuthToken(Request request, StringBuffer sb) {
+        sb.append(HtmlUtil.hidden(ARG_AUTHTOKEN,request.getSessionId()));
+    }
+
 
 
     /**

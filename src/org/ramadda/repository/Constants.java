@@ -1105,6 +1105,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SESSIONID = "sessionid";
 
+    public static final String ARG_AUTHTOKEN = "authtoken";
+
     /** _more_ */
     public static final String ARG_REMOVESESSIONID = "removesessionid";
 

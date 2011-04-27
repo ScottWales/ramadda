@@ -1236,6 +1236,14 @@ public class Request implements Constants {
         }
     }
 
+
+    public void ensureAuthToken() {
+        if(!getString(ARG_AUTHTOKEN, "").equals(getSessionId())) {
+            throw new IllegalArgumentException("Bad authentication token");
+        }
+        //        System.err.println ("token OK");
+    }
+
     /**
      * _more_
      *
@@ -1736,6 +1744,8 @@ public class Request implements Constants {
     public String getSessionId() {
         return sessionId;
     }
+
+
 
 
 

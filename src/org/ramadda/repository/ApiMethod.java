@@ -82,6 +82,8 @@ public class ApiMethod {
     /** _more_ */
     public static final String ATTR_ADMIN = "admin";
 
+    public static final String ATTR_REQUIRESAUTHTOKEN = "requires_auth_token";
+
     /** _more_ */
     public static final String ATTR_CANCACHE = "cancache";
 
@@ -103,6 +105,7 @@ public class ApiMethod {
     /** _more_ */
     private boolean mustBeAdmin = true;
 
+    private boolean requiresAuthToken = false;
 
     /** _more_ */
     private RequestHandler requestHandler;
@@ -157,7 +160,8 @@ public class ApiMethod {
      */
     public ApiMethod(Repository repository, RequestHandler requestHandler,
                      String request, String name, Method method,
-                     boolean mustBeAdmin, boolean needsSsl,
+                     boolean mustBeAdmin, boolean requiresAuthToken,
+                     boolean needsSsl,
                      String authMethod, boolean checkAuthMethod,
                      boolean canCache, boolean isTopLevel) {
         this.repository      = repository;
@@ -165,6 +169,7 @@ public class ApiMethod {
         this.request         = request;
         this.name            = name;
         this.mustBeAdmin     = mustBeAdmin;
+        this.requiresAuthToken = requiresAuthToken;
         this.needsSsl        = needsSsl;
         this.authMethod      = authMethod;
         this.checkAuthMethod = checkAuthMethod;
@@ -205,6 +210,9 @@ public class ApiMethod {
             if(!user.getAdmin()) {
                 return false;
             }
+        }
+        if(requiresAuthToken) {
+            request.ensureAuthToken();
         }
         if (actions.size() > 0) {
             for (int i = 0; i < actions.size(); i++) {
@@ -367,6 +375,28 @@ public class ApiMethod {
     public boolean getMustBeAdmin() {
         return mustBeAdmin;
     }
+
+/**
+Set the RequiresAuthToken property.
+
+@param value The new value for RequiresAuthToken
+**/
+public void setRequiresAuthToken (boolean value) {
+	requiresAuthToken = value;
+}
+
+/**
+Get the RequiresAuthToken property.
+
+@return The RequiresAuthToken
+**/
+public boolean getRequiresAuthToken () {
+	return requiresAuthToken;
+}
+
+
+
+
 
     /**
      * Set the Actions property.

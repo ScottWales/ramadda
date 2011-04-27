@@ -835,7 +835,8 @@ public class UserManager extends RepositoryManager {
         sb.append(RepositoryUtil.header(msgLabel("User") + HtmlUtil.space(1)
                                         + user.getId()));
         sb.append(HtmlUtil.p());
-        sb.append(request.form(getRepositoryBase().URL_USER_EDIT));
+        sb.append(request.formPost(getRepositoryBase().URL_USER_EDIT));
+        getRepository().addAuthToken(request, sb);
         sb.append(HtmlUtil.hidden(ARG_USER_ID, user.getId()));
         if (request.defined(ARG_USER_DELETE)) {
             sb.append(
@@ -1152,7 +1153,8 @@ public class UserManager extends RepositoryManager {
             sb.append(
                 getRepository().showDialogWarning(errorBuffer.toString()));
         }
-        sb.append(request.form(getRepositoryBase().URL_USER_NEW));
+        sb.append(request.formPost(getRepositoryBase().URL_USER_NEW));
+        getRepository().addAuthToken(request, sb);
         StringBuffer formSB = new StringBuffer();
         formSB.append(msgHeader("Create a single user"));
         formSB.append(HtmlUtil.formTable());
@@ -1260,7 +1262,8 @@ public class UserManager extends RepositoryManager {
             init = "#one per line\n#user id, password, name, email";
         }
         sb.append(msgHeader("Bulk User Create"));
-        sb.append(request.form(getRepositoryBase().URL_USER_NEW));
+        sb.append(request.formPost(getRepositoryBase().URL_USER_NEW));
+        getRepository().addAuthToken(request, sb);
         sb.append(HtmlUtil.textArea(ARG_USER_BULK, init, 10, 80));
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.submit("Submit"));
@@ -2243,7 +2246,8 @@ public class UserManager extends RepositoryManager {
             sb.append(HtmlUtil.p());
 
             sb.append(
-                request.form(getRepositoryBase().URL_USER_RESETPASSWORD));
+                request.formPost(getRepositoryBase().URL_USER_RESETPASSWORD));
+            getRepository().addAuthToken(request, sb);
             sb.append(HtmlUtil.hidden(ARG_USER_PASSWORDKEY, key));
             sb.append(HtmlUtil.formTable());
             sb.append(formEntry(request, msgLabel("User"), user.getId()));
@@ -2329,7 +2333,8 @@ public class UserManager extends RepositoryManager {
                                       String name) {
         sb.append(msgHeader("Please enter your user ID"));
         sb.append(HtmlUtil.p());
-        sb.append(request.form(getRepositoryBase().URL_USER_RESETPASSWORD));
+        sb.append(request.formPost(getRepositoryBase().URL_USER_RESETPASSWORD));
+        getRepository().addAuthToken(request, sb);
         sb.append(msgLabel("User ID"));
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.input(ARG_USER_NAME, name, HtmlUtil.SIZE_20));
@@ -2859,7 +2864,8 @@ public class UserManager extends RepositoryManager {
 
         sb.append(HtmlUtil.p());
         sb.append(msgHeader("User Settings"));
-        sb.append(request.form(getRepositoryBase().URL_USER_SETTINGS));
+        sb.append(request.formPost(getRepositoryBase().URL_USER_SETTINGS));
+        getRepository().addAuthToken(request, sb);
         makeUserForm(request, user, sb, false);
         sb.append(HtmlUtil.submit(msg("Change Settings"), ARG_USER_CHANGE));
         sb.append(HtmlUtil.formClose());
@@ -2867,7 +2873,8 @@ public class UserManager extends RepositoryManager {
         if (user.canChangePassword()) {
             sb.append(HtmlUtil.p());
             sb.append(msgHeader("Password"));
-            sb.append(request.form(getRepositoryBase().URL_USER_SETTINGS));
+            sb.append(request.formPost(getRepositoryBase().URL_USER_SETTINGS));
+            getRepository().addAuthToken(request, sb);
             makePasswordForm(request, user, sb);
             sb.append(HtmlUtil.submit(msg("Change Password"),
                                       ARG_USER_CHANGE));
