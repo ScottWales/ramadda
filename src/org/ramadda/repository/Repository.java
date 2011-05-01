@@ -137,9 +137,9 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
     /** _more_ */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
-    public static final String MACRO_ENTRY_FOOTER = "entry.footer"; 
-
     public static final String MACRO_HEADER = "header";
+
+    public static final String MACRO_ENTRY_FOOTER = "entry.footer";
 
     /** _more_ */
     public static final String MACRO_ENTRY_BREADCRUMBS = "entry.breadcrumbs";
@@ -3280,6 +3280,12 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         if (entryHeader == null) {
             entryHeader = "";
         }
+        String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER);                               
+        if (entryFooter == null) {                                                                         
+            entryFooter = "";                                                                              
+        }  
+
+
         String entryBreadcrumbs =
             (String) result.getProperty(PROP_ENTRY_BREADCRUMBS);
         if (entryBreadcrumbs == null) {
@@ -3300,7 +3306,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 "<span class=\"linkslabel\">Favorites:</span>${entries}");
         String favoritesSeparator =
             getTemplateProperty(request,
-                                "ramadda.template.favrorites.separator", "");
+                                "ramadda.template.favorites.separator", "");
 
         List<FavoriteEntry> favoritesList =
             getUserManager().getFavorites(request, request.getUser());
@@ -3313,7 +3319,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 Entry entry = favorite.getEntry();
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, entry.getLabel(), null,
-                                          false);
+                                                                    false, null, false);
                 String link = favoritesWrapper.replace("${link}",
                                   entryLink.toString());
                 favoriteLinks.add("<nobr>" + link + "</nobr>");
@@ -3383,6 +3389,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             MACRO_LINKS, linksHtml, MACRO_CONTENT, content + jsContent,
             MACRO_FAVORITES, favorites.toString(), MACRO_ENTRY_HEADER,
             entryHeader, MACRO_HEADER, header,
+            MACRO_ENTRY_FOOTER, entryFooter, 
             MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs,
             MACRO_HEADFINAL, head, MACRO_ROOT, getUrlBase(),
         };
@@ -4078,7 +4085,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             if (isOutputTypeOK(outputType)) {
                 okLinks.add(link);
             } else {
-                System.err.println ("NOT OK: " + outputType);
+                //                System.err.println ("NOT OK: " + outputType);
             }
         }
         return okLinks;
@@ -4905,6 +4912,8 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         if (msg == null) {
             return null;
         }
+        msg = msg(msg);
+        //        if(msg.length()==0) return "";
         return msg(msg) + ":" + HtmlUtil.space(1);
     }
 

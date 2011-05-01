@@ -431,10 +431,17 @@ public class EntryManager extends RepositoryManager {
      */
     public Result addEntryHeader(Request request, Entry entry, Result result)
             throws Exception {
+        //For now don't add the entry header for the top-level entry
+        //for pages like search, etc.
+        if(entry == null) {
+            return result;
+        }
         if (entry == null) {
             entry = getTopGroup();
         }
-        if (result.getShouldDecorate()) {
+        //If entry is a dummy that means its from search results
+        //            if (result.getShouldDecorate()) {
+        if (result.getShouldDecorate() && !entry.isDummy()) {
             //            if(entry.getDescription().indexOf("<noentryheader>")>=0) return result;
             //            String output = request.getString(ARG_OUTPUT, (String) "");
             //            request.put(ARG_OUTPUT, output);
@@ -446,12 +453,15 @@ public class EntryManager extends RepositoryManager {
                 entryForHeader = getTopGroup();
             }
             //            if (!entry.isGroup()) {
+            String entryFooter = entryFooter(request, entryForHeader);
+
             String[] crumbs = getBreadCrumbs(request, entryForHeader, false);
             sb.append(crumbs[1]);
             //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
             //                result.setTitle(result.getTitle());
             result.putProperty(PROP_ENTRY_HEADER, sb.toString());
             result.putProperty(PROP_ENTRY_BREADCRUMBS, crumbs[0]);
+            result.putProperty(PROP_ENTRY_FOOTER, entryFooter);
             //            }
 
             List<Metadata> metadataList =
@@ -720,6 +730,113 @@ public class EntryManager extends RepositoryManager {
         return makeEntryEditResult(request, entry, title, sb);
 
     }
+
+    /**
+     * Function to get share button, ratings and also Numbers of Comments and comments icon getComments(request, entry); 
+     * This will only be painted if there is a menubar.
+     *
+     * @param request _more_
+     *
+     * @return String with the HTML
+     *
+     * @throws Exception _more_
+     */
+  
+    public String entryFooter(Request request, Entry entry) throws Exception {
+        
+    	if (entry==null){
+            entry = getTopGroup();
+    	}
+        StringBuffer sb    = new StringBuffer();
+        
+        String entryUrl =
+            HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+                         ARG_ENTRYID, entry.getId());
+        
+        
+        
+        //Table to englobe this toolbar
+        sb.append("<table width=\"100%\"><tr><td>");
+        
+               
+        // Comments
+        if(entry.getComments()!=null){
+            List<Comment> comments = entry.getComments();
+            Link link = new Link(
+                                 request.entryUrl(getRepository().URL_COMMENTS_SHOW, entry),
+                                 getRepository().iconUrl(ICON_COMMENTS),
+                                 "Add/View Comments",
+                                 OutputType.TYPE_VIEW | OutputType.TYPE_TOOLBAR);
+                     
+            String href = HtmlUtil.href(link.getUrl(),
+                                        "Comments:(" +comments.size()+")" +
+                                        HtmlUtil.img(link.getIcon(),
+                                                     link.getLabel(),
+                                                     link.getLabel()));
+        	
+        	    	
+            sb.append(href);
+		    
+            sb.append("</td><td>");
+        }
+        
+        // Share button
+        String title = entry.getName();
+        //  String share =
+        //      "<script type=\"text/javascript\">var addthis_disable_flash=\"true\"; addthis_pub=\"jeffmc\";</script><a href=\"http://www.addthis.com/bookmark.php?v=20\" onmouseover=\"return addthis_open(this, '', '" + entryUrl + "', '" + title + "')\" onmouseout=\"addthis_close()\" onclick=\"return addthis_sendto()\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
+	
+        String share =
+            "<script type=\"text/javascript\">" +
+            "var addthis_disable_flash=\"true\"; addthis_pub=\"jeffmc\";</script>" +
+            "<a href=\"http://www.addthis.com/bookmark.php?v=20\" " +
+            //"onmouseover=\"return addthis_open(this, '', '" + entryUrl + "', '" + title + "')\" " +
+            //		"onmouseout=\"addthis_close()\" return addthis_sendto()
+            "onclick=\"return addthis_open(this, '', '" + entryUrl + "', '" + title + "')\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
+ 
+	    
+        sb.append(share);
+        sb.append("</td><td>");
+   
+        
+        // Ratings 
+        boolean doRatings = getRepository().getProperty(PROP_RATINGS_ENABLE,true);
+        if (doRatings) {
+            String link = request.url(getRepository().URL_COMMENTS_SHOW,
+                                      ARG_ENTRYID, entry.getId());
+            String ratings = HtmlUtil.div(
+                                          "",
+                                          HtmlUtil.cssClass("js-kit-rating")
+                                          + HtmlUtil.attr(
+                                                          HtmlUtil.ATTR_TITLE,
+                                                          entry.getFullName()) + HtmlUtil.attr(
+                                                                                               "permalink",
+                                                                                               link)) + HtmlUtil.importJS(
+                                                                                                                          "http://js-kit.com/ratings.js");
+
+            sb.append(
+                      HtmlUtil.table(
+                                     HtmlUtil.row(
+                                                  HtmlUtil.col(
+                                                               ratings,
+                                                               HtmlUtil.attr(
+                                                                             HtmlUtil.ATTR_ALIGN,
+                                                                             HtmlUtil.VALUE_RIGHT)), HtmlUtil.attr(
+                                                                                                                   HtmlUtil.ATTR_VALIGN,
+                                                                                                                   HtmlUtil.VALUE_TOP)), HtmlUtil.attr(
+                                                                                                                                                       HtmlUtil.ATTR_WIDTH, "100%")));
+        }else {
+            sb.append(HtmlUtil.p());
+        }
+        
+        
+        sb.append("</td></tr></table>");
+        
+        return  sb.toString();
+    }
+
+
+
+
 
 
 
@@ -1842,8 +1959,8 @@ public class EntryManager extends RepositoryManager {
         //Exclude the synthetic entries
         List<Entry> okEntries = new ArrayList<Entry>();
         for(Entry entry: entries) {
-            if (entry.getTypeHandler().isSynthType()
-                || isSynthEntry(entry.getId())) {
+            //we don't ask the type if its a synth type 
+            if (/**entry.getTypeHandler().isSynthType()||*/ isSynthEntry(entry.getId())) {
                 continue;
             }
             okEntries.add(entry);
@@ -4232,6 +4349,7 @@ public class EntryManager extends RepositoryManager {
 
         StringBuffer
             htmlSB          = null,
+            exportSB        = null,
             nonHtmlSB       = null,
             actionSB        = null,
             categorySB      = null,
@@ -4251,12 +4369,16 @@ public class EntryManager extends RepositoryManager {
                     cnt++;
                 }
                 sb = htmlSB;
-            } else if (link.isType(OutputType.TYPE_NONHTML)) {
-                if (nonHtmlSB == null) {
+
+
+            //} else if (link.isType(OutputType.TYPE_NONHTML)) {
+             //if (nonHtmlSB == null) {
+            } else if (link.isType(OutputType.TYPE_EXPORT)) {
+                if (exportSB == null) {     
                     cnt++;
-                    nonHtmlSB = new StringBuffer(tableHeader);
+                    exportSB = new StringBuffer(tableHeader);
                 }
-                sb = nonHtmlSB;
+                sb = exportSB;
             } else if (link.isType(OutputType.TYPE_FILE)) {
                 if (fileSB == null) {
                     cnt++;
@@ -4328,10 +4450,10 @@ public class EntryManager extends RepositoryManager {
             menu.append(HtmlUtil.tag(HtmlUtil.TAG_TD, "", htmlSB.toString()));
         }
 
-        if (nonHtmlSB != null) {
-            nonHtmlSB.append("</table>");
+        if (exportSB != null) {
+            exportSB.append("</table>");
             menu.append(HtmlUtil.tag(HtmlUtil.TAG_TD, "",
-                                     nonHtmlSB.toString()));
+                                     exportSB.toString()));
         }
 
         menu.append(HtmlUtil.close(HtmlUtil.TAG_TR));
@@ -4389,12 +4511,12 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         List<Link> links = getEntryLinks(request, entry);
 
-        String fileMenu = getEntryActionsTable(request, entry,
+        String entryMenu = getEntryActionsTable(request, entry,
                                                     OutputType.TYPE_FILE, links,true);
         String editMenu = getEntryActionsTable(request, entry,
                                                     OutputType.TYPE_EDIT, links,true);
-        String feedMenu = getEntryActionsTable(request, entry,
-                                                    OutputType.TYPE_NONHTML, links,true);
+        String exportMenu = getEntryActionsTable(request, entry, OutputType.TYPE_EXPORT, links,true);   
+
         String viewMenu = getEntryActionsTable(request, entry,
                                                     OutputType.TYPE_HTML, links,true);
 
@@ -4423,12 +4545,17 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        if(fileMenu!=null)  {
+        if(entryMenu!=null)  {
             if(menuItems.size()>0)
                 menuItems.add(sep);
+            String menuName = "File";                                                                                                  
+            //Do we really want to change the name of the menu based on the entry type?
+            if(entry.isGroup()) {
+                //                menuName="Folder";
+            }        
             menuItems.add(getRepository().makePopupLink(
                                                         HtmlUtil.span(
-                                                                      msg("File"), menuClass), fileMenu, false,  true));
+                                                                      msg(menuName), menuClass), entryMenu, false,  true));
 
         }
 
@@ -4440,13 +4567,13 @@ public class EntryManager extends RepositoryManager {
                                                                       msg("Edit"),menuClass), editMenu, false, true));
         }
 
-        if(feedMenu!=null)  {
+        if(exportMenu!=null)  {
             if(menuItems.size()>0)
                 menuItems.add(sep);
             menuItems.add(getRepository().makePopupLink(
                 HtmlUtil.span(
-                    msg("Feeds"),
-                    menuClass), feedMenu, false,true));
+                    msg("Connect"),
+                    menuClass), exportMenu, false,true));
         }
         
         if(viewMenu!=null)  {
@@ -4478,7 +4605,7 @@ public class EntryManager extends RepositoryManager {
             .div(HtmlUtil
                 .table(HtmlUtil
                     .row(HtmlUtil
-                        .cols(fileMenu, sep, editMenu, sep,
+                        .cols(entryMenu, sep, editMenu, sep,
                             viewMenu)+"<td align=right>" + rightSide +"</td>"), " width=100% cellpadding=0 cellspacing=0 border=0 "), HtmlUtil
                             .cssClass("entrymenubar"));*/
     }
@@ -5838,6 +5965,41 @@ public class EntryManager extends RepositoryManager {
             }
         }
         return result;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getChildrenAll(Request request, Entry group)
+            throws Exception {
+        List<Entry> children = new ArrayList<Entry>();
+        if ( !group.isGroup()) {
+            return children;
+        }
+        List<Entry>  entries = new ArrayList<Entry>();
+        List<String> ids     = getChildIds(request, (Entry) group, null);
+        for (String id : ids) {
+            Entry entry = getEntry(request, id);
+            if (entry == null) {
+                continue;
+            }
+            if (entry.isGroup()) {
+                children.add(entry);
+            } else {
+                entries.add(entry);
+            }
+        }
+        children.addAll(entries);
+        return children;
     }
 
 

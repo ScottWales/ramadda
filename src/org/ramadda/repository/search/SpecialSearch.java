@@ -126,8 +126,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
             URL_SEARCH = new RequestUrl(this, searchUrl);
         }
 
+
         makeHeader(request, sb);
-        sb.append(request.form(URL_SEARCH,  HtmlUtil.attr(HtmlUtil.ATTR_NAME,"apisearchform")));
 
         String[]nwse = new String[] {
             request.getString(ARG_AREA_NORTH, ""),
@@ -176,6 +176,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
 
 
         StringBuffer formSB  = new StringBuffer();
+        formSB.append(request.form(URL_SEARCH,  HtmlUtil.attr(HtmlUtil.ATTR_NAME,"apisearchform")));
         formSB.append(HtmlUtil.br());
         formSB.append(HtmlUtil.formTable());
         formSB.append(HtmlUtil.formEntryTop(msgLabel("Text"),
@@ -201,32 +202,46 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
 
         formSB.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Search"), ARG_SEARCH_SUBMIT)));
         formSB.append(HtmlUtil.formTableClose());
-        sb.append("<table border=0 cellpadding=0 cellspacing=0><tr valign=top>");
+        formSB.append(HtmlUtil.formClose());
+
 
         List<String> tabContents = new ArrayList<String>();
         List<String> tabTitles = new ArrayList<String>();
         StringBuffer timelineSB = new StringBuffer();
+        StringBuffer listSB = new StringBuffer();
+
+
+        makeEntryList(request, listSB, entries);
+
         String head = getRepository().getHtmlOutputHandler().makeTimeline(request, entries, timelineSB,"width:" + tabWidth+"px; height: " + tabHeight+"px;");
        
 
         StringBuffer mapSB =new StringBuffer(msg("Shift-drag to select region"));
         mapSB.append(map.getHtml());
+
+        //Pad it out
+        listSB.append("&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>");
+        tabContents.add(listSB.toString());
+        tabTitles.add(msg("List"));
+
         tabContents.add(mapSB.toString());
         tabTitles.add(msg("Map"));
 
         tabContents.add(timelineSB.toString());
         tabTitles.add(msg("Timeline"));
+
         String tabs =  OutputHandler.makeTabs(tabTitles, tabContents, true, "tab_content");
-        sb.append(HtmlUtil.col(tabs));
-        sb.append(HtmlUtil.col(formSB.toString()));
+        sb.append("<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
+        sb.append(HtmlUtil.col(formSB.toString(), HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,"30%")));
+        sb.append(HtmlUtil.col(tabs, HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,"70%")));
         sb.append("</table>");
-        sb.append(HtmlUtil.formClose());
+
         sb.append(HtmlUtil.script(js.toString()));
         if(entries.size()==0) {
-            sb.append(getRepository().showDialogNote("No entries found"));
+            //            sb.append(getRepository().showDialogNote("No entries found"));
         }
 
-        makeEntryList(request, sb, entries);
+
 
         for(Entry entry: entries) {
             

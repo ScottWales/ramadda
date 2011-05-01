@@ -59,20 +59,24 @@ import java.util.List;
  */
 public class UserManager extends RepositoryManager {
 
+    private  static final int CART_TYPE = OutputType.TYPE_TOOLBAR;
+    //    private  static final int CART_TYPE = TYPE_FILE;
+
+
     /** output type */
     public static final OutputType OUTPUT_CART_ADD =
-        new OutputType("Add to Cart", "user.cart.add", OutputType.TYPE_FILE,
+        new OutputType("Add to Cart", "user.cart.add", CART_TYPE,
                        "", ICON_CART_ADD);
 
     /** output type */
     public static final OutputType OUTPUT_CART_REMOVE =
         new OutputType("Remove from Cart", "user.cart.remove",
-                       OutputType.TYPE_FILE, "", ICON_CART_DELETE);
+                       CART_TYPE, "", ICON_CART_DELETE);
 
     /** output type */
     public static final OutputType OUTPUT_FAVORITE =
         new OutputType("Add as Favorite", "user.addfavorite",
-                       OutputType.TYPE_FILE, "", ICON_FAVORITE);
+                       CART_TYPE, "", ICON_FAVORITE);
 
     /** role */
     public static final String ROLE_ANY = "any";
@@ -2163,14 +2167,16 @@ public class UserManager extends RepositoryManager {
 
         sb.append(msgHeader("Please enter your registered email address"));
         sb.append(HtmlUtil.p());
-
         sb.append(request.form(getRepositoryBase().URL_USER_FINDUSERID));
-        sb.append(msgLabel("Email"));
+        sb.append(msgLabel("Your Email"));
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.input(ARG_USER_EMAIL, email, HtmlUtil.SIZE_30));
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.submit("Submit"));
         sb.append(HtmlUtil.formClose());
+
+        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtil.img(getRepository().getUrlBase()+"/images/dilbert.gif"));
         return new Result(msg("Password Reset"), sb);
     }
 
@@ -2341,7 +2347,10 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.submit(msg("Reset your password")));
         sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtil.img(getRepository().getUrlBase()+"/images/dilbert.gif"));
     }
+
 
 
 
@@ -2565,18 +2574,20 @@ public class UserManager extends RepositoryManager {
                     List<Entry> cart = getCart(request);
                     Link link = makeLink(request, state.getEntry(),
                                          OUTPUT_CART_ADD);
-                    link.setLinkType(OutputType.TYPE_FILE);
+                    //link.setLinkType(OutputType.TYPE_FILE);
+                    link.setLinkType(OutputType.TYPE_FILE|CART_TYPE);
                     links.add(link);
 
                     link = makeLink(request, state.getEntry(),
                                     OUTPUT_CART_REMOVE);
-                    link.setLinkType(OutputType.TYPE_FILE);
+                    link.setLinkType(OutputType.TYPE_FILE|CART_TYPE);
                     links.add(link);
 
                     if ( !request.getUser().getAnonymous()) {
                         link = makeLink(request, state.getEntry(),
                                         OUTPUT_FAVORITE);
-                        link.setLinkType(OutputType.TYPE_ACTION);
+                        link.setLinkType(OutputType.TYPE_ACTION|CART_TYPE);
+                        //                        link.setLinkType(OutputType.TYPE_ACTION);
                         links.add(link);
                     }
                 }

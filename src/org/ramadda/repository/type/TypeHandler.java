@@ -1331,7 +1331,7 @@ public class TypeHandler extends RepositoryManager {
                                request.entryUrl(getRepository().URL_COMMENTS_SHOW, entry),
                                getRepository().iconUrl(ICON_COMMENTS),
                                "Add/View Comments",
-                               OutputType.TYPE_EDIT | OutputType.TYPE_TOOLBAR));
+                               OutputType.TYPE_VIEW | OutputType.TYPE_TOOLBAR));
         }
 
         if ((request.getUser() != null)
@@ -1562,8 +1562,7 @@ public class TypeHandler extends RepositoryManager {
                         HtmlUtil.url(
                                      request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
                             Misc.newList(
-                                ARG_FROMDATE, startDate, ARG_TODATE,
-                                endDate));
+                                         ARG_DATA_DATE+"."+ARG_FROM, startDate, ARG_DATA_DATE+"."+ARG_TO,   endDate));
                     String searchLink =
                         HtmlUtil.href(
                             searchUrl,
@@ -1577,9 +1576,31 @@ public class TypeHandler extends RepositoryManager {
                             + HtmlUtil.img(iconUrl(ICON_RANGE))
                             + HtmlUtil.space(1) + endDate));
                 } else {
+                	
+            		 String startDate = formatDate(request,
+                            entry.getStartDate(), entry);
+			         String endDate = startDate;
+			         
+			         String searchUrl =
+			             HtmlUtil.url(
+			                          request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
+			                 Misc.newList(
+			                		 ARG_DATA_DATE+"."+ARG_FROM, startDate, ARG_DATA_DATE+"."+ARG_TO,
+			                     endDate));
+			         String searchLink =
+                      HtmlUtil.href(
+                          searchUrl,
+                          HtmlUtil.img(
+                              getRepository().iconUrl(ICON_SEARCH),
+                              "Search for entries with this date range",
+                                  " border=0 "));
+            	
+
+
+
                     sb.append(formEntry(request, msgLabel("Date"),
-                            formatDate(request, entry.getStartDate(),
-                                       entry)));
+                            formatDate(request, entry.getStartDate(), entry) +
+                                        searchLink + HtmlUtil.space(1) + startDate));               
                 }
             }
             String typeDesc = entry.getTypeHandler().getDescription();
@@ -2556,10 +2577,10 @@ public class TypeHandler extends RepositoryManager {
 
 
         List dateTypes = new ArrayList();
-        dateTypes.add(new TwoFacedObject(msg("Overlaps range"),
-                                         DATE_SEARCHMODE_OVERLAPS));
         dateTypes.add(new TwoFacedObject(msg("Contained by range"),
                                          DATE_SEARCHMODE_CONTAINEDBY));
+        dateTypes.add(new TwoFacedObject(msg("Overlaps range"),
+                                         DATE_SEARCHMODE_OVERLAPS));
         dateTypes.add(new TwoFacedObject(msg("Contains range"),
                                          DATE_SEARCHMODE_CONTAINS));
 

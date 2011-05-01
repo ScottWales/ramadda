@@ -99,7 +99,6 @@ public class OutputType {
     /** _more_ */
     public static final int TYPE_FORSEARCH = 1 << 8;
 
-
     /** _more_ */
     public static final int TYPE_CATEGORY = 1 << 9;
     

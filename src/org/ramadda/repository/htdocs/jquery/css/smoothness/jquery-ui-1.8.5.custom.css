@@ -57,27 +57,26 @@
 /* Component containers
 ----------------------------------*/
 .ui-widget { 
-//jeffmc font-family: Verdana,Arial,sans-serif; 
-//jeffmc font-size: 1.1em; 
+/*jeffmc font-family: Verdana,Arial,sans-serif; */
+/*jeffmc font-size: 1.1em; */
 }
 .ui-widget .ui-widget { 
-//jeffmc font-size: 1em; 
+/*jeffmc font-size: 1em; */
 }
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdana,Arial,sans-serif; 
-//jeffmc font-size: 1em; 
+/*jeffmc font-size: 1em; */
 }
 .ui-widget-content { 
-//jeffmc: border: 1px solid #aaaaaa; 
+/*jeffmc: border: 1px solid #aaaaaa; */
   background: #ffffff url(images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x; color: #222222; 
 }
 .ui-widget-content a { 
-                   //jeffmc    color: #222222; 
+                   /*jeffmc    color: #222222; */
                    }
 .ui-widget-header { 
 
-//border: 1px solid #aaaaaa; 
-
-//jeffmc: background: #cccccc url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x; 
+/*border: 1px solid #aaaaaa; */
+/*jeffmc: background: #cccccc url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x; */
 
 color: #222222; font-weight: bold; }
 .ui-widget-header a { color: #222222; }
@@ -307,7 +306,7 @@ color: #222222; font-weight: bold; }
 .ui-corner-right {  -moz-border-radius-topright: 6px; -webkit-border-top-right-radius: 6px; border-top-right-radius: 6px; -moz-border-radius-bottomright: 6px; -webkit-border-bottom-right-radius: 6px; border-bottom-right-radius: 6px; }
 .ui-corner-left { -moz-border-radius-topleft: 6px; -webkit-border-top-left-radius: 6px; border-top-left-radius: 6px; -moz-border-radius-bottomleft: 6px; -webkit-border-bottom-left-radius: 6px; border-bottom-left-radius: 6px; }
 
-//jeffmc: .xxxui-corner-all { -moz-border-radius: 6px; -webkit-border-radius: 6px; border-radius: 6px; }
+/*jeffmc: .xxxui-corner-all { -moz-border-radius: 6px; -webkit-border-radius: 6px; border-radius: 6px; }*/
 
 /* Overlays */
 .ui-widget-overlay { background: #aaaaaa url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x; opacity: .30;filter:Alpha(Opacity=30); }
@@ -504,7 +503,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
  * http://docs.jquery.com/UI/Tabs#theming
  */
 .ui-tabs { position: relative; 
-//jeffmc: padding: .2em; 
+/*jeffmc: padding: .2em; */
 zoom: 1; } 
 /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
 
@@ -520,22 +519,22 @@ border-bottom: 0 !important; padding: 0; white-space: nowrap; }
 
 .ui-tabs .ui-tabs-nav li a { 
 float: left; 
-//jeffmc: changed padding
-//padding: .5em 1em; 
+/*jeffmc: changed padding*/
+/*padding: .5em 1em; */
 padding-left: .5em; 
 padding-right: .5em; 
 padding-top: .2em; 
 padding-bottom: .0em; 
 text-decoration: none; }
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 1px; 
-//jeffmc:;
+/*jeffmc: added bold*/
 font-weight: bold;
 }
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
 .ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
 .ui-tabs .ui-tabs-panel { 
 border: 1px solid #aaaaaa; 
-//border-width: 0;
+/*border-width: 0;*/
 display: block;  padding: 1em 1.4em; background: none; 
 }
 .ui-tabs .ui-tabs-hide { display: none !important; }

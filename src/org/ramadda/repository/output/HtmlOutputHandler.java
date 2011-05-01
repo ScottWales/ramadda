@@ -79,12 +79,15 @@ public class HtmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
         new OutputType("Timeline", "default.timeline",
-                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       //OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, 
+                       OutputType.TYPE_FORSEARCH, 
+                       "", 
                        ICON_TIMELINE);
 
     public static final OutputType OUTPUT_GRID =
         new OutputType("Grid Layout", "html.grid",
-                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       //                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_FORSEARCH, "",
                        ICON_DATA);
 
 
@@ -170,6 +173,7 @@ public class HtmlOutputHandler extends OutputHandler {
         OutputType []types = new OutputType[]{OUTPUT_TREE, OUTPUT_GRID, OUTPUT_TIMELINE,CalendarOutputHandler.OUTPUT_CALENDAR};
         StringBuffer sb = new StringBuffer("<table cellspacing=0 cellpadding=0><tr>");
         String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
+        sb.append("<td align=center>" + msgLabel("Change layout") +"</td>"); 
         for(OutputType output: types) {
             String link = HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                                      entry, ARG_OUTPUT, output),
@@ -516,7 +520,8 @@ public class HtmlOutputHandler extends OutputHandler {
                     " <tr  " + theClass
                     + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
                     + html[0] + "</nobr></td><td>"
-                    + HtmlUtil.makeToggleInline("", html[1], false)
+                    //                    + HtmlUtil.makeToggleInline("", html[1], false)
+                    + HtmlUtil.makeToggleInline("", html[1], true)
                     + "</td></tr>";
                 sb.append(row);
             } else {
