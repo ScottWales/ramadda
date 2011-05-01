@@ -1,6 +1,6 @@
 <types>
 
-  <type name="note"  description="Note">
+  <type name="notes_note"  description="Note" handler="org.ramadda.plugins.notes.NoteTypeHandler" category="Information">`b
      <property name="icon" value="/icons/note.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.datatype.show" value="false"/>

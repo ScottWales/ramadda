@@ -40,11 +40,11 @@ import java.util.Properties;
  *
  *
  */
-public class NoteEntryTypeHandler extends GenericTypeHandler {
+public class NoteTypeHandler extends GenericTypeHandler {
 
 
     /** _more_ */
-    public static String TYPE_NOTEENTRY = "noteentry";
+    public static String TYPE_NOTE = "notes_note";
 
 
     /**
@@ -55,7 +55,7 @@ public class NoteEntryTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public NoteEntryTypeHandler(Repository repository, Element entryNode)
+    public NoteTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
