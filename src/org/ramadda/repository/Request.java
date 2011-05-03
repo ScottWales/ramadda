@@ -288,7 +288,7 @@ public class Request implements Constants {
     public String getEntryUrl(String theUrl, Entry entry) {
         String url = theUrl.toString();
         if (theUrl.equals(repository.URL_ENTRY_SHOW.toString())) {
-            String name = entry.getFullName();
+            String name = entry.getFullName(true);
             try {
                 name = name.replace("/", "_FORWARDSLASH_");
                 name = java.net.URLEncoder.encode(name, "UTF-8");

@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository;
@@ -31,11 +30,12 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
+import java.awt.geom.Rectangle2D;
+
 
 import java.io.File;
 
 import java.util.ArrayList;
-import java.awt.geom.Rectangle2D;
 
 
 import java.util.Date;
@@ -50,7 +50,7 @@ import java.util.List;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class Entry  implements Cloneable { 
+public class Entry implements Cloneable {
 
     /** _more_ */
     public static final String IDDELIMITER = ":";
@@ -104,6 +104,7 @@ public class Entry  implements Cloneable {
     /** _more_ */
     private long createDate;
 
+    /** _more_          */
     private long changeDate;
 
 
@@ -140,8 +141,10 @@ public class Entry  implements Cloneable {
     /** _more_ */
     private double west = NONGEO;
 
+    /** _more_          */
     private double altitudeBottom = NONGEO;
 
+    /** _more_          */
     private double altitudeTop = NONGEO;
 
     /** _more_ */
@@ -156,15 +159,17 @@ public class Entry  implements Cloneable {
     /** _more_ */
     private String icon;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable properties;
 
-    /** _more_          */
+    /** _more_ */
     private String propertiesString;
 
+    /** _more_          */
     private Hashtable transientProperties = new Hashtable();
 
 
+    /** _more_          */
     private boolean isGroup = false;
 
 
@@ -175,6 +180,7 @@ public class Entry  implements Cloneable {
     List<Entry> subEntries;
 
 
+    /** _more_          */
     private List<String> childIds;
 
 
@@ -183,6 +189,11 @@ public class Entry  implements Cloneable {
      */
     public Entry() {}
 
+    /**
+     * _more_
+     *
+     * @param that _more_
+     */
     public Entry(Entry that) {
         //        super(that);
         initWith(that);
@@ -199,6 +210,12 @@ public class Entry  implements Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param handler _more_
+     * @param isDummy _more_
+     */
     public Entry(TypeHandler handler, boolean isDummy) {
         this("", handler);
         this.isDummy = isDummy;
@@ -219,10 +236,17 @@ public class Entry  implements Cloneable {
         this.typeHandler = typeHandler;
     }
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param typeHandler _more_
+     * @param isGroup _more_
+     */
     public Entry(String id, TypeHandler typeHandler, boolean isGroup) {
         this(id);
         this.typeHandler = typeHandler;
-        this.isGroup = isGroup;
+        this.isGroup     = isGroup;
     }
 
 
@@ -240,21 +264,21 @@ public class Entry  implements Cloneable {
     }
 
     /**
-       Set the ChildIds property.
-
-       @param value The new value for ChildIds
-    **/
-    public void setChildIds (List<String> value) {
-	childIds = value;
+     *  Set the ChildIds property.
+     *
+     *  @param value The new value for ChildIds
+     */
+    public void setChildIds(List<String> value) {
+        childIds = value;
     }
 
     /**
-       Get the ChildIds property.
-
-       @return The ChildIds
-    **/
-    public List<String> getChildIds () {
-	return childIds;
+     *  Get the ChildIds property.
+     *
+     *  @return The ChildIds
+     */
+    public List<String> getChildIds() {
+        return childIds;
     }
 
 
@@ -280,13 +304,63 @@ public class Entry  implements Cloneable {
      * @return _more_
      */
     public String getFullName() {
-        if (getParentEntry() != null) {
-            return getParentEntry().getFullName() + "/" + getName();
+        return getFullName(false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param encodeForUrl _more_
+     *
+     * @return _more_
+     */
+    public String getFullName(boolean encodeForUrl) {
+        String name = getName();
+        //        boolean debug = name.indexOf("crap")>=0;
+        //Encode any URLish characters
+        if (encodeForUrl) {
+            name = encodeName(name);
         }
-        return getName();
+        //        if(debug)
+        //            System.err.println ("getFullName:" + name);
+        Entry parent = getParentEntry();
+        if (parent != null) {
+            String parentName = parent.getFullName(encodeForUrl);
+            //            if(debug)
+            //                System.err.println ("parent name:" + parentName);
+            return parentName + PATHDELIMITER + name;
+        }
+        return name;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public static String encodeName(String name) {
+        name = name.replaceAll("\\/", "%2F");
+        name = name.replaceAll("\\?", "%3F");
+        name = name.replaceAll("\\&", "%26");
+        return name;
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public static String decodeName(String name) {
+        name = name.replaceAll("%2F", "/");
+        name = name.replaceAll("%3F", "?");
+        name = name.replaceAll("%26", "&");
+        return name;
+    }
 
     /**
      * _more_
@@ -324,21 +398,31 @@ public class Entry  implements Cloneable {
         setSouth(template.getSouth());
         setEast(template.getEast());
         setWest(template.getWest());
-        this.altitudeTop = template.altitudeTop;
+        this.altitudeTop    = template.altitudeTop;
         this.altitudeBottom = template.altitudeBottom;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Rectangle2D.Double getBounds() {
-	return  new Rectangle2D.Double(west, south,
-				       east - west, north - south);
+        return new Rectangle2D.Double(west, south, east - west,
+                                      north - south);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param rect _more_
+     */
     public void setBounds(Rectangle2D.Double rect) {
-	west = rect.getX();
-	south = rect.getY();
-	east =  west+rect.getWidth();
-	north =  south+rect.getHeight();
+        west  = rect.getX();
+        south = rect.getY();
+        east  = west + rect.getWidth();
+        north = south + rect.getHeight();
     }
 
 
@@ -350,18 +434,20 @@ public class Entry  implements Cloneable {
      * @param name _more_
      * @param description _more_
      * @param group _more_
+     * @param parentEntry _more_
      * @param user _more_
      * @param resource _more_
      * @param dataType _more_
      * @param createDate _more_
+     * @param changeDate _more_
      * @param startDate _more_
      * @param endDate _more_
      * @param values _more_
      */
     public void initEntry(String name, String description, Entry parentEntry,
                           User user, Resource resource, String dataType,
-                          long createDate, long changeDate, long startDate, long endDate,
-                          Object[] values) {
+                          long createDate, long changeDate, long startDate,
+                          long endDate, Object[] values) {
         //        super.init(name, description, parentEntry, user, createDate,changeDate);
         this.id          = id;
         this.name        = name;
@@ -372,8 +458,8 @@ public class Entry  implements Cloneable {
         this.changeDate  = changeDate;
 
 
-        this.resource = resource;
-        this.dataType = dataType;
+        this.resource    = resource;
+        this.dataType    = dataType;
         if ((dataType == null) || (dataType.length() == 0)) {
             this.dataType = typeHandler.getDefaultDataType();
         }
@@ -484,6 +570,11 @@ public class Entry  implements Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isTopEntry() {
         return isGroup() && (getParentEntryId() == null);
     }
@@ -505,11 +596,20 @@ public class Entry  implements Cloneable {
      * @return _more_
      */
     public boolean isGroup() {
-        if(isGroup) return true;
-        if(typeHandler!=null) return typeHandler.isGroup();
+        if (isGroup) {
+            return true;
+        }
+        if (typeHandler != null) {
+            return typeHandler.isGroup();
+        }
         return false;
     }
 
+    /**
+     * _more_
+     *
+     * @param g _more_
+     */
     public void setGroup(boolean g) {
         isGroup = g;
     }
@@ -562,15 +662,29 @@ public class Entry  implements Cloneable {
         return values;
     }
 
+    /**
+     * _more_
+     *
+     * @param index _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getValue(int index, String dflt) {
-        if(values == null || index>=values.length|| values[index]==null) {
+        if ((values == null) || (index >= values.length)
+                || (values[index] == null)) {
             return dflt;
         }
         return values[index].toString();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String toString() {
-        return name + " id:" + id +"  type:" + getTypeHandler();
+        return name + " id:" + id + "  type:" + getTypeHandler();
     }
 
     /**
@@ -655,6 +769,11 @@ public class Entry  implements Cloneable {
         return getTypeHandler().getLabel() + ": " + new Date(startDate);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getBaseLabel() {
         if ((name != null) && (name.trim().length() > 0)) {
             return name;
@@ -668,22 +787,34 @@ public class Entry  implements Cloneable {
 
 
 
+    /**
+     * _more_
+     *
+     * @param that _more_
+     */
     public void setLocation(Entry that) {
-        this.north = that.north;
-        this.south = that.south;
-        this.east = that.east;
-        this.west = that.west;
-        this.altitudeTop = that.altitudeTop;
+        this.north          = that.north;
+        this.south          = that.south;
+        this.east           = that.east;
+        this.west           = that.west;
+        this.altitudeTop    = that.altitudeTop;
         this.altitudeBottom = that.altitudeBottom;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param lat _more_
+     * @param lon _more_
+     * @param alt _more_
+     */
     public void setLocation(double lat, double lon, double alt) {
-        this.north = lat;
-        this.south = lat;
-        this.east = lon;
-        this.west = lon;
-        this.altitudeTop = alt;
+        this.north          = lat;
+        this.south          = lat;
+        this.east           = lon;
+        this.west           = lon;
+        this.altitudeTop    = alt;
         this.altitudeBottom = alt;
     }
 
@@ -729,58 +860,80 @@ public class Entry  implements Cloneable {
     }
 
     /**
-       Set the AltitudeTop property.
-
-       @param value The new value for AltitudeTop
-    **/
-    public void setAltitudeTop (double value) {
-	altitudeTop = value;
+     *  Set the AltitudeTop property.
+     *
+     *  @param value The new value for AltitudeTop
+     */
+    public void setAltitudeTop(double value) {
+        altitudeTop = value;
     }
 
     /**
-       Get the AltitudeTop property.
-
-       @return The AltitudeTop
-    **/
-    public double getAltitudeTop () {
-	return altitudeTop;
+     *  Get the AltitudeTop property.
+     *
+     *  @return The AltitudeTop
+     */
+    public double getAltitudeTop() {
+        return altitudeTop;
     }
 
     /**
-       Set the AltitudeBottom property.
-
-       @param value The new value for AltitudeBottom
-    **/
-    public void setAltitudeBottom (double value) {
-	altitudeBottom = value;
+     *  Set the AltitudeBottom property.
+     *
+     *  @param value The new value for AltitudeBottom
+     */
+    public void setAltitudeBottom(double value) {
+        altitudeBottom = value;
     }
 
     /**
-       Get the AltitudeBottom property.
-
-       @return The AltitudeBottom
-    **/
-    public double getAltitudeBottom () {
-	return altitudeBottom;
+     *  Get the AltitudeBottom property.
+     *
+     *  @return The AltitudeBottom
+     */
+    public double getAltitudeBottom() {
+        return altitudeBottom;
     }
 
-    public double getAltitude () {
-	return altitudeTop;
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double getAltitude() {
+        return altitudeTop;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasAltitudeTop() {
         return (altitudeTop == altitudeTop) && (altitudeTop != NONGEO);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasAltitudeBottom() {
-        return (altitudeBottom == altitudeBottom) && (altitudeBottom != NONGEO);
+        return (altitudeBottom == altitudeBottom)
+               && (altitudeBottom != NONGEO);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasAltitude() {
-        return hasAltitudeTop() && hasAltitudeBottom() && (altitudeBottom== altitudeTop);
+        return hasAltitudeTop() && hasAltitudeBottom()
+               && (altitudeBottom == altitudeTop);
     }
 
 
@@ -841,10 +994,15 @@ public class Entry  implements Cloneable {
                 : NONGEO);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public double[][] getLatLonBounds() {
         return new double[][] {
-            {north,north,south,south,north},
-            {west,east,east,west,west}
+            { north, north, south, south, north },
+            { west, east, east, west, west }
         };
     }
 
@@ -961,10 +1119,23 @@ public class Entry  implements Cloneable {
         return remoteServer;
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     *
+     * @return _more_
+     */
     public Object getTransientProperty(Object key) {
         return transientProperties.get(key);
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param value _more_
+     */
     public void putTransientProperty(Object key, Object value) {
         transientProperties.put(key, value);
     }
@@ -1087,6 +1258,16 @@ public class Entry  implements Cloneable {
         return subEntries;
     }
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param description _more_
+     * @param parentEntry _more_
+     * @param user _more_
+     * @param createDate _more_
+     * @param changeDate _more_
+     */
     public void init(String name, String description, Entry parentEntry,
                      User user, long createDate, long changeDate) {
         this.name        = name;
@@ -1174,6 +1355,11 @@ public class Entry  implements Cloneable {
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Entry getParentEntry() {
         return parentEntry;
     }
@@ -1189,6 +1375,11 @@ public class Entry  implements Cloneable {
         setParentEntryId(value);
     }
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setParentEntryId(String value) {
         parentEntryId = value;
     }
@@ -1203,6 +1394,11 @@ public class Entry  implements Cloneable {
         return getParentEntryId();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getParentEntryId() {
         return ((parentEntry != null)
                 ? parentEntry.getId()
@@ -1362,6 +1558,9 @@ public class Entry  implements Cloneable {
 
 
 
+    /**
+     * _more_
+     */
     public void clearAssociations() {
         associations = null;
     }
