@@ -1131,8 +1131,14 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        String wikiTemplate = getWikiText(request, group);
+        String wikiTemplate = null;
+        //If the user specifically selected an output listing then don't do the wiki text
+        if(!request.exists(ARG_OUTPUT)) {
+            wikiTemplate = getWikiText(request, group);
+        }
+
         String head = null;
+
 
 
         if (showTimeline) {
