@@ -288,6 +288,7 @@ public class XmlOutputHandler extends OutputHandler {
         if ((entry.getDescription() != null)
                 && (entry.getDescription().length() > 0)) {
             Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, node);
+            descNode.setAttribute("encoded", "true");
             descNode.appendChild(XmlUtil.makeCDataNode(doc, entry.getDescription(),
                                                        true));
         }
