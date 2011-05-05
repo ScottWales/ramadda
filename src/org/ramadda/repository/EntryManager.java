@@ -4573,10 +4573,8 @@ public class EntryManager extends RepositoryManager {
                               OutputType.TYPE_EDIT, links, true);
         String exportMenu = getEntryActionsTable(request, entry,
                                 OutputType.TYPE_EXPORT, links, true);
-
         String viewMenu = getEntryActionsTable(request, entry,
                               OutputType.TYPE_HTML, links, true);
-
 
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();

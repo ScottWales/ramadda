@@ -97,12 +97,12 @@ public class CatalogOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG =
         new OutputType("Catalog", "thredds.catalog",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_NONHTML | OutputType.TYPE_EXPORT |OutputType.TYPE_FORSEARCH,
                        "", ICON_CATALOG);
 
     public static final OutputType OUTPUT_CATALOG_EMBED =
         new OutputType("Catalog", "thredds.catalog.embed",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_NONHTML | OutputType.TYPE_EXPORT | OutputType.TYPE_FORSEARCH,
                        "", ICON_CATALOG);
 
 
@@ -375,7 +375,8 @@ public class CatalogOutputHandler extends OutputHandler {
             addServices(group, request, catalogInfo, topDataset);
             addMetadata(request, group, catalogInfo, topDataset);
             int cnt  = subGroups.size() + entries.size();
-            int max  = request.get(ARG_MAX, DB_MAX_ROWS);
+            //            int max  = request.get(ARG_MAX, DB_MAX_ROWS);
+            int max  = request.get(ARG_MAX, DB_VIEW_ROWS);
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
             //            System.err.println ("entries:" + entries.size() + " groups:" + subGroups.size()+ " max:" + max+" skip:" + skip);
 

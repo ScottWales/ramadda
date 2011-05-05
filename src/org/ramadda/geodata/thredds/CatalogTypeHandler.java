@@ -323,7 +323,8 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
             if (child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
-                String datasetId = getId(mainEntry, child);
+                //                String datasetId = getId(mainEntry, child);
+                String datasetId = getId(mainEntry, child.getBaseURI(),""); 
                 String entryId   = getCatalogId(mainEntry, url + ":id:" + datasetId);
                 childIdToParent.put(entryId, parentId);
                 ids.add(entryId);

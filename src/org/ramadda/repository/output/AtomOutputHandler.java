@@ -71,15 +71,14 @@ import java.util.zip.*;
 
 
 /**
- * Class SqlUtil _more_
+ * Provides ATOM xml representation
  *
  *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author RAMADDA Development Team
  */
 public class AtomOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** mime type      */
     public static final String MIME_ATOM = "application/atom+xml";
 
     /** _more_ */

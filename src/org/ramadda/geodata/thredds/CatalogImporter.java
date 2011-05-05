@@ -103,7 +103,8 @@ public class CatalogImporter extends OutputHandler {
             links.add(makeLink(request, state.group, OUTPUT_CATALOG_IMPORT));
             Link hr = new Link(true);
             hr.setLinkType(OutputType.TYPE_FILE);
-            links.add(hr);
+            //take the hr out for now
+            //links.add(hr);
         }
     }
 
