@@ -1,0 +1,11 @@
+
+<api handler="org.ramadda.repository.search.SpecialSearch" id="community_search">
+      <property name="admin" value="false"/>
+<!--
+      <property name="metadatatypes" value="nlas_platform,nlas_haswaveform"/>
+-->
+      <property name="label" value="View Community Members"/>
+      <property name="searchurl" value="/community/search"/>
+      <property name="type" value="community_user"/>
+      <api request="/community/search"    method="processSearchRequest" toplevel="true" name="View Community Members"/>
+</api>

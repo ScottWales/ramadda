@@ -1,0 +1,33 @@
+<types>
+
+  <type name="community_user"  description="Community Member" handler="org.ramadda.plugins.community.UserTypeHandler" category="Information">
+     <property name="icon" value="/icons/user.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.description.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.date.show.before" value="false"/>
+     <property name="form.date.label" value="Membership Date"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.location.show.before" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Name"/>
+
+<column name="address1" type="string" label="Address 1" showinhtml="true"/>
+<column name="address2" type="string" label="Address 2" showinhtml="true"/>
+<column name="city" type="string" label="City" showinhtml="true" cansearch="true"/>
+<column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+<column name="postal_code" type="string" columns="10" label="Postal code" showinhtml="true" cansearch="true"/>
+<column name="country" type="enumerationplus" label="Country" values="file:/org/ramadda/plugins/community/resources/countries.txt" showinhtml="true" cansearch="true"/>
+<column name="email" type="email" label="Email" showinhtml="true"/>
+<column name="phone" type="string" label="Phone" showinhtml="true"/>
+<column name="institution" type="enumerationplus" label="Institution" showinhtml="true" 
+values="file:/org/ramadda/plugins/community/resources/institutions.txt" cansearch="true"/>
+<column name="user_url" type="url" label="URL" showinhtml="true" />
+</type>
+
+
+</types>
