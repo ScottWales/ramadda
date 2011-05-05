@@ -179,10 +179,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler  
         formSB.append(request.form(URL_SEARCH,  HtmlUtil.attr(HtmlUtil.ATTR_NAME,"apisearchform")));
         formSB.append(HtmlUtil.br());
         formSB.append(HtmlUtil.formTable());
-        formSB.append(HtmlUtil.formEntryTop(msgLabel("Text"),
+        formSB.append(HtmlUtil.formEntryTop(msgLabel(typeHandler.getFormLabel(null, ARG_NAME, "Text")),
                                             HtmlUtil.input(ARG_TEXT, request.getString(ARG_TEXT,""),
-                                                       HtmlUtil.SIZE_20
-                                                       + " autofocus ")));
+                                                           HtmlUtil.SIZE_20
+                                                           + " autofocus ")));
 
         String clearLink =   map.getSelectorClearLink(repository.msg("Clear"));
         String searchType = TypeHandler.getSpatialSearchTypeWidget(request);

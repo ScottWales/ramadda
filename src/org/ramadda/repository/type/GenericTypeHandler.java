@@ -366,13 +366,19 @@ public class GenericTypeHandler extends TypeHandler {
         }
 
         for (Column column : columns) {
+            String value = null;
             Element child = nodes.get(column.getName());
-            if(child == null) continue;
-            String value = XmlUtil.getChildText(child);
+            if(child != null) {
+                value = XmlUtil.getChildText(child);
+            }
+            if(value == null) {
+                value = XmlUtil.getAttribute(node, column.getName(), (String) null);
+            }
+            if(value == null) {
+                continue;
+            }
             column.setValue(entry, values, value);
         }
-
-
     }
 
 
@@ -757,6 +763,11 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
+    public boolean shouldShowInHtml(Request requst, Entry entry, OutputType output) {
+        return output.equals(OutputHandler.OUTPUT_HTML);
+    }
+
+
     /**
      * _more_
      *
@@ -779,7 +790,7 @@ public class GenericTypeHandler extends TypeHandler {
             throws Exception {
         StringBuffer sb = super.getInnerEntryContent(entry, request, output,
                               showDescription, showResource, linkToDownload);
-        if (output.equals(OutputHandler.OUTPUT_HTML)) {
+        if (shouldShowInHtml(request, entry, output)) {
             Object[] values = entry.getValues();
             if (values != null) {
                 for (Column column : columns) {

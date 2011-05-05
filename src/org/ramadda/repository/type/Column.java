@@ -351,7 +351,7 @@ public class Column implements Constants {
         }
 
 
-        if (type.equals(TYPE_ENUMERATION)) {
+        if(isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
                                      (String) null);
             if (valueString != null) {
@@ -1285,8 +1285,15 @@ public class Column implements Constants {
             if (values != null) {
                 value = (String) toString(values, offset);
             }
+            List enums = typeHandler.getEnumValues(this, entry);
+            //TODO: Check for Strings vs TwoFacedObjects
+            if(enumValues!=null) {
+                List tmp = new ArrayList(enums);
+                tmp.addAll(enumValues);
+                enums = tmp;
+            }
             widget = HtmlUtil.select(id,
-                                     typeHandler.getEnumValues(this, entry),
+                                     enums,
                                      value) + "  or:  "
                                             + HtmlUtil.input(id + "_plus",
                                                 "", HtmlUtil.SIZE_10);

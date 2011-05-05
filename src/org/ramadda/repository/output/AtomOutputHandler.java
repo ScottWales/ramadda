@@ -216,13 +216,12 @@ public class AtomOutputHandler extends OutputHandler {
                 links.add(new AtomUtil.Link(AtomUtil.REL_IMAGE, imageUrl,
                                             "Image"));
             }
-            List<Service> services =
-                entry.getTypeHandler().getServices(request, entry);
+            TypeHandler typeHandler = entry.getTypeHandler();
+            List<Service> services = typeHandler.getServices(request, entry);
             for (Service service : services) {
                 String url  = service.getUrl();
                 String type = service.getType();
                 String name = service.getName();
-
                 links.add(new AtomUtil.Link(type, url, name));
             }
 
@@ -260,13 +259,16 @@ public class AtomOutputHandler extends OutputHandler {
                              entry.getNorth() +" " + entry.getEast() +"</georss:box>\n");
             }
 
-
             extra.append(XmlUtil.toString(root));
 
+            String desc = entry.getDescription();
+            if(TypeHandler.isWikiText(desc)) {
+                desc = "";
+            }
             sb.append(AtomUtil.makeEntry(entry.getName(), 
                                          selfUrl,
                                          new Date(entry.getEndDate()),
-                                         entry.getDescription(), null,
+                                         desc, null,
                                          links, extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
