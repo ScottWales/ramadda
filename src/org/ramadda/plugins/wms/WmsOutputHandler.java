@@ -48,7 +48,7 @@ public class WmsOutputHandler extends OutputHandler {
 
     /** output type for viewing map */
     public static final OutputType OUTPUT_WMS_VIEWER =
-        new OutputType("WMS Map View", "wms.viewer", OutputType.TYPE_HTML,
+        new OutputType("WMS Map View", "wms.viewer", OutputType.TYPE_VIEW,
                        "", "/icons/globe.jpg");
 
 

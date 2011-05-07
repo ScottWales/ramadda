@@ -65,12 +65,12 @@ public class WikiPageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
                                                      "wiki.view",
-                                                     OutputType.TYPE_HTML,
+                                                     OutputType.TYPE_VIEW,
                                                      "", ICON_WIKI);
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI_HISTORY =
-        new OutputType("Wiki History", "wiki.history", OutputType.TYPE_HTML,
+        new OutputType("Wiki History", "wiki.history", OutputType.TYPE_VIEW,
                        "", ICON_WIKI);
 
 

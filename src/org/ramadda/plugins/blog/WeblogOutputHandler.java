@@ -77,7 +77,7 @@ public class WeblogOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_BLOG = new OutputType("Weblog",
                                                      "blog",
-                                                     OutputType.TYPE_HTML,
+                                                     OutputType.TYPE_VIEW,
                                                      "", "blog.image");
 
 

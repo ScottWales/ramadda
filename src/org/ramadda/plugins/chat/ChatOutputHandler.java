@@ -89,18 +89,18 @@ public class ChatOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_CHATROOM =
-        new OutputType("Chat Room", "chat.room", OutputType.TYPE_HTML, "",
+        new OutputType("Chat Room", "chat.room", OutputType.TYPE_VIEW, "",
                        ICON_CHAT);
 
     /** _more_ */
     public static final OutputType OUTPUT_CHAT = new OutputType("Chat",
                                                      "chat.chat",
-                                                     OutputType.TYPE_HTML,
+                                                     OutputType.TYPE_VIEW,
                                                      "", ICON_CHAT);
 
     /** _more_ */
     public static final OutputType OUTPUT_WHITEBOARD =
-        new OutputType("Whiteboard", "chat.whiteboard", OutputType.TYPE_HTML,
+        new OutputType("Whiteboard", "chat.whiteboard", OutputType.TYPE_VIEW,
                        "", ICON_CHAT);
 
 

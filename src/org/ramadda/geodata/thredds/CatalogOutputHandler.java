@@ -97,12 +97,12 @@ public class CatalogOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG =
         new OutputType("Catalog", "thredds.catalog",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_EXPORT |OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
                        "", ICON_CATALOG);
 
     public static final OutputType OUTPUT_CATALOG_EMBED =
         new OutputType("Catalog", "thredds.catalog.embed",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_EXPORT | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
                        "", ICON_CATALOG);
 
 

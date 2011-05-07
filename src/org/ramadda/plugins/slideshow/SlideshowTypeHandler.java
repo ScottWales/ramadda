@@ -214,7 +214,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                     getRepository().URL_ENTRY_SHOW, ARG_ENTRYID,
                     entry.getId(), ARG_SLIDESHOW_SHOW,
                     "true"), getRepository().iconUrl(ICON_SLIDESHOW),
-                             "View Slideshow", OutputType.TYPE_HTML));
+                             "View Slideshow", OutputType.TYPE_VIEW));
     }
 
 

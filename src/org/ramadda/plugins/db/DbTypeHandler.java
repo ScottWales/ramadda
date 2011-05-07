@@ -74,6 +74,9 @@ import java.util.List;
 
 public class DbTypeHandler extends BlobTypeHandler {
 
+    /** _more_ */
+    public static final String ATTR_RSS_VERSION = "version";
+
     /** _more_          */
     public static final String TAG_DBVALUES = "dbvalues";
 
