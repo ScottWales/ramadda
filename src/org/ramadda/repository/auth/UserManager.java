@@ -59,24 +59,20 @@ import java.util.List;
  */
 public class UserManager extends RepositoryManager {
 
-    private  static final int CART_TYPE = OutputType.TYPE_TOOLBAR;
-    //    private  static final int CART_TYPE = TYPE_FILE;
-
-
     /** output type */
     public static final OutputType OUTPUT_CART_ADD =
-        new OutputType("Add to Cart", "user.cart.add", CART_TYPE,
+        new OutputType("Add to Cart", "user.cart.add", OutputType.TYPE_TOOLBAR,
                        "", ICON_CART_ADD);
 
     /** output type */
     public static final OutputType OUTPUT_CART_REMOVE =
         new OutputType("Remove from Cart", "user.cart.remove",
-                       CART_TYPE, "", ICON_CART_DELETE);
+                       OutputType.TYPE_ACTION, "", ICON_CART_DELETE);
 
     /** output type */
     public static final OutputType OUTPUT_FAVORITE =
         new OutputType("Add as Favorite", "user.addfavorite",
-                       CART_TYPE, "", ICON_FAVORITE);
+                       OutputType.TYPE_TOOLBAR, "", ICON_FAVORITE);
 
     /** role */
     public static final String ROLE_ANY = "any";
@@ -2574,20 +2570,18 @@ public class UserManager extends RepositoryManager {
                     List<Entry> cart = getCart(request);
                     Link link = makeLink(request, state.getEntry(),
                                          OUTPUT_CART_ADD);
-                    //link.setLinkType(OutputType.TYPE_FILE);
-                    link.setLinkType(OutputType.TYPE_FILE|CART_TYPE);
+                    link.setLinkType(OutputType.TYPE_FILE|OutputType.TYPE_TOOLBAR);
                     links.add(link);
 
                     link = makeLink(request, state.getEntry(),
                                     OUTPUT_CART_REMOVE);
-                    link.setLinkType(OutputType.TYPE_FILE|CART_TYPE);
+                    link.setLinkType(OutputType.TYPE_FILE|OutputType.TYPE_ACTION);
                     links.add(link);
 
                     if ( !request.getUser().getAnonymous()) {
                         link = makeLink(request, state.getEntry(),
                                         OUTPUT_FAVORITE);
-                        link.setLinkType(OutputType.TYPE_ACTION|CART_TYPE);
-                        //                        link.setLinkType(OutputType.TYPE_ACTION);
+                        link.setLinkType(OutputType.TYPE_TOOLBAR);
                         links.add(link);
                     }
                 }

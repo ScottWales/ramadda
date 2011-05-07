@@ -267,7 +267,6 @@ public interface Constants {
     public static final String ICON_RIGHTDART = "ramadda.icon.rightdart";
 
     /** _more_ */
-    public static final String ICON_RSS = "ramadda.icon.rss";
     public static final String ICON_ATOM = "ramadda.icon.atom";
 
     /** _more_ */
@@ -424,8 +423,6 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_RESOURCE_TYPE = "resource_type";
 
-    /** _more_ */
-    public static final String ATTR_RSS_VERSION = "version";
 
     /** _more_ */
     public static final String ATTR_SERVER = "server";

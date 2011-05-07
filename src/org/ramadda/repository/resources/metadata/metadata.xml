@@ -162,10 +162,11 @@
     </type>
 
     <type
-       name="Spatial KML Polygon Coordinates"
-       id="spatial.kmlpolycoords">
-      <element name="value"/>
+       name="Spatial Polygon Coordinates"
+       id="spatial.polygon">
+      <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
     </type>
+
 
 </handler>
 

@@ -27,6 +27,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.type.*;
 
@@ -81,7 +82,7 @@ public class MapOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_MAP =
         new OutputType("Coverage Map", "map.map",
-                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 
 
@@ -274,6 +275,7 @@ public class MapOutputHandler extends OutputHandler {
                     location = entry.getCenter();
                 }
 
+                List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
                 if (entry.getResource().isImage()) {
                     String thumbUrl = getRepository().absoluteUrl(HtmlUtil.url(
                                       request.url(repository.URL_ENTRY_GET)
@@ -283,7 +285,6 @@ public class MapOutputHandler extends OutputHandler {
                                       ARG_IMAGEWIDTH, "300"));
                     info.append(HtmlUtil.img(thumbUrl,"",""));
 
-                    List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
                     for(Metadata metadata: metadataList) {
                         if(metadata.getType().equals(JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
                             double dir = Double.parseDouble(metadata.getAttr1());
@@ -293,6 +294,21 @@ public class MapOutputHandler extends OutputHandler {
                             if(haveBearingLines!=null)haveBearingLines[0] = true;
                             break;
                         } 
+                    }
+                }
+
+                for(Metadata metadata: metadataList) {
+                    if(metadata.getType().equals(MetadataHandler.TYPE_SPATIAL_POLYGON)) {
+                        List<double[]>points = new ArrayList<double[]>();
+                        String s = metadata.getAttr1();
+                        for(String pair: StringUtil.split(s,";",true,true)) {
+                            List<String> toks = StringUtil.splitUpTo(pair, ",", 2);
+                            if(toks.size()!=2) continue;
+                            double lat = Misc.decodeLatLon(toks.get(0));
+                            double lon = Misc.decodeLatLon(toks.get(1));
+                            points.add(new double[]{lat,lon});
+                        }
+                        map.addLines(entry.getId()+"_polygon", points);
                     }
                 }
 

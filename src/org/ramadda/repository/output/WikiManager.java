@@ -95,7 +95,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
                                                      "wiki.view",
-                                                     OutputType.TYPE_HTML,
+                                                     OutputType.TYPE_VIEW,
                                                      "", ICON_WIKI);
 
 
@@ -705,7 +705,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getHtmlOutputHandler().getCommentBlock(request, entry,
                     false).toString();
         } else if (include.equals(WIKIPROP_TOOLBAR)) {
-            return getEntryManager().getEntryToolbar(request, entry, false);
+            return getEntryManager().getEntryToolbar(request, entry);
         } else if (include.equals(WIKIPROP_BREADCRUMBS)) {
             return getEntryManager().getBreadCrumbs(request, entry);
         } else if (include.equals(WIKIPROP_DESCRIPTION)) {
@@ -905,7 +905,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             String title = null;
             String propertyValue;
-            if ( !outputType.getIsHtml()) {
+            if ( !outputType.getIsView()) {
                 List<Link> links = new ArrayList<Link>();
                 handler.getEntryLinks(myRequest,
                                       new OutputHandler.State(importEntry),

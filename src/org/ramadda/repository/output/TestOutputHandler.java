@@ -81,7 +81,7 @@ public class TestOutputHandler extends OutputHandler {
     public TestOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(new OutputType("", "testit", OutputType.TYPE_HTML));
+        addType(new OutputType("", "testit", OutputType.TYPE_VIEW));
     }
 
 

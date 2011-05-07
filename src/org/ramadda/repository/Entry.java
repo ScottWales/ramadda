@@ -1517,6 +1517,17 @@ public class Entry implements Cloneable {
         return metadata.contains(value);
     }
 
+    public boolean hasMetadataOfType(String type) {
+        if (metadata == null) {
+            return false;
+        }
+        for(Metadata myMetadata: metadata) {
+            if(myMetadata.getType().equals(type)) return true;
+        }
+        return false;
+    }
+
+
 
     /**
      * _more_

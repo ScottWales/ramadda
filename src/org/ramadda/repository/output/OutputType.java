@@ -72,46 +72,37 @@ import java.util.zip.*;
  */
 public class OutputType {
 
-    /** _more_ */
-    public static final int TYPE_HTML = 1 << 0;
+    /** for the file menu */
+    public static final int TYPE_FILE = 1 << 0;
 
-    /** _more_ */
-    public static final int TYPE_NONHTML = 1 << 1;
+    /** for the  edit menu */
+    public static final int TYPE_EDIT = 1 << 1;
 
-    /** _more_ */
-    public static final int TYPE_ACTION = 1 << 2;
+    /** for the  connect menu */
+    public static final int TYPE_NONHTML = 1 << 2;
 
-    /** _more_ */
-    public static final int TYPE_INTERNAL = 1 << 3;
+    /** for the  view menu */
+    public static final int TYPE_VIEW = 1 << 3;
 
-    /** _more_ */
-    public static final int TYPE_FILE = 1 << 4;
+    /** The extra categorixed menu */
+    public static final int TYPE_CATEGORY = 1 << 4;
 
-    /** _more_ */
-    public static final int TYPE_EDIT = 1 << 5;
+    /** for the  toolbar */
+    public static final int TYPE_TOOLBAR = 1 << 5;
 
-    /** _more_ */
-    public static final int TYPE_VIEW = 1 << 6;
+    /** A general action. Shows up in the action list */
+    public static final int TYPE_ACTION = 1 << 6;
 
-    /** _more_ */
-    public static final int TYPE_TOOLBAR = 1 << 7;
-
-    /** _more_ */
+    /** for internal uses */
+    public static final int TYPE_INTERNAL = 1 << 7;
+    
+    /** Shows up in the search result format list */
     public static final int TYPE_FORSEARCH = 1 << 8;
 
-    /** _more_ */
-    public static final int TYPE_CATEGORY = 1 << 9;
-    
-    /** _more_ */
-    public static final int TYPE_CONNECT = 1 << 10;
-
-    /** _more_ */
-    public static final int TYPE_EXPORT = 1 << 11;
-    
-    /** _more_ */
-    public static final int TYPE_ALL = TYPE_HTML | TYPE_ACTION | TYPE_NONHTML
-                                       | TYPE_FILE | TYPE_EDIT | TYPE_VIEW
-                                       | TYPE_TOOLBAR | TYPE_CATEGORY | TYPE_CONNECT;
+    /** All types */
+    public static final int TYPE_ALL = TYPE_VIEW | TYPE_ACTION | TYPE_NONHTML
+                                       | TYPE_FILE | TYPE_EDIT
+                                       | TYPE_TOOLBAR | TYPE_CATEGORY;
 
 
     /** _more_ */
@@ -143,7 +134,7 @@ public class OutputType {
     private String icon;
 
     /** _more_ */
-    private int type = TYPE_HTML;
+    private int type = TYPE_VIEW;
 
     /** _more_ */
     private Counter numberOfCalls = new Counter();
@@ -375,8 +366,8 @@ public class OutputType {
      *
      *  @return The IsHtml
      */
-    public boolean getIsHtml() {
-        return isType(TYPE_HTML);
+    public boolean getIsView() {
+        return isType(TYPE_VIEW);
     }
 
 
@@ -432,15 +423,6 @@ public class OutputType {
      */
     public boolean getIsEdit() {
         return isType(TYPE_EDIT);
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean getIsView() {
-        return isType(TYPE_VIEW);
     }
 
     /**

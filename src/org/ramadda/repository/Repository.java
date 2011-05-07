@@ -2625,6 +2625,10 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                         entry.getId()));
             }
 
+           public String toString() {
+                return "Copy handler";
+            }
+
             public Result outputGroup(Request request, OutputType outputType,
                                       Entry group, List<Entry> subGroups,
                                       List<Entry> entries)
@@ -2643,6 +2647,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
                 }
                 request.put(ARG_FROM, idBuffer);
                 return getEntryManager().processEntryCopy(request);
+
                 //                return new Result(request.url(URL_ENTRY_COPY, ARG_FROM,
                 //                        idBuffer.toString()));
             }
@@ -4110,7 +4115,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         List<Link> okLinks = new ArrayList<Link>();
 
         for (Link link : links) {
-            if (link.isType(OutputType.TYPE_HTML)) {
+            if (link.isType(OutputType.TYPE_VIEW)) {
                 okLinks.add(link);
             }
         }
@@ -4268,7 +4273,7 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         if ((type == null) || (type.length() == 0)) {
             type = OutputHandler.OUTPUT_HTML.getId();
         }
-        OutputType output = new OutputType("", type, OutputType.TYPE_HTML);
+        OutputType output = new OutputType("", type, OutputType.TYPE_VIEW);
 
         for (OutputHandler outputHandler : outputHandlers) {
             if (outputHandler.canHandleOutput(output)) {

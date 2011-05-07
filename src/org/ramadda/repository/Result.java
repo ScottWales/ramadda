@@ -66,8 +66,6 @@ public class Result {
     /** _more_ */
     public static String TYPE_CSV = "text/csv";
 
-    /** _more_ */
-    public static String TYPE_RSS = "application/rss+xml";
 
     /** _more_ */
     private byte[] content;

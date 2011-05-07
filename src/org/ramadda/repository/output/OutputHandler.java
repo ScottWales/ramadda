@@ -91,12 +91,12 @@ public class OutputHandler extends RepositoryManager {
     /** _more_ */
     public static final OutputType OUTPUT_HTML =
         new OutputType("Information", "default.html",
-                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_INFORMATION);
 
     public static final OutputType OUTPUT_TREE =
         new OutputType("Information", "default.html",
-                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_TREE);
 
 

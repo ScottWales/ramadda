@@ -761,15 +761,14 @@ public class EntryManager extends RepositoryManager {
 
 
         // Comments
-        if (entry.getComments() != null) {
-            List<Comment> comments = entry.getComments();
+        List<Comment> comments = entry.getComments();
+        if (comments != null) {
             Link link = new Link(
                             request.entryUrl(
                                 getRepository().URL_COMMENTS_SHOW,
                                 entry), getRepository().iconUrl(
                                     ICON_COMMENTS), "Add/View Comments",
-                                        OutputType.TYPE_VIEW
-                                        | OutputType.TYPE_TOOLBAR);
+                            OutputType.TYPE_TOOLBAR);
 
             String href = HtmlUtil.href(link.getUrl(),
                                         "Comments:(" + comments.size() + ")"
@@ -2503,13 +2502,11 @@ public class EntryManager extends RepositoryManager {
             request.put(ARG_ENTRYID, group.getId());
         }
 
-
+        OutputHandler outputHandler = getRepository().getOutputHandler(request);
         Result result =
-            getRepository().getOutputHandler(request).outputGroup(request,
-                                             request.getOutput(),
-                                             ((group != null)
-                ? group
-                : getDummyGroup()), new ArrayList<Entry>(), entries);
+            outputHandler.outputGroup(request,
+                                      request.getOutput(),
+                                      getDummyGroup(), new ArrayList<Entry>(), entries);
         return addEntryHeader(request, (group != null)
                                        ? group
                                        : getTopGroup(), result);
@@ -4315,8 +4312,8 @@ public class EntryManager extends RepositoryManager {
             getRepository().getOutputHandler(request);
 
         if ( !entry.isTopEntry()) {
-            links.addAll(outputHandler.getNextPrevLinks(request, entry,
-                    request.getOutput()));
+            //            links.addAll(outputHandler.getNextPrevLinks(request, entry,
+            //                    request.getOutput()));
         }
         return links;
     }
@@ -4415,18 +4412,16 @@ public class EntryManager extends RepositoryManager {
             if ( !link.isType(typeMask)) {
                 continue;
             }
-            if (link.isType(OutputType.TYPE_HTML)) {
+            if (link.isType(OutputType.TYPE_VIEW)) {
                 if (htmlSB == null) {
                     htmlSB = new StringBuffer(tableHeader);
                     //                    htmlSB.append("<tr><td class=entrymenulink>" + msg("View") +"</td></tr>");
                     cnt++;
                 }
                 sb = htmlSB;
-
-
                 //} else if (link.isType(OutputType.TYPE_NONHTML)) {
                 //if (nonHtmlSB == null) {
-            } else if (link.isType(OutputType.TYPE_EXPORT)) {
+            } else if (link.isType(OutputType.TYPE_NONHTML)) {
                 if (exportSB == null) {
                     cnt++;
                     exportSB = new StringBuffer(tableHeader);
@@ -4530,16 +4525,12 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getEntryToolbar(Request request, Entry entry,
-                                  boolean justActions)
+    public String getEntryToolbar(Request request, Entry entry)
             throws Exception {
         List<Link>   links = getEntryLinks(request, entry);
         StringBuffer sb    = new StringBuffer();
         for (Link link : links) {
-            if (link.isType(OutputType.TYPE_TOOLBAR)
-                    || link.isType(OutputType.TYPE_ACTION)
-                    || ( !justActions
-                         && (link.isType(OutputType.TYPE_NONHTML)))) {
+            if (link.isType(OutputType.TYPE_TOOLBAR)) {
                 String href = HtmlUtil.href(link.getUrl(),
                                             HtmlUtil.img(link.getIcon(),
                                                 link.getLabel(),
@@ -4572,9 +4563,9 @@ public class EntryManager extends RepositoryManager {
         String editMenu = getEntryActionsTable(request, entry,
                               OutputType.TYPE_EDIT, links, true);
         String exportMenu = getEntryActionsTable(request, entry,
-                                OutputType.TYPE_EXPORT, links, true);
+                                OutputType.TYPE_NONHTML, links, true);
         String viewMenu = getEntryActionsTable(request, entry,
-                              OutputType.TYPE_HTML, links, true);
+                              OutputType.TYPE_VIEW, links, true);
 
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
@@ -4908,7 +4899,7 @@ public class EntryManager extends RepositoryManager {
                              HtmlUtil.img(getIconUrl(request, entry)), links,
                              true, false);
             nav = StringUtil.join(separator, breadcrumbs);
-            String toolbar = getEntryToolbar(request, entry, true);
+            String toolbar = getEntryToolbar(request, entry);
             String menubar = getEntryMenubar(request, entry, toolbar);
             toolbar =
                 getRepository().getHtmlOutputHandler().getHtmlHeader(request,

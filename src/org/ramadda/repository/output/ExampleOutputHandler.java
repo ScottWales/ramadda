@@ -54,15 +54,15 @@ public class ExampleOutputHandler extends OutputHandler {
 
     /** example1 */
     public static final OutputType OUTPUT_EXAMPLE1 =
-        new OutputType("Example 1", "example.example1", OutputType.TYPE_HTML);
+        new OutputType("Example 1", "example.example1", OutputType.TYPE_VIEW);
 
     /** example2 */
     public static final OutputType OUTPUT_EXAMPLE2 =
-        new OutputType("Example 2", "example.example2", OutputType.TYPE_HTML);
+        new OutputType("Example 2", "example.example2", OutputType.TYPE_VIEW);
 
     /** example3 */
     public static final OutputType OUTPUT_EXAMPLE3 =
-        new OutputType("Example 3", "example.example3", OutputType.TYPE_HTML);
+        new OutputType("Example 3", "example.example3", OutputType.TYPE_VIEW);
 
 
     /**

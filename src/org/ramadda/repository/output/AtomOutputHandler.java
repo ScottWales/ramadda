@@ -88,7 +88,7 @@ public class AtomOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ATOM = new OutputType("ATOM Feed",
                                                      "atom",
-                                                                OutputType.TYPE_NONHTML | OutputType.TYPE_CONNECT/* |OutputType.TYPE_TOOLBAR*/,
+                                                                OutputType.TYPE_NONHTML ,
                                                      "", ICON_ATOM);
 
 

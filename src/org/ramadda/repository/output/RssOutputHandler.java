@@ -80,6 +80,9 @@ import java.util.zip.*;
 public class RssOutputHandler extends OutputHandler {
 
     /** _more_ */
+    public static final String ATTR_RSS_VERSION = "version";
+
+    /** _more_ */
     public static final String TAG_RSS_RSS = "rss";
 
     /** _more_ */
@@ -112,6 +115,12 @@ public class RssOutputHandler extends OutputHandler {
     public static final String TAG_RSS_DESCRIPTION = "description";
 
 
+    public static final String ICON_RSS = "ramadda.icon.rss";
+
+    /** _more_ */
+    public static String MIME_RSS = "application/rss+xml";
+
+
     /** _more_          */
     SimpleDateFormat rssSdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
@@ -119,13 +128,13 @@ public class RssOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_RSS_FULL =
         new OutputType("Full RSS Feed", "rss.full", 
-                       OutputType.TYPE_NONHTML|OutputType.TYPE_CONNECT | OutputType.TYPE_TOOLBAR,
+                       OutputType.TYPE_NONHTML| OutputType.TYPE_TOOLBAR,
                        "", ICON_RSS);
 
     /** _more_ */
     public static final OutputType OUTPUT_RSS_SUMMARY =
         new OutputType("RSS Feed", "rss.summary",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH|OutputType.TYPE_CONNECT | OutputType.TYPE_TOOLBAR,
+                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH| OutputType.TYPE_TOOLBAR,
                        "", ICON_RSS);
 
 

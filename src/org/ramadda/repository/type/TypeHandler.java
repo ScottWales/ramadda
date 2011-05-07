@@ -1431,7 +1431,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_COMMENTS_SHOW,
                         entry), getRepository().iconUrl(ICON_COMMENTS),
-                                "View Comments", OutputType.TYPE_HTML));
+                                "View Comments", OutputType.TYPE_VIEW));
         } else {
             links.add(
                 new Link(
@@ -1439,8 +1439,7 @@ public class TypeHandler extends RepositoryManager {
                         getRepository().URL_COMMENTS_SHOW,
                         entry), getRepository().iconUrl(ICON_COMMENTS),
                                 "Add/View Comments",
-                                OutputType.TYPE_VIEW
-                                | OutputType.TYPE_TOOLBAR));
+                    OutputType.TYPE_TOOLBAR));
         }
 
         if ((request.getUser() != null)
@@ -1451,13 +1450,8 @@ public class TypeHandler extends RepositoryManager {
                         getRepository().URL_ENTRY_COPY, entry,
                         ARG_FROM), getRepository().iconUrl(ICON_MOVE),
                                    "Copy/Move Entry",
-                                   OutputType.TYPE_EDIT
-                                   | OutputType.TYPE_TOOLBAR));
+                                   OutputType.TYPE_EDIT));
         }
-
-
-
-
     }
 
 

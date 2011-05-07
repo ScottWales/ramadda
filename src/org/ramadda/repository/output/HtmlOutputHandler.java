@@ -79,26 +79,26 @@ public class HtmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
         new OutputType("Timeline", "default.timeline",
-    //OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, 
+    //OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, 
     OutputType.TYPE_FORSEARCH, "", ICON_TIMELINE);
 
     /** _more_          */
     public static final OutputType OUTPUT_GRID =
         new OutputType("Grid Layout", "html.grid",
-    //                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+    //                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
     OutputType.TYPE_FORSEARCH, "", ICON_DATA);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH =
         new OutputType("Graph", "default.graph",
-                       OutputType.TYPE_HTML | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_GRAPH);
 
     /** _more_ */
     public static final OutputType OUTPUT_CLOUD = new OutputType("Cloud",
                                                       "default.cloud",
-                                                      OutputType.TYPE_HTML);
+                                                      OutputType.TYPE_VIEW);
 
     /** _more_ */
     public static final OutputType OUTPUT_INLINE =
