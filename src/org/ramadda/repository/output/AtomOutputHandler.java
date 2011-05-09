@@ -22,8 +22,8 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
-import org.ramadda.repository.type.*;
 import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.type.*;
 
 import org.ramadda.util.AtomUtil;
 
@@ -78,7 +78,7 @@ import java.util.zip.*;
  */
 public class AtomOutputHandler extends OutputHandler {
 
-    /** mime type      */
+    /** mime type */
     public static final String MIME_ATOM = "application/atom+xml";
 
     /** _more_ */
@@ -88,7 +88,7 @@ public class AtomOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ATOM = new OutputType("ATOM Feed",
                                                      "atom",
-                                                                OutputType.TYPE_NONHTML ,
+                                                     OutputType.TYPE_NONHTML,
                                                      "", ICON_ATOM);
 
 
@@ -202,7 +202,7 @@ public class AtomOutputHandler extends OutputHandler {
             String selfUrl =
                 repository.absoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, entry.getId()));
-            links.add(new AtomUtil.Link("text/html", selfUrl,  "Web page"));
+            links.add(new AtomUtil.Link("text/html", selfUrl, "Web page"));
             String resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
                 String imageUrl = repository.absoluteUrl(
@@ -215,7 +215,7 @@ public class AtomOutputHandler extends OutputHandler {
                 links.add(new AtomUtil.Link(AtomUtil.REL_IMAGE, imageUrl,
                                             "Image"));
             }
-            TypeHandler typeHandler = entry.getTypeHandler();
+            TypeHandler   typeHandler = entry.getTypeHandler();
             List<Service> services = typeHandler.getServices(request, entry);
             for (Service service : services) {
                 String url  = service.getUrl();
@@ -225,50 +225,87 @@ public class AtomOutputHandler extends OutputHandler {
             }
 
             List<String> urls = new ArrayList<String>();
-            getMetadataManager().getThumbnailUrls(request,  entry,urls);
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
 
-            for(String url: urls) {
-                links.add(new AtomUtil.Link("thumbnail", getRepository().absoluteUrl(url), "Thumbnail"));
+            for (String url : urls) {
+                links.add(new AtomUtil.Link("thumbnail",
+                                            getRepository().absoluteUrl(url),
+                                            "Thumbnail"));
             }
 
-            Document doc = XmlUtil.getDocument("<metadata></metadata>");
-            Element root = doc.getDocumentElement();
-            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+            StringBuffer extra = new StringBuffer();
+
+            Document     doc   = XmlUtil.getDocument("<metadata></metadata>");
+            Element      root  = doc.getDocumentElement();
+            typeHandler.addMetadataToXml(entry, root, "atom");
+
+            List<Metadata> metadataList =
+                getMetadataManager().getMetadata(entry);
             List<MetadataHandler> metadataHandlers =
                 repository.getMetadataManager().getMetadataHandlers();
             for (Metadata metadata : metadataList) {
+                if (metadata.getType().equals(
+                        MetadataHandler.TYPE_SPATIAL_POLYGON)) {
+                    //                    <georss:polygon>45.256 -110.45 46.46 -109.48 43.84 -109.86 45.256 -110.45</georss:polygon>
+                    extra.append("<georss:polygon>");
+                    List<double[]> points   = new ArrayList<double[]>();
+                    String         s        = metadata.getAttr1();
+
+                    double         firstLat = Double.NaN;
+                    double         firstLon = Double.NaN;
+                    for (String pair : StringUtil.split(s, ";", true, true)) {
+                        List<String> toks = StringUtil.splitUpTo(pair, ",",
+                                                2);
+                        if (toks.size() != 2) {
+                            continue;
+                        }
+                        double lat = Misc.decodeLatLon(toks.get(0));
+                        double lon = Misc.decodeLatLon(toks.get(1));
+                        extra.append(lat);
+                        extra.append(" ");
+                        extra.append(lon);
+                        extra.append(" ");
+                        if (Double.isNaN(firstLat)) {
+                            firstLat = lat;
+                            firstLon = lon;
+                        }
+                    }
+                    //Close the circle
+                    extra.append(firstLat);
+                    extra.append(" ");
+                    extra.append(firstLon);
+                    extra.append(" ");
+                    extra.append("</georss:polygon>\n");
+                }
+
                 for (MetadataHandler metadataHandler : metadataHandlers) {
                     if (metadataHandler.canHandle(metadata)) {
-                        if(!metadataHandler.addMetadataToXml(request,
-                                                             "dif", entry,
-                                                             metadata, doc, root)){
-                            metadataHandler.addMetadataToXml(request,
-                                                             "atom", entry,
-                                                             metadata, doc, root);
+                        if ( !metadataHandler.addMetadataToXml(request,
+                                "dif", entry, metadata, doc, root)) {
+                            metadataHandler.addMetadataToXml(request, "atom",
+                                    entry, metadata, doc, root);
 
                         }
                         break;
                     }
                 }
             }
-            StringBuffer extra =new StringBuffer();
 
-            if(entry.hasAreaDefined()) {
-                extra.append("<georss:box>" + entry.getSouth() + " " + entry.getWest() +" "  +
-                             entry.getNorth() +" " + entry.getEast() +"</georss:box>\n");
+            if (entry.hasAreaDefined()) {
+                extra.append("<georss:box>" + entry.getSouth() + " "
+                             + entry.getWest() + " " + entry.getNorth() + " "
+                             + entry.getEast() + "</georss:box>\n");
             }
 
             extra.append(XmlUtil.toString(root));
 
             String desc = entry.getDescription();
-            if(TypeHandler.isWikiText(desc)) {
+            if (TypeHandler.isWikiText(desc)) {
                 desc = "";
             }
-            sb.append(AtomUtil.makeEntry(entry.getName(), 
-                                         selfUrl,
-                                         new Date(entry.getEndDate()),
-                                         desc, null,
-                                         links, extra.toString()));
+            sb.append(AtomUtil.makeEntry(entry.getName(), selfUrl,
+                                         new Date(entry.getEndDate()), desc,
+                                         null, links, extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
         return new Result("", sb, MIME_ATOM);

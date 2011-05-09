@@ -498,7 +498,15 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public void handleNoEntriesHtml(Request request, Entry entry, StringBuffer sb) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     */
+    public void handleNoEntriesHtml(Request request, Entry entry,
+                                    StringBuffer sb) {
         sb.append(HtmlUtil.tag(HtmlUtil.TAG_I, "",
                                msg("No entries in this folder")));
     }
@@ -1101,6 +1109,16 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @param entry _more_
+     * @param root _more_
+     * @param metadataType _more_
+     */
+    public void addMetadataToXml(Entry entry, Element root,
+                                 String metadataType) {}
+
+    /**
+     * _more_
+     *
      * @param request _more_
      * @param entry _more_
      *
@@ -1439,7 +1457,7 @@ public class TypeHandler extends RepositoryManager {
                         getRepository().URL_COMMENTS_SHOW,
                         entry), getRepository().iconUrl(ICON_COMMENTS),
                                 "Add/View Comments",
-                    OutputType.TYPE_TOOLBAR));
+                                OutputType.TYPE_TOOLBAR));
         }
 
         if ((request.getUser() != null)
@@ -1449,8 +1467,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_ENTRY_COPY, entry,
                         ARG_FROM), getRepository().iconUrl(ICON_MOVE),
-                                   "Copy/Move Entry",
-                                   OutputType.TYPE_EDIT));
+                                   "Copy/Move Entry", OutputType.TYPE_EDIT));
         }
     }
 

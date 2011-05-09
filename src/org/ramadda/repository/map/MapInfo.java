@@ -19,9 +19,12 @@ package org.ramadda.repository.map;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.MapOutputHandler;
 
 import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
@@ -77,6 +80,27 @@ public class MapInfo {
 
     public void addJS(String s) {
         getJS().append(s);
+    }
+
+
+    public boolean addSpatialMetadata(Entry entry, List<Metadata>metadataList) {
+        boolean didone = false;
+        for(Metadata metadata: metadataList) {
+            if(metadata.getType().equals(MetadataHandler.TYPE_SPATIAL_POLYGON)) {
+                List<double[]>points = new ArrayList<double[]>();
+                String s = metadata.getAttr1();
+                for(String pair: StringUtil.split(s,";",true,true)) {
+                    List<String> toks = StringUtil.splitUpTo(pair, ",", 2);
+                    if(toks.size()!=2) continue;
+                    double lat = Misc.decodeLatLon(toks.get(0));
+                    double lon = Misc.decodeLatLon(toks.get(1));
+                    points.add(new double[]{lat,lon});
+                }
+                this.addLines(entry.getId()+"_polygon", points);
+                didone = true;
+            }
+        }
+        return didone;
     }
 
 

@@ -21,7 +21,7 @@
 package org.ramadda.repository;
 
 
-import ucar.unidata.util.DateUtil;
+
 import ucar.unidata.util.HtmlUtil;
 
 import java.text.SimpleDateFormat;
@@ -252,12 +252,14 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public final RequestUrl URL_USER_NEW = new RequestUrl(this, "/user/new");
 
-
+    /** _more_          */
+    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+    
 
 
     /** _more_ */
     public static final GregorianCalendar calendar =
-        new GregorianCalendar(DateUtil.TIMEZONE_UTC);
+        new GregorianCalendar(TIMEZONE_UTC);
 
 
     /** _more_ */
@@ -395,7 +397,7 @@ public class RepositoryBase implements Constants, RepositorySource {
             sdf = new SimpleDateFormat();
             sdf.applyPattern(format);
             if (timezone == null) {
-                sdf.setTimeZone(DateUtil.TIMEZONE_UTC);
+                sdf.setTimeZone(TIMEZONE_UTC);
             } else {
                 if ((defaultTimeZone != null)
                         && (timezone.equals("")

@@ -246,14 +246,19 @@ public class MapOutputHandler extends OutputHandler {
 
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
+            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
             if(makeRectangles) {
+                //                boolean didMetadata= map.addSpatialMetadata(entry, metadataList);
                 entry.getTypeHandler().addToMap(request, entry, map);
-                if (entry.hasAreaDefined()) {
+                if (entry.hasAreaDefined()/* && !didMetadata*/) {
                     if(!screenBigRects || Math.abs(entry.getEast()-entry.getWest()) < 90) {
                         map.addBox(entry, mapProperties);
                     }
                 }
             }
+            boolean didMetadata= map.addSpatialMetadata(entry, metadataList);
+
+
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 StringBuffer info = new StringBuffer("<table>");
                 info.append(entry.getTypeHandler().getInnerEntryContent(entry,
@@ -275,7 +280,6 @@ public class MapOutputHandler extends OutputHandler {
                     location = entry.getCenter();
                 }
 
-                List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
                 if (entry.getResource().isImage()) {
                     String thumbUrl = getRepository().absoluteUrl(HtmlUtil.url(
                                       request.url(repository.URL_ENTRY_GET)
@@ -285,32 +289,18 @@ public class MapOutputHandler extends OutputHandler {
                                       ARG_IMAGEWIDTH, "300"));
                     info.append(HtmlUtil.img(thumbUrl,"",""));
 
-                    for(Metadata metadata: metadataList) {
-                        if(metadata.getType().equals(JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
-                            double dir = Double.parseDouble(metadata.getAttr1());
-                            LatLonPointImpl fromPt = new LatLonPointImpl(location[0],location[1]);
-                            LatLonPointImpl pt = Bearing.findPoint(fromPt,dir,0.25,null);
-                            map.addLine(entry.getId(), fromPt, pt);
-                            if(haveBearingLines!=null)haveBearingLines[0] = true;
-                            break;
-                        } 
-                    }
+                }
+                for(Metadata metadata: metadataList) {
+                    if(metadata.getType().equals(JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
+                        double dir = Double.parseDouble(metadata.getAttr1());
+                        LatLonPointImpl fromPt = new LatLonPointImpl(location[0],location[1]);
+                        LatLonPointImpl pt = Bearing.findPoint(fromPt,dir,0.25,null);
+                        map.addLine(entry.getId(), fromPt, pt);
+                        if(haveBearingLines!=null)haveBearingLines[0] = true;
+                        break;
+                    } 
                 }
 
-                for(Metadata metadata: metadataList) {
-                    if(metadata.getType().equals(MetadataHandler.TYPE_SPATIAL_POLYGON)) {
-                        List<double[]>points = new ArrayList<double[]>();
-                        String s = metadata.getAttr1();
-                        for(String pair: StringUtil.split(s,";",true,true)) {
-                            List<String> toks = StringUtil.splitUpTo(pair, ",", 2);
-                            if(toks.size()!=2) continue;
-                            double lat = Misc.decodeLatLon(toks.get(0));
-                            double lon = Misc.decodeLatLon(toks.get(1));
-                            points.add(new double[]{lat,lon});
-                        }
-                        map.addLines(entry.getId()+"_polygon", points);
-                    }
-                }
 
                 String infoHtml= info.toString();
                 infoHtml = infoHtml.replace("\r", " ");
