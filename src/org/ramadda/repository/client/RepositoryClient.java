@@ -22,39 +22,31 @@ package org.ramadda.repository.client;
 
 
 import org.w3c.dom.Document;
-
-
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.ramadda.repository.*;
+import org.ramadda.repository.Constants;
+import org.ramadda.repository.RepositoryBase;
+import org.ramadda.repository.RepositoryUtil;
+import org.ramadda.repository.RequestUrl;
+import org.ramadda.repository.ServerInfo;
+
 
 import ucar.unidata.ui.HttpFormEntry;
-
-
 import ucar.unidata.util.HtmlUtil;
-
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import java.net.URL;
-
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.zip.*;
-
-
-
 
 
 
@@ -68,7 +60,6 @@ public class RepositoryClient extends RepositoryBase {
 
     /** _more_ */
     private static final String ID_PREVIOUS = "previous";
-
 
     /** _more_ */
     private String sessionId;
@@ -918,13 +909,13 @@ public class RepositoryClient extends RepositoryBase {
             //first get the basic information including the ssl port
             getInfo();
 
-            List entries = Misc.toList(new Object[] {
-                               HttpFormEntry.hidden(ARG_RESPONSE,
-                                   RESPONSE_XML),
-                               HttpFormEntry.hidden(ARG_USER_PASSWORD,
-                                   getPassword()),
-                               HttpFormEntry.hidden(ARG_USER_ID,
-                                   getUser()) });
+            List entries = new ArrayList();
+            entries.add(HttpFormEntry.hidden(ARG_RESPONSE,
+                                             RESPONSE_XML));
+            entries.add(HttpFormEntry.hidden(ARG_USER_PASSWORD,
+                                             getPassword()));
+            entries.add(HttpFormEntry.hidden(ARG_USER_ID,
+                                             getUser()));
             String[] result = doPost(URL_USER_LOGIN, entries);
             if (result[0] != null) {
                 msg[0] = "Error logging in: " + result[0];

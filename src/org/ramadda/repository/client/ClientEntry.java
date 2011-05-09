@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,26 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository.client;
 
 
+import org.ramadda.repository.Constants;
+import org.ramadda.repository.Resource;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.ramadda.repository.*;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
 import ucar.unidata.xml.XmlUtil;
 
-import java.io.File;
 
 import java.util.ArrayList;
-
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -224,7 +218,6 @@ public class ClientEntry implements Constants {
     /**
      * _more_
      *
-     * @param service _more_
      *
      * @param child _more_
      */
@@ -244,7 +237,16 @@ public class ClientEntry implements Constants {
             return false;
         }
         ClientEntry that = (ClientEntry) o;
-        return Misc.equals(this.id, that.id);
+        if ((this.id == null) && (that.id == null)) {
+            return true;
+        }
+        if ((this.id == null) && (that.id != null)) {
+            return false;
+        }
+        if ((this.id != null) && (that.id == null)) {
+            return false;
+        }
+        return this.id.equals(that.id);
     }
 
 
