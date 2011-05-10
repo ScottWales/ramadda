@@ -369,8 +369,8 @@ public class CalendarOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Result outputCalendar(Request request, Entry group,
-                                  List<Entry> entries, StringBuffer sb)
+    public Result outputCalendar(Request request, Entry group,
+                                 List<Entry> entries, StringBuffer sb)
             throws Exception {
 
         if (entries.size() == 0) {
