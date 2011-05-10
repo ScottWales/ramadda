@@ -1,0 +1,38 @@
+<types>
+
+  <type name="trip_trip"  description="Trip" handler="org.ramadda.plugins.trip.TripTypeHandler" category="Trip Planning">
+     <property name="icon" value="/trip/trip.png"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.date.label" value="Trip Dates"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Trip"/>
+  </type>
+
+
+  <type name="trip_hotel"  description="Hotel Information"  category="Trip Planning">
+     <property name="icon" value="/trip/hotel.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Hotel"/>
+     <column name="address" type="string" label="Address" rows="5" showinhtml="true"/>
+     <column name="confirmation_info" type="string" label="Confirmation Information" showinhtml="true"/>
+   </type>
+
+
+  <type name="trip_flight"  description="Flight Information"  category="Trip Planning">
+     <property name="icon" value="/trip/plane.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Flight"/>
+   </type>
+
+  <type name="trip_train"  description="Train Information"  category="Trip Planning">
+     <property name="icon" value="/trip/train.gif"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Train"/>
+   </type>
+
+
+
+</types>
