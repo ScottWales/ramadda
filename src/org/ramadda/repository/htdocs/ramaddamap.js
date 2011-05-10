@@ -149,6 +149,7 @@ function RepositoryMap (mapId, params) {
 
         if(this.initialBoxes) {
             this.initBoxes(this.initialBoxes);
+            this.initialBoxes = null;
         }
         if(this.initialBounds) {
             this.map.setCenter(this.initialBounds.getCenterLonLat());
@@ -156,7 +157,8 @@ function RepositoryMap (mapId, params) {
             this.initialBounds = null;
         }
         if(this.initialLines) {
-            this.map.addLayer(this.initalLines);
+            this.map.addLayer(this.initialLines);
+            this.initialLines = null;
         }
        if(forSelection) {
             this.addRegionSelectorControl();
@@ -523,7 +525,6 @@ function RepositoryMap (mapId, params) {
                 style[key] = attrs[key];
             }
         }
-
 
 
         if(!this.lines) {
