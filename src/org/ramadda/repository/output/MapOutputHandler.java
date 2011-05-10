@@ -247,16 +247,16 @@ public class MapOutputHandler extends OutputHandler {
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
             List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+
             if(makeRectangles) {
-                //                boolean didMetadata= map.addSpatialMetadata(entry, metadataList);
+                boolean didMetadata= map.addSpatialMetadata(entry, metadataList);
                 entry.getTypeHandler().addToMap(request, entry, map);
-                if (entry.hasAreaDefined()/* && !didMetadata*/) {
+                if (entry.hasAreaDefined() && !didMetadata) {
                     if(!screenBigRects || Math.abs(entry.getEast()-entry.getWest()) < 90) {
                         map.addBox(entry, mapProperties);
                     }
                 }
             }
-            boolean didMetadata= map.addSpatialMetadata(entry, metadataList);
 
 
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
