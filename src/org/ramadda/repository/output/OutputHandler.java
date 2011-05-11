@@ -1663,6 +1663,14 @@ public class OutputHandler extends RepositoryManager {
             return null;
         }
 
+        String url = entry.getResource().getPath();
+        if(url!=null) {
+            if(url.startsWith("ftp:") || url.startsWith("http:")) {
+                return url;
+            }
+        }
+
+
         return HtmlUtil.url(request.url(repository.URL_ENTRY_GET) + "/"
                             + (addVersion
                                ? ("v" + (imageVersionCnt++))
