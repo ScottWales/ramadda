@@ -2203,11 +2203,13 @@ public class TypeHandler extends RepositoryManager {
             }
             String extraMapStuff = "";
             if ((entry != null) && entry.isGroup()) {
-                extraMapStuff =
-                    HtmlUtil.br()
-                    + HtmlUtil.checkbox(ARG_SETBOUNDSFROMCHILDREN, "true",
-                                        false) + " "
-                                            + msg("Set bounds from children");
+                if(okToShowInForm(entry, "setbounds")) {
+                    extraMapStuff =
+                        HtmlUtil.br()
+                        + HtmlUtil.checkbox(ARG_SETBOUNDSFROMCHILDREN, "true",
+                                            false) + " "
+                        + msg("Set bounds from children");
+                }
             }
 
             MapInfo map = getRepository().getMapManager().createMap(request,
