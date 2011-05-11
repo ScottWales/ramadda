@@ -147,7 +147,7 @@ public class Request implements Constants {
 
     private boolean isMobile = false;
 
-
+    private String htmlTemplateId;
 
     /**
      * _more_
@@ -1999,6 +1999,24 @@ public class Request implements Constants {
 
     public boolean responseInXml() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
+    }
+
+    /**
+       Set the HtmlTemplateId property.
+
+       @param value The new value for HtmlTemplateId
+    **/
+    public void setHtmlTemplateId (String value) {
+	htmlTemplateId = value;
+    }
+
+    /**
+       Get the HtmlTemplateId property.
+
+       @return The HtmlTemplateId
+    **/
+    public String getHtmlTemplateId () {
+	return htmlTemplateId;
     }
 
 

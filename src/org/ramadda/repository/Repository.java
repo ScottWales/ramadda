@@ -3706,6 +3706,15 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
         if(request == null && defaultTemplate!=null) {
             return defaultTemplate;
         }
+        String templateId = request.getHtmlTemplateId();
+        if(templateId!=null) {
+            for (HtmlTemplate template : theTemplates) {
+                if(Misc.equals(template.getId(), templateId)) {
+                    return template;
+                }
+            }
+        }
+
         User user = request.getUser();
         if(user.getAnonymous()) {
             if(defaultTemplate!=null) {
