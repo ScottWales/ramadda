@@ -68,6 +68,11 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
     /** _more_ */
     private CalendarOutputHandler calendarOutputHandler;
 
+    public static final String TYPE_HOTEL = "trip_hotel";
+    public static final String TYPE_FLIGHT = "trip_flight";
+    public static final String TYPE_TRAIN = "trip_train";
+
+
     /**
      * _more_
      *
@@ -106,14 +111,23 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         StringBuffer sb = new StringBuffer();
+        appendHeader(request, group, sb);
+
+        subGroups.addAll(entries);
+        return calendarOutputHandler.outputCalendar(request,  group,
+                                                    subGroups, sb);
+    }
+
+
+    public void appendHeader(Request request, Entry group, StringBuffer sb) throws Exception {
         boolean canAdd = getAccessManager().canDoAction(request, group,
                              Permission.ACTION_NEW);
 
         if (canAdd) {
             sb.append("<b>New:</b> ");
-            String[]types = {"trip_hotel",
-                             "trip_plane",
-                             "trip_train",};
+            String[]types = {TYPE_HOTEL,
+                             TYPE_FLIGHT,
+                             TYPE_TRAIN};
             String[]names = {"New Hotel Reservation",
                              "New Flight",
                              "New Train",};
@@ -134,13 +148,6 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
 
             sb.append("<p>");
         }
-
-        subGroups.addAll(entries);
-        return calendarOutputHandler.outputCalendar(request,  group,
-                                                    subGroups, sb);
     }
-
-
-
 
 }
