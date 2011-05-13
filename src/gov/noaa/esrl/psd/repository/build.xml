@@ -21,7 +21,7 @@
         <property name="tmpjardir" value="${distdir}/tmpjardir" />
 
         <property  name="build.sysclasspath" value="ignore"/>
-        <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/repositorytds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+        <property name="classpath" value="${libdir}/tika-app-0.9.jar:${libdir}/idv.jar:${libdir}/repositorylib.jar:${libdir}/repositorytds.jar:${libdir}/servlet-api.jar"/>
         <property name="pluginjar" value="${distdir}/psdrepository.jar"/>
 
         <property name="compiledir" value="${srcdir}"/>
