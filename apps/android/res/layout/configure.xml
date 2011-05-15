@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:orientation="vertical">
+<TextView android:text="Server:" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+<EditText android:layout_width="match_parent" android:text="" android:layout_height="wrap_content" android:singleLine="true"  android:id="@+id/configure_server">
+</EditText>
+<TextView android:text="User ID"  android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+<EditText android:layout_width="match_parent" android:text="" android:lines="1" android:singleLine="true" 
+android:layout_height="wrap_content"  android:id="@+id/configure_user">
+</EditText>
+<TextView android:text="Password"  android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+<EditText android:layout_width="match_parent" android:text="" android:lines="1" android:singleLine="true" 
+android:layout_height="wrap_content"  android:id="@+id/configure_password" android:password="true">
+</EditText>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:orientation="horizontal">
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save" android:id="@+id/configure_save"></Button>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cancel" android:id="@+id/configure_cancel"></Button>
+</LinearLayout>
+</LinearLayout>

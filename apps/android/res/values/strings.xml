@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RAMADDA</string>
+    
+    <string name="about_title">About</string>
+    
+    <string name="about_text">The RAMADDA App allows you to create notes and upload pictures to a RAMADDA server
+	</string>
+	
+    <string name="configure_title">Configure</string>
+    <string name="newnote_title">New Note</string>
+    
+</resources>
