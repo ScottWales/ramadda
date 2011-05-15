@@ -834,7 +834,8 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean okToShowInForm(Entry entry, String arg, boolean dflt) {
-        String value = getProperty(entry, "form." + arg + ".show", "" + dflt);
+        String key = "form." + arg + ".show";
+        String value = getProperty(entry, key, "" + dflt);
         return value.equals("true");
     }
 
@@ -2404,8 +2405,8 @@ public class TypeHandler extends RepositoryManager {
                                     : okToShowInForm(entry, ARG_URL));
         boolean showResourceForm = okToShowInForm(entry, ARG_RESOURCE);
         if (showResourceForm) {
-            boolean showDownload = okToShowInForm(entry,
-                                       ARG_RESOURCE_DOWNLOAD);
+            boolean showDownload = showFile && okToShowInForm(entry,
+                                                              ARG_RESOURCE_DOWNLOAD);
             List<String> tabTitles  = new ArrayList<String>();
             List<String> tabContent = new ArrayList<String>();
             String       urlLabel   = getFormLabel(entry, ARG_URL, "URL");
@@ -2416,6 +2417,10 @@ public class TypeHandler extends RepositoryManager {
                 tabContent.add(HtmlUtil.inset(formContent, 8));
             }
             if (showUrl) {
+                String url = "";
+                if(entry!=null && entry.getResource().isUrl()) {
+                    url = entry.getResource().getPath();
+                }
                 String download = !showDownload
                                   ? ""
                                   : HtmlUtil.space(1)
@@ -2423,7 +2428,7 @@ public class TypeHandler extends RepositoryManager {
                                         .checkbox(
                                             ARG_RESOURCE_DOWNLOAD) + HtmlUtil
                                                 .space(1) + msg("Download");
-                String formContent = HtmlUtil.input(ARG_URL, "", size)
+                String formContent = HtmlUtil.input(ARG_URL, url, size)
                                      + BLANK + download;
                 tabTitles.add(urlLabel);
                 tabContent.add(HtmlUtil.inset(formContent, 8));
@@ -2488,30 +2493,35 @@ public class TypeHandler extends RepositoryManager {
             } else {
                 //                if (entry.getResource().isFile()) {
                 //If its the admin then show the full path
-                if (request.getUser().getAdmin()) {
-                    sb.append(formEntry(request, msgLabel("Resource"),
-                                        entry.getResource().getPath()));
-                } else {
-                    sb.append(
-                        formEntry(
-                            request, msgLabel("Resource"),
-                            getStorageManager().getFileTail(entry)));
+                if (showFile) {
+                    if (request.getUser().getAdmin()) {
+                        sb.append(formEntry(request, msgLabel("Resource"),
+                                            entry.getResource().getPath()));
+                    } else {
+                        sb.append(
+                                  formEntry(
+                                            request, msgLabel("Resource"),
+                                            getStorageManager().getFileTail(entry)));
+                    }
                 }
-
-                if (tabTitles.size() > 1) {
-                    sb.append(formEntry(request, "",
-                                        msg("Upload new resource")));
-                    sb.append(
-                        formEntryTop(
-                            request, msgLabel("Resource"),
-                            OutputHandler.makeTabs(
-                                tabTitles, tabContent, true, "tab_content",
-                                "tab_contents_noborder") + extra));
-                } else if (tabTitles.size() == 1) {
-                    sb.append(formEntry(request, "",
-                                        msg("Upload new resource")));
-                    sb.append(formEntry(request, tabTitles.get(0) + ":",
-                                        tabContent.get(0) + extra));
+                if (showFile) {
+                    if (tabTitles.size() > 1) {
+                        if(showFile) {
+                            sb.append(formEntry(request, "",
+                                                msg("Upload new resource")));
+                            sb.append(
+                                      formEntryTop(
+                                                   request, msgLabel("Resource"),
+                                                   OutputHandler.makeTabs(
+                                                                          tabTitles, tabContent, true, "tab_content",
+                                                                          "tab_contents_noborder") + extra));
+                        }
+                    } else if (tabTitles.size() == 1) {
+                        sb.append(formEntry(request, "",
+                                            msg("Upload new resource")));
+                        sb.append(formEntry(request, tabTitles.get(0) + ":",
+                                            tabContent.get(0) + extra));
+                    }
                 }
 
 
@@ -2534,7 +2544,7 @@ public class TypeHandler extends RepositoryManager {
 
 
             if ( !hasDefaultDataType()
-                    && okToShowInForm(entry, ARG_DATATYPE)) {
+                 && okToShowInForm(entry, ARG_DATATYPE, false)) {
                 String selected = "";
                 if (entry != null) {
                     selected = entry.getDataType();
