@@ -226,7 +226,15 @@ public class ApiMethod {
     }
 
 
-
+    public void printDebug(Request request) throws Exception {
+        System.err.println ("Api method requiresAuthToken=" + requiresAuthToken + " must be admin=" +mustBeAdmin);
+        for (int i = 0; i < actions.size(); i++) {
+            if (!repository.getAccessManager().canDoAction(request,
+                                                            (String) actions.get(i))) {
+                System.err.println ("can't do action:" + actions.get(i));
+            }
+        }
+    }
 
     /**
      * _more_
