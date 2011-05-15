@@ -1248,6 +1248,8 @@ public class Column implements Constants {
                 } else {
                     value = false;
                 }
+            } else {
+                value = Misc.equals(dflt,"true");
             }
             widget = HtmlUtil.checkbox(id, "true",value);
             //            widget = HtmlUtil.select(id, Misc.newList("True", "False"),
