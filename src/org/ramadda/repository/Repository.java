@@ -2977,11 +2977,15 @@ public class Repository extends RepositoryBase implements RequestHandler, Proper
             return getAdmin().doInitialization(request);
         }
 
-        if ( !getUserManager().isRequestOk(request)
-                || !apiMethod.isRequestOk(request, this)) {
+        boolean requestOk1 = getUserManager().isRequestOk(request);
+        boolean requestOk2 = apiMethod.isRequestOk(request, this);
+        if (!requestOk1 || !requestOk2) {
+            System.err.println ("Access error:  user=" + request.getUser() +  " request=" + request +" ok1= " + requestOk1 + " ok2= " + requestOk2);
+            System.err.println ("Admin Info  admin only= " + getProperty(PROP_ACCESS_ADMINONLY, false) + " user is admin=" + request.getUser().getAdmin() + " require login=" + getProperty(PROP_ACCESS_REQUIRELOGIN, false));
+            apiMethod.printDebug(request);
             throw new AccessException(
-                msg("You do not have permission to access this page"),
-                request);
+                                      msg("You do not have permission to access this page"),
+                                      request);
         }
 
 
