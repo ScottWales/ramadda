@@ -161,6 +161,15 @@ public class TripOutputHandler extends OutputHandler {
         }
         subGroups.addAll(entries);
         
+        List<Entry> eventEntries = new ArrayList<Entry>();
+        for(Entry entry: subGroups) {
+            if(entry.getTypeHandler() instanceof TripItemHandler) {
+                eventEntries.add(entry);
+            }
+        }
+        subGroups = eventEntries;
+
+
         sb.append(HtmlUtil.cssLink(getRepository().getUrlBase()
                                    + "/trip/trip.css"));
         subGroups = getEntryManager().sortEntriesOnDate(subGroups, false);
@@ -217,6 +226,23 @@ public class TripOutputHandler extends OutputHandler {
                 }
                 if(confirmation!=null) {
                     desc.append(HtmlUtil.formEntry(msgLabel("Confirmation"), confirmation));
+                }
+            } 
+
+
+            if(type.equals(TripTypeHandler.TYPE_EVENT)) {
+                String address = entry.getValue(1,"");
+                String phone = entry.getValue(2,null);
+                String email = entry.getValue(3,null);
+                String mapUrl = "http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=" + address.replaceAll("\n"," ");
+                address = address.replaceAll("\n","<br>");
+                desc.append(HtmlUtil.formEntryTop(msgLabel("Address"), HtmlUtil.italics(address) +" " +
+                                                  HtmlUtil.href(mapUrl,"(map)")));
+                if(phone!=null) {
+                    desc.append(HtmlUtil.formEntry(msgLabel("Phone"), phone));
+                }
+                if(email!=null) {
+                    desc.append(HtmlUtil.formEntry(msgLabel("Email"), email));
                 }
             } 
 

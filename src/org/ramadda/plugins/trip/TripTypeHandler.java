@@ -70,7 +70,28 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
 
     public static final String TYPE_HOTEL = "trip_hotel";
     public static final String TYPE_FLIGHT = "trip_flight";
+    public static final String TYPE_CAR = "trip_car";
     public static final String TYPE_TRAIN = "trip_train";
+    public static final String TYPE_EVENT = "trip_event";
+
+
+    private static String[]types = {TYPE_HOTEL,
+                                    TYPE_CAR,
+                             TYPE_FLIGHT,
+                             TYPE_TRAIN,
+                             TYPE_EVENT,};
+
+    private static   String[]names = {"New Lodging",
+                                      "New Car Rental",
+                                      "New Flight",
+                                      "New Train", 
+                                      "New Event"};
+
+    private static            String[]icons = {"/trip/hotel.png",
+                                               "/trip/car.gif",
+                                               "/trip/plane.png",
+                                               "/trip/train.gif",
+                                               "/trip/event.png"};
 
 
     /**
@@ -112,10 +133,18 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
 
         StringBuffer sb = new StringBuffer();
         appendHeader(request, group, sb);
+        sb.append(group.getDescription());
 
         subGroups.addAll(entries);
+        List<Entry> eventEntries = new ArrayList<Entry>();
+        for(Entry entry: subGroups) {
+            if(entry.getTypeHandler() instanceof TripItemHandler) {
+                eventEntries.add(entry);
+            }
+        }
+
         return calendarOutputHandler.outputCalendar(request,  group,
-                                                    subGroups, sb);
+                                                    eventEntries, sb);
     }
 
 
@@ -125,15 +154,6 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (canAdd) {
             sb.append("<b>New:</b> ");
-            String[]types = {TYPE_HOTEL,
-                             TYPE_FLIGHT,
-                             TYPE_TRAIN};
-            String[]names = {"New Hotel Reservation",
-                             "New Flight",
-                             "New Train",};
-            String[]icons = {"/trip/hotel.png",
-                             "/trip/plane.png",
-                             "/trip/train.gif",};
             for(int i=0;i<types.length;i++) {
                 if(i>0)             sb.append("&nbsp;|&nbsp;");
                 sb.append(HtmlUtil
