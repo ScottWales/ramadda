@@ -2985,7 +2985,6 @@ public class EntryManager extends RepositoryManager {
     public void setBoundsOnEntry(final Entry parent, List<Entry> children) {
         try {
             Rectangle2D.Double rect = getBounds(children);
-            System.err.println("set bounds on entry:" + rect);
             if ((rect != null) && !rect.equals(parent.getBounds())) {
                 parent.setBounds(rect);
                 setEntryBounds(parent);

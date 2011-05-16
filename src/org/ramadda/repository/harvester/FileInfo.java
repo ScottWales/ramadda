@@ -33,15 +33,16 @@ import java.util.List;
 
 
 /**
- * Class FileInfo _more_
+ * Class FileInfo holds information about a file or directory
  *
  *
- * @author IDV Development Team
- * @version $Revision: 1.30 $
  */
 public class FileInfo {
 
-    /** _more_ */
+    /** tracks whether we have initialized ourselves */
+    boolean hasInitialized = false;
+
+    /** The file */
     File file;
 
     /** _more_ */
@@ -51,42 +52,39 @@ public class FileInfo {
     long size = 0;
 
     /** _more_ */
-    boolean hasInitialized = false;
-
-    /** _more_ */
     boolean isDir;
 
     private List addedFiles;
 
     /**
-     * _more_
+     * ctor
      *
-     * @param f _more_
+     * @param f the file
      */
     public FileInfo(File f) {
         this(f, f.isDirectory());
     }
 
     /**
-     * _more_
+     * ctor
      *
-     * @param f _more_
-     * @param isDir _more_
+     * @param f the file
+     * @param isDir is file a directory
      */
     public FileInfo(File f, boolean isDir) {
         this.isDir = isDir;
         file       = f;
         time       = file.lastModified();
-        if ( !isDir) {
+        if (!isDir) {
             size = file.length();
         }
         hasInitialized = true;
     }
 
     /**
-     * _more_
+     * override hashcode
      *
-     * @return _more_
+     * @return hashcode
      */
     public int hashCode() {
         return file.hashCode();
@@ -110,14 +108,13 @@ public class FileInfo {
 
 
 
-
     /**
      * _more_
      *
      * @return _more_
      */
     public boolean hasChanged() {
-        if ( !hasInitialized) {
+        if (!hasInitialized) {
             if (file.exists()) {
                 time = file.lastModified();
                 if (!isDir) {
@@ -137,6 +134,11 @@ public class FileInfo {
         time = newTime;
         size = newSize;
         return changed;
+    }
+
+    public void reset() {
+        time = -1;
+        size = -1;
     }
 
     /**
