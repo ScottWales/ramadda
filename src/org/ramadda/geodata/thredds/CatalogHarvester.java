@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -22,15 +20,17 @@
 package org.ramadda.geodata.thredds;
 
 
-
-import org.w3c.dom.*;
+import org.ramadda.geodata.data.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
-import org.ramadda.geodata.data.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 
@@ -75,44 +75,45 @@ import java.util.Properties;
  */
 public class CatalogHarvester extends Harvester {
 
-    /** arg and xml attr          */
+    /** arg and xml attr */
     private static final String ATTR_TOPURL = "topurl";
 
-    /** arg and xml attr          */
+    /** arg and xml attr */
     private static final String ATTR_DOWNLOAD = "download";
 
-    /** arg and xml attr          */
+    /** arg and xml attr */
     private static final String ATTR_RECURSE = "recurse";
 
 
     /** Should we follow catalog refs */
-    private     boolean recurse = false;
+    private boolean recurse = false;
 
     /** Should we download files */
-    private     boolean download = false;
+    private boolean download = false;
 
     /** _more_ */
-    private     HashSet seenCatalog;
+    private HashSet seenCatalog;
 
     /** _more_ */
-    private     List<String> groups;
+    private List<String> groups;
 
     /** _more_ */
-    private     int catalogCnt = 0;
+    private int catalogCnt = 0;
 
     /** _more_ */
-    private     int entryCnt = 0;
+    private int entryCnt = 0;
 
     /** _more_ */
-    private     int groupCnt = 0;
+    private int groupCnt = 0;
 
 
     /** _more_ */
-    private     String topUrl;
+    private String topUrl;
 
     /** _more_ */
-    private     List<Entry> entries = new ArrayList<Entry>();
+    private List<Entry> entries = new ArrayList<Entry>();
 
+    /** _more_          */
     private Object jobId;
 
 
@@ -153,9 +154,11 @@ public class CatalogHarvester extends Harvester {
      * @param user _more_
      * @param recurse _more_
      * @param download _more_
+     * @param jobId _more_
      */
     public CatalogHarvester(Repository repository, Entry group, String url,
-                            User user, boolean recurse, boolean download, Object jobId) {
+                            User user, boolean recurse, boolean download,
+                            Object jobId) {
         super(repository);
         this.jobId = jobId;
         setName("Catalog harvester");
@@ -279,11 +282,11 @@ public class CatalogHarvester extends Harvester {
      * @throws Exception _more_
      */
     protected void runInner(int timestamp) throws Exception {
-        entryCnt   = 0;
-        catalogCnt = 0;
-        groupCnt   = 0;
-        groups     = new ArrayList<String>();
-        entries    = new ArrayList<Entry>();
+        entryCnt    = 0;
+        catalogCnt  = 0;
+        groupCnt    = 0;
+        groups      = new ArrayList<String>();
+        entries     = new ArrayList<Entry>();
         seenCatalog = new HashSet();
         importCatalog(topUrl, getBaseGroup(), 0, timestamp);
         if ((entries.size() > 0) && !getTestMode()) {
@@ -389,7 +392,8 @@ public class CatalogHarvester extends Harvester {
             try {
                 if (metadata.getAttr1().length() > 10000) {
                     logHarvesterInfo("Too long metadata:"
-                                    + metadata.getAttr1().substring(0, 100) + "...");
+                                     + metadata.getAttr1().substring(0, 100)
+                                     + "...");
                     continue;
                 }
                 getMetadataManager().insertMetadata(metadata);
@@ -419,10 +423,9 @@ public class CatalogHarvester extends Harvester {
         if (getTestMode() && (entryCnt >= getTestCount())) {
             return false;
         }
-        if ((jobId != null)
-            && !getActionManager().getActionOk(jobId)) {
+        if ((jobId != null) && !getActionManager().getActionOk(jobId)) {
             getActionManager().setActionMessage(jobId,
-                                                "Catalog import canceled");
+                    "Catalog import canceled");
             return false;
         }
         return true;
@@ -446,7 +449,7 @@ public class CatalogHarvester extends Harvester {
                                 int recurseDepth, int timestamp)
             throws Exception {
 
-        if (!canContinueRunning(timestamp)) {
+        if ( !canContinueRunning(timestamp)) {
             return;
         }
 
@@ -481,10 +484,13 @@ public class CatalogHarvester extends Harvester {
         }
 
         //If we are harvesting a RAMADDA thredds catalog then skip the latestopendap dataset
-        if(urlPath!=null && urlPath.indexOf("latestopendap=true")>=0) {
+        if ((urlPath != null)
+                && (urlPath.indexOf("latestopendap=true") >= 0)) {
             return;
         }
-        System.err.println(tab+"name:" + name+"  #children:" + elements.getLength() +" depth:" + xmlDepth + " " + urlPath +" " + haveChildDatasets);
+        System.err.println(tab + "name:" + name + "  #children:"
+                           + elements.getLength() + " depth:" + xmlDepth
+                           + " " + urlPath + " " + haveChildDatasets);
 
         if ( !haveChildDatasets && (xmlDepth > 0) && (urlPath != null)) {
             if (makeEntry(node, parent, catalogUrlPath, urlPath, name)) {
@@ -495,8 +501,8 @@ public class CatalogHarvester extends Harvester {
         name = name.replace(Entry.IDDELIMITER, "--");
         name = name.replace("'", "");
         Entry group = null;
-        for(Entry newGroup: getEntryManager().findEntriesWithName(null, parent,
-                                                                  name)) {
+        for (Entry newGroup :
+                getEntryManager().findEntriesWithName(null, parent, name)) {
             if (newGroup.isGroup()) {
                 group = (Entry) newGroup;
                 break;
@@ -651,9 +657,9 @@ public class CatalogHarvester extends Harvester {
         entryCnt++;
         if (jobId != null) {
             getActionManager().setActionMessage(jobId,
-                                                "Loaded " + catalogCnt + " catalogs<br>" +
-                                                "Created " + entryCnt + " entries<br>"+
-                                                "Created " + groupCnt + " groups<br>");
+                    "Loaded " + catalogCnt + " catalogs<br>" + "Created "
+                    + entryCnt + " entries<br>" + "Created " + groupCnt
+                    + " groups<br>");
         }
 
         Entry entry      = typeHandler.createEntry(repository.getGUID());
@@ -715,16 +721,16 @@ public class CatalogHarvester extends Harvester {
         sb.append("Created " + entryCnt + " entries<br>");
         sb.append("Created " + groupCnt + " groups<br>");
 
-        if(groups!=null) {
+        if (groups != null) {
             StringBuffer groupSB = new StringBuffer();
             groupSB.append("<div class=\"scrollablediv\"><ul>");
-            for (String groupLine: groups) {
+            for (String groupLine : groups) {
                 groupSB.append("<li>");
                 groupSB.append(groupLine);
             }
             groupSB.append("</ul></div>");
-            sb.append(HtmlUtil.makeShowHideBlock("Entries", groupSB.toString(),
-                                                 false));
+            sb.append(HtmlUtil.makeShowHideBlock("Entries",
+                    groupSB.toString(), false));
         }
         return sb.toString();
     }

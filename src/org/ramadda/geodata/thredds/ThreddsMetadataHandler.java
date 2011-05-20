@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -14,9 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.thredds;
+
+
+import org.ramadda.geodata.data.*;
+
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
+
+import org.ramadda.repository.metadata.*;
 
 
 import org.w3c.dom.*;
@@ -38,15 +50,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
-
-
-
-import org.ramadda.repository.*;
-import org.ramadda.geodata.data.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.auth.*;
-
-import org.ramadda.repository.metadata.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
@@ -139,6 +142,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_VARIABLE = "thredds.variable";
 
+    /** _more_          */
     public static final String TYPE_STANDARDNAME = "thredds.standardname";
 
     /** _more_ */
@@ -170,11 +174,11 @@ public class ThreddsMetadataHandler extends MetadataHandler {
     public static final String NCATTR_STANDARD_NAME = "standard_name";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_STARTTIME_ATTRIBUTES =
         "cdm.attribute.starttimes";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ENDTIME_ATTRIBUTES =
         "cdm.attribute.endtimes";
 
@@ -460,17 +464,17 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     continue;
                 }
 
-                String metadataType =getRepository().getProperty("metadata.type." + name);
-                if(metadataType!=null) {
-                    metadata =
-                        new Metadata(getRepository().getGUID(),
-                                     entry.getId(), metadataType,
-                                     DFLT_INHERITED, value,
-                                     Metadata.DFLT_ATTR,
-                                     Metadata.DFLT_ATTR,
-                                     Metadata.DFLT_ATTR,
-                                     Metadata.DFLT_EXTRA);
-                    
+                String metadataType =
+                    getRepository().getProperty("metadata.type." + name);
+                if (metadataType != null) {
+                    metadata = new Metadata(getRepository().getGUID(),
+                                            entry.getId(), metadataType,
+                                            DFLT_INHERITED, value,
+                                            Metadata.DFLT_ATTR,
+                                            Metadata.DFLT_ATTR,
+                                            Metadata.DFLT_ATTR,
+                                            Metadata.DFLT_EXTRA);
+
                     if ( !entry.hasMetadata(metadata)) {
                         metadataList.add(metadata);
                     }
@@ -480,7 +484,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 if (ATTR_KEYWORDS.equals(name)) {
                     for (String keyword :
                             (List<String>) StringUtil.split(value, ";", true,
-                            true)) {
+                                true)) {
 
                         try {
                             metadata =
@@ -633,7 +637,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         try {
                             metadata =
                                 new Metadata(getRepository().getGUID(),
-                                             entry.getId(), TYPE_STANDARDNAME,
+                                             entry.getId(),
+                                             TYPE_STANDARDNAME,
                                              DFLT_INHERITED, varName,
                                              var.getName(),
                                              var.getUnitsString(),
@@ -653,20 +658,19 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
                 for (Attribute attr : var.getAttributes()) {
-                    String key = "metadata.variable." + var.getName()+"." + attr.getName();
-                    String metadataType =getRepository().getProperty(key,(String)null);
+                    String key = "metadata.variable." + var.getName() + "."
+                                 + attr.getName();
+                    String metadataType = getRepository().getProperty(key,
+                                              (String) null);
                     //                    System.err.println ("Looking for:" + key);
-                    if(metadataType!=null) {
-                        System.err.println ("making variable level metadata:" + metadataType);
-                        metadata =
-                            new Metadata(getRepository().getGUID(),
-                                         entry.getId(), metadataType,
-                                         DFLT_INHERITED, 
-                                         var.getName(),
-                                         attr.getStringValue(),
-                                         Metadata.DFLT_ATTR,
-                                         Metadata.DFLT_ATTR,
-                                         Metadata.DFLT_EXTRA);
+                    if (metadataType != null) {
+                        System.err.println("making variable level metadata:"
+                                           + metadataType);
+                        metadata = new Metadata(getRepository().getGUID(),
+                                entry.getId(), metadataType, DFLT_INHERITED,
+                                var.getName(), attr.getStringValue(),
+                                Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
+                                Metadata.DFLT_EXTRA);
                         if ( !entry.hasMetadata(metadata)) {
                             metadataList.add(metadata);
                         }
@@ -733,10 +737,10 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         return DateUtil.parse(dateString);
     }
 
-    /** _more_          */
+    /** _more_ */
     private HashSet startTimeAttrs;
 
-    /** _more_          */
+    /** _more_ */
     private HashSet endTimeAttrs;
 
     /**
@@ -813,11 +817,13 @@ public class ThreddsMetadataHandler extends MetadataHandler {
      * @param doc _more_
      * @param datasetNode _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     public boolean addMetadataToXml(Request request, String xmlType,
-                                 Entry entry, Metadata metadata,
-                                 Document doc, Element datasetNode)
+                                    Entry entry, Metadata metadata,
+                                    Document doc, Element datasetNode)
             throws Exception {
 
 
@@ -834,8 +840,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     metadata.getAttr1(), ATTR_UNITS, metadata.getAttr3() });
             return true;
         } else {
-            return super.addMetadataToXml(request, xmlType, entry, metadata, doc,
-                                   datasetNode);
+            return super.addMetadataToXml(request, xmlType, entry, metadata,
+                                          doc, datasetNode);
 
         }
     }

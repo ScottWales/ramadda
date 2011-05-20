@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,18 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.thredds;
 
 
-import org.w3c.dom.*;
+import org.ramadda.geodata.data.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.geodata.data.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -100,6 +101,7 @@ public class CatalogOutputHandler extends OutputHandler {
                        OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
                        "", ICON_CATALOG);
 
+    /** _more_          */
     public static final OutputType OUTPUT_CATALOG_EMBED =
         new OutputType("Catalog", "thredds.catalog.embed",
                        OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
@@ -217,8 +219,10 @@ public class CatalogOutputHandler extends OutputHandler {
             } else {
                 for (MetadataHandler metadataHandler : metadataHandlers) {
                     Metadata metadata = null;
-                    if(metadataHandler instanceof ThreddsMetadataHandler) {
-                        metadata = ((ThreddsMetadataHandler)metadataHandler).makeMetadataFromCatalogNode(child);
+                    if (metadataHandler instanceof ThreddsMetadataHandler) {
+                        metadata =
+                            ((ThreddsMetadataHandler) metadataHandler)
+                                .makeMetadataFromCatalogNode(child);
                     }
                     if (metadata != null) {
                         metadataList.add(metadata);
@@ -252,7 +256,16 @@ public class CatalogOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.getEntry() != null) {
-            links.add(makeLink(request, state.getEntry(), OUTPUT_CATALOG));
+            String url = getRepository().getUrlBase() + "/thredds/"
+                         + state.getEntry().getFullName(true) + ".xml";
+            OutputType outputType = OUTPUT_CATALOG;
+            Link       link = new Link(url, (outputType.getIcon() == null)
+                                            ? null
+                                            : iconUrl(outputType
+                                                .getIcon()), outputType
+                                                    .getLabel(), outputType);
+            //link = makeLink(request, state.getEntry(), OUTPUT_CATALOG));
+            links.add(link);
         }
     }
 
@@ -266,7 +279,8 @@ public class CatalogOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_CATALOG) || output.equals(OUTPUT_CATALOG_EMBED)) {
+        if (output.equals(OUTPUT_CATALOG)
+                || output.equals(OUTPUT_CATALOG_EMBED)) {
             return repository.getMimeTypeFromSuffix(".xml");
         } else {
             return super.getMimeType(output);
@@ -374,7 +388,7 @@ public class CatalogOutputHandler extends OutputHandler {
                     title });
             addServices(group, request, catalogInfo, topDataset);
             addMetadata(request, group, catalogInfo, topDataset);
-            int cnt  = subGroups.size() + entries.size();
+            int cnt = subGroups.size() + entries.size();
             //            int max  = request.get(ARG_MAX, DB_MAX_ROWS);
             int max  = request.get(ARG_MAX, DB_VIEW_ROWS);
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
@@ -428,7 +442,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                new String[] { CatalogUtil.ATTR_NAME,
                         "icon", CatalogUtil.ATTR_VALUE,
                         getRepository().absoluteUrl(
-                             getRepository().iconUrl(ICON_OPENDAP))});
+                            getRepository().iconUrl(ICON_OPENDAP)) });
 
 
                 topDataset.insertBefore(latestDataset, firstChild);
@@ -536,11 +550,25 @@ public class CatalogOutputHandler extends OutputHandler {
 
 
 
-    private Element createDataset(CatalogInfo catalogInfo, Entry entry, Element parent, String name) throws Exception {
+    /**
+     * _more_
+     *
+     * @param catalogInfo _more_
+     * @param entry _more_
+     * @param parent _more_
+     * @param name _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Element createDataset(CatalogInfo catalogInfo, Entry entry,
+                                  Element parent, String name)
+            throws Exception {
         Element dataset = XmlUtil.create(catalogInfo.doc,
                                          CatalogUtil.TAG_DATASET, parent,
                                          new String[] { CatalogUtil.ATTR_NAME,
-                                                        name});
+                name });
 
         XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
@@ -567,34 +595,39 @@ public class CatalogOutputHandler extends OutputHandler {
     public void addServices(Entry entry, Request request,
                             CatalogInfo catalogInfo, Element dataset)
             throws Exception {
+
         File   f    = entry.getFile();
         String path = f.toString();
         path = path.replace("\\", "/");
 
         int cnt = 0;
-        List<Service>  services = entry.getTypeHandler().getServices(request, entry);
+        List<Service> services = entry.getTypeHandler().getServices(request,
+                                     entry);
         boolean didOpendap = false;
 
         if (canDataLoad(request, entry)
                 && !entry.getType().equals(
                     OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             String urlPath = getDataOutputHandler().getOpendapUrl(entry);
-            boolean aggregation = entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
+            boolean aggregation =
+                entry.getType().equals(
+                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
 
             addService(catalogInfo, SERVICE_OPENDAP,
                        getRepository().URL_ENTRY_SHOW.getFullUrl());
 
             Element opendapDataDataset = dataset;
             cnt++;
-            if(aggregation) {
-                opendapDataDataset =  XmlUtil.create(catalogInfo.doc,
-                                                     CatalogUtil.TAG_DATASET,opendapDataDataset,
-                                                     new String[] {
-                                                         CatalogUtil.ATTR_NAME,entry.getName()+" Aggregation"});
-            } 
+            if (aggregation) {
+                opendapDataDataset = XmlUtil.create(catalogInfo.doc,
+                        CatalogUtil.TAG_DATASET, opendapDataDataset,
+                        new String[] { CatalogUtil.ATTR_NAME,
+                                       entry.getName() + " Aggregation" });
+            }
 
             Element service = XmlUtil.create(catalogInfo.doc,
-                                             CatalogUtil.TAG_ACCESS,opendapDataDataset,
+                                             CatalogUtil.TAG_ACCESS,
+                                             opendapDataDataset,
                                              new String[] {
                                                  CatalogUtil.ATTR_SERVICENAME,
                     SERVICE_OPENDAP, CatalogUtil.ATTR_URLPATH, urlPath });
@@ -602,28 +635,31 @@ public class CatalogOutputHandler extends OutputHandler {
         }
 
 
-        for(Service service: services) {
-            String url = service.getUrl();
+        for (Service service : services) {
+            String url  = service.getUrl();
             String type = service.getType();
             String name = service.getName();
             String icon = service.getIcon();
 
             cnt++;
 
-            Element subDataset = createDataset(catalogInfo,  entry, dataset, name);
+            Element subDataset = createDataset(catalogInfo, entry, dataset,
+                                     name);
             addService(catalogInfo, type,
-                       "http://"+getRepository().getHostname() +":" +getRepository().getPort());
+                       "http://" + getRepository().getHostname() + ":"
+                       + getRepository().getPort());
             Element serviceNode = XmlUtil.create(catalogInfo.doc,
-                                             CatalogUtil.TAG_ACCESS, subDataset,
-                                             new String[] {
-                                                 CatalogUtil.ATTR_SERVICENAME,
-                                                 type, CatalogUtil.ATTR_URLPATH, url});
+                                      CatalogUtil.TAG_ACCESS, subDataset,
+                                      new String[] {
+                                          CatalogUtil.ATTR_SERVICENAME,
+                                          type, CatalogUtil.ATTR_URLPATH,
+                                          url });
 
-            if(icon!=null && icon.length()>0) {
+            if ((icon != null) && (icon.length() > 0)) {
                 XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                subDataset,
                                new String[] { CatalogUtil.ATTR_NAME,
-                                              "icon", CatalogUtil.ATTR_VALUE,icon});
+                        "icon", CatalogUtil.ATTR_VALUE, icon });
             }
 
         }
@@ -636,21 +672,23 @@ public class CatalogOutputHandler extends OutputHandler {
                        getRepository().URL_ENTRY_GET.getFullUrl());
             Element subDataset;
 
-            if(cnt>0) {
-                subDataset = createDataset(catalogInfo,  entry, dataset, "File download");
+            if (cnt > 0) {
+                subDataset = createDataset(catalogInfo, entry, dataset,
+                                           "File download");
             } else {
                 subDataset = dataset;
             }
             Element service = XmlUtil.create(catalogInfo.doc,
-                                             CatalogUtil.TAG_ACCESS, subDataset,
+                                             CatalogUtil.TAG_ACCESS,
+                                             subDataset,
                                              new String[] {
                                                  CatalogUtil.ATTR_SERVICENAME,
                     SERVICE_HTTP, CatalogUtil.ATTR_URLPATH, urlPath });
             XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
-                           subDataset,
-                           new String[] { CatalogUtil.ATTR_NAME,
-                                          "icon", CatalogUtil.ATTR_VALUE,
-                                          getRepository().absoluteUrl(getRepository().iconUrl(ICON_FILE))});
+                           subDataset, new String[] { CatalogUtil.ATTR_NAME,
+                    "icon", CatalogUtil.ATTR_VALUE,
+                    getRepository().absoluteUrl(
+                        getRepository().iconUrl(ICON_FILE)) });
 
         }
 
@@ -675,6 +713,7 @@ public class CatalogOutputHandler extends OutputHandler {
             //For now
             //            }
         }
+
     }
 
 
@@ -829,15 +868,17 @@ public class CatalogOutputHandler extends OutputHandler {
                                   Element parent, int depth)
             throws Exception {
 
-        boolean embedGroups = request.getString(ARG_OUTPUT,"").equals(OUTPUT_CATALOG_EMBED.getId());
+        boolean embedGroups = request.getString(ARG_OUTPUT,
+                                  "").equals(OUTPUT_CATALOG_EMBED.getId());
         List<Entry> entries = new ArrayList();
         List<Entry> groups  = new ArrayList();
         for (int i = 0; i < entryList.size(); i++) {
             Entry entry = (Entry) entryList.get(i);
-            if (entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-                    entries.add(entry);
+            if (entry.getType().equals(
+                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+                entries.add(entry);
             } else {
-                if (!embedGroups && entry.isGroup()) {
+                if ( !embedGroups && entry.isGroup()) {
                     groups.add((Entry) entry);
                 } else {
                     entries.add(entry);

@@ -1,4 +1,5 @@
 /*
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -13,18 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.thredds;
 
 
-import org.w3c.dom.*;
+import org.ramadda.geodata.data.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.geodata.data.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -72,13 +76,14 @@ import java.util.zip.*;
  */
 public class CatalogImporter extends OutputHandler {
 
+    /** _more_          */
     public static final String ARG_CATALOG = "catalog";
 
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG_IMPORT =
         new OutputType("Import THREDDS Catalog", "thredds.import.catalog",
-                       OutputType.TYPE_FILE,
-                       "", CatalogOutputHandler.ICON_CATALOG);
+                       OutputType.TYPE_FILE, "",
+                       CatalogOutputHandler.ICON_CATALOG);
 
     /**
      * _more_
@@ -94,6 +99,15 @@ public class CatalogImporter extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param state _more_
+     * @param links _more_
+     *
+     * @throws Exception _more_
+     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if ( !request.getUser().getAdmin()) {
@@ -109,21 +123,38 @@ public class CatalogImporter extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param outputType _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputGroup(final Request request, OutputType outputType,
                               final Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        if ( !getAccessManager().canDoAction(request, group, Permission.ACTION_NEW)) {
-            throw new IllegalArgumentException("No access to import a catalog");
+
+        if ( !getAccessManager().canDoAction(request, group,
+                                             Permission.ACTION_NEW)) {
+            throw new IllegalArgumentException(
+                "No access to import a catalog");
         }
 
 
         request.ensureAdmin();
         if ( !request.exists(ARG_CATALOG)) {
             StringBuffer sb = new StringBuffer();
-            sb.append(request.form(getRepository().URL_ENTRY_SHOW,""));
+            sb.append(request.form(getRepository().URL_ENTRY_SHOW, ""));
             sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
-            sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_CATALOG_IMPORT.getId()));
+            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+                                      OUTPUT_CATALOG_IMPORT.getId()));
             sb.append(msgHeader("Import a THREDDS catalog"));
             sb.append(HtmlUtil.formTable());
             sb.append(HtmlUtil.formEntry(msgLabel("URL"),
@@ -154,15 +185,15 @@ public class CatalogImporter extends OutputHandler {
 
 
 
-        boolean  recurse     = request.get(ARG_RECURSE, false);
-        boolean  addMetadata = request.get(ATTR_ADDMETADATA, false);
-        boolean  addShortMetadata = request.get(ATTR_ADDSHORTMETADATA, false);
-        boolean  download    = request.get(ARG_RESOURCE_DOWNLOAD, false);
+        boolean      recurse     = request.get(ARG_RECURSE, false);
+        boolean      addMetadata = request.get(ATTR_ADDMETADATA, false);
+        boolean addShortMetadata = request.get(ATTR_ADDSHORTMETADATA, false);
+        boolean      download    = request.get(ARG_RESOURCE_DOWNLOAD, false);
         StringBuffer sb          = new StringBuffer();
         //        sb.append(getEntryManager().makeEntryHeader(request, group));
         sb.append("<p>");
         final String catalog = request.getString(ARG_CATALOG, "").trim();
-        sb.append(request.form(getRepository().URL_ENTRY_SHOW,""));
+        sb.append(request.form(getRepository().URL_ENTRY_SHOW, ""));
         sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_CATALOG_IMPORT.getId()));
         sb.append(HtmlUtil.submit(msgLabel("Import catalog")));
@@ -193,28 +224,34 @@ public class CatalogImporter extends OutputHandler {
         sb.append("</form>");
 
         if (catalog.length() > 0) {
-            ActionManager.Action action  = new ActionManager.Action() {
-                    public void run(Object actionId) throws Exception {
-                        boolean recurse     = request.get(ARG_RECURSE, false);
-                        boolean addMetadata = request.get(ATTR_ADDMETADATA, false);
-                        boolean addShortMetadata = request.get(ATTR_ADDSHORTMETADATA, false);
-                        boolean download    = request.get(ARG_RESOURCE_DOWNLOAD, false);
-                        CatalogHarvester harvester =
-                            new CatalogHarvester(
-                                                 getRepository(), group, catalog, request.getUser(),
-                                                 recurse, download,actionId);
-                        harvester.setAddMetadata(addMetadata);
-                        harvester.setAddShortMetadata(addShortMetadata);
-                        harvester.run();
-                    }
-                };
-            String href =
-                HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                               group), "Continue");
-            return getActionManager().doAction(request, action, "Importing Catalog",
-                                               "Continue: " + href);
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    boolean recurse     = request.get(ARG_RECURSE, false);
+                    boolean addMetadata = request.get(ATTR_ADDMETADATA,
+                                              false);
+                    boolean addShortMetadata =
+                        request.get(ATTR_ADDSHORTMETADATA, false);
+                    boolean download = request.get(ARG_RESOURCE_DOWNLOAD,
+                                           false);
+                    CatalogHarvester harvester =
+                        new CatalogHarvester(getRepository(), group, catalog,
+                                             request.getUser(), recurse,
+                                             download, actionId);
+                    harvester.setAddMetadata(addMetadata);
+                    harvester.setAddShortMetadata(addShortMetadata);
+                    harvester.run();
+                }
+            };
+            String href = HtmlUtil.href(
+                              request.entryUrl(
+                                  getRepository().URL_ENTRY_SHOW,
+                                  group), "Continue");
+            return getActionManager().doAction(request, action,
+                    "Importing Catalog", "Continue: " + href);
         }
-        return new Result("", new StringBuffer("Humm, probably shouldn't get here"));
+        return new Result(
+            "", new StringBuffer("Humm, probably shouldn't get here"));
+
     }
 
 

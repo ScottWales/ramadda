@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,17 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.thredds;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -82,7 +82,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
 
 
     /** _more_ */
-    private    static Hashtable<String, DomHolder> domCache = new Hashtable();
+    private static Hashtable<String, DomHolder> domCache = new Hashtable();
 
     /** _more_ */
     private Hashtable childIdToParent = new Hashtable();
@@ -147,6 +147,8 @@ public class CatalogTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param mainEntry _more_
      * @param parent _more_
      * @param ids _more_
      */
@@ -158,13 +160,15 @@ public class CatalogTypeHandler extends GenericTypeHandler {
                 continue;
             }
             ids.put(getId(mainEntry, child), child);
-            walkTree(mainEntry,  child, ids);
+            walkTree(mainEntry, child, ids);
         }
     }
 
     /**
      * _more_
      *
+     *
+     * @param mainEntry _more_
      * @param node _more_
      *
      * @return _more_
@@ -233,6 +237,8 @@ public class CatalogTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param mainEntry _more_
      * @param id _more_
      *
      * @return _more_
@@ -245,12 +251,14 @@ public class CatalogTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param mainEntry _more_
      * @param url _more_
      * @param subid _more_
      *
      * @return _more_
      */
-    private  String getId(Entry mainEntry, String url, String subid) {
+    private String getId(Entry mainEntry, String url, String subid) {
         if (subid == null) {
             return getCatalogId(mainEntry, url);
         }
@@ -324,8 +332,9 @@ public class CatalogTypeHandler extends GenericTypeHandler {
             Element child = (Element) elements.item(i);
             if (child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
                 //                String datasetId = getId(mainEntry, child);
-                String datasetId = getId(mainEntry, child.getBaseURI(),""); 
-                String entryId   = getCatalogId(mainEntry, url + ":id:" + datasetId);
+                String datasetId = getId(mainEntry, child.getBaseURI(), "");
+                String entryId = getCatalogId(mainEntry,
+                                     url + ":id:" + datasetId);
                 childIdToParent.put(entryId, parentId);
                 ids.add(entryId);
             } else if (child.getTagName().equals(
@@ -409,7 +418,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      */
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
             throws Exception {
-        System.err.println ("make synth entry:" + id);
+        System.err.println("make synth entry:" + id);
         String[] loc   = parseId(id);
         String   url   = loc[0];
         String   newId = getId(parentEntry, loc[0], loc[1]);
@@ -493,7 +502,8 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         Date now = new Date();
         entry.initEntry(name, "", (Entry) parentEntry,
                         getUserManager().getLocalFileUser(), resource, "",
-                        now.getTime(), now.getTime(), now.getTime(), now.getTime(), null);
+                        now.getTime(), now.getTime(), now.getTime(),
+                        now.getTime(), null);
         return entry;
     }
 
