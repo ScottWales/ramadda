@@ -1623,6 +1623,7 @@ public class TypeHandler extends RepositoryManager {
                         entry.getUser().getId()), entry.getUser().getLabel(),
                             "title=\"View user profile\"");
 
+
             sb.append(formEntry(request, msgLabel("Created by"),
                                 userSearchLink + " @ "
                                 + formatDate(request, entry.getCreateDate(),
@@ -2157,6 +2158,9 @@ public class TypeHandler extends RepositoryManager {
     public void addSpatialToEntryForm(Request request, StringBuffer sb,
                                       Entry entry)
             throws Exception {
+        MapOutputHandler mapOutputHandler =
+            (MapOutputHandler) getRepository().getOutputHandler(
+                                                                MapOutputHandler.OUTPUT_MAP.getId());
         if (okToShowInForm(entry, ARG_LOCATION, false)) {
             String lat = "";
             String lon = "";
@@ -2175,13 +2179,15 @@ public class TypeHandler extends RepositoryManager {
                 + HtmlUtil.input(ARG_LOCATION_LONGITUDE, lon,
                                  HtmlUtil.SIZE_6);
 
-            sb.append(formEntry(request, msgLabel("Location"),
-                                locationWidget));
+            String[] nwse = new String[]{lat,lon};
+            //            sb.append(formEntry(request, msgLabel("Location"),  locationWidget));
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              true);
+            String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse, "", "");
+            sb.append(formEntry(request, msgLabel("Location"), mapSelector));
+
         } else if (okToShowInForm(entry, ARG_AREA)) {
             StringBuffer mapSB = new StringBuffer();
-            MapOutputHandler mapOutputHandler =
-                (MapOutputHandler) getRepository().getOutputHandler(
-                    MapOutputHandler.OUTPUT_MAP.getId());
             if (mapOutputHandler != null) {
                 List<Entry> entries = new ArrayList<Entry>();
                 if (entry != null) {
@@ -2404,6 +2410,7 @@ public class TypeHandler extends RepositoryManager {
                                     ? false
                                     : okToShowInForm(entry, ARG_URL));
         boolean showResourceForm = okToShowInForm(entry, ARG_RESOURCE);
+
         if (showResourceForm) {
             boolean showDownload = showFile && okToShowInForm(entry,
                                                               ARG_RESOURCE_DOWNLOAD);

@@ -608,7 +608,6 @@ public class OutputHandler extends RepositoryManager {
             url = HtmlUtil.url(url, ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                                outputType.toString());
         }
-        int linkType = OutputType.TYPE_ACTION;
         return new Link(url, (outputType.getIcon() == null)
                              ? null
                              : iconUrl(outputType.getIcon()), outputType
