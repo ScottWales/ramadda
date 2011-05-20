@@ -59,13 +59,14 @@
        <property name="manifestjars" value="tika-app-0.9.jar repositorylib.jar   servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
+       <property name="lib3" value="${lib_dir}/dummy.jar"/>
     </target>
 
     <target name="initfull">
        <property name="classpath" value="${lib_dir}/idv.jar:${lib_dir}/tika-app-0.9.jar:${lib_dir}/repositorylib.jar:${lib_dir}/repositorytds.jar:${lib_dir}/servlet-api.jar"/>
        <property name="manifestjars" value="idv.jar tika-app-0.9.jar  repositorylib.jar   repositorytds.jar servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/visad.jar" />
-       <property name="lib2" value="${lib_dir}/local-visad.jar"/>
+       <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
     </target>
 
 
@@ -386,8 +387,10 @@
         <unjar src="${lib_dir}/servlet-api.jar" dest="${tmpjar_dir}"/>
 -->
 
-<echo message="Unjarring ${lib1}"/>
+        <echo message="Unjarring ${lib1}"/>
         <unjar src="${lib1}" dest="${tmpjar_dir}"/>
+        <echo message="Unjarring ${lib2}"/>
+        <unjar src="${lib2}" dest="${tmpjar_dir}"/>
 
         <jar 
             basedir="${tmpjar_dir}"
