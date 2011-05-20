@@ -1,0 +1,27 @@
+
+
+
+repositorylib.jar:
+This holds all of the 3rd party libs  used by ramadda. It is made with the ant target: repositorylib in 
+src/org/ramadda/repository
+
+repositorytds.jar:
+This gets built from the THREDDS TDS war file.
+To build this:
+Get the latest thredds.war from the Unidata FTP site, e.g:
+ftp://ftp.unidata.ucar/pub/thredds/4.2/current/thredds.war
+
+Now run the tcl script:
+tclsh ../src/org/ramadda/repository/release/makethredds.tcl
+
+This unjars the war and unjars certain jars and makes repositorytds.jar
+
+
+
+ncIdv.jar:
+This should be the definitive source of the netcdf package. It gets included in both the repositorytds.jar
+and the repositorylib.jar. We do this because other packages have netcdf in it (e.g., visad.jar)
+
+tika-app-0.9.jar
+The tika-app-0.9.jar  has been modified. I (jeffmc) removed the ucar tree from this because we had too many conflicts
+with ncIdv.jar
