@@ -7520,8 +7520,10 @@ public class EntryManager extends RepositoryManager {
         //        }
 
         if (entries.size() > 1) {
-            System.err.println("RAMADDA: + more than one top-level entries:"
-                               + entries);
+            System.err.println("RAMADDA: there are more than one top-level entries");
+            for(Entry topEntry: entries) {
+                //                System.err.println("\t:" + topEntry);
+            }
         }
 
         if (entries.size() > 0) {
