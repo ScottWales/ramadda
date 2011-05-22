@@ -30,4 +30,20 @@ values="file:/org/ramadda/plugins/community/resources/institutions.txt" cansearc
 </type>
 
 
+
+  <type name="community_bibliographic_entry"  description="Bibliographic Entry" xhandler="org.ramadda.plugins.community.UserTypeHandler" category="Information">
+     <property name="icon" value="/community/book.png"/>
+     <property name="form.name.label" value="Article Title"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.date.label" value="Publish Date"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <column name="type" type="enumeration" label="Bibliography Type" values="book,article,other" showinhtml="true"/>
+     <column name="authors" type="string" rows="5" label="Authors" showinhtml="true"/>
+</type>
+
+
 </types>
