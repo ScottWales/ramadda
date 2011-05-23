@@ -488,9 +488,11 @@ public class CatalogHarvester extends Harvester {
                 && (urlPath.indexOf("latestopendap=true") >= 0)) {
             return;
         }
+        /*
         System.err.println(tab + "name:" + name + "  #children:"
                            + elements.getLength() + " depth:" + xmlDepth
                            + " " + urlPath + " " + haveChildDatasets);
+        */
 
         if ( !haveChildDatasets && (xmlDepth > 0) && (urlPath != null)) {
             if (makeEntry(node, parent, catalogUrlPath, urlPath, name)) {
