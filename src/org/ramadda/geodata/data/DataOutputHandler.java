@@ -2658,8 +2658,7 @@ public class DataOutputHandler extends OutputHandler {
                 GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return outputEntry(request, outputType, group);
         }
-        System.err.println("group:" + group + " " + group.getType());
-
+        //        System.err.println("group:" + group + " " + group.getType());
         return super.outputGroup(request, outputType, group, subGroups,
                                  entries);
     }
@@ -2829,8 +2828,6 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-
-    int opendapCnt = 0;
     public Result outputOpendap(final Request request, final Entry entry)
             throws Exception {
         //jeffmc: this used to be synchronized and I just don't know why
@@ -2839,8 +2836,7 @@ public class DataOutputHandler extends OutputHandler {
         //if opening a file hangs. So, lets remove the synchronized
         //    public synchronized Result outputOpendap(final Request request,
 
-        opendapCnt++;
-        System.err.println("opendap #" + opendapCnt);
+
         String     location = getPath(request, entry);
         NetcdfFile ncFile   = ncFilePool.get(location);
         opendapCounter.incr();

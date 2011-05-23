@@ -83,8 +83,10 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     public GridAggregationTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
-        getRepository().getHarvesterManager().addHarvesterType(
-            GridAggregationHarvester.class);
+        //We don't need to do this since the Repository loads in the harvesters based on 
+        //plugin classes
+        //        getRepository().getHarvesterManager().addHarvesterType(
+        //            GridAggregationHarvester.class);
     }
 
 
