@@ -25,7 +25,7 @@ import opendap.dap.DAP2Exception;
 
 
 
-import opendap.dap.parser.ParseException;
+//import opendap.dap.parser.ParseException;
 
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
@@ -2922,7 +2922,7 @@ public class DataOutputHandler extends OutputHandler {
          * @throws ParseException On badness
          */
         protected GuardedDataset getDataset(ReqState preq)
-                throws DAP2Exception, IOException, ParseException {
+            throws DAP2Exception, IOException/*, ParseException*/ {
             HttpServletRequest request = preq.getRequest();
             String             reqPath = entry.getName();
 
