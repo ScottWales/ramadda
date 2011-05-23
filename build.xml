@@ -29,6 +29,15 @@
       <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
    </target>
 
+   <target name="pluginszip" depends="init">
+         <zip destfile="${dist_dir}/ramadda1.3b-allplugins.zip">
+            <zipfileset dir="${dist_dir}/allplugins" includes="*"/>
+        </zip>
+         <zip destfile="${dist_dir}/ramadda1.3b-geodataplugins.zip">
+            <zipfileset dir="${dist_dir}/geoplugins" includes="*"/>
+        </zip>
+   </target>
+
 
     <target name="runserver" depends="init">
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="runserver"/>
