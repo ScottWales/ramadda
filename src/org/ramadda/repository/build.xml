@@ -271,6 +271,7 @@
         <copy  file="${dist_dir}/${repositoryjar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/idv.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/repositorylib.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/tika-app-0.9.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${repository_dir}/release/ramadda.sh" todir="${release_dir}" overwrite="true">
             <filterset>
                 <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
@@ -335,8 +336,6 @@
           <lib file="${lib_dir}/repositorytds.jar"/>
           <lib file="${lib_dir}/tika-app-0.9.jar"/>
       </war>
-
-
     </target>
 
 
@@ -389,8 +388,10 @@
 
         <echo message="Unjarring ${lib1}"/>
         <unjar src="${lib1}" dest="${tmpjar_dir}"/>
+<!--
         <echo message="Unjarring ${lib2}"/>
         <unjar src="${lib2}" dest="${tmpjar_dir}"/>
+-->
 
         <jar 
             basedir="${tmpjar_dir}"
