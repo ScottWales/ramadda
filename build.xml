@@ -24,19 +24,19 @@
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false"/>
     </target>
 
-    <target name="plugins" depends="init">
-      <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
+    <target name="plugins" depends="init,purgeplugins">
       <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
+<!-- build wms plugin to get it into geoplugins -->
+      <ant antfile="${src_dir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
+      <zip destfile="${dist_dir}/ramadda1.3b-geodataplugins.zip">
+          <zipfileset dir="${dist_dir}/plugins" includes="*"/>
+      </zip>
+      <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
+      <zip destfile="${dist_dir}/ramadda1.3b-allplugins.zip">
+          <zipfileset dir="${dist_dir}/plugins" includes="*"/>
+      </zip>
    </target>
 
-   <target name="pluginszip" depends="init">
-         <zip destfile="${dist_dir}/ramadda1.3b-allplugins.zip">
-            <zipfileset dir="${dist_dir}/allplugins" includes="*"/>
-        </zip>
-         <zip destfile="${dist_dir}/ramadda1.3b-geodataplugins.zip">
-            <zipfileset dir="${dist_dir}/geoplugins" includes="*"/>
-        </zip>
-   </target>
 
 
     <target name="runserver" depends="init">
@@ -124,6 +124,9 @@
 
    <target name="purge" depends="init,clean" >
      <delete dir="${dist_dir}"/>
+    </target>
+   <target name="purgeplugins" depends="init,clean" >
+     <delete dir="${dist_dir}/plugins"/>
     </target>
 
 
