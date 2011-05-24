@@ -1,7 +1,9 @@
 package org.ramadda.client.android;
 
 import android.app.Activity;
-import android.content.Context;
+
+
+import  android.content.Context;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.view.Gravity;
@@ -17,7 +19,6 @@ import java.util.List;
 
 public class  RamaddaClient extends RamaddaActivity { 
 	
-	
 	public static final String PROP_USERID = "user.id";
 	public static final String PROP_PASSWORD = "user.password";
 	public static final String PROP_SERVER = "server";
@@ -26,7 +27,6 @@ public class  RamaddaClient extends RamaddaActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         List<View> buttons = new ArrayList<View>();
-
     
         buttons.add(GuiUtils.makeButton(this, "List", new View.OnClickListener() {
             public void onClick(View v) {

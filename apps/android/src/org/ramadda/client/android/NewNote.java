@@ -31,14 +31,17 @@ public class NewNote extends RamaddaActivity implements View.OnClickListener {
     }
     
     public void onClick(View v) {
-      	if(v.getId() == R.id.newnote_record) {
-      		try {
-      			if(!recording) beginRecording();
-      			else endRecording();
-      			} catch(Exception exc) {
-      				throw new RuntimeException(exc);
+    	if(v.getId() == R.id.newnote_record) {
+    		try {	
+    			if(!recording) {
+    				beginRecording();
+    			} else {
+      				endRecording();
       			}
-      			return;
+    		} catch(Exception exc) {
+    			throw new RuntimeException(exc);
+      		}
+      		return;
       	}
 
     	if(v.getId() == R.id.newnote_create) {
@@ -49,7 +52,7 @@ public class NewNote extends RamaddaActivity implements View.OnClickListener {
     		System.err.println(name +" " + description +" " + includeLocation);
     	}
     	finish();
-    	
+
     }
     
     private void beginRecording() throws IOException {
