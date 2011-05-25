@@ -1,6 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -25,10 +24,10 @@ package org.ramadda.repository;
 import org.python.core.*;
 import org.python.util.*;
 
+import org.ramadda.repository.auth.*;
+
 
 import org.w3c.dom.*;
-
-import org.ramadda.repository.auth.*;
 
 
 
@@ -99,6 +98,7 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String DIR_ENTRIES = "entries";
 
+    /** _more_          */
     public static final String DIR_USERS = "users";
 
     /** _more_ */
@@ -123,6 +123,7 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String DIR_LOGS = "logs";
 
+    /** _more_          */
     public static final String DIR_INDEX = "index";
 
     /** _more_ */
@@ -147,10 +148,10 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String PROP_DIRDEPTH = "ramadda.storage.dirdepth";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_FASTDIR = "ramadda.storage.fastdir";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_FASTDIRSIZE =
         "ramadda.storage.fastdirsize";
 
@@ -203,11 +204,13 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     private String entriesDir;
 
+    /** _more_          */
     private String usersDir;
 
     /** _more_ */
     private File storageDir;
 
+    /** _more_          */
     private File indexDir;
 
     /** _more_ */
@@ -317,19 +320,23 @@ public class StorageManager extends RepositoryManager {
         }
         repositoryDir = new File(repositoryDirProperty);
 
-        System.err.println ("RAMADDA: home directory: " + repositoryDir);
-        if(!repositoryDir.exists()) {
-	    IOUtil.makeDirRecursive(repositoryDir);
-	}
-
-        if(!repositoryDir.exists()) {
-            System.err.println ("RAMADDA: error: home directory does not exist");
-            throw new IllegalStateException("RAMADDA: error: home directory does not exist");
+        System.err.println("RAMADDA: home directory: " + repositoryDir);
+        if ( !repositoryDir.exists()) {
+            IOUtil.makeDirRecursive(repositoryDir);
         }
 
-        if(!repositoryDir.canWrite()) {
-            System.err.println ("RAMADDA: error: home directory is not writable");
-            throw new IllegalStateException("RAMADDA: error: home directory is not writable");
+        if ( !repositoryDir.exists()) {
+            System.err.println(
+                "RAMADDA: error: home directory does not exist");
+            throw new IllegalStateException(
+                "RAMADDA: error: home directory does not exist");
+        }
+
+        if ( !repositoryDir.canWrite()) {
+            System.err.println(
+                "RAMADDA: error: home directory is not writable");
+            throw new IllegalStateException(
+                "RAMADDA: error: home directory is not writable");
         }
 
 
@@ -443,10 +450,24 @@ public class StorageManager extends RepositoryManager {
      * @return _more_
      */
     public TemporaryDir makeTemporaryDir(String dir) {
+        return makeTemporaryDir(dir, true);
+    }
+
+    /**
+     * Make a temporary directory
+     *
+     * @param dir dir name
+     * @param shouldScour should we scour this directory of old files
+     *
+     * @return _more_
+     */
+    public TemporaryDir makeTemporaryDir(String dir, boolean shouldScour) {
         TemporaryDir tmpDir = new TemporaryDir(IOUtil.joinDir(getTmpDir(),
                                   dir));
         IOUtil.makeDirRecursive(tmpDir.getDir());
-        addTemporaryDir(tmpDir);
+        if (shouldScour) {
+            addTemporaryDir(tmpDir);
+        }
         return tmpDir;
     }
 
@@ -640,7 +661,7 @@ public class StorageManager extends RepositoryManager {
             File f = new File(logDir);
             IOUtil.makeDirRecursive(f);
 
-            if(getRepository().isReadOnly()) {
+            if (getRepository().isReadOnly()) {
                 System.err.println("RAMADDA: skipping log4j");
                 return logDir;
             }
@@ -662,9 +683,10 @@ public class StorageManager extends RepositoryManager {
                 }
             }
             try {
-                    System.err.println("RAMADDA: Configuring log4j. Note: this may print out a stack trace.");
-                    org.apache.log4j.PropertyConfigurator.configure(
-                                                                    log4JFile.toString());
+                System.err.println(
+                    "RAMADDA: Configuring log4j. Note: this may print out a stack trace.");
+                org.apache.log4j.PropertyConfigurator.configure(
+                    log4JFile.toString());
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error configuring log4j:" + exc);
                 exc.printStackTrace();
@@ -769,6 +791,11 @@ public class StorageManager extends RepositoryManager {
         return storageDir.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getIndexDir() {
         if (indexDir == null) {
             indexDir = new File(IOUtil.joinDir(getRepositoryDir(),
@@ -898,6 +925,14 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param createIfNeeded _more_
+     *
+     * @return _more_
+     */
     public File getUserDir(String id, boolean createIfNeeded) {
         id = IOUtil.cleanFileName(id);
         if (usersDir == null) {
@@ -906,14 +941,13 @@ public class StorageManager extends RepositoryManager {
         }
 
         String dir1 = "user_" + ((id.length() >= 2)
-                                  ? id.substring(0, 2)
-                                  : "");
+                                 ? id.substring(0, 2)
+                                 : "");
         String dir2 = "user_" + ((id.length() >= 4)
-                                  ? id.substring(2, 4)
-                                  : "");
+                                 ? id.substring(2, 4)
+                                 : "");
         File userDir = new File(IOUtil.joinDir(usersDir,
-                                           IOUtil.joinDir(dir1,
-                                               IOUtil.joinDir(dir2, id))));
+                           IOUtil.joinDir(dir1, IOUtil.joinDir(dir2, id))));
         if (createIfNeeded) {
             IOUtil.makeDirRecursive(userDir);
         }
@@ -1035,7 +1069,6 @@ public class StorageManager extends RepositoryManager {
      *
      * @param request _more_
      * @param original _more_
-     * @param prefix _more_
      * @param targetName _more_
      *
      * @return _more_
@@ -1357,7 +1390,8 @@ public class StorageManager extends RepositoryManager {
      */
     public void checkLocalFile(File file) throws Exception {
         if ( !isLocalFileOk(file)) {
-            System.err.println("StorageManager.checkLocalFile bad file location:" + file);
+            System.err.println(
+                "StorageManager.checkLocalFile bad file location:" + file);
             throw new AccessException(
                 "The specified file is not under one of the allowable file system directories<br>These need to be set by the site administrator",
                 null);
@@ -1407,7 +1441,7 @@ public class StorageManager extends RepositoryManager {
      * @return _more_
      */
     public File checkWriteFile(File file) {
-        if(getRepository().isReadOnly()) {
+        if (getRepository().isReadOnly()) {
             throw new IllegalArgumentException("Unable to write to file");
         }
         getStorageDir();
