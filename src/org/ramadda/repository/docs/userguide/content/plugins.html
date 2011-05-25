@@ -9,11 +9,16 @@
 RAMADDA has a plugin facility that enables one to add new kinds of entry types, new content views, etc. In the RAMADDA home directory there is a &quot;plugins&quot; sub-directory. When RAMADDA starts up it loads all of the files in the plugins directory. 
 <p>
 There is a listing of available plugins at:
-<a href="http://motherlode.ucar.edu/repository/alias/ramaddaplugins">http://motherlode.ucar.edu/repository/alias/ramaddaplugins</a>. To install a plugin just download the file and copy it to the RAMADDA home directory <i>plugins</i> directory.
+
+<a href="https://sites.google.com/site/ramaddacms/home/plugins">https://sites.google.com/site/ramaddacms/home/plugins</a>. 
+To install a plugin just download the file and copy it to the RAMADDA home directory <i>plugins</i> directory.
+
 
 
 <h3>How plugins work</h3>
-RAMADDA determines what to do with a plugin file by looking at its file name. If the file is a jar file it will crack open the jar file and look at each contained file. It handles the files in the following way:
+RAMADDA determines what to do with a plugin file by looking at its file name. If the file is a .zip file RAMADDA will
+unzip the files in the zip file and load each one as a plugin.
+If the file is a jar file it will crack open the jar file and look at each contained file. It handles the files in the following way:
 <ul>
 <li> <i>.properties</i><br>
 Any &quot;.properties&quot; files are loaded as  system properties.
