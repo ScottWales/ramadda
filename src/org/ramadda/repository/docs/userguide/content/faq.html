@@ -98,10 +98,11 @@ a SMTP server that RAMADDA will use to send email.
 <faqitem cat="Administration" id="template" q="I want to change the html design of RAMADDA" >
 The HTML pages that RAMADDA generates are based on a template mechanism.
 Here is an example template: <a href="template.html.txt">template.html.txt</a>.
-Copy the example to your local RAMADDA directory (strip off the .txt):<pre>
-&lt;user home&gt;/.ramadda/resources/template.html
+Copy the example to your local RAMADDA plugins directory (strip off the .txt):<pre>
+&lt;user home&gt;/.ramadda/plugins/template.html
 </pre>
-This is one of the places where RAMADDA looks for templates.
+
+Any plugin file that ends with "template.html" is loaded by RAMADDA as a template.
 <p>
 In the template are a set of properties. You should change the id and name property.
 There are a number of other  macros shown as <i>${macro}</i> that are used to 
@@ -116,31 +117,26 @@ When RAMADDA is serving a file (e.g., someimage.png) it will look in:
 So place any files you want served in that directory.
 <p>
 
-
-RAMADDA uses the &quot;ramadda.html.templates&quot; property, a semi-colon delimited list of
-file paths,  to find where the templates are.
-The default value for this property is:
-<pre>
-    ramadda.html.templates=%repositorydir%/resources/template.html;%resourcedir%/templates/wikipedia.html;...
-</pre>
-
-If you wanted to change this then make some <i>.properties</i> file with the new paths, e.g.,:<pre>
-    ramadda.html.templates=%repositorydir%/resources/template1.html;%repositorydir%/resources/template2.html;...
-</pre>
-and place the .properties file in the plugins directory:<pre>
-    &lt;user home&gt;/plugins
-</pre>
-
 Normally, RAMADDA will cache template in memory so if you are modifying the template
 you can't just hit reload in your browser. You would need to restart RAMADDA.
-To get around this you can run set the property:<pre>
+To get around this you can run set the property:
+<pre>
     ramadda.cacheresources=false
 </pre> in your properties file or specify this property on the command line:
 <pre>
     java -Xmx1024m -server   org.ramadda.repository.RepositoryServer -Dramadda.cacheresources=false
 </pre>
 
+This way  you can edit your template, reload the page to see the results, edit again, etc.
 Don't forget to unset this property when in production.
+
+<p>
+If you want to specify a template as the default template for the site then set the property:
+<pre>
+ramadda.html.template.default=<your template id>
+</pre>
+You can set this in a plugin .properties file or you can specify this property (and other properties as well)
+in the Admin-&gt;Settings-&gt;Site and Contact Information-&gt;Extra Properties field.
 
 </faqitem>
 
