@@ -237,7 +237,7 @@ public class AtomOutputHandler extends OutputHandler {
 
             Document     doc   = XmlUtil.getDocument("<metadata></metadata>");
             Element      root  = doc.getDocumentElement();
-            typeHandler.addMetadataToXml(entry, root, "atom");
+            typeHandler.addMetadataToXml(entry, root, extra, "atom");
 
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
@@ -304,7 +304,9 @@ public class AtomOutputHandler extends OutputHandler {
                 desc = "";
             }
             sb.append(AtomUtil.makeEntry(entry.getName(), selfUrl,
-                                         new Date(entry.getEndDate()), desc,
+                                         new Date(entry.getCreateDate()), 
+                                         new Date(entry.getChangeDate()), 
+                                         desc,
                                          null, links, extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
