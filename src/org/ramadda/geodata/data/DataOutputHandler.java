@@ -126,6 +126,7 @@ import ucar.unidata.ui.ImageUtils;
 
 
 
+import org.ramadda.util.TempDir;
 
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
@@ -137,7 +138,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.Pool;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TemporaryDir;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
@@ -310,10 +310,10 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /** nj cache directory */
-    private TemporaryDir nj22Dir;
+    private TempDir nj22Dir;
 
     /** data cache directory */
-    private TemporaryDir dataCacheDir;
+    private TempDir dataCacheDir;
 
 
     //TODO: When we close a ncfile some thread might be using it
@@ -622,7 +622,7 @@ public class DataOutputHandler extends OutputHandler {
 
         //TODO: what other global configuration should be done?
         nj22Dir =
-            getRepository().getStorageManager().makeTemporaryDir("nj22");
+            getRepository().getStorageManager().makeTempDir("nj22");
         nj22Dir.setMaxFiles(500);
 
         // Apply settings for the NetcdfDataset
@@ -640,7 +640,7 @@ public class DataOutputHandler extends OutputHandler {
         //        ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache(true);
         ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache(true);
 
-        dataCacheDir = getRepository().getStorageManager().makeTemporaryDir(
+        dataCacheDir = getRepository().getStorageManager().makeTempDir(
             "visaddatacache");
         dataCacheDir.setMaxFiles(2000);
 
