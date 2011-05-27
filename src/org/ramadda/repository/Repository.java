@@ -67,7 +67,7 @@ import ucar.unidata.util.PluginClassLoader;
 
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.util.TemporaryDir;
+import org.ramadda.util.TempDir;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 
@@ -2077,8 +2077,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected void initPlugins() throws Exception {
         //The false says not to scour
-        TemporaryDir tempDir =
-            getStorageManager().makeTemporaryDir("tmpplugins", false);
+        TempDir tempDir =
+            getStorageManager().makeTempDir("tmpplugins", false);
         File   tmpPluginsDir = tempDir.getDir();
 
         File   dir           = new File(getStorageManager().getPluginsDir());
