@@ -25,6 +25,7 @@ import org.python.core.*;
 import org.python.util.*;
 
 import org.ramadda.repository.auth.*;
+import org.ramadda.util.TempDir;
 
 
 import org.w3c.dom.*;
@@ -40,7 +41,6 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TemporaryDir;
 
 import ucar.unidata.xml.XmlUtil;
 
@@ -98,7 +98,7 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String DIR_ENTRIES = "entries";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DIR_USERS = "users";
 
     /** _more_ */
@@ -123,7 +123,7 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String DIR_LOGS = "logs";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DIR_INDEX = "index";
 
     /** _more_ */
@@ -180,17 +180,17 @@ public class StorageManager extends RepositoryManager {
     private String iconsDir;
 
     /** _more_ */
-    private List<TemporaryDir> tmpDirs = new ArrayList<TemporaryDir>();
+    private List<TempDir> tmpDirs = new ArrayList<TempDir>();
 
     /** _more_ */
-    private TemporaryDir scratchDir;
+    private TempDir scratchDir;
 
 
     /** _more_ */
     private String anonymousDir;
 
     /** _more_ */
-    private TemporaryDir cacheDir;
+    private TempDir cacheDir;
 
     /** _more_ */
     private String logDir;
@@ -204,17 +204,17 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     private String entriesDir;
 
-    /** _more_          */
+    /** _more_ */
     private String usersDir;
 
     /** _more_ */
     private File storageDir;
 
-    /** _more_          */
+    /** _more_ */
     private File indexDir;
 
     /** _more_ */
-    private TemporaryDir thumbDir;
+    private TempDir thumbDir;
 
     /** _more_ */
     private List<File> downloadDirs = new ArrayList<File>();
@@ -438,8 +438,13 @@ public class StorageManager extends RepositoryManager {
      *
      * @param storageDir _more_
      */
-    public void addTemporaryDir(TemporaryDir storageDir) {
+    public void addTempDir(final TempDir storageDir) {
         tmpDirs.add(storageDir);
+        Misc.runInABit(10000, new Runnable() {
+            public void run() {
+                scourTmpDir(storageDir, true);
+            }
+        });
     }
 
     /**
@@ -449,8 +454,8 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public TemporaryDir makeTemporaryDir(String dir) {
-        return makeTemporaryDir(dir, true);
+    public TempDir makeTempDir(String dir) {
+        return makeTempDir(dir, true);
     }
 
     /**
@@ -461,12 +466,11 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public TemporaryDir makeTemporaryDir(String dir, boolean shouldScour) {
-        TemporaryDir tmpDir = new TemporaryDir(IOUtil.joinDir(getTmpDir(),
-                                  dir));
+    public TempDir makeTempDir(String dir, boolean shouldScour) {
+        TempDir tmpDir = new TempDir(IOUtil.joinDir(getTmpDir(), dir));
         IOUtil.makeDirRecursive(tmpDir.getDir());
         if (shouldScour) {
-            addTemporaryDir(tmpDir);
+            addTempDir(tmpDir);
         }
         return tmpDir;
     }
@@ -480,7 +484,7 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public File getTmpDirFile(TemporaryDir tmpDir, String file) {
+    public File getTmpDirFile(TempDir tmpDir, String file) {
         File f = new File(IOUtil.joinDir(tmpDir.getDir(), file));
         dirTouched(tmpDir, f);
         return checkFile(f);
@@ -534,9 +538,9 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    private TemporaryDir getScratchDir() {
+    private TempDir getScratchDir() {
         if (scratchDir == null) {
-            scratchDir = makeTemporaryDir(DIR_SCRATCH);
+            scratchDir = makeTempDir(DIR_SCRATCH);
             scratchDir.setMaxAge(DateUtil.hoursToMillis(1));
         }
         return scratchDir;
@@ -575,9 +579,9 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    private TemporaryDir getThumbDir() {
+    private TempDir getThumbDir() {
         if (thumbDir == null) {
-            thumbDir = makeTemporaryDir(DIR_THUMBNAILS);
+            thumbDir = makeTempDir(DIR_THUMBNAILS);
             thumbDir.setMaxFiles(1000);
             thumbDir.setMaxSize(1000 * 1000 * 1000);
         }
@@ -628,9 +632,9 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    private TemporaryDir getCacheDir() {
+    private TempDir getCacheDir() {
         if (cacheDir == null) {
-            cacheDir = makeTemporaryDir(DIR_CACHE);
+            cacheDir = makeTempDir(DIR_CACHE);
             cacheDir.setMaxSize(1000 * 1000 * 1000);
         }
         return cacheDir;
@@ -702,7 +706,7 @@ public class StorageManager extends RepositoryManager {
      * @param tmpDir _more_
      * @param f _more_
      */
-    public void dirTouched(final TemporaryDir tmpDir, File f) {
+    public void dirTouched(final TempDir tmpDir, File f) {
         if (f != null) {
             f.setLastModified(new Date().getTime());
             //if the file is already there then don't scour
@@ -727,9 +731,13 @@ public class StorageManager extends RepositoryManager {
      * _more_
      */
     private void scourTmpDirs() {
-        List<TemporaryDir> tmpTmpDirs = new ArrayList<TemporaryDir>(tmpDirs);
-        for (TemporaryDir tmpDir : tmpTmpDirs) {
-            scourTmpDir(tmpDir);
+        //Scour once an hour
+        while (true) {
+            List<TempDir> tmpTmpDirs = new ArrayList<TempDir>(tmpDirs);
+            for (TempDir tmpDir : tmpTmpDirs) {
+                scourTmpDir(tmpDir);
+            }
+            Misc.sleepSeconds(60 * 60);
         }
     }
 
@@ -739,21 +747,42 @@ public class StorageManager extends RepositoryManager {
      *
      * @param tmpDir _more_
      */
-    protected void scourTmpDir(final TemporaryDir tmpDir) {
+    protected void scourTmpDir(final TempDir tmpDir) {
+        scourTmpDir(tmpDir, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param tmpDir _more_
+     * @param force _more_
+     */
+    protected void scourTmpDir(final TempDir tmpDir, boolean force) {
         synchronized (tmpDir) {
-            //            System.err.println ("scourTmpDir:" +  tmpDir.getDir().getName());
-            if ( !tmpDir.haveChanged()) {
-                return;
-            }
+            //            if ( !force && !tmpDir.haveChanged()) {
+            //                return;
+            //            }
             List<File> filesToScour = tmpDir.findFilesToScour();
             if (filesToScour.size() > 0) {
                 logInfo("StorageManager: scouring " + filesToScour.size()
-                        + " file from:" + tmpDir.getDir().getName());
+                        + " files from:" + tmpDir.getDir().getName());
+                System.err.println("StorageManager: scouring " + filesToScour.size()
+                                   + " files from:" + tmpDir);
             }
             List<File> notDeleted = IOUtil.deleteFiles(filesToScour);
             if (notDeleted.size() > 0) {
                 logInfo("Unable to delete tmp files:" + notDeleted);
             }
+            //Now check for empty top level dirs and get rid of the
+            for (File remainingFile : tmpDir.listFiles()) {
+                if ( !remainingFile.isDirectory()) {
+                    continue;
+                }
+                if (remainingFile.listFiles().length == 0) {
+                    remainingFile.delete();
+                }
+            }
+
         }
         tmpDir.setTouched(false);
     }
