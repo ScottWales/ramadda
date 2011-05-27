@@ -1115,7 +1115,8 @@ public class TypeHandler extends RepositoryManager {
      * @param metadataType _more_
      */
     public void addMetadataToXml(Entry entry, Element root,
-                                 String metadataType) {}
+                                 StringBuffer extraXml,
+                                 String metadataType)  {}
 
     /**
      * _more_
