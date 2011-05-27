@@ -57,6 +57,8 @@ public class AtomUtil {
     /** _more_          */
     public static final String TAG_FEED = "feed";
 
+    public static final String TAG_PUBLISHED = "published";
+
     /** _more_          */
     public static final String TAG_TITLE = "title";
 
@@ -243,7 +245,9 @@ public class AtomUtil {
      * @return _more_
      */
     public static String makeEntry(String title, 
-                                   String id, Date updated,
+                                   String id, 
+                                   Date published,
+                                   Date updated,
                                    String summary, String content,
                                    List<Link> links, String extraStuff) {
         StringBuffer sb = new StringBuffer();
@@ -265,8 +269,11 @@ public class AtomUtil {
         sb.append(XmlUtil.tag(TAG_ID, "", id));
 
 
-        if (updated != null) {
-            sb.append(XmlUtil.tag(TAG_UPDATED, "", format(updated)));
+        if(published!=null) {
+            sb.append(XmlUtil.tag(TAG_PUBLISHED, "", format(published)));
+            if (updated != null && updated.getTime()>published.getTime()) {
+                sb.append(XmlUtil.tag(TAG_UPDATED, "", format(updated)));
+            }
         }
         if ((summary != null) && (summary.length() > 0)) {
             sb.append(XmlUtil.tag(TAG_SUMMARY, "",
