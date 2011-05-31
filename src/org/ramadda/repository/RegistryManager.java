@@ -312,6 +312,7 @@ public class RegistryManager extends RepositoryManager {
      */
     public void addToInstallForm(Request request, StringBuffer sb)
             throws Exception {
+        if(true) return;
         String msg = msg("Servers this server registers with:");
         msg = HtmlUtil.space(1)
               + HtmlUtil.href(

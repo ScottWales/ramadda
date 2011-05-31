@@ -29,6 +29,8 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.TempDir;
+
 
 import org.w3c.dom.*;
 
@@ -48,8 +50,6 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
-
-import org.ramadda.util.TempDir;
 import ucar.unidata.xml.XmlNodeList;
 import ucar.unidata.xml.XmlUtil;
 
@@ -96,16 +96,12 @@ import javax.swing.ImageIcon;
 
 
 /**
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * This class does most of the work of managing repository content
  */
 public class EntryManager extends RepositoryManager {
 
     /** _more_ */
     public static final int ENTRY_CACHE_LIMIT = 10000;
-
 
 
     /** _more_ */
@@ -114,6 +110,9 @@ public class EntryManager extends RepositoryManager {
 
     /** _more_ */
     private static final String GROUP_TOP = "Top";
+
+    /** _more_          */
+    private static final String ID_ROOT = "root";
 
     /** _more_ */
     private Entry topEntry;
@@ -768,7 +767,7 @@ public class EntryManager extends RepositoryManager {
                                 getRepository().URL_COMMENTS_SHOW,
                                 entry), getRepository().iconUrl(
                                     ICON_COMMENTS), "Add/View Comments",
-                            OutputType.TYPE_TOOLBAR);
+                                        OutputType.TYPE_TOOLBAR);
 
             String href = HtmlUtil.href(link.getUrl(),
                                         "Comments:(" + comments.size() + ")"
@@ -2502,11 +2501,11 @@ public class EntryManager extends RepositoryManager {
             request.put(ARG_ENTRYID, group.getId());
         }
 
-        OutputHandler outputHandler = getRepository().getOutputHandler(request);
-        Result result =
-            outputHandler.outputGroup(request,
-                                      request.getOutput(),
-                                      getDummyGroup(), new ArrayList<Entry>(), entries);
+        OutputHandler outputHandler =
+            getRepository().getOutputHandler(request);
+        Result result = outputHandler.outputGroup(request,
+                            request.getOutput(), getDummyGroup(),
+                            new ArrayList<Entry>(), entries);
         return addEntryHeader(request, (group != null)
                                        ? group
                                        : getTopGroup(), result);
@@ -3217,8 +3216,8 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().deleteFile(new File(file));
         }
 
-        List<Entry>              newEntries = new ArrayList<Entry>();
-        Hashtable<String, Entry> entries    = new Hashtable<String, Entry>();
+
+        Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
         if (parent != null) {
             entries.put("", parent);
         }
@@ -3242,9 +3241,53 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+        List<Entry> newEntries = processEntryXml(request, root, entries,
+                                     origFileToStorage, resultRoot);
+
+
+        if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
+            //TODO: Return a list of the newly created entries
+            String xml = XmlUtil.toString(resultRoot);
+            return new Result(xml, MIME_XML);
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(msgHeader("Imported entries"));
+        sb.append("<ul>");
+
+        for (Entry entry : newEntries) {
+            sb.append("<li> ");
+            sb.append(getBreadCrumbs(request, entry, true, parent)[1]);
+        }
+        sb.append("</ul>");
+        if (parent != null) {
+            return makeEntryEditResult(request, parent, "Imported Entries",
+                                       sb);
+        }
+        return new Result("", sb);
+
+    }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param root _more_
+     * @param entries _more_
+     * @param origFileToStorage _more_
+     * @param resultRoot _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> processEntryXml(
+            Request request, Element root, Hashtable<String, Entry> entries,
+            Hashtable<String, String> origFileToStorage, Element resultRoot)
+            throws Exception {
+        List<Entry>   newEntries       = new ArrayList<Entry>();
         List<Element> entryNodes       = new ArrayList<Element>();
         List<Element> associationNodes = new ArrayList<Element>();
 
@@ -3273,9 +3316,11 @@ public class EntryManager extends RepositoryManager {
             Entry entry = processEntryXml(request, node, entries,
                                           origFileToStorage, true, false);
             //System.err.println("entry:" + entry.getFullName() + " " + entry.getId());
-            XmlUtil.create(resultDoc, TAG_ENTRY, resultRoot,
-                           new String[] { ATTR_ID,
-                                          entry.getId() });
+            if (resultRoot != null) {
+                XmlUtil.create(resultRoot.getOwnerDocument(), TAG_ENTRY,
+                               resultRoot, new String[] { ATTR_ID,
+                        entry.getId() });
+            }
             newEntries.add(entry);
             if (XmlUtil.getAttribute(node, ATTR_ADDMETADATA, false)) {
                 addInitialMetadata(request,
@@ -3293,39 +3338,17 @@ public class EntryManager extends RepositoryManager {
             String id =
                 getAssociationManager().processAssociationXml(request, node,
                     entries, origFileToStorage);
-            XmlUtil.create(resultDoc, TAG_ASSOCIATION, resultRoot,
-                           new String[] { ATTR_ID,
-                                          id });
+            if (resultRoot != null) {
+                XmlUtil.create(resultRoot.getOwnerDocument(),
+                               TAG_ASSOCIATION, resultRoot,
+                               new String[] { ATTR_ID,
+                        id });
+            }
         }
 
         insertEntries(newEntries, true);
-
-        if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
-            //TODO: Return a list of the newly created entries
-            String xml = XmlUtil.toString(resultRoot);
-            return new Result(xml, MIME_XML);
-        }
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(msgHeader("Imported entries"));
-        sb.append("<ul>");
-
-        for (Entry entry : newEntries) {
-            sb.append("<li> ");
-            sb.append(getBreadCrumbs(request, entry, true, parent)[1]);
-        }
-        sb.append("</ul>");
-        if (parent != null) {
-            return makeEntryEditResult(request, parent, "Imported Entries",
-                                       sb);
-        }
-        return new Result("", sb);
-
+        return newEntries;
     }
-
-
-
-
 
     /**
      * _more_
@@ -5119,8 +5142,9 @@ public class EntryManager extends RepositoryManager {
         if (entryId == null) {
             return null;
         }
-        if (entryId.equals(getTopGroup().getId())) {
-            return getTopGroup();
+        Entry topGroup = getTopGroup();
+        if (entryId.equals(topGroup.getId()) || entryId.equals(ID_ROOT)) {
+            return topGroup;
         }
 
         //        synchronized (MUTEX_ENTRY) {
@@ -7520,8 +7544,9 @@ public class EntryManager extends RepositoryManager {
         //        }
 
         if (entries.size() > 1) {
-            System.err.println("RAMADDA: there are more than one top-level entries");
-            for(Entry topEntry: entries) {
+            System.err.println(
+                "RAMADDA: there are more than one top-level entries");
+            for (Entry topEntry : entries) {
                 //                System.err.println("\t:" + topEntry);
             }
         }

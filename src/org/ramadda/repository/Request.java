@@ -272,6 +272,11 @@ public class Request implements Constants {
     }
 
 
+    public boolean isPost() {
+        if(httpServletRequest==null) return false;
+        return httpServletRequest.getMethod().equals("POST");
+    }
+
     public void setReturnFilename(String filename) {
         httpServletResponse.setHeader("Content-disposition","attachment; filename=" + filename);
     }
@@ -457,6 +462,16 @@ public class Request implements Constants {
      */
     public String formPost(RequestUrl theUrl, String extra) {
         return HtmlUtil.formPost(url(theUrl), extra);
+    }
+
+
+    public void formPostWithAuthToken(StringBuffer sb, RequestUrl theUrl) {
+        formPostWithAuthToken(sb, theUrl, null);
+    }
+
+    public void formPostWithAuthToken(StringBuffer sb, RequestUrl theUrl, String extra) {
+        sb.append(formPost(theUrl, extra));
+        repository.addAuthToken(this, sb);
     }
 
 
@@ -1668,7 +1683,7 @@ public class Request implements Constants {
         httpHeaderArgs = value;
         //TODO: be smarter about this
         String ua = getUserAgent("").toLowerCase();
-        isMobile =  ua.indexOf("iphone")>=0;
+        isMobile =  ua.indexOf("iphone")>=0 || ua.indexOf("android")>=0  || ua.indexOf("blackberry")>=0;
     }
 
     /**

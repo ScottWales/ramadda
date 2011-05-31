@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -20,10 +18,9 @@
  */
 
 package org.ramadda.repository.admin;
-import  org.ramadda.repository.*;
 
 
-import org.w3c.dom.*;
+import org.ramadda.repository.*;
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
@@ -32,6 +29,9 @@ import org.ramadda.repository.ftp.FtpManager;
 import org.ramadda.repository.harvester.*;
 
 import org.ramadda.repository.output.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -68,8 +68,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -145,7 +145,7 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public RequestUrl URL_ADMIN_STACK = new RequestUrl(this, "/admin/stack",
-                                          "Stack");
+                                            "Stack");
 
 
     /** _more_ */
@@ -280,10 +280,9 @@ public class Admin extends RepositoryManager {
      */
     private StringBuffer getLicenseForm() throws Exception {
         StringBuffer sb = new StringBuffer();
-        String license =
-            getStorageManager().readSystemResource(
-                "/org/ramadda/repository/resources/license.txt");
-        sb.append(HtmlUtil.textArea("", license, 20, 50));
+        String license = getStorageManager().readSystemResource(
+                             "/org/ramadda/repository/resources/license.txt");
+        sb.append(HtmlUtil.textArea("", license, 20, 75));
         sb.append("<p>");
         sb.append(HtmlUtil.checkbox("agree", "1"));
         sb.append(
@@ -315,7 +314,7 @@ public class Admin extends RepositoryManager {
             title = "Installation";
             sb.append(HtmlUtil.formTable());
             sb.append(
-                "<p>Thank you for installing the RAMADDA Repository. <p>Here is the local file system directory where data is stored and the database information.<br>Now would be a good time to change these settings and restart RAMADDA if this is not what you want.<br>See <a target=\"other\" href=\"http://www.unidata.ucar.edu/software/ramadda/docs/userguide/installing.html\">here</a> for installation instructions.");
+                "<p>Thank you for installing the RAMADDA Repository. <p>Below is the local file system directory where data is stored and the database information.<br>Now would be a good time to change these settings and restart RAMADDA if this is not what you want.<br>See <a target=\"other\" href=\"http://www.unidata.ucar.edu/software/ramadda/docs/userguide/installing.html\">here</a> for installation instructions.");
             getStorageManager().addInfo(sb);
             getDatabaseManager().addInfo(sb);
             sb.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Next"))));
@@ -362,36 +361,29 @@ public class Admin extends RepositoryManager {
 
 
                 if (okToAdd) {
-                    getUserManager().makeOrUpdateUser(
-                        new User(
-                            id, name,
-                            request.getString(
-                                UserManager.ARG_USER_EMAIL, "").trim(), "",
-                                    "",
-                                    getUserManager().hashPassword(password1),
-                            true, "", "", false, null), false);
+                    User user = new User(
+                                    id, name,
+                                    request.getString(
+                                        UserManager.ARG_USER_EMAIL,
+                                        "").trim(), "", "",
+                                            getUserManager().hashPassword(
+                                                password1), true, "", "",
+                                                    false, null);
+                    getUserManager().makeOrUpdateUser(user, false);
                     didIt(ARG_ADMIN_ADMINCREATED);
                     didIt(ARG_ADMIN_INSTALLCOMPLETE);
 
-                    String [] propArgs = new String[]{
-                        PROP_REPOSITORY_NAME,
-                        PROP_HOSTNAME,
-                        PROP_PORT,
-                        PROP_REPOSITORY_NAME,
-                        PROP_REPOSITORY_DESCRIPTION
-                    };
+                    String[] propArgs = new String[] { PROP_REPOSITORY_NAME,
+                            PROP_HOSTNAME, PROP_PORT, PROP_REPOSITORY_NAME,
+                            PROP_REPOSITORY_DESCRIPTION };
 
 
-                    for(String propArg: propArgs) {
+                    for (String propArg : propArgs) {
                         if (request.defined(propArg)) {
                             getRepository().writeGlobal(propArg,
-                                                        request.getString(propArg, "").trim());
+                                    request.getString(propArg, "").trim());
                         }
                     }
-
-
-
-
 
                     if (request.defined(UserManager.ARG_USER_EMAIL)) {
                         getRepository().writeGlobal(PROP_ADMIN_EMAIL,
@@ -400,12 +392,33 @@ public class Admin extends RepositoryManager {
                     }
 
                     getRegistryManager().applyInstallForm(request);
-
-
                     sb.append(
                         getRepository().showDialogNote(
                             msg("Site administrator created")));
                     sb.append(HtmlUtil.p());
+
+                    Entry topEntry = getEntryManager().getTopGroup();
+                    topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
+                            topEntry.getName()));
+                    topEntry.setDescription(
+                        "<wiki>\nWelcome to your RAMADDA server.\n\nYou should \n<a href=\""
+                        + getRepository().URL_ENTRY_FORM + "?entryid="
+                        + topEntry.getId()
+                        + "\">edit this page</a>\n\n<p>\n\nHere are some folders to get you started:<br>\n\n{{children showtoggle=false}}\n");
+                    getEntryManager().storeEntry(topEntry);
+
+
+                    String initEntriesXml =
+                        getRepository().getResource(
+                            "/org/ramadda/repository/resources/initentries.xml");
+                    Element root = XmlUtil.getRoot(initEntriesXml);
+                    List<Entry> newEntries =
+                        getEntryManager().processEntryXml(
+                            getRepository().getRequest(user), root,
+                            new Hashtable<String, Entry>(),
+                            new Hashtable<String, String>(), null);
+
+
                     sb.append(getUserManager().makeLoginForm(request));
                     getRegistryManager().doFinalInitialization();
                     return new Result("", sb);
@@ -476,7 +489,7 @@ public class Admin extends RepositoryManager {
                 HtmlUtil.formEntry(
                     msgLabel("Hostname"),
                     HtmlUtil.input(PROP_HOSTNAME, hostname, HtmlUtil.SIZE_60)
-                    + " (Use  &quot;ipadaddress&quot; for dynamic ips)"));
+                    + " (Use  &quot;ipaddress&quot; for dynamic IPS)"));
             sb.append(HtmlUtil.formEntry(msgLabel("Port"),
                                          HtmlUtil.input(PROP_PORT, port,
                                              HtmlUtil.SIZE_10)));
@@ -524,7 +537,9 @@ public class Admin extends RepositoryManager {
                 String tableName = tables.getString("TABLE_NAME");
 
                 //Humm, not sure why I get this table name and its giving me an error
-                if(tableName.equals("ENTRY")) continue;
+                if (tableName.equals("ENTRY")) {
+                    continue;
+                }
 
                 String tableType = tables.getString("TABLE_TYPE");
                 //            System.err.println("table type" + tableType);
@@ -539,7 +554,8 @@ public class Admin extends RepositoryManager {
                     continue;
                 }
 
-                if (tableName.equals("BASE")|| tableName.equals("AGGGREGATION")) {
+                if (tableName.equals("BASE")
+                        || tableName.equals("AGGGREGATION")) {
                     continue;
                 }
 
@@ -610,15 +626,25 @@ public class Admin extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result adminShutdown(Request request) throws Exception {
-        
+
         Misc.runInABit(1000, new Runnable() {
-                public void run() {
-                    getRepository().shutdown();
-                }
-            });
-        
-        return makeResult(request, "Administration", new StringBuffer("Shutting down"));
+            public void run() {
+                getRepository().shutdown();
+            }
+        });
+
+        return makeResult(request, "Administration",
+                          new StringBuffer("Shutting down"));
     }
 
 
@@ -651,8 +677,9 @@ public class Admin extends RepositoryManager {
             }
         }
         sb.append("<p>");
-        sb.append(request.formPost(URL_ADMIN_STARTSTOP, " name=\"admin\""));
-        getRepository().addAuthToken(request, sb);
+        request.formPostWithAuthToken(sb, URL_ADMIN_STARTSTOP,
+                                      " name=\"admin\"");
+
         if ( !getDatabaseManager().hasConnection()) {
             sb.append(HtmlUtil.hidden(ARG_ADMIN_WHAT, "restart"));
             sb.append(HtmlUtil.submit("Restart Database"));
@@ -789,15 +816,21 @@ public class Admin extends RepositoryManager {
     public Result makeResult(Request request, String title, StringBuffer sb)
             throws Exception {
         StringBuffer headerSB = new StringBuffer();
-        addHeader(request,  headerSB);
+        addHeader(request, headerSB);
         headerSB.append(sb);
         sb = headerSB;
         Result result = new Result(title, sb);
         return addHeaderToAncillaryPage(request, result);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     */
     public void addHeader(Request request, StringBuffer sb) {
-        sb.append(getRepository().makeHeader(request, adminUrls,""));
+        sb.append(getRepository().makeHeader(request, adminUrls, ""));
     }
 
 
@@ -846,8 +879,7 @@ public class Admin extends RepositoryManager {
     public Result adminSettings(Request request) throws Exception {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(request.formPost(URL_ADMIN_SETTINGS_DO));
-        getRepository().addAuthToken(request, sb);
+        request.formPostWithAuthToken(sb, URL_ADMIN_SETTINGS_DO, null);
         String size = HtmlUtil.SIZE_60;
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Change Settings")));
@@ -921,9 +953,16 @@ public class Admin extends RepositoryManager {
 
 
 
-        csb.append(HtmlUtil.row(HtmlUtil.colspan(msgHeader("Extra Properties"), 2)));
-        csb.append(HtmlUtil.formEntryTop(msgLabel("Properties"),
-                                        HtmlUtil.textArea(PROP_PROPERTIES, getProperty(PROP_PROPERTIES,"#add extra properties\n#name=value\n"), 5,60)));
+        csb.append(
+            HtmlUtil.row(HtmlUtil.colspan(msgHeader("Extra Properties"), 2)));
+        csb.append(
+            HtmlUtil.formEntryTop(
+                msgLabel("Properties"),
+                HtmlUtil.textArea(
+                    PROP_PROPERTIES,
+                    getProperty(
+                        PROP_PROPERTIES,
+                        "#add extra properties\n#name=value\n"), 5, 60)));
 
         getRepository().getRegistryManager().addAdminConfig(request, csb);
 
@@ -1076,7 +1115,8 @@ public class Admin extends RepositoryManager {
 
         asb.append(
             HtmlUtil.colspan(
-                             msgHeader("Enable Unidata Local Data Manager (LDM) Access"), 2));
+                msgHeader("Enable Unidata Local Data Manager (LDM) Access"),
+                2));
         String pqinsertPath = getProperty(PROP_LDM_PQINSERT, "");
         String ldmExtra1    = "";
         if ((pqinsertPath.length() > 0) && !new File(pqinsertPath).exists()) {
@@ -1119,8 +1159,8 @@ public class Admin extends RepositoryManager {
         osb.append(HtmlUtil.formTable());
 
 
-        StringBuffer     outputSB      = new StringBuffer();
-        List<OutputType> types         = getRepository().getOutputTypes();
+        StringBuffer     outputSB         = new StringBuffer();
+        List<OutputType> types            = getRepository().getOutputTypes();
         String           lastCategoryName = null;
         for (OutputType type : types) {
             if ( !type.getForUser()) {
@@ -1133,12 +1173,10 @@ public class Admin extends RepositoryManager {
                     outputSB.append(HtmlUtil.p());
                 }
                 lastCategoryName = type.getGroupName();
-                outputSB
-                    .append(
-                        HtmlUtil
-                            .div(lastCategoryName, HtmlUtil
-                                .cssClass(
-                                    "pagesubheading")) + "\n<div style=\"margin-left:20px\">");
+                outputSB.append(
+                    HtmlUtil.div(
+                        lastCategoryName, HtmlUtil.cssClass(
+                            "pagesubheading")) + "\n<div style=\"margin-left:20px\">");
             }
             outputSB.append(HtmlUtil.checkbox("outputtype." + type.getId(),
                     "true", ok));
@@ -1554,7 +1592,7 @@ public class Admin extends RepositoryManager {
                     StringUtil.join("<br>", counter.getMessages()), false)));
 
 
-        getRepository().addStatusInfo(statusSB);
+        getRepository().getPluginManager().addStatusInfo(statusSB);
         getEntryManager().addStatusInfo(statusSB);
 
         statusSB.append(HtmlUtil.formTableClose());
@@ -1662,6 +1700,8 @@ public class Admin extends RepositoryManager {
                                 msg("Dump Database")));
         sb.append(HtmlUtil.p());
         sb.append(request.uploadForm(URL_ADMIN_SQL));
+        getRepository().addAuthToken(request, sb);
+
         sb.append(HtmlUtil.submit(msg("Execute")));
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.textArea(ARG_QUERY, (bulkLoad
@@ -1680,6 +1720,7 @@ public class Admin extends RepositoryManager {
 
         long t1 = System.currentTimeMillis();
 
+        request.ensureAuthToken();
         if (bulkLoad) {
             getDatabaseManager().loadSql(query, false, true);
             return makeResult(request, msg("SQL"),
@@ -1804,6 +1845,15 @@ public class Admin extends RepositoryManager {
         return makeResult(request, msg("Scan"), sb);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result adminPrintStack(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtil.formTable());
@@ -1820,19 +1870,24 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtil.formEntry("Used Memory:",
                                      fmt.format(usedMemory) + " (MB)"));
 
-        sb.append(HtmlUtil.formEntry("# Requests:", "" + getRepository().getNumberOfCurrentRequests()));
-        sb.append(HtmlUtil.formEntry("Start Time:", "" + getRepository().getStartTime()));
+        sb.append(
+            HtmlUtil.formEntry(
+                "# Requests:",
+                "" + getRepository().getNumberOfCurrentRequests()));
+        sb.append(HtmlUtil.formEntry("Start Time:",
+                                     "" + getRepository().getStartTime()));
 
 
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
         sb.append(HtmlUtil.formEntry("Up Time:",
                                      fmt.format((double) (uptime / 1000
-                                                          / 60)) + " " + msg("minutes"))); 
+                                         / 60)) + " " + msg("minutes")));
 
         sb.append(HtmlUtil.formTableClose());
         sb.append(HtmlUtil.makeShowHideBlock(msg("Stack"),
-
-                                             "<pre>" +LogUtil.getStackDump(true)+"</pre>", false));
+                                             "<pre>"
+                                             + LogUtil.getStackDump(true)
+                                             + "</pre>", false));
         return makeResult(request, msg("Stack Trace"), sb);
     }
 
@@ -1855,7 +1910,7 @@ public class Admin extends RepositoryManager {
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_START)) {
 
-    //            Misc.run(this, "runDatabaseCleanUp", request);
+            //            Misc.run(this, "runDatabaseCleanUp", request);
             Misc.run(this, "runDatabaseOrphanCheck", request);
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_DUMPDB)) {
@@ -1989,47 +2044,54 @@ public class Admin extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @throws Exception _more_
+     */
     public void runDatabaseOrphanCheck(Request request) throws Exception {
         if (runningCleanup) {
             return;
         }
         runningCleanup = true;
         cleanupStatus  = new StringBuffer();
-        int myTS = ++cleanupTS;
-        List<String[]> ids = new ArrayList<String[]>();
+        int             myTS  = ++cleanupTS;
+        List<String[]>  ids   = new ArrayList<String[]>();
         HashSet<String> idMap = new HashSet<String>();
 
         try {
             Statement statement =
-                getDatabaseManager().select(
-                    SqlUtil.comma(
-                                  Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_PARENT_GROUP_ID
-                                  ), Tables.ENTRIES.NAME,
-                    (Clause) null);
+                getDatabaseManager()
+                    .select(SqlUtil
+                        .comma(Tables.ENTRIES.COL_ID,
+                               Tables.ENTRIES.COL_PARENT_GROUP_ID), Tables
+                                   .ENTRIES.NAME, (Clause) null);
             SqlUtil.Iterator iter =
                 getDatabaseManager().getIterator(statement);
-            ResultSet   results;
-            long        t1        = System.currentTimeMillis();
+            ResultSet results;
+            long      t1 = System.currentTimeMillis();
             while ((results = iter.getNext()) != null) {
                 if ((cleanupTS != myTS) || !runningCleanup) {
                     runningCleanup = false;
                     break;
                 }
-                String id  = results.getString(1);
-                String parentId  = results.getString(2);
-                ids.add(new String[]{id,parentId});
+                String id       = results.getString(1);
+                String parentId = results.getString(2);
+                ids.add(new String[] { id, parentId });
                 idMap.add(id);
             }
 
-            for(String[]tuples: ids) {
-                String id = tuples[0];
+            for (String[] tuples : ids) {
+                String id       = tuples[0];
                 String parentId = tuples[1];
-                if(parentId ==null) {
+                if (parentId == null) {
                     Entry entry = getEntryManager().getEntry(request, id);
-                    System.out.println("root:" + id +" " + entry);
+                    System.out.println("root:" + id + " " + entry);
                     continue;
                 }
-                if(!idMap.contains(parentId)) {
+                if ( !idMap.contains(parentId)) {
                     //                    System.out.println("bad parent:" + id +" " + parentId);
                 }
             }

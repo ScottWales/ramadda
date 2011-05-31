@@ -249,9 +249,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_USER_EDIT = new RequestUrl(this,
                                                 "/user/edit", "Users");
 
-    /** _more_ */
-    public final RequestUrl URL_USER_NEW = new RequestUrl(this, "/user/new");
-
     /** _more_          */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
     

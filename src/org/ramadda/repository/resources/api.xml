@@ -23,7 +23,7 @@
       <api request="/entry/getentries"       method="processGetEntries" />
       <api request="/entry/copy"             method="processEntryCopy"/>
       <api request="/entry/import"           method="processEntryImport" actions="new"/>
-      <api request="/entry/export/*"           method="processEntryExport" />
+      <api request="/entry/export/*"         method="processEntryExport" />
       <api request="/entry/xmlcreate"        method="processEntryXmlCreate"/>
       <api request="/entry/comments/show"    method="processCommentsShow"/>
       <api request="/entry/comments/add"     method="processCommentsAdd"      actions="comment"/>
@@ -94,9 +94,9 @@
       <api request="/user/logout"             method="processLogout"   />
       <api request="/user/home"               method="processHome"     />
       <api request="/user/profile"            method="processProfile" />
-      <api request="/user/settings"           method="processSettings" needs_ssl="true"/>
+      <api request="/user/settings"           method="processSettings" needs_ssl="true"  />
       <api request="/user/cart"               method="processCart"     />
-      <api request="/user/resetpassword"      method="processResetPassword"     needs_ssl="true"/>
+      <api request="/user/resetpassword"      method="processResetPassword"     needs_ssl="true" />
       <api request="/user/finduserid"         method="processFindUserId"    needs_ssl="true"/>
       <api request="/user/favorite"           method="processFavorite" />
 
@@ -104,7 +104,8 @@
       <api request="/user/list"               method="adminUserList"       admin="true" needs_ssl="true" />
       <api request="/user/activity"           method="processActivityLog"  admin="true" needs_ssl="true" />
       <api request="/user/edit"               method="adminUserEdit"       admin="true" needs_ssl="true" />
-      <api request="/user/new"                method="adminUserNew"        admin="true" needs_ssl="true" />
+      <api request="/user/new/form"           method="adminUserNewForm"        admin="true" needs_ssl="true" />
+      <api request="/user/new/do"             method="adminUserNewDo"        admin="true" needs_ssl="true" />
 
   </group>
 
@@ -118,10 +119,10 @@
 
   <group handler="admin" needs_ssl="true" admin="true">
       <api request="/admin/sql"          method="adminSql"           />
-      <api request="/admin/startstop"    method="adminDbStartStop"   />
-      <api request="/admin/shutdown"    method="adminShutdown"   />
+      <api request="/admin/startstop"    method="adminDbStartStop"   requires_auth_token="true"  />
+      <api request="/admin/shutdown"     method="adminShutdown"      requires_auth_token="true" />
       <api request="/admin/settings"     method="adminSettings"       name="Admin" toplevel="true"/>
-      <api request="/admin/settings/do"  method="adminSettingsDo"    />
+      <api request="/admin/settings/do"  method="adminSettingsDo"     requires_auth_token="true" />
       <api request="/admin/tables"       method="adminDbTables"      />
       <api request="/admin/dumpdb"       method="adminDbDump"        />
       <api request="/admin/actions"      method="adminActions"       />

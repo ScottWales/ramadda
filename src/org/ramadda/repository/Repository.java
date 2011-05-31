@@ -63,7 +63,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.PatternFileFilter;
-import ucar.unidata.util.PluginClassLoader;
+
 
 import ucar.unidata.util.StringUtil;
 
@@ -81,8 +81,6 @@ import java.io.File;
 import java.io.InputStream;
 
 import java.lang.reflect.*;
-
-
 
 import java.net.*;
 
@@ -105,9 +103,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import java.util.jar.*;
-
-
 
 import java.util.regex.*;
 import java.util.zip.*;
@@ -125,69 +120,65 @@ public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {
 
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_LINKS = "links";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_LOGO_URL = "logo.url";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_LOGO_IMAGE = "logo.image";
 
-    /** _more_          */
+    /** html template macro          */
     public static final String MACRO_SEARCH_URL = "search.url";
 
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
-    /** _more_          */
+    /** html template macro          */
     public static final String MACRO_HEADER = "header";
 
-    /** _more_          */
+    /** html template macro          */
     public static final String MACRO_ENTRY_FOOTER = "entry.footer";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_ENTRY_BREADCRUMBS = "entry.breadcrumbs";
 
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_HEADER_IMAGE = "header.image";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_HEADER_TITLE = "header.title";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_USERLINK = "userlink";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_FAVORITES = "favorites";
 
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_REPOSITORY_NAME = "repository_name";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_FOOTER = "footer";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_TITLE = "title";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_ROOT = "root";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_HEADFINAL = "headfinal";
 
-
-
-
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_BOTTOM = "bottom";
 
-    /** _more_ */
+    /** html template macro */
     public static final String MACRO_CONTENT = "content";
-
 
 
     /** _more_ */
@@ -195,7 +186,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     public static final String MSG_SUFFIX = " msg>";
-
 
     /** _more_          */
     public static final String PROP_CACHERESOURCES = "ramadda.cacheresources";
@@ -236,8 +226,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     public static final OutputType OUTPUT_DELETER =
         new OutputType("Delete Entry", "repository.delete",
-                       OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
-                       ICON_DELETE);
+                       OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "", 
+                      ICON_DELETE);
 
 
     /** _more_ */
@@ -274,166 +264,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    private Counter numberOfCurrentRequests = new Counter();
-
-    /** _more_ */
-    private Properties mimeTypes;
-
-
-    /** _more_ */
-    private Properties properties = new Properties();
-
-    /** _more_ */
-    private Properties cmdLineProperties = new Properties();
-
-    /** _more_ */
-    private Map<String, String> systemEnv;
-
-    /** _more_ */
-    private Properties dbProperties = new Properties();
-
-
-
-    /** _more_ */
-    private Properties phraseMap;
-
-    /** _more_          */
-    private static XmlEncoder xmlEncoder;
-
-
-    /** _more_ */
-    private long baseTime = System.currentTimeMillis();
-
-
-    /** _more_ */
-    ucar.unidata.util.SocketConnection dummyConnection;
-
-    /** _more_ */
-    private List<String> loadFiles = new ArrayList<String>();
-
-    /** _more_ */
-    private List<Class> adminHandlerClasses = new ArrayList<Class>();
-
-    /** _more_          */
-    private List<EntryChecker> entryMonitors = new ArrayList<EntryChecker>();
-
-    /** _more_ */
-    private String dumpFile;
-
-
-    /** _more_ */
-    private Hashtable<String, Properties> languageMap = new Hashtable<String,
-                                                            Properties>();
-
-    /** _more_ */
-    private List<TwoFacedObject> languages = new ArrayList<TwoFacedObject>();
-
-
-    /** _more_ */
-    private HashSet<String> seenMsg = new HashSet<String>();
-
-    /** _more_ */
-    private boolean debugMsg = false;
-
-    /** _more_          */
-    private PrintWriter allMsgOutput;
-
-    /** _more_          */
-    private PrintWriter missingMsgOutput;
-
-    /** _more_          */
-    private Date startTime = new Date();
-
-    /** _more_          */
-    private StringBuffer pluginSB = new StringBuffer();
-
-
-    /** _more_ */
-    private Hashtable typeHandlersMap = new Hashtable();
-
-    /** _more_ */
-    private List<TypeHandler> allTypeHandlers = new ArrayList<TypeHandler>();
-
-    /** _more_ */
-    private List<OutputHandler> outputHandlers =
-        new ArrayList<OutputHandler>();
-
-    /** _more_ */
-    private Hashtable<String, OutputType> outputTypeMap =
-        new Hashtable<String, OutputType>();
-
-
-    /** _more_ */
-    private List<OutputHandler> allOutputHandlers =
-        new ArrayList<OutputHandler>();
-
-
-
-    /** _more_ */
-    private Hashtable resources = new Hashtable();
-
-
-    /** _more_ */
-    private Hashtable namesHolder = new Hashtable();
-
-
-
-
-
-    /** _more_ */
-    private List<String> typeDefFiles = new ArrayList<String>();
-
-    /** _more_ */
-    private List<String> apiDefFiles = new ArrayList<String>();
-
-    /** _more_ */
-    private List<String> outputDefFiles = new ArrayList<String>();
-
-
-    /** _more_ */
-    private List<String> metadataDefFiles = new ArrayList<String>();
-
-
-    /** _more_ */
-    private List<String> pythonLibs = new ArrayList<String>();
-
-    /** _more_ */
-    private List<String> pluginPropertyFiles = new ArrayList<String>();
-
-    /** _more_ */
-    private List<String> pluginTemplateFiles = new ArrayList<String>();
-
-    /** _more_ */
-    private List<String> pluginSqlFiles = new ArrayList<String>();
-
-    /** _more_ */
-    private List<String> pluginFiles = new ArrayList<String>();
-
-    /** _more_          */
-    private List<MultiJarClassLoader> pluginClassLoaders =
-        new ArrayList<MultiJarClassLoader>();
-
-    /** _more_ */
-    private List<User> cmdLineUsers = new ArrayList();
-
-
-    /** _more_ */
-    String[] args;
-
-
-    /** _more_ */
-    public static boolean debug = true;
-
-    /** _more_ */
     private UserManager userManager;
-
 
     /** _more_ */
     private MonitorManager monitorManager;
 
     /** _more_ */
     private SessionManager sessionManager;
-
 
     /** _more_          */
     private WikiManager wikiManager;
@@ -471,6 +308,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private StorageManager storageManager;
 
+    private PluginManager pluginManager;
+
     /** _more_ */
     private DatabaseManager databaseManager;
 
@@ -479,6 +318,117 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private Admin admin;
+
+
+    /** _more_ */
+    private Counter numberOfCurrentRequests = new Counter();
+
+    /** _more_ */
+    private Properties mimeTypes;
+
+
+    /** _more_ */
+    private Properties properties = new Properties();
+
+    /** _more_ */
+    private Properties cmdLineProperties = new Properties();
+
+    /** _more_ */
+    private Map<String, String> systemEnv;
+
+    /** _more_ */
+    private Properties dbProperties = new Properties();
+
+
+
+    /** _more_ */
+    private Properties phraseMap;
+
+    /** _more_          */
+    private static XmlEncoder xmlEncoder;
+
+
+    /** _more_ */
+    private long baseTime = System.currentTimeMillis();
+
+    /** _more_ */
+    ucar.unidata.util.SocketConnection dummyConnection;
+
+    /** _more_ */
+    private List<String> sqlLoadFiles = new ArrayList<String>();
+
+    /** _more_          */
+    private List<EntryChecker> entryMonitors = new ArrayList<EntryChecker>();
+
+    /** _more_ */
+    private String dumpFile;
+
+
+    /** _more_ */
+    private Hashtable<String, Properties> languageMap = new Hashtable<String,
+                                                            Properties>();
+
+    /** _more_ */
+    private List<TwoFacedObject> languages = new ArrayList<TwoFacedObject>();
+
+
+    /** _more_ */
+    private HashSet<String> seenMsg = new HashSet<String>();
+
+    /** _more_ */
+    private boolean debugMsg = false;
+
+    /** _more_          */
+    private PrintWriter allMsgOutput;
+
+    /** _more_          */
+    private PrintWriter missingMsgOutput;
+
+    /** _more_          */
+    private Date startTime = new Date();
+
+
+
+    /** _more_ */
+    private Hashtable typeHandlersMap = new Hashtable();
+
+    /** _more_ */
+    private List<TypeHandler> allTypeHandlers = new ArrayList<TypeHandler>();
+
+    /** _more_ */
+    private List<OutputHandler> outputHandlers =
+        new ArrayList<OutputHandler>();
+
+    /** _more_ */
+    private Hashtable<String, OutputType> outputTypeMap =
+        new Hashtable<String, OutputType>();
+
+
+    /** _more_ */
+    private List<OutputHandler> allOutputHandlers =
+        new ArrayList<OutputHandler>();
+
+
+
+    /** _more_ */
+    private Hashtable resources = new Hashtable();
+
+
+    /** _more_ */
+    private Hashtable namesHolder = new Hashtable();
+
+
+    /** _more_ */
+    private List<User> cmdLineUsers = new ArrayList();
+
+
+    /** _more_ */
+    String[] args;
+
+
+    /** _more_ */
+    public static boolean debug = true;
+
 
     /** _more_ */
     private GroupTypeHandler groupTypeHandler;
@@ -512,10 +462,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    Hashtable<String, ApiMethod> requestMap = new Hashtable();
+    ApiMethod homeApi;
+
 
     /** _more_ */
-    ApiMethod homeApi;
+    Hashtable<String, ApiMethod> requestMap = new Hashtable();
 
     /** _more_ */
     ArrayList<ApiMethod> apiMethods = new ArrayList();
@@ -527,29 +478,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     ArrayList<ApiMethod> topLevelMethods = new ArrayList();
 
 
-    /** _more_ */
-    private Hashtable<String, String> pluginHtdocsMap = new Hashtable<String,
-                                                            String>();
-
-    /** _more_ */
-    private Hashtable<String, String> pluginHelpMap = new Hashtable<String,
-                                                          String>();
-
-    /** _more_ */
-    private List<String> pluginHelpPaths = new ArrayList<String>();
-
-    /** _more_ */
-    private String pluginHelpToc;
-
-    /** _more_ */
-    private List<PageDecorator> pageDecorators =
-        new ArrayList<PageDecorator>();
-
-    /** _more_          */
-    private List<ImportHandler> importHandlers =
-        new ArrayList<ImportHandler>();
-
-
     /** _more_          */
     private HttpClient httpClient;
 
@@ -559,6 +487,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_          */
     private boolean readOnly = false;
+
+
+
 
     /**
      * _more_
@@ -644,7 +575,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @return _more_
      */
     public boolean isSSLEnabled(Request request) {
@@ -664,7 +595,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param ms _more_
      *
      * @return _more_
@@ -677,7 +608,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param ms _more_
      * @param timezone _more_
      *
@@ -690,7 +621,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param d _more_
      *
      * @return _more_
@@ -703,7 +634,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param d _more_
      * @param timezone _more_
      *
@@ -717,7 +648,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param d _more_
      * @param timezone _more_
      *
@@ -730,7 +661,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param d _more_
      * @param timezone _more_
      * @param extraAlt _more_
@@ -869,7 +800,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    private void load(Properties properties, String path) throws Exception {
+    public void loadProperties(Properties properties, String path) throws Exception {
         //        System.err.println ("RAMADDA:  loading " + path);
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
         if (inputStream == null) {
@@ -904,29 +835,25 @@ public class Repository extends RepositoryBase implements RequestHandler,
          */
 
         properties = new Properties();
-        load(properties,
+        loadProperties(properties,
              "/org/ramadda/repository/resources/repository.properties");
 
         try {
-            load(properties,
-                 "/org/ramadda/repository/resources/georepository.properties");
-        } catch (Exception exc) {}
-        try {
-            load(properties,
+            loadProperties(properties,
                  "/org/ramadda/repository/resources/build.properties");
         } catch (Exception exc) {}
 
         for (int i = 0; i < args.length; i++) {
-            if (checkFile(args[i])) {
+            if (getPluginManager().checkFile(args[i])) {
                 continue;
             }
             if (args[i].endsWith(".properties")) {
-                load(cmdLineProperties, args[i]);
+                loadProperties(cmdLineProperties, args[i]);
             } else if (args[i].equals("-dump")) {
                 dumpFile = args[i + 1];
                 i++;
             } else if (args[i].equals("-load")) {
-                loadFiles.add(args[i + 1]);
+                sqlLoadFiles.add(args[i + 1]);
                 i++;
             } else if (args[i].equals("-admin")) {
                 User user = new User(args[i + 1], true);
@@ -976,7 +903,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                              + "/conf/repository.properties");
             System.err.println("RAMADDA: looking for:" + catalinaConfFile);
             if (catalinaConfFile.exists()) {
-                load(properties, catalinaConfFile.toString());
+                loadProperties(properties, catalinaConfFile.toString());
             } else {
                 //A hack to run on unavco facility server
                 if (new File("/export/home/jeffmc/ramaddadev").exists()) {
@@ -999,7 +926,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 IOUtil.joinDir(getStorageManager().getRepositoryDir(),
                                "repository.properties");
             if (new File(localPropertyFile).exists()) {
-                load(properties, localPropertyFile);
+                loadProperties(properties, localPropertyFile);
             }
 
             File[] localFiles =
@@ -1011,26 +938,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (f.getName().equals("repository.properties")) {
                     continue;
                 }
-                load(properties, f.toString());
+                loadProperties(properties, f.toString());
             }
 
         } catch (Exception exc) {}
 
         //create the log dir
-
         getStorageManager().getLogDir();
 
-        initPlugins();
-        makePluginHelp();
-
-        for (String f : pluginPropertyFiles) {
-            load(properties, f);
-        }
-
-        apiDefFiles.addAll(0, getResourcePaths(PROP_API));
-        typeDefFiles.addAll(0, getResourcePaths(PROP_TYPES));
-        outputDefFiles.addAll(0, getResourcePaths(PROP_OUTPUTHANDLERS));
-        metadataDefFiles.addAll(0, getResourcePaths(PROP_METADATA));
+        //load the plugins
+        getPluginManager().init(properties);
 
         debug = getProperty(PROP_DEBUG, false);
         //        System.err.println ("debug:" + debug);
@@ -1054,7 +971,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         mimeTypes = new Properties();
         for (String path : getResourcePaths(PROP_HTML_MIMEPROPERTIES)) {
             try {
-                load(mimeTypes, path);
+                loadProperties(mimeTypes, path);
             } catch (Exception exc) {
                 //noop
             }
@@ -1141,7 +1058,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     private void createTypeHandlers() throws Exception {
-        for (String file : typeDefFiles) {
+        for (String file : getPluginManager().getTypeDefFiles()) {
             file = getStorageManager().localizePath(file);
             Element entriesRoot = XmlUtil.getRoot(file, getClass());
             if (entriesRoot == null) {
@@ -1187,10 +1104,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected void initServer() throws Exception {
 
         getDatabaseManager().init();
-        initTypeHandlers();
+        initDefaultTypeHandlers();
 
         boolean loadedRdb = false;
-        for (String sqlFile : (List<String>) loadFiles) {
+        for (String sqlFile : (List<String>) sqlLoadFiles) {
             if (sqlFile.endsWith(".rdb")) {
                 getDatabaseManager().loadRdbFile(sqlFile);
                 loadedRdb = true;
@@ -1202,18 +1119,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         createTypeHandlers();
-
-
-
         readGlobals();
         checkVersion();
         initOutputHandlers();
-        getMetadataManager().initMetadataHandlers(metadataDefFiles);
+        getMetadataManager().initMetadataHandlers( getPluginManager().getMetadataDefFiles());
         initApi();
         getRegistryManager().checkApi();
 
         //        getAdmin().addAdminHandler(new org.ramadda.plugins.db.DbAdminHandler());
-        for (Class adminHandlerClass : adminHandlerClasses) {
+        for (Class adminHandlerClass : getPluginManager().getAdminHandlerClasses()) {
             Constructor ctor = Misc.findConstructor(adminHandlerClass,
                                    new Class[] { Repository.class });
             if (ctor != null) {
@@ -1229,7 +1143,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         //Load in any other sql files from the command line
-        for (String sqlFile : (List<String>) loadFiles) {
+        for (String sqlFile : (List<String>) sqlLoadFiles) {
             if ( !sqlFile.endsWith(".rdb")) {
                 String sql =
                     getStorageManager().readUncheckedSystemResource(sqlFile);
@@ -1269,7 +1183,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         getAdmin().doFinalInitialization();
 
-
         if (loadedRdb) {
             getDatabaseManager().finishRdbLoad();
         }
@@ -1278,10 +1191,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         //Do this in a thread because (on macs) it hangs sometimes)
         Misc.run(this, "getFtpManager");
-
-
-
-
     }
 
 
@@ -1361,6 +1270,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected StorageManager doMakeStorageManager() {
         return new StorageManager(this);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    protected PluginManager doMakePluginManager() {
+        return new PluginManager(this);
     }
 
 
@@ -1635,7 +1554,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public List<String> getPythonLibs() {
-        return pythonLibs;
+        return getPluginManager().getPythonLibs();
     }
 
 
@@ -1690,6 +1609,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             storageManager.init();
         }
         return storageManager;
+    }
+
+    public PluginManager getPluginManager() {
+        if (pluginManager == null) {
+            pluginManager = doMakePluginManager();
+        }
+        return pluginManager;
     }
 
 
@@ -1848,7 +1774,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public List<ImportHandler> getImportHandlers() {
-        return importHandlers;
+        return getPluginManager().getImportHandlers();
     }
 
 
@@ -1928,324 +1854,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
-    protected void loadPluginFile(File f) {}
 
-    /**
-     * Class MyClassLoader _more_
-     *
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
-     */
-    private class MyClassLoader extends MultiJarClassLoader {
-
-        /**
-         * _more_
-         *
-         * @param path _more_
-         * @param parent _more_
-         *
-         * @throws Exception _more_
-         */
-        public MyClassLoader(ClassLoader parent) throws Exception {
-            super(parent);
-        }
-
-
-        /**
-         * _more_
-         *
-         * @param name _more_
-         *
-         * @return _more_
-         *
-         * @throws ClassNotFoundException _more_
-         */
-        public Class xxxloadClass(String name) throws ClassNotFoundException {
-            try {
-                Class clazz = super.loadClass(name);
-                if (clazz != null) {
-                    return clazz;
-                }
-                return clazz;
-            } catch (ClassNotFoundException cnfe) {
-                for (MultiJarClassLoader loader : pluginClassLoaders) {
-                    Class clazz = loader.getClassFromPlugin(name);
-                    if (clazz != null) {
-                        return clazz;
-                    }
-                }
-                throw cnfe;
-            }
-        }
-
-
-        /**
-         * _more_
-         *
-         * @param c _more_
-         *
-         * @throws Exception _more_
-         */
-        protected void checkClass(Class c) throws Exception {
-            if (ImportHandler.class.isAssignableFrom(c)) {
-                pluginStat("Import handler", c.getName());
-                Constructor ctor = Misc.findConstructor(c,
-                                       new Class[] { Repository.class });
-                if (ctor != null) {
-                    importHandlers.add(
-                        (ImportHandler) ctor.newInstance(
-                            new Object[] { Repository.this }));
-                } else {
-                    importHandlers.add((ImportHandler) c.newInstance());
-                }
-                return;
-            }
-
-
-            if (UserAuthenticator.class.isAssignableFrom(c)) {
-                pluginStat("Authenticator", c.getName());
-                Constructor ctor = Misc.findConstructor(c,
-                                       new Class[] { Repository.class });
-                if (ctor != null) {
-                    getUserManager().addUserAuthenticator(
-                        (UserAuthenticator) ctor.newInstance(
-                            new Object[] { Repository.this }));
-
-                } else {
-                    getUserManager().addUserAuthenticator(
-                        (UserAuthenticator) c.newInstance());
-                }
-            } else if (PageDecorator.class.isAssignableFrom(c)) {
-                pluginStat("Page decorator", c.getName());
-                PageDecorator pageDecorator = (PageDecorator) c.newInstance();
-                pageDecorators.add(pageDecorator);
-            } else if (AdminHandler.class.isAssignableFrom(c)) {
-                pluginStat("Admin handler", c.getName());
-                adminHandlerClasses.add(c);
-            } else if (Harvester.class.isAssignableFrom(c)) {
-                pluginStat("Harvester", c.getName());
-                getHarvesterManager().addHarvesterType(c);
-            }
-
-            super.checkClass(c);
-        }
-
-        /**
-         * _more_
-         *
-         *
-         * @param jarFilePath _more_
-         * @param jarEntry _more_
-         *
-         * @return _more_
-         */
-        protected String defineResource(String jarFilePath,
-                                        JarEntry jarEntry) {
-            String path = super.defineResource(jarFilePath, jarEntry);
-            checkFile(path, true);
-            String entryName = jarEntry.getName();
-            int    idx       = entryName.indexOf("htdocs/");
-            if (idx >= 0) {
-                String htpath = entryName.substring(idx + "htdocs".length());
-                pluginHtdocsMap.put(htpath, path);
-
-                idx = entryName.indexOf("help/");
-                if (idx >= 0) {
-                    pluginHelpMap.put(htpath, path);
-                    if (path.indexOf(".html") >= 0) {
-                        pluginHelpPaths.add(htpath);
-                    }
-                }
-            }
-            return path;
-        }
-    }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void initPlugins() throws Exception {
-        //The false says not to scour
-        TempDir tempDir =
-            getStorageManager().makeTempDir("tmpplugins", false);
-        File   tmpPluginsDir = tempDir.getDir();
-
-        File   dir           = new File(getStorageManager().getPluginsDir());
-        File[] plugins       = dir.listFiles();
-        Arrays.sort(plugins);
-        MultiJarClassLoader classLoader =
-            new MyClassLoader(getClass().getClassLoader());
-        pluginClassLoaders.add(classLoader);
-        Misc.addClassLoader(classLoader);
-        for (int i = 0; i < plugins.length; i++) {
-            if (plugins[i].isDirectory()) {
-                continue;
-            }
-            String pluginFile = plugins[i].toString();
-            processPluginFile(pluginFile, pluginSB, classLoader,
-                              tmpPluginsDir);
-        }
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param pluginFile _more_
-     * @param pluginSB _more_
-     * @param classLoader _more_
-     * @param tmpPluginsDir _more_
-     *
-     * @throws Exception _more_
-     */
-    private void processPluginFile(String pluginFile, StringBuffer pluginSB,
-                                   MultiJarClassLoader classLoader,
-                                   File tmpPluginsDir)
-            throws Exception {
-
-        if (pluginFile.toLowerCase().endsWith(".zip")) {
-            ZipInputStream zin =
-                new ZipInputStream(new FileInputStream(pluginFile));
-            ZipEntry ze = null;
-            while ((ze = zin.getNextEntry()) != null) {
-                if (ze.isDirectory()) {
-                    continue;
-                }
-                String path = ze.getName();
-
-                //Turn the path into a filename
-                path = path.replaceAll("/", "_");
-                File tmpFile = new File(IOUtil.joinDir(tmpPluginsDir, path));
-                //Skip the manifest
-                if (tmpFile.toString().indexOf("MANIFEST") >= 0) {
-                    continue;
-                }
-                //Write out the zipped file and load it as a plugin
-                FileOutputStream fos =
-                    getStorageManager().getFileOutputStream(tmpFile);
-                IOUtil.writeTo(zin, fos);
-                IOUtil.close(fos);
-                processPluginFile(tmpFile.toString(), pluginSB, classLoader,
-                                  tmpPluginsDir);
-            }
-            zin.close();
-        } else if (pluginFile.toLowerCase().endsWith(".jar")) {
-            pluginSB.append(
-                "<tr><td><b>Plugin file</b></td><td colspan=2><i>"
-                + pluginFile + "</i></td></tr>");
-            classLoader.addJar(pluginFile);
-        } else {
-            pluginSB.append(
-                "<tr><td><b>Plugin file</b></td><td colspan=2><i>"
-                + pluginFile + "</i></td></tr>");
-            checkFile(pluginFile, true);
-        }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
-    protected boolean checkFile(String file) {
-        return checkFile(file, false);
-    }
-
-    /**
-     * _more_
-     *
-     * @param desc _more_
-     * @param what _more_
-     */
-    private void pluginStat(String desc, Object what) {
-        pluginSB.append("<tr><td></td><td><b>" + desc + "</b></td><td><i>"
-                        + what + "</i></td></tr>");
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param fromPlugin _more_
-     *
-     * @return _more_
-     */
-    protected boolean checkFile(String file, boolean fromPlugin) {
-        if (file.indexOf("api.xml") >= 0) {
-            if (fromPlugin) {
-                pluginStat("Api", file);
-            }
-            apiDefFiles.add(file);
-        } else if ((file.indexOf("types.xml") >= 0)
-                   || (file.indexOf("type.xml") >= 0)) {
-            if (fromPlugin) {
-                pluginStat("Types", file);
-            }
-            typeDefFiles.add(file);
-        } else if (file.indexOf("outputhandlers.xml") >= 0) {
-            if (fromPlugin) {
-                pluginStat("Output", file);
-            }
-            outputDefFiles.add(file);
-        } else if (file.indexOf("metadata.xml") >= 0) {
-            if (fromPlugin) {
-                pluginStat("Metadata", file);
-            }
-            metadataDefFiles.add(file);
-        } else if (file.endsWith(".py")) {
-            if (fromPlugin) {
-                pluginStat("Python", file);
-            }
-            pythonLibs.add(file);
-        } else if (file.endsWith(".sql")) {
-            if (fromPlugin) {
-                pluginStat("Sql", file);
-            }
-            pluginSqlFiles.add(file);
-        } else if (file.endsWith("template.html")) {
-            if (fromPlugin) {
-                pluginStat("Template", file);
-            }
-            pluginTemplateFiles.add(file);
-        } else if (file.endsWith(".properties")) {
-            if (fromPlugin) {
-                pluginStat("Properties", file);
-                pluginPropertyFiles.add(file);
-            }
-        } else {
-            //            if (fromPlugin) 
-            //                pluginStat("Unknown", file);
-            pluginFiles.add(file);
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public List<String> getPluginFiles() {
-        return pluginFiles;
-    }
 
     /**
      * _more_
@@ -2591,7 +2200,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected void initApi() throws Exception {
         Hashtable handlers = new Hashtable();
 
-        for (String file : apiDefFiles) {
+        for (String file :  getPluginManager().getApiDefFiles()) {
             file = getStorageManager().localizePath(file);
             Element   apiRoot = XmlUtil.getRoot(file, getClass());
             Hashtable props   = new Hashtable();
@@ -2649,7 +2258,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected void initOutputHandlers() throws Exception {
 
-        for (String file : outputDefFiles) {
+        for (String file :  getPluginManager().getOutputDefFiles()) {
 
             file = getStorageManager().localizePath(file);
             Element root = XmlUtil.getRoot(file, getClass());
@@ -2886,7 +2495,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -2907,7 +2516,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -3065,7 +2674,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -3136,7 +2745,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -3173,12 +2782,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return getAdmin().doInitialization(request);
         }
 
-        boolean requestOk1 = getUserManager().isRequestOk(request);
-        boolean requestOk2 = apiMethod.isRequestOk(request, this);
-        if ( !requestOk1 || !requestOk2) {
+        if (!getUserManager().isRequestOk(request)) {
             System.err.println("Access error:  user=" + request.getUser()
-                               + " request=" + request + " ok1= "
-                               + requestOk1 + " ok2= " + requestOk2);
+                               + " request=" + request);
+            System.err.println("Admin Info  admin only= "
+                               + getProperty(PROP_ACCESS_ADMINONLY, false)
+                               + " user is admin="
+                               + request.getUser().getAdmin()
+                               + " require login="
+                               + getProperty(PROP_ACCESS_REQUIRELOGIN,
+                                             false));
+            throw new AccessException(
+                                      msg("You do not have permission to access this page"),
+                request);
+        }
+
+        if (!apiMethod.isRequestOk(request, this)) {
+            System.err.println("Access error 2:  user=" + request.getUser()
+                               + " request=" + request);
             System.err.println("Admin Info  admin only= "
                                + getProperty(PROP_ACCESS_ADMINONLY, false)
                                + " user is admin="
@@ -3188,7 +2809,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                              false));
             apiMethod.printDebug(request);
             throw new AccessException(
-                msg("You do not have permission to access this page"),
+                msg("Incorrect access"),
                 request);
         }
 
@@ -3241,7 +2862,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param sb _more_
      */
     public void addAuthToken(Request request, StringBuffer sb) {
@@ -3253,7 +2874,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param apiMethod _more_
      *
      * @return _more_
@@ -3285,7 +2906,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -3357,7 +2978,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-        String pluginPath = pluginHtdocsMap.get(path);
+        String pluginPath = getPluginManager().getHtdocsMap().get(path);
 
         if (pluginPath != null) {
             InputStream inputStream =
@@ -3409,7 +3030,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -3443,7 +3064,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param result _more_
      *
      * @throws Exception _more_
@@ -3459,7 +3080,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String sessionMessage =
             getSessionManager().getSessionMessage(request);
 
-        //        System.err.println(request +" DECORATE=" + request.get(ARG_DECORATE, true));
+        //        System.err.println(request +" DECORAT=" + request.get(ARG_DECORATE, true));
 
         if ( !request.get(ARG_DECORATE, true)) {
             if (true) {
@@ -3604,7 +3225,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             pageTitle = getProperty(PROP_REPOSITORY_NAME, "Repository");
         }
 
-        for (PageDecorator pageDecorator : pageDecorators) {
+        for (PageDecorator pageDecorator : getPluginManager().getPageDecorators()) {
             template = pageDecorator.decoratePage(this, request, template,
                     currentEntry);
         }
@@ -3700,7 +3321,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param s _more_
      *
      * @return _more_
@@ -3866,7 +3487,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                            "mapheader");
 
             List<String> templatePaths =
-                new ArrayList<String>(pluginTemplateFiles);
+                new ArrayList<String>(getPluginManager().getTemplateFiles());
             for (String path :
                     StringUtil.split(getProperty(PROP_HTML_TEMPLATES,
                         "%resourcedir%/template.html"), ";", true, true)) {
@@ -3923,11 +3544,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-
     /**
-     * _more_
+     * Find the html template for the given request
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -3940,6 +3560,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return defaultTemplate;
         }
         String templateId = request.getHtmlTemplateId();
+
+        User user = request.getUser();
+
+        if (templateId == null && user.getAnonymous()) {
+            templateId = user.getTemplate();
+        }
+
         if (templateId != null) {
             for (HtmlTemplate template : theTemplates) {
                 if (Misc.equals(template.getId(), templateId)) {
@@ -3948,7 +3575,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        User user = request.getUser();
         if (user.getAnonymous()) {
             if (defaultTemplate != null) {
                 return defaultTemplate;
@@ -3974,7 +3600,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param name _more_
      * @param dflt _more_
      *
@@ -4014,7 +3640,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         /*
         if ( !cacheResources()) {
             try {
-            load(properties,
+            loadProperties(properties,
             "/org/ramadda/repository/resources/repository.properties");
             } catch (Exception exc) {}
             }*/
@@ -4211,7 +3837,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        SqlUtil.showLoadingSql = false;
         //        System.err.println("RAMADDA: done loading schema");
 
-        for (String sqlFile : pluginSqlFiles) {
+        for (String sqlFile : getPluginManager().getSqlFiles()) {
             sql = getStorageManager().readUncheckedSystemResource(sqlFile);
             sql = getDatabaseManager().convertSql(sql);
             getDatabaseManager().loadSql(sql, true, false);
@@ -4240,7 +3866,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param propName _more_
      *
      * @throws Exception _more_
@@ -4255,7 +3881,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param propName _more_
      * @param deleteIfNull _more_
      *
@@ -4311,7 +3937,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      *  _more_
      *
-     *  @param request _more_
+     *  @param request The request
      * @param state _more_
      *
      *  @return _more_
@@ -4347,7 +3973,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param state _more_
      *
      * @return _more_
@@ -4457,6 +4083,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
             ZipOutputHandler.OUTPUT_ZIP);
     }
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public TypeHandler getGroupTypeHandler() {
+        return groupTypeHandler;
+    }
+
+
+
     /**
      * _more_
      *
@@ -4492,7 +4130,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4538,7 +4176,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    protected void initTypeHandlers() throws Exception {
+    private void initDefaultTypeHandlers() throws Exception {
         addTypeHandler(TypeHandler.TYPE_ANY,
                        new TypeHandler(this, TypeHandler.TYPE_ANY,
                                        "Any file type"));
@@ -4550,15 +4188,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         addTypeHandler(TypeHandler.TYPE_FILE,
                        typeHandler = new TypeHandler(this, "file", "File"));
         typeHandler.putProperty("icon", ICON_FILE);
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public TypeHandler getGroupTypeHandler() {
-        return groupTypeHandler;
     }
 
 
@@ -4602,7 +4231,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4680,7 +4309,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4700,14 +4329,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /** _more_ */
-    int fileCnt = 0;
-
-    /** _more_ */
-    Object MUTEX = new Object();
-
-
-
 
 
 
@@ -4717,7 +4338,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4799,7 +4420,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4823,7 +4444,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4839,7 +4460,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = "/index.html";
         }
 
-        String pluginHelp = pluginHelpMap.get(path);
+        String pluginHelp = getPluginManager().getHelpMap().get(path);
         if (pluginHelp != null) {
             path = pluginHelp;
         } else {
@@ -4855,10 +4476,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 helpText = matcher.group(1);
             }
             if (path.endsWith("toc.html")) {
-                if (pluginHelpToc == null) {
-                    makePluginHelp();
-                }
-                helpText = helpText.replace("<tocend>", pluginHelpToc);
+                helpText = helpText.replace("<tocend>", getPluginManager().getHelpToc());
                 //                helpText = helpText+pluginHelpToc;
             }
 
@@ -4887,49 +4505,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     */
-    private void makePluginHelp() {
-        StringBuffer pluginHelpLinks = null;
-        for (String htpath : pluginHelpPaths) {
-            String path  = pluginHelpMap.get(htpath);
-            String title = IOUtil.getFileTail(path);
-            try {
-                String contents =
-                    getStorageManager().readSystemResource(path);
-                Pattern pattern =
-                    Pattern.compile("(?s).*<title>(.*)</title>");
-                Matcher matcher = pattern.matcher(contents);
-                if (matcher.find()) {
-                    title = matcher.group(1);
-                }
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-
-            if (pluginHelpLinks == null) {
-                pluginHelpLinks = new StringBuffer("<p>");
-                pluginHelpLinks.append(msgHeader("Plugins"));
-                pluginHelpLinks.append("<ol>");
-            }
-            pluginHelpLinks.append("<li> "
-                                   + HtmlUtil.href(getUrlBase() + "/help"
-                                       + htpath, title));
-        }
-
-        if (pluginHelpLinks == null) {
-            pluginHelpToc = "";
-        } else {
-            pluginHelpToc = pluginHelpLinks + "</ol>";
-        }
-    }
 
 
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4944,7 +4525,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4958,7 +4539,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4983,7 +4564,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param what _more_
      * @param includeExtra _more_
      * @return _more_
@@ -5046,7 +4627,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param urls _more_
      * @param arg _more_
      *
@@ -5091,7 +4672,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @return _more_
      */
     public List getNavLinks(Request request) {
@@ -5134,7 +4715,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -5161,18 +4742,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     */
-    public void addStatusInfo(StringBuffer sb) {
-        sb.append(HtmlUtil.formEntryTop(msgLabel("Plugins"),
-                                        HtmlUtil.makeShowHideBlock("",
-                                            "<table>" + pluginSB.toString()
-                                            + "</table>", false)));
+    public Request getRequest(User user) throws Exception {
+        Request request = new Request(getRepository(), "", new Hashtable());
+        request.setUser(user);
+        return request;
     }
+
+
 
     /**
      * _more_
@@ -5446,7 +5022,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param includeAny _more_
      *
      * @return _more_
@@ -5461,7 +5037,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param includeAny _more_
      * @param selected _more_
      * @param checkAddOk _more_
@@ -5504,7 +5080,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -5633,7 +5209,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param addOrderBy _more_
      *
      * @return _more_
@@ -5645,7 +5221,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param addOrderBy _more_
      * @param forEntry _more_
      *
@@ -5764,7 +5340,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (names == null) {
             try {
                 names = new Properties();
-                load(names, namesFile);
+                loadProperties(names, namesFile);
                 namesHolder.put(namesFile, names);
             } catch (Exception exc) {
                 getLogManager().logError("err:" + exc, exc);
@@ -5870,7 +5446,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param name _more_
      * @param formName _more_
      * @param date _more_
@@ -5885,7 +5461,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param name _more_
      * @param formName _more_
      * @param date _more_
@@ -5901,7 +5477,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param name _more_
      * @param formName _more_
      * @param date _more_
@@ -6071,7 +5647,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param url _more_
      * @param okArg _more_
      * @param extra _more_

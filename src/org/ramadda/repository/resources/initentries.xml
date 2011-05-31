@@ -1,0 +1,16 @@
+
+<entries>
+
+<entry parent="root" name="Projects" type="group">
+<description>A place to store projects</description>
+</entry>
+
+<entry parent="root" name="Users" type="group">
+<description>A place to create home directories for users</description>
+</entry>
+
+<entry parent="root" name="Data" type="group">
+<description>A place to store data</description>
+</entry>
+
+</entries>
