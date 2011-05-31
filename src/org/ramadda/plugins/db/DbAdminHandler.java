@@ -63,7 +63,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
      * @throws Exception _more_
      */
     private void init() throws Exception {
-        for (String pluginFile : getRepository().getPluginFiles()) {
+        for (String pluginFile : getRepository().getPluginManager().getPluginFiles()) {
             if ( !pluginFile.endsWith("db.xml")) {
                 continue;
             }
