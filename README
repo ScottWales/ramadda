@@ -27,12 +27,11 @@ directory
 Running stand-alone
 ###########################################################################
 You can run RAMADDA stand-alone from the source tree. After building it
-you can hit:
-ant runserver
+you can run:
+    ant runserver
 or:
-cd  dist/ramadda1.3b/
-chmod 755 ramadda.sh
-./ramadda.sh
+   cd  dist/ramadda1.3b/
+   source ramadda.sh
 
 
 

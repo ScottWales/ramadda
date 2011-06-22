@@ -181,7 +181,6 @@ public class FtpManager extends RepositoryManager {
     private void initFtpServer() throws Exception {
 
         FtpServerFactory serverFactory = new FtpServerFactory();
-
         Hashtable        ftplets = new Hashtable<java.lang.String, Ftplet>();
         ftplets.put("default", new RepositoryFtplet(this));
         serverFactory.setFtplets(ftplets);
@@ -206,6 +205,7 @@ public class FtpManager extends RepositoryManager {
                 getRepository().getStorageManager().getRepositoryDir()
                 + "/keystore", false));
 
+        /*
         if (keystore.exists()) {
             logInfo("Using FTPS");
             String password =
@@ -222,7 +222,7 @@ public class FtpManager extends RepositoryManager {
             factory.setSslConfiguration(ssl.createSslConfiguration());
             factory.setImplicitSsl(true);
         }
-
+        */
 
 
         // replace the default listener

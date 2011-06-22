@@ -180,7 +180,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** html template macro */
     public static final String MACRO_CONTENT = "content";
 
-
     /** _more_ */
     public static final String MSG_PREFIX = "<msg ";
 
