@@ -436,7 +436,7 @@ public class ZipOutputHandler extends OutputHandler {
 
 
             String path = entry.getResource().getPath();
-            String name = getStorageManager().getFileTail(path);
+            String name = getStorageManager().getFileTail(entry);
             int    cnt  = 1;
             if ( !forExport) {
                 while (seen.get(name) != null) {
