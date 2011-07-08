@@ -137,7 +137,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             request = getRepository().getTmpRequest();
         }
         StringBuffer sb        = new StringBuffer();
-        String       type      = entry.getValue(1, TYPE_JOINEXISTING);
+        String       type      = entry.getValue(0, TYPE_JOINEXISTING);
         String       typeToUse = TYPE_JOINEXISTING;
         if (type.equalsIgnoreCase(TYPE_UNION)) {
             typeToUse = TYPE_UNION;
@@ -149,7 +149,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
         if (typeToUse.equals(TYPE_JOINEXISTING)) {
             sb.append("<aggregation type=\"joinExisting\" dimName=\""
-                      + entry.getValue(0, "time")
+                      + entry.getValue(1, "time")
                       + "\" timeUnitsChange=\"true\">\n");
         } else if (typeToUse.equals(TYPE_UNION)) {
             sb.append("<aggregation type=\"union\" >");
@@ -159,9 +159,65 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         }
         List<String> sortedChillens      = new ArrayList<String>();
         boolean      childrenAggregation = false;
-        for (Entry child :
-                getRepository().getEntryManager().getChildren(request,
-                    entry)) {
+        List<Entry> childrenEntries;
+        String files = entry.getValue(3, "").trim();
+        String pattern = entry.getValue(4, "").trim();
+        if(files.length()>0) {
+            if(!entry.getUser().getAdmin()) {
+                throw new IllegalArgumentException("When using the files list in the grid aggregation you must be an administrator");
+            }
+            childrenEntries = new ArrayList<Entry>();
+            List<File> filesToUse  = new ArrayList<File>();
+            for(String f: StringUtil.split(files,"\n",true,true)) {
+                File file = new File(f);
+                getStorageManager().checkLocalFile(file);
+                if(file.isDirectory()) {
+                    //TODO: use pattern
+                    File[] childFiles = (pattern.length()==0?file.listFiles():file.listFiles());
+                    for(File child: childFiles) {
+                        if(child.isDirectory()) {
+                            //TODO: Do we recurse
+                        } else {
+                            filesToUse.add(child);
+                        }
+                    }
+                } else {
+                    if(!file.exists()) {
+                        //What to do???
+                    } else {
+                        filesToUse.add(file);
+                   }
+                }
+            }
+            for(File dataFile: filesToUse) {
+                //Check for access
+                getStorageManager().checkLocalFile(dataFile);
+                Entry dummyEntry  = new Entry();
+                dummyEntry.setResource(new Resource(dataFile, Resource.TYPE_LOCAL_FILE));
+                childrenEntries.add(dummyEntry);
+            }
+        } else {
+            childrenEntries = getRepository().getEntryManager().getChildren(request,
+                                                                            entry);
+        }
+
+        /*
+<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>
+ <variable name='ens' type='String' shape='ens'>
+   <attribute name='long_name' value='ensemble coordinate' />
+   <attribute name='_CoordinateAxisType' value='Ensemble' />
+ </variable>
+ <aggregation dimName='ens' type='joinNew'>
+   <variableAgg name='tasmax'/>
+   <netcdf location='E:/work/dmurray/A1B_HadCM3Q3_DM_25km_2001-2010_tasmax.nc.gz'
+coordValue='HadCM'/>
+   <netcdf location='E:/work/dmurray/A1B_ECHAM5-r3_DM_25km_2001-2010_tasmax.nc.gz'
+coordValue='ECHAM5'/>
+ </aggregation>
+</netcdf>
+*/
+
+        for (Entry child :childrenEntries) {
             if (child.getType().equals(
                     GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
                 String ncml = getNcmlString(request, child);
