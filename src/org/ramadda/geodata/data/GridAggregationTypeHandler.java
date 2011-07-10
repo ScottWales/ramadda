@@ -32,6 +32,7 @@ import ucar.unidata.util.HtmlUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.PatternFileFilter;
 
 
 import ucar.unidata.util.StringUtil;
@@ -59,18 +60,24 @@ import java.util.List;
  */
 public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
+    /** _more_          */
+    public static final int INDEX_TYPE = 0;
+
+    /** _more_          */
+    public static final int INDEX_COORDINATE = 1;
+
+    /** _more_          */
+    public static final int INDEX_FIELDS = 2;
+
+    /** _more_          */
+    public static final int INDEX_FILES = 3;
+
+    /** _more_          */
+    public static final int INDEX_PATTERN = 4;
+
+
     /** _more_ */
     public static final String TYPE_GRIDAGGREGATION = "gridaggregation";
-
-
-    /** _more_          */
-    public static final String TYPE_JOINEXISTING = "joinExisting";
-
-    /** _more_          */
-    public static final String TYPE_JOINNEW = "joinNew";
-
-    /** _more_          */
-    public static final String TYPE_UNION = "union";
 
 
     /**
@@ -133,97 +140,109 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public String getNcmlString(Request request, Entry entry)
             throws Exception {
+
         if (request == null) {
             request = getRepository().getTmpRequest();
         }
-        StringBuffer sb        = new StringBuffer();
-        String       type      = entry.getValue(0, TYPE_JOINEXISTING);
-        String       typeToUse = TYPE_JOINEXISTING;
-        if (type.equalsIgnoreCase(TYPE_UNION)) {
-            typeToUse = TYPE_UNION;
-        } else if (type.equalsIgnoreCase(TYPE_JOINNEW)) {
-            typeToUse = TYPE_JOINNEW;
-        }
+        StringBuffer sb = new StringBuffer();
 
-        sb.append(
-            "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
-        if (typeToUse.equals(TYPE_JOINEXISTING)) {
-            sb.append("<aggregation type=\"joinExisting\" dimName=\""
-                      + entry.getValue(1, "time")
-                      + "\" timeUnitsChange=\"true\">\n");
-        } else if (typeToUse.equals(TYPE_UNION)) {
-            sb.append("<aggregation type=\"union\" >");
+        NcmlUtil ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
+                                NcmlUtil.AGG_JOINEXISTING));
+        String timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
+        String files          = entry.getValue(INDEX_FILES, "").trim();
+        String pattern        = entry.getValue(INDEX_PATTERN, "").trim();
+
+
+        ncmlUtil.openNcml(sb);
+        if (ncmlUtil.isJoinExisting()) {
+            sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                      XmlUtil.attrs(new String[] {
+                NcmlUtil.ATTR_TYPE, NcmlUtil.AGG_JOINEXISTING,
+                NcmlUtil.ATTR_DIMNAME, timeCoordinate,
+                NcmlUtil.ATTR_TIMEUNITSCHANGE, "true"
+            })));
+        } else if (ncmlUtil.isUnion()) {
+            sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                      XmlUtil.attrs(new String[] {
+                                          NcmlUtil.ATTR_TYPE,
+                                          NcmlUtil.AGG_UNION })));
+        } else if (ncmlUtil.isJoinNew()) {
+            //TODO here
+        } else if (ncmlUtil.isEnsemble()) {
+            String ensembleDimName = "ens";
+            ncmlUtil.addEnsembleVariables(sb, ensembleDimName);
+            sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
+                                      XmlUtil.attrs(new String[] {
+                                          NcmlUtil.ATTR_DIMNAME,
+                                          ensembleDimName,
+                                          NcmlUtil.ATTR_TYPE,
+                                          NcmlUtil.AGG_JOINNEW })));
+            //TODO: What name here
+            sb.append(XmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
+                                  XmlUtil.attrs(new String[] {
+                                      NcmlUtil.ATTR_NAME,
+                                      "tasmax" })));
         } else {
-            //TODO: figure this out.
-
+            throw new IllegalArgumentException("Unknown aggregation type:"
+                    + ncmlUtil);
         }
+
         List<String> sortedChillens      = new ArrayList<String>();
         boolean      childrenAggregation = false;
-        List<Entry> childrenEntries;
-        String files = entry.getValue(3, "").trim();
-        String pattern = entry.getValue(4, "").trim();
-        if(files.length()>0) {
-            if(!entry.getUser().getAdmin()) {
-                throw new IllegalArgumentException("When using the files list in the grid aggregation you must be an administrator");
+        List<Entry>  childrenEntries;
+
+        if (files.length() > 0) {
+            if ( !entry.getUser().getAdmin()) {
+                throw new IllegalArgumentException(
+                    "When using the files list in the grid aggregation you must be an administrator");
             }
             childrenEntries = new ArrayList<Entry>();
-            List<File> filesToUse  = new ArrayList<File>();
-            for(String f: StringUtil.split(files,"\n",true,true)) {
+            List<File> filesToUse = new ArrayList<File>();
+            for (String f : StringUtil.split(files, "\n", true, true)) {
                 File file = new File(f);
-                getStorageManager().checkLocalFile(file);
-                if(file.isDirectory()) {
-                    //TODO: use pattern
-                    File[] childFiles = (pattern.length()==0?file.listFiles():file.listFiles());
-                    for(File child: childFiles) {
-                        if(child.isDirectory()) {
+                if (file.isDirectory()) {
+                    List<File> childFiles = IOUtil.getFiles(new ArrayList(),
+                                                file, false,
+                                                ((pattern.length() == 0)
+                            ? null
+                            : new PatternFileFilter(pattern)));
+
+                    for (File child : childFiles) {
+                        if (child.isDirectory()) {
                             //TODO: Do we recurse
                         } else {
                             filesToUse.add(child);
                         }
                     }
                 } else {
-                    if(!file.exists()) {
+                    if ( !file.exists()) {
                         //What to do???
                     } else {
                         filesToUse.add(file);
-                   }
+                    }
                 }
             }
-            for(File dataFile: filesToUse) {
+
+            for (File dataFile : filesToUse) {
                 //Check for access
                 getStorageManager().checkLocalFile(dataFile);
-                Entry dummyEntry  = new Entry();
-                dummyEntry.setResource(new Resource(dataFile, Resource.TYPE_LOCAL_FILE));
+                Entry dummyEntry = new Entry();
+                dummyEntry.setResource(new Resource(dataFile,
+                        Resource.TYPE_LOCAL_FILE));
                 childrenEntries.add(dummyEntry);
             }
         } else {
-            childrenEntries = getRepository().getEntryManager().getChildren(request,
-                                                                            entry);
+            childrenEntries =
+                getRepository().getEntryManager().getChildren(request, entry);
         }
 
-        /*
-<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>
- <variable name='ens' type='String' shape='ens'>
-   <attribute name='long_name' value='ensemble coordinate' />
-   <attribute name='_CoordinateAxisType' value='Ensemble' />
- </variable>
- <aggregation dimName='ens' type='joinNew'>
-   <variableAgg name='tasmax'/>
-   <netcdf location='E:/work/dmurray/A1B_HadCM3Q3_DM_25km_2001-2010_tasmax.nc.gz'
-coordValue='HadCM'/>
-   <netcdf location='E:/work/dmurray/A1B_ECHAM5-r3_DM_25km_2001-2010_tasmax.nc.gz'
-coordValue='ECHAM5'/>
- </aggregation>
-</netcdf>
-*/
 
-        for (Entry child :childrenEntries) {
-            if (child.getType().equals(
-                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        for (Entry child : childrenEntries) {
+            if (child.getType().equals(TYPE_GRIDAGGREGATION)) {
                 String ncml = getNcmlString(request, child);
                 //MATIAS:
-                if (ncml!=null) {
-                //                if (ncml!=""){
+                if (ncml != null) {
+                    //                if (ncml!=""){
                     sb.append(ncml);
                     childrenAggregation = true;
                 }
@@ -232,21 +251,28 @@ coordValue='ECHAM5'/>
             sortedChillens.add(child.getResource().getPath());
         }
 
-        if (typeToUse.equals(TYPE_JOINEXISTING)) {
+        if (ncmlUtil.isJoinExisting()) {
             Collections.sort(sortedChillens);
         }
+        System.err.println("making ncml:");
         for (String s : sortedChillens) {
-            sb.append(XmlUtil.tag("netcdf",
-                                  XmlUtil.attrs("location",
-                                      IOUtil.getURL(s,
-                                          getClass()).toString(), "enhance",
-                                              "true"), ""));
+            System.err.println("   file:" + s);
+            sb.append(
+                XmlUtil.tag(
+                    NcmlUtil.TAG_NETCDF,
+                    XmlUtil.attrs(
+                        NcmlUtil.ATTR_LOCATION,
+                        IOUtil.getURL(s, getClass()).toString(),
+                        NcmlUtil.ATTR_ENHANCE, "true"), ""));
         }
-        sb.append("</aggregation>\n</netcdf>\n");
-        //if (sortedChillens.size()> 0){
+
+        sb.append(XmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
+        sb.append(XmlUtil.closeTag(NcmlUtil.TAG_NETCDF));
+
         System.err.println(sb);
+
         return sb.toString();
-        //}else return "";     
+
     }
 
 

@@ -2792,7 +2792,8 @@ public class DataOutputHandler extends OutputHandler {
         }
         //        System.err.println("nd:" + metadataList);
         for (Metadata metadata : metadataList) {
-            if (metadata.getAttr1().endsWith(".ncml")) {
+            String fileAttachment = metadata.getAttr1();
+            if (fileAttachment.endsWith(".ncml")) {
                 File templateNcmlFile =
                     new File(
                         IOUtil.joinDir(

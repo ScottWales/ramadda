@@ -80,7 +80,7 @@ public class GridAggregationHarvester extends PatternHarvester {
     public static final String ATTR_AGGREGATIONTYPE = "aggregationtype";
     public static final String ATTR_AGGREGATIONCOORDINATE = "aggregationcoordinate";
 
-    private String aggregationType = GridAggregationTypeHandler.TYPE_JOINEXISTING;
+    private String aggregationType = NcmlUtil.AGG_JOINEXISTING;
     private String aggregationCoordinate = "time";
 
     /**
@@ -144,7 +144,8 @@ public class GridAggregationHarvester extends PatternHarvester {
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         super.createEditForm(request, sb);
-        List<String> types = (List<String>)Misc.newList(GridAggregationTypeHandler.TYPE_JOINEXISTING, GridAggregationTypeHandler.TYPE_UNION);
+        List<String> types = (List<String>)Misc.newList(NcmlUtil.AGG_JOINEXISTING, 
+                                                        NcmlUtil.AGG_UNION);
         
         sb.append(HtmlUtil.formEntry(msgLabel("Time Coordinate:"),
                 HtmlUtil.input(ATTR_AGGREGATIONCOORDINATE,
