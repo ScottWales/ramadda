@@ -315,6 +315,7 @@ public class MetadataTypeBase extends RepositoryManager {
             macros.put(key, value);
             macros.put(key + ".label", label);
             macros.put(key + ".cdata", wrapCdata(value));
+            macros.put(key + ".encoded", XmlUtil.encodeString(value));
         }
 
         template = StringUtil.applyMacros(template, macros, false);
