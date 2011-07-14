@@ -1,4 +1,0 @@
-This uses the IDV generate.tcl script to create the workshop content and place it
-in ../htdocs/workshop directory. Just run:
-tclsh generate.tcl
-here (see make.sh)
