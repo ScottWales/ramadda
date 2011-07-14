@@ -1,0 +1,1 @@
+tclsh ~/source/idv/trunk/auxdata/docs/build/generate.tcl  
