@@ -1,0 +1,33 @@
+[ht::head {Installating RAMADDA under Tomcat}]
+
+
+RAMADDA is available at:
+<a href="http://www.sourceforge.com/projects/ramadda">
+http://www.sourceforge.com/projects/ramadda
+</a>
+
+<p>
+Steps performed as root:
+
+<ol>
+<li>
+Install Tomcat
+<pre>
+yum -y install tomcat6
+</pre>
+
+<li>
+Copy RAMADDA war file to webapps directory:
+<pre>
+cp repository.war /var/lib/tomcat6/webapps
+</pre>
+
+<li>
+Start Tomcat
+<pre>
+chkconfig tomcat6 on
+service tomcat6 start
+</pre>
+</ol>
+
+[ht::foot]
