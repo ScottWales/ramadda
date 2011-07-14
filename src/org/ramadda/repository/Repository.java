@@ -45,6 +45,8 @@ import org.ramadda.util.MultiJarClassLoader;
 
 import org.ramadda.util.PropertyProvider;
 
+import org.ramadda.util.TempDir;
+
 
 import org.w3c.dom.*;
 
@@ -66,8 +68,6 @@ import ucar.unidata.util.PatternFileFilter;
 
 
 import ucar.unidata.util.StringUtil;
-
-import org.ramadda.util.TempDir;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 
@@ -129,17 +129,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** html template macro */
     public static final String MACRO_LOGO_IMAGE = "logo.image";
 
-    /** html template macro          */
+    /** html template macro */
     public static final String MACRO_SEARCH_URL = "search.url";
 
 
     /** html template macro */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
-    /** html template macro          */
+    /** html template macro */
     public static final String MACRO_HEADER = "header";
 
-    /** html template macro          */
+    /** html template macro */
     public static final String MACRO_ENTRY_FOOTER = "entry.footer";
 
     /** html template macro */
@@ -186,10 +186,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     public static final String MSG_SUFFIX = " msg>";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_CACHERESOURCES = "ramadda.cacheresources";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_LANGUAGE_DEFAULT =
         "ramadda.language.default";
 
@@ -225,8 +225,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     public static final OutputType OUTPUT_DELETER =
         new OutputType("Delete Entry", "repository.delete",
-                       OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "", 
-                      ICON_DELETE);
+                       OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
+                       ICON_DELETE);
 
 
     /** _more_ */
@@ -271,7 +271,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private SessionManager sessionManager;
 
-    /** _more_          */
+    /** _more_ */
     private WikiManager wikiManager;
 
     /** _more_ */
@@ -307,6 +307,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private StorageManager storageManager;
 
+    /** _more_ */
     private PluginManager pluginManager;
 
     /** _more_ */
@@ -343,7 +344,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Properties phraseMap;
 
-    /** _more_          */
+    /** _more_ */
     private static XmlEncoder xmlEncoder;
 
 
@@ -356,7 +357,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private List<String> sqlLoadFiles = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List<EntryChecker> entryMonitors = new ArrayList<EntryChecker>();
 
     /** _more_ */
@@ -377,13 +378,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean debugMsg = false;
 
-    /** _more_          */
+    /** _more_ */
     private PrintWriter allMsgOutput;
 
-    /** _more_          */
+    /** _more_ */
     private PrintWriter missingMsgOutput;
 
-    /** _more_          */
+    /** _more_ */
     private Date startTime = new Date();
 
 
@@ -448,12 +449,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    private List<HtmlTemplate> templates;
+    private List<HtmlTemplate> htmlTemplates;
 
-    /** _more_          */
+    /** _more_ */
     private HtmlTemplate mobileTemplate;
 
-    /** _more_          */
+    /** _more_ */
     private HtmlTemplate defaultTemplate;
 
     /** _more_ */
@@ -477,14 +478,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     ArrayList<ApiMethod> topLevelMethods = new ArrayList();
 
 
-    /** _more_          */
+    /** _more_ */
     private HttpClient httpClient;
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean active = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean readOnly = false;
 
 
@@ -799,7 +800,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public void loadProperties(Properties properties, String path) throws Exception {
+    public void loadProperties(Properties properties, String path)
+            throws Exception {
         //        System.err.println ("RAMADDA:  loading " + path);
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
         if (inputStream == null) {
@@ -834,12 +836,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
          */
 
         properties = new Properties();
-        loadProperties(properties,
-             "/org/ramadda/repository/resources/repository.properties");
+        loadProperties(
+            properties,
+            "/org/ramadda/repository/resources/repository.properties");
 
         try {
-            loadProperties(properties,
-                 "/org/ramadda/repository/resources/build.properties");
+            loadProperties(
+                properties,
+                "/org/ramadda/repository/resources/build.properties");
         } catch (Exception exc) {}
 
         for (int i = 0; i < args.length; i++) {
@@ -945,7 +949,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //create the log dir
         getStorageManager().getLogDir();
 
-        //load the plugins
+        //initialize the plugin manager with the properties
         getPluginManager().init(properties);
 
         debug = getProperty(PROP_DEBUG, false);
@@ -1051,14 +1055,149 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
     /**
      * _more_
      *
      * @throws Exception _more_
      */
-    private void createTypeHandlers() throws Exception {
+    protected void initServer() throws Exception {
+
+        getDatabaseManager().init();
+        initDefaultTypeHandlers();
+
+        boolean loadedRdb = false;
+        for (String sqlFile : (List<String>) sqlLoadFiles) {
+            if (sqlFile.endsWith(".rdb")) {
+                getDatabaseManager().loadRdbFile(sqlFile);
+                loadedRdb = true;
+            }
+        }
+
+        if ( !loadedRdb) {
+            initSchema();
+        }
+
+
+        readGlobals();
+        checkVersion();
+
+        loadPlugins();
+
+        initDefaultOutputHandlers();
+
+        getRegistryManager().checkApi();
+
+        //Load in any other sql files from the command line
+        for (String sqlFile : (List<String>) sqlLoadFiles) {
+            if ( !sqlFile.endsWith(".rdb")) {
+                String sql =
+                    getStorageManager().readUncheckedSystemResource(sqlFile);
+                getDatabaseManager().loadSql(sql, false, true);
+                readGlobals();
+            }
+        }
+
+
+        getUserManager().initUsers(cmdLineUsers);
+
+        //This finds or creates the top-level group
+        getEntryManager().initTopGroup();
+
+
+        setLocalFilePaths();
+
+        if (dumpFile != null) {
+            FileOutputStream fos = new FileOutputStream(dumpFile);
+            getDatabaseManager().makeDatabaseCopy(fos, true, null);
+            IOUtil.close(fos);
+        }
+
+        HtmlUtil.setBlockHideShowImage(iconUrl(ICON_MINUS),
+                                       iconUrl(ICON_PLUS));
+        HtmlUtil.setInlineHideShowImage(iconUrl(ICON_MINUS),
+        //iconUrl(ICON_ELLIPSIS));
+        iconUrl(ICON_PLUS));
+
+        getLogManager().logInfo("RAMADDA started");
+
+
+        getStorageManager().doFinalInitialization();
+        if (getInstallationComplete()) {
+            getRegistryManager().doFinalInitialization();
+        }
+
+        getAdmin().doFinalInitialization();
+
+        if (loadedRdb) {
+            getDatabaseManager().finishRdbLoad();
+        }
+
+        getHarvesterManager().initHarvesters();
+
+        //Do this in a thread because (on macs) it hangs sometimes)
+        Misc.run(this, "getFtpManager");
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param pluginPath _more_
+     *
+     * @throws Exception _more_
+     */
+    public void installPlugin(String pluginPath) throws Exception {
+        try {
+            String tail = IOUtil.getFileTail(pluginPath);
+            String newPluginFile =
+                IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
+            InputStream      inputStream = IOUtil.getInputStream(pluginPath);
+            FileOutputStream fos         =
+                new FileOutputStream(newPluginFile);
+            IOUtil.writeTo(inputStream, fos);
+            IOUtil.close(inputStream);
+            IOUtil.close(fos);
+            getPluginManager().checkFile(newPluginFile);
+            loadPlugins();
+        } catch (Exception exc) {
+            getLogManager().logError("Error installing plugin:" + pluginPath,
+                                     exc);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    private void loadPlugins() throws Exception {
+        System.err.println("loadPlugins");
+        getPluginManager().loadPlugins();
+        clearTemplates();
+        loadTypeHandlers();
+        loadOutputHandlers();
+        getMetadataManager().loadMetadataHandlers(getPluginManager());
+        loadApi();
+        loadAdminHandlers();
+        loadLanguagePacks();
+        loadSql();
+    }
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    private void loadTypeHandlers() throws Exception {
         for (String file : getPluginManager().getTypeDefFiles()) {
             file = getStorageManager().localizePath(file);
+            if (getPluginManager().haveSeen(file)) {
+                continue;
+            }
             Element entriesRoot = XmlUtil.getRoot(file, getClass());
             if (entriesRoot == null) {
                 continue;
@@ -1095,38 +1234,84 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
+
     /**
      * _more_
      *
      * @throws Exception _more_
      */
-    protected void initServer() throws Exception {
+    private void loadOutputHandlers() throws Exception {
+        for (String file : getPluginManager().getOutputDefFiles()) {
+            file = getStorageManager().localizePath(file);
+            if (getPluginManager().haveSeen(file)) {
+                continue;
+            }
+            Element root = XmlUtil.getRoot(file, getClass());
+            if (root == null) {
+                continue;
+            }
+            List children = XmlUtil.findChildren(root, TAG_OUTPUTHANDLER);
+            for (int i = 0; i < children.size(); i++) {
+                Element node = (Element) children.get(i);
+                boolean required = XmlUtil.getAttribute(node, ARG_REQUIRED,
+                                       true);
+                try {
+                    Class c = Misc.findClass(XmlUtil.getAttribute(node,
+                                  ATTR_CLASS));
 
-        getDatabaseManager().init();
-        initDefaultTypeHandlers();
+                    Constructor ctor = Misc.findConstructor(c,
+                                           new Class[] { Repository.class,
+                            Element.class });
+                    OutputHandler outputHandler =
+                        (OutputHandler) ctor.newInstance(new Object[] { this,
+                            node });
+                    addOutputHandler(outputHandler);
 
-        boolean loadedRdb = false;
-        for (String sqlFile : (List<String>) sqlLoadFiles) {
-            if (sqlFile.endsWith(".rdb")) {
-                getDatabaseManager().loadRdbFile(sqlFile);
-                loadedRdb = true;
+                } catch (Exception exc) {
+                    if ( !required) {
+                        getLogManager().logWarning(
+                            "Couldn't load optional output handler:"
+                            + XmlUtil.toString(node));
+                        getLogManager().logWarning(exc.toString());
+                    } else {
+                        getLogManager().logError(
+                            "Error loading output handler file:" + file, exc);
+                        throw exc;
+                    }
+                }
             }
         }
+    }
 
-        if ( !loadedRdb) {
-            initSchema();
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    private void loadSql() throws Exception {
+        for (String sqlFile : getPluginManager().getSqlFiles()) {
+            if (getPluginManager().haveSeen(sqlFile)) {
+                continue;
+            }
+            String sql =
+                getStorageManager().readUncheckedSystemResource(sqlFile);
+            sql = getDatabaseManager().convertSql(sql);
+            getDatabaseManager().loadSql(sql, true, false);
         }
+    }
 
-        createTypeHandlers();
-        readGlobals();
-        checkVersion();
-        initOutputHandlers();
-        getMetadataManager().initMetadataHandlers( getPluginManager().getMetadataDefFiles());
-        initApi();
-        getRegistryManager().checkApi();
-
-        //        getAdmin().addAdminHandler(new org.ramadda.plugins.db.DbAdminHandler());
-        for (Class adminHandlerClass : getPluginManager().getAdminHandlerClasses()) {
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    private void loadAdminHandlers() throws Exception {
+        for (Class adminHandlerClass :
+                getPluginManager().getAdminHandlerClasses()) {
+            if (getPluginManager().haveSeen(adminHandlerClass)) {
+                continue;
+            }
             Constructor ctor = Misc.findConstructor(adminHandlerClass,
                                    new Class[] { Repository.class });
             if (ctor != null) {
@@ -1139,58 +1324,72 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
         //        getAdmin().addAdminHandler(new LdapAdminHandler());
+    }
 
 
-        //Load in any other sql files from the command line
-        for (String sqlFile : (List<String>) sqlLoadFiles) {
-            if ( !sqlFile.endsWith(".rdb")) {
-                String sql =
-                    getStorageManager().readUncheckedSystemResource(sqlFile);
-                getDatabaseManager().loadSql(sql, false, true);
-                readGlobals();
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    private void loadApi() throws Exception {
+        Hashtable handlers = new Hashtable();
+        for (String file : getPluginManager().getApiDefFiles()) {
+            file = getStorageManager().localizePath(file);
+            if (getPluginManager().haveSeen(file)) {
+                continue;
+            }
+            Element   apiRoot = XmlUtil.getRoot(file, getClass());
+            Hashtable props   = new Hashtable();
+            processApiNode(apiRoot, handlers, props, "repository");
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    protected void loadLanguagePacks() throws Exception {
+        List sourcePaths =
+            Misc.newList(
+                getStorageManager().getSystemResourcePath() + "/languages",
+                getStorageManager().getPluginsDir().toString());
+        for (int i = 0; i < sourcePaths.size(); i++) {
+            String       dir     = (String) sourcePaths.get(i);
+            List<String> listing = getListing(dir, getClass());
+            for (String path : listing) {
+                if ( !path.endsWith(".pack")) {
+                    continue;
+                }
+                if (getPluginManager().haveSeen(path)) {
+                    continue;
+                }
+                String content =
+                    getStorageManager().readUncheckedSystemResource(path,
+                        (String) null);
+                if (content == null) {
+                    continue;
+                }
+                Object[]   result     = parsePhrases(path, content);
+                String     type       = (String) result[0];
+                String     name       = (String) result[1];
+                Properties properties = (Properties) result[2];
+                if (type != null) {
+                    if (name == null) {
+                        name = type;
+                    }
+                    languages.add(new TwoFacedObject(name, type));
+                    languageMap.put(type, properties);
+                } else {
+                    getLogManager().logError("No _type_ found in: " + path);
+                }
             }
         }
-
-
-        getUserManager().initUsers(cmdLineUsers);
-
-        //This finds or creates the top-level group
-        getEntryManager().initTopGroup();
-
-        initLanguages();
-        setLocalFilePaths();
-
-        if (dumpFile != null) {
-            FileOutputStream fos = new FileOutputStream(dumpFile);
-            getDatabaseManager().makeDatabaseCopy(fos, true, null);
-            IOUtil.close(fos);
-        }
-
-        HtmlUtil.setBlockHideShowImage(iconUrl(ICON_MINUS),
-                                       iconUrl(ICON_PLUS));
-        HtmlUtil.setInlineHideShowImage(iconUrl(ICON_MINUS),
-        //iconUrl(ICON_ELLIPSIS));
-        iconUrl(ICON_PLUS));
-
-        getLogManager().logInfo("RAMADDA started");
-
-
-        getStorageManager().doFinalInitialization();
-        if (getInstallationComplete()) {
-            getRegistryManager().doFinalInitialization();
-        }
-
-        getAdmin().doFinalInitialization();
-
-        if (loadedRdb) {
-            getDatabaseManager().finishRdbLoad();
-        }
-
-        getHarvesterManager().initHarvesters();
-
-        //Do this in a thread because (on macs) it hangs sometimes)
-        Misc.run(this, "getFtpManager");
     }
+
 
 
 
@@ -1547,14 +1746,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public List<String> getPythonLibs() {
-        return getPluginManager().getPythonLibs();
-    }
 
 
     /**
@@ -1610,6 +1801,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return storageManager;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public PluginManager getPluginManager() {
         if (pluginManager == null) {
             pluginManager = doMakePluginManager();
@@ -1681,45 +1877,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        writeGlobal(PROP_VERSION,""+VERSION);
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void initLanguages() throws Exception {
-        List sourcePaths =
-            Misc.newList(
-                getStorageManager().getSystemResourcePath() + "/languages",
-                getStorageManager().getPluginsDir().toString());
-        for (int i = 0; i < sourcePaths.size(); i++) {
-            String       dir     = (String) sourcePaths.get(i);
-            List<String> listing = getListing(dir, getClass());
-            for (String path : listing) {
-                if ( !path.endsWith(".pack")) {
-                    continue;
-                }
-                String content =
-                    getStorageManager().readUncheckedSystemResource(path,
-                        (String) null);
-                if (content == null) {
-                    continue;
-                }
-                Object[]   result     = parsePhrases(path, content);
-                String     type       = (String) result[0];
-                String     name       = (String) result[1];
-                Properties properties = (Properties) result[2];
-                if (type != null) {
-                    if (name == null) {
-                        name = type;
-                    }
-                    languages.add(new TwoFacedObject(name, type));
-                    languageMap.put(type, properties);
-                } else {
-                    getLogManager().logError("No _type_ found in: " + path);
-                }
-            }
-        }
-    }
 
     /**
      * _more_
@@ -2152,7 +2309,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 wildCardApiMethods.add(apiMethod);
             }
         }
-
+        if (apiMethod.getIsTopLevel()
+                && !topLevelMethods.contains(apiMethod)) {
+            topLevelMethods.add(apiMethod);
+        }
     }
 
 
@@ -2191,26 +2351,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void initApi() throws Exception {
-        Hashtable handlers = new Hashtable();
-
-        for (String file :  getPluginManager().getApiDefFiles()) {
-            file = getStorageManager().localizePath(file);
-            Element   apiRoot = XmlUtil.getRoot(file, getClass());
-            Hashtable props   = new Hashtable();
-            processApiNode(apiRoot, handlers, props, "repository");
-        }
-        for (ApiMethod apiMethod : apiMethods) {
-            if (apiMethod.getIsTopLevel()) {
-                topLevelMethods.add(apiMethod);
-            }
-        }
-    }
 
     /**
      * _more_
@@ -2255,48 +2395,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    protected void initOutputHandlers() throws Exception {
-
-        for (String file :  getPluginManager().getOutputDefFiles()) {
-
-            file = getStorageManager().localizePath(file);
-            Element root = XmlUtil.getRoot(file, getClass());
-            if (root == null) {
-                continue;
-            }
-            List children = XmlUtil.findChildren(root, TAG_OUTPUTHANDLER);
-            for (int i = 0; i < children.size(); i++) {
-                Element node = (Element) children.get(i);
-                boolean required = XmlUtil.getAttribute(node, ARG_REQUIRED,
-                                       true);
-                try {
-                    Class c = Misc.findClass(XmlUtil.getAttribute(node,
-                                  ATTR_CLASS));
-
-                    Constructor ctor = Misc.findConstructor(c,
-                                           new Class[] { Repository.class,
-                            Element.class });
-                    OutputHandler outputHandler =
-                        (OutputHandler) ctor.newInstance(new Object[] { this,
-                            node });
-                    addOutputHandler(outputHandler);
-
-                } catch (Exception exc) {
-                    if ( !required) {
-                        getLogManager().logWarning(
-                            "Couldn't load optional output handler:"
-                            + XmlUtil.toString(node));
-                        getLogManager().logWarning(exc.toString());
-                    } else {
-                        getLogManager().logError(
-                            "Error loading output handler file:" + file, exc);
-                        throw exc;
-                    }
-                }
-            }
-
-        }
-
+    protected void initDefaultOutputHandlers() throws Exception {
 
         OutputHandler outputHandler = new OutputHandler(getRepository(),
                                           "Entry Deleter") {
@@ -2454,6 +2553,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         addOutputHandler(copyHandler);
 
         getUserManager().initOutputHandlers();
+
 
 
 
@@ -2781,7 +2881,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return getAdmin().doInitialization(request);
         }
 
-        if (!getUserManager().isRequestOk(request)) {
+        if ( !getUserManager().isRequestOk(request)) {
             System.err.println("Access error:  user=" + request.getUser()
                                + " request=" + request);
             System.err.println("Admin Info  admin only= "
@@ -2792,11 +2892,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                + getProperty(PROP_ACCESS_REQUIRELOGIN,
                                              false));
             throw new AccessException(
-                                      msg("You do not have permission to access this page"),
+                msg("You do not have permission to access this page"),
                 request);
         }
 
-        if (!apiMethod.isRequestOk(request, this)) {
+        if ( !apiMethod.isRequestOk(request, this)) {
             System.err.println("Access error 2:  user=" + request.getUser()
                                + " request=" + request);
             System.err.println("Admin Info  admin only= "
@@ -2807,9 +2907,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                + getProperty(PROP_ACCESS_REQUIRELOGIN,
                                              false));
             apiMethod.printDebug(request);
-            throw new AccessException(
-                msg("Incorrect access"),
-                request);
+            throw new AccessException(msg("Incorrect access"), request);
         }
 
 
@@ -2933,7 +3031,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = "/repository/applets/gantt/gantt.jar";
         }
 
-        path =path.replaceAll("//","/");
+        path = path.replaceAll("//", "/");
         //        System.err.println("path:" + path);
         if ( !path.startsWith(getUrlBase())) {
             //            System.err.println("bad:" + getUrlBase());
@@ -2977,9 +3075,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-
         String pluginPath = getPluginManager().getHtdocsMap().get(path);
-
         if (pluginPath != null) {
             InputStream inputStream =
                 getStorageManager().getInputStream(pluginPath);
@@ -3225,7 +3321,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             pageTitle = getProperty(PROP_REPOSITORY_NAME, "Repository");
         }
 
-        for (PageDecorator pageDecorator : getPluginManager().getPageDecorators()) {
+        for (PageDecorator pageDecorator :
+                getPluginManager().getPageDecorators()) {
             template = pageDecorator.decoratePage(this, request, template,
                     currentEntry);
         }
@@ -3470,7 +3567,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private List<HtmlTemplate> getTemplates() {
-        List<HtmlTemplate> theTemplates = templates;
+        List<HtmlTemplate> theTemplates = htmlTemplates;
         if (theTemplates == null) {
             String imports = "";
             try {
@@ -3521,7 +3618,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
             if (cacheResources()) {
-                templates = theTemplates;
+                htmlTemplates = theTemplates;
             }
         }
         return theTemplates;
@@ -3561,9 +3658,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         String templateId = request.getHtmlTemplateId();
 
-        User user = request.getUser();
+        User   user       = request.getUser();
 
-        if (templateId == null && user.getAnonymous()) {
+        if ((templateId == null) && user.getAnonymous()) {
             templateId = user.getTemplate();
         }
 
@@ -3837,18 +3934,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        SqlUtil.showLoadingSql = false;
         //        System.err.println("RAMADDA: done loading schema");
 
-        for (String sqlFile : getPluginManager().getSqlFiles()) {
-            sql = getStorageManager().readUncheckedSystemResource(sqlFile);
-            sql = getDatabaseManager().convertSql(sql);
-            getDatabaseManager().loadSql(sql, true, false);
-        }
-
-
+        loadSql();
         getDatabaseManager().initComplete();
-
-
         readGlobals();
-
     }
 
     /**
@@ -3930,7 +4018,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      */
     private void clearTemplates() {
-        templates       = null;
+        htmlTemplates   = null;
         defaultTemplate = null;
     }
 
@@ -4059,7 +4147,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      *
-     * @throws Exception _more_
      */
     public HtmlOutputHandler getHtmlOutputHandler() {
         try {
@@ -4476,7 +4563,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 helpText = matcher.group(1);
             }
             if (path.endsWith("toc.html")) {
-                helpText = helpText.replace("<tocend>", getPluginManager().getHelpToc());
+                helpText = helpText.replace("<tocend>",
+                                            getPluginManager().getHelpToc());
                 //                helpText = helpText+pluginHelpToc;
             }
 
@@ -4742,6 +4830,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param user _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Request getRequest(User user) throws Exception {
         Request request = new Request(getRepository(), "", new Hashtable());
         request.setUser(user);
@@ -5594,7 +5691,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param contents _more_
      * @param compId _more_
-     * @param makeClose _more_
      *
      * @return _more_
      */
@@ -5705,6 +5801,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static Object decodeObject(String xml) throws Exception {
         return xmlEncoder.toObject(xml);
     }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<String> getPythonLibs() {
+        return getPluginManager().getPythonLibs();
+    }
+
+
 
 
 }

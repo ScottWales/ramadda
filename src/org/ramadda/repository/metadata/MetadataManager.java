@@ -567,11 +567,13 @@ public class MetadataManager extends RepositoryManager {
      * @param metadataDefFiles _more_
      * @throws Exception _more_
      */
-    public void initMetadataHandlers(List<String> metadataDefFiles)
+    public void loadMetadataHandlers(PluginManager pluginManager)
             throws Exception {
+        List<String> metadataDefFiles = getRepository().getPluginManager().getMetadataDefFiles();
         for (String file : metadataDefFiles) {
             try {
                 file = getStorageManager().localizePath(file);
+                if(pluginManager.haveSeen(file)) continue;
                 Element root = XmlUtil.getRoot(file, getClass());
                 if (root == null) {
                     continue;

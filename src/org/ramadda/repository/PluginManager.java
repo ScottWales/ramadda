@@ -62,6 +62,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -98,6 +99,12 @@ public class PluginManager extends RepositoryManager {
     /** _more_ */
     private List<MultiJarClassLoader> classLoaders =
         new ArrayList<MultiJarClassLoader>();
+
+    /** _more_          */
+    private MultiJarClassLoader classLoader;
+
+    /** _more_          */
+    private Properties properties;
 
     /** _more_ */
     private List<String> metadataDefFiles = new ArrayList<String>();
@@ -143,6 +150,9 @@ public class PluginManager extends RepositoryManager {
     private List<ImportHandler> importHandlers =
         new ArrayList<ImportHandler>();
 
+    /** _more_          */
+    private HashSet seenThings = new HashSet();
+
     /**
      * _more_
      *
@@ -155,17 +165,44 @@ public class PluginManager extends RepositoryManager {
     /**
      * _more_
      *
+     * @param object _more_
+     */
+    public void markSeen(Object object) {
+        seenThings.add(object);
+    }
+
+    /**
+     * _more_
+     *
+     * @param object _more_
+     *
+     * @return _more_
+     */
+    public boolean haveSeen(Object object) {
+        boolean contains = seenThings.contains(object);
+        if ( !contains) {
+            markSeen(object);
+        }
+        return contains;
+    }
+
+
+    /**
+     * _more_
+     *
      * @param properties _more_
      *
      * @throws Exception _more_
      */
     public void init(Properties properties) throws Exception {
-        initPlugins();
-        makePluginHelp();
-        for (String f : propertyFiles) {
-            getRepository().loadProperties(properties, f);
+        this.properties = properties;
+        if (classLoader == null) {
+            classLoader = new MyClassLoader(getClass().getClassLoader());
+            classLoaders.add(classLoader);
+            Misc.addClassLoader(classLoader);
         }
 
+        loadPlugins();
         apiDefFiles.addAll(0, getRepository().getResourcePaths(PROP_API));
         typeDefFiles.addAll(0, getRepository().getResourcePaths(PROP_TYPES));
         outputDefFiles.addAll(
@@ -180,26 +217,40 @@ public class PluginManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected void initPlugins() throws Exception {
+    public void loadPlugins() throws Exception {
         //The false says not to scour
         TempDir tempDir = getStorageManager().makeTempDir("tmpplugins",
                               false);
         File   tmpPluginsDir = tempDir.getDir();
-
         File   dir           = new File(getStorageManager().getPluginsDir());
         File[] plugins       = dir.listFiles();
         Arrays.sort(plugins);
-        MultiJarClassLoader classLoader =
-            new MyClassLoader(getClass().getClassLoader());
-        classLoaders.add(classLoader);
-        Misc.addClassLoader(classLoader);
         for (int i = 0; i < plugins.length; i++) {
             if (plugins[i].isDirectory()) {
                 continue;
             }
             String pluginFile = plugins[i].toString();
+            if (haveSeen(pluginFile)) {
+                continue;
+            }
             processPluginFile(pluginFile, pluginSB, classLoader,
                               tmpPluginsDir);
+        }
+        loadPropertyFiles();
+        makePluginHelp();
+    }
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    public void loadPropertyFiles() throws Exception {
+        for (String f : propertyFiles) {
+            if (haveSeen(f)) {
+                continue;
+            }
+            getRepository().loadProperties(properties, f);
         }
     }
 

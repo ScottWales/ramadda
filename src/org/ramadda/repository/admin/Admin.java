@@ -321,7 +321,6 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtil.formTableClose());
             didIt(ARG_ADMIN_INSTALLNOTICESHOWN);
         } else if ( !haveDone(ARG_ADMIN_LICENSEREAD)) {
-
             title = "License";
             sb.append(getLicenseForm());
             sb.append(HtmlUtil.submit(msg("Next")));
@@ -392,6 +391,13 @@ public class Admin extends RepositoryManager {
                     }
 
                     getRegistryManager().applyInstallForm(request);
+                    String plugin =
+                        "http://downloads.sourceforge.net/project/ramadda/ramadda1.3b/plugins/ramadda1.3b-allplugins.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Framadda%2Ffiles%2Framadda1.3b%2Fplugins%2F&ts=1310641009&use_mirror=cdnetworks-us-2";
+
+                    plugin =
+                        "/Users/jeffmc/Downloads/ramadda1.3b-allplugins.zip";
+                    //                    getRepository().installPlugin(plugin);
+
                     sb.append(
                         getRepository().showDialogNote(
                             msg("Site administrator created")));
