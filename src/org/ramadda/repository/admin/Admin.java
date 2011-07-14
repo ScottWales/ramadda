@@ -94,6 +94,27 @@ import javax.mail.internet.MimeMessage;
 public class Admin extends RepositoryManager {
 
     /** _more_ */
+    public static final String ARG_ADMIN_ADMINCREATED = "admin.admincreated";
+
+    /** _more_ */
+    public static final String ARG_ADMIN_INSTALLCOMPLETE =
+        "admin.installcomplete";
+
+    /** _more_ */
+    public static final String ARG_ADMIN_INSTALLNOTICESHOWN =
+        "admin.installnoticeshown";
+
+    /** _more_          */
+    public static final String ARG_ADMIN_INSTALLPLUGIN =
+        "admin.installplugin";
+
+    /** _more_ */
+    public static final String ARG_ADMIN_LICENSEREAD = "admin.licenseread";
+
+
+
+
+    /** _more_ */
     public RequestUrl URL_ADMIN_SQL = new RequestUrl(this, "/admin/sql",
                                           "SQL");
 
@@ -208,6 +229,19 @@ public class Admin extends RepositoryManager {
             adminUrls.add(URL_ADMIN_SQL);
         }
     }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean getInstallationComplete() {
+        return getRepository().getDbProperty(ARG_ADMIN_INSTALLCOMPLETE,
+                                             false);
+    }
+
+
+
 
     /**
      * _more_
@@ -391,12 +425,6 @@ public class Admin extends RepositoryManager {
                     }
 
                     getRegistryManager().applyInstallForm(request);
-                    String plugin =
-                        "http://downloads.sourceforge.net/project/ramadda/ramadda1.3b/plugins/ramadda1.3b-allplugins.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Framadda%2Ffiles%2Framadda1.3b%2Fplugins%2F&ts=1310641009&use_mirror=cdnetworks-us-2";
-
-                    plugin =
-                        "/Users/jeffmc/Downloads/ramadda1.3b-allplugins.zip";
-                    //                    getRepository().installPlugin(plugin);
 
                     sb.append(
                         getRepository().showDialogNote(
@@ -427,6 +455,15 @@ public class Admin extends RepositoryManager {
 
                     sb.append(getUserManager().makeLoginForm(request));
                     getRegistryManager().doFinalInitialization();
+
+                    if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
+                        String plugin =
+                            "/org/ramadda/repository/resources/plugins/ramadda1.3b-allplugins.zip";
+                        getRepository().installPlugin(plugin);
+                    }
+
+
+
                     return new Result("", sb);
                 }
                 sb.append(msg("Error"));
@@ -499,6 +536,15 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtil.formEntry(msgLabel("Port"),
                                          HtmlUtil.input(PROP_PORT, port,
                                              HtmlUtil.SIZE_10)));
+
+            //TODO: read the plugins.xml file and offer more plugins
+            //than the hard coded all plugin
+            sb.append(
+                HtmlUtil.formEntry(
+                    msgLabel("Install Plugins"),
+                    HtmlUtil.checkbox(ARG_ADMIN_INSTALLPLUGIN, "true", false)
+                    + " " + "All plugins"));
+
 
 
             getRegistryManager().addToInstallForm(request, sb);

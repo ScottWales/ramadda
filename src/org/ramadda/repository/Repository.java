@@ -1123,7 +1123,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         getStorageManager().doFinalInitialization();
-        if (getInstallationComplete()) {
+        if (getAdmin().getInstallationComplete()) {
             getRegistryManager().doFinalInitialization();
         }
 
@@ -2831,15 +2831,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean getInstallationComplete() {
-        return getDbProperty(ARG_ADMIN_INSTALLCOMPLETE, false);
-    }
-
 
     /**
      * _more_
@@ -2877,7 +2868,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         //        System.err.println(request + " user-agent:" + userAgent +" ip:" + request.getIp());
 
-        if ( !getInstallationComplete()) {
+        if ( !getAdmin().getInstallationComplete()) {
             return getAdmin().doInitialization(request);
         }
 

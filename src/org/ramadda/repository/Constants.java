@@ -1,8 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * Copyright 2010- ramadda.org
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -75,6 +72,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_CLOCK = "ramadda.icon.clock";
+
+    /** _more_          */
     public static final String ICON_TIMELINE = "ramadda.icon.timeline";
 
     /** _more_ */
@@ -190,6 +189,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_INFORMATION = "ramadda.icon.information";
 
+    /** _more_          */
     public static final String ICON_TREE = "ramadda.icon.tree";
 
     /** _more_ */
@@ -307,6 +307,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_XML = "ramadda.icon.xml";
 
+    /** _more_          */
     public static final String ICON_JSON = "ramadda.icon.json";
 
 
@@ -334,16 +335,16 @@ public interface Constants {
     public static final String ATTR_ATTR = "attr";
 
     /** _more_ */
-    public static final String ATTR_ATTR1 = ATTR_ATTR +"1";
+    public static final String ATTR_ATTR1 = ATTR_ATTR + "1";
 
     /** _more_ */
-    public static final String ATTR_ATTR2 = ATTR_ATTR +"2";
+    public static final String ATTR_ATTR2 = ATTR_ATTR + "2";
 
     /** _more_ */
-    public static final String ATTR_ATTR3 = ATTR_ATTR +"3";
+    public static final String ATTR_ATTR3 = ATTR_ATTR + "3";
 
     /** _more_ */
-    public static final String ATTR_ATTR4 = ATTR_ATTR+"4";
+    public static final String ATTR_ATTR4 = ATTR_ATTR + "4";
 
     /** _more_ */
     public static final String ATTR_CANDONEW = "candonew";
@@ -363,7 +364,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_DB_DESCRIPTION = "description";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FORUSER = "foruser";
 
     /** _more_ */
@@ -411,7 +412,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_PARENT = "parent";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SUPER = "super";
 
     /** _more_ */
@@ -445,7 +446,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_CREATEDATE = "createdate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CHANGEDATE = "changedate";
 
     /** _more_ */
@@ -464,13 +465,13 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_WEST = "west";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ALTITUDE = "altitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ALTITUDE_TOP = "altitudetop";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ALTITUDE_BOTTOM = "altitudebottom";
 
 
@@ -505,20 +506,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ADMIN = "admin";
 
-    /** _more_ */
-    public static final String ARG_ADMIN_ADMINCREATED = "admin.admincreated";
-
-    /** _more_ */
-    public static final String ARG_ADMIN_INSTALLCOMPLETE =
-        "admin.installcomplete";
-
-    /** _more_ */
-    public static final String ARG_ADMIN_INSTALLNOTICESHOWN =
-        "admin.installnoticeshown";
-
-    /** _more_ */
-    public static final String ARG_ADMIN_LICENSEREAD = "admin.licenseread";
-
 
     /** _more_ */
     public static final String ARG_ADMIN_WHAT = "what";
@@ -535,19 +522,19 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_AREA = "area";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCATION = "location";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCATION_LATITUDE = "location.latitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCATION_LONGITUDE = "location.longitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_BBOX = "bbox";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DEFAULTBBOX = "defaultbbox";
 
     /** _more_ */
@@ -590,6 +577,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CANCEL = "cancel";
 
+    /** _more_          */
     public static final String ARG_COLUMNS = "columns";
 
     /** _more_ */
@@ -625,7 +613,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CREATEDATE = "createdate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_CHANGEDATE = "changedate";
 
     /** _more_ */
@@ -643,34 +631,36 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_DATE = "date";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATE_OVERLAPS = "date.overlaps";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATE_SEARCHMODE = "date.searchmode";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATE_NODATAMODE = "date.nodatamode";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VALUE_NODATAMODE_NONE = "none";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VALUE_NODATAMODE_INCLUDE = "include";
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String DATE_SEARCHMODE_OVERLAPS = "overlaps";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DATE_SEARCHMODE_CONTAINEDBY = "containedby";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DATE_SEARCHMODE_CONTAINS = "contains";
 
-    public static final String DATE_SEARCHMODE_DEFAULT = DATE_SEARCHMODE_OVERLAPS;
+    /** _more_          */
+    public static final String DATE_SEARCHMODE_DEFAULT =
+        DATE_SEARCHMODE_OVERLAPS;
 
 
     /** _more_ */
@@ -738,6 +728,7 @@ public interface Constants {
         "file.preservedirectoryfile";
 
 
+    /** _more_          */
     public static final String ARG_FORMAT = "format";
 
 
@@ -760,38 +751,92 @@ public interface Constants {
     public static final String ARG_FROMDATE_TIME = ARG_FROMDATE + ".time";
 
 
-    public static final String ARG_DATA_DATE= "datadate";
-    public static final String ARG_CREATE_DATE= "createdate";
-    public static final String ARG_CHANGE_DATE= "changedate";
+    /** _more_          */
+    public static final String ARG_DATA_DATE = "datadate";
+
+    /** _more_          */
+    public static final String ARG_CREATE_DATE = "createdate";
+
+    /** _more_          */
+    public static final String ARG_CHANGE_DATE = "changedate";
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Jul 14, '11
+     * @author         Enter your name here...    
+     */
     public static final class DateArg {
+
+        /** _more_          */
         public String suffix;
+
+        /** _more_          */
         public boolean hasRange;
+
+        /** _more_          */
         public String label;
+
+        /** _more_          */
         public String from;
+
+        /** _more_          */
         public String to;
+
+        /** _more_          */
         public String mode;
+
+        /** _more_          */
         public String relative;
+
+        /**
+         * _more_
+         *
+         * @param suffix _more_
+         * @param label _more_
+         * @param hasRange _more_
+         */
         public DateArg(String suffix, String label, boolean hasRange) {
-            this.suffix = suffix;
-            this.label = label;
+            this.suffix   = suffix;
+            this.label    = label;
             this.hasRange = hasRange;
-            from = suffix+".from";
-            to = suffix+".to";
-            mode = suffix+".mode";
-            relative = suffix+".relative";
+            from          = suffix + ".from";
+            to            = suffix + ".to";
+            mode          = suffix + ".mode";
+            relative      = suffix + ".relative";
         }
-        
+
+        /**
+         * _more_
+         *
+         * @param o _more_
+         *
+         * @return _more_
+         */
         public boolean equals(Object o) {
-            if(!(o instanceof DateArg)) return false;
+            if ( !(o instanceof DateArg)) {
+                return false;
+            }
             DateArg that = (DateArg) o;
             return this.suffix.equals(that.suffix);
         }
 
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public String getFromArg() {
             return from;
         }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public String getToArg() {
             return to;
         }
@@ -799,13 +844,21 @@ public interface Constants {
 
     }
 
-    public static final DateArg dataDate = new DateArg(ARG_DATA_DATE,"Data Date", true);
-    public static final DateArg createDate = new DateArg(ARG_CREATE_DATE,"Create Date", false);
-    public static final DateArg changeDate = new DateArg(ARG_CHANGE_DATE,"Change Date",false);
+    /** _more_          */
+    public static final DateArg dataDate = new DateArg(ARG_DATA_DATE,
+                                               "Data Date", true);
 
-    public static final Constants.DateArg[] DATEARGS ={Constants.dataDate,
-                                                       Constants.createDate,
-                                                       Constants.changeDate};
+    /** _more_          */
+    public static final DateArg createDate = new DateArg(ARG_CREATE_DATE,
+                                                 "Create Date", false);
+
+    /** _more_          */
+    public static final DateArg changeDate = new DateArg(ARG_CHANGE_DATE,
+                                                 "Change Date", false);
+
+    /** _more_          */
+    public static final Constants.DateArg[] DATEARGS = { Constants.dataDate,
+            Constants.createDate, Constants.changeDate };
 
 
 
@@ -934,6 +987,7 @@ public interface Constants {
         "ramadda.monitor.enable.exec";
 
 
+    /** _more_          */
     public static final String PROP_READ_ONLY = "ramadda.readonly";
 
     /** _more_ */
@@ -999,17 +1053,17 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_USER_HOME = "userhome";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ALTITUDE = "altitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ALTITUDE_TOP = "altitude.top";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ALTITUDE_BOTTOM = "altitude.bottom";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SETBOUNDSFROMCHILDREN =
         "setboundsfromchildren";
 
@@ -1038,7 +1092,7 @@ public interface Constants {
     public static final String ARG_PUBLISH = "publish";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SUBMIT_PUBLISH = "submit.publish";
 
     /** _more_ */
@@ -1090,10 +1144,13 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SEARCHMETADATA = "searchmetadata";
 
+    /** _more_          */
     public static final String ARG_SEARCH_TYPE = "search.type";
 
+    /** _more_          */
     public static final String SEARCH_TYPE_TEXT = "search.type.text";
 
+    /** _more_          */
     public static final String SEARCH_TYPE_ADVANCED = "search.type.advanced";
 
 
@@ -1103,6 +1160,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SESSIONID = "sessionid";
 
+    /** _more_          */
     public static final String ARG_AUTHTOKEN = "authtoken";
 
     /** _more_ */
@@ -1196,13 +1254,13 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_MD5 = "md5";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MD5 = "md5";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_FILESIZE = "filesize";
 
     /** _more_ */
@@ -1381,12 +1439,18 @@ public interface Constants {
     public static final String PROP_FTP_PASSIVEPORTS =
         "ramadda.ftp.passiveports";
 
+    /** _more_          */
     public static final String PROP_SHOWMAP = "ramadda.showmap";
 
-    public static final String PROP_SEARCH_LUCENE_ENABLED = "ramadda.search.lucene.enabled";
+    /** _more_          */
+    public static final String PROP_SEARCH_LUCENE_ENABLED =
+        "ramadda.search.lucene.enabled";
 
-    public static final String PROP_SEARCH_SHOW_METADATA = "ramadda.search.show.metadata";
+    /** _more_          */
+    public static final String PROP_SEARCH_SHOW_METADATA =
+        "ramadda.search.show.metadata";
 
+    /** _more_          */
     public static final String PROP_PROPERTIES = "ramadda.properties";
 
 
@@ -1505,6 +1569,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ENTRY_HEADER = "ramadda.entryheader";
 
+    /** _more_          */
     public static final String PROP_ENTRY_FOOTER = "ramadda.entryfooter";
 
 
@@ -1571,7 +1636,9 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_HTML_TEMPLATES = "ramadda.html.templates";
 
-    public static final String PROP_HTML_TEMPLATE_DEFAULT = "ramadda.html.template.default";
+    /** _more_          */
+    public static final String PROP_HTML_TEMPLATE_DEFAULT =
+        "ramadda.html.template.default";
 
 
     /** _more_ */
@@ -1785,8 +1852,11 @@ public interface Constants {
     /** _more_ */
     public static final int DB_MAX_ROWS = 1000;
 
+    /** _more_          */
     public static final int DB_VIEW_ROWS = 50;
-    public static final int VIEW_MAX_ROWS  = DB_VIEW_ROWS;
+
+    /** _more_          */
+    public static final int VIEW_MAX_ROWS = DB_VIEW_ROWS;
 
 
 
@@ -1868,19 +1938,20 @@ public interface Constants {
     public static long GIGA = MEGA * 1000;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PROXY_USER = "ramadda.proxy.user";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PROXY_PASSWORD = "ramadda.proxy.password";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PROXY_HOST = "ramadda.proxy.host";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PROXY_PORT = "ramadda.proxy.port";
 
 
+    /** _more_          */
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
 }
