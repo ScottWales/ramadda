@@ -189,8 +189,10 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         List<String> sortedChillens      = new ArrayList<String>();
         boolean      childrenAggregation = false;
-        List<Entry>  childrenEntries;
+        List<Entry>  childrenEntries =
+                getRepository().getEntryManager().getChildren(request, entry);
 
+        //Check if the user specified any files directly
         if (files.length() > 0) {
             if ( !entry.getUser().getAdmin()) {
                 throw new IllegalArgumentException(
@@ -228,12 +230,9 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 getStorageManager().checkLocalFile(dataFile);
                 Entry dummyEntry = new Entry();
                 dummyEntry.setResource(new Resource(dataFile,
-                        Resource.TYPE_LOCAL_FILE));
+                                                    Resource.TYPE_LOCAL_FILE));
                 childrenEntries.add(dummyEntry);
             }
-        } else {
-            childrenEntries =
-                getRepository().getEntryManager().getChildren(request, entry);
         }
 
 
