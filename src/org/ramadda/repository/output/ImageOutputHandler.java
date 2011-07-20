@@ -351,10 +351,10 @@ public class ImageOutputHandler extends OutputHandler {
 
         sb.append(HtmlUtil.space(2));
         sb.append(HtmlUtil.submitImage(iconUrl(ICON_ANTIROTATE),
-                                       ARG_IMAGE_EDIT_ROTATE_LEFT));
+                                       ARG_IMAGE_EDIT_ROTATE_LEFT, msg("Rotate Left")));
         sb.append(HtmlUtil.space(2));
         sb.append(HtmlUtil.submitImage(iconUrl(ICON_ROTATE),
-                                       ARG_IMAGE_EDIT_ROTATE_RIGHT));
+                                       ARG_IMAGE_EDIT_ROTATE_RIGHT, msg("Rotate Right")));
         File entryDir = getStorageManager().getEntryDir(entry.getId(), false);
         File original = new File(entryDir + "/" + "originalimage");
         if (original.exists()) {
