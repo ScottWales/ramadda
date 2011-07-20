@@ -4,6 +4,7 @@
 
     <target name="init">
         <property file="${basedir}/build.properties"/>
+        <property name="allplugins" value="${dist_dir}/ramadda1.3b-allplugins.zip"/>
         <mkdir dir="${dist_dir}"/>
     </target>
 
@@ -15,6 +16,7 @@
 
     <target name="all" depends="init">
       <antcall target="plugins"/>
+      <copy overwrite="true" file="${allplugins}"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
       <antcall target="ramadda"/>
     </target>
 
@@ -32,7 +34,7 @@
           <zipfileset dir="${dist_dir}/plugins" includes="*"/>
       </zip>
       <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
-      <zip destfile="${dist_dir}/ramadda1.3b-allplugins.zip">
+      <zip destfile="${allplugins}">
           <zipfileset dir="${dist_dir}/plugins" includes="*"/>
       </zip>
    </target>
