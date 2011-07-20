@@ -111,9 +111,24 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT =
         "image.edit.rotate.left";
 
+    public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_X =
+        "image.edit.rotate.left.x";
+
+    public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_Y =
+        "image.edit.rotate.left.y";
+
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT =
         "image.edit.rotate.right";
+
+    /** _more_ */
+    public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT_X =
+        "image.edit.rotate.right.x";
+
+
+    /** _more_ */
+    public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT_Y =
+        "image.edit.rotate.right.y";
 
     /** _more_ */
     public static final OutputType OUTPUT_GALLERY =
@@ -305,6 +320,10 @@ public class ImageOutputHandler extends OutputHandler {
             request.remove(ARG_IMAGE_EDIT_CROP);
             request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT);
             request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT);
+            request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT_X);
+            request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT_X);
+            request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT_Y);
+            request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT_Y);
             request.remove(ARG_IMAGE_UNDO);
             return new Result(request.getUrl());
         }
@@ -433,11 +452,13 @@ public class ImageOutputHandler extends OutputHandler {
                                            new int[] { x1,
                         y1 }, new int[] { x2, y2 });
             }
-        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT)) {
+        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT) ||
+                   request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT_X)) {
             newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
                                            true);
 
-        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT)) {
+        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT) ||
+                   request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT_X)) {
             newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
                                            false);
 
