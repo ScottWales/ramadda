@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository.type;
@@ -23,10 +22,10 @@ package org.ramadda.repository.type;
 
 import org.apache.commons.net.ftp.*;
 
+import org.ramadda.repository.*;
+
 
 import org.w3c.dom.*;
-
-import org.ramadda.repository.*;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
@@ -64,6 +63,9 @@ public class FtpTypeHandler extends GenericTypeHandler {
 
     /** _more_ */
     public static final int COL_MAXSIZE = 4;
+
+    /** _more_          */
+    public static final int COL_PATTERN = 5;
 
 
 
@@ -317,6 +319,29 @@ public class FtpTypeHandler extends GenericTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param ftpClient _more_
+     * @param path _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private static boolean isDir(FTPClient ftpClient, String path)
+            throws Exception {
+        boolean isDir = false;
+        //A hack but assume anything with a "." is not a directory
+        //The problem is how to determine if the path is a directory
+        //If we do changeWorkingDir for every file this becomes very 
+        //expensive
+
+        if (path.indexOf(".") < 0) {
+            isDir = ftpClient.changeWorkingDirectory(path);
+        }
+        return isDir;
+    }
 
 
     /**
@@ -357,6 +382,10 @@ public class FtpTypeHandler extends GenericTypeHandler {
         //        System.err.println ("getFtpClient:" + (t2-t1));
 
         try {
+            String pattern = (String) values[COL_PATTERN];
+            if ((pattern != null) && (pattern.trim().length() == 0)) {
+                pattern = null;
+            }
             boolean isDir = ftpClient.changeWorkingDirectory(path);
             if (isDir) {
                 boolean checkReadme = parentEntry.getDescription().length()
@@ -368,6 +397,9 @@ public class FtpTypeHandler extends GenericTypeHandler {
 
                 for (int i = 0; i < files.length; i++) {
                     String name = files[i].getName().toLowerCase();
+                    if ((pattern != null) && !name.matches(pattern)) {
+                        continue;
+                    }
                     if (checkReadme) {
                         if (name.equals("readme")
                                 || name.equals("readme.txt")) {
@@ -449,7 +481,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
             ftpClient.setFileType(FTP.IMAGE_FILE_TYPE);
             ftpClient.enterLocalPassiveMode();
 
-            boolean isDir = ftpClient.changeWorkingDirectory(file);
+            boolean isDir = isDir(ftpClient, file);
             //            System.err.println("file:" + file + " is dir: " + isDir);
 
             if (isDir) {
@@ -522,7 +554,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
     private Hashtable<String, Hashtable> cache = new Hashtable<String,
                                                      Hashtable>();
 
-    /** _more_          */
+    /** _more_ */
     private int cacheCnt = 0;
 
     /**
@@ -596,7 +628,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
 
         //        xxx
         try {
-            boolean isDir = ftpClient.changeWorkingDirectory(path);
+            boolean isDir = isDir(ftpClient, path);
             if (isDir) {
                 File   tmp    = new File(path);
                 String parent = tmp.getParent().replace("\\", "/");
@@ -725,8 +757,9 @@ public class FtpTypeHandler extends GenericTypeHandler {
             }
             resource.setFileSize(ftpFile.getSize());
         }
-        entry.initEntry(name, "", parent, getUserManager().getLocalFileUser(),
-                        resource, "", dttm, dttm, dttm, dttm, null);
+        entry.initEntry(name, "", parent,
+                        getUserManager().getLocalFileUser(), resource, "",
+                        dttm, dttm, dttm, dttm, null);
 
 
         return entry;

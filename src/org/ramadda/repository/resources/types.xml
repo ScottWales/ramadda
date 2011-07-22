@@ -51,6 +51,7 @@
      <column name="ftpuser" group="FTP Information" type="string"     default="anonymous" label="User Name" columns="20"  showinhtml="false"/>
      <column name="ftppassword" group="FTP Information" type="password"     label="Password"  showinhtml="false"/>
      <column name="maxsize" group="FTP Information" type="double" suffix="(MB)" default="0"   label="Max size to cache" columns="5"  showinhtml="false"/>
+     <column name="pattern" group="FTP Information" type="string" suffix="Only show files that match this pattern"   label="File Pattern" showinhtml="true"/>
  </type>
 
 
