@@ -62,9 +62,9 @@
 <!--
   <type name="level3radar" datatype="radar" description="Level 3 Radar File" handler="org.ramadda.repository.type.Level3RadarTypeHandler">
 	<column name="station" group="Level 3 Things" type="string" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station" 
-                properties="/org/ramadda/repository/resources/level3radar.station.properties"/>
+                properties="/org/ramadda/geodata/data/resources/resources/level3radar.station.properties"/>
 	<column name="product" type="string" group="Level 3 Things"  isindex="true" cansearch="true" canlist="true" searchtype="select" label="Product"  
-                properties="/org/ramadda/repository/resources/level3radar.product.properties"/>
+                properties="/org/ramadda/geodata/data/resources/level3radar.product.properties"/>
   </type>
 
 
