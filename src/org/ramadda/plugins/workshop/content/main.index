@@ -5,4 +5,43 @@ index.html
 >title:Installing RAMADDA
 >>installation/index.html
 >>installation/configuration.html
->harvesters.html
+
+
+>title:Creating and managing content
+>>content/ui.html
+
+
+>title:Working with gridded data
+>>data/loadagrid.html
+>>data/gridservices.html
+>>data/idv.html
+#>>content/editing.html
+
+
+>title:Working with point data
+>>data/pointdata.html
+
+
+>admin/index.html
+>>admin/general.html 
+##note:customization
+>>admin/users.html
+>>admin/access.html
+
+
+>title:More with RAMADDA content
+>>content/localfileview.html
+>>content/harvesters.html
+>>content/gridaggregation.html
+>>content/wiki.html
+>>content/sendai.html
+>>content/images.html
+>>content/latlonimage.html
+>>content/kml.html
+>>content/otherservers.html
+
+
+
+
+
+
