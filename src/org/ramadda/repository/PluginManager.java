@@ -230,6 +230,7 @@ public class PluginManager extends RepositoryManager {
                 continue;
             }
             String pluginFile = plugins[i].toString();
+            //            System.err.println ("plugin:" + pluginFile);
             if (haveSeen(pluginFile)) {
                 continue;
             }
@@ -247,9 +248,9 @@ public class PluginManager extends RepositoryManager {
      */
     public void loadPropertyFiles() throws Exception {
         for (String f : propertyFiles) {
-            if (haveSeen(f)) {
-                continue;
-            }
+            //            if (haveSeen(f)) {
+            //                continue;
+            //            }
             getRepository().loadProperties(properties, f);
         }
     }
