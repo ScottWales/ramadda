@@ -950,6 +950,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getStorageManager().getLogDir();
 
         //initialize the plugin manager with the properties
+        System.err.println("initing with properties");
         getPluginManager().init(properties);
 
         debug = getProperty(PROP_DEBUG, false);
@@ -1175,7 +1176,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     private void loadPlugins() throws Exception {
-        System.err.println("loadPlugins");
         getPluginManager().loadPlugins();
         clearTemplates();
         loadTypeHandlers();
