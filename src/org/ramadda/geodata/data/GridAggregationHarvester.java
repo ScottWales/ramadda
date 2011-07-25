@@ -158,7 +158,11 @@ public class GridAggregationHarvester extends PatternHarvester {
     public void initEntry(Entry entry) {
         super.initEntry(entry);
         if(entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-        	 entry.setValues(new Object[]{aggregationCoordinate,aggregationType});
+            //We're not using these 3 parameters
+            String fields = "";
+            String files = "";
+            String pattern = "";
+            entry.setValues(new Object[]{aggregationType,aggregationCoordinate, fields, files, pattern});
         	 
         }
     }
