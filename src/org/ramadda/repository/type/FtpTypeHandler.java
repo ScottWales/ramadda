@@ -65,7 +65,12 @@ public class FtpTypeHandler extends GenericTypeHandler {
     public static final int COL_MAXSIZE = 4;
 
     /** _more_          */
-    public static final int COL_PATTERN = 5;
+    public static final int COL_FILE_PATTERN = 5;
+
+    /** _more_          */
+    public static final int COL_DATE_PATTERN = 6;
+
+    public static final int COL_DATE_FORMAT = 7;
 
 
 
@@ -382,7 +387,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
         //        System.err.println ("getFtpClient:" + (t2-t1));
 
         try {
-            String pattern = (String) values[COL_PATTERN];
+            String pattern = (String) values[COL_FILE_PATTERN];
             if ((pattern != null) && (pattern.trim().length() == 0)) {
                 pattern = null;
             }
@@ -740,9 +745,27 @@ public class FtpTypeHandler extends GenericTypeHandler {
             maxSize = ((Double) values[COL_MAXSIZE]).doubleValue();
         }
 
-
-
         long     dttm = ftpFile.getTimestamp().getTime().getTime();
+        /*
+          String datePattern = (String)values[COL_DATE_PATTERN];
+          //TODO cache the compiled patterns
+          if(datePattern!=null && datePattern.length()>0)  {
+              Pattern p = Pattern.compile(datePattern);
+              Matcher m = p.matcher(path);
+              if(m.matches()) {
+                  String dateString = m.group(1);
+                  String dateFormat = (String)values[COL_DATE_FORMAT];
+                  Date date=null;
+                  if(dateFormat!=null && dateFormat.length()==0) {
+                       date = new SimpleDateFormat(dateFormat).parse(dateString);
+                       
+                  } else {
+                       date = DateUtil.parse(dateString);
+                  }
+                  dttm  = date.getTime();
+              }
+          }
+         */
         Resource resource;
         if (isDir) {
             resource = new Resource("ftp://" + server + myFtpFile.path,
