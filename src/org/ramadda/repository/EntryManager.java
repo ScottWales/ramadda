@@ -111,7 +111,7 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     private static final String GROUP_TOP = "Top";
 
-    /** _more_          */
+    /** _more_ */
     private static final String ID_ROOT = "root";
 
     /** _more_ */
@@ -2888,7 +2888,6 @@ public class EntryManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
-     * @param toEntry _more_
      * @param toGroup _more_
      * @param entries _more_
      *
@@ -4541,7 +4540,6 @@ public class EntryManager extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-     * @param justActions _more_
      *
      * @return _more_
      *
@@ -7479,12 +7477,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    /** _more_ */
+    private HashSet missingResources = new HashSet();
+
     /**
      * _more_
      *
      * @param entry _more_
      */
-    public void entryFileIsMissing(Entry entry) {}
+    public void entryFileIsMissing(Entry entry) {
+        String path = entry.getResource().getPath();
+        if ( !missingResources.contains(path)) {
+            missingResources.add(path);
+            logInfo("File for entry: " + entry.getId() + " does not exist:"
+                    + path);
+        }
+    }
 
 
     /**
