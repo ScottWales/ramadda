@@ -1,15 +1,21 @@
 
 
+
 index.html
->overview.html
->title:Installing RAMADDA
+>title:Installing and configuring RAMADDA
 >>installation/index.html
 >>installation/configuration.html
+>>installation/ramaddadir.html
+>>user/index.html
+
+>title:The RAMADDA User Interface
+>>ui/index.html
+>>ui/crud.html
+>>ui/views.html
+>>ui/entries.html
 
 
->title:Creating and managing content
->>content/ui.html
-
+exit
 
 >title:Working with gridded data
 >>data/loadagrid.html
@@ -31,7 +37,14 @@ index.html
 
 >title:More with RAMADDA content
 >>content/localfileview.html
->>content/harvesters.html
+
+
+>title:Harvesters:RAMADDA provides the ability to "harvest" data and content
+>>harvesters/fileharvesters.html
+>>harvesters/urlharvesters.html
+
+
+
 >>content/gridaggregation.html
 >>content/wiki.html
 >>content/sendai.html
