@@ -14,27 +14,41 @@ http://sourceforge.net/projects/ramadda/files/ramadda1.3b/
 
 
 <p>
+
 Steps performed as root:
 
 <ol>
 <li>
-Install Tomcat
+
+If you haven't already then install Tomcat
 <pre>
 yum -y install tomcat6
 </pre>
 
-<li>
-Copy RAMADDA war file to webapps directory:
-<pre>
-cp repository.war /var/lib/tomcat6/webapps
-</pre>
+
+<li> 
+Before we install RAMADDA we need to add a property file to
+the Tomcat <i>conf</i> directory to tell RAMADDA where to
+store data and files. Copy the file:<br>
+<a href="repository.properties">repository.properties</a> 
+<br> to: <br> 
+<i>/usr/share/tomcat6/conf</i>
+
 
 <li>
-Start Tomcat
+Copy the RAMADDA war file to the webapps directory:
+
+<br>
+<i>cp repository.war /usr/share/tomcat6/conf</i>
+<br>
+
+<li>
+And now start Tomcat
 <pre>
 chkconfig tomcat6 on
 service tomcat6 start
 </pre>
+
 </ol>
 
 [ht::foot]

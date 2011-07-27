@@ -4,6 +4,7 @@
 index.html
 >title:Installing and configuring RAMADDA
 >>installation/index.html
+-installation/repository.properties
 >>installation/configuration.html
 >>installation/ramaddadir.html
 >>user/index.html
@@ -11,32 +12,29 @@ index.html
 >title:The RAMADDA User Interface
 >>ui/index.html
 >>ui/crud.html
+>>ui/listing.html
 >>ui/views.html
->>ui/entries.html
+>>ui/metadata.html
+>>ui/search.html
 
 
-exit
+
+
 
 >title:Working with gridded data
 >>data/loadagrid.html
->>data/gridservices.html
+>>data/subsetting.html
 >>data/idv.html
-#>>content/editing.html
+>>data/gridaggregation.html
 
 
->title:Working with point data
->>data/pointdata.html
+#>title:Working with point data
+#>>data/pointdata.html
 
-
->admin/index.html
->>admin/general.html 
-##note:customization
+>title:Repository Administration 
+>>admin/settings.html
 >>admin/users.html
 >>admin/access.html
-
-
->title:More with RAMADDA content
->>content/localfileview.html
 
 
 >title:Harvesters:RAMADDA provides the ability to "harvest" data and content
@@ -44,15 +42,15 @@ exit
 >>harvesters/urlharvesters.html
 
 
+>title:Doing more with RAMADDA
+>>doingmore/localfileview.html
+>>doingmore/wiki.html
+>>doingmore/images.html
+>>doingmore/latlonimage.html
+>>doingmore/kml.html
 
->>content/gridaggregation.html
->>content/wiki.html
->>content/sendai.html
->>content/images.html
->>content/latlonimage.html
->>content/kml.html
->>content/otherservers.html
-
+##>>doingmore/otherservers.html
+##>>doingmore/sendai.html
 
 
 
