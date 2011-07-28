@@ -3423,10 +3423,13 @@ public class EntryManager extends RepositoryManager {
         String description = XmlUtil.getAttribute(node, ATTR_DESCRIPTION,
                                  (String) null);
         if (description == null) {
-            description = XmlUtil.getGrandChildText(node, TAG_DESCRIPTION);
-            if ((description != null)
-                    && XmlUtil.getAttribute(node, "encoded", false)) {
-                description = new String(XmlUtil.decodeBase64(description));
+            Element descriptionNode = XmlUtil.findChild(node,TAG_DESCRIPTION);
+            if(descriptionNode!=null) {
+                description = XmlUtil.getChildText(descriptionNode); 
+                if ((description != null)
+                    && XmlUtil.getAttribute(descriptionNode, "encoded", false)) {
+                    description = new String(XmlUtil.decodeBase64(description));
+                }
             }
         }
         if (description == null) {
