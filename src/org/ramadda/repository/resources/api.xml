@@ -119,6 +119,7 @@
 
   <group handler="admin" needs_ssl="true" admin="true">
       <api request="/admin/sql"          method="adminSql"           />
+      <api request="/admin/plugin/upload"    method="adminPluginUpload"  />
       <api request="/admin/startstop"    method="adminDbStartStop"   requires_auth_token="true"  />
       <api request="/admin/shutdown"     method="adminShutdown"      requires_auth_token="true" />
       <api request="/admin/settings"     method="adminSettings"       name="Admin" toplevel="true"/>

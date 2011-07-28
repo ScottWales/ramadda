@@ -104,7 +104,7 @@ public class Admin extends RepositoryManager {
     public static final String ARG_ADMIN_INSTALLNOTICESHOWN =
         "admin.installnoticeshown";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ADMIN_INSTALLPLUGIN =
         "admin.installplugin";
 
@@ -135,6 +135,12 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     public RequestUrl URL_ADMIN_SETTINGS = new RequestUrl(this,
                                                "/admin/settings", "Settings");
+
+
+    /** _more_ */
+    public RequestUrl URL_ADMIN_PLUGIN_UPLOAD = new RequestUrl(this,
+                                                    "/admin/plugin/upload",
+                                                    "Upload Plugin");
 
     /** _more_ */
     public RequestUrl URL_ADMIN_SETTINGS_DO = new RequestUrl(this,
@@ -697,6 +703,21 @@ public class Admin extends RepositoryManager {
 
         return makeResult(request, "Administration",
                           new StringBuffer("Shutting down"));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result adminPluginUpload(Request request) throws Exception {
+        request.ensureAuthToken();
+        return getRepository().getPluginManager().adminPluginUpload(request);
     }
 
 
@@ -1644,10 +1665,11 @@ public class Admin extends RepositoryManager {
                     StringUtil.join("<br>", counter.getMessages()), false)));
 
 
-        getRepository().getPluginManager().addStatusInfo(statusSB);
         getEntryManager().addStatusInfo(statusSB);
 
         statusSB.append(HtmlUtil.formTableClose());
+
+
 
         StringBuffer outputSB = new StringBuffer();
         outputSB.append(HtmlUtil.formTable());
@@ -1691,7 +1713,12 @@ public class Admin extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtil.makeShowHideBlock(msg("System Status"),
-                                             statusSB.toString(), true));
+                                             statusSB.toString(), false));
+
+        StringBuffer pluginsSB = new StringBuffer();
+        getRepository().getPluginManager().addStatusInfo(request, pluginsSB);
+        sb.append(HtmlUtil.makeShowHideBlock(msg("Plugins"),
+                                             pluginsSB.toString(), false));
 
         sb.append(HtmlUtil.makeShowHideBlock(msg("API"), apiSB.toString(),
                                              false));

@@ -512,6 +512,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ADMIN_WHAT = "what";
 
+    public static final String ARG_PLUGIN_FILE = "plugin.file";
+
     /** _more_ */
     public static final String ARG_ALLENTRIES = "allentries";
 

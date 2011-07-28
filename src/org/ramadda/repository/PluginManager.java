@@ -100,10 +100,10 @@ public class PluginManager extends RepositoryManager {
     private List<MultiJarClassLoader> classLoaders =
         new ArrayList<MultiJarClassLoader>();
 
-    /** _more_          */
+    /** _more_ */
     private MultiJarClassLoader classLoader;
 
-    /** _more_          */
+    /** _more_ */
     private Properties properties;
 
     /** _more_ */
@@ -150,7 +150,7 @@ public class PluginManager extends RepositoryManager {
     private List<ImportHandler> importHandlers =
         new ArrayList<ImportHandler>();
 
-    /** _more_          */
+    /** _more_ */
     private HashSet seenThings = new HashSet();
 
     /**
@@ -380,13 +380,47 @@ public class PluginManager extends RepositoryManager {
     /**
      * _more_
      *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result adminPluginUpload(Request request) throws Exception {
+        String pluginFile = request.getUploadedFile(ARG_PLUGIN_FILE);
+        if ((pluginFile == null) || !new File(pluginFile).exists()) {
+            return getAdmin().makeResult(
+                request, "Administration",
+                new StringBuffer("No plugin file provided"));
+        }
+        getRepository().installPlugin(pluginFile);
+        return getAdmin().makeResult(request, "Administration",
+                                     new StringBuffer("Plugin Installed"));
+    }
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param request _more_
      * @param sb _more_
      */
-    public void addStatusInfo(StringBuffer sb) {
-        sb.append(HtmlUtil.formEntryTop(msgLabel("Plugins"),
-                                        HtmlUtil.makeShowHideBlock("",
-                                            "<table>" + pluginSB.toString()
-                                            + "</table>", false)));
+    public void addStatusInfo(Request request, StringBuffer sb) {
+        StringBuffer formBuffer = new StringBuffer();
+        request.uploadFormPostWithAuthToken(
+            formBuffer, getAdmin().URL_ADMIN_PLUGIN_UPLOAD, "");
+        formBuffer.append(msgLabel("Plugin File"));
+        formBuffer.append(HtmlUtil.fileInput(ARG_PLUGIN_FILE,
+                                             HtmlUtil.SIZE_60));
+        formBuffer.append(HtmlUtil.submit("Upload new plugin file"));
+        formBuffer.append(HtmlUtil.formClose());
+        formBuffer.append(HtmlUtil.br());
+        formBuffer.append(msg("Installed Plugins"));
+        formBuffer.append("<table>");
+        formBuffer.append(pluginSB);
+        formBuffer.append("</table>");
+        sb.append(formBuffer);
     }
 
 

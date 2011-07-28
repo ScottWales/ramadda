@@ -475,6 +475,18 @@ public class Request implements Constants {
     }
 
 
+    public void uploadFormPostWithAuthToken(StringBuffer sb, RequestUrl theUrl) {
+        uploadFormPostWithAuthToken(sb, theUrl, null);
+    }
+
+    public void uploadFormPostWithAuthToken(StringBuffer sb, RequestUrl theUrl, String extra) {
+        sb.append(HtmlUtil.uploadForm(url(theUrl), extra));
+        repository.addAuthToken(this, sb);
+    }
+
+
+
+
     /**
      * _more_
      *
