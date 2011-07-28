@@ -20,13 +20,13 @@ index.html
 
 
 
-
 >title:Working with gridded data
 >>data/loadagrid.html
 >>data/subsetting.html
->>data/idv.html
->>data/gridaggregation.html
+#>>data/gridaggregation.html
+#>>data/idv.html
 
+exit
 
 #>title:Working with point data
 #>>data/pointdata.html

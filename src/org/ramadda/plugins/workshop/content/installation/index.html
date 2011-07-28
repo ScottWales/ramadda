@@ -6,11 +6,6 @@ RAMADDA is available at:<br>
 http://www.sourceforge.com/projects/ramadda
 </a>
 
-<p>
-We're going to install the repository.war:<br>
-<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.3b/">
-http://sourceforge.net/projects/ramadda/files/ramadda1.3b/
-</a>
 
 
 <p>
@@ -35,6 +30,13 @@ store data and files. Copy the file:<br>
 <i>/usr/share/tomcat6/conf</i>
 
 
+<li> Download the repository.war file from:<br>
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.3b/">
+http://sourceforge.net/projects/ramadda/files/ramadda1.3b/
+</a>
+
+
+
 <li>
 Copy the RAMADDA war file to the webapps directory:
 
@@ -42,10 +44,12 @@ Copy the RAMADDA war file to the webapps directory:
 <i>cp repository.war /usr/share/tomcat6/conf</i>
 <br>
 
+
 <li>
-And now start Tomcat
+And now restart Tomcat (don't forget that you need to be root to do this).
 <pre>
-chkconfig tomcat6 on
+su
+service tomcat6 stop
 service tomcat6 start
 </pre>
 
