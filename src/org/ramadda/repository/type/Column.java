@@ -1290,7 +1290,12 @@ public class Column implements Constants {
             List enums = typeHandler.getEnumValues(this, entry);
             //TODO: Check for Strings vs TwoFacedObjects
             if(enumValues!=null) {
-                List tmp = new ArrayList(enums);
+                List tmp  = new ArrayList();
+                for(Object o: enums) {
+                    if(!TwoFacedObject.contains(enumValues, o)) {
+                        tmp.add(o);
+                    }
+                }
                 tmp.addAll(enumValues);
                 enums = tmp;
             }
@@ -1298,7 +1303,7 @@ public class Column implements Constants {
                                      enums,
                                      value) + "  or:  "
                                             + HtmlUtil.input(id + "_plus",
-                                                "", HtmlUtil.SIZE_10);
+                                                "", HtmlUtil.SIZE_20);
         } else if (isType(TYPE_INT)) {
             String value = ((dflt != null)
                             ? dflt
