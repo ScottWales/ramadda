@@ -834,7 +834,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean okToShowInForm(Entry entry, String arg, boolean dflt) {
-        String key = "form." + arg + ".show";
+        String key   = "form." + arg + ".show";
         String value = getProperty(entry, key, "" + dflt);
         return value.equals("true");
     }
@@ -1112,11 +1112,12 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param entry _more_
      * @param root _more_
+     * @param extraXml _more_
      * @param metadataType _more_
      */
     public void addMetadataToXml(Entry entry, Element root,
                                  StringBuffer extraXml,
-                                 String metadataType)  {}
+                                 String metadataType) {}
 
     /**
      * _more_
@@ -2159,9 +2160,10 @@ public class TypeHandler extends RepositoryManager {
     public void addSpatialToEntryForm(Request request, StringBuffer sb,
                                       Entry entry)
             throws Exception {
+
         MapOutputHandler mapOutputHandler =
             (MapOutputHandler) getRepository().getOutputHandler(
-                                                                MapOutputHandler.OUTPUT_MAP.getId());
+                MapOutputHandler.OUTPUT_MAP.getId());
         if (okToShowInForm(entry, ARG_LOCATION, false)) {
             String lat = "";
             String lon = "";
@@ -2180,11 +2182,12 @@ public class TypeHandler extends RepositoryManager {
                 + HtmlUtil.input(ARG_LOCATION_LONGITUDE, lon,
                                  HtmlUtil.SIZE_6);
 
-            String[] nwse = new String[]{lat,lon};
+            String[] nwse = new String[] { lat, lon };
             //            sb.append(formEntry(request, msgLabel("Location"),  locationWidget));
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
-            String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse, "", "");
+            String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
+                                     "", "");
             sb.append(formEntry(request, msgLabel("Location"), mapSelector));
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
@@ -2211,12 +2214,12 @@ public class TypeHandler extends RepositoryManager {
             }
             String extraMapStuff = "";
             if ((entry != null) && entry.isGroup()) {
-                if(okToShowInForm(entry, "setbounds")) {
-                    extraMapStuff =
-                        HtmlUtil.br()
-                        + HtmlUtil.checkbox(ARG_SETBOUNDSFROMCHILDREN, "true",
-                                            false) + " "
-                        + msg("Set bounds from children");
+                if (okToShowInForm(entry, "setbounds")) {
+                    extraMapStuff = HtmlUtil.br()
+                                    + HtmlUtil.checkbox(
+                                        ARG_SETBOUNDSFROMCHILDREN, "true",
+                                        false) + " "
+                                            + msg("Set bounds from children");
                 }
             }
 
@@ -2257,6 +2260,7 @@ public class TypeHandler extends RepositoryManager {
                                             HtmlUtil.SIZE_10) + " "
                                                 + msg("meters")));
         }
+
 
 
     }
@@ -2413,8 +2417,9 @@ public class TypeHandler extends RepositoryManager {
         boolean showResourceForm = okToShowInForm(entry, ARG_RESOURCE);
 
         if (showResourceForm) {
-            boolean showDownload = showFile && okToShowInForm(entry,
-                                                              ARG_RESOURCE_DOWNLOAD);
+            boolean showDownload = showFile
+                                   && okToShowInForm(entry,
+                                       ARG_RESOURCE_DOWNLOAD);
             List<String> tabTitles  = new ArrayList<String>();
             List<String> tabContent = new ArrayList<String>();
             String       urlLabel   = getFormLabel(entry, ARG_URL, "URL");
@@ -2426,7 +2431,7 @@ public class TypeHandler extends RepositoryManager {
             }
             if (showUrl) {
                 String url = "";
-                if(entry!=null && entry.getResource().isUrl()) {
+                if ((entry != null) && entry.getResource().isUrl()) {
                     url = entry.getResource().getPath();
                 }
                 String download = !showDownload
@@ -2444,7 +2449,7 @@ public class TypeHandler extends RepositoryManager {
 
             if (showLocalFile) {
                 String formContent = HtmlUtil.input(ARG_LOCALFILE, "", size);
-                tabTitles.add(msg("Local File"));
+                tabTitles.add(msg("File on Server"));
                 tabContent.add(HtmlUtil.inset(formContent, 8));
             }
 
@@ -2507,22 +2512,21 @@ public class TypeHandler extends RepositoryManager {
                                             entry.getResource().getPath()));
                     } else {
                         sb.append(
-                                  formEntry(
-                                            request, msgLabel("Resource"),
-                                            getStorageManager().getFileTail(entry)));
+                            formEntry(
+                                request, msgLabel("Resource"),
+                                getStorageManager().getFileTail(entry)));
                     }
                 }
                 if (showFile) {
                     if (tabTitles.size() > 1) {
-                        if(showFile) {
+                        if (showFile) {
                             sb.append(formEntry(request, "",
-                                                msg("Upload new resource")));
-                            sb.append(
-                                      formEntryTop(
-                                                   request, msgLabel("Resource"),
-                                                   OutputHandler.makeTabs(
-                                                                          tabTitles, tabContent, true, "tab_content",
-                                                                          "tab_contents_noborder") + extra));
+                                    msg("Upload new resource")));
+                            sb.append(formEntryTop(request,
+                                    msgLabel("Resource"),
+                                    OutputHandler.makeTabs(tabTitles,
+                                        tabContent, true, "tab_content",
+                                        "tab_contents_noborder") + extra));
                         }
                     } else if (tabTitles.size() == 1) {
                         sb.append(formEntry(request, "",
@@ -2552,7 +2556,7 @@ public class TypeHandler extends RepositoryManager {
 
 
             if ( !hasDefaultDataType()
-                 && okToShowInForm(entry, ARG_DATATYPE, false)) {
+                    && okToShowInForm(entry, ARG_DATATYPE, false)) {
                 String selected = "";
                 if (entry != null) {
                     selected = entry.getDataType();
