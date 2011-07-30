@@ -39,6 +39,7 @@ import ucar.unidata.xml.XmlUtil;
 
 
 import java.io.*;
+import javax.servlet.http.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -158,7 +159,6 @@ public class ZipFileOutputHandler extends OutputHandler {
                                   entry.getResource().getPath());
         ZipInputStream zin = new ZipInputStream(fis);
         try {
-
             ZipEntry ze = null;
             sb.append("<ul>");
             String fileToFetch = request.getString(ARG_FILE, null);
@@ -168,9 +168,20 @@ public class ZipFileOutputHandler extends OutputHandler {
                 }
                 String path = ze.getName();
                 if ((fileToFetch != null) && path.equals(fileToFetch)) {
+                    HttpServletResponse response = request.getHttpServletResponse();
                     String type = getRepository().getMimeTypeFromSuffix(
                                       IOUtil.getFileExtension(path));
-                    return new Result("", zin, type);
+                    response.setContentType(type);
+                    OutputStream output = response.getOutputStream();
+                    try {
+                        IOUtil.writeTo(zin,
+                                       output);
+                    } finally {
+                        IOUtil.close(output);
+                        IOUtil.close(zin);
+                    }
+                    return Result.makeNoOpResult();
+                    //                    return new Result("", zin, type);
                 }
                 //            if(path.endsWith("MANIFEST.MF")) continue;
                 sb.append("<li>");

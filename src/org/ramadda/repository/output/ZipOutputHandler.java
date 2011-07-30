@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository.output;
@@ -23,12 +22,12 @@ package org.ramadda.repository.output;
 
 import org.apache.log4j.Logger;
 
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+
 
 
 import org.w3c.dom.*;
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -351,7 +350,7 @@ public class ZipOutputHandler extends OutputHandler {
                 getMimeType(OUTPUT_ZIP));
 
         }
-        getLogManager().logInfo("Zip File ended");  
+        getLogManager().logInfo("Zip File ended");
         return result;
     }
 
@@ -380,6 +379,7 @@ public class ZipOutputHandler extends OutputHandler {
                               long sizeSoFar, int[] counter,
                               boolean forExport, Element entriesRoot)
             throws Exception {
+
         long      sizeProcessed = 0;
         Hashtable seen          = new Hashtable();
         long      sizeLimit;
@@ -409,8 +409,8 @@ public class ZipOutputHandler extends OutputHandler {
             if (forExport && (entriesRoot != null)) {
                 entryNode =
                     getRepository().getXmlOutputHandler().getEntryTag(null,
-                                                                      entry, zos, entriesRoot.getOwnerDocument(), entriesRoot,
-                        true, level != 0);
+                        entry, zos, entriesRoot.getOwnerDocument(),
+                        entriesRoot, true, level != 0);
             }
 
             if (entry.isGroup() && recurse) {
@@ -428,7 +428,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
 
-            getLogManager().logInfo("Zip generated size ="+sizeProcessed); 
+            getLogManager().logInfo("Zip generated size =" + sizeProcessed);
             if ( !getAccessManager().canDownload(request, entry)) {
                 continue;
             }
@@ -480,6 +480,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
         }
         return sizeProcessed;
+
     }
 
 }
