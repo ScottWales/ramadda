@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,30 +14,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.JpegMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
 
-import ucar.unidata.geoloc.Bearing;
-import ucar.unidata.geoloc.LatLonPointImpl;
+
+import org.w3c.dom.*;
 
 import ucar.unidata.data.gis.KmlUtil;
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.Metadata;
-import org.ramadda.repository.metadata.JpegMetadataHandler;
-import org.ramadda.repository.auth.*;
-
-import java.awt.Color;
+import ucar.unidata.geoloc.Bearing;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
+
+import java.awt.Color;
 
 
 import java.io.*;
@@ -65,7 +65,8 @@ import java.util.Properties;
 public class KmlOutputHandler extends OutputHandler {
 
     /** _more_ */
-    public static final String KML_ATTRS =  "  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
+    public static final String KML_ATTRS =
+        "  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
 
     /** _more_ */
     public static final OutputType OUTPUT_KML =
@@ -103,8 +104,10 @@ public class KmlOutputHandler extends OutputHandler {
             throws Exception {
         if (state.getEntry() != null) {
             if ( !state.getEntry().isGroup()) {
-                if (true) {
-                    return;
+                if ( !isLatLonImage(state.getEntry())) {
+                    if (true) {
+                        return;
+                    }
                 }
             }
             links.add(
@@ -127,6 +130,27 @@ public class KmlOutputHandler extends OutputHandler {
         return repository.getMimeTypeFromSuffix(".kml");
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param outputType _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result outputEntry(Request request, OutputType outputType,
+                              Entry entry)
+            throws Exception {
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+        return outputGroup(request, outputType, entry,
+                           new ArrayList<Entry>(), entries);
+
+    }
 
     /**
      * _more_
@@ -209,34 +233,40 @@ public class KmlOutputHandler extends OutputHandler {
                 url = getRepository().absoluteUrl(url);
                 KmlUtil.groundOverlay(folder, entry.getName(),
                                       entry.getDescription(), url,
-                                      entry.getNorth(), entry.getSouth(),
-                                      entry.getEast(), entry.getWest());
+                                      getLocation(entry.getNorth(), 90),
+                                      getLocation(entry.getSouth(), -90),
+                                      getLocation(entry.getEast(), 180),
+                                      getLocation(entry.getWest(), -180));
                 continue;
             }
 
-            List<Service> services = entry.getTypeHandler().getServices( request,  entry);
-            for(Service service: services) {
-                if(service.isType(Service.TYPE_KML)) {
-                    KmlUtil.networkLink(folder, service.getName(), service.getUrl());
+            List<Service> services =
+                entry.getTypeHandler().getServices(request, entry);
+            for (Service service : services) {
+                if (service.isType(Service.TYPE_KML)) {
+                    KmlUtil.networkLink(folder, service.getName(),
+                                        service.getUrl());
                 }
             }
 
             String resource = entry.getResource().getPath();
-            if (resource != null &&  
-                (IOUtil.hasSuffix(resource, "kml") || IOUtil.hasSuffix(resource, "kmz"))) {
+            if ((resource != null)
+                    && (IOUtil.hasSuffix(resource, "kml")
+                        || IOUtil.hasSuffix(resource, "kmz"))) {
                 String url;
                 if (entry.getResource().isFile()) {
                     String fileTail = getStorageManager().getFileTail(entry);
-                    url = HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET)
-                                       + "/" + fileTail, ARG_ENTRYID,
-                                       entry.getId());
+                    url = HtmlUtil.url(
+                        request.url(getRepository().URL_ENTRY_GET) + "/"
+                        + fileTail, ARG_ENTRYID, entry.getId());
                     url = getRepository().absoluteUrl(url);
                 } else if (entry.getResource().isUrl()) {
                     url = resource;
                 } else {
                     continue;
                 }
-                Element link = KmlUtil.networkLink(folder, entry.getName(), url);
+                Element link = KmlUtil.networkLink(folder, entry.getName(),
+                                   url);
 
                 if (entry.getDescription().length() > 0) {
                     KmlUtil.description(link, entry.getDescription());
@@ -245,43 +275,59 @@ public class KmlOutputHandler extends OutputHandler {
                 KmlUtil.open(link, false);
                 link.setAttribute(KmlUtil.ATTR_ID, entry.getId());
             } else if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                double []lonlat;
-                if(entry.hasAreaDefined()) {
+                double[] lonlat;
+                if (entry.hasAreaDefined()) {
                     lonlat = entry.getCenter();
                 } else {
                     lonlat = entry.getLocation();
                 }
-                String link =  HtmlUtil.href(
-                                             getRepository().absoluteUrl(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry)),
-                                             entry.getName());
-                String desc =  link + entry.getDescription();
-                boolean isImage  =  entry.getResource().isImage();
+                String link = HtmlUtil.href(
+                                  getRepository().absoluteUrl(
+                                      request.entryUrl(
+                                          getRepository().URL_ENTRY_SHOW,
+                                          entry)), entry.getName());
+                String  desc    = link + entry.getDescription();
+                boolean isImage = entry.getResource().isImage();
                 if (isImage) {
-                    String thumbUrl = getRepository().absoluteUrl(HtmlUtil.url(
-                                      request.url(repository.URL_ENTRY_GET)
-                                      + "/"
-                                      + getStorageManager().getFileTail(
-                                          entry), ARG_ENTRYID, entry.getId(),
-                                      ARG_IMAGEWIDTH, "500"));
-                    desc = desc +"<br>" + HtmlUtil.img(thumbUrl,"","");
+                    String thumbUrl =
+                        getRepository().absoluteUrl(
+                            HtmlUtil.url(
+                                request.url(repository.URL_ENTRY_GET) + "/"
+                                + getStorageManager().getFileTail(
+                                    entry), ARG_ENTRYID, entry.getId(),
+                                            ARG_IMAGEWIDTH, "500"));
+                    desc = desc + "<br>" + HtmlUtil.img(thumbUrl, "", "");
                 }
-                Element placemark = KmlUtil.placemark(folder, entry.getName(),
-                                                      desc,
-                                                      lonlat[0], lonlat[1], entry.hasAltitudeTop()?entry.getAltitudeTop():(entry.hasAltitudeBottom()?entry.getAltitudeBottom():0),null);
-                
+                Element placemark = KmlUtil.placemark(folder,
+                                        entry.getName(), desc, lonlat[0],
+                                        lonlat[1], entry.hasAltitudeTop()
+                        ? entry.getAltitudeTop()
+                        : (entry.hasAltitudeBottom()
+                           ? entry.getAltitudeBottom()
+                           : 0), null);
+
                 KmlUtil.visible(placemark, true);
 
                 if (isImage) {
-                    List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
-                    for(Metadata metadata: metadataList) {
-                        if(metadata.getType().equals(JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
-                            double dir = Double.parseDouble(metadata.getAttr1());
-                            LatLonPointImpl fromPt = new LatLonPointImpl(lonlat[0],lonlat[1]);
-                            LatLonPointImpl pt = Bearing.findPoint(fromPt,dir,0.25,null);
-                            Element bearingPlacemark = KmlUtil.placemark(folder, "Bearing",null,
-                                                                         new float[][] {{(float)fromPt.getLatitude(),(float)pt.getLatitude()},
-                                                                                        { (float)fromPt.getLongitude(), (float)pt.getLongitude()}},
-                                                                         Color.red,2);
+                    List<Metadata> metadataList =
+                        getMetadataManager().getMetadata(entry);
+                    for (Metadata metadata : metadataList) {
+                        if (metadata.getType().equals(
+                                JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
+                            double dir =
+                                Double.parseDouble(metadata.getAttr1());
+                            LatLonPointImpl fromPt =
+                                new LatLonPointImpl(lonlat[0], lonlat[1]);
+                            LatLonPointImpl pt = Bearing.findPoint(fromPt,
+                                                     dir, 0.25, null);
+                            Element bearingPlacemark =
+                                KmlUtil.placemark(folder, "Bearing", null,
+                                    new float[][] {
+                                { (float) fromPt.getLatitude(),
+                                  (float) pt.getLatitude() },
+                                { (float) fromPt.getLongitude(),
+                                  (float) pt.getLongitude() }
+                            }, Color.red, 2);
                             KmlUtil.visible(bearingPlacemark, false);
                             break;
                         }
@@ -300,6 +346,29 @@ public class KmlOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param l _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static double getLocation(double l, double dflt) {
+        if ((l == l) && (l != Entry.NONGEO)) {
+            return l;
+        }
+        return dflt;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public static boolean isLatLonImage(Entry entry) {
         return entry.getType().equals("latlonimage")
                && entry.getResource().isImage();
