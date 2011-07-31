@@ -273,10 +273,11 @@ public class WmsImageOutputHandler extends OutputHandler {
             layer = layer.replace("${name}", layerEntry.getId());
             layer = layer.replace("${title}",
                                   XmlUtil.encodeString(layerEntry.getName()));
-            layer = layer.replaceAll("%north%", layerEntry.getNorth() + "");
-            layer = layer.replaceAll("%south%", layerEntry.getSouth() + "");
-            layer = layer.replaceAll("%east%", layerEntry.getEast() + "");
-            layer = layer.replaceAll("%west%", layerEntry.getWest() + "");
+            
+            layer = layer.replaceAll("%north%", KmlOutputHandler.getLocation(layerEntry.getNorth(),90) + "");
+            layer = layer.replaceAll("%south%", KmlOutputHandler.getLocation(layerEntry.getSouth(),-90) + "");
+            layer = layer.replaceAll("%east%", KmlOutputHandler.getLocation(layerEntry.getEast(),180) + "");
+            layer = layer.replaceAll("%west%", KmlOutputHandler.getLocation(layerEntry.getWest(),-180) + "");
             layers.append(layer);
             layers.append("\n");
         }
