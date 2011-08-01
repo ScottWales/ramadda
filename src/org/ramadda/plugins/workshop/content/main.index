@@ -1,13 +1,13 @@
 
-
-
 index.html
 >title:Installing and configuring RAMADDA
+
 >>installation/index.html
 -installation/repository.properties
 >>installation/configuration.html
 >>installation/ramaddadir.html
 >>user/index.html
+
 
 >title:The RAMADDA User Interface
 >>ui/index.html
