@@ -16,6 +16,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
  */
+
 package org.ramadda.util;
 
 
@@ -102,13 +103,31 @@ public class MultiJarClassLoader extends ClassLoader {
      *
      *
      * @param jarFilePath Where the jar file is
-     * @param parent  parent
      *
      * @throws IOException On badness
      */
     public void addJar(String jarFilePath) throws IOException {
         JarFile jarFile = new JarFile(jarFilePath);
-        jarFiles.add(jarFile);
+        //Check if we have already loaded this jar file
+        //If so then close the old one and put the new one in the list
+        boolean replacedJarFile = false;
+        //        System.err.println ("add jar:" + jarFilePath);
+        for (int i = 0; i < jarFiles.size(); i++) {
+            JarFile oldJarFile = jarFiles.get(i);
+            if (Misc.equals(jarFilePath, oldJarFile.getName())) {
+                //                System.err.println ("\tOLD JAR");
+                oldJarFile.close();
+                jarFiles.set(i, jarFile);
+                replacedJarFile = true;
+                break;
+            }
+        }
+
+        if ( !replacedJarFile) {
+            //            System.err.println("\tNEW JAR");
+            jarFiles.add(jarFile);
+        }
+
         List entries = Misc.toList(jarFile.entries());
         //First load in the class files
         for (int i = 0; i < entries.size(); i++) {
@@ -189,14 +208,14 @@ public class MultiJarClassLoader extends ClassLoader {
      *
      *
      * @version        $version$, Sat, Feb 12, '11
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class MyJarEntry {
 
-        /** _more_          */
+        /** _more_ */
         JarFile jarFile;
 
-        /** _more_          */
+        /** _more_ */
         JarEntry jarEntry;
 
         /**
