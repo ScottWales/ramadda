@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.data;
@@ -52,12 +51,16 @@ import org.jfree.ui.*;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.TypeHandler;
+
+
+
+import org.ramadda.util.TempDir;
 
 import org.w3c.dom.*;
 
@@ -124,10 +127,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.ui.ImageUtils;
 
-
-
-import org.ramadda.util.TempDir;
-
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
 
@@ -187,6 +186,13 @@ public class DataOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String FORMAT_KML = "kml";
 
+    /** _more_ */
+    public static final String SUFFIX_NCML = ".ncml";
+
+    /** _more_ */
+    public static final String SUFFIX_CTL = ".ctl";
+
+    /** _more_ */
     public static final String ARG_POINT_BBOX = "bbox";
 
     /** _more_ */
@@ -226,7 +232,8 @@ public class DataOutputHandler extends OutputHandler {
     private static final String FORMAT_TIMESERIES_CHART = "timeserieschart";
 
     /** chart format */
-    private static final String FORMAT_TIMESERIES_CHART_DATA = "timeserieschartdata";
+    private static final String FORMAT_TIMESERIES_CHART_DATA =
+        "timeserieschartdata";
 
     /** chart image format */
     private static final String FORMAT_TIMESERIES_IMAGE = "timeseriesimage";
@@ -447,6 +454,7 @@ public class DataOutputHandler extends OutputHandler {
         }
     };
 
+    /** _more_ */
     private boolean doGridPool = true;
 
     /** grid pool */
@@ -493,11 +501,18 @@ public class DataOutputHandler extends OutputHandler {
     };
 
 
-    private  GridDataset createGrid(String path) {
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     */
+    private GridDataset createGrid(String path) {
         try {
             getStorageManager().dirTouched(nj22Dir, null);
             //            gridOpenCounter.incr();
-            
+
             GridDataset gds = GridDataset.open(path);
             if (gds.getGrids().iterator().hasNext()) {
                 return gds;
@@ -621,8 +636,7 @@ public class DataOutputHandler extends OutputHandler {
         super(repository, element);
 
         //TODO: what other global configuration should be done?
-        nj22Dir =
-            getRepository().getStorageManager().makeTempDir("nj22");
+        nj22Dir = getRepository().getStorageManager().makeTempDir("nj22");
         nj22Dir.setMaxFiles(500);
 
         // Apply settings for the NetcdfDataset
@@ -640,8 +654,8 @@ public class DataOutputHandler extends OutputHandler {
         //        ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache(true);
         ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache(true);
 
-        dataCacheDir = getRepository().getStorageManager().makeTempDir(
-            "visaddatacache");
+        dataCacheDir =
+            getRepository().getStorageManager().makeTempDir("visaddatacache");
         dataCacheDir.setMaxFiles(2000);
 
         NetcdfDataset.disableNetcdfFileCache();
@@ -1037,10 +1051,10 @@ public class DataOutputHandler extends OutputHandler {
     /** _more_ */
     private HashSet<String> suffixSet;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, List<Pattern>> patterns;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, List<Pattern>> notPatterns;
 
 
@@ -1216,10 +1230,10 @@ public class DataOutputHandler extends OutputHandler {
                 ok = false;
             } else {
                 try {
-                    if(doGridPool) {
+                    if (doGridPool) {
                         ok = gridPool.containsOrCreate(getPath(entry));
                     } else {
-                        ok = (createGrid(getPath(entry))!=null);
+                        ok = (createGrid(getPath(entry)) != null);
                     }
                 } catch (Exception ignoreThis) {}
             }
@@ -1302,7 +1316,7 @@ public class DataOutputHandler extends OutputHandler {
 
         sb.append(HtmlUtil.href(HtmlUtil.url(getRepository().URL_ENTRY_SHOW
                                              + "/" + tail
-                                             + ".ncml", new String[] {
+                                             + SUFFIX_NCML, new String[] {
             ARG_ENTRYID, entry.getId(), ARG_OUTPUT, OUTPUT_CDL.getId(),
             ARG_FORMAT, FORMAT_NCML
         }), "NCML"));
@@ -1368,7 +1382,7 @@ public class DataOutputHandler extends OutputHandler {
                 GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return GridDataset.open(path);
         }
-        if(doGridPool) {
+        if (doGridPool) {
             return gridPool.get(path);
         } else {
             return createGrid(path);
@@ -1382,7 +1396,7 @@ public class DataOutputHandler extends OutputHandler {
      * @param ncd _more_
      */
     public void returnGridDataset(String path, GridDataset ncd) {
-        if(doGridPool) {
+        if (doGridPool) {
             gridPool.put(path, ncd);
         }
     }
@@ -1524,7 +1538,7 @@ public class DataOutputHandler extends OutputHandler {
             } else if (qp.acceptType.equals(QueryParams.XML)) {
                 suffix = ".xml";
             }
-        
+
             String baseName = IOUtil.stripExtension(entry.getName());
             if (format.equals(FORMAT_TIMESERIES_CHART)) {
                 StringBuffer buf = new StringBuffer();
@@ -1585,7 +1599,7 @@ public class DataOutputHandler extends OutputHandler {
                 return getEntryManager().processEntryPublish(request, f,
                         (Entry) entry.clone(), entry, "point series of");
             }
-            Result result   = null;
+            Result result = null;
             if (format.equals(FORMAT_TIMESERIES_IMAGE)) {
                 result = outputTimeSeriesImage(request, entry, f);
             } else {
@@ -1651,8 +1665,10 @@ public class DataOutputHandler extends OutputHandler {
             lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
             lon = Misc.format(llr.getCenterLon());
         }
-        MapInfo map = getRepository().getMapManager().createMap(request,  true);
-        String llb =  map.makeSelector(ARG_LOCATION, true, new String[] { lat, lon });
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          true);
+        String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,
+                lon });
         sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
 
         if ((dates != null) && (dates.size() > 0)) {
@@ -1826,15 +1842,15 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputGridAsPoint(Request request, Entry entry)
             throws Exception {
-        String format  = request.getString(ARG_FORMAT, QueryParams.NETCDF);
+        String format   = request.getString(ARG_FORMAT, QueryParams.NETCDF);
         String baseName = IOUtil.stripExtension(entry.getName());
         if (format.equals(FORMAT_TIMESERIES)) {
             request.put(ARG_FORMAT, FORMAT_TIMESERIES_IMAGE);
-            String redirectUrl = request.getRequestPath() + "/"
-                                 + baseName + ".png" + "?"
-                                 + request.getUrlArgs();
-            return new Result("Point As Grid Time Series Image", 
-            		new StringBuffer(HtmlUtil.img(redirectUrl, "Image is being processed...")));
+            String redirectUrl = request.getRequestPath() + "/" + baseName
+                                 + ".png" + "?" + request.getUrlArgs();
+            return new Result("Point As Grid Time Series Image",
+                              new StringBuffer(HtmlUtil.img(redirectUrl,
+                                  "Image is being processed...")));
         }
         StringBuffer sb     = new StringBuffer();
         String       path   = getPath(request, entry);
@@ -1975,15 +1991,15 @@ public class DataOutputHandler extends OutputHandler {
         Date[]       dateRange = null;
         List<Date>   dates     = getGridDates(dataset);
         StringBuffer varSB     = getVariableForm(dataset, false);
-        LatLonRect llr = dataset.getBoundingBox();
+        LatLonRect   llr       = dataset.getBoundingBox();
         if (llr != null) {
-            MapInfo map = getRepository().getMapManager().createMap(request,  true);
-            map.addBox("", llr,  new MapProperties("blue", false));
-            String llb =  map.makeSelector(ARG_AREA, true, 
-                                                 new String[]{"" + llr.getLatMax(),
-                                                              "" + llr.getLonMin(),
-                                                              "" + llr.getLatMin(),
-                                                              "" + llr.getLonMax(),});
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              true);
+            map.addBox("", llr, new MapProperties("blue", false));
+            String llb = map.makeSelector(ARG_AREA, true,
+                                          new String[] { "" + llr.getLatMax(),
+                    "" + llr.getLonMin(), "" + llr.getLatMin(),
+                    "" + llr.getLonMax(), });
             sb.append(
                 HtmlUtil.formEntryTop(
                     msgLabel("Subset Spatially"),
@@ -2097,14 +2113,15 @@ public class DataOutputHandler extends OutputHandler {
             throws Exception {
 
 
-        MapInfo map = getRepository().getMapManager().createMap(request,  false);
-        String              path       = getPath(request, entry);
-        FeatureDatasetPoint pod        = pointPool.get(path);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          false);
+        String               path           = getPath(request, entry);
+        FeatureDatasetPoint  pod            = pointPool.get(path);
 
-        StringBuffer        sb         = new StringBuffer();
-        List                vars       = pod.getDataVariables();
-        int                 skip       = request.get(ARG_SKIP, 0);
-        int                 max        = request.get(ARG_MAX, 200);
+        StringBuffer         sb             = new StringBuffer();
+        List                 vars           = pod.getDataVariables();
+        int                  skip           = request.get(ARG_SKIP, 0);
+        int                  max            = request.get(ARG_MAX, 200);
 
         int                  cnt            = 0;
         int                  total          = 0;
@@ -2137,7 +2154,7 @@ public class DataOutputHandler extends OutputHandler {
             cnt++;
             List          columnData = new ArrayList();
             StructureData structure  = po.getData();
-            StringBuffer info = new StringBuffer("");
+            StringBuffer  info       = new StringBuffer("");
             info.append("<b>Date:</b> " + po.getNominalTimeAsDate() + "<br>");
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
                 //{name:\"Ashley\",breed:\"German Shepherd\",age:12}
@@ -2161,13 +2178,15 @@ public class DataOutputHandler extends OutputHandler {
             }
             columnDataList.add("{" + StringUtil.join(",", columnData)
                                + "}\n");
-            map.addMarker("", new LatLonPointImpl(el.getLatitude(), el.getLongitude()), icon, info.toString());
+            map.addMarker("",
+                          new LatLonPointImpl(el.getLatitude(),
+                              el.getLongitude()), icon, info.toString());
         }
 
 
 
-        List         columnDefs  = new ArrayList();
-        List         columnNames = new ArrayList();
+        List columnDefs  = new ArrayList();
+        List columnNames = new ArrayList();
         for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
             columnNames.add(HtmlUtil.quote(var.getShortName()));
             String label = var.getDescription();
@@ -2298,28 +2317,32 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputTrajectoryMap(Request request, Entry entry)
             throws Exception {
-        String               path         = getPath(request, entry);
-        TrajectoryObsDataset tod          = trajectoryPool.get(path);
-        StringBuffer         sb           = new StringBuffer();
+        String               path = getPath(request, entry);
+        TrajectoryObsDataset tod  = trajectoryPool.get(path);
+        StringBuffer         sb   = new StringBuffer();
 
-        MapInfo map = getRepository().getMapManager().createMap(request, 800, 600, false);
-        List                 trajectories = tod.getTrajectories();
+        MapInfo map = getRepository().getMapManager().createMap(request, 800,
+                          600, false);
+        List trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
         for (int i = 0; i < trajectories.size(); i++) {
             List allVariables = tod.getDataVariables();
             TrajectoryObsDatatype todt =
                 (TrajectoryObsDatatype) trajectories.get(i);
-            float[]      lats     = toFloatArray(todt.getLatitude(null));
-            float[]      lons     = toFloatArray(todt.getLongitude(null));
+            float[] lats = toFloatArray(todt.getLatitude(null));
+            float[] lons = toFloatArray(todt.getLongitude(null));
             for (int ptIdx = 0; ptIdx < lats.length; ptIdx++) {
                 if (ptIdx > 0) {
                     if (ptIdx == lats.length - 1) {
-                        map.addMarker("", lats[ptIdx], lons[ptIdx], null, "End time:" + todt.getEndDate()); 
+                        map.addMarker("", lats[ptIdx], lons[ptIdx], null,
+                                      "End time:" + todt.getEndDate());
                     }
                     //#FF0000
-                    map.addLine("", lats[ptIdx-1], lons[ptIdx-1],lats[ptIdx], lons[ptIdx]);
+                    map.addLine("", lats[ptIdx - 1], lons[ptIdx - 1],
+                                lats[ptIdx], lons[ptIdx]);
                 } else {
-                    map.addMarker("", lats[ptIdx], lons[ptIdx], null, "Start time:" + todt.getEndDate()); 
+                    map.addMarker("", lats[ptIdx], lons[ptIdx], null,
+                                  "Start time:" + todt.getEndDate());
                 }
 
             }
@@ -2421,13 +2444,23 @@ public class DataOutputHandler extends OutputHandler {
         return "new LatLonPoint(" + lat + "," + lon + ")";
     }
 
-    private  Result makePointSubsetForm(Request request, Entry entry, 
-                                        String suffix) {
-        StringBuffer sb = new StringBuffer();
-        String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param suffix _more_
+     *
+     * @return _more_
+     */
+    private Result makePointSubsetForm(Request request, Entry entry,
+                                       String suffix) {
+        StringBuffer sb      = new StringBuffer();
+        String       formUrl = request.url(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtil.form(formUrl + suffix));
         sb.append(HtmlUtil.submit("Subset Point Data", ARG_SUBMIT));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, request.getString(ARG_OUTPUT,"")));
+        sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+                                  request.getString(ARG_OUTPUT, "")));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.formTable());
         List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
@@ -2438,46 +2471,58 @@ public class DataOutputHandler extends OutputHandler {
                                      HtmlUtil.select(ARG_FORMAT, formats,
                                          format)));
 
-        MapInfo map = getRepository().getMapManager().createMap(request,  true);
-        map.addBox(entry,  new MapProperties("blue", false));
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          true);
+        map.addBox(entry, new MapProperties("blue", false));
         map.centerOn(entry);
-        String llb =  map.makeSelector(ARG_POINT_BBOX, true, null);
+        String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
         sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
 
 
         sb.append(HtmlUtil.formTableClose());
         sb.append(HtmlUtil.submit("Subset Point Data", ARG_SUBMIT));
         sb.append(HtmlUtil.formClose());
-        return new Result("",sb);
+        return new Result("", sb);
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputPointSubset(Request request, Entry entry)
-        throws Exception {
-        if(!request.defined(ARG_FORMAT)) {
+            throws Exception {
+        if ( !request.defined(ARG_FORMAT)) {
             return makePointSubsetForm(request, entry, "");
         }
-        String format = request.getString(ARG_FORMAT,FORMAT_CSV);
+        String format = request.getString(ARG_FORMAT, FORMAT_CSV);
 
-        if(format.equals(FORMAT_CSV)) {
+        if (format.equals(FORMAT_CSV)) {
             request.getHttpServletResponse().setContentType("text/csv");
             request.setReturnFilename(IOUtil.stripExtension(entry.getName())
                                       + ".csv");
         } else {
-            request.getHttpServletResponse().setContentType("application/vnd.google-earth.kml+xml");
+            request.getHttpServletResponse().setContentType(
+                "application/vnd.google-earth.kml+xml");
             request.setReturnFilename(IOUtil.stripExtension(entry.getName())
                                       + ".kml");
         }
 
 
-        OutputStream            os = request.getHttpServletResponse().getOutputStream();
-        PrintWriter pw = new PrintWriter(os);
+        OutputStream os = request.getHttpServletResponse().getOutputStream();
+        PrintWriter  pw = new PrintWriter(os);
 
-        if(format.equals(FORMAT_CSV)) {
+        if (format.equals(FORMAT_CSV)) {
             outputPointCsv(request, entry, pw);
         } else {
-            outputPointKml(request, entry,pw);
+            outputPointKml(request, entry, pw);
         }
 
         pw.close();
@@ -2492,12 +2537,12 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param pw _more_
      *
-     * @return _more_
      *
      * @throws Exception _more_
      */
-    private void  outputPointCsv(Request request, Entry entry, PrintWriter pw)
+    private void outputPointCsv(Request request, Entry entry, PrintWriter pw)
             throws Exception {
         String               path         = getPath(request, entry);
         FeatureDatasetPoint  pod          = pointPool.get(path);
@@ -2565,8 +2610,8 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param pw _more_
      *
-     * @return _more_
      *
      * @throws Exception _more_
      */
@@ -2793,7 +2838,8 @@ public class DataOutputHandler extends OutputHandler {
         //        System.err.println("nd:" + metadataList);
         for (Metadata metadata : metadataList) {
             String fileAttachment = metadata.getAttr1();
-            if (fileAttachment.endsWith(".ncml")) {
+            if (fileAttachment.endsWith(SUFFIX_NCML)
+                    || fileAttachment.endsWith(SUFFIX_CTL)) {
                 File templateNcmlFile =
                     new File(
                         IOUtil.joinDir(
@@ -2807,7 +2853,7 @@ public class DataOutputHandler extends OutputHandler {
                 //Use the last modified time of the ncml file so we pick up any updated file
                 String dttm = templateNcmlFile.lastModified() + "";
                 String fileName = dttm + "_" + entry.getId() + "_"
-                                  + metadata.getId() + ".ncml";
+                                  + metadata.getId() + SUFFIX_NCML;
                 File ncmlFile = getStorageManager().getScratchFile(fileName);
                 IOUtil.writeBytes(ncmlFile, ncml.getBytes());
                 location = ncmlFile.toString();
@@ -2912,18 +2958,17 @@ public class DataOutputHandler extends OutputHandler {
         }
 
         /**
-         * _more_
+         * Make the dataset
          *
-         * @param preq _more_
+         * @param preq preq
          *
-         * @return _more_
+         * @return The dataset
          *
          * @throws DAP2Exception On badness
          * @throws IOException On badness
-         * @throws ParseException On badness
          */
         protected GuardedDataset getDataset(ReqState preq)
-            throws DAP2Exception, IOException/*, ParseException*/ {
+                throws DAP2Exception, IOException /*, ParseException*/ {
             HttpServletRequest request = preq.getRequest();
             String             reqPath = entry.getName();
 
@@ -2994,7 +3039,7 @@ public class DataOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         //sb.append(getHeader(request, entry));
         sb.append(header(msg("Chart")));
-        
+
         TimeSeriesCollection dummy  = new TimeSeriesCollection();
         JFreeChart chart = createChart(request, entry, dummy);
         XYPlot               xyPlot = (XYPlot) chart.getPlot();
@@ -3067,7 +3112,8 @@ public class DataOutputHandler extends OutputHandler {
                 if (series == null) {
                     paramCount++;
                     TimeSeriesCollection dataset = new TimeSeriesCollection();
-                    series = new MyTimeSeries(formatName, FixedMillisecond.class);
+                    series = new MyTimeSeries(formatName,
+                            FixedMillisecond.class);
                     allSeries.add(series);
                     ValueAxis rangeAxis = new NumberAxis(formatName + " "
                                               + formatUnit);
@@ -3143,8 +3189,8 @@ public class DataOutputHandler extends OutputHandler {
      * @return  the parameter name
      */
     public String getParamName(String rawname) {
-    	String name = rawname;
-        int index = rawname.indexOf("[unit=");
+        String name  = rawname;
+        int    index = rawname.indexOf("[unit=");
         if (index >= 0) {
             name = rawname.substring(0, index);
         }
@@ -3235,22 +3281,22 @@ public class DataOutputHandler extends OutputHandler {
      */
     private static JFreeChart createChart(Request request, Entry entry,
                                           XYDataset dataset) {
-        LatLonPointImpl llp = new LatLonPointImpl(
-                request.getLatOrLonValue(ARG_LOCATION + ".latitude", 0),
-                request.getLatOrLonValue(
-                    ARG_LOCATION + ".longitude", 0));
-        String title = entry.getName() + " at " + llp.toString();
+        LatLonPointImpl llp =
+            new LatLonPointImpl(request.getLatOrLonValue(ARG_LOCATION
+                + ".latitude", 0), request.getLatOrLonValue(ARG_LOCATION
+                               + ".longitude", 0));
+        String     title = entry.getName() + " at " + llp.toString();
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
-        		//entry.getName(),  // title
-        	title,    // title
-            "Date",   // x-axis label
-            "",       // y-axis label
-            dataset,  // data
-            true,     // create legend?
-            true,     // generate tooltips?
-            false     // generate URLs?
-                );
+        //entry.getName(),  // title
+        title,    // title
+        "Date",   // x-axis label
+        "",       // y-axis label
+        dataset,  // data
+        true,     // create legend?
+        true,     // generate tooltips?
+        false     // generate URLs?
+            );
 
         chart.setBackgroundPaint(Color.white);
         ValueAxis rangeAxis = new NumberAxis("");
