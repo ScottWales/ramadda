@@ -1148,11 +1148,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param pluginPath _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
-    public void installPlugin(String pluginPath) throws Exception {
+    public boolean installPlugin(String pluginPath) throws Exception {
         try {
-            String tail = IOUtil.getFileTail(pluginPath);
+            //Remove any ..._file_ prefix
+            String tail = RepositoryUtil.getFileTail(pluginPath);
             String newPluginFile =
                 IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
             InputStream      inputStream = IOUtil.getInputStream(pluginPath);
@@ -1161,12 +1164,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
             IOUtil.writeTo(inputStream, fos);
             IOUtil.close(inputStream);
             IOUtil.close(fos);
-            getPluginManager().checkFile(newPluginFile);
+            boolean haveLoadedBefore =
+                getPluginManager().reloadFile(newPluginFile);
             loadPlugins();
+            return haveLoadedBefore;
         } catch (Exception exc) {
             getLogManager().logError("Error installing plugin:" + pluginPath,
                                      exc);
         }
+        return false;
     }
 
 
@@ -2843,8 +2849,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getResult(Request request) throws Exception {
 
-
-
         ApiMethod apiMethod = findApiMethod(request);
 
         if (apiMethod == null) {
@@ -3003,12 +3007,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected Result getHtdocsFile(Request request) throws Exception {
 
         String path = request.getRequestPath();
-
-
         if ( !path.startsWith(getUrlBase())) {
             path = getUrlBase() + path;
         }
 
+        //Some hackery so we can reload applets when developing
         if ((path.indexOf("/graph") >= 0) && path.endsWith(".jar")) {
             path = "/repository/applets/graph.jar";
         }
@@ -3057,10 +3060,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     String js = IOUtil.readInputStream(inputStream);
                     js          = js.replace("${urlroot}", getUrlBase());
                     inputStream = new ByteArrayInputStream(js.getBytes());
-                } else if(path.endsWith(".html")) {
+                } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
-                    return  getEntryManager().addHeaderToAncillaryPage(request,
-                                                                       new Result(BLANK, new StringBuffer(html)));
+                    return getEntryManager().addHeaderToAncillaryPage(
+                        request, new Result(BLANK, new StringBuffer(html)));
                 }
                 Result result = new Result(BLANK, inputStream, type);
                 //                result.setCacheOk(false);
@@ -3078,10 +3081,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String js = IOUtil.readInputStream(inputStream);
                 js          = js.replace("${urlroot}", getUrlBase());
                 inputStream = new ByteArrayInputStream(js.getBytes());
-                } else if(path.endsWith(".html")) {
-                    String html = IOUtil.readInputStream(inputStream);
-                    return  getEntryManager().addHeaderToAncillaryPage(request,
-                                                                       new Result(BLANK, new StringBuffer(html)));
+            } else if (path.endsWith(".html")) {
+                String html = IOUtil.readInputStream(inputStream);
+                return getEntryManager().addHeaderToAncillaryPage(request,
+                        new Result(BLANK, new StringBuffer(html)));
             }
             String mimeType =
                 getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
@@ -3118,6 +3121,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                     msgLabel("Unknown request") + path)));
         result.setResponseCode(Result.RESPONSE_NOTFOUND);
         return result;
+
 
     }
 

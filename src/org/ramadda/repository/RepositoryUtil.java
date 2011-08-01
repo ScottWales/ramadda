@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository;
@@ -93,19 +92,21 @@ public class RepositoryUtil {
 
 
     /**
-     * _more_
+     * This will prune out any leading &lt;unique id&gt;_file_&lt;actual file name&gt;
      *
      * @param fileName _more_
      *
      * @return _more_
      */
     public static String getFileTail(String fileName) {
-        int idx = fileName.indexOf("_file_");
+        int idx = fileName.indexOf(StorageManager.FILE_SEPARATOR);
         if (idx >= 0) {
-            fileName = fileName.substring(idx + "_file_".length());
+            fileName =
+                fileName.substring(idx
+                                   + StorageManager.FILE_SEPARATOR.length());
         } else {
             /*
-               We had this here for files from old versions of RAMADDA where we did not add the _file_ delimiter
+               We had this here for files from old versions of RAMADDA where we did not add the StorageManager.FILE_SEPARATOR delimiter
             */
             int idx1 = fileName.indexOf("-");
             if (idx1 >= 0) {
@@ -203,21 +204,40 @@ public class RepositoryUtil {
         return l;
     }
 
+    /**
+     * _more_
+     *
+     * @param html _more_
+     * @param left _more_
+     *
+     * @return _more_
+     */
     public static String leftIndset(String html, int left) {
-        return inset(html, 0,left,0,0);
+        return inset(html, 0, left, 0, 0);
     }
 
+    /**
+     * _more_
+     *
+     * @param html _more_
+     * @param top _more_
+     * @param left _more_
+     * @param bottom _more_
+     * @param right _more_
+     *
+     * @return _more_
+     */
     public static String inset(String html, int top, int left, int bottom,
                                int right) {
         return HtmlUtil.div(html, HtmlUtil.style(((top == 0)
-                                 ? ""
-                                 : "margin-top:" + top + "px;") + ((left == 0)
                 ? ""
-                                                                   : "margin-left:" + left + "px;") + ((bottom == 0)
+                : "margin-top:" + top + "px;") + ((left == 0)
                 ? ""
-                                                                                                       : "margin-bottom:" + bottom + "px;") + ((right == 0)
+                : "margin-left:" + left + "px;") + ((bottom == 0)
                 ? ""
-                                                                                                                                               : "margin-right:" + top + "px;")));
+                : "margin-bottom:" + bottom + "px;") + ((right == 0)
+                ? ""
+                : "margin-right:" + top + "px;")));
     }
 
 

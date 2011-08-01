@@ -150,7 +150,7 @@ public class PluginManager extends RepositoryManager {
     private List<ImportHandler> importHandlers =
         new ArrayList<ImportHandler>();
 
-    /** _more_ */
+    /** Keeps track of files we've seen */
     private HashSet seenThings = new HashSet();
 
     /**
@@ -353,6 +353,20 @@ public class PluginManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     */
+    protected boolean reloadFile(String file) {
+        boolean contains = seenThings.contains(file);
+        seenThings.remove(file);
+        checkFile(file);
+        return contains;
+    }
+
 
     /**
      * _more_
@@ -393,9 +407,16 @@ public class PluginManager extends RepositoryManager {
                 request, "Administration",
                 new StringBuffer("No plugin file provided"));
         }
-        getRepository().installPlugin(pluginFile);
-        return getAdmin().makeResult(request, "Administration",
-                                     new StringBuffer("Plugin Installed"));
+        if (getRepository().installPlugin(pluginFile)) {
+            return getAdmin().makeResult(
+                request, "Administration",
+                new StringBuffer(
+                    "Plugin has been re-installed.<br><b>Note: Reinstalling a plugin can lead to odd behavior. It is probably best to restart RAMADDA</b>"));
+        } else {
+            return getAdmin().makeResult(
+                request, "Administration",
+                new StringBuffer("Plugin installed"));
+        }
     }
 
 
