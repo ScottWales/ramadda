@@ -27,12 +27,10 @@ index.html
 #>>data/idv.html
 
 
-
+##Don - can you do these two sections?
 >title:Working with point data
 >>data/pointdata.html
 >>data/pointdb.html
-
-
 
 
 >title:Populating your RAMADDA server
