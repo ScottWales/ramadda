@@ -37,8 +37,8 @@ index.html
 >>doingmore/localfileview.html
 >>harvesters/fileharvesters.html
 #>>harvesters/urlharvesters.html
->>doingmore/wiki.html
->>doingmore/images.html
+#>>doingmore/wiki.html
+#>>doingmore/images.html
 
 >title:Repository Administration 
 >>admin/settings.html
