@@ -26,26 +26,28 @@ index.html
 #>>data/gridaggregation.html
 #>>data/idv.html
 
-exit
 
-#>title:Working with point data
-#>>data/pointdata.html
+
+>title:Working with point data
+>>data/pointdata.html
+>>data/pointdb.html
+
+
+
+
+>title:Populating your RAMADDA server
+>>doingmore/localfileview.html
+>>harvesters/fileharvesters.html
+#>>harvesters/urlharvesters.html
+>>doingmore/wiki.html
+>>doingmore/images.html
 
 >title:Repository Administration 
 >>admin/settings.html
 >>admin/users.html
 >>admin/access.html
 
-
->title:Harvesters:RAMADDA provides the ability to "harvest" data and content
->>harvesters/fileharvesters.html
->>harvesters/urlharvesters.html
-
-
->title:Doing more with RAMADDA
->>doingmore/localfileview.html
->>doingmore/wiki.html
->>doingmore/images.html
+exit
 >>doingmore/latlonimage.html
 >>doingmore/kml.html
 

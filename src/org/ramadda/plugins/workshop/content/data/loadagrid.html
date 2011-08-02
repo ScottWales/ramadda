@@ -7,8 +7,8 @@
 <ol>
 <li> Go to the top level Data folder
 <li> Go to [ht::menu File {New File}]
-<li> Select one of the gridded files on your local machine, e.g.,<pre>
-     /data/idv/grids/sample_ruc_grid.nc
+<li> Select the AVN grid on your local machine<pre>
+     /data/idv/grids/sample_avn.nc
 </pre>
 <li> Note there is now a Data menu. Select [ht::menu Data NCDump] to show the 
 NetCDF metadata. 
@@ -18,12 +18,25 @@ View the Map ([ht::menu View  {Coverage Map}]
 </ol>
 
 
-
-
 <li> Load another grid file
 <ol>
 <li> Go back to the Data folder and upload another grid file.
 <li> Open the More... section and select "Add Properties" 
+<li> Upload the file
+</ol>
+
+<li> Now, lets load this data into the IDV.
+<ol>
+<li> Copy this link to the THREDDS catalog into the IDV Catalog Chooser
+in the Data Chooser:
+<pre>
+http://localhost:8080/repository/thredds
+</pre>
+
+<li> Navigate to the Data folder and select one of the grids you just loaded.
+<li> Create some display - lets publish an image and the bundle back to your RAMADDA server
+<li> Go view the published bundle in your browser. Note the Association 
+back to the original data
 </ol>
 
 
