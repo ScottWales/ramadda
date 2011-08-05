@@ -21,11 +21,16 @@ pre {
 RAMADDA has a plugin facility that enables one to add new kinds of entry types, new content views, etc. In the RAMADDA home directory there is a &quot;plugins&quot; sub-directory. When RAMADDA starts up it loads all of the files in the plugins directory. 
 <p>
 There is a listing of available plugins at:
-<a href="http://motherlode.ucar.edu/repository/alias/ramaddaplugins">http://motherlode.ucar.edu/repository/alias/ramaddaplugins</a>. To install a plugin just download the file and copy it to the RAMADDA home directory <i>plugins</i> directory.
+
+<a href="https://sites.google.com/site/ramaddacms/home/plugins">https://sites.google.com/site/ramaddacms/home/plugins</a>. 
+To install a plugin just download the file and copy it to the RAMADDA home directory <i>plugins</i> directory.
+
 
 
 <h3>How plugins work</h3>
-RAMADDA determines what to do with a plugin file by looking at its file name. If the file is a jar file it will crack open the jar file and look at each contained file. It handles the files in the following way:
+RAMADDA determines what to do with a plugin file by looking at its file name. If the file is a .zip file RAMADDA will
+unzip the files in the zip file and load each one as a plugin.
+If the file is a jar file it will crack open the jar file and look at each contained file. It handles the files in the following way:
 <ul>
 <li> <i>.properties</i><br>
 Any &quot;.properties&quot; files are loaded as  system properties.
@@ -40,16 +45,55 @@ Any .class file is loaded via a classloader. Some classes are special:
 
 <li><i>api.xml</i><br>
 If the file ends with &quot;api.xml&quot; then it defines new web application apis. 
+
 <li><i>types.xml</i><br>
 If the file ends with &quot;types.xml&quot; it defines new repository entry types.
+
 <li><i>outputhandlers.xml</i><br>
 If the file ends with &quot;outputhandlers.xml&quot; it defines new output handlers.
+
 <li><i>metadata.xml</i><br>
 If the file ends with &quot;metadata.xml&quot; it defines new metadata types.
+
 <li><i>.py</i><br>
 If the file ends with &quot;.py&quot; then it defines new jython routines that are loaded into any jython interpreter (e.g., used by the repository script entry type).
+
 <li><i>.sql</i><br> 
 If the file ends with &quot;.sql&quot; then the file is evaluated at startup to define new database schemas.
+
+
+<a name="languages"></a>
+<li><i>.pack</i><br> 
+RAMADDA supports multiple language translations.
+<pre>
+ramadda.language.default=
+</pre>
+
+<pre>
+#This is an example language translation file. It is a .properties file. 
+# "#" are comments.
+#
+#RAMADDA looks in the org/ramadda/repository/resources/languages package for
+#any file that ends with ".pack". It then looks in the repository plugins directory
+#for any .pack files. So, rename this file, (e.g., sp.pack) copy it to your plugins and put your 
+#translations in it below. If you see a phrase in RAMADDA that is not getting translated
+#just send a note about it to the developers. 
+#
+#The following 2 lines define the id of the language and its name
+#If the id=default, e.g.:
+#language.id=default
+#Then this language pack will be used as the default translation for the site
+#
+language.id=example
+language.name=Example Language 
+
+#
+#Here is where you do the translation
+#.e.g:
+#Phrase used in RAMADDA=Your translation
+
+
+
 
 </ul>
 

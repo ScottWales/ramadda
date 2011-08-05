@@ -130,7 +130,7 @@ When RAMADDA is serving a file (e.g., someimage.png) it will look in:
 So place any files you want served in that directory.
 <p>
 
-Normally, RAMADDA will cache template in memory so if you are modifying the template
+Normally, RAMADDA will cache templates in memory so if you are modifying the template
 you can't just hit reload in your browser. You would need to restart RAMADDA.
 To get around this you can run set the property:
 <pre>
@@ -144,13 +144,14 @@ This way  you can edit your template, reload the page to see the results, edit a
 Don't forget to unset this property when in production.
 
 <p>
-If you want to specify a template as the default template for the site then set the property:
+You can specify a default template for your site in 2 ways. First, go to the Admin->Users list
+and edit the anonynmous user. Select the desired template from the list.
+You can also specify the default template for the site via a property:
 <pre>
 ramadda.html.template.default=<your template id>
 </pre>
 You can set this in a plugin .properties file or you can specify this property (and other properties as well)
 in the Admin-&gt;Settings-&gt;Site and Contact Information-&gt;Extra Properties field.
-
 </div>
 <p><hr align="center" width="10%"><p></div></div></div>
 
