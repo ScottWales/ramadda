@@ -1137,6 +1137,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     sql.append("int");
                 } else if (type == ColumnInfo.TYPE_DOUBLE) {
                     sql.append("ramadda.double");
+                } else if (type == ColumnInfo.TYPE_BIGINT) {
+                    sql.append("ramadda.bigint");
                 } else if (type == ColumnInfo.TYPE_CLOB) {
                     sql.append(convertType("clob", column.getSize()));
                 }
@@ -1347,7 +1349,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                             size = 36000;
                         }
                     }
-                    //                    System.err.println("\tcol:" + colName + " type:" + type  + " name:" + typeName + " size:" + size);
+                    System.err.println("\tcol:" + colName + " type:" + type  + " name:" + typeName + " size:" + size);
                     columns.add(new ColumnInfo(colName, typeName, type,
                             size));
                 }
@@ -1360,6 +1362,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             int rowCnt = 0;
             System.err.println("Exporting database");
             for (TableInfo tableInfo : tableInfos) {
+                //Hummm
+                if(tableInfo.getName().equalsIgnoreCase("base")) continue;
+                if(tableInfo.getName().equalsIgnoreCase("agggregation")) continue;
+                if(tableInfo.getName().equalsIgnoreCase("entry")) continue;
                 System.err.println("Exporting table: " + tableInfo.getName());
                 List<ColumnInfo> columns   = tableInfo.getColumns();
                 List             valueList = new ArrayList();
@@ -1400,6 +1406,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                             (Double) results.getObject(i));
                             } else if (type == ColumnInfo.TYPE_CLOB) {
                                 writeString(dos, results.getString(i));
+                            } else if (type == ColumnInfo.TYPE_BIGINT) {
+                                writeLong(dos, results.getLong(i));
                             } else {
                                 Object object = results.getObject(i);
                                 throw new IllegalArgumentException(

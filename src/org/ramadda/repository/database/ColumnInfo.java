@@ -45,6 +45,8 @@ public class ColumnInfo {
     public static final int TYPE_CLOB = 5;
 
 
+    public static final int TYPE_BIGINT = 6;
+
     /** _more_          */
     private String name;
 
@@ -95,6 +97,8 @@ public class ColumnInfo {
             return TYPE_DOUBLE;
         } else if (type == java.sql.Types.CLOB) {
             return TYPE_CLOB;
+        } else if (type == java.sql.Types.BIGINT) {
+            return TYPE_BIGINT;
         } else {
             throw new IllegalArgumentException("Unknown sqltype:" + type);
         }
