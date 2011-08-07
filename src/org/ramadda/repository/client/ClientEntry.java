@@ -39,7 +39,7 @@ import java.util.List;
  * Class Entry _more_
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class ClientEntry implements Constants {
@@ -626,7 +626,7 @@ public class ClientEntry implements Constants {
      * Class Service _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class Service {
 

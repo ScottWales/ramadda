@@ -53,7 +53,7 @@ import java.util.zip.*;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class RepositoryClient extends RepositoryBase {
@@ -1389,7 +1389,7 @@ public class RepositoryClient extends RepositoryBase {
      * Class InvalidSession _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class InvalidSession extends RuntimeException {
 
@@ -1408,7 +1408,7 @@ public class RepositoryClient extends RepositoryBase {
      * Class EntryErrorException _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class EntryErrorException extends RuntimeException {
 

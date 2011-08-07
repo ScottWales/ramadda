@@ -52,7 +52,7 @@ import javax.swing.tree.*;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class InteractiveRepositoryClient extends RepositoryClient {
@@ -319,7 +319,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
      * Class GroupNode _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     public class GroupNode extends DefaultMutableTreeNode {
@@ -422,7 +422,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
      * Class GroupTree _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     private static class GroupTree extends JTree {

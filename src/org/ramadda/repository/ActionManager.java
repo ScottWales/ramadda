@@ -52,7 +52,7 @@ import java.util.Properties;
  * Class TypeHandler _more_
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class ActionManager extends RepositoryManager {
@@ -313,7 +313,7 @@ public class ActionManager extends RepositoryManager {
      * Action _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     public static interface Action {
@@ -333,7 +333,7 @@ public class ActionManager extends RepositoryManager {
      * Class ActionInfo _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     public  class ActionInfo {

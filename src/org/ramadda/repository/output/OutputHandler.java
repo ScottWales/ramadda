@@ -74,10 +74,10 @@ import java.util.zip.*;
 
 
 /**
- * Class SqlUtil _more_
+ * 
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class OutputHandler extends RepositoryManager {
@@ -380,7 +380,7 @@ public class OutputHandler extends RepositoryManager {
      * Class State _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     public static class State {

@@ -64,7 +64,7 @@ import java.util.regex.*;
  * Produces a wget script to download files
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class WgetOutputHandler extends OutputHandler {

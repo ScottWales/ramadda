@@ -47,7 +47,7 @@ import java.util.List;
  * example3 is applicable to a single entry but only shows up in the links and actions tab
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class ExampleOutputHandler extends OutputHandler {

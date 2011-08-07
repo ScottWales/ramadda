@@ -44,7 +44,7 @@ import java.util.List;
  * Class TypeHandler _more_
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class FtpTypeHandler extends GenericTypeHandler {
@@ -793,7 +793,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
      * Class MyFTPFile _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class MyFTPFile {
 

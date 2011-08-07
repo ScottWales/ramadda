@@ -51,7 +51,7 @@ import java.util.List;
 /**
  *
  *
- *  @author IDV Development Team
+ *  @author RAMADDA Development Team
  *  @version $Revision: 1.3 $
  */
 public class LogManager extends RepositoryManager {
@@ -309,7 +309,7 @@ public class LogManager extends RepositoryManager {
      * Class LogEntry _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public class LogEntry {
 

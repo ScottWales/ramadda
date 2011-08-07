@@ -101,7 +101,7 @@ import javax.sql.DataSource;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class DatabaseManager extends RepositoryManager implements SqlUtil
@@ -492,7 +492,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * Class ConnectionWrapper _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     private static class ConnectionInfo {
@@ -2032,7 +2032,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * Class SelectInfo _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     private static class SelectInfo {
 
@@ -2239,7 +2239,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * Class Iterator _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class Iterator extends SqlUtil.Iterator {
 

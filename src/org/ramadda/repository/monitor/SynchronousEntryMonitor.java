@@ -41,7 +41,7 @@ import java.util.List;
  * Class FileInfo _more_
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.30 $
  */
 public class SynchronousEntryMonitor extends EntryMonitor {

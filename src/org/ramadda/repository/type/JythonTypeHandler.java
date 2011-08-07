@@ -53,7 +53,7 @@ import java.util.List;
  * Class TypeHandler _more_
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class JythonTypeHandler extends GenericTypeHandler {
@@ -446,7 +446,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
      * Class InputInfo _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class InputInfo {
 
@@ -486,7 +486,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
      * Class FormInfo _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class FormInfo {
 

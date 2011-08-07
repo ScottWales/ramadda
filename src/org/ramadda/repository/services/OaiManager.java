@@ -70,7 +70,7 @@ import java.util.Properties;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class OaiManager extends RepositoryManager {
@@ -728,7 +728,7 @@ public class OaiManager extends RepositoryManager {
      * Class EntryList _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     private static class EntryList {
 
@@ -784,7 +784,7 @@ public class OaiManager extends RepositoryManager {
      * Class MyException _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class MyException extends IllegalArgumentException {
 

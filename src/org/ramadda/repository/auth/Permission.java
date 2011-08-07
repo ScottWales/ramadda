@@ -66,7 +66,7 @@ import java.util.regex.*;
 
 
 /**
- * Class SqlUtil _more_
+ * 
  *
  *
  * @author RAMADDA Development Team

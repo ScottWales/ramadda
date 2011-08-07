@@ -38,7 +38,7 @@ import java.util.TimeZone;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class RepositoryUtil {
@@ -135,7 +135,7 @@ public class RepositoryUtil {
      * Class MissingEntryException _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     public static class MissingEntryException extends Exception {

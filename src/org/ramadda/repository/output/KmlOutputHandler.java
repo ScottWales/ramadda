@@ -56,10 +56,10 @@ import java.util.Properties;
 
 
 /**
- * Class SqlUtil _more_
+ * 
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class KmlOutputHandler extends OutputHandler {

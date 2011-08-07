@@ -111,10 +111,8 @@ import java.util.zip.*;
 
 
 /**
+ * The main class. 
  *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {

@@ -53,7 +53,7 @@ import java.util.Properties;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class Level3RadarTypeHandler extends GenericTypeHandler {

@@ -34,7 +34,7 @@ import java.net.URL;
  * Class Entry _more_
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class Resource {

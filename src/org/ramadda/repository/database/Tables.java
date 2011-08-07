@@ -25,10 +25,10 @@ import ucar.unidata.sql.SqlUtil;
 
 
 /**
- * Class SqlUtil _more_
+ * 
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class Tables {
@@ -37,7 +37,7 @@ public class Tables {
      * Class ENTRIES _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class ENTRIES {
 
@@ -138,7 +138,7 @@ public class Tables {
      * Class ANCESTORS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class ANCESTORS {
 
@@ -175,7 +175,7 @@ public class Tables {
      * Class METADATA _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class METADATA {
 
@@ -235,7 +235,7 @@ public class Tables {
      * Class COMMENTS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class COMMENTS {
 
@@ -286,7 +286,7 @@ public class Tables {
      * Class ASSOCIATIONS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class ASSOCIATIONS {
 
@@ -333,7 +333,7 @@ public class Tables {
      * Class USERS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class USERS {
 
@@ -398,7 +398,7 @@ public class Tables {
      * Class USERROLES _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class USERROLES {
 
@@ -435,7 +435,7 @@ public class Tables {
      * Class FAVORITES _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class FAVORITES {
 
@@ -481,7 +481,7 @@ public class Tables {
      * Class USER_ACTIVITY _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class USER_ACTIVITY {
 
@@ -527,7 +527,7 @@ public class Tables {
      * Class SESSIONS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class SESSIONS {
 
@@ -575,7 +575,7 @@ public class Tables {
      * Class MONITORS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class MONITORS {
 
@@ -627,7 +627,7 @@ public class Tables {
      * Class PERMISSIONS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class PERMISSIONS {
 
@@ -667,7 +667,7 @@ public class Tables {
      * Class HARVESTERS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class HARVESTERS {
 
@@ -707,7 +707,7 @@ public class Tables {
      * Class GLOBALS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class GLOBALS {
 
@@ -745,7 +745,7 @@ public class Tables {
      * Class SERVERREGISTRY _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class SERVERREGISTRY {
 
@@ -791,7 +791,7 @@ public class Tables {
      * Class REMOTESERVERS _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class REMOTESERVERS {
 
@@ -842,7 +842,7 @@ public class Tables {
      * Class DUMMY _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class DUMMY {
 
@@ -875,7 +875,7 @@ public class Tables {
      * Class POINTDATAMETADATA _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      */
     public static class POINTDATAMETADATA {
 

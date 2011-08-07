@@ -67,7 +67,7 @@ import java.util.zip.*;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class Metadata implements Constants {
@@ -526,7 +526,7 @@ public class Metadata implements Constants {
      * Class Type _more_
      *
      *
-     * @author IDV Development Team
+     * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
     public static class Type {

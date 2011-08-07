@@ -76,6 +76,20 @@
       <element name="Page Title"/>
     </type>
 
+<!--
+
+    <type
+       name="Page Style"
+       id="content.pagestyle">
+      <element id="forwhat" name="Style is for" datatype="enumeration"
+         values="both:Folders and files,folder:Just folders,files:Just files"/>
+      <element id="showmenubar" name="Show Menu Bar" datatype="boolean"/>
+      <element name="menus" label="Menus to show" datatype="string"/>
+      <element id="showbreadcrumbs" name="Show Breadcrumbs" datatype="boolean"/>
+      <element name="template" label="Wiki Template" datatype="wiki" rows="20"/>
+    </type>
+-->
+
     <type
        name="Jython Script"
        id="content.jython">

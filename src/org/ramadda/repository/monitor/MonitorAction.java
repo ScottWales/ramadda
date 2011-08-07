@@ -28,7 +28,7 @@ import org.ramadda.repository.auth.*;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.30 $
  */
 public abstract class MonitorAction implements Constants {

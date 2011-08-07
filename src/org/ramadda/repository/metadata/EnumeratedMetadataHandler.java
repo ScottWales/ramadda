@@ -28,7 +28,7 @@ import org.ramadda.repository.*;
 /**
  *
  *
- * @author IDV Development Team
+ * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
 public class EnumeratedMetadataHandler extends MetadataHandler {
