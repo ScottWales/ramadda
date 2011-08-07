@@ -2184,9 +2184,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                    ApiMethod.ATTR_CANCACHE, true));
 
 
-
-
-
         String handlerName = XmlUtil.getAttributeFromTree(node,
                                  ApiMethod.ATTR_HANDLER,
                                  Misc.getProperty(props,
@@ -2276,7 +2273,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                         paramTypes);
         if (method == null) {
             throw new IllegalArgumentException("Unknown request method:"
-                    + methodName);
+                                               + methodName + " in class:" + handler.getClass().getName());
         }
 
 

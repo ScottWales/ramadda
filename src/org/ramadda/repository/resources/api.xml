@@ -6,7 +6,7 @@
   <group>
      <api request="/ping"             method="processPing"/>
      <api request="/info"             method="processInfo"/>
-     <api request="/docs/*"           method="processDocs"/>
+     <api request="/docs"             method="processDocs"/>
   </group>
 
   <group handler="entrymanager">
