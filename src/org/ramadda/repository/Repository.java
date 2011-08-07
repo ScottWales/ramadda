@@ -4538,7 +4538,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public Result processHelp(Request request) throws Exception {
+    public Result processDocs(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        List<String[]> helpUrls = getPluginManager().getHelpUrls();
+        sb.append(msgHeader("Available documentation"));
+        if(helpUrls.size()==0) {
+            sb.append(showDialogNote(msg("No documentation available")));
+        }
+        sb.append("<ul>");
+        for(String[]url : helpUrls) {
+            sb.append("<li>");
+            sb.append(HtmlUtil.href(url[0],url[1]));
+        }
+        sb.append("</ul>");
+
+        if(true) return new Result("Documentation", sb);
+
+
         String path = request.getRequestPath();
         path = path.substring((getUrlBase() + "/help").length());
         if (path.length() == 0) {

@@ -135,6 +135,8 @@ public class PluginManager extends RepositoryManager {
     /** _more_ */
     private List<String> helpPaths = new ArrayList<String>();
 
+    private List<String[]> helpUrls = new ArrayList<String[]>();
+
     /** _more_ */
     private String helpToc;
 
@@ -617,9 +619,30 @@ public class PluginManager extends RepositoryManager {
             checkFile(path, true);
             String entryName = jarEntry.getName();
             int    idx       = entryName.indexOf("htdocs/");
+
+
+
             if (idx >= 0) {
                 String htpath = entryName.substring(idx + "htdocs".length());
                 htdocsMap.put(htpath, path);
+
+                if(htpath.matches("/[^/]+/index.html")) {
+                    try {
+                        String contents =
+                            getStorageManager().readSystemResource(path);
+                        Pattern pattern =
+                            Pattern.compile("(?s).*<title>(.*)</title>");
+                        Matcher matcher = pattern.matcher(contents);
+                        String title = htpath;
+                        if (matcher.find()) {
+                            title = matcher.group(1);
+                        }
+                        System.err.println ("help:"  + title);
+                        helpUrls.add(new String[]{htpath, title});
+                    } catch(Exception exc) {
+                        throw new RuntimeException(exc);
+                    }
+                }
 
                 idx = entryName.indexOf("help/");
                 if (idx >= 0) {
@@ -633,6 +656,10 @@ public class PluginManager extends RepositoryManager {
         }
     }
 
+
+    public List<String[]> getHelpUrls() {
+        return helpUrls;
+    }
 
     /**
      * Get the MetadataDefFiles property.
