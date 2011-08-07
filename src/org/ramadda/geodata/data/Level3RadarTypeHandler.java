@@ -18,7 +18,9 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package org.ramadda.repository.type;
+package org.ramadda.geodata.data;
+
+import org.ramadda.repository.type.*;
 
 
 import org.w3c.dom.*;
