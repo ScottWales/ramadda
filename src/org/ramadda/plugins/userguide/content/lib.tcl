@@ -1,5 +1,5 @@
 gen::setDoTclEvaluation 1
-
+gen::setTargetDir ../htdocs/userguide
 
 proc class {c} {
     return "<code>$c</code>"
