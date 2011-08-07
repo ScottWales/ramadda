@@ -585,7 +585,11 @@ public class PluginManager extends RepositoryManager {
                         if (matcher.find()) {
                             title = matcher.group(1);
                         }
-                        docUrls.add(new String[] { htpath, title });
+                        if(htpath.startsWith("/userguide")) {
+                            docUrls.add(0, new String[] { htpath, title });
+                        } else {
+                            docUrls.add(new String[] { htpath, title });
+                        }
                     } catch (Exception exc) {
                         throw new RuntimeException(exc);
                     }
