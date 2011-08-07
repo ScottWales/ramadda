@@ -390,7 +390,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    private Hashtable typeHandlersMap = new Hashtable();
+    private Hashtable<String, TypeHandler> typeHandlersMap =
+        new Hashtable<String, TypeHandler>();
 
     /** _more_ */
     private List<TypeHandler> allTypeHandlers = new ArrayList<TypeHandler>();
@@ -4831,6 +4832,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return request;
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Request getTmpRequest(Entry entry) throws Exception {
+        //TODO: Add pagestyle
+        Request request = getTmpRequest();
+        return request;
+    }
 
     /**
      * _more_
