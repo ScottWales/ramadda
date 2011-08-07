@@ -595,9 +595,12 @@ public class Admin extends RepositoryManager {
                 String tableName = tables.getString("TABLE_NAME");
 
                 //Humm, not sure why I get this table name and its giving me an error
-                if (tableName.equals("ENTRY")) {
+                if (tableName.equals("ENTRY")||
+                    tableName.equals("BASE")
+                    || tableName.equals("AGGGREGATION")) {
                     continue;
                 }
+
 
                 String tableType = tables.getString("TABLE_TYPE");
                 //            System.err.println("table type" + tableType);
@@ -612,10 +615,7 @@ public class Admin extends RepositoryManager {
                     continue;
                 }
 
-                if (tableName.equals("BASE")
-                        || tableName.equals("AGGGREGATION")) {
-                    continue;
-                }
+
 
 
                 ResultSet columns = dbmd.getColumns(null, null, tableName,
@@ -625,12 +625,13 @@ public class Admin extends RepositoryManager {
 
                 int cnt = 0;
                 if (tableName.toLowerCase().indexOf("_index_") < 0) {
-                    cnt = getDatabaseManager().getCount(tableName,
-                            new Clause());
+                    //TODO                    cnt = getDatabaseManager().getCount(tableName,
+                    //                            new Clause());
                 }
                 String tableVar  = null;
                 String TABLENAME = tableName.toUpperCase();
-                sb.append("Table:" + tableName + " (#" + cnt + ")");
+                //TODO    sb.append("Table:" + tableName + " (#" + cnt + ")");
+                sb.append("Table:" + tableName);
                 sb.append("<ul>");
                 List colVars = new ArrayList();
 
@@ -1988,7 +1989,6 @@ public class Admin extends RepositoryManager {
             cleanupTS++;
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_START)) {
-
             //            Misc.run(this, "runDatabaseCleanUp", request);
             Misc.run(this, "runDatabaseOrphanCheck", request);
             return new Result(request.url(URL_ADMIN_CLEANUP));
@@ -2007,11 +2007,11 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtil.submit(msg("Stop cleanup"), ACTION_STOP));
         } else {
             sb.append(HtmlUtil.p());
-            sb.append(
-                msg(
-                "Cleanup allows you to remove all file entries from the repository database that do not exist on the local file system"));
-            sb.append("<p>");
-            sb.append(HtmlUtil.submit(msg("Start cleanup"), ACTION_START));
+            //            sb.append(
+            //                msg(
+            //                "Cleanup allows you to remove all file entries from the repository database that do not exist on the local file system"));
+            //            sb.append("<p>");
+            //            sb.append(HtmlUtil.submit(msg("Start cleanup"), ACTION_START));
 
             //            sb.append("<p>");
             //            sb.append(HtmlUtil.submit(msg("Clear cache"), ACTION_CLEARCACHE));
