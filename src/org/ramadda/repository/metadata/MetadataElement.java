@@ -23,6 +23,7 @@ package org.ramadda.repository.metadata;
 
 import org.w3c.dom.*;
 
+import java.text.SimpleDateFormat;
 import org.ramadda.repository.*;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
@@ -43,6 +44,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -61,6 +63,8 @@ public class MetadataElement extends MetadataTypeBase {
 
     /** _more_ */
     public static final String TYPE_STRING = "string";
+
+    public static final String TYPE_WIKI = "wiki";
 
     /** _more_ */
     public static final String TYPE_URL = "url";
@@ -85,6 +89,15 @@ public class MetadataElement extends MetadataTypeBase {
 
     /** _more_ */
     public static final String TYPE_GROUP = "group";
+
+    /** _more_ */
+    public static final String TYPE_DATE = "date";
+
+    /** _more_ */
+    public static final String TYPE_DATETIME = "datetime";
+
+    /** _more_ */
+    public static final String TYPE_LATLON = "latlon";
 
     /** _more_ */
     public static final String TYPE_DEPENDENTENUMERATION =
@@ -282,7 +295,8 @@ public class MetadataElement extends MetadataTypeBase {
      * @return _more_
      */
     private boolean isString(String type) {
-        return dataType.equals(TYPE_STRING) || dataType.equals(TYPE_EMAIL)
+        return dataType.equals(TYPE_STRING) ||
+            dataType.equals(TYPE_WIKI) || dataType.equals(TYPE_EMAIL)
                || dataType.equals(TYPE_URL);
     }
 
@@ -701,17 +715,41 @@ public class MetadataElement extends MetadataTypeBase {
         value = (((value == null) || (value.length() == 0))
                  ? dflt
                  : value);
+        System.err.println(dataType +" " + dataType.equals(TYPE_WIKI) +" " + isString(dataType));
         if (isString(dataType)) {
-            if (rows > 1) {
-                return HtmlUtil.textArea(arg, value, rows, columns);
+            if(dataType.equals(TYPE_WIKI)) {
+                String buttons =
+                    getRepository().getWikiManager().makeWikiEditBar(
+                            request, entry, arg) + HtmlUtil.br();
+                return buttons+HtmlUtil.textArea(arg, value, rows, columns, HtmlUtil.id(arg));
+            } else {
+                if (rows > 1) {
+                    return HtmlUtil.textArea(arg, value, rows, columns);
+                }
+                return HtmlUtil.input(arg, value,
+                                      HtmlUtil.attr(HtmlUtil.ATTR_SIZE,
+                                                    "" + columns));
             }
-            return HtmlUtil.input(arg, value,
-                                  HtmlUtil.attr(HtmlUtil.ATTR_SIZE,
-                                      "" + columns));
         } else if (dataType.equals(TYPE_BOOLEAN)) {
             return HtmlUtil.checkbox(arg, "true", Misc.equals(value, "true"));
         } else if (dataType.equals(TYPE_INT)) {
             return HtmlUtil.input(arg, value, HtmlUtil.SIZE_10);
+        } else if (dataType.equals(TYPE_DATETIME)) {
+            Date date;
+            if (value != null) {
+                date = parseDate(value);
+            } else {
+                date = new Date();
+            }
+            return  getRepository().makeDateInput(request, arg, "", date);
+        } else if (dataType.equals(TYPE_DATE)) {
+            Date date;
+            if (values != null) {
+                date = parseDate(value);
+            } else {
+                date = new Date();
+            }
+            return getRepository().makeDateInput(request, arg, "", date, null, false);
         } else if (dataType.equals(TYPE_ENUMERATION)) {
             return HtmlUtil.select(arg, values, value);
         } else if (dataType.equals(TYPE_ENUMERATIONPLUS)) {
@@ -819,6 +857,11 @@ public class MetadataElement extends MetadataTypeBase {
             return null;
         }
 
+    }
+
+
+    private Date parseDate(String value) {
+        return null;
     }
 
 
