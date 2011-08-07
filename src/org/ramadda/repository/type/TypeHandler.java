@@ -301,6 +301,10 @@ public class TypeHandler extends RepositoryManager {
     protected void init(Element entryNode) throws Exception {
         forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
         setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
+        if(getType().indexOf(".")>0) {
+            //            System.err.println("DOT TYPE: " + getType());
+        }
+
         setProperties(entryNode);
         setDescription(XmlUtil.getAttribute(entryNode, ATTR_DB_DESCRIPTION,
                                             getType()));

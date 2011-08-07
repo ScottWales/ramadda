@@ -149,6 +149,10 @@ public class GenericTypeHandler extends TypeHandler {
      */
     protected void init(Element entryNode) throws Exception {
         super.init(entryNode);
+        if(getType().indexOf(".")>=0) {
+            //Were screwed - too may types had a . in them
+            //            throw new IllegalArgumentException ("Cannot have a '.' in the type name: "+ getType());
+        }
 
         setDefaultDataType(XmlUtil.getAttribute(entryNode, ATTR_DATATYPE,
                 (String) null));
@@ -869,7 +873,10 @@ public class GenericTypeHandler extends TypeHandler {
      * @return _more_
      */
     public String getTableName() {
-        return getType();
+        String typeName = getType();
+        //TODO  - clean up the table name
+        //        typeName = typeName.replaceAll("\\.","_");
+        return typeName;
     }
 
 
