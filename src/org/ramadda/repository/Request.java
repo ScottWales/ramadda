@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository;
@@ -52,8 +51,8 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.*;
@@ -67,11 +66,9 @@ import javax.servlet.http.*;
 
 
 /**
- * Class SqlUtil _more_
  *
  *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author RAMADDA Development Team
  */
 public class Request implements Constants {
 
@@ -145,9 +142,15 @@ public class Request implements Constants {
     /** _more_ */
     private ApiMethod apiMethod;
 
+    /** _more_          */
     private boolean isMobile = false;
 
+    /** _more_          */
     private String htmlTemplateId;
+
+    /** _more_          */
+    private PageStyle pageStyle;
+
 
     /**
      * _more_
@@ -272,13 +275,26 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isPost() {
-        if(httpServletRequest==null) return false;
+        if (httpServletRequest == null) {
+            return false;
+        }
         return httpServletRequest.getMethod().equals("POST");
     }
 
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     */
     public void setReturnFilename(String filename) {
-        httpServletResponse.setHeader("Content-disposition","attachment; filename=" + filename);
+        httpServletResponse.setHeader("Content-disposition",
+                                      "attachment; filename=" + filename);
     }
 
 
@@ -465,21 +481,50 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param theUrl _more_
+     */
     public void formPostWithAuthToken(StringBuffer sb, RequestUrl theUrl) {
         formPostWithAuthToken(sb, theUrl, null);
     }
 
-    public void formPostWithAuthToken(StringBuffer sb, RequestUrl theUrl, String extra) {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param theUrl _more_
+     * @param extra _more_
+     */
+    public void formPostWithAuthToken(StringBuffer sb, RequestUrl theUrl,
+                                      String extra) {
         sb.append(formPost(theUrl, extra));
         repository.addAuthToken(this, sb);
     }
 
 
-    public void uploadFormPostWithAuthToken(StringBuffer sb, RequestUrl theUrl) {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param theUrl _more_
+     */
+    public void uploadFormPostWithAuthToken(StringBuffer sb,
+                                            RequestUrl theUrl) {
         uploadFormPostWithAuthToken(sb, theUrl, null);
     }
 
-    public void uploadFormPostWithAuthToken(StringBuffer sb, RequestUrl theUrl, String extra) {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param theUrl _more_
+     * @param extra _more_
+     */
+    public void uploadFormPostWithAuthToken(StringBuffer sb,
+                                            RequestUrl theUrl, String extra) {
         sb.append(HtmlUtil.uploadForm(url(theUrl), extra));
         repository.addAuthToken(this, sb);
     }
@@ -663,7 +708,8 @@ public class Request implements Constants {
      *
      * @return _more_
      */
-    public String getUrl(HashSet<String> exceptArgs, HashSet<String> exceptValues) {
+    public String getUrl(HashSet<String> exceptArgs,
+                         HashSet<String> exceptValues) {
         return checkUrl(getRequestPath() + "?"
                         + getUrlArgs(exceptArgs, exceptValues));
     }
@@ -719,7 +765,7 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getUrlArgs(String except) {
-        HashSet<String> tmp  = new HashSet<String>();
+        HashSet<String> tmp = new HashSet<String>();
         tmp.add(except);
         return getUrlArgs(tmp);
     }
@@ -746,7 +792,8 @@ public class Request implements Constants {
      *
      * @return _more_
      */
-    public String getUrlArgs(HashSet<String> exceptArgs, HashSet<String> exceptValues) {
+    public String getUrlArgs(HashSet<String> exceptArgs,
+                             HashSet<String> exceptValues) {
         return getUrlArgs(exceptArgs, exceptValues, null);
     }
 
@@ -761,7 +808,8 @@ public class Request implements Constants {
      *
      * @return _more_
      */
-    public String getUrlArgs(HashSet<String> exceptArgs, HashSet<String> exceptValues,
+    public String getUrlArgs(HashSet<String> exceptArgs,
+                             HashSet<String> exceptValues,
                              String exceptArgsPattern) {
         StringBuffer sb  = new StringBuffer();
         int          cnt = 0;
@@ -1178,9 +1226,17 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getAnonymousEncodedString(String key, String dflt) {
-        if (!isAnonymous()) {
-            return getString(key,dflt);
+        if ( !isAnonymous()) {
+            return getString(key, dflt);
         }
         return getEncodedString(key, dflt);
     }
@@ -1264,8 +1320,11 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     */
     public void ensureAuthToken() {
-        if(!getString(ARG_AUTHTOKEN, "").equals(getSessionId())) {
+        if ( !getString(ARG_AUTHTOKEN, "").equals(getSessionId())) {
             throw new IllegalArgumentException("Bad authentication token");
         }
         //        System.err.println ("token OK");
@@ -1695,7 +1754,9 @@ public class Request implements Constants {
         httpHeaderArgs = value;
         //TODO: be smarter about this
         String ua = getUserAgent("").toLowerCase();
-        isMobile =  ua.indexOf("iphone")>=0 || ua.indexOf("android")>=0  || ua.indexOf("blackberry")>=0;
+        isMobile = (ua.indexOf("iphone") >= 0)
+                   || (ua.indexOf("android") >= 0)
+                   || (ua.indexOf("blackberry") >= 0);
     }
 
     /**
@@ -1835,13 +1896,25 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isMobile() {
         return isMobile;
     }
 
+    /**
+     * _more_
+     *
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getUserAgent(String dflt) {
-        String value =  getHeaderArg("User-Agent");
-        if(value == null) {
+        String value = getHeaderArg("User-Agent");
+        if (value == null) {
             System.err.println("no user agent");
             return dflt;
         }
@@ -2024,27 +2097,55 @@ public class Request implements Constants {
         return this.apiMethod;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean responseInXml() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
     }
 
     /**
-       Set the HtmlTemplateId property.
-
-       @param value The new value for HtmlTemplateId
-    **/
-    public void setHtmlTemplateId (String value) {
-	htmlTemplateId = value;
+     *  Set the HtmlTemplateId property.
+     *
+     *  @param value The new value for HtmlTemplateId
+     */
+    public void setHtmlTemplateId(String value) {
+        htmlTemplateId = value;
     }
 
     /**
-       Get the HtmlTemplateId property.
-
-       @return The HtmlTemplateId
-    **/
-    public String getHtmlTemplateId () {
-	return htmlTemplateId;
+     *  Get the HtmlTemplateId property.
+     *
+     *  @return The HtmlTemplateId
+     */
+    public String getHtmlTemplateId() {
+        return htmlTemplateId;
     }
+
+    /**
+     * Set the PageStyle property.
+     *
+     * @param value The new value for PageStyle
+     */
+    public void setPageStyle(PageStyle value) {
+        pageStyle = value;
+    }
+
+    /**
+     * Get the PageStyle property.
+     *
+     * @return The PageStyle
+     */
+    public PageStyle getPageStyle() {
+        if (pageStyle == null) {
+            pageStyle = new PageStyle();
+        }
+        return pageStyle;
+    }
+
+
 
 
 }

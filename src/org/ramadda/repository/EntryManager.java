@@ -3423,12 +3423,15 @@ public class EntryManager extends RepositoryManager {
         String description = XmlUtil.getAttribute(node, ATTR_DESCRIPTION,
                                  (String) null);
         if (description == null) {
-            Element descriptionNode = XmlUtil.findChild(node,TAG_DESCRIPTION);
-            if(descriptionNode!=null) {
-                description = XmlUtil.getChildText(descriptionNode); 
+            Element descriptionNode = XmlUtil.findChild(node,
+                                          TAG_DESCRIPTION);
+            if (descriptionNode != null) {
+                description = XmlUtil.getChildText(descriptionNode);
                 if ((description != null)
-                    && XmlUtil.getAttribute(descriptionNode, "encoded", false)) {
-                    description = new String(XmlUtil.decodeBase64(description));
+                        && XmlUtil.getAttribute(descriptionNode, "encoded",
+                            false)) {
+                    description =
+                        new String(XmlUtil.decodeBase64(description));
                 }
             }
         }
@@ -4569,14 +4572,12 @@ public class EntryManager extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-     * @param rightSide _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public String getEntryMenubar(Request request, Entry entry,
-                                  String rightSide)
+    public String getEntryMenubar(Request request, Entry entry)
             throws Exception {
 
         List<Link> links = getEntryLinks(request, entry);
@@ -4596,7 +4597,6 @@ public class EntryManager extends RepositoryManager {
                                   HtmlUtil.cssClass("menuseparator"));
 
 
-
         String menuClass = HtmlUtil.cssClass("entrymenulink");
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_CATEGORY)) {
@@ -4610,8 +4610,10 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        PageStyle pageStyle = request.getPageStyle();
 
-        if (entryMenu != null) {
+        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_FILE)
+                && (entryMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
@@ -4627,7 +4629,8 @@ public class EntryManager extends RepositoryManager {
 
         }
 
-        if (editMenu != null) {
+        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_EDIT)
+                && (editMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
@@ -4637,7 +4640,8 @@ public class EntryManager extends RepositoryManager {
                     true));
         }
 
-        if (exportMenu != null) {
+        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_CONNECT)
+                && (exportMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
@@ -4647,7 +4651,8 @@ public class EntryManager extends RepositoryManager {
                     false, true));
         }
 
-        if (viewMenu != null) {
+        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_VIEW)
+                && (viewMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
@@ -4657,7 +4662,8 @@ public class EntryManager extends RepositoryManager {
                     true));
         }
 
-        if (categoryMenu != null) {
+        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_OTHER)
+                && (categoryMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
@@ -4670,20 +4676,7 @@ public class EntryManager extends RepositoryManager {
             HtmlUtil.row(
                 HtmlUtil.cols(Misc.listToStringArray(menuItems)),
                 " cellpadding=0 cellspacing=0 border=0 "));
-
-        String table = HtmlUtil.leftRight(leftTable, rightSide,
-                                          HtmlUtil.cssClass("entrymenubar"));
-
-
-        return table;
-        /*        return HtmlUtil
-            .div(HtmlUtil
-                .table(HtmlUtil
-                    .row(HtmlUtil
-                        .cols(entryMenu, sep, editMenu, sep,
-                            viewMenu)+"<td align=right>" + rightSide +"</td>"), " width=100% cellpadding=0 cellspacing=0 border=0 "), HtmlUtil
-                            .cssClass("entrymenubar"));*/
-
+        return leftTable;
     }
 
 
@@ -4855,15 +4848,18 @@ public class EntryManager extends RepositoryManager {
     public String[] getBreadCrumbs(Request request, Entry entry,
                                    boolean makeLinkForLastGroup, Entry stopAt)
             throws Exception {
+
         if (request == null) {
-            request = getRepository().getTmpRequest();
+            request = getRepository().getTmpRequest(entry);
         }
 
-        String target      = (request.defined(ARG_TARGET)
-                              ? request.getString(ARG_TARGET, "")
-                              : null);
-        List   breadcrumbs = new ArrayList();
-        List   titleList   = new ArrayList();
+        PageStyle pageStyle   = request.getPageStyle();
+
+        String    target      = (request.defined(ARG_TARGET)
+                                 ? request.getString(ARG_TARGET, "")
+                                 : null);
+        List      breadcrumbs = new ArrayList();
+        List      titleList   = new ArrayList();
         if (entry == null) {
             return new String[] { BLANK, BLANK };
         }
@@ -4921,29 +4917,50 @@ public class EntryManager extends RepositoryManager {
             String img = getRepository().makePopupLink(
                              HtmlUtil.img(getIconUrl(request, entry)), links,
                              true, false);
-            nav = StringUtil.join(separator, breadcrumbs);
-            String toolbar = getEntryToolbar(request, entry);
-            String menubar = getEntryMenubar(request, entry, toolbar);
-            toolbar =
+            String breadcrumbHtml = "";
+            if (pageStyle.getShowBreadcrumbs(entry)) {
+                breadcrumbHtml = HtmlUtil.div(StringUtil.join(separator,
+                        breadcrumbs), HtmlUtil.cssClass("breadcrumbs"));
+            }
+
+
+            boolean showToolbar = pageStyle.getShowToolbar(entry);
+            boolean showMenubar = pageStyle.getShowMenubar(entry);
+            String  toolbar     = showToolbar
+                                  ? getEntryToolbar(request, entry)
+                                  : "";
+            String  menubar     = showMenubar
+                                  ? getEntryMenubar(request, entry)
+                                  : "";
+
+            if (showToolbar || showMenubar) {
+                menubar =
+                    HtmlUtil.leftRight(menubar, toolbar,
+                                       HtmlUtil.cssClass("entrymenubar"));
+            } else {
+                menubar = "";
+            }
+
+            String htmlViewLinks =
                 getRepository().getHtmlOutputHandler().getHtmlHeader(request,
                     entry);
 
-            String header =
+            String entryHeader =
                 "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
                 + HtmlUtil.rowBottom("<td class=\"entryname\" >" + img
                                      + entryLink
-                                     + "</td><td align=\"right\">" + toolbar
-                                     + "</td>") + "</table>";
+                                     + "</td><td align=\"right\">"
+                                     + htmlViewLinks + "</td>") + "</table>";
 
-            nav = HtmlUtil.div(
-                menubar + HtmlUtil.div(nav, HtmlUtil.cssClass("breadcrumbs"))
-                + header, HtmlUtil.cssClass("entryheader"));
+            nav = HtmlUtil.div(menubar + breadcrumbHtml + entryHeader,
+                               HtmlUtil.cssClass("entryheader"));
 
         }
         String title =
             StringUtil.join(HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR),
                             titleList);
         return new String[] { title, nav };
+
     }
 
 
