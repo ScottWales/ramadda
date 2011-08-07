@@ -78,6 +78,7 @@ import java.util.zip.*;
 
 
 /**
+ * This class loads and manages the plugins
  */
 public class PluginManager extends RepositoryManager {
 
@@ -128,17 +129,8 @@ public class PluginManager extends RepositoryManager {
     private Hashtable<String, String> htdocsMap = new Hashtable<String,
                                                       String>();
 
-    /** _more_ */
-    private Hashtable<String, String> helpMap = new Hashtable<String,
-                                                    String>();
-
-    /** _more_ */
-    private List<String> helpPaths = new ArrayList<String>();
-
-    private List<String[]> helpUrls = new ArrayList<String[]>();
-
-    /** _more_ */
-    private String helpToc;
+    /** _more_          */
+    private List<String[]> docUrls = new ArrayList<String[]>();
 
     /** _more_ */
     private List<Class> adminHandlerClasses = new ArrayList<Class>();
@@ -194,7 +186,7 @@ public class PluginManager extends RepositoryManager {
      *
      * @param properties _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void init(Properties properties) throws Exception {
         this.properties = properties;
@@ -217,7 +209,7 @@ public class PluginManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void loadPlugins() throws Exception {
         //The false says not to scour
@@ -240,13 +232,12 @@ public class PluginManager extends RepositoryManager {
                               tmpPluginsDir);
         }
         loadPropertyFiles();
-        makePluginHelp();
     }
 
     /**
      * _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void loadPropertyFiles() throws Exception {
         for (String f : propertyFiles) {
@@ -267,7 +258,7 @@ public class PluginManager extends RepositoryManager {
      * @param classLoader _more_
      * @param tmpPluginsDir _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private void processPluginFile(String pluginFile, StringBuffer pluginSB,
                                    MultiJarClassLoader classLoader,
@@ -310,47 +301,6 @@ public class PluginManager extends RepositoryManager {
                 "<tr><td><b>Plugin file</b></td><td colspan=2><i>"
                 + pluginFile + "</i></td></tr>");
             checkFile(pluginFile, true);
-        }
-    }
-
-
-
-    /**
-     * _more_
-     */
-    public void makePluginHelp() {
-        StringBuffer pluginHelpLinks = null;
-        for (String htpath : helpPaths) {
-            String path  = helpMap.get(htpath);
-            String title = IOUtil.getFileTail(path);
-            try {
-                String contents =
-                    getStorageManager().readSystemResource(path);
-                Pattern pattern =
-                    Pattern.compile("(?s).*<title>(.*)</title>");
-                Matcher matcher = pattern.matcher(contents);
-                if (matcher.find()) {
-                    title = matcher.group(1);
-                }
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-
-            if (pluginHelpLinks == null) {
-                pluginHelpLinks = new StringBuffer("<p>");
-                pluginHelpLinks.append(msgHeader("Plugins"));
-                pluginHelpLinks.append("<ol>");
-            }
-            pluginHelpLinks.append(
-                "<li> "
-                + HtmlUtil.href(
-                    getRepository().getUrlBase() + "/help" + htpath, title));
-        }
-
-        if (pluginHelpLinks == null) {
-            helpToc = "";
-        } else {
-            helpToc = pluginHelpLinks + "</ol>";
         }
     }
 
@@ -400,7 +350,7 @@ public class PluginManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result adminPluginUpload(Request request) throws Exception {
         String pluginFile = request.getUploadedFile(ARG_PLUGIN_FILE);
@@ -518,7 +468,7 @@ public class PluginManager extends RepositoryManager {
          *
          * @param parent _more_
          *
-         * @throws Exception _more_
+         * @throws Exception On badness
          */
         public MyClassLoader(ClassLoader parent) throws Exception {
             super(parent);
@@ -532,7 +482,7 @@ public class PluginManager extends RepositoryManager {
          *
          * @return _more_
          *
-         * @throws ClassNotFoundException _more_
+         * @throws ClassNotFoundException On badness
          */
         public Class xxxloadClass(String name) throws ClassNotFoundException {
             try {
@@ -554,11 +504,11 @@ public class PluginManager extends RepositoryManager {
 
 
         /**
-         * _more_
+         * Check if this class is one of the special classes, e.g., ImportHandler, PageDecorator, etc.
          *
-         * @param c _more_
+         * @param c the class
          *
-         * @throws Exception _more_
+         * @throws Exception On badness
          */
         protected void checkClass(Class c) throws Exception {
             if (ImportHandler.class.isAssignableFrom(c)) {
@@ -620,35 +570,24 @@ public class PluginManager extends RepositoryManager {
             String entryName = jarEntry.getName();
             int    idx       = entryName.indexOf("htdocs/");
 
-
-
             if (idx >= 0) {
                 String htpath = entryName.substring(idx + "htdocs".length());
                 htdocsMap.put(htpath, path);
 
-                if(htpath.matches("/[^/]+/index.html")) {
+                if (htpath.matches("/[^/]+/index.html")) {
                     try {
                         String contents =
                             getStorageManager().readSystemResource(path);
                         Pattern pattern =
                             Pattern.compile("(?s).*<title>(.*)</title>");
                         Matcher matcher = pattern.matcher(contents);
-                        String title = htpath;
+                        String  title   = htpath;
                         if (matcher.find()) {
                             title = matcher.group(1);
                         }
-                        System.err.println ("help:"  + title);
-                        helpUrls.add(new String[]{htpath, title});
-                    } catch(Exception exc) {
+                        docUrls.add(new String[] { htpath, title });
+                    } catch (Exception exc) {
                         throw new RuntimeException(exc);
-                    }
-                }
-
-                idx = entryName.indexOf("help/");
-                if (idx >= 0) {
-                    helpMap.put(htpath, path);
-                    if (path.indexOf(".html") >= 0) {
-                        helpPaths.add(htpath);
                     }
                 }
             }
@@ -657,8 +596,13 @@ public class PluginManager extends RepositoryManager {
     }
 
 
-    public List<String[]> getHelpUrls() {
-        return helpUrls;
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<String[]> getDocUrls() {
+        return docUrls;
     }
 
     /**
@@ -766,26 +710,7 @@ public class PluginManager extends RepositoryManager {
         return templateFiles;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getHelpToc() {
-        if (helpToc == null) {
-            makePluginHelp();
-        }
-        return helpToc;
-    }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public Hashtable<String, String> getHelpMap() {
-        return helpMap;
-    }
 
     /**
      * _more_

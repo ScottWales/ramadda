@@ -4537,73 +4537,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processDocs(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        List<String[]> helpUrls = getPluginManager().getHelpUrls();
+        List<String[]> docUrls = getPluginManager().getDocUrls();
         sb.append(msgHeader("Available documentation"));
-        if(helpUrls.size()==0) {
+        if(docUrls.size()==0) {
             sb.append(showDialogNote(msg("No documentation available")));
         }
         sb.append("<ul>");
-        for(String[]url : helpUrls) {
+        for(String[]url : docUrls) {
             sb.append("<li>");
             sb.append(HtmlUtil.href(url[0],url[1]));
         }
         sb.append("</ul>");
-
-        if(true) return new Result("Documentation", sb);
-
-
-        String path = request.getRequestPath();
-        path = path.substring((getUrlBase() + "/help").length());
-        if (path.length() == 0) {
-            path = "/index.html";
-        }
-        if (path.equals("/")) {
-            path = "/index.html";
-        }
-
-        String pluginHelp = getPluginManager().getHelpMap().get(path);
-        if (pluginHelp != null) {
-            path = pluginHelp;
-        } else {
-            path = "/org/ramadda/repository/docs/userguide/processed" + path;
-        }
-        Result result = null;
-        if (path.endsWith(".html")) {
-            String helpText = getStorageManager().readSystemResource(path);
-            //Pull out the body if we can
-            Pattern pattern = Pattern.compile("(?s).*<body>(.*)</body>");
-            Matcher matcher = pattern.matcher(helpText);
-            if (matcher.find()) {
-                helpText = matcher.group(1);
-            }
-            if (path.endsWith("toc.html")) {
-                helpText = helpText.replace("<tocend>",
-                                            getPluginManager().getHelpToc());
-                //                helpText = helpText+pluginHelpToc;
-            }
-
-            if (pluginHelp != null) {
-                helpText = HtmlUtil.href(
-                    getUrlBase() + "/help/toc.html",
-                    HtmlUtil.img(
-                        getUrlBase() + "/help/images/TOCIcon.gif")) + "<br>"
-                            + HtmlUtil.img(
-                                getUrlBase()
-                                + "/help/images/blueline.gif") + "<p>"
-                                    + helpText;
-            }
-
-            result = getEntryManager().addHeaderToAncillaryPage(request,
-                    new Result(BLANK, new StringBuffer(helpText)));
-        } else {
-            InputStream inputStream =
-                getStorageManager().getInputStream(path);
-            result = new Result(BLANK, inputStream,
-                                IOUtil.getFileExtension(path));
-
-        }
-        result.setCacheOk(true);
-        return result;
+        return new Result("Documentation", sb);
     }
 
 

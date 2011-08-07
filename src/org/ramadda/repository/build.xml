@@ -249,7 +249,6 @@
             <include name="**/*.xml"/>
 -->
             <include name="${repositoryrelpath}/htdocs/**/*.*"/>
-            <include name="${repositoryrelpath}/docs/userguide/processed/**/*.*"/>
             <include name="${repositoryrelpath}/resources/**/*.*"/>
             <include name="${repositoryrelpath}/idv/template.jnlp"/>
         </jar>

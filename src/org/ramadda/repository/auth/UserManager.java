@@ -1869,10 +1869,12 @@ public class UserManager extends RepositoryManager {
 
 
 
-        urls.add(request.url(getRepositoryBase().URL_HELP));
-        extras.add("");
-        labels.add(msg("Help"));
-        tips.add(msg("View Help"));
+        if(getRepository().getPluginManager().getDocUrls().size()>0) {
+            urls.add(request.url(getRepositoryBase().URL_HELP));
+            extras.add("");
+            labels.add(msg("Help"));
+            tips.add(msg("View Help"));
+        }
 
         List links = new ArrayList();
         for (int i = 0; i < urls.size(); i++) {
