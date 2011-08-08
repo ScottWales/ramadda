@@ -949,7 +949,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getStorageManager().getLogDir();
 
         //initialize the plugin manager with the properties
-        System.err.println("initing with properties");
         getPluginManager().init(properties);
 
         debug = getProperty(PROP_DEBUG, false);
