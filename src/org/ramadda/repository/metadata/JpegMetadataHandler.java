@@ -152,6 +152,8 @@ public class JpegMetadataHandler extends MetadataHandler {
                     if ((caption != null)
                             && entry.getDescription().isEmpty()) {
                         entry.setDescription(caption);
+                        //This tells ramadda that something was added
+                        extra.put("1", "");
                     }
                 }
 
