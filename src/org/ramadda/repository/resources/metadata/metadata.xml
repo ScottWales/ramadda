@@ -177,6 +177,7 @@
 
     <type
        name="Spatial Polygon Coordinates"
+       showinhtml="false"
        id="spatial.polygon">
       <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
     </type>
