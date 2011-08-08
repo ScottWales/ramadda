@@ -176,8 +176,13 @@ public class JpegMetadataHandler extends MetadataHandler {
             }
             double latitude  = getValue(dir, GpsDirectory.TAG_GPS_LATITUDE);
             double longitude = getValue(dir, GpsDirectory.TAG_GPS_LONGITUDE);
-            if (longitude > 0) {
+            String lonRef = dir.getString(GpsDirectory.TAG_GPS_LONGITUDE_REF);
+            String latRef = dir.getString(GpsDirectory.TAG_GPS_LATITUDE_REF);
+            if ((lonRef != null) && lonRef.equalsIgnoreCase("W")) {
                 longitude = -longitude;
+            }
+            if ((latRef != null) && latRef.equalsIgnoreCase("S")) {
+                latitude = -latitude;
             }
             double altitude = (dir.containsTag(GpsDirectory.TAG_GPS_ALTITUDE)
                                ? getValue(dir, GpsDirectory.TAG_GPS_ALTITUDE)
