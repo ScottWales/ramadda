@@ -1,6 +1,6 @@
 /*
  * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
+ * Copyright 2010-  Jeff McWhirter, Don Murray
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
  */
 
 package org.ramadda.repository.metadata;
@@ -26,9 +25,11 @@ import com.drew.lang.*;
 
 import com.drew.metadata.*;
 import com.drew.metadata.exif.*;
+import com.drew.metadata.iptc.IptcDirectory;
 
 
 import org.ramadda.repository.*;
+
 import ucar.unidata.ui.ImageUtils;
 
 import ucar.unidata.util.IOUtil;
@@ -44,23 +45,22 @@ import java.util.List;
 
 
 /**
- *
+ * A class for handling JPEG Metadata
  *
  * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
 public class JpegMetadataHandler extends MetadataHandler {
 
-    /** _more_          */
+    /** Camera Direction type */
     public static final String TYPE_CAMERA_DIRECTION = "camera.direction";
 
 
     /**
-     * _more_
+     * Construct a new instance for the repository
      *
-     * @param repository _more_
+     * @param repository  the repository
      *
-     * @throws Exception _more_
+     * @throws Exception  problems
      */
     public JpegMetadataHandler(Repository repository) throws Exception {
         super(repository);
@@ -68,17 +68,18 @@ public class JpegMetadataHandler extends MetadataHandler {
 
 
     /**
-     * _more_
+     * Get the initial metadata
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadataList _more_
-     * @param extra _more_
-     * @param shortForm _more_
+     * @param request  the request
+     * @param entry  the entry
+     * @param metadataList the metadata list
+     * @param extra  extra stuff
+     * @param shortForm  true for shortform
      */
     public void getInitialMetadata(Request request, Entry entry,
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
+
         String path = entry.getResource().getPath();
 
         if ( !entry.getResource().isImage()) {
@@ -125,6 +126,8 @@ public class JpegMetadataHandler extends MetadataHandler {
                 metadata.getDirectory(ExifDirectory.class);
             com.drew.metadata.Directory dir =
                 metadata.getDirectory(GpsDirectory.class);
+            com.drew.metadata.Directory iptcDir =
+                metadata.getDirectory(IptcDirectory.class);
 
             if (exifDir != null) {
                 //This tells ramadda that something was added
@@ -136,6 +139,19 @@ public class JpegMetadataHandler extends MetadataHandler {
                         entry.setStartDate(dttm.getTime());
                         entry.setEndDate(dttm.getTime());
                         extra.put("1", "");
+                    }
+                }
+
+            }
+
+            if (iptcDir != null) {
+                // Get caption and make it the description if the user didn't add one
+                if (iptcDir.containsTag(IptcDirectory.TAG_CAPTION)) {
+                    String caption =
+                        iptcDir.getString(IptcDirectory.TAG_CAPTION);
+                    if ((caption != null)
+                            && entry.getDescription().isEmpty()) {
+                        entry.setDescription(caption);
                     }
                 }
 
@@ -173,18 +189,19 @@ public class JpegMetadataHandler extends MetadataHandler {
             getRepository().getLogManager().logError("Processing jpg:"
                     + path, exc);
         }
+
     }
 
 
     /**
-     * _more_
+     * Get the value of a tag as a double
      *
-     * @param dir _more_
-     * @param tag _more_
+     * @param dir  the directory
+     * @param tag  the tag
      *
-     * @return _more_
+     * @return  the double value
      *
-     * @throws Exception _more_
+     * @throws Exception  couldn't create the double
      */
     private double getValue(Directory dir, int tag) throws Exception {
         try {
