@@ -4805,8 +4805,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public PageStyle doMakePageStyle(Entry entry) {
         PageStyle pageStyle =  new PageStyle();
-        pageStyle.setFolderWikiTemplate("{{description}} {{information}} CHILLENS: {{children open=true}}");
-        pageStyle.setFileWikiTemplate("{{description}} {{information showtoggle=false}}");
+        //pageStyle.setFolderWikiTemplate("{{description}} {{information}} CHILLENS: {{children open=true}}");
+        //pageStyle.setFileWikiTemplate("{{description}} {{information showtoggle=false}}");
         return pageStyle;
     }
 
