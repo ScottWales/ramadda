@@ -33,7 +33,7 @@
         </delete>
     </target>
     <target name="publisherplugin" depends="init,clean">
-        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <property name="pluginclasspath" value="${libdir}/tika-app-0.9.jar:${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
         <javac
             verbose="false"
             classpath="${pluginclasspath}"
