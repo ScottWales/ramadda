@@ -189,6 +189,16 @@ public class JpegMetadataHandler extends MetadataHandler {
             double altitude = (dir.containsTag(GpsDirectory.TAG_GPS_ALTITUDE)
                                ? getValue(dir, GpsDirectory.TAG_GPS_ALTITUDE)
                                : 0);
+            try {
+                int altRef = dir.getInt(GpsDirectory.TAG_GPS_ALTITUDE_REF);
+                if (altRef > 0) {
+                    altitude = -altitude;
+                }
+            } catch (MetadataException mde) {
+                // means that the tag didn't exist
+            	// with version 2.5.0 of metadata extractor could move to 
+            	// getInteger which will return null instead of throw exception
+            }
             entry.setLocation(latitude, longitude, altitude);
             //This tells ramadda that something was added
             extra.put("1", "");
