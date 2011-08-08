@@ -423,23 +423,25 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
                     informationBlock, true));
 
-            StringBuffer metadataSB = new StringBuffer();
-
-            getMetadataManager().decorateEntry(request, entry, metadataSB,
-                    false);
-            String metataDataHtml = metadataSB.toString();
-            if (metataDataHtml.length() > 0) {
-                sb.append(HtmlUtil.makeShowHideBlock(msg("Attachments"),
-                        "<div class=\"description\">" + metadataSB
-                        + "</div>", false));
-            }
+            //            sb.append(getAttachmentsHtml(request, entry));
         }
 
         return makeLinksResult(request, msg("Entry"), sb, new State(entry));
     }
 
 
-
+    public String getAttachmentsHtml(Request request, Entry entry) throws Exception {
+        StringBuffer metadataSB = new StringBuffer();
+        getMetadataManager().decorateEntry(request, entry, metadataSB,
+                                           false);
+        String metataDataHtml = metadataSB.toString();
+        if (metataDataHtml.length() > 0) {
+            return HtmlUtil.makeShowHideBlock(msg("Attachments"),
+                                              "<div class=\"description\">" + metadataSB
+                                              + "</div>", false);
+        }
+        return "";
+    }
 
     /**
      * _more_
@@ -880,7 +882,6 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basic = entry.getTypeHandler().getEntryContent(entry,
                 request, false, true));
 
-
         for (TwoFacedObject tfo :
                 getMetadataHtml(request, entry, true, true)) {
             tabTitles.add(tfo.toString());
@@ -890,6 +891,12 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer comments = getCommentBlock(request, entry, true);
         //        System.out.println (comments);
         tabContents.add(comments);
+
+        String attachments = getAttachmentsHtml(request, entry);
+        if(attachments.length()>0) {
+            tabTitles.add(msg("Attachments"));
+            tabContents.add(attachments);
+        }
 
         StringBuffer associationBlock =
             getAssociationManager().getAssociationBlock(request, entry);
@@ -1169,6 +1176,7 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
+
         boolean isSearchResults = group.isDummy();
         TypeHandler typeHandler =
             getRepository().getTypeHandler(group.getType());
@@ -1240,6 +1248,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         showNext(request, subGroups, entries, sb);
+
 
 
         boolean hasChildren = ((subGroups.size() != 0)
@@ -1366,20 +1375,15 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     private String getWikiText(Request request, Entry entry)
             throws Exception {
-        if ( !checkedTemplates) {
-            entryTemplate =
-                getRepository().getResource(RESOURCE_ENTRYTEMPLATE, true);
-            groupTemplate =
-                getRepository().getResource(RESOURCE_GROUPTEMPLATE, true);
-            checkedTemplates = true;
-        }
+        PageStyle pageStyle   = request.getPageStyle(entry);
         if (TypeHandler.isWikiText(entry.getDescription())) {
             return entry.getDescription();
         }
-        if (entry.isGroup()) {
-            return groupTemplate;
+        String wikiTemplate = pageStyle.getWikiTemplate(entry);
+        if(wikiTemplate!=null) {
+            return wikiTemplate;
         }
-        return entryTemplate;
+        return null;
     }
 
 

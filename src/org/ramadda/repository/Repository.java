@@ -4797,10 +4797,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Request getTmpRequest(Entry entry) throws Exception {
-        //TODO: Add pagestyle
         Request request = getTmpRequest();
+        request.setPageStyle(doMakePageStyle(entry));
         return request;
     }
+
+
+    public PageStyle doMakePageStyle(Entry entry) {
+        PageStyle pageStyle =  new PageStyle();
+        pageStyle.setFolderWikiTemplate("{{description}} {{information}} CHILLENS: {{children open=true}}");
+        pageStyle.setFileWikiTemplate("{{description}} {{information showtoggle=false}}");
+        return pageStyle;
+    }
+
 
     /**
      * _more_

@@ -31,23 +31,25 @@ import org.ramadda.repository.auth.*;
 public class PageStyle {
 
     /** _more_ */
-    public static final String MENU_FILE = "menu.file";
+    public static final String MENU_FILE = "file";
 
     /** _more_ */
-    public static final String MENU_EDIT = "menu.edit";
+    public static final String MENU_EDIT = "edit";
 
     /** _more_ */
-    public static final String MENU_VIEW = "menu.view";
+    public static final String MENU_VIEW = "view";
 
     /** _more_ */
-    public static final String MENU_CONNECT = "menu.connect";
+    public static final String MENU_CONNECT = "connect";
 
     /** _more_ */
-    public static final String MENU_OTHER = "menu.other";
+    public static final String MENU_OTHER = "other";
 
 
     /** _more_ */
-    private String wikiTemplate;
+    private String folderWikiTemplate;
+
+    private String fileWikiTemplate;
 
     /** _more_ */
     private boolean showMenubar = true;
@@ -83,8 +85,12 @@ public class PageStyle {
      *
      *  @param value The new value for WikiTemplate
      */
-    public void setWikiTemplate(String value) {
-        wikiTemplate = value;
+    public void setFolderWikiTemplate(String value) {
+        folderWikiTemplate = value;
+    }
+
+    public void setFileWikiTemplate(String value) {
+        fileWikiTemplate = value;
     }
 
     /**
@@ -95,7 +101,16 @@ public class PageStyle {
      *  @return The WikiTemplate
      */
     public String getWikiTemplate(Entry entry) {
-        return wikiTemplate;
+        //If its a fake entry (e.g, from search results) then
+        //don't use the wiki template
+        if(entry.isDummy()) {
+            return null;
+        }
+
+        if(entry.isGroup()) {
+            return folderWikiTemplate;
+        }
+        return fileWikiTemplate;
     }
 
     /**

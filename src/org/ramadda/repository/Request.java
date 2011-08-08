@@ -2138,9 +2138,9 @@ public class Request implements Constants {
      *
      * @return The PageStyle
      */
-    public PageStyle getPageStyle() {
+    public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
-            pageStyle = new PageStyle();
+            pageStyle = repository.doMakePageStyle(entry);
         }
         return pageStyle;
     }

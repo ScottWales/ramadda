@@ -479,7 +479,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                  Entry entry, String include, Hashtable props)
             throws Exception {
 
-        boolean open         = Misc.getProperty(props, "open", true);
+        String hasChildren = (String) wikiUtil.getProperty(entry.getId()
+                                                           + "_haschildren");
+
+        
+        boolean open         = Misc.getProperty(props, "open", (hasChildren!=null?hasChildren.equals("false"):true));
         boolean inBlock      = Misc.getProperty(props, "showtoggle", true);
         String  blockContent = null;
         String  blockTitle   = "";
@@ -778,8 +782,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
         if (doBG) {
             return HtmlUtil.makeShowHideBlock(blockTitle, blockContent, open,
-                    HtmlUtil.cssClass("wiki-tocheader"),
-                    HtmlUtil.cssClass("wiki-toc"));
+                                              HtmlUtil.cssClass("pagesubheading"),"");
+            //            HtmlUtil.cssClass("wiki-tocheader"),  HtmlUtil.cssClass("wiki-toc"));
         } else {
             return HtmlUtil.makeShowHideBlock(blockTitle, blockContent, open);
         }
@@ -943,8 +947,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             if (inBlock && (title != null)) {
                 return HtmlUtil.makeShowHideBlock(title, propertyValue, open,
-                        HtmlUtil.cssClass("wiki-tocheader"),
-                        HtmlUtil.cssClass("wiki-toc"));
+                                                  HtmlUtil.cssClass("pagesubheading"),"");
+//                        HtmlUtil.cssClass("wiki-tocheader"),   HtmlUtil.cssClass("wiki-toc"));
             }
             return propertyValue;
         } catch (Exception exc) {
@@ -1325,17 +1329,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                               List<Entry> subEntries)
             throws Exception {
         List children = new ArrayList();
+        boolean hasChildren = false;
         if (subGroups != null) {
+            hasChildren =subGroups.size()>0;
             wikiUtil.putProperty(entry.getId() + "_subgroups", subGroups);
             children.addAll(subGroups);
         }
 
         if (subEntries != null) {
+            hasChildren |=subEntries.size()>0;
             wikiUtil.putProperty(entry.getId() + "_subentries", subEntries);
             children.addAll(subEntries);
         }
 
         wikiUtil.putProperty(entry.getId() + "_children", children);
+        wikiUtil.putProperty(entry.getId() + "_haschildren", ""+hasChildren);
 
 
         //TODO: We need to keep track of what is getting called so we prevent

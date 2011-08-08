@@ -4610,9 +4610,9 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        PageStyle pageStyle = request.getPageStyle();
+        PageStyle pageStyle = request.getPageStyle(entry);
 
-        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_FILE)
+        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FILE)
                 && (entryMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
@@ -4629,7 +4629,7 @@ public class EntryManager extends RepositoryManager {
 
         }
 
-        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_EDIT)
+        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_EDIT)
                 && (editMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
@@ -4640,7 +4640,7 @@ public class EntryManager extends RepositoryManager {
                     true));
         }
 
-        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_CONNECT)
+        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_CONNECT)
                 && (exportMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
@@ -4651,7 +4651,7 @@ public class EntryManager extends RepositoryManager {
                     false, true));
         }
 
-        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_VIEW)
+        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_VIEW)
                 && (viewMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
@@ -4662,7 +4662,7 @@ public class EntryManager extends RepositoryManager {
                     true));
         }
 
-        if (pageStyle.okToShowMenu(entry, pageStyle.MENU_OTHER)
+        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_OTHER)
                 && (categoryMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
@@ -4853,7 +4853,7 @@ public class EntryManager extends RepositoryManager {
             request = getRepository().getTmpRequest(entry);
         }
 
-        PageStyle pageStyle   = request.getPageStyle();
+        PageStyle pageStyle   = request.getPageStyle(entry);
 
         String    target      = (request.defined(ARG_TARGET)
                                  ? request.getString(ARG_TARGET, "")
