@@ -1387,7 +1387,7 @@ public class TypeHandler extends RepositoryManager {
                     request.url(
                         getRepository().URL_ENTRY_UPLOAD, ARG_GROUP,
                         entry.getId()), getRepository().iconUrl(ICON_UPLOAD),
-                                        "Upload a file",
+                                        "Upload a File",
                                         OutputType.TYPE_FILE
                                         | OutputType.TYPE_TOOLBAR));
         }
@@ -1422,7 +1422,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_ADDFORM,
                         entry), getRepository().iconUrl(ICON_METADATA_ADD),
-                                "Add property", OutputType.TYPE_EDIT));
+                                "Add Property", OutputType.TYPE_EDIT));
             links.add(
                 new Link(
                     request.entryUrl(getRepository().URL_ACCESS_FORM, entry),
@@ -1555,7 +1555,7 @@ public class TypeHandler extends RepositoryManager {
         fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
         return new Link(getEntryManager().getEntryResourceUrl(request,
                 entry), getRepository().iconUrl(ICON_FETCH),
-                        msg("Download file") + size, OutputType.TYPE_FILE);
+                        msg("Download File") + size, OutputType.TYPE_FILE);
     }
 
 
