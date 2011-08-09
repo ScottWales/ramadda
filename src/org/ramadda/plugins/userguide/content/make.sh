@@ -3,4 +3,4 @@
 #export IDV_TRUNK=.../idv/trunk
 #
 
-tclsh ${IDV_TRUNK}/auxdata/docs/build/generate.tcl  
+tclsh ${IDV_TRUNK}/auxdata/docs/build/generate.tcl   -clean

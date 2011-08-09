@@ -1,7 +1,7 @@
 
 
 index.html
--repository.properties
+-repository.dummy_properties
 -map.html
 >overview.html
 >user.html
