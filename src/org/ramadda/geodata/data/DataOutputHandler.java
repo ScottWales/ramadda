@@ -244,7 +244,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
-        new OutputType("OpenDAP", "data.opendap", OutputType.TYPE_CATEGORY,
+        new OutputType("OPeNDAP", "data.opendap", OutputType.TYPE_CATEGORY,
                        OutputType.SUFFIX_NONE, ICON_OPENDAP, GROUP_DATA);
 
     /** CDL Output Type */
@@ -261,7 +261,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Point map Output Type */
     public static final OutputType OUTPUT_POINT_MAP =
-        new OutputType("Plot points on a map", "data.point.map",
+        new OutputType("Plot Points on a Map", "data.point.map",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_MAP, GROUP_DATA);
 
@@ -280,7 +280,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
-        new OutputType("Subset spatially", "data.gridsubset.form",
+        new OutputType("Subset Spatially", "data.gridsubset.form",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_SUBSET, GROUP_DATA);
 
@@ -290,7 +290,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Grid as point form Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
-        new OutputType("Extract time series", "data.gridaspoint.form",
+        new OutputType("Extract Time Series", "data.gridaspoint.form",
                        OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
                        ICON_SUBSET, GROUP_DATA);
 
@@ -817,7 +817,7 @@ public class DataOutputHandler extends OutputHandler {
                             + getStorageManager().getFileTail(entry)
                             + "/dodsC/entry.das";
         links.add(new Link(opendapUrl, getRepository().iconUrl(ICON_OPENDAP),
-                           "OpenDAP", OUTPUT_OPENDAP));
+                           "OPeNDAP", OUTPUT_OPENDAP));
         request.put(ARG_OUTPUT, oldOutput);
 
 
