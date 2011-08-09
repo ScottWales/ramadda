@@ -179,7 +179,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
         WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, WIKIPROP_COMMENTS,
         WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR, WIKIPROP_IMAGE,
-        WIKIPROP_LINKS, WIKIPROP_RECENT, WIKIPROP_MAPENTRY, WIKIPROP_MAPENTRY,
+        WIKIPROP_LINKS, WIKIPROP_RECENT, WIKIPROP_MAPENTRY, 
         WIKIPROP_GALLERY, 
         WIKIPROP_TABS,  WIKIPROP_TABS,
         WIKIPROP_GRID,
@@ -782,7 +782,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
         if (doBG) {
             return HtmlUtil.makeShowHideBlock(blockTitle, blockContent, open,
-                                              HtmlUtil.cssClass("pagesubheading"),"");
+                                              HtmlUtil.cssClass("toggleblocklabel"),"");
             //            HtmlUtil.cssClass("wiki-tocheader"),  HtmlUtil.cssClass("wiki-toc"));
         } else {
             return HtmlUtil.makeShowHideBlock(blockTitle, blockContent, open);
@@ -1006,11 +1006,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         String select = OutputHandler.getSelect(request, textAreaId,
                             "Add link", true, "wikilink", entry,
-                            false) + HtmlUtil.space(1) + "|"
+                            false) /*+ HtmlUtil.space(1) + "|"
                                    + HtmlUtil.space(1)
                                    + OutputHandler.getSelect(request,
                                        textAreaId, "Import entry", true,
-                                       "entryid", entry, false);
+                                       "entryid", entry, false)*/;
 
         StringBuffer buttons = new StringBuffer();
         buttons.append(addWikiEditButton(textAreaId, "button_bold.png",
@@ -1082,8 +1082,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             String js2 = "javascript:insertTags("
                          + HtmlUtil.squote(textAreaId) + ","
-                         + HtmlUtil.squote("{{import ") + ","
-                         + HtmlUtil.squote(" " + prop + "}}") + ","
+                         + HtmlUtil.squote("{{") + ","
+                         + HtmlUtil.squote(prop + "}}") + ","
                          + HtmlUtil.squote(" entryid ") + ");";
             importMenu.append(HtmlUtil.href(js2, prop));
             importMenu.append(HtmlUtil.br());
@@ -1142,7 +1142,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         buttons.append(importButton);
         buttons.append(HtmlUtil.space(2));
         buttons.append(select);
-
         return buttons.toString();
     }
 

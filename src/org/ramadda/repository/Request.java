@@ -2140,7 +2140,7 @@ public class Request implements Constants {
      */
     public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
-            pageStyle = repository.doMakePageStyle(entry);
+            pageStyle = repository.doMakePageStyle(this, entry);
         }
         return pageStyle;
     }

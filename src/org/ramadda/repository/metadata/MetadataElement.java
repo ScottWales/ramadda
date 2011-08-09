@@ -237,6 +237,10 @@ public class MetadataElement extends MetadataTypeBase {
 
         subName = XmlUtil.getAttribute(node, ATTR_SUBNAME, "");
         id      = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
+
+
+
+
         max     = XmlUtil.getAttribute(node, ATTR_MAX, max);
         setRows(XmlUtil.getAttribute(node, ATTR_ROWS, 1));
         setColumns(XmlUtil.getAttribute(node, ATTR_COLUMNS, 60));
@@ -715,7 +719,6 @@ public class MetadataElement extends MetadataTypeBase {
         value = (((value == null) || (value.length() == 0))
                  ? dflt
                  : value);
-        System.err.println(dataType +" " + dataType.equals(TYPE_WIKI) +" " + isString(dataType));
         if (isString(dataType)) {
             if(dataType.equals(TYPE_WIKI)) {
                 String buttons =

@@ -95,7 +95,7 @@ public class OutputHandler extends RepositoryManager {
                        ICON_INFORMATION);
 
     public static final OutputType OUTPUT_TREE =
-        new OutputType("Information", "default.html",
+        new OutputType("Information", "tree.html",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_TREE);
 

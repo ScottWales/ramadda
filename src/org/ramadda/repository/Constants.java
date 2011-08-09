@@ -1446,6 +1446,9 @@ public interface Constants {
     /** _more_          */
     public static final String PROP_SHOWMAP = "ramadda.showmap";
 
+    public static final String PROP_NOSTYLE = "nostyle";
+
+
     /** _more_          */
     public static final String PROP_SEARCH_LUCENE_ENABLED =
         "ramadda.search.lucene.enabled";

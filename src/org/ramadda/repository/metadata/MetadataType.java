@@ -784,7 +784,10 @@ public class MetadataType extends MetadataTypeBase {
                                 forEdit);
             if ((widget == null) || (widget.length() == 0)) {}
             else {
-                sb.append(HtmlUtil.formEntryTop(elementLbl, widget));
+                String suffixLabel = element.getSuffixLabel();
+                if(suffixLabel==null) suffixLabel = "";
+
+                sb.append(HtmlUtil.formEntryTop(elementLbl, widget+suffixLabel));
             }
         }
 

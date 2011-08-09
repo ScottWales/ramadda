@@ -191,6 +191,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final String PROP_LANGUAGE_DEFAULT =
         "ramadda.language.default";
 
+
     /** _more_ */
     protected List<RequestUrl> entryEditUrls =
         RepositoryUtil.toList(new RequestUrl[] {
@@ -4798,16 +4799,46 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Request getTmpRequest(Entry entry) throws Exception {
         Request request = getTmpRequest();
-        request.setPageStyle(doMakePageStyle(entry));
+        request.setPageStyle(doMakePageStyle(request,entry));
         return request;
     }
 
 
-    public PageStyle doMakePageStyle(Entry entry) {
-        PageStyle pageStyle =  new PageStyle();
-        //pageStyle.setFolderWikiTemplate("{{description}} {{information}} CHILLENS: {{children open=true}}");
-        //pageStyle.setFileWikiTemplate("{{description}} {{information showtoggle=false}}");
-        return pageStyle;
+    public PageStyle doMakePageStyle(Request request, Entry entry)  {
+        try {
+            PageStyle pageStyle =  new PageStyle();
+            if(request.exists(PROP_NOSTYLE) || getProperty(PROP_NOSTYLE, false)) return pageStyle;
+            List<Metadata>metadataList = getMetadataManager().findMetadata(entry,
+                                                                           ContentMetadataHandler.TYPE_PAGESTYLE, true);
+
+            if(metadataList!=null && metadataList.size()>0) {
+                Metadata metadata =  metadataList.get(0);
+                pageStyle.setShowBreadcrumbs(Misc.equals(metadata.getAttr2(),"true"));
+                pageStyle.setShowToolbar(Misc.equals(metadata.getAttr3(),"true"));
+                pageStyle.setShowEntryHeader(Misc.equals(metadata.getAttr4(),"true"));
+
+                boolean canEdit = getAccessManager().canDoAction(request, entry,
+                                                                 Permission.ACTION_EDIT);
+                if(!canEdit) {
+                    String menus = metadata.getAttr1();
+                    if(menus!=null && menus.trim().length()>0) {
+                        if(menus.equals("none")) {
+                            pageStyle.setShowMenubar(false);
+                        } else {
+                            for(String menu:StringUtil.split(menus,",",true,true))
+                                pageStyle.setMenu(menu);
+                        }
+                    }
+                }
+                if(metadata.getAttr(5)!=null && metadata.getAttr(5).trim().length()>0) 
+                    pageStyle.setFolderWikiTemplate(metadata.getAttr(5));
+                if(metadata.getAttr(6)!=null && metadata.getAttr(6).trim().length()>0) 
+                    pageStyle.setFileWikiTemplate(metadata.getAttr(6));
+            }
+            return pageStyle;
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 

@@ -1159,7 +1159,7 @@ function selectClick(id,entryId,value) {
     if (selector.selecttype=="wikilink") {
         insertAtCursor(selector.textComp.obj,"[[" +entryId+"|"+value+"]]");
     } else if (selector.selecttype=="entryid") {
-        insertTagsInner(selector.textComp.obj, "{{import " +entryId+" "," }}","importtype");
+        insertTagsInner(selector.textComp.obj, "{{" +entryId+" "," }}","importtype");
     } else { 
         if(selector.hiddenComp) {
             selector.hiddenComp.obj.value =entryId;

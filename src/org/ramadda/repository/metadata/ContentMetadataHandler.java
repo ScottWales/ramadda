@@ -72,6 +72,8 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_ATTACHMENT = "content.attachment";
 
+    public static final String TYPE_PAGESTYLE = "content.pagestyle";
+
     /** _more_ */
     public static final String TYPE_LOGO = "content.logo";
 

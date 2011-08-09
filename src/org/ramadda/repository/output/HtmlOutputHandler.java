@@ -174,6 +174,7 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_HTML);
+        addType(OUTPUT_TREE);
         addType(OUTPUT_TIMELINE);
         addType(OUTPUT_GRID);
         addType(OUTPUT_GRAPH);
@@ -477,7 +478,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
-        } else if (output.equals(OUTPUT_HTML)) {
+        } else if (output.equals(OUTPUT_HTML)||output.equals(OUTPUT_TREE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else {
             return super.getMimeType(output);

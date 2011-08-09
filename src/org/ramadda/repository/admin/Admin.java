@@ -1084,6 +1084,15 @@ public class Admin extends RepositoryManager {
         if (phrases == null) {
             phrases = "#label=new label to use\n#e.g.: Foo=Bar";
         }
+
+        dsb.append(
+            HtmlUtil.formEntryTop(
+                msgLabel("Ignore Page Styles"),
+                HtmlUtil.checkbox(
+                    PROP_NOSTYLE, "true",
+                    getProperty(PROP_NOSTYLE, false))));
+
+
         dsb.append(
             HtmlUtil.formEntryTop(
                 msgLabel("Translations"),
@@ -1444,6 +1453,10 @@ public class Admin extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_LDM_QUEUE, true);
         getRepository().writeGlobal(request, PROP_GOOGLEAPIKEYS, true);
         getRepository().writeGlobal(request, PROP_FACEBOOK_CONNECT_KEY);
+
+        
+        getRepository().writeGlobal(PROP_NOSTYLE,"" + request.get(PROP_NOSTYLE, false));
+
 
         String ratings = "" + request.get(PROP_RATINGS_ENABLE, false);
         getRepository().writeGlobal(PROP_RATINGS_ENABLE, ratings);

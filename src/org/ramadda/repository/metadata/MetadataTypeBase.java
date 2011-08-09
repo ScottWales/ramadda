@@ -86,6 +86,7 @@ public class MetadataTypeBase extends RepositoryManager {
     public static final String ATTR_NAME = "name";
 
     public static final String ATTR_LABEL = "label";
+    public static final String ATTR_SUFFIX = "suffix";
 
     /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
@@ -117,6 +118,7 @@ public class MetadataTypeBase extends RepositoryManager {
     private String name;
 
     private String label;
+    private String suffixLabel;
 
     /** _more_ */
     private boolean showInHtml = true;
@@ -361,6 +363,8 @@ public class MetadataTypeBase extends RepositoryManager {
     public void init(Element node) throws Exception {
         setName(XmlUtil.getAttribute(node, ATTR_NAME, ""));
         setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String)null));
+        setSuffixLabel(XmlUtil.getAttribute(node, ATTR_SUFFIX, (String)null));
+
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
         setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
                 false));
@@ -640,6 +644,20 @@ public class MetadataTypeBase extends RepositoryManager {
 
     public void setLabel(String value) {
         label = value;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSuffixLabel() {
+        return suffixLabel;
+    }
+
+
+    public void setSuffixLabel(String value) {
+        suffixLabel = value;
     }
 
     /**

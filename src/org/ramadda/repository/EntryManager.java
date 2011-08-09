@@ -4917,15 +4917,19 @@ public class EntryManager extends RepositoryManager {
             String img = getRepository().makePopupLink(
                              HtmlUtil.img(getIconUrl(request, entry)), links,
                              true, false);
+
+
+            boolean showBreadcrumbs = pageStyle.getShowBreadcrumbs(entry);
+            boolean showToolbar = pageStyle.getShowToolbar(entry);
+            boolean showMenubar = pageStyle.getShowMenubar(entry);
+            boolean showEntryHeader = pageStyle.getShowEntryHeader(entry);
+
             String breadcrumbHtml = "";
-            if (pageStyle.getShowBreadcrumbs(entry)) {
+            if (showBreadcrumbs) {
                 breadcrumbHtml = HtmlUtil.div(StringUtil.join(separator,
                         breadcrumbs), HtmlUtil.cssClass("breadcrumbs"));
             }
 
-
-            boolean showToolbar = pageStyle.getShowToolbar(entry);
-            boolean showMenubar = pageStyle.getShowMenubar(entry);
             String  toolbar     = showToolbar
                                   ? getEntryToolbar(request, entry)
                                   : "";
@@ -4945,15 +4949,21 @@ public class EntryManager extends RepositoryManager {
                 getRepository().getHtmlOutputHandler().getHtmlHeader(request,
                     entry);
 
-            String entryHeader =
-                "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
+            String entryHeader ="";
+            String style = "";
+            if(showEntryHeader) {
+                entryHeader = "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
                 + HtmlUtil.rowBottom("<td class=\"entryname\" >" + img
                                      + entryLink
                                      + "</td><td align=\"right\">"
                                      + htmlViewLinks + "</td>") + "</table>";
+            }
 
+            if(showEntryHeader || showToolbar || showBreadcrumbs) {
+                style  = HtmlUtil.cssClass("entryheader");
+            }
             nav = HtmlUtil.div(menubar + breadcrumbHtml + entryHeader,
-                               HtmlUtil.cssClass("entryheader"));
+                               style);
 
         }
         String title =

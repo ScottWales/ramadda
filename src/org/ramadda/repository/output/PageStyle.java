@@ -23,6 +23,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
+import java.util.HashSet;
 
 /**
  *
@@ -51,21 +52,28 @@ public class PageStyle {
 
     private String fileWikiTemplate;
 
+    private HashSet<String> menus = new HashSet<String>();
+
     /** _more_ */
     private boolean showMenubar = true;
 
     /** _more_          */
     private boolean showToolbar = true;
 
+    private boolean showEntryHeader = true;
+
     /** _more_ */
     private boolean showBreadcrumbs = true;
-
 
 
     /**
      * _more_
      */
     public PageStyle() {}
+
+    public void setMenu(String menu) {
+        menus.add(menu);
+    }
 
     /**
      * _more_
@@ -77,7 +85,8 @@ public class PageStyle {
      * @return _more_
      */
     public boolean okToShowMenu(Entry entry, String menu) {
-        return true;
+        if(menus.size()==0) return true;
+        return menus.contains(menu);
     }
 
     /**
@@ -106,7 +115,6 @@ public class PageStyle {
         if(entry.isDummy()) {
             return null;
         }
-
         if(entry.isGroup()) {
             return folderWikiTemplate;
         }
@@ -154,6 +162,27 @@ public class PageStyle {
     public boolean getShowToolbar(Entry entry) {
         //        if(true) return false;
         return showToolbar;
+    }
+
+
+    /**
+     *  Set the ShowEntryHeader property.
+     *
+     *  @param value The new value for ShowEntryHeader
+     */
+    public void setShowEntryHeader(boolean value) {
+        showEntryHeader = value;
+    }
+
+    /**
+     *  Get the ShowEntryHeader property.
+     *
+     *
+     * @param entry _more_
+     *  @return The ShowEntryHeader
+     */
+    public boolean getShowEntryHeader(Entry entry) {
+        return showEntryHeader;
     }
 
     /**
