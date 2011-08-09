@@ -248,7 +248,7 @@ public class DataOutputHandler extends OutputHandler {
                        OutputType.SUFFIX_NONE, ICON_OPENDAP, GROUP_DATA);
 
     /** CDL Output Type */
-    public static final OutputType OUTPUT_CDL = new OutputType("NCDump",
+    public static final OutputType OUTPUT_CDL = new OutputType("File Metadata",
                                                     "data.cdl",
                                                     OutputType.TYPE_CATEGORY,
                                                     OutputType.SUFFIX_NONE,
