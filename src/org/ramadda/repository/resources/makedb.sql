@@ -40,7 +40,7 @@ ALTER table entries add column md5 varchar(32);
 ALTER table entries add column filesize ramadda.bigint;
 ALTER table entries add column altitudetop ramadda.double;
 ALTER table entries add column altitudebottom ramadda.double;
-ALTER table entries alter column description set data type varchar(15000);
+---ALTER table entries alter column description set data type varchar(15000);
 
 
 
@@ -91,10 +91,10 @@ CREATE TABLE  metadata (id varchar(200),
 			entry_id varchar(200),
                         type varchar(200),
                 	inherited int,
-                        attr1 varchar(10000),
-                        attr2 varchar(10000),
-                        attr3 varchar(10000),
-                        attr4 varchar(10000),
+                        attr1 varchar(6000),
+                        attr2 varchar(6000),
+                        attr3 varchar(6000),
+                        attr4 varchar(6000),
 		        extra ramadda.bigclob);
 
 ALTER table metadata add column extra ramadda.bigclob;
