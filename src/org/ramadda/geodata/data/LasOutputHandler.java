@@ -127,7 +127,7 @@ public class LasOutputHandler extends OutputHandler {
 
     /** The output type */
     public static final OutputType OUTPUT_LAS_XML =
-        new OutputType("LAS-XML", "las.xml", OutputType.TYPE_NONHTML, "",
+        new OutputType("LAS-XML", "las.xml", OutputType.TYPE_FEEDS, "",
                        null);
 
 

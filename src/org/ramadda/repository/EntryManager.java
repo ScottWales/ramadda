@@ -4446,9 +4446,9 @@ public class EntryManager extends RepositoryManager {
                     cnt++;
                 }
                 sb = htmlSB;
-                //} else if (link.isType(OutputType.TYPE_NONHTML)) {
+                //} else if (link.isType(OutputType.TYPE_FEEDS)) {
                 //if (nonHtmlSB == null) {
-            } else if (link.isType(OutputType.TYPE_NONHTML)) {
+            } else if (link.isType(OutputType.TYPE_FEEDS)) {
                 if (exportSB == null) {
                     cnt++;
                     exportSB = new StringBuffer(tableHeader);
@@ -4460,7 +4460,7 @@ public class EntryManager extends RepositoryManager {
                     fileSB = new StringBuffer(tableHeader);
                 }
                 sb = fileSB;
-            } else if (link.isType(OutputType.TYPE_CATEGORY)) {
+            } else if (link.isType(OutputType.TYPE_OTHER)) {
                 if (categorySB == null) {
                     cnt++;
                     categorySB = new StringBuffer(tableHeader);
@@ -4587,7 +4587,7 @@ public class EntryManager extends RepositoryManager {
         String editMenu = getEntryActionsTable(request, entry,
                               OutputType.TYPE_EDIT, links, true);
         String exportMenu = getEntryActionsTable(request, entry,
-                                OutputType.TYPE_NONHTML, links, true);
+                                OutputType.TYPE_FEEDS, links, true);
         String viewMenu = getEntryActionsTable(request, entry,
                               OutputType.TYPE_VIEW, links, true);
 
@@ -4599,9 +4599,9 @@ public class EntryManager extends RepositoryManager {
 
         String menuClass = HtmlUtil.cssClass("entrymenulink");
         for (Link link : links) {
-            if (link.isType(OutputType.TYPE_CATEGORY)) {
+            if (link.isType(OutputType.TYPE_OTHER)) {
                 categoryMenu = getEntryActionsTable(request, entry,
-                        OutputType.TYPE_CATEGORY, links);
+                        OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
                 categoryMenu = getRepository().makePopupLink(
                     HtmlUtil.span(msg(categoryName), menuClass),
@@ -4640,7 +4640,7 @@ public class EntryManager extends RepositoryManager {
                     true));
         }
 
-        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_CONNECT)
+        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FEEDS)
                 && (exportMenu != null)) {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);

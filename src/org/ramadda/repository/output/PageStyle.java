@@ -41,7 +41,7 @@ public class PageStyle {
     public static final String MENU_VIEW = "view";
 
     /** _more_ */
-    public static final String MENU_CONNECT = "connect";
+    public static final String MENU_FEEDS = "feeds";
 
     /** _more_ */
     public static final String MENU_OTHER = "other";

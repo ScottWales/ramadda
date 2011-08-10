@@ -438,7 +438,7 @@ public class IdvOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_IDV_GRID =
-        new OutputType("Grid Displays", "idv.grid", OutputType.TYPE_CATEGORY,
+        new OutputType("Grid Displays", "idv.grid", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE, ICON_PLANVIEW,
                        GROUP_DATA);
 
@@ -446,7 +446,7 @@ public class IdvOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_IDV_POINT =
         new OutputType("Point Displays", "idv.point",
-                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_PLANVIEW, GROUP_DATA);
 
 

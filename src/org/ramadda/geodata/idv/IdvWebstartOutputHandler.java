@@ -85,7 +85,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_WEBSTART =
         new OutputType("View in IDV", "idv.webstart",
-                       OutputType.TYPE_CATEGORY, "", "/icons/idv.gif",
+                       OutputType.TYPE_OTHER, "", "/icons/idv.gif",
                        IdvOutputHandler.GROUP_DATA);
 
 

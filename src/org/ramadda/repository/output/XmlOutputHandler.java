@@ -78,14 +78,14 @@ public class XmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_XML =
         new OutputType("XML", "xml.xml",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
                        "", ICON_XML);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_XMLENTRY =
         new OutputType("XML Entry", "xml.xmlentry",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
                        "", ICON_XML);
 
 

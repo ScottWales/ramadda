@@ -80,7 +80,7 @@ public class IcalOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ICAL = new OutputType("ICAL",
                                                      "ical",
-                                                     OutputType.TYPE_NONHTML,
+                                                     OutputType.TYPE_FEEDS,
                                                      "", ICON_CALENDAR);
 
 

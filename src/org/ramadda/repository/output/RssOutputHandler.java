@@ -128,13 +128,13 @@ public class RssOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_RSS_FULL =
         new OutputType("Full RSS Feed", "rss.full", 
-                       OutputType.TYPE_NONHTML| OutputType.TYPE_TOOLBAR,
+                       OutputType.TYPE_FEEDS| OutputType.TYPE_TOOLBAR,
                        "", ICON_RSS);
 
     /** _more_ */
     public static final OutputType OUTPUT_RSS_SUMMARY =
         new OutputType("RSS Feed", "rss.summary",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH| OutputType.TYPE_TOOLBAR,
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH| OutputType.TYPE_TOOLBAR,
                        "", ICON_RSS);
 
 

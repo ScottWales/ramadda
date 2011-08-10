@@ -1423,7 +1423,7 @@ public class Request implements Constants {
         if (outputType != null) {
             return outputType;
         }
-        return new OutputType(typeId, OutputType.TYPE_NONHTML);
+        return new OutputType(typeId, OutputType.TYPE_FEEDS);
     }
 
 

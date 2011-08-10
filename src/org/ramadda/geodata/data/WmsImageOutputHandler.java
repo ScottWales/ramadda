@@ -75,7 +75,7 @@ public class WmsImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_WMS_CAPABILITIES =
         new OutputType("WMS Capabilities", "wms.capabilities",
-                       OutputType.TYPE_NONHTML, "", ICON_IMAGE);
+                       OutputType.TYPE_FEEDS, "", ICON_IMAGE);
 
 
     /** _more_          */

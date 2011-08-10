@@ -244,59 +244,59 @@ public class DataOutputHandler extends OutputHandler {
 
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
-        new OutputType("OPeNDAP", "data.opendap", OutputType.TYPE_CATEGORY,
+        new OutputType("OPeNDAP", "data.opendap", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE, ICON_OPENDAP, GROUP_DATA);
 
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL = new OutputType("File Metadata",
                                                     "data.cdl",
-                                                    OutputType.TYPE_CATEGORY,
+                                                    OutputType.TYPE_OTHER,
                                                     OutputType.SUFFIX_NONE,
                                                     ICON_DATA, GROUP_DATA);
 
     /** WCS Output Type */
     public static final OutputType OUTPUT_WCS = new OutputType("WCS",
                                                     "data.wcs",
-                                                    OutputType.TYPE_NONHTML);
+                                                    OutputType.TYPE_FEEDS);
 
     /** Point map Output Type */
     public static final OutputType OUTPUT_POINT_MAP =
         new OutputType("Plot Points on a Map", "data.point.map",
-                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_MAP, GROUP_DATA);
 
     /** CSV Output Type */
     public static final OutputType OUTPUT_POINT_SUBSET =
         new OutputType("CSV, KML Output", "data.point.subset",
-                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_CSV, GROUP_DATA);
 
 
     /** Trajectory map Output Type */
     public static final OutputType OUTPUT_TRAJECTORY_MAP =
         new OutputType("Trajectory as Map", "data.trajectory.map",
-                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_MAP, GROUP_DATA);
 
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Subset Spatially", "data.gridsubset.form",
-                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_SUBSET, GROUP_DATA);
 
     /** Grid subset Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET =
-        new OutputType("data.gridsubset", OutputType.TYPE_NONHTML);
+        new OutputType("data.gridsubset", OutputType.TYPE_FEEDS);
 
     /** Grid as point form Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
         new OutputType("Extract Time Series", "data.gridaspoint.form",
-                       OutputType.TYPE_CATEGORY, OutputType.SUFFIX_NONE,
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_SUBSET, GROUP_DATA);
 
     /** Grid as point Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT =
-        new OutputType("data.gridaspoint", OutputType.TYPE_NONHTML);
+        new OutputType("data.gridaspoint", OutputType.TYPE_FEEDS);
 
     /** cdm cache */
     private Cache<String, Boolean> cdmEntries = new Cache<String,

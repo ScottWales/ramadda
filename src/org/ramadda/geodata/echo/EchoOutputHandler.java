@@ -66,7 +66,7 @@ public class EchoOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ECHO_XML =
         new OutputType("Echo-XML", "echo.xml",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
                        "", "/echo/nasa.png");
 
 

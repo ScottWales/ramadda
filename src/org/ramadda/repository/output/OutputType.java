@@ -79,13 +79,13 @@ public class OutputType {
     public static final int TYPE_EDIT = 1 << 1;
 
     /** for the  connect menu */
-    public static final int TYPE_NONHTML = 1 << 2;
+    public static final int TYPE_FEEDS = 1 << 2;
 
     /** for the  view menu */
     public static final int TYPE_VIEW = 1 << 3;
 
-    /** The extra categorixed menu */
-    public static final int TYPE_CATEGORY = 1 << 4;
+    /** The extra categorized menu */
+    public static final int TYPE_OTHER = 1 << 4;
 
     /** for the  toolbar */
     public static final int TYPE_TOOLBAR = 1 << 5;
@@ -100,9 +100,9 @@ public class OutputType {
     public static final int TYPE_FORSEARCH = 1 << 8;
 
     /** All types */
-    public static final int TYPE_ALL = TYPE_VIEW | TYPE_ACTION | TYPE_NONHTML
+    public static final int TYPE_ALL = TYPE_VIEW | TYPE_ACTION | TYPE_FEEDS
                                        | TYPE_FILE | TYPE_EDIT
-                                       | TYPE_TOOLBAR | TYPE_CATEGORY;
+                                       | TYPE_TOOLBAR | TYPE_OTHER;
 
 
     /** _more_ */
@@ -214,6 +214,20 @@ public class OutputType {
         this(that);
         this.suffix = suffix;
     }
+
+    public static int getTypeMask(List<String> menuIds) {
+        if(menuIds.size()==0) return TYPE_ALL;
+        int type = 0;
+        for(String menu: menuIds) {
+            if(menu.equals(PageStyle.MENU_FILE)) type|= TYPE_FILE;
+            else if(menu.equals(PageStyle.MENU_EDIT)) type|= TYPE_EDIT;
+            else if(menu.equals(PageStyle.MENU_VIEW)) type|= TYPE_VIEW;
+            else if(menu.equals(PageStyle.MENU_FEEDS)) type|= TYPE_FEEDS;
+            else if(menu.equals(PageStyle.MENU_OTHER)) type|= TYPE_OTHER;
+        }
+        return type;
+    }
+
 
     /**
      * _more_
@@ -395,7 +409,7 @@ public class OutputType {
      * @return _more_
      */
     public boolean getIsNonHtml() {
-        return isType(TYPE_NONHTML);
+        return isType(TYPE_FEEDS);
     }
 
     /**

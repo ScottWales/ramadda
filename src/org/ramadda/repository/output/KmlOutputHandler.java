@@ -71,7 +71,7 @@ public class KmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_KML =
         new OutputType("Google Earth KML", "kml",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
                        "", ICON_KML);
 
 

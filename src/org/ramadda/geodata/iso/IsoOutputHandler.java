@@ -62,7 +62,7 @@ public class IsoOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ISO_XML =
         new OutputType("Iso-XML", "iso.xml",
-                       OutputType.TYPE_NONHTML | OutputType.TYPE_FORSEARCH,
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
                        "", ICON_DIF);
 
 
