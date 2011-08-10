@@ -1887,8 +1887,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             SqlUtil.loadSql(sql, statement, ignoreErrors, printStatus, errors);
             int existsCnt = 0;
             for(SqlUtil.SqlError error: errors) {
-                if(error.getException().toString().indexOf("already exists")<0) {
-                    System.err.println("ERROR: DatabaseManager.loadSql: "  + error.getException() +"\nsql:" + error.getSql()); 
+                String errorString = error.getException().toString().toLowerCase();
+                if(errorString.indexOf("already exists")<0  && errorString.indexOf("duplicate")<0) {
+                    System.err.println("RAMADDA: Error in DatabaseManager.loadSql: "  + error.getException() +"\nsql:" + error.getSql()); 
                 } else {
                     //                    System.err.println("EXISTS: "+error.getSql());
                     existsCnt++;
