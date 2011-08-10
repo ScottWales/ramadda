@@ -904,8 +904,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (catalinaBase != null) {
             File catalinaConfFile = new File(catalinaBase
                                              + "/conf/repository.properties");
-            System.err.println("RAMADDA: looking for:" + catalinaConfFile);
             if (catalinaConfFile.exists()) {
+                System.err.println("RAMADDA: loading:" + catalinaConfFile);
                 loadProperties(properties, catalinaConfFile.toString());
             } else {
                 //A hack to run on unavco facility server
@@ -928,8 +928,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String localPropertyFile =
                 IOUtil.joinDir(getStorageManager().getRepositoryDir(),
                                "repository.properties");
+
             if (new File(localPropertyFile).exists()) {
+                System.err.println ("RAMADDA: loading local property file:" +
+                                    localPropertyFile);
                 loadProperties(properties, localPropertyFile);
+            } else {
             }
 
             File[] localFiles =
@@ -951,6 +955,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         //initialize the plugin manager with the properties
         getPluginManager().init(properties);
+
 
         debug = getProperty(PROP_DEBUG, false);
         //        System.err.println ("debug:" + debug);
