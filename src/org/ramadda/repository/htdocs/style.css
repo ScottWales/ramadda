@@ -877,7 +877,7 @@ a.menulink {
    background-color : #FFFFFF;
    position: absolute; 
    visibility: hidden; 
-   z-index: 1;
+   z-index: 1000;
 //Shadow effect
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
