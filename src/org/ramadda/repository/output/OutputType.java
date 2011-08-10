@@ -87,6 +87,9 @@ public class OutputType {
     /** The extra categorized menu */
     public static final int TYPE_OTHER = 1 << 4;
 
+    public static final int TYPE_CATEGORY  = TYPE_OTHER;
+    public static final int TYPE_CONNECT  = TYPE_FEEDS;
+
     /** for the  toolbar */
     public static final int TYPE_TOOLBAR = 1 << 5;
 
