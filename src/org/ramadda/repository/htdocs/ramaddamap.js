@@ -18,6 +18,7 @@ var map_wms_openlayers = "wms:OpenLayers WMS,http://vmap0.tiles.osgeo.org/wms/vm
 
 var defaultLocation = new OpenLayers.LonLat(-104, 40);
 var defaultZoomLevel = 3;
+var wrapBounds = new OpenLayers.Bounds(-360,-90,360,90);
 
 
 
@@ -37,7 +38,8 @@ function RepositoryMap (mapId, params) {
 
     this.addWMSLayer  = function(name, url, layer) {
         var layer = new OpenLayers.Layer.WMS( name, url,
-                                               {layers: layer} );
+                                               {layers: layer},
+                                               {wrapDateLine: true} );
         this.map.addLayer(layer);
     }
 
@@ -132,6 +134,7 @@ function RepositoryMap (mapId, params) {
         //        this.map = new OpenLayers.Map( this.mapDivId);
         //        this.map.minResolution = 0.0000001;
         //        this.map.minScale = 0.0000001;
+        //this.map.restrictedExtent = wrapBounds;
         this.vectors = new OpenLayers.Layer.Vector("Drawing");
         this.map.addLayer(this.vectors);
         this.addBaseLayers();
@@ -444,7 +447,7 @@ function RepositoryMap (mapId, params) {
 
     this.addBox = function(id, north, west, south, east, params) {
         var args =  {"color": "blue",
-                     "selectable": true};
+                     "selectable": true, "zoomToExtent": false};
 
         for( a in params) {
             args[a] = params[a];
@@ -476,13 +479,9 @@ function RepositoryMap (mapId, params) {
         box.id = id;
         this.boxes.addMarker(box);
 
-       //        if(zoomToExtent) {
-        //            this.map.zoomToExtent(bounds);
-        //        }
-        //        lonlat = new OpenLayers.LonLat(west+(east-west)/2,south+(north-south)/2);
-        //        this.map.setOptions({restrictedExtent: bounds});
-        //        this.map.setCenter(lonlat);
-        //        this.map.zoomTo(4);
+        if(args["zoomToExtent"]) {
+            this.centerOnMarkers(bounds);
+        }
         return box;
     }
 

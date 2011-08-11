@@ -20,89 +20,89 @@
 package org.ramadda.repository.map;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataHandler;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-import java.awt.geom.Rectangle2D;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 
 /**
+ * A MapInfo class to hold map info
  */
 public class MapInfo {
 
-    /** _more_ */
+    /** default box color */
     public static final String DFLT_BOX_COLOR = "blue";
 
-    /** _more_ */
+    /** default map width */
     public static final int DFLT_WIDTH = 600;
 
-    /** _more_ */
+    /** default map height */
     public static final int DFLT_HEIGHT = 300;
 
-    /** _more_ */
+    /** The associated repository */
     private Repository repository;
 
-
-    /** _more_ */
+    /** the map count */
     private static int cnt = 0;
 
-    /** _more_ */
+    /** the map variable name */
     private String mapVarName;
 
-    /** _more_ */
+    /** the width */
     private int width = DFLT_WIDTH;
 
-    /** _more_ */
+    /** the height */
     private int height = DFLT_HEIGHT;
 
-    /** _more_ */
+    /** is the map for selection */
     private boolean forSelection = false;
 
-    /** _more_ */
+    /** the javascript buffer? */
     private StringBuffer jsBuffer = null;
 
-    /** _more_ */
+    /** the html */
     private StringBuffer html = new StringBuffer();
 
 
     /**
-     * _more_
+     * Create a MapInfo for the associated repository
      *
-     * @param repository _more_
+     * @param repository the associated repository
      */
     public MapInfo(Repository repository) {
         this(repository, DFLT_WIDTH, DFLT_HEIGHT);
     }
 
     /**
-     * _more_
+     * Create a MapInfo for the associated repository
      *
-     * @param repository _more_
-     * @param width _more_
-     * @param height _more_
+     * @param repository the associated repository
+     * @param width  the width of the map
+     * @param height  the height of the map
      */
     public MapInfo(Repository repository, int width, int height) {
         this(repository, width, height, false);
     }
 
     /**
-     * _more_
+     * Create a MapInfo for the associated repository
      *
-     * @param repository _more_
-     * @param width _more_
-     * @param height _more_
-     * @param forSelection _more_
+     * @param repository the associated repository
+     * @param width  the width of the map
+     * @param height  the height of the map
+     * @param forSelection  true if for selecting something
      */
     public MapInfo(Repository repository, int width, int height,
                    boolean forSelection) {
@@ -115,11 +115,11 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Shortcut to repository.msg
      *
-     * @param s _more_
+     * @param s  the string
      *
-     * @return _more_
+     * @return  the translated message
      */
     public String msg(String s) {
         return repository.msg(s);
@@ -127,20 +127,20 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Shortcut to repository.msgLabel
      *
-     * @param s _more_
+     * @param s  the string
      *
-     * @return _more_
+     * @return  the label
      */
     public String msgLabel(String s) {
         return repository.msgLabel(s);
     }
 
     /**
-     * _more_
+     * Show the maps
      *
-     * @return _more_
+     * @return  true if successful
      */
     public boolean showMaps() {
         return repository.getMapManager().showMaps();
@@ -148,18 +148,18 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Add the html to the output
      *
-     * @param s _more_
+     * @param s  the string
      */
     public void addHtml(String s) {
         html.append(s);
     }
 
     /**
-     * _more_
+     * Add JavaSript code to the output
      *
-     * @param s _more_
+     * @param s  the JavaSript
      */
     public void addJS(String s) {
         getJS().append(s);
@@ -167,12 +167,12 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Add spatial metadata
      *
-     * @param entry _more_
-     * @param metadataList _more_
+     * @param entry  the entry
+     * @param metadataList  the list of metatdata
      *
-     * @return _more_
+     * @return true if we added some metadata
      */
     public boolean addSpatialMetadata(Entry entry,
                                       List<Metadata> metadataList) {
@@ -200,11 +200,11 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Get the map div
      *
-     * @param contents _more_
+     * @param contents the contents
      *
-     * @return _more_
+     * @return  the div tag
      */
     private String getMapDiv(String contents) {
         StringBuffer result = new StringBuffer();
@@ -221,9 +221,9 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Get the HTML for this map
      *
-     * @return _more_
+     * @return  the HTML
      */
     public String getHtml() {
         if ( !showMaps()) {
@@ -239,9 +239,9 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Get the JavaScript for this map
      *
-     * @return _more_
+     * @return  the JavaScript
      */
     private StringBuffer getJS() {
         if (jsBuffer == null) {
@@ -257,13 +257,13 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Make a selector
      *
-     * @param arg _more_
-     * @param popup _more_
-     * @param nwse _more_
+     * @param arg  the argument
+     * @param popup  true to make a popup
+     * @param nwse  the north, south, east and west ids
      *
-     * @return _more_
+     * @return  the corresponding code
      */
     public String makeSelector(String arg, boolean popup, String[] nwse) {
 
@@ -271,15 +271,15 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Make a selector
      *
-     * @param arg _more_
-     * @param popup _more_
-     * @param nwse _more_
-     * @param extraLeft _more_
-     * @param extraTop _more_
+     * @param arg  the argument
+     * @param popup  true to make a popup
+     * @param nwse  the north, south, east and west ids
+     * @param extraLeft  extra left text
+     * @param extraTop  extra top text
      *
-     * @return _more_
+     * @return  the corresponding code
      */
     public String makeSelector(String arg, boolean popup, String[] nwse,
                                String extraLeft, String extraTop) {
@@ -334,11 +334,11 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Get the selector clear link
      *
-     * @param msg _more_
+     * @param msg  name for the clear link
      *
-     * @return _more_
+     * @return  the link
      */
     public String getSelectorClearLink(String msg) {
         return HtmlUtil.mouseClickHref(getVariableName()
@@ -347,12 +347,12 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * GEt the selector widget
      *
-     * @param arg _more_
-     * @param nwse _more_
+     * @param arg  the argument
+     * @param nwse the N,S,E and W labels
      *
-     * @return _more_
+     * @return  the widget
      */
     public String getSelectorWidget(String arg, String[] nwse) {
         boolean doRegion = true;
@@ -387,10 +387,10 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Add a box to the map
      *
-     * @param entry _more_
-     * @param properties _more_
+     * @param entry  the map entry
+     * @param properties  the properties for the box
      */
     public void addBox(Entry entry, MapProperties properties) {
         addBox(entry.getId(), properties, entry.getNorth(), entry.getWest(),
@@ -398,11 +398,11 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Add a box to the map
      *
-     * @param id _more_
-     * @param llr _more_
-     * @param properties _more_
+     * @param id  the id
+     * @param llr  the bounds
+     * @param properties the box properties
      */
     public void addBox(String id, LatLonRect llr, MapProperties properties) {
         addBox(id, properties, llr.getLatMax(), llr.getLonMin(),
@@ -411,20 +411,21 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Add a box to the map
      *
-     * @param id _more_
-     * @param properties _more_
-     * @param north _more_
-     * @param west _more_
-     * @param south _more_
-     * @param east _more_
+     * @param id  the id
+     * @param properties the box properties
+     * @param north  north value
+     * @param west   west value
+     * @param south  south value
+     * @param east   east value
      */
     public void addBox(String id, MapProperties properties, double north,
                        double west, double south, double east) {
         getJS().append("var mapBoxAttributes = {\"color\":\""
                        + properties.getColor() + "\",\"selectable\": "
-                       + properties.getSelectable() + "};\n");
+                       + properties.getSelectable() + ",\"zoomToExtent\": "
+                       + properties.getZoomToExtent() + "};\n");
         getJS().append(mapVarName + ".addBox(" + HtmlUtil.squote(id) + ","
                        + north + "," + west + "," + south + "," + east
                        + ", mapBoxAttributes);\n");
@@ -432,11 +433,11 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Add a line to the map
      *
-     * @param id _more_
-     * @param fromPt _more_
-     * @param toPt _more_
+     * @param id  the line id
+     * @param fromPt  starting point
+     * @param toPt    ending point
      */
     public void addLine(String id, LatLonPointImpl fromPt,
                         LatLonPointImpl toPt) {
@@ -445,10 +446,10 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Add a set of lines
      *
-     * @param id _more_
-     * @param pts _more_
+     * @param id  the lines id
+     * @param pts  the points
      */
     public void addLines(String id, double[][] pts) {
         for (int i = 1; i < pts.length; i++) {
@@ -457,10 +458,10 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Add a set of lines
      *
-     * @param id _more_
-     * @param pts _more_
+     * @param id  the lines id
+     * @param pts  the points
      */
     public void addLines(String id, List<double[]> pts) {
         if (pts.size() == 0) {
@@ -484,13 +485,13 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Add a line
      *
-     * @param id _more_
-     * @param fromLat _more_
-     * @param fromLon _more_
-     * @param toLat _more_
-     * @param toLon _more_
+     * @param id  the line id
+     * @param fromLat  starting lat
+     * @param fromLon  starting lon
+     * @param toLat    ending lat
+     * @param toLon    ending lon
      */
     public void addLine(String id, double fromLat, double fromLon,
                         double toLat, double toLon) {
@@ -500,12 +501,12 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Add a marker
      *
-     * @param id _more_
-     * @param pt _more_
-     * @param icon _more_
-     * @param info _more_
+     * @param id  the marker id
+     * @param pt  the position
+     * @param icon  the icon
+     * @param info  the associated text
      */
     public void addMarker(String id, LatLonPointImpl pt, String icon,
                           String info) {
@@ -513,13 +514,13 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Add a marker
      *
-     * @param id _more_
-     * @param lat _more_
-     * @param lon _more_
-     * @param icon _more_
-     * @param info _more_
+     * @param id  the marker id
+     * @param lat  the latitude
+     * @param lon  the longitude
+     * @param icon  the icon
+     * @param info  the associated text
      */
     public void addMarker(String id, double lat, double lon, String icon,
                           String info) {
@@ -532,9 +533,9 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Center the map on the bounds
      *
-     * @param bounds _more_
+     * @param bounds  the bounds
      */
     public void centerOn(Rectangle2D.Double bounds) {
         if (bounds != null) {
@@ -551,16 +552,16 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Center the map
      */
     public void center() {
         getJS().append(mapVarName + ".centerOnMarkers(null);\n");
     }
 
     /**
-     * _more_
+     * Center on the entry bounds
      *
-     * @param entry _more_
+     * @param entry  the entry
      */
     public void centerOn(Entry entry) {
         if (entry == null) {
@@ -577,12 +578,12 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Center on the box defined by the N,S,E,W coords
      *
-     * @param north _more_
-     * @param west _more_
-     * @param south _more_
-     * @param east _more_
+     * @param north  north edge
+     * @param west   west edge
+     * @param south  south edge
+     * @param east   east edge
      */
     public void centerOn(double north, double west, double south,
                          double east) {
@@ -593,12 +594,12 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Get the highlight  href tag
      *
-     * @param id _more_
-     * @param label _more_
+     * @param id  the id
+     * @param label  the label
      *
-     * @return _more_
+     * @return  the href tag
      */
     public String getHiliteHref(String id, String label) {
         return "<a href=\"javascript:" + getVariableName() + ".hiliteMarker("
@@ -606,12 +607,12 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Create a OpenLayers.LonLat string representation from a lat/lon point
      *
-     * @param lat _more_
-     * @param lon _more_
+     * @param lat  the latitude
+     * @param lon  the longitude
      *
-     * @return _more_
+     * @return the OpenLayer.LonLat
      */
     public static String llp(double lat, double lon) {
         if (lat < -90) {

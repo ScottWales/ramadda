@@ -20,46 +20,44 @@
 package org.ramadda.repository.map;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.output.MapOutputHandler;
-
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
-
-import ucar.unidata.util.HtmlUtil;
-
-import java.awt.geom.Rectangle2D;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
-
 
 /**
- * Class description
+ * A class to hold some map properties
  *
- *
- * @version        $version$, Fri, Jul 22, '11
- * @author         Enter your name here...    
+ * @author   RAMADDA development team
  */
 public class MapProperties {
 
-    /** _more_          */
+    /** color property */
     private String color = MapInfo.DFLT_BOX_COLOR;
 
-    /** _more_          */
+    /** selectable property */
     private boolean selectable = false;
 
+    /** zoom to extent property */
+    private boolean zoomToExtent = false;
+
     /**
-     * _more_
+     * Create a MapProperties
      *
-     * @param color _more_
-     * @param selectable _more_
+     * @param color  the color 
+     * @param selectable  true if selectable
      */
     public MapProperties(String color, boolean selectable) {
+        this(color,selectable,false);
+    }
+
+    /**
+     * Create a MapProperties
+     *
+     * @param color the color
+     * @param selectable  true if selectable
+     * @param zoom  true if should zoom to bounds
+     */
+    public MapProperties(String color, boolean selectable, boolean zoom) {
         this.color      = color;
         this.selectable = selectable;
+        this.zoomToExtent = zoom;
     }
 
     /**
@@ -96,6 +94,24 @@ public class MapProperties {
      */
     public boolean getSelectable() {
         return selectable;
+    }
+
+    /**
+     *  Set the ZoomToExtent property.
+     *
+     *  @param value The new value for ZoomToExtent
+     */
+    public void setZoomToExtent(boolean value) {
+        zoomToExtent = value;
+    }
+
+    /**
+     *  Get the ZoomToExtent property.
+     *
+     *  @return The ZoomToExtent
+     */
+    public boolean getZoomToExtent() {
+        return zoomToExtent;
     }
 
 

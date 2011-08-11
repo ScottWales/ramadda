@@ -1995,7 +1995,7 @@ public class DataOutputHandler extends OutputHandler {
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
-            map.addBox("", llr, new MapProperties("blue", false));
+            map.addBox("", llr, new MapProperties("blue", false, true));
             String llb = map.makeSelector(ARG_AREA, true,
                                           new String[] { "" + llr.getLatMax(),
                     "" + llr.getLonMin(), "" + llr.getLatMin(),
@@ -2037,11 +2037,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Sort the grids
      *
-     * @param dataset _more_
+     * @param dataset  the grid dataset
      *
-     * @return _more_
+     * @return  the grids
      */
     public List<GridDatatype> sortGrids(GridDataset dataset) {
         List tuples = new ArrayList();
@@ -2064,13 +2064,13 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the PointFeatureIterator
      *
-     * @param input _more_
+     * @param input  the dataset
      *
-     * @return _more_
+     * @return  the iterator
      *
-     * @throws Exception _more_
+     * @throws Exception  problem getting the iterator
      */
     public static PointFeatureIterator getPointIterator(
             FeatureDatasetPoint input)
@@ -2100,14 +2100,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output a point map
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the request
+     * @param entry  the entry
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception  on badness
      */
     public Result outputPointMap(Request request, Entry entry)
             throws Exception {
@@ -2306,14 +2306,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output a trajectory map
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the request
+     * @param entry    the entry
      *
-     * @return _more_
+     * @return  the result
      *
-     * @throws Exception _more_
+     * @throws Exception  on badness
      */
     public Result outputTrajectoryMap(Request request, Entry entry)
             throws Exception {
@@ -2433,12 +2433,12 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create a LatLonPoint string
      *
-     * @param lat _more_
-     * @param lon _more_
+     * @param lat  the latitude
+     * @param lon  the longitude
      *
-     * @return _more_
+     * @return  the string
      */
     public static String llp(double lat, double lon) {
         return "new LatLonPoint(" + lat + "," + lon + ")";
@@ -2473,7 +2473,7 @@ public class DataOutputHandler extends OutputHandler {
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
-        map.addBox(entry, new MapProperties("blue", false));
+        map.addBox(entry, new MapProperties("blue", false, true));
         map.centerOn(entry);
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
         sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
