@@ -2982,7 +2982,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-
         if (sslEnabled) {
             if ( !request.get(ARG_NOREDIRECT, false)) {
                 if (apiMethod.getNeedsSsl() && !request.getSecure()) {
@@ -3596,8 +3595,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             for (String path : templatePaths) {
                 try {
+                    //Skip resources called template.html that might be for other things
+                    if(IOUtil.getFileTail(path).equals("template.html")) continue;
                     String resource =
                         getStorageManager().readSystemResource(path);
+                    try {
+                        resource = processTemplate(resource);
+                    } catch(Exception exc) {
+                        getLogManager().logError("failed to process template:" + path, exc);
+                        continue;
+                    }
                     resource = resource.replace("${html.imports}", imports);
                     HtmlTemplate template = new HtmlTemplate(this, path,
                                                 resource);
@@ -3627,6 +3634,44 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return theTemplates;
     }
 
+
+    public  String processTemplate(String html) throws Exception {
+        StringBuffer template = new StringBuffer();
+        while(true) {
+            int idx1 = html.indexOf("<include");
+            if(idx1<0) {
+                template.append(html);
+                break;
+            }
+            template.append(html.substring(0,idx1));
+            html = html.substring(idx1);
+            idx1 = html.indexOf(">")+1;
+            String include  = html.substring(0,idx1);
+            include = include.substring("<include".length());
+            include =include.replace(">","");
+            Hashtable props =  StringUtil.parseHtmlProperties(include);
+            String url=(String)props.get("href");
+            if(url!=null)  {
+                String includedContent  = getStorageManager().readSystemResource(new URL(url));
+                //                String includedContent =  IOUtil.readContents(url, Repository.class);
+                template.append(includedContent);
+            }
+            html = html.substring(idx1);
+        }
+        html = template.toString();
+        if(html.indexOf("${html.imports}")<0) {
+           html = html.replace("<head>","<head>\n${html.imports}");
+        }
+        if(html.indexOf("${headfinal}")<0) {
+           html = html.replace("</head>","${headfinal}\n</head>");
+        }
+        return html;
+    }
+
+    public static void main(String[]args) throws Exception {
+        //        String html = ":before:<include href=\"http://www.unavco.org/lib/uv-header-webapps.html\">:during:<include href=\"http://www.unavco.org/lib/uv-footer-webapps.html\">:after:";
+        //        System.err.println(processTemplate(html));
+    }
 
     /**
      * _more_

@@ -1595,6 +1595,9 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_HARVESTERS = "ramadda.harvesters";
 
+
+    public static final String PROP_ALWAYS_HTTPS = "ramadda.always_https";
+
     /** _more_ */
     public static final String PROP_HARVESTERS_ACTIVE =
         "ramadda.harvesters.active";

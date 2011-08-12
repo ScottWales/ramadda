@@ -1085,17 +1085,18 @@ function scrollObject(id,cnt,lastHeight) {
 
 var selectors = new Array();
 
-function Selector(event, id, allEntries, selecttype, localeId) {
-    this.id = id;
+function Selector(event, selectorId, elementId, allEntries, selecttype, localeId) {
+    this.id  = selectorId;
+    this.elementId  = elementId;
     this.localeId = localeId;
     this.allEntries = allEntries;
     this.selecttype = selecttype;
-    this.textComp = util.getDomObject(id);
+    this.textComp = util.getDomObject(this.elementId);
      if (!this.textComp) {
-//	alert("cannot find text comp " + id);
+//	alert("cannot find text comp " + this.elementId);
 	return false;
     }
-    this.hiddenComp = util.getDomObject(id+"_hidden");
+    this.hiddenComp = util.getDomObject(this.elementId+"_hidden");
 
     this.clearInput = function() {
 	if(this.hiddenComp) {
@@ -1132,12 +1133,12 @@ function Selector(event, id, allEntries, selecttype, localeId) {
         
         util.setPosition(this.div, x+10,y);
         showObject(this.div);
-        url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + id+"&noredirect=true";
+        url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + this.id+"&noredirect=true";
         if(localeId) {
             url = url+"&localeid=" + localeId;
         }
         //Don:  alert('loading url '):
-        util.loadXML( url, handleSelect,id);
+        util.loadXML( url, handleSelect,this.id);
         return false;
     }
 
@@ -1159,7 +1160,7 @@ function selectClick(id,entryId,value) {
     if (selector.selecttype=="wikilink") {
         insertAtCursor(selector.textComp.obj,"[[" +entryId+"|"+value+"]]");
     } else if (selector.selecttype=="entryid") {
-        insertTagsInner(selector.textComp.obj, "{{" +entryId+" "," }}","importtype");
+        insertTagsInner(selector.textComp.obj, "entry=\"" +entryId+"|"+value+"\" "," ","importtype");
     } else { 
         if(selector.hiddenComp) {
             selector.hiddenComp.obj.value =entryId;
@@ -1182,19 +1183,19 @@ function selectCancel() {
 }
 
 
-function selectCreate(event, id,allEntries,selecttype, localeId) {
-    if(!selectors[id]) {
+function selectCreate(event, selectorId,elementId, allEntries,selecttype, localeId) {
+    if(!selectors[selectorId]) {
         //Don:  alert('creating selector'):
-        selectors[id] = new Selector(event,id,allEntries,selecttype,localeId);
+        selectors[selectorId] = new Selector(event,selectorId, elementId,allEntries,selecttype,localeId);
     } else {
         //Don:  alert('have selector'):
-        selectors[id].handleClick(event);
+        selectors[selectorId].handleClick(event);
     }
 }
 
 
-function selectInitialClick(event, id, allEntries, selecttype, localeId) {
-    selectCreate(event, id, allEntries, selecttype, localeId);
+function selectInitialClick(event, selectorId, elementId, allEntries, selecttype, localeId) {
+    selectCreate(event, selectorId, elementId, allEntries, selecttype, localeId);
     return false;
 }
 
@@ -1535,12 +1536,14 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
             + tagOpen + selText + tagClose
             + txtarea.value.substring(endPos, txtarea.value.length);
         //set new selection
+        //        alert(isSample + "  " +txtarea.selectionStart + " " +txtarea.selectionEnd);
+
         if (isSample) {
             txtarea.selectionStart = startPos + tagOpen.length;
             txtarea.selectionEnd = startPos + tagOpen.length + selText.length;
         } else {
             txtarea.selectionStart = startPos + tagOpen.length + selText.length + tagClose.length;
-            txtarea.selectionEnd = txtarea.selectionStart;
+            txtarea.selectionEnd = txtarea.selectionStart-tagClose.length;
         }
         //restore textarea scroll position
         txtarea.scrollTop = textScroll;

@@ -207,13 +207,17 @@ public class HtmlOutputHandler extends OutputHandler {
         if (entry.isDummy() || !entry.isGroup()) {
             return "";
         }
+        return makeHtmlHeader(request, entry,"Change layout");
+    }
 
+
+    public String makeHtmlHeader(Request request, Entry entry, String title) {
         OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_GRID,
                 OUTPUT_TIMELINE, CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
             new StringBuffer("<table cellspacing=0 cellpadding=0><tr>");
         String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
-        sb.append("<td align=center>" + msgLabel("Change layout") + "</td>");
+        sb.append("<td align=center>" + msgLabel(title) + "</td>");
         for (OutputType output : types) {
             String link = HtmlUtil.href(
                               request.entryUrl(
@@ -1266,7 +1270,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String wikiTemplate = null;
         //If the user specifically selected an output listing then don't do the wiki text
-        if ( !request.exists(ARG_OUTPUT)) {
+        if (!request.exists(ARG_OUTPUT) || Misc.equals(request.getString(ARG_OUTPUT,""),OUTPUT_HTML.getId())) {
             wikiTemplate = getWikiText(request, group);
         }
 

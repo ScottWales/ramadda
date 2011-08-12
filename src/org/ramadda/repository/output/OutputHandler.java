@@ -825,21 +825,25 @@ public class OutputHandler extends RepositoryManager {
                                    String label, boolean allEntries,
                                    String type, Entry entry, boolean addClear)
             throws Exception {
+
+        String selectorId =  elementId+"_" + type;
         String event = HtmlUtil.call("selectInitialClick",
-                                     "event," + HtmlUtil.squote(elementId)
-                                     + "," + HtmlUtil.squote("" + allEntries)
-                                     + "," + HtmlUtil.squote(type) + ","
+                                     HtmlUtil.comma("event",
+                                                    HtmlUtil.squote(selectorId),
+                                                    HtmlUtil.squote(elementId),
+                                                    HtmlUtil.squote("" + allEntries),
+                                                    HtmlUtil.squote(type)) + ","
                                      + ((entry != null)
                                         ? HtmlUtil.squote(entry.getId())
                                         : "null"));
         String clearEvent = HtmlUtil.call("clearSelect",
-                                          HtmlUtil.squote(elementId));
+                                          HtmlUtil.squote(selectorId));
         String link = HtmlUtil.mouseClickHref(event, label,
-                          HtmlUtil.id(elementId + ".selectlink"));
+                          HtmlUtil.id(selectorId + ".selectlink"));
         if (addClear) {
             link = link + " "
                    + HtmlUtil.mouseClickHref(clearEvent, "Clear",
-                                             HtmlUtil.id(elementId
+                                             HtmlUtil.id(selectorId
                                                  + ".selectlink"));
         }
         return link;

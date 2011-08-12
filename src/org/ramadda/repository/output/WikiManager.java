@@ -84,9 +84,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** _more_ */
     public static final String PROP_ENTRY = "entry";
+    public static final String PROP_SEPARATOR = "separator";
+    public static final String PROP_CLASS = "class";
+    public static final String PROP_STYLE = "style";
+    public static final String PROP_TAGOPEN = "tagopen";
+    public static final String PROP_TAGCLOSE = "tagclose";
 
     /** _more_          */
     public static final String PROP_TITLE = "title";
+
+    public static final String PROP_LAYOUT = "layout";
+
+    public static final String LAYOUT_HORIZONTAL = "hor";
+    public static final String LAYOUT_VERTICAL = "vert";
 
     /** _more_          */
     public static final String PROP_MENUS = "menus";
@@ -119,6 +129,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** _more_ */
     public static final String WIKIPROP_IMPORT = "import";
+
+
+    public static final String WIKIPROP_MENU = "menu";
+
+    public static final String WIKIPROP_TREE = "tree";
 
     /** _more_ */
     public static final String WIKIPROP_COMMENTS = "comments";
@@ -169,6 +184,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String WIKIPROP_LINKS = "links";
 
+    public static final String WIKIPROP_LAYOUT = "layout";
+
     /** _more_ */
     public static final String WIKIPROP_ = "";
 
@@ -188,10 +205,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String[] WIKIPROPS = {
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
-        WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, WIKIPROP_COMMENTS,
+        WIKIPROP_LAYOUT,
+        WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, 
+        WIKIPROP_MAPENTRY,
+        WIKIPROP_COMMENTS,
         WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR, WIKIPROP_IMAGE,
-        WIKIPROP_LINKS, WIKIPROP_RECENT, WIKIPROP_MAPENTRY, WIKIPROP_GALLERY,
-        WIKIPROP_TABS, WIKIPROP_TABS, WIKIPROP_GRID,
+        WIKIPROP_MENU, WIKIPROP_RECENT,  WIKIPROP_GALLERY,
+        WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE, WIKIPROP_LINKS
         /*,
                           WIKIPROP_CHILDREN_GROUPS,
                           WIKIPROP_CHILDREN_ENTRIES,
@@ -224,10 +244,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      */
     public String getWikiPropertyValue(WikiUtil wikiUtil, String property) {
         try {
-            /*
-              {{type name="value" ...}}
-              {{import "entry identifier" type name="value"}}
-             */
             Entry   entry   = (Entry) wikiUtil.getProperty(PROP_ENTRY);
             Request request = (Request) wikiUtil.getProperty(PROP_REQUEST);
             //Check for infinite loop
@@ -273,15 +289,32 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
             }
 
-            Hashtable props = new Hashtable();
-            props = StringUtil.parseHtmlProperties(remainder);
+            Hashtable props =  StringUtil.parseHtmlProperties(remainder);
             String entryId = (String) props.get(PROP_ENTRY);
+
             if (entryId != null) {
-                theEntry = getEntryManager().getEntry(request, entryId);
+                theEntry = null;
+                int barIndex = entryId.indexOf("|");
+                if(barIndex>=0) {
+                    entryId = entryId.substring(0,barIndex);
+                }
+                if(entryId.equals("this")) {
+                    theEntry = entry;
+                }
+
+                if (theEntry == null) {
+                    theEntry = getEntryManager().getEntry(request, entryId);
+                }
+                if (theEntry == null) {
+                    theEntry = getEntryManager().findEntryFromName(entryId, request.getUser(),false);
+                }
+
+
                 if (theEntry == null) {
                     return "Unknown entry:" + entryId;
                 }
             }
+
 
             addWikiLink(wikiUtil, theEntry);
             String include = handleWikiImport(wikiUtil, request, theEntry,
@@ -574,7 +607,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getWikiImage(wikiUtil, request, entry, props);
         } else if (include.equals(WIKIPROP_URL)) {
             return getWikiUrl(wikiUtil, request, entry, props);
-        } else if (include.equals(WIKIPROP_LINKS)) {
+        } else if (include.equals(WIKIPROP_MENU)) {
             boolean popup = Misc.getProperty(props, PROP_POPUP, false);
             String  menus = Misc.getProperty(props, PROP_MENUS, "");
             int type = OutputType.getTypeMask(StringUtil.split(menus, ",",
@@ -739,6 +772,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getEntryManager().getBreadCrumbs(request, entry);
         } else if (include.equals(WIKIPROP_DESCRIPTION)) {
             return entry.getDescription();
+        } else if (include.equals(WIKIPROP_LAYOUT)) {
+            return  getHtmlOutputHandler().makeHtmlHeader(request, entry,Misc.getProperty(props, PROP_TITLE,"Layout"));
         } else if (include.equals(WIKIPROP_NAME)) {
             return entry.getName();
         } else if (include.equals(WIKIPROP_CHILDREN_GROUPS)) {
@@ -757,7 +792,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
             blockContent = sb.toString();
-            blockTitle = Misc.getProperty(props, "title", msg("Folders"))
+            blockTitle = Misc.getProperty(props, PROP_TITLE, msg("Folders"))
                          + link;
         } else if (include.equals(WIKIPROP_CHILDREN_ENTRIES)) {
             doBG = false;
@@ -776,12 +811,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
             blockContent = sb.toString();
-            blockTitle = Misc.getProperty(props, "title", msg("Entries"))
+            blockTitle = Misc.getProperty(props, PROP_TITLE, msg("Entries"))
                          + link;
             blockContent = sb.toString();
-            blockTitle = Misc.getProperty(props, "title", msg("Folders"))
+            blockTitle = Misc.getProperty(props, PROP_TITLE, msg("Folders"))
                          + link;
-        } else if (include.equals(WIKIPROP_CHILDREN)) {
+        } else if (include.equals(WIKIPROP_CHILDREN) || include.equals(WIKIPROP_TREE)) {
             doBG = false;
             StringBuffer sb = new StringBuffer();
             List<Entry> children =
@@ -798,6 +833,35 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             blockContent = sb.toString();
             blockTitle = Misc.getProperty(props, "title", msg("Links"))
                          + link;
+        } else if (include.equals(WIKIPROP_LINKS)) {
+            List<Entry> children =
+                (List<Entry>) wikiUtil.getProperty(entry.getId()
+                    + "_children");
+            if (children == null) {
+                children = getEntryManager().getChildren(request, entry);
+            }
+            if (children.size() == 0) {
+                return "";
+            }
+
+
+            String separator= Misc.getProperty(props, PROP_SEPARATOR,"&nbsp;|&nbsp;");
+            String cssClass= Misc.getProperty(props, PROP_CLASS, "");
+            String style= Misc.getProperty(props, PROP_STYLE, "style");
+            String tagOpen= Misc.getProperty(props, PROP_TAGOPEN, "");
+            String tagClose= Misc.getProperty(props, PROP_TAGCLOSE, "");
+
+            StringBuffer sb = new StringBuffer();
+            List<String> links = new ArrayList<String>();
+            for(Entry child: children) {
+                String href = HtmlUtil.href(
+                                            request.entryUrl(getRepository().URL_ENTRY_SHOW, child),
+                                            child.getName(),
+                                            HtmlUtil.cssClass(cssClass) + HtmlUtil.style(style)
+                                            );
+                links.add(tagOpen+href+ tagClose);
+            }
+            return StringUtil.join(separator, links);
         } else {
             return null;
         }
@@ -934,7 +998,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 myRequest.put(key, props.get(key));
             }
 
-
             String include = getWikiInclude(wikiUtil, request, importEntry,
                                             tag, props);
             if (include != null) {
@@ -1051,13 +1114,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             throws Exception {
 
 
-        String select = OutputHandler.getSelect(request, textAreaId,
-                            "Add link", true, "wikilink", entry, false)  /*+ HtmlUtil.space(1) + "|"
-                                                                         + HtmlUtil.space(1)
-                                                                         + OutputHandler.getSelect(request,
-                                                                             textAreaId, "Import entry", true,
-                                                                             "entryid", entry, false)*/
-        ;
+
 
         StringBuffer buttons = new StringBuffer();
         buttons.append(addWikiEditButton(textAreaId, "button_bold.png",
@@ -1122,16 +1179,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String prop = WIKIPROPS[i];
             String js = "javascript:insertTags("
                         + HtmlUtil.squote(textAreaId) + ","
-                        + HtmlUtil.squote("{{") + "," + HtmlUtil.squote("}}")
+                        + HtmlUtil.squote("{{") + "," + HtmlUtil.squote(" }}")
                         + "," + HtmlUtil.squote(prop) + ");";
             propertyMenu.append(HtmlUtil.href(js, prop));
             propertyMenu.append(HtmlUtil.br());
 
             String js2 = "javascript:insertTags("
                          + HtmlUtil.squote(textAreaId) + ","
-                         + HtmlUtil.squote("{{") + ","
-                         + HtmlUtil.squote(prop + "}}") + ","
-                         + HtmlUtil.squote(" entryid ") + ");";
+                         + HtmlUtil.squote("{{"+prop+" ") + ","
+                         + HtmlUtil.squote("}}") + ","
+                         + HtmlUtil.squote("") + ");";
             importMenu.append(HtmlUtil.href(js2, prop));
             importMenu.append(HtmlUtil.br());
         }
@@ -1172,7 +1229,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
         */
 
-
         String propertyMenuLabel =
             HtmlUtil.img(iconUrl("/icons/wiki/button_property.png"),
                          "Add Entry Property");
@@ -1180,15 +1236,28 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             getRepository().makePopupLink(propertyMenuLabel,
                                           propertyMenu.toString());
         buttons.append(propertyButton);
-        String importMenuLabel =
-            HtmlUtil.img(iconUrl("/icons/wiki/button_import.png"),
-                         "Import Entry Property");
+        String importMenuLabel = msg("Add property");
+        //            HtmlUtil.img(iconUrl("/icons/wiki/button_import.png"),
+        //                         "Import Entry Property");
         String importButton = getRepository().makePopupLink(importMenuLabel,
                                   HtmlUtil.hbox(importMenu.toString(),
                                       importOutputMenu.toString()));
+
+        String addEntry = OutputHandler.getSelect(request, textAreaId, "Add entry id", true,
+                                                  "entryid", entry, false);
+
+        String addLink = OutputHandler.getSelect(request, textAreaId,
+                            "Add entry link", true, "wikilink", entry, false);
+
+
+
+        buttons.append(HtmlUtil.space(2));
         buttons.append(importButton);
         buttons.append(HtmlUtil.space(2));
-        buttons.append(select);
+        buttons.append(addEntry);
+        buttons.append(HtmlUtil.space(2));
+        buttons.append(addLink);
+
         return buttons.toString();
     }
 

@@ -1,3 +1,4 @@
+
 /*
  * Copyright 1997-2010 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -496,10 +497,20 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String absoluteUrl(String url) {
-        return "http://" + getHostname() + ":" + getPort() + url;
+        int port = getPort();
+        if(port ==80)
+            return getHttpProtocol()+"://" + getHostname() + url;
+        else
+            return getHttpProtocol()+"://" + getHostname() + ":" + port + url;
     }
 
 
+    public String getHttpProtocol() {
+        if(getProperty(PROP_ALWAYS_HTTPS,false)) {
+            return "https";
+        }
+        return "http";
+    }
 
     /**
      * _more_
@@ -550,7 +561,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String httpsUrl(String url) {
         int port = getHttpsPort();
         if (port < 0) {
-            return "http://" + getHostname() + ":" + getPort() + url;
+            return getHttpProtocol()+"://" + getHostname() + ":" + getPort() + url;
             //            return url;
             //            throw new IllegalStateException("Do not have ssl port defined");
         }
@@ -573,6 +584,12 @@ public class RepositoryBase implements Constants, RepositorySource {
         return dflt;
     }
 
+    /**
+     * Note: this is overwritten in the Repository class
+     */
+    public boolean getProperty(String name, boolean dflt) {
+        return dflt;
+    }
 
 
 
