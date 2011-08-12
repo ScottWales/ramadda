@@ -77,14 +77,11 @@ import java.util.zip.*;
  */
 public class ChatOutputHandler extends OutputHandler {
 
+    public static final int DEFAULT_PORT = -1;
+
     /** _more_ */
     public static final String PROP_HTML_CHATAPPLET =
         "ramadda.html.chatapplet";
-
-
-    /** _more_ */
-    //    private final Logger LOG =
-    //        LoggerFactory.getLogger(ChatOutputHandler.class);
 
 
     /** _more_ */
@@ -115,10 +112,12 @@ public class ChatOutputHandler extends OutputHandler {
     public ChatOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(OUTPUT_CHAT);
-        addType(OUTPUT_CHATROOM);
-        addType(OUTPUT_WHITEBOARD);
-        Misc.run(this, "run");
+        if(getChatPort()>0) {
+            addType(OUTPUT_CHAT);
+            addType(OUTPUT_CHATROOM);
+            addType(OUTPUT_WHITEBOARD);
+            Misc.run(this, "run");
+        }
     }
 
 
@@ -505,7 +504,7 @@ public class ChatOutputHandler extends OutputHandler {
      * @return _more_
      */
     public int getChatPort() {
-        return getRepository().getProperty("ramadda.chat.port", 8387);
+        return getRepository().getProperty("ramadda.chat.port", DEFAULT_PORT);
     }
 
 
@@ -523,7 +522,9 @@ public class ChatOutputHandler extends OutputHandler {
      */
     public void run() {
         try {
-            ServerSocket serverSocket = new ServerSocket(getChatPort());
+            int port = getChatPort();
+            if(port<0) return;
+            ServerSocket serverSocket = new ServerSocket();
             while (getActive()) {
                 Socket         socket     = serverSocket.accept();
                 ChatConnection connection = new ChatConnection(socket);
