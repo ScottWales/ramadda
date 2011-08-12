@@ -18,7 +18,7 @@ var map_wms_openlayers = "wms:OpenLayers WMS,http://vmap0.tiles.osgeo.org/wms/vm
 
 var defaultLocation = new OpenLayers.LonLat(-104, 40);
 var defaultZoomLevel = 3;
-var wrapBounds = new OpenLayers.Bounds(-360,-90,360,90);
+var wrapBounds = new OpenLayers.Bounds(-540,-90,540,90);
 
 
 
@@ -135,6 +135,7 @@ function RepositoryMap (mapId, params) {
         //        this.map.minResolution = 0.0000001;
         //        this.map.minScale = 0.0000001;
         //this.map.restrictedExtent = wrapBounds;
+        //this.map.maxExtent = wrapBounds;
         this.vectors = new OpenLayers.Layer.Vector("Drawing");
         this.map.addLayer(this.vectors);
         this.addBaseLayers();
@@ -157,6 +158,7 @@ function RepositoryMap (mapId, params) {
         if(this.initialBounds) {
             this.map.setCenter(this.initialBounds.getCenterLonLat());
             this.map.zoomToExtent(this.initialBounds);
+            this.map.restrictedExtent = this.initialBounds;
             this.initialBounds = null;
         }
         if(this.initialLines) {
@@ -253,9 +255,37 @@ function RepositoryMap (mapId, params) {
             this.selectorBox = this.addBox("",north,  west, south, east, args);
         } else {
             var bounds = new OpenLayers.Bounds(west, south, east, north);
+            bounds = this.normalizeBounds(bounds)
             this.selectorBox.bounds = bounds;
         }
         this.boxes.redraw();
+    }
+
+    this.normalizeBounds = function(bounds) {
+       if (!this.map) {
+           return bounds;
+       }
+       var newBounds = bounds;
+       var newLeft = bounds.left;
+       var newRight = bounds.right;
+       var extentBounds = this.map.restrictedExtent;
+       if (extentBounds.left < 0) {  // map is -180 to 180
+           if (bounds.right > 180) {  //bounds is 0 to 360
+              newLeft = bounds.left-360;
+              newRight = bounds.right-360;
+           }
+       } else { // map is 0 to 360
+           if (bounds.left < 0) {  // left edge is -180 to 180
+               newLeft = bounds.left+360;
+           }
+           if (bounds.right < 0) {  // right edge is -180 to 180
+               newRight = bounds.right+360;
+           }
+       }
+       newLeft = Math.max(newLeft, extentBounds.left);
+       newRight = Math.min(newRight, extentBounds.right);
+       newBounds = new OpenLayers.Bounds(newLeft, bounds.bottom, newRight, bounds.top);
+       return newBounds;
     }
 
 
@@ -303,14 +333,20 @@ function RepositoryMap (mapId, params) {
                     var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
                     var ur = this.map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
                     theMap.setSelectionBox(ur.lat, ll.lon, ll.lat,ur.lon);
+                    var bounds = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat);
+                    bounds = theMap.normalizeBounds(bounds);
                     theMap.findSelectionFields();
                     if(theMap.fldNorth) {
-                        theMap.fldNorth.obj.value = ur.lat;
-                        theMap.fldSouth.obj.value = ll.lat;
-                        theMap.fldWest.obj.value = ll.lon;
-                        theMap.fldEast.obj.value = ur.lon;
+                        //theMap.fldNorth.obj.value = ur.lat;
+                        //theMap.fldSouth.obj.value = ll.lat;
+                        //theMap.fldWest.obj.value = ll.lon;
+                        //theMap.fldEast.obj.value = ur.lon;
+                        theMap.fldNorth.obj.value = bounds.top;
+                        theMap.fldSouth.obj.value = bounds.bottom;
+                        theMap.fldWest.obj.value =  bounds.left;
+                        theMap.fldEast.obj.value =  bounds.right;
                     }
-                    //                    OpenLayers.Event.stop(evt); 
+                    // OpenLayers.Event.stop(evt); 
                 }
             });
 
@@ -465,6 +501,7 @@ function RepositoryMap (mapId, params) {
         var bounds = new OpenLayers.Bounds(west, south, east, north);
         //        var bounds = new OpenLayers.Bounds(north, west, south, east);
         //        alert("adding box "+ north +" " + bounds);
+        bounds = this.normalizeBounds(bounds);
 
         box = new OpenLayers.Marker.Box(bounds);
         var theMap = this;
