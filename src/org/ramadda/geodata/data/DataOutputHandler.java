@@ -1667,6 +1667,7 @@ public class DataOutputHandler extends OutputHandler {
         }
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
+        map.addBox("", llr, new MapProperties("blue", false, true));
         String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,
                 lon });
         sb.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
