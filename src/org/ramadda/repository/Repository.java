@@ -4940,8 +4940,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (msg == null) {
             return null;
         }
+        if(msg.length()==0) return msg;
         msg = msg(msg);
-        //        if(msg.length()==0) return "";
         return msg(msg) + ":" + HtmlUtil.space(1);
     }
 
