@@ -1,9 +1,21 @@
 gen::setDoTclEvaluation 1
 gen::setTargetDir ../htdocs/userguide
 
+
+namespace eval wiki {}
+
+proc wiki::tag {t} {
+    return "<a name=\"$t\"></a><b>$t</b>:"
+}
+
+proc wiki::text {t} {
+    return "<pre>$t</pre>"
+}
+
 proc class {c} {
     return "<code>$c</code>"
 }
+
 
 proc import {file} {
    set fp [open $file r ]

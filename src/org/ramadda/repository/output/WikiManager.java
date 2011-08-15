@@ -544,6 +544,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String hasChildren = (String) wikiUtil.getProperty(entry.getId()
                                  + "_haschildren");
 
+        boolean hasOpenProperty = props.contains(PROP_OPEN);
 
         boolean open = Misc.getProperty(props, PROP_OPEN, ((hasChildren != null)
                 ? hasChildren.equals("false")
@@ -793,6 +794,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             return sb.toString();
         } else if (include.equals(WIKIPROP_CHILDREN_GROUPS)) {
+            if(!hasOpenProperty) open = true;
             doBG = false;
             props.put(PROP_FOLDERS, "true");
             List<Entry> children = getEntries(request, wikiUtil, entry,
@@ -807,6 +809,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             blockTitle = Misc.getProperty(props, PROP_TITLE, msg("Folders"))
                          + link;
         } else if (include.equals(WIKIPROP_CHILDREN_ENTRIES)) {
+            if(!hasOpenProperty) open = true;
             doBG = false;
             props.put(PROP_FILES, "true");
             List<Entry> children = getEntries(request, wikiUtil, entry,
@@ -823,6 +826,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                          + link;
         } else if (include.equals(WIKIPROP_CHILDREN)
                    || include.equals(WIKIPROP_TREE)) {
+            if(!hasOpenProperty) open = true;
             doBG = false;
             StringBuffer sb      = new StringBuffer();
             List<Entry> children = getEntries(request, wikiUtil, entry,
@@ -1208,6 +1212,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         StringBuffer importMenu   = new StringBuffer();
         for (int i = 0; i < WIKIPROPS.length; i++) {
             String prop = WIKIPROPS[i];
+            System.out.println(prop);
             String js = "javascript:insertTags("
                         + HtmlUtil.squote(textAreaId) + ","
                         + HtmlUtil.squote("{{") + ","
@@ -1268,7 +1273,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                           propertyMenu.toString());
         //        buttons.append(propertyButton);
 
-        String importMenuLabel = msg("Add output");
+        String importMenuLabel = msg("Add property");
         //            HtmlUtil.img(iconUrl("/icons/wiki/button_import.png"),
         //                         "Import Entry Property");
         String importButton = getRepository().makePopupLink(importMenuLabel,

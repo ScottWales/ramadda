@@ -1796,6 +1796,7 @@ public class Admin extends RepositoryManager {
         getRepository().addAuthToken(request, sb);
 
         sb.append(HtmlUtil.submit(msg("Execute")));
+        sb.append(HtmlUtil.b("Note: be careful what you do here!"));
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.textArea(ARG_QUERY, (bulkLoad
                 ? ""

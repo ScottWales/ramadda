@@ -1,0 +1,212 @@
+[ht::head {Wiki Text}]
+
+<%nochildlist%>
+
+
+
+
+The RAMADDA Wiki facility generally follows the format
+that Wikipedia follows. For example:
+[wiki::text {
+==Section Heading 1==
+===Section Heading 2===
+}]
+
+A horizontal line:
+[wiki::text {
+----
+}]
+
+Lists:
+[wiki::text {
+* bullet 1
+* bullet 2
+** sub bullet 1
+** sub bullet 2
+* bullet 3
+}]
+
+
+See the 
+<a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
+Note: RAMADDA does not support the Wikipedia HTML table format. 
+For tables its best just to use HTML table markup.
+
+
+<subhead intoc="false" id="links">Linking to other entries</subhead>
+Normally in a wiki a link to another page is of the form:<blockquote>
+\[\[Page name\]\]</blockquote>
+In RAMADDA you can use the name of another entry to create the link.
+The Entry needs to be a sibling entry to the Wiki Page
+(i.e., it shares the same parent of the Wiki Page entry) or it needs to be the
+identifier of some other entry, e.g.,<blockquote>
+\[\[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data\]\]</blockquote>
+If the entry with the given name does not exist then the link will take one to the
+create entry form.
+<p>
+
+You can add links to other entries with the &quot;Add Link&quot; menu.
+
+
+<subhead intoc="false" id="import">RAMADDA WIKI Properties</subhead>
+You can also import content from the current Wiki Page entry or any other entry with the import  
+syntax:<blockquote>{{<i>property</i>}}
+</blockquote>
+e.g., in the above example we are importing the Information tab block for the Wiki Page entry with:
+<blockquote>{{information}}</blockquote>
+
+
+For example, if we want to import the information block for the above data file with the
+block being closed we would do:<blockquote>
+{{information entry="7ca13e52-8efb-4d17-863f-e17027dbcc22"  open="false"}}</blockquote>
+
+
+The set of import tags include:
+<ul>
+information
+name
+description
+layout
+properties
+html
+map
+mapentry
+comments
+breadcrumbs
+toolbar
+image
+menu
+recent
+gallery
+tabs
+grid
+tree
+links
+information
+name
+description
+layout
+properties
+html
+map
+mapentry
+comments
+breadcrumbs
+toolbar
+image
+menu
+recent
+gallery
+tabs
+grid
+tree
+links
+
+
+
+<li> <i>name</i> The name of the entry.
+<li> <i>description</i> The description of the entry.
+<li> <i>comments</i> The comments for the entry.
+<li> <i>toolbar</i> The icon toolbar.
+<li> <i>breadcrumbs</i> The breadcrumb path.
+<li> <i>information</i> The properties information block.
+<li> <i>image</i> If the entry is an image then the image.
+<li> <i>links</i> The table  of views and actions.
+<li> <i>children</i> The list of children entries. (see below).
+<li> <i>subfolders</i> Just the children folders.
+<li> <i>subentries</i> Just the children non folders.
+</ul>
+
+
+
+You can also import any of the views of an entry, e.g., the map view, the opendap view, the 
+calendar view, etc.
+In the above example we are importing the map view of the earthquake data:
+<blockquote>{{import entry="7ca13e52-8efb-4d17-863f-e17027dbcc22" data.point.map width="400"}}</blockquote>
+Right now you need to manually enter the output view identifier in the import statement.
+Look at the URL of a page and you will see &quot;output=<i>identifier</i>&quot;.
+
+
+
+In this case we use html and the import tags to come up with the page layout.
+
+<p>
+The <i>children</i> tag is used to display the children entries of a folder.
+It can take the form:
+<pre>
+{{children title="Links" showtoggle="false"}}
+</pre>
+
+The title attribute is used in place of "Children". 
+If showtoggle="false" then the show/hide toggle link is not shown.
+
+You can specifiy another entry:
+<pre>
+{{children entry="some other entry id"}}
+</pre>
+
+
+<p>
+Other tags include:
+<p>
+
+Display a map:
+<pre>{{map}} </pre>
+
+Display a map just for a group:
+<pre>{{mapentry}} </pre>
+
+If you used the {{map}} tag with a folder then the children get mapped. The mapentry tag
+says to make a map for just the entry.
+
+
+
+[wiki::tag recent]
+<p>
+Show  the most recent 3 days in a list organized by day:
+<pre>{{recent days="3"}} </pre>
+
+Show a vertical listing of the children entry images:
+<pre>{{gallery level="1"}} </pre>
+
+Show a vertical listing of the grand children entry images:
+<pre>{{gallery level="2"}} </pre>
+
+Set the image width and only show up to 5 images:
+<pre>{{gallery level="2" width="300" count="5"}} </pre>
+
+
+Show the children as tabs:
+<pre>{{tabs}} </pre>
+
+Show the children in a grid:
+<pre>{{grid}} </pre>
+
+Show the grandchildren in a grid:
+<pre>{{grid level="2"}} </pre>
+
+
+
+Show all of the menu actions:
+<pre>
+{{menu}}
+</pre>
+
+
+You can specify which menus to show with a comma separated list of menu names:
+<pre>
+{{menu menus="file,edit,feeds,view,other"}}
+</pre>
+
+This only shows the file and view menu:
+<pre>
+{{menu menus="file,view"}}
+</pre>
+
+
+Show the menu actions in a popup:
+<pre>
+{{menu popup="true" title="Click here"}}
+</pre>
+
+[ht::foot]
