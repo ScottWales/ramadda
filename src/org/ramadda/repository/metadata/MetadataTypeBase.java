@@ -471,8 +471,10 @@ public class MetadataTypeBase extends RepositoryManager {
             }
 
             String tail = getStorageManager().getFileTail(f.toString());
-            if ((matchFile != null) && !Misc.equals(matchFile, tail)) {
-                continue;
+            if (matchFile != null) {
+                if(!matchFile.equals("*") && !Misc.equals(matchFile, tail)) {
+                    continue;
+                }
             }
             if (ImageUtils.isImage(f.toString())) {
                 String path =

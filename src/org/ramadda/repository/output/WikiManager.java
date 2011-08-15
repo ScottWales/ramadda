@@ -200,6 +200,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_LINKS = "links";
 
+    public static final String WIKIPROP_ENTRYID = "entryid";
+
     /** wiki import          */
     public static final String WIKIPROP_LAYOUT = "layout";
 
@@ -226,7 +228,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKIPROP_MAPENTRY, WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS,
         WIKIPROP_TOOLBAR, WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT,
         WIKIPROP_GALLERY, WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE,
-        WIKIPROP_LINKS
+        WIKIPROP_LINKS, WIKIPROP_ENTRYID
     };
 
 
@@ -574,6 +576,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     Misc.getProperty(props, PROP_TITLE, "Layout"));
         } else if (include.equals(WIKIPROP_NAME)) {
             return entry.getName();
+        } else if (include.equals(WIKIPROP_ENTRYID)) {
+            return entry.getId();
         } else if (include.equals(WIKIPROP_PROPERTIES)) {
             return makeEntryTabs(request, entry);
         } else if (include.equals(WIKIPROP_IMAGE)) {
@@ -1212,7 +1216,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         StringBuffer importMenu   = new StringBuffer();
         for (int i = 0; i < WIKIPROPS.length; i++) {
             String prop = WIKIPROPS[i];
-            System.out.println(prop);
+            //            System.out.println(prop);
             String js = "javascript:insertTags("
                         + HtmlUtil.squote(textAreaId) + ","
                         + HtmlUtil.squote("{{") + ","
