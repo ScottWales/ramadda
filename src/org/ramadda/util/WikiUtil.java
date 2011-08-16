@@ -312,12 +312,18 @@ public class WikiUtil {
             int start = matcher.start(0);
             int end   = matcher.end(0);
             int level = prefix.length();
-            String value = "<a name=\"" + label
-                           + "\"></a><div class=\"wiki-h" + level + "\">"
-                           + label + "</div>";
+            String value; 
+            if(label.startsWith("{{")) {
+                value = "<div class=\"wiki-h" + level + "\">"
+                    + label + "</div>";
+            } else {
+                value = "<a name=\"" + label
+                    + "\"></a><div class=\"wiki-h" + level + "\">"
+                    + label + "</div>";
             //            if(level==1)
             //                value = value+"<hr class=\"wiki-hr\">";
-            headings.add(new Object[] { new Integer(level), label });
+                headings.add(new Object[] { new Integer(level), label });
+            }
             s       = s.substring(0, start) + value + s.substring(end);
             matcher = pattern.matcher(s);
         }
@@ -499,6 +505,8 @@ public class WikiUtil {
         if(categoryLinks.size()>0) {
             s = s + HtmlUtil.div("<b>Categories:</b> " + StringUtil.join("&nbsp;|&nbsp; ", categoryLinks),HtmlUtil.cssClass("wiki-categories"));
         }
+
+
 
         return s;
 

@@ -272,11 +272,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (property.length() == 0) {
                 return "";
             }
-            if (request.getExtraProperty(property) != null) {
-                return "<b>Detected circular wiki import:" + property
-                       + "</b>";
-            }
-            request.putExtraProperty(property, property);
+
 
             List<String> toks = StringUtil.splitUpTo(property, " ", 2);
             if (toks.size() == 0) {
@@ -336,6 +332,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     return "Unknown entry:" + entryId;
                 }
             }
+
+
+            String propertyKey = theEntry.getId()+"_" +property;
+            if (request.getExtraProperty(propertyKey) != null) {
+                return "<b>Detected circular wiki import:" + property
+                       + "</b>";
+            }
+            request.putExtraProperty(propertyKey, property);
 
 
             addWikiLink(wikiUtil, theEntry);
@@ -1511,7 +1515,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return content;
         }
         return HtmlUtil.div(content, HtmlUtil.cssClass("wikicontent"));
-
     }
 
     /**
