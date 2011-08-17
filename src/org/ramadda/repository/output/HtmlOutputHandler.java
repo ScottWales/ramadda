@@ -1380,11 +1380,16 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     private String getWikiText(Request request, Entry entry)
             throws Exception {
+        String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request, entry);
+        if(wikiTemplate!=null) {
+            return wikiTemplate;
+        }
+
         PageStyle pageStyle   = request.getPageStyle(entry);
         if (TypeHandler.isWikiText(entry.getDescription())) {
             return entry.getDescription();
         }
-        String wikiTemplate = pageStyle.getWikiTemplate(entry);
+        wikiTemplate = pageStyle.getWikiTemplate(entry);
         if(wikiTemplate!=null) {
             return wikiTemplate;
         }

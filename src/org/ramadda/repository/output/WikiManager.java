@@ -83,6 +83,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in import tag */
     public static final String PROP_ENTRY = "entry";
+    public static final String PROP_FORMAT = "format";
+
 
     
     /** attribute in import tag */
@@ -145,6 +147,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** wiki import */
     public static final String WIKIPROP_IMPORT = "import";
+    public static final String WIKIPROP_DATE = "date";
+    public static final String WIKIPROP_DATE_FROM = "fromdate";
+    public static final String WIKIPROP_DATE_TO = "todate";
 
     /** wiki import          */
     public static final String WIKIPROP_MENU = "menu";
@@ -224,6 +229,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** list of import items for the text editor menu */
     public static final String[] WIKIPROPS = {
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
+        WIKIPROP_DATE_FROM,  WIKIPROP_DATE_TO,
         WIKIPROP_LAYOUT, WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP,
         WIKIPROP_MAPENTRY, WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS,
         WIKIPROP_TOOLBAR, WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT,
@@ -323,10 +329,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     theEntry = getEntryManager().getEntry(request, entryId);
                 }
                 if (theEntry == null) {
-                    theEntry = getEntryManager().findEntryFromName(entryId,
-                            request.getUser(), false);
+                    theEntry  =  findWikiEntry(request,  wikiUtil,
+                                               entryId, entry);
                 }
-
 
                 if (theEntry == null) {
                     return "Unknown entry:" + entryId;
@@ -550,7 +555,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String hasChildren = (String) wikiUtil.getProperty(entry.getId()
                                  + "_haschildren");
 
-        boolean hasOpenProperty = props.contains(PROP_OPEN);
+        boolean hasOpenProperty = props.get(PROP_OPEN)!=null;
 
         boolean open = Misc.getProperty(props, PROP_OPEN, ((hasChildren != null)
                 ? hasChildren.equals("false")
@@ -580,6 +585,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     Misc.getProperty(props, PROP_TITLE, "Layout"));
         } else if (include.equals(WIKIPROP_NAME)) {
             return entry.getName();
+        } else if (include.equals(WIKIPROP_DATE_FROM)||include.equals(WIKIPROP_DATE_TO)) {
+            String format = Misc.getProperty(props, PROP_FORMAT, RepositoryBase.DEFAULT_TIME_FORMAT);
+            Date date = new Date(include.equals(WIKIPROP_DATE_FROM)?entry.getStartDate():
+                                 entry.getEndDate());
+            SimpleDateFormat dateFormat =
+                new SimpleDateFormat(format);
+            dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
+            return dateFormat.format(date);
         } else if (include.equals(WIKIPROP_ENTRYID)) {
             return entry.getId();
         } else if (include.equals(WIKIPROP_PROPERTIES)) {
@@ -746,8 +759,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                        props);
             StringBuffer sb        = new StringBuffer();
 
-
-
             List<Entry>  onesToUse = new ArrayList<Entry>();
             for (Entry child : children) {
                 if ( !child.getResource().isImage()) {
@@ -845,7 +856,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
             blockContent = sb.toString();
-            blockTitle = Misc.getProperty(props, "title", msg("Links"))
+            blockTitle = Misc.getProperty(props, PROP_TITLE, msg("Links"))
                          + link;
         } else if (include.equals(WIKIPROP_LINKS)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
@@ -881,6 +892,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         if ( !inBlock) {
             return blockContent;
         }
+        System.err.println(hasOpenProperty+ " " + open);
         if (doBG) {
             return HtmlUtil.makeShowHideBlock(blockTitle, blockContent, open,
                     HtmlUtil.cssClass("toggleblocklabel"), "");
@@ -1126,16 +1138,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                String name, Entry parent)
             throws Exception {
         name = name.trim();
+        System.err.println("looking for:" + name);
         Entry theEntry = null;
-        theEntry = getEntryManager().getEntry(request, name);
-        if ((theEntry == null) && parent.isGroup()) {
+        if (parent.isGroup()) {
             for (Entry child :
                     getEntryManager().getChildren(request, (Entry) parent)) {
                 if (child.getName().trim().equalsIgnoreCase(name)) {
-                    theEntry = child;
-                    break;
+                    return child;
                 }
             }
+        }
+        theEntry =  getEntryManager().getEntry(request, name);
+        if(theEntry!=null) {
+            return theEntry;
         }
         return theEntry;
     }
@@ -1381,10 +1396,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
             Entry theEntry = null;
+            theEntry = getEntryManager().findEntryWithName(request,
+                        (Entry) entry, name);
+
             //If the entry is a group first check its children.
-            if (entry.isGroup()) {
-                theEntry = findWikiEntry(request, wikiUtil, name,
-                                         (Entry) entry);
+            if (theEntry == null) {
+                if (entry.isGroup()) {
+                    theEntry = findWikiEntry(request, wikiUtil, name,
+                                             (Entry) entry);
+                }
             }
             if (theEntry == null) {
                 theEntry = findWikiEntry(request, wikiUtil, name, parent);

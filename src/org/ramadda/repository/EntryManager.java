@@ -3079,7 +3079,11 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryExport(Request request) throws Exception {
-        Entry entry = getEntry(request, request.getString(ARG_ENTRYID, ""));
+        System.err.println ("request:" + request.getString(ARG_ENTRYID,"XXX") + " " + request);
+        Entry entry = getEntry(request);
+        if(entry==null) {
+            throw new IllegalArgumentException("Unable to find entry:" + request);
+        }
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
         return getRepository().getZipOutputHandler().toZip(request, "",

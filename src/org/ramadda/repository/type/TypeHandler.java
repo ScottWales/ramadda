@@ -255,6 +255,10 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {}
 
 
+    public String getWikiTemplate(Request request, Entry entry) {
+        return null;
+    }
+
 
     /**
      * _more_
@@ -1357,7 +1361,7 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     HtmlUtil.url(
                         getRepository().URL_ENTRY_EXPORT.toString() + "/"
-                        + IOUtil.stripExtension(entry.getName())
+                        + IOUtil.stripExtension(Entry.encodeName(entry.getName()))
                         + ".zip", new String[] { ARG_ENTRYID,
                     entry.getId() }), getRepository().iconUrl(ICON_EXPORT),
                                       "Export Entries",

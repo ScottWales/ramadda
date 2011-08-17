@@ -374,6 +374,9 @@ public class GenericTypeHandler extends TypeHandler {
             Element child = nodes.get(column.getName());
             if(child != null) {
                 value = XmlUtil.getChildText(child);
+                if(XmlUtil.getAttribute(child,"encoded",false)) {
+                    value = new String(XmlUtil.decodeBase64(value));
+                }
             }
             if(value == null) {
                 value = XmlUtil.getAttribute(node, column.getName(), (String) null);
@@ -949,6 +952,19 @@ public class GenericTypeHandler extends TypeHandler {
         column.addToEntryForm(request, entry, formBuffer, values, state);
     }
 
+
+    public void addToEntryNode(Entry entry, Element node) throws Exception {
+        super.addToEntryNode(entry,  node);
+
+
+        if (!haveDatabaseTable()) {
+            return;
+        }
+        Object[]values = getEntryValues(entry);
+        for (Column column : columns) {
+            column.addToEntryNode(entry, values, node);
+        }
+    }
 
     public void addToSpecialSearchForm(Request request, StringBuffer formBuffer)
         throws Exception {

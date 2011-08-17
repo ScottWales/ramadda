@@ -345,6 +345,7 @@ public class Entry implements Cloneable {
         name = name.replaceAll("\\/", "%2F");
         name = name.replaceAll("\\?", "%3F");
         name = name.replaceAll("\\&", "%26");
+        name = name.replaceAll("\\#", "%23");
         return name;
     }
 

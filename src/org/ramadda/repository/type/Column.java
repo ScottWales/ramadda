@@ -75,6 +75,9 @@ public class Column implements Constants {
     private static SimpleDateFormat dateTimeFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+    private static SimpleDateFormat fullDateTimeFormat =
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+
     /** _more_ */
     private static SimpleDateFormat dateFormat =
         new SimpleDateFormat("yyyy-MM-dd");
@@ -162,6 +165,8 @@ public class Column implements Constants {
     /** _more_ */
     public static final String SEARCHTYPE_SELECT = "select";
 
+
+    public static final String TAG_COLUMN = "column";
 
     /** _more_ */
     public static final String ATTR_NAME = "name";
@@ -781,8 +786,29 @@ public class Column implements Constants {
             statementIdx++;
         }
         return statementIdx;
+    }
 
 
+    public void addToEntryNode(Entry entry, Object[]values, Element node) throws Exception {
+        if(values[offset]==null) {
+            return;
+        }
+        String stringValue = null;
+        if (isType(TYPE_LATLON)) {
+            stringValue = values[offset]+";"+values[offset+1];
+        } else if (isType(TYPE_LATLONBBOX)) {
+            stringValue = values[offset]+";"+values[offset+1]+";"+values[offset+2]+";"+values[offset+3];
+        } else  if (isDate()) {
+            fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
+            stringValue =fullDateTimeFormat.format((Date) values[offset]);
+        } else {
+            stringValue = values[offset].toString();
+        }
+        Element valueNode = XmlUtil.create(node.getOwnerDocument(), name);
+        node.appendChild(valueNode);
+        valueNode.setAttribute("encoded", "true");
+        valueNode.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(), stringValue,
+                                                    true));
     }
 
 
@@ -821,13 +847,11 @@ public class Column implements Constants {
             valueIdx++;
             values[offset + 1] = new Double(results.getDouble(valueIdx));
             valueIdx++;
-
         } else if (isType(TYPE_LATLONBBOX)) {
             values[offset]     = new Double(results.getDouble(valueIdx++));
             values[offset + 1] = new Double(results.getDouble(valueIdx++));
             values[offset + 2] = new Double(results.getDouble(valueIdx++));
             values[offset + 3] = new Double(results.getDouble(valueIdx++));
-
         } else if (isType(TYPE_PASSWORD)) {
             String value = results.getString(valueIdx);
             if (value != null) {
@@ -1623,10 +1647,19 @@ public class Column implements Constants {
     public void setValue(Entry entry, Object[] values, String value)
             throws Exception {
 
-        if (isType(TYPE_LATLON)) {}
-        else if (isType(TYPE_LATLONBBOX)) {}
-        else if (isDate()) {
-            //            values[offset] = request.getDate(id, new Date());
+        if (isType(TYPE_LATLON)) {
+            List<String> toks = StringUtil.split(value,";",true,true);
+            values[offset] = new Double(toks.get(0));
+            values[offset+1] = new Double(toks.get(1));
+        } else if (isType(TYPE_LATLONBBOX)) {
+            List<String> toks = StringUtil.split(value,";",true,true);
+            values[offset] = new Double(toks.get(0));
+            values[offset+1] = new Double(toks.get(1));
+            values[offset+2] = new Double(toks.get(2));
+            values[offset+3] = new Double(toks.get(3));
+        } else if (isDate()) {
+            fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
+            values[offset] = fullDateTimeFormat.parse(value);
         } else if (isType(TYPE_BOOLEAN)) {
             values[offset] = new Boolean(value);
         } else if (isType(TYPE_ENUMERATION) || isType(TYPE_ENUMERATIONPLUS)) {
