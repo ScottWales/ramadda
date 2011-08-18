@@ -111,7 +111,7 @@ import java.util.zip.*;
 
 
 /**
- * The main class. 
+ * The main class.
  *
  */
 public class Repository extends RepositoryBase implements RequestHandler,
@@ -773,14 +773,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void init(Properties properties) throws Exception {
 
-        /*
-        final PrintStream oldErr = System.err;
+
+        /*        final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setErr(new PrintStream(oldOut){
                 public void     println(String x) {
-                    if(x.indexOf("Got")>=0) {
-                        Misc.printStack("got it");
-                    }
+                    Misc.printStack("got it");
                     oldErr.println(x);
                 }
             });
@@ -876,8 +874,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 } else if (toks.size() == 1) {
                     cmdLineProperties.put(toks.get(0), "");
                 } else {
-                    System.err.println("-D property:" + toks.get(0) + "="
-                                       + toks.get(1));
                     cmdLineProperties.put(toks.get(0), toks.get(1));
                 }
             } else {
@@ -930,11 +926,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                "repository.properties");
 
             if (new File(localPropertyFile).exists()) {
-                System.err.println ("RAMADDA: loading local property file:" +
-                                    localPropertyFile);
+                System.err.println("RAMADDA: loading local property file:"
+                                   + localPropertyFile);
                 loadProperties(properties, localPropertyFile);
-            } else {
-            }
+            } else {}
 
             File[] localFiles =
                 getStorageManager().getRepositoryDir().listFiles();
@@ -2278,7 +2273,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                         paramTypes);
         if (method == null) {
             throw new IllegalArgumentException("Unknown request method:"
-                                               + methodName + " in class:" + handler.getClass().getName());
+                    + methodName + " in class:"
+                    + handler.getClass().getName());
         }
 
 
@@ -3596,13 +3592,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
             for (String path : templatePaths) {
                 try {
                     //Skip resources called template.html that might be for other things
-                    if(IOUtil.getFileTail(path).equals("template.html")) continue;
+                    if (IOUtil.getFileTail(path).equals("template.html")) {
+                        continue;
+                    }
                     String resource =
                         getStorageManager().readSystemResource(path);
                     try {
                         resource = processTemplate(resource);
-                    } catch(Exception exc) {
-                        getLogManager().logError("failed to process template:" + path, exc);
+                    } catch (Exception exc) {
+                        getLogManager().logError(
+                            "failed to process template:" + path, exc);
                         continue;
                     }
                     resource = resource.replace("${html.imports}", imports);
@@ -3635,40 +3634,57 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    public  String processTemplate(String html) throws Exception {
+    /**
+     * _more_
+     *
+     * @param html _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String processTemplate(String html) throws Exception {
         StringBuffer template = new StringBuffer();
-        while(true) {
+        while (true) {
             int idx1 = html.indexOf("<include");
-            if(idx1<0) {
+            if (idx1 < 0) {
                 template.append(html);
                 break;
             }
-            template.append(html.substring(0,idx1));
+            template.append(html.substring(0, idx1));
             html = html.substring(idx1);
-            idx1 = html.indexOf(">")+1;
-            String include  = html.substring(0,idx1);
+            idx1 = html.indexOf(">") + 1;
+            String include = html.substring(0, idx1);
             include = include.substring("<include".length());
-            include =include.replace(">","");
-            Hashtable props =  StringUtil.parseHtmlProperties(include);
-            String url=(String)props.get("href");
-            if(url!=null)  {
-                String includedContent  = getStorageManager().readSystemResource(new URL(url));
+            include = include.replace(">", "");
+            Hashtable props = StringUtil.parseHtmlProperties(include);
+            String    url   = (String) props.get("href");
+            if (url != null) {
+                String includedContent =
+                    getStorageManager().readSystemResource(new URL(url));
                 //                String includedContent =  IOUtil.readContents(url, Repository.class);
                 template.append(includedContent);
             }
             html = html.substring(idx1);
         }
         html = template.toString();
-        if(html.indexOf("${html.imports}")<0) {
-           html = html.replace("<head>","<head>\n${html.imports}");
+        if (html.indexOf("${html.imports}") < 0) {
+            html = html.replace("<head>", "<head>\n${html.imports}");
         }
-        if(html.indexOf("${headfinal}")<0) {
-           html = html.replace("</head>","${headfinal}\n</head>");
+        if (html.indexOf("${headfinal}") < 0) {
+            html = html.replace("</head>", "${headfinal}\n</head>");
         }
         return html;
     }
 
-    public static void main(String[]args) throws Exception {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
         //        String html = ":before:<include href=\"http://www.unavco.org/lib/uv-header-webapps.html\">:during:<include href=\"http://www.unavco.org/lib/uv-footer-webapps.html\">:after:";
         //        System.err.println(processTemplate(html));
     }
@@ -4586,16 +4602,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result processDocs(Request request) throws Exception {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer   sb      = new StringBuffer();
         List<String[]> docUrls = getPluginManager().getDocUrls();
         sb.append(msgHeader("Available documentation"));
-        if(docUrls.size()==0) {
+        if (docUrls.size() == 0) {
             sb.append(showDialogNote(msg("No documentation available")));
         }
         sb.append("<ul>");
-        for(String[]url : docUrls) {
+        for (String[] url : docUrls) {
             sb.append("<li>");
-            sb.append(HtmlUtil.href(url[0],url[1]));
+            sb.append(HtmlUtil.href(url[0], url[1]));
         }
         sb.append("</ul>");
         return new Result("Documentation", sb);
@@ -4849,44 +4865,86 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Request getTmpRequest(Entry entry) throws Exception {
         Request request = getTmpRequest();
-        request.setPageStyle(doMakePageStyle(request,entry));
+        request.setPageStyle(doMakePageStyle(request, entry));
         return request;
     }
 
 
-    public PageStyle doMakePageStyle(Request request, Entry entry)  {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public PageStyle doMakePageStyle(Request request, Entry entry) {
         try {
-            PageStyle pageStyle =  new PageStyle();
-            if(request.exists(PROP_NOSTYLE) || getProperty(PROP_NOSTYLE, false)) return pageStyle;
-            List<Metadata>metadataList = getMetadataManager().findMetadata(entry,
-                                                                           ContentMetadataHandler.TYPE_PAGESTYLE, true);
+            PageStyle pageStyle = new PageStyle();
+            if (request.exists(PROP_NOSTYLE)
+                    || getProperty(PROP_NOSTYLE, false)) {
+                return pageStyle;
+            }
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(entry,
+                    ContentMetadataHandler.TYPE_PAGESTYLE, true);
+            if ((metadataList == null) || (metadataList.size() == 0)) {
+                return pageStyle;
+            }
 
-            if(metadataList!=null && metadataList.size()>0) {
-                Metadata metadata =  metadataList.get(0);
-                pageStyle.setShowBreadcrumbs(Misc.equals(metadata.getAttr2(),"true"));
-                pageStyle.setShowToolbar(Misc.equals(metadata.getAttr3(),"true"));
-                pageStyle.setShowEntryHeader(Misc.equals(metadata.getAttr4(),"true"));
+            Metadata theMetadata = null;
+            for (Metadata metadata : metadataList) {
+                String type = metadata.getAttr(6);
+                if ((type == null) || (type.trim().length() == 0)) {
+                    theMetadata = metadata;
+                    break;
+                }
+                if (type.equals("file") && !entry.isGroup()) {
+                    theMetadata = metadata;
+                    break;
+                }
+                if (type.equals("folder") && entry.isGroup()) {
+                    theMetadata = metadata;
+                    break;
+                }
+                if (type.equals(entry.getType())) {
+                    theMetadata = metadata;
+                    break;
+                }
+            }
 
-                boolean canEdit = getAccessManager().canDoAction(request, entry,
-                                                                 Permission.ACTION_EDIT);
-                if(!canEdit) {
-                    String menus = metadata.getAttr1();
-                    if(menus!=null && menus.trim().length()>0) {
-                        if(menus.equals("none")) {
-                            pageStyle.setShowMenubar(false);
-                        } else {
-                            for(String menu:StringUtil.split(menus,",",true,true))
-                                pageStyle.setMenu(menu);
+            if (theMetadata == null) {
+                return pageStyle;
+            }
+
+            pageStyle.setShowBreadcrumbs(Misc.equals(theMetadata.getAttr2(),
+                    "true"));
+            pageStyle.setShowToolbar(Misc.equals(theMetadata.getAttr3(),
+                    "true"));
+            pageStyle.setShowEntryHeader(Misc.equals(theMetadata.getAttr4(),
+                    "true"));
+
+            boolean canEdit = getAccessManager().canDoAction(request, entry,
+                                  Permission.ACTION_EDIT);
+            if ( !canEdit) {
+                String menus = theMetadata.getAttr1();
+                if ((menus != null) && (menus.trim().length() > 0)) {
+                    if (menus.equals("none")) {
+                        pageStyle.setShowMenubar(false);
+                    } else {
+                        for (String menu :
+                                StringUtil.split(menus, ",", true, true)) {
+                            pageStyle.setMenu(menu);
                         }
                     }
                 }
-                if(metadata.getAttr(5)!=null && metadata.getAttr(5).trim().length()>0) 
-                    pageStyle.setFolderWikiTemplate(metadata.getAttr(5));
-                if(metadata.getAttr(6)!=null && metadata.getAttr(6).trim().length()>0) 
-                    pageStyle.setFileWikiTemplate(metadata.getAttr(6));
+            }
+            if ((theMetadata.getAttr(5) != null)
+                    && (theMetadata.getAttr(5).trim().length() > 0)) {
+                pageStyle.setWikiTemplate(theMetadata.getAttr(5));
             }
             return pageStyle;
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
@@ -4940,7 +4998,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (msg == null) {
             return null;
         }
-        if(msg.length()==0) return msg;
+        if (msg.length() == 0) {
+            return msg;
+        }
         msg = msg(msg);
         return msg(msg) + ":" + HtmlUtil.space(1);
     }

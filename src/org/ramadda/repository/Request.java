@@ -142,13 +142,13 @@ public class Request implements Constants {
     /** _more_ */
     private ApiMethod apiMethod;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isMobile = false;
 
-    /** _more_          */
+    /** _more_ */
     private String htmlTemplateId;
 
-    /** _more_          */
+    /** _more_ */
     private PageStyle pageStyle;
 
 
@@ -1479,7 +1479,6 @@ public class Request implements Constants {
      *
      * @return  the decoded value or the default if not defined
      *
-     * @throws Exception  problem parsing the input
      */
     public double getLatOrLonValue(String from, double dflt) {
         if ( !defined(from)) {
@@ -1915,7 +1914,7 @@ public class Request implements Constants {
     public String getUserAgent(String dflt) {
         String value = getHeaderArg("User-Agent");
         if (value == null) {
-            System.err.println("no user agent");
+            //            System.err.println("no user agent");
             return dflt;
         }
         return value;
@@ -2136,6 +2135,8 @@ public class Request implements Constants {
     /**
      * Get the PageStyle property.
      *
+     *
+     * @param entry _more_
      * @return The PageStyle
      */
     public PageStyle getPageStyle(Entry entry) {

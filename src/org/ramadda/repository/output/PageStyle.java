@@ -25,6 +25,7 @@ import org.ramadda.repository.auth.*;
 
 import java.util.HashSet;
 
+
 /**
  *
  *
@@ -48,18 +49,18 @@ public class PageStyle {
 
 
     /** _more_ */
-    private String folderWikiTemplate;
+    private String wikiTemplate;
 
-    private String fileWikiTemplate;
-
+    /** _more_          */
     private HashSet<String> menus = new HashSet<String>();
 
     /** _more_ */
     private boolean showMenubar = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showToolbar = true;
 
+    /** _more_          */
     private boolean showEntryHeader = true;
 
     /** _more_ */
@@ -71,6 +72,11 @@ public class PageStyle {
      */
     public PageStyle() {}
 
+    /**
+     * _more_
+     *
+     * @param menu _more_
+     */
     public void setMenu(String menu) {
         menus.add(menu);
     }
@@ -85,7 +91,9 @@ public class PageStyle {
      * @return _more_
      */
     public boolean okToShowMenu(Entry entry, String menu) {
-        if(menus.size()==0) return true;
+        if (menus.size() == 0) {
+            return true;
+        }
         return menus.contains(menu);
     }
 
@@ -94,12 +102,8 @@ public class PageStyle {
      *
      *  @param value The new value for WikiTemplate
      */
-    public void setFolderWikiTemplate(String value) {
-        folderWikiTemplate = value;
-    }
-
-    public void setFileWikiTemplate(String value) {
-        fileWikiTemplate = value;
+    public void setWikiTemplate(String value) {
+        wikiTemplate = value;
     }
 
     /**
@@ -112,13 +116,10 @@ public class PageStyle {
     public String getWikiTemplate(Entry entry) {
         //If its a fake entry (e.g, from search results) then
         //don't use the wiki template
-        if(entry.isDummy()) {
+        if (entry.isDummy()) {
             return null;
         }
-        if(entry.isGroup()) {
-            return folderWikiTemplate;
-        }
-        return fileWikiTemplate;
+        return wikiTemplate;
     }
 
     /**

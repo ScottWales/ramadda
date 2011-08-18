@@ -3079,10 +3079,12 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryExport(Request request) throws Exception {
-        System.err.println ("request:" + request.getString(ARG_ENTRYID,"XXX") + " " + request);
+        System.err.println("request:" + request.getString(ARG_ENTRYID, "XXX")
+                           + " " + request);
         Entry entry = getEntry(request);
-        if(entry==null) {
-            throw new IllegalArgumentException("Unable to find entry:" + request);
+        if (entry == null) {
+            throw new IllegalArgumentException("Unable to find entry:"
+                    + request);
         }
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
@@ -4924,22 +4926,22 @@ public class EntryManager extends RepositoryManager {
 
 
             boolean showBreadcrumbs = pageStyle.getShowBreadcrumbs(entry);
-            boolean showToolbar = pageStyle.getShowToolbar(entry);
-            boolean showMenubar = pageStyle.getShowMenubar(entry);
+            boolean showToolbar     = pageStyle.getShowToolbar(entry);
+            boolean showMenubar     = pageStyle.getShowMenubar(entry);
             boolean showEntryHeader = pageStyle.getShowEntryHeader(entry);
 
-            String breadcrumbHtml = "";
+            String  breadcrumbHtml  = "";
             if (showBreadcrumbs) {
                 breadcrumbHtml = HtmlUtil.div(StringUtil.join(separator,
                         breadcrumbs), HtmlUtil.cssClass("breadcrumbs"));
             }
 
-            String  toolbar     = showToolbar
-                                  ? getEntryToolbar(request, entry)
-                                  : "";
-            String  menubar     = showMenubar
-                                  ? getEntryMenubar(request, entry)
-                                  : "";
+            String toolbar = showToolbar
+                             ? getEntryToolbar(request, entry)
+                             : "";
+            String menubar = showMenubar
+                             ? getEntryMenubar(request, entry)
+                             : "";
 
             if (showToolbar || showMenubar) {
                 menubar =
@@ -4953,21 +4955,22 @@ public class EntryManager extends RepositoryManager {
                 getRepository().getHtmlOutputHandler().getHtmlHeader(request,
                     entry);
 
-            String entryHeader ="";
-            String style = "";
-            if(showEntryHeader) {
-                entryHeader = "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
-                + HtmlUtil.rowBottom("<td class=\"entryname\" >" + img
-                                     + entryLink
-                                     + "</td><td align=\"right\">"
-                                     + htmlViewLinks + "</td>") + "</table>";
+            String entryHeader = "";
+            String style       = "";
+            if (showEntryHeader) {
+                entryHeader =
+                    "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
+                    + HtmlUtil.rowBottom("<td class=\"entryname\" >" + img
+                                         + entryLink
+                                         + "</td><td align=\"right\">"
+                                         + htmlViewLinks
+                                         + "</td>") + "</table>";
             }
 
-            if(showEntryHeader || showToolbar || showBreadcrumbs) {
-                style  = HtmlUtil.cssClass("entryheader");
+            if (showEntryHeader || showToolbar || showBreadcrumbs) {
+                style = HtmlUtil.cssClass("entryheader");
             }
-            nav = HtmlUtil.div(menubar + breadcrumbHtml + entryHeader,
-                               style);
+            nav = HtmlUtil.div(menubar + breadcrumbHtml + entryHeader, style);
 
         }
         String title =
@@ -6926,7 +6929,6 @@ public class EntryManager extends RepositoryManager {
 
         List<String> toks = (List<String>) StringUtil.split(name,
                                 Entry.PATHDELIMITER, true, true);
-        System.err.println("toks:" + toks);
         Entry  parent = null;
         String lastName;
         if ((toks.size() == 0) || (toks.size() == 1)) {
