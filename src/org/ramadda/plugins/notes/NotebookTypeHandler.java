@@ -75,6 +75,26 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    public List<Clause> assembleWhereClause(Request request,
+                                            StringBuffer searchCriteria)
+            throws Exception {
+        List<Clause> where       = super.assembleWhereClause(request, searchCriteria);
+        if(request.defined(ARG_OUTPUT)) return where;
+        if(!request.defined(ARG_LETTER)) return where;
+        String letter = request.getString(ARG_LETTER,"A");
+        if(letter.equals("all")) return where;
+        where.add(Clause.like(Tables.ENTRIES.COL_NAME,letter+"%"));
+        return where;
+    }
+
+
+    public void getChildrenEntries(Request request, Entry group, List<Entry> entries, List<Entry> subGroups, List<Clause> where) throws Exception {
+        if(!request.defined(ARG_OUTPUT) && !request.defined(ARG_LETTER)) return;
+        super.getChildrenEntries(request, group, entries, subGroups, where);
+    }
+
+
+
     /**
      * _more_
      *
@@ -100,24 +120,20 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         boolean canAdd = getAccessManager().canDoAction(request, group,
                              Permission.ACTION_NEW);
 
-        /*
         if (canAdd) {
             String label = 
-                HtmlUtil.img(getRepository().iconUrl(ICON_NEW),  msg("New GLOSSARY Question"))+" "  + msg("Create new glossary entry");
+                HtmlUtil.img(getRepository().iconUrl(ICON_NEW),  msg("New Note"))+" "  + msg("Create new note");
             sb.append(HtmlUtil
                       .href(HtmlUtil
                             .url(request
                                  .entryUrl(getRepository().URL_ENTRY_FORM, group,
                                            ARG_GROUP), ARG_TYPE,
-                                 GlossaryEntryTypeHandler.TYPE_GLOSSARYENTRY), label));
+                                 NoteTypeHandler.TYPE_NOTE), label));
         }
 
         List<String> letters = new ArrayList<String>();
         Hashtable<String,StringBuffer> letterToBuffer = new Hashtable<String,StringBuffer>();
-
         subGroups.addAll(entries);
-
-
         sb.append(HtmlUtil.p());
         sb.append("<center>");
         List<String> header = new ArrayList<String>();
@@ -135,10 +151,10 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append("</center>");
 
         if(subGroups.size()==0 && request.defined(ARG_LETTER)) {
-            sb.append(getRepository().showDialogNote(msg("No glossary entries found")));
+            sb.append(getRepository().showDialogNote(msg("No notes found")));
         }
-        sb.append("<style type=\"text/css\">.glossary_entry {margin:0px;margin-bottom:5px;}\n");
-        sb.append(".glossary_entries {margin:0px;margin-bottom:5px;}\n</style>");
+        sb.append("<style type=\"text/css\">.note {margin:0px;margin-bottom:5px;}\n");
+        sb.append(".notes {margin:0px;margin-bottom:5px;}\n</style>");
         for(Entry entry: subGroups) {
             String name  = entry.getName();
             String letter = "-";
@@ -149,10 +165,10 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             if(letterBuffer==null) {
                 letterToBuffer.put(letter, letterBuffer = new StringBuffer());
                 letters.add(letter);
-                letterBuffer.append("<ul class=\"glossary_entries\">");
+                letterBuffer.append("<ul class=\"notes\">");
             }
             String href= getEntryManager().getAjaxLink(request, entry, name).toString();
-            letterBuffer.append(HtmlUtil.li(href, HtmlUtil.cssClass("glossary_entry")));
+            letterBuffer.append(HtmlUtil.li(href, HtmlUtil.cssClass("note")));
         }
 
         letters = (List<String>) Misc.sort(letters);
@@ -164,9 +180,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(HtmlUtil.h2(letter));
             sb.append(letterBuffer);
         }
-        return new Result(msg("GLOSSARY"), sb);
-        */
-        return null;
+        return new Result(msg("Notebook"), sb);
     }
 
 

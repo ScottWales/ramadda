@@ -16,22 +16,8 @@ In the form select &quot;Wiki Page&quot; to go to the Wiki Page create form:
 
 [ht::cimg images/wikicreate.gif {Wiki Page Create Form} {border=0 width=600}]
 
-You can enter  an entry name and the wiki text. We generally follow the format
-that Wikipedia follows. For example:<br> 
-==Section Heading 1==<br>
-===Section Heading 2===<br>
-A horizontal line:<br>
-----<br>
-Lists:<br>
-* bullet 1
-* bullet 2
-** sub bullet 1
-** sub bullet 2
-* bullet 3
-<p>
-
-See the 
-<a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information.
+See the help on <a href="wikitext.html">Wiki Text</a> for more information
+on how to use wiki text markup.
 <p>
 The default HTML view of a Wiki Page entry  looks like:
 [ht::cimg images/wikiexample.gif {Wiki Page} {border=0 width=600}]
@@ -42,22 +28,6 @@ The &quot;Wiki History&quot; link in the top tabs will take you to the history p
 [ht::cimg images/wikihistory.gif {Wiki History Page} {border=0 width=600}]
 This shows the history of past edits and allows you to view and compare versions and to revert 
 back to past versions.
-
-
-<subhead intoc="false" id="links">Linking to other entries</subhead>
-Normally in a wiki a link to another page is of the form:<blockquote>
-\[\[Page name\]\]</blockquote>
-In RAMADDA you can use the name of another entry to create the link.
-The Entry needs to be a sibling entry to the Wiki Page
-(i.e., it shares the same parent of the Wiki Page entry) or it needs to be the
-identifier of some other entry, e.g.,<blockquote>
-\[\[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data\]\]</blockquote>
-If the entry with the given name does not exist then the link will take one to the
-create entry form.
-<p>
-
-You can add links to other entries with the &quot;Add Link&quot; menu.
-
 
 
 
@@ -77,17 +47,18 @@ June 8th-12th&lt;/h3&gt;
 
 &lt;table width="100%"&gt;&lt;tr valign="top"&gt;&lt;td&gt;
 
-{{children title="Links"}}
+{{tree title="Links"}}
 &lt;/td&gt;&lt;td&gt;
 &lt;img src="http://www.unidata.ucar.edu/photos/2006userwkshp/collage.jpg" width="500"&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-
 
 Presentation Schedule:
 {{import 075c24ad-9078-4f3f-8a96-1866668a449b calendar.calendar }}
 </pre>
 
 In this case we use html and the import tags to come up with the page layout.
+
+
 
 
 

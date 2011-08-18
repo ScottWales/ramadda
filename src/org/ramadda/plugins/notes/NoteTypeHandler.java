@@ -61,4 +61,8 @@ public class NoteTypeHandler extends GenericTypeHandler {
     }
 
 
+    public String getWikiTemplate(Request request, Entry entry) {
+        return "{{description}}";
+    }
+
 }

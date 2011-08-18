@@ -1,7 +1,7 @@
 <types>
 
-  <type name="notes_notenbook"  description="Notebook" handler="org.ramadda.plugins.notes.NotebookTypeHandler" category="Information">
-     <property name="icon" value="/icons/note.gif"/>
+  <type name="notes_notebook"  description="Notebook" handler="org.ramadda.plugins.notes.NotebookTypeHandler" category="Information">
+     <property name="icon" value="/notes/notebook.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.resource.show" value="false"/>
@@ -10,9 +10,14 @@
 
   <type name="notes_note"  description="Note" handler="org.ramadda.plugins.notes.NoteTypeHandler" category="Information">`b
      <property name="icon" value="/icons/note.gif"/>
+     <property name="form.name.label" value="Subject"/>
+     <property name="form.description.label" value="Note"/>
      <property name="form.area.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.resource.show" value="false"/>
+<!--
+     <column name="category" type="enumerationplug" label="Category" cansearch="true" showinhtml="true"/>
+-->
 </type>
 
 

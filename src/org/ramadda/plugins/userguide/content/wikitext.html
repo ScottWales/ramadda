@@ -2,8 +2,30 @@
 
 <%nochildlist%>
 
+There is always some repository entry associated with wiki text. This might
+be a specific <a href="wiki.html#wikipage">Wiki Entry</a>, 
+we might be treating
+the description of some arbitrary entry as wiki text 
+using the <a href="wiki.html#wikidesc">&lt;wiki&gt; tag</a>,
+or the wiki text might be coming from a <a href="pagestyle.html">Page Style</a>.
 
 
+<subhead intoc="false" id="editor">Wiki Editor</subhead>
+In any of these cases RAMADDA provides a wiki text editor:
+[ht::cimg images/wikiedit.png {Wiki Text Editor} {border=0 width=600}]
+<ul>
+<li>
+The  buttons allow you to add basic wiki markup.
+<li>
+The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
+(e.g., name, description, children entries, etc).
+<li>
+The Add entry id menu allows you to specify the entry to use in properties (see below).
+<li>
+The Add entry link menu adds wiki links to other entries.
+</ul>
+
+<subhead intoc="false" id="markup">Basic Markup</subhead>
 
 The RAMADDA Wiki facility generally follows the format
 that Wikipedia follows. For example:
@@ -32,89 +54,162 @@ See the
 Note: RAMADDA does not support the Wikipedia HTML table format. 
 For tables its best just to use HTML table markup.
 
-
 <subhead intoc="false" id="links">Linking to other entries</subhead>
-Normally in a wiki a link to another page is of the form:<blockquote>
-\[\[Page name\]\]</blockquote>
+Normally in a wiki a link to another page is of the form:
+[wiki::text {
+[[Page name]]
+}]
+
 In RAMADDA you can use the name of another entry to create the link.
-The Entry needs to be a sibling entry to the Wiki Page
-(i.e., it shares the same parent of the Wiki Page entry) or it needs to be the
-identifier of some other entry, e.g.,<blockquote>
-\[\[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data\]\]</blockquote>
+You ca use the Add entry link menu to select an entry. 
+This produces wiki text of the form:
+[wiki::text {
+[[entry id|Label to show for link]]
+}]
+
+e.g.:
+[wiki::text {
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
+}]
+
+You can also just specify an entry by name. Either an absolute path:
+[wiki::text {
+[[Top entry/Some other entry]]
+}]
+
+Or relative to the wiki entry:
+[wiki::text {
+[[Some entry]]
+}]
+
+
 If the entry with the given name does not exist then the link will take one to the
 create entry form.
+
+
+
+<subhead intoc="false" id="import">RAMADDA Wiki Properties</subhead>
+You can also import content from the current Wiki Page entry or any other entry with the import  
+syntax:
+[wiki::text [wiki::tag property]]
+
+e.g., if we wanted to show the information tabs for an entry we'd do:
+[wiki::text [wiki::tag information]]
+
+
+For example, if we want to import the information block with it open:
+[wiki::text [wiki::tag information {open="true"}]]
+
+This would give us:
+[ht::cimg images/wikiinformation.png {} {border=0}]
+
+
+Normally, all property tags refer to the relevant entry. However, you can specify another entry:
+[wiki::text [wiki::tag information {entry="some other entry id or name"}]]
+
+The Add entry id menu in the editor toolbar allows you to select the entry to use. This
+adds both the ID of the entry as well as its name. You can use either the ID or the name
+or both. 
 <p>
 
-You can add links to other entries with the &quot;Add Link&quot; menu.
+The first set of property tags show some information for the entry.
 
-
-<subhead intoc="false" id="import">RAMADDA WIKI Properties</subhead>
-You can also import content from the current Wiki Page entry or any other entry with the import  
-syntax:<blockquote>{{<i>property</i>}}
-</blockquote>
-e.g., in the above example we are importing the Information tab block for the Wiki Page entry with:
-<blockquote>{{information}}</blockquote>
-
-
-For example, if we want to import the information block for the above data file with the
-block being closed we would do:<blockquote>
-{{information entry="7ca13e52-8efb-4d17-863f-e17027dbcc22"  open="false"}}</blockquote>
-
-
-The set of import tags include:
 <ul>
-information
-name
-description
-layout
-properties
-html
-map
-mapentry
-comments
-breadcrumbs
-toolbar
-image
-menu
-recent
-gallery
-tabs
-grid
-tree
-links
-information
-name
-description
-layout
-properties
-html
-map
-mapentry
-comments
-breadcrumbs
-toolbar
-image
-menu
-recent
-gallery
-tabs
-grid
-tree
-links
+<li> [wiki::tagdef name]:  Entry name
+<li> [wiki::tagdef description]: Entry description
+<li> [wiki::tagdef fromdate {format="date time format"} ], [wiki::tagdef todate {format="date time format"} ]: 
+From date/to date of entry. 
+If specified, format the date with the given date time format.
+This follows the
+Java <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
+
+
+<li> [wiki::tagdef information]: The information tabs.
+<li> [wiki::tagdef properties]: Show the properties listing.
+<li> [wiki::tagdef html]: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<li> [wiki::tagdef map {width="width of map" height="height of map"}]: Display a map. If the entry is a folder then display the children entries of the folder.
+<li> [wiki::tagdef mapentry {width="width of map" height="height of map"}]:
+Display a map just for a group.
+If you used the {{map}} tag with a folder then the children get mapped. The mapentry tag
+says to make a map for just the entry.
+<li> [wiki::tagdef comments]: Show the comments.
+<li> [wiki::tagdef breadcrumbs]: Show the breadcrumb path
+<li> [wiki::tagdef layout]: This shows the "Layout:" toolbar bar for an entry.
+<li> [wiki::tagdef toolbar]: Show the entry toolbar
+<li> [wiki::tagdef image {src="image source" width="image width" link="true|false" left="absolute position" top="absolute position"}]: Include an image. If src is not given then
+this shows the image (if there is one) from the entry.
+If src is specified it can take on the form: <pre>
+src="entry name"
+</pre>
+to show an entry. This is equivalent to using entry="...". You can also specify the name of a file attachment with:
+
+<pre>
+src="::attachment name"
+</pre>
+
+Or any attachment with:
+<pre>
+src="::*"
+</pre>
+
+<li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}]: 
+Show the menu actions. If menus is not specified
+show all of the menus. If menus is specified only show those menus listed.
+Show all menus in a toggle block:
+<pre>
+{{menu}}
+</pre>
+
+
+You can specify which menus to show with a comma separated list of menu names. Only show the
+file and view menu:
+<pre>
+{{menu menus="file,view"}}
+</pre>
+
+
+Show the menu actions in a popup:
+<pre>
+{{menu popup="true" title="Click here"}}
+</pre>
+
+</ul>
+
+
+The following properties display a collection of entries. By default they
+are the children entries of the wiki entry but you can specify
+other groups of entries.
+<ul>
+
+<li> [wiki::tagdef recent {days="number of days to show"}]:
+Show the most recent N days in a list organized by day.
+
+<li> [wiki::tagdef gallery {level="number of levels down the entry hierarchy"}]:
+Show a vertical listing of the children entry images, e.g.
+<pre>{{gallery level="1"}} </pre>
+
+Show a vertical listing of the grand children entry images:
+<pre>{{gallery level="2"}} </pre>
+
+Set the image width and only show up to 5 images:
+<pre>{{gallery level="2" width="300" count="5"}} </pre>
+
+<li> [wiki::tagdef tabs]: Show the children as tabs.
+<li> [wiki::tagdef grid]: Show the children in a grid. e.g., show the grand children as a grid:
+<pre>{{grid level="2"}} </pre>
+<li> [wiki::tagdef tree]:
+The [wiki::tagdef tree] tag is used to display the children entries of a folder.
+It can take the form:
+[wiki::text [wiki::tagdef tree {title="Links" showtoggle="false" open="true"}]]
 
 
 
-<li> <i>name</i> The name of the entry.
-<li> <i>description</i> The description of the entry.
-<li> <i>comments</i> The comments for the entry.
-<li> <i>toolbar</i> The icon toolbar.
-<li> <i>breadcrumbs</i> The breadcrumb path.
-<li> <i>information</i> The properties information block.
-<li> <i>image</i> If the entry is an image then the image.
-<li> <i>links</i> The table  of views and actions.
-<li> <i>children</i> The list of children entries. (see below).
-<li> <i>subfolders</i> Just the children folders.
-<li> <i>subentries</i> Just the children non folders.
+The title attribute is used in place of "Children". 
+If showtoggle="false" then the show/hide toggle link is not shown.
+
+
+<li> [wiki::tagdef links]
+
 </ul>
 
 
@@ -128,85 +223,5 @@ Look at the URL of a page and you will see &quot;output=<i>identifier</i>&quot;.
 
 
 
-In this case we use html and the import tags to come up with the page layout.
-
-<p>
-The <i>children</i> tag is used to display the children entries of a folder.
-It can take the form:
-<pre>
-{{children title="Links" showtoggle="false"}}
-</pre>
-
-The title attribute is used in place of "Children". 
-If showtoggle="false" then the show/hide toggle link is not shown.
-
-You can specifiy another entry:
-<pre>
-{{children entry="some other entry id"}}
-</pre>
-
-
-<p>
-Other tags include:
-<p>
-
-Display a map:
-<pre>{{map}} </pre>
-
-Display a map just for a group:
-<pre>{{mapentry}} </pre>
-
-If you used the {{map}} tag with a folder then the children get mapped. The mapentry tag
-says to make a map for just the entry.
-
-
-
-[wiki::tag recent]
-<p>
-Show  the most recent 3 days in a list organized by day:
-<pre>{{recent days="3"}} </pre>
-
-Show a vertical listing of the children entry images:
-<pre>{{gallery level="1"}} </pre>
-
-Show a vertical listing of the grand children entry images:
-<pre>{{gallery level="2"}} </pre>
-
-Set the image width and only show up to 5 images:
-<pre>{{gallery level="2" width="300" count="5"}} </pre>
-
-
-Show the children as tabs:
-<pre>{{tabs}} </pre>
-
-Show the children in a grid:
-<pre>{{grid}} </pre>
-
-Show the grandchildren in a grid:
-<pre>{{grid level="2"}} </pre>
-
-
-
-Show all of the menu actions:
-<pre>
-{{menu}}
-</pre>
-
-
-You can specify which menus to show with a comma separated list of menu names:
-<pre>
-{{menu menus="file,edit,feeds,view,other"}}
-</pre>
-
-This only shows the file and view menu:
-<pre>
-{{menu menus="file,view"}}
-</pre>
-
-
-Show the menu actions in a popup:
-<pre>
-{{menu popup="true" title="Click here"}}
-</pre>
 
 [ht::foot]
