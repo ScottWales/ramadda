@@ -46,8 +46,8 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/weather/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/wiki/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/workshop/build.xml" inheritAll="false"/>
 <!--
+      <ant antfile="${src_dir}/org/ramadda/plugins/workshop/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/personfinder/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/forum/build.xml" inheritAll="false"/>
