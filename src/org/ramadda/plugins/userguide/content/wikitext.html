@@ -61,7 +61,7 @@ Normally in a wiki a link to another page is of the form:
 }]
 
 In RAMADDA you can use the name of another entry to create the link.
-You ca use the Add entry link menu to select an entry. 
+You can use the Add entry link menu to select an entry. 
 This produces wiki text of the form:
 [wiki::text {
 [[entry id|Label to show for link]]
@@ -88,7 +88,7 @@ create entry form.
 
 
 
-<subhead intoc="false" id="import">RAMADDA Wiki Properties</subhead>
+<subhead intoc="false" id="propertiesg">Wiki Properties</subhead>
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 [wiki::text [wiki::tag property]]
@@ -105,14 +105,19 @@ This would give us:
 
 
 Normally, all property tags refer to the relevant entry. However, you can specify another entry:
-[wiki::text [wiki::tag information {entry="some other entry id or name"}]]
+[wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
 
-The Add entry id menu in the editor toolbar allows you to select the entry to use. This
-adds both the ID of the entry as well as its name. You can use either the ID or the name
-or both. 
-<p>
 
-The first set of property tags show some information for the entry.
+The entry value can be the ID of an entry, its name (or full path) or "parent" or "grandparent" to denote
+the parent entry (or its parent) of the current entry.
+The Add entry id menu in the editor toolbar allows you to select the entry to use. As a convenience this
+adds both the ID of the entry as well as its name. 
+
+
+
+<subhead intoc="false" id="basic">Basic Wiki Properties</subhead>
+
+The first set of property tags show some information for the entry. Note: the attributes are all optional.
 
 <ul>
 <li> [wiki::tagdef name]:  Entry name
@@ -176,27 +181,21 @@ Show the menu actions in a popup:
 </ul>
 
 
+<subhead intoc="false" id="collection">Collection Wiki Properties</subhead>
+
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
-other groups of entries.
+other groups of entries with:
+[wiki::text {{{property entry="some other entry" folders="true" files="true" type="entries of a specific type" level="1 or 2"}}}]
+</ul>
+If <i>folders</i> is set then only show folder like entries.<br>
+If <i>files</i> is set then only show non folders.<br>
+If <i>type</i> is set then only show entries of  that type.<br>
+The attribute <i>level</i> can be set to "1" (the default) or "2". Level 1 refers to the immediate children
+entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).
+
 <ul>
 
-<li> [wiki::tagdef recent {days="number of days to show"}]:
-Show the most recent N days in a list organized by day.
-
-<li> [wiki::tagdef gallery {level="number of levels down the entry hierarchy"}]:
-Show a vertical listing of the children entry images, e.g.
-<pre>{{gallery level="1"}} </pre>
-
-Show a vertical listing of the grand children entry images:
-<pre>{{gallery level="2"}} </pre>
-
-Set the image width and only show up to 5 images:
-<pre>{{gallery level="2" width="300" count="5"}} </pre>
-
-<li> [wiki::tagdef tabs]: Show the children as tabs.
-<li> [wiki::tagdef grid]: Show the children in a grid. e.g., show the grand children as a grid:
-<pre>{{grid level="2"}} </pre>
 <li> [wiki::tagdef tree]:
 The [wiki::tagdef tree] tag is used to display the children entries of a folder.
 It can take the form:
@@ -207,21 +206,60 @@ It can take the form:
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
+<li> [wiki::tagdef grid]: Show the children in a grid. e.g., show the grandchildren as a grid:
+[wiki::text {{{grid level="2"}}}]
 
-<li> [wiki::tagdef links]
+<li> [wiki::tagdef recent {days="number of days to show"}]:
+Show the most recent N days in a list organized by day.
+
+<li> [wiki::tagdef gallery {width="image width" count="max number to show"}]:
+Show a vertical listing of the children entry images, e.g.
+[wiki::text {{{gallery}}}] </pre>
+
+Show a vertical listing of the grandchildren entry images:
+[wiki::text {{{gallery level="2"}}}] </pre>
+
+Set the image width and only show up to 5 images:
+[wiki::text {{{gallery  width="300" count="5"}}}] </pre>
+
+<li> [wiki::tagdef tabs]: Show the children as tabs.
+
+<li> [wiki::tagdef links {separator="separator text to use" 
+                          style="inline css style for the link"
+                          class="css class for the link"
+                          tagopen="html to prepend to the link" 
+                          tagclose="close html"}]: Layout links to the entries.<br>
+This produces a set of links to the entries. You can create a header with wiki text like:
+[wiki::text {
+&lt;center&gt;
+{{links separator="&amp;nbsp;|&amp;nbsp"}}
+&lt;/center&gt;
+}]
+
+If you wanted to make a vertical list do:
+[wiki::text {
+{{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
+}]
+
 
 </ul>
 
 
 
+<subhead intoc="false" id="import">Importing any page</subhead>
+
+
+
 You can also import any of the views of an entry, e.g., the map view, the opendap view, the 
-calendar view, etc.
-In the above example we are importing the map view of the earthquake data:
-<blockquote>{{import entry="7ca13e52-8efb-4d17-863f-e17027dbcc22" data.point.map width="400"}}</blockquote>
-Right now you need to manually enter the output view identifier in the import statement.
-Look at the URL of a page and you will see &quot;output=<i>identifier</i>&quot;.
+calendar view, etc., with the  [wiki::tag import] tag:<br>
+[wiki::tagdef import {output="<any of the output types>"}]
+<p>
 
+So, if you wanted to show the calendar view of an entry you would do:
+[wiki::text [wiki::tag import {output="calendar.calendar"}]]
 
+To find the correct output identifier just navigate to the page you want to include
+and look at the url for the output=... url argument and use that.
 
 
 [ht::foot]
