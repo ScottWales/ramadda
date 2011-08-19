@@ -15,8 +15,8 @@ To run under Tomcat download the repository.war file.
 To run stand alone download the repository.zip file, unzip it and look at the README.
 
 
-<a name="tomcat"></a>
-<h2>Running under Tomcat</h2>
+<subhead intoc="false" id="tomcat">Running under Tomcat</subhead>
+
 To run under Tomcat just 
 place the repository.war in the tomcat webapps directory. By default the repository is 
 accessed at /repository on the web server. I believe with Tomcat the top-level path can only be a single level and
@@ -35,8 +35,8 @@ java ... -XX:MaxPermSize=256m ...
 
 
 
-<a name="jetty"></a>
-<h2>Running Standalone</h2>
+<subhead intoc="false" id="jetty">Running Standalone</subhead>
+
 You can run RAMADDA stand-alone. This is really useful for development and just requires  Java 1.6 or greater. 
 First, download and ramadda&lt;version&gt;.zip file at:
 <a href="http://sourceforge.net/projects/ramadda/files/">http://sourceforge.net/projects/ramadda/files/</a>.
@@ -53,7 +53,8 @@ By default the server is on port 8080.  To change the port do:<pre>
 
 
 
-<h2>RAMADDA Home Directory</h2>
+<subhead intoc="false" id="home">RAMADDA Home Directory</subhead>
+
 RAMADDA uses a local home directory on the server.
 This is where RAMADDA looks for properties files and other resources, where the 
 java derby database is stored and where any uploaded data files are stored, etc. 
@@ -62,7 +63,7 @@ By default ramadda will use: <pre>
    &lt;server process home directory&gt;/.ramadda</pre>
 i.e., the home directory of the process that runs is running the server (.e.g., "tomcat").
 <p>
-You can override this a number of ways. This is the bootstrapping step.
+You can override this a number of ways - some good some not so good. This is the bootstrapping step.
 What ramadda does is look for the property: ramadda_home in a variety of places, in precedence:
 
 <ol>
@@ -71,8 +72,9 @@ What ramadda does is look for the property: ramadda_home in a variety of places,
 In the web.xml  in the repository.war you can specify command line properties:<pre>
     &lt;param-value&gt;-Dramadda_home=/home/dir&lt;/param-value&gt;
 </pre>
+
 The problem with this is you have to unjar the war and change the web.xml. Then, when you install a 
-new release you have to repeat the process. Changing an installed resource makes me cringe. 
+new release of RAMADDA you have to always remember to edit the web.xml file again. Uggh.
 
 <li> As a Java environment variable<br>
 Wherever you define the arguments that are passed to <i>java</i> when starting Tomcat include:<pre>
@@ -85,6 +87,7 @@ e.g.:<pre>java -Xmx512m  -Dramadda_home=/home/dir
 Environment variables can be set for the tomcat process
 Just define:<pre>ramadda_home=/home/dir</pre>
 </ol>
+
 
 RAMADDA will also look for a repository.properties file under the Tomcat &quot;conf&quot; directory.
 It looks for any of the environment variables:
@@ -104,11 +107,13 @@ if found then RAMADDA looks for the property:
 ramadda_home=/path/to/ramadda/home
 </pre>
 
+This is probably the cleanest way to do the initial confifuration of RAMADDA. Assuming you have set the CATALINA_BASE environment variable this does not require editing any files and you only need to do anything when you reinstall Tomcat. 
 
 
 
-<a name="properties"></a>
-<h2>RAMADDA Property Files</h2>
+
+<subhead intoc="false" id="properties">RAMADDA Property Files</subhead>
+
 For other  configuration options RAMADDA looks in its home directory for any .properties files.
 While most of the RAMADDA configuration is accomplished through the web ADMIN interface there
 are a number of configuration options that need to be placed in a properties file, e.g. 
@@ -132,9 +137,11 @@ In the source release the system properties file can be viewed:
 </pre>
 
 
-<a name="directory"></a>
 
-<h2>Directory Structure</h2>
+
+
+<subhead intoc="false" id="directory">Directory Structure</subhead>
+
 Under the home directory RAMADDA will create the following subdirectories:
 
 <ul>
@@ -192,7 +199,7 @@ If you are running with the Derby database this directory holds the database
 
 
 
-<h2>Configuration</h2>
+<subhead intoc="false" id="configuration">Configuration</subhead>
 
 RAMADDA for the most part can be configured through the <a href="admin.html">Admin pages</a>. When you are logged in to 
 RAMADDA as an administrator there should be a &quot;Admin&quot; on the left side of the page.
