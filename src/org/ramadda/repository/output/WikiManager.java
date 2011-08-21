@@ -662,18 +662,28 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             StringBuffer mapSB = new StringBuffer();
             int          width = Misc.getProperty(props, "width", 400);
             int          height = Misc.getProperty(props, "height", 300);
-            MapOutputHandler mapOutputHandler =
-                (MapOutputHandler) getRepository().getOutputHandler(
-                    MapOutputHandler.OUTPUT_MAP);
-            if (mapOutputHandler == null) {
-                return "No maps";
-            }
+            boolean googleEarth  =  Misc.getProperty(props, "earth", false)&&
+                getMapManager().isGoogleEarthEnabled(request);
+                
 
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
-            boolean[] haveBearingLines = { false };
-            MapInfo map = mapOutputHandler.getMap(request, children, mapSB,
-                              width, height, haveBearingLines);
+
+
+            if(googleEarth) {
+                getMapManager().getGoogleEarth(request,   children, mapSB, Misc.getProperty(props, "width", 400), 
+                                               Misc.getProperty(props, "height", 300));
+            } else {
+                MapOutputHandler mapOutputHandler =
+                    (MapOutputHandler) getRepository().getOutputHandler(
+                                                                        MapOutputHandler.OUTPUT_MAP);
+                if (mapOutputHandler == null) {
+                    return "No maps";
+                }
+                boolean[] haveBearingLines = { false };
+                MapInfo map = mapOutputHandler.getMap(request, children, mapSB,
+                                                      width, height, haveBearingLines);
+            }
             return mapSB.toString();
         } else if (include.equals(WIKIPROP_MAPENTRY)) {
             StringBuffer mapSB = new StringBuffer();

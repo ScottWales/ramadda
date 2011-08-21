@@ -1233,7 +1233,7 @@ public class UserManager extends RepositoryManager {
         String msg = "A new RAMADDA account has been created for you.";
         msgSB.append(HtmlUtil.checkbox(ARG_USER_SENDMAIL, "true", false));
         msgSB.append(HtmlUtil.space(1));
-        msgSB.append(msg("Send an email to the new user with message:"));
+        msgSB.append(msgLabel("Send an email to the new user with message"));
         msgSB.append(HtmlUtil.br());
         msgSB.append(HtmlUtil.textArea(ARG_USER_MESSAGE, msg, 5, 50));
 
@@ -1635,7 +1635,7 @@ public class UserManager extends RepositoryManager {
             Entry fromEntry = getEntryManager().getEntry(request,
                                   request.getString(ARG_FROM, ""));
             sb.append(HtmlUtil.br());
-            sb.append(msgLabel("Pick an entry  to associate with")
+            sb.append(msgLabel("Pick an entry to associate with")
                       + HtmlUtil.space(1) + fromEntry.getName());
         }
 

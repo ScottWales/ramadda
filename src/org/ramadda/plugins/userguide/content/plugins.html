@@ -53,9 +53,7 @@ If the file ends with &quot;.sql&quot; then the file is evaluated at startup to 
 <a name="languages"></a>
 <li><i>.pack</i><br> 
 RAMADDA supports multiple language translations.
-<pre>
-ramadda.language.default=
-</pre>
+From the example.pack file we have the following documentation:
 
 <pre>
 #This is an example language translation file. It is a .properties file. 
@@ -68,19 +66,29 @@ ramadda.language.default=
 #just send a note about it to the developers. 
 #
 #The following 2 lines define the id of the language and its name
-#If the id=default, e.g.:
-#language.id=default
-#Then this language pack will be used as the default translation for the site
 #
 language.id=example
 language.name=Example Language 
+
+#
+# To set a language as the default language for the entire site
+# define the following property in your local repository.properties file or
+# in the Admin->Site and Contact Information -> Extra Properties section
+#
+# ramadda.language.default=example
+#
 
 #
 #Here is where you do the translation
 #.e.g:
 #Phrase used in RAMADDA=Your translation
 
+</pre>
 
+
+<pre>
+
+</pre>
 
 
 </ul>

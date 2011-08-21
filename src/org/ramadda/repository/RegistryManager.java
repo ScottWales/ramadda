@@ -313,7 +313,7 @@ public class RegistryManager extends RepositoryManager {
     public void addToInstallForm(Request request, StringBuffer sb)
             throws Exception {
         if(true) return;
-        String msg = msg("Servers this server registers with:");
+        String msg = msgLabel("Servers this server registers with");
         msg = HtmlUtil.space(1)
               + HtmlUtil.href(
                   "http://www.unidata.ucar.edu/software/ramadda/docs/userguide/remoteservers.html",
@@ -455,7 +455,7 @@ public class RegistryManager extends RepositoryManager {
         csb.append(
             HtmlUtil.formEntry(
                 "",
-                msg("Servers this server registers with:")
+                msgLabel("Servers this server registers with")
                 + HtmlUtil.space(2) + helpLink));
         csb.append(
             HtmlUtil.formEntry(

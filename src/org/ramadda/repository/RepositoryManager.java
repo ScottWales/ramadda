@@ -26,6 +26,7 @@ package org.ramadda.repository;
 import org.w3c.dom.*;
 
 import org.ramadda.repository.admin.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.search.*;
@@ -587,6 +588,10 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public StorageManager getStorageManager() {
         return repository.getStorageManager();
+    }
+
+    public MapManager getMapManager() {
+        return repository.getMapManager();
     }
 
 

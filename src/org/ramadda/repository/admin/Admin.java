@@ -1183,9 +1183,9 @@ public class Admin extends RepositoryManager {
         String fileWidget = HtmlUtil.textArea(PROP_LOCALFILEPATHS,
                                 getProperty(PROP_LOCALFILEPATHS, ""), 5, 40);
         String fileLabel =
-            msg("Enter one server file system directory per line.")
+            msg("Enter one server file system directory per line")
             + HtmlUtil.br()
-            + msg("Directories that RAMADDA is allowed to serve files from (e.g., from harvesters or the local file view entries).");
+            + msg("Directories that RAMADDA is allowed to serve files from (e.g., from harvesters or the server file view entries)");
         asb.append(HtmlUtil.formEntryTop(msgLabel("File system access"),
                                          "<table><tr valign=top><td>"
                                          + fileWidget + "</td><td>"
@@ -1453,8 +1453,6 @@ public class Admin extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_LDM_QUEUE, true);
         getRepository().writeGlobal(request, PROP_GOOGLEAPIKEYS, true);
         getRepository().writeGlobal(request, PROP_FACEBOOK_CONNECT_KEY);
-
-        
         getRepository().writeGlobal(PROP_NOSTYLE,"" + request.get(PROP_NOSTYLE, false));
 
 
@@ -1501,6 +1499,8 @@ public class Admin extends RepositoryManager {
             getRepository().setLocalFilePaths();
             getRepository().clearCache();
         }
+
+        getMapManager().applyAdminConfig(request);
 
         List<OutputHandler> outputHandlers =
             getRepository().getOutputHandlers();

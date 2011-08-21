@@ -1,7 +1,6 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
+ * Copyright 2010-2011 Don Murray/NOAA
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,16 +15,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.idv;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.auth.*;
 import org.ramadda.geodata.data.*;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.util.*;
@@ -433,21 +435,20 @@ public class IdvOutputHandler extends OutputHandler {
     public static final String DISPLAY_ISOSURFACE = "isosurface";
 
 
+    /** _more_          */
     public static final String GROUP_DATA = "Data";
 
 
     /** _more_ */
     public static final OutputType OUTPUT_IDV_GRID =
         new OutputType("Grid Displays", "idv.grid", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, ICON_PLANVIEW,
-                       GROUP_DATA);
+                       OutputType.SUFFIX_NONE, ICON_PLANVIEW, GROUP_DATA);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_IDV_POINT =
-        new OutputType("Point Displays", "idv.point",
-                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       ICON_PLANVIEW, GROUP_DATA);
+        new OutputType("Point Displays", "idv.point", OutputType.TYPE_OTHER,
+                       OutputType.SUFFIX_NONE, ICON_PLANVIEW, GROUP_DATA);
 
 
     /** _more_ */
@@ -564,7 +565,7 @@ public class IdvOutputHandler extends OutputHandler {
      */
     public OutputHandler getDataOutputHandler() throws Exception {
         return getRepository().getOutputHandler(
-                                                DataOutputHandler.OUTPUT_OPENDAP.toString());
+            DataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
@@ -592,8 +593,10 @@ public class IdvOutputHandler extends OutputHandler {
 
         List<Entry> theEntries = null;
         if (entry != null) {
-            if ( !((DataOutputHandler)getDataOutputHandler()).canLoadAsGrid(entry)) {
-                if (((DataOutputHandler)getDataOutputHandler()).canLoadAsPoint(entry)) {
+            if ( !((DataOutputHandler) getDataOutputHandler()).canLoadAsGrid(
+                    entry)) {
+                if (((DataOutputHandler) getDataOutputHandler())
+                        .canLoadAsPoint(entry)) {
                     links.add(makeLink(request, entry, OUTPUT_IDV_POINT));
                 }
                 return;
@@ -705,9 +708,10 @@ public class IdvOutputHandler extends OutputHandler {
      */
     public Result outputGrid(final Request request, Entry entry)
             throws Exception {
-        DataOutputHandler dataOutputHandler = (DataOutputHandler)getDataOutputHandler();
+        DataOutputHandler dataOutputHandler =
+            (DataOutputHandler) getDataOutputHandler();
         String action = request.getString(ARG_ACTION, ACTION_MAKEINITFORM);
-        String            path = dataOutputHandler.getPath(request, entry);
+        String path   = dataOutputHandler.getPath(request, entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load grid");
@@ -1103,11 +1107,15 @@ public class IdvOutputHandler extends OutputHandler {
         tabContents.add(basic.toString());
 
         StringBuffer bounds = new StringBuffer();
-        MapInfo map = getRepository().getMapManager().createMap(request,  true);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          true);
         map.addBox(entry, new MapProperties("blue", false));
         map.centerOn(entry);
-        String llb =  map.makeSelector(ARG_VIEW_BOUNDS, true,null,
-                                             htmlCheckbox(request, ARG_VIEW_JUSTCLIP, false) + " " + msg("Just subset data") + HtmlUtil.space(2), "");
+        String llb = map.makeSelector(ARG_VIEW_BOUNDS, true, null,
+                                      htmlCheckbox(request,
+                                          ARG_VIEW_JUSTCLIP, false) + " "
+                                              + msg("Just subset data")
+                                              + HtmlUtil.space(2), "");
         bounds.append(llb);
 
 
@@ -1848,50 +1856,10 @@ public class IdvOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.href(url,
                                     "Click here to retrieve the KMZ file"));
         } else if (product.equals(PRODUCT_GEPLUGIN)) {
-            String template =
-                getRepository().getResource(
-                    "/org/ramadda/repository/resources/googleearth/geplugin.html");
             url = url.replace(PRODUCT_GEPLUGIN, PRODUCT_KMZ);
-            template = template.replace("${kmzurl}", url);
-            // fill in the API keys for this machine
-            String geAPIKeys = getProperty(PROP_GOOGLEAPIKEYS, null);
-            String mapsKey   = "";
-            String otherOpts = "";
-            if (geAPIKeys != null) {
-                String hostname = getRepository().getHostname();
-                List   keys = StringUtil.split(geAPIKeys, "\n", true, false);
-                for (int i = 0; i < keys.size(); i++) {
-                    List serverKey = StringUtil.split(keys.get(i), ":", true,
-                                         false);
-                    if (serverKey.size() >= 2) {
-                        String server = (String) serverKey.get(0);
-                        // check to see if this matches me
-                        if (hostname.indexOf(server) >= 0) {  // match
-                            mapsKey = (String) serverKey.get(1);
-                            if ( !mapsKey.equals("")) {
-                                mapsKey = "?key=" + mapsKey;
-                            }
-                            if (serverKey.size() > 2) {
-                                // , {"other_params":"client=clientName&sensor=true_or_false"}
-                                otherOpts = ", {\"other_params\":\""
-                                            + serverKey.get(2) + "\"}";
-                            } else {  // clear out in case there was something else from a previous entry
-                                otherOpts = "";
-                            }
-                        }
-                    }
-                }
-
-            }
-            template = template.replace("${gemapskey}", mapsKey);
-            template = template.replace("${geother_params}", otherOpts);
-            template = template.replace("${image_width}",
-                                        request.getString(ARG_IMAGE_WIDTH,
-                                            "500"));
-            template = template.replace("${image_height}",
-                                        request.getString(ARG_IMAGE_HEIGHT,
-                                            "500"));
-            sb.append(template);
+            String id = getMapManager().getGoogleEarthPlugin(request, sb,
+                                                             request.get(ARG_IMAGE_WIDTH, 500),
+                                                             request.get(ARG_IMAGE_HEIGHT, 500), url);
             //sb.append(HtmlUtil.href(url,
             //                        "Click here to retrieve the KMZ file"));
         }
@@ -1963,7 +1931,8 @@ public class IdvOutputHandler extends OutputHandler {
                                      DataSource dataSource)
             throws Exception {
 
-        DataOutputHandler dataOutputHandler =(DataOutputHandler) getDataOutputHandler();
+        DataOutputHandler dataOutputHandler =
+            (DataOutputHandler) getDataOutputHandler();
         //      Trace.addNot(".*ShadowFunction.*");
         //      Trace.addNot(".*GeoGrid.*");
         //      Trace.addOnly(".*MapProjection.*");
@@ -2844,10 +2813,10 @@ public class IdvOutputHandler extends OutputHandler {
 
 
 
-        DataOutputHandler dataOutputHandler = (DataOutputHandler)getDataOutputHandler();
+        DataOutputHandler dataOutputHandler =
+            (DataOutputHandler) getDataOutputHandler();
         String action = request.getString(ARG_ACTION, ACTION_POINT_MAKEPAGE);
-        String            path              =
-            dataOutputHandler.getPath(entry);
+        String path   = dataOutputHandler.getPath(entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load point data");

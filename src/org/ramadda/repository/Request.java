@@ -1953,6 +1953,11 @@ public class Request implements Constants {
     }
 
 
+    public String getServerName() {
+        return getHttpServletRequest().getServerName();
+    }
+
+
     /**
      *  Get the HttpServletRequest property.
      *

@@ -85,6 +85,11 @@ public class MapOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 
+    public static final OutputType OUTPUT_GEMAP =
+        new OutputType("Google Earth", "map.gemap",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       ICON_MAP);
+
 
     /**
      * _more_
@@ -97,8 +102,9 @@ public class MapOutputHandler extends OutputHandler {
     public MapOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        if(getRepository().getMapManager().showMaps()) {
+        if(getMapManager().showMaps()) {
             addType(OUTPUT_MAP);
+            addType(OUTPUT_GEMAP);
         }
     }
 
@@ -125,6 +131,9 @@ public class MapOutputHandler extends OutputHandler {
         }
         if (ok) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
+            if(getMapManager().isGoogleEarthEnabled(request)) {
+                links.add(makeLink(request, state.getEntry(), OUTPUT_GEMAP));
+            }
 
         }
     }
@@ -180,6 +189,12 @@ public class MapOutputHandler extends OutputHandler {
                                    new State(group, subGroups, entries));
         }
 
+        if(outputType.equals(OUTPUT_GEMAP)) {
+            getMapManager().getGoogleEarth(request,  
+                                           entriesToUse, sb,700,400);
+            return makeLinksResult(request, msg("Google Earth"), sb, new State(group));
+        }
+
         sb.append(
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td width=700>");
         boolean [] haveBearingLines = {false};
@@ -200,6 +215,7 @@ public class MapOutputHandler extends OutputHandler {
         return makeLinksResult(request, msg("Map"), sb,
                                new State(group, subGroups, entries));
     }
+
 
 
 

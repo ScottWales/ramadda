@@ -368,11 +368,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         sb.append(
             HtmlUtil.colspan(
                 msgHeader(
-                    "Then create an entry with" + HtmlUtil.space(2)
+                          "Then create an entry with") + HtmlUtil.space(2)
                     + HtmlUtil.href(
                         getRepository().getUrlBase()
-                        + "/help/harvesters.html", "(Help)",
-                            " target=_HELP")), 2));
+                        + "/help/harvesters.html", "(" + msg("Help")+ ")",
+                            " target=_HELP"), 2));
 
 
         //        sb.append(
@@ -405,7 +405,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         String moveNote =
             msg(
-            "Note: this will move the files from their current location to RAMADDA's own storage directory");
+            "Note: This will move the files from their current location to RAMADDA's storage directory");
         sb.append(HtmlUtil.formEntry(msgLabel("Move file to storage"),
                                      HtmlUtil.checkbox(ATTR_MOVETOSTORAGE,
                                          "true",
