@@ -88,7 +88,7 @@ public class MapOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_GEMAP =
         new OutputType("Google Earth", "map.gemap",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
-                       ICON_MAP);
+                       ICON_GOOGLEEARTH);
 
 
     /**

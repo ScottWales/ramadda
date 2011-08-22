@@ -47,6 +47,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_ARROW = "ramadda.icon.arrow";
+    public static final String ICON_GOOGLEEARTH = "ramadda.icon.googleearth";
 
     /** _more_ */
     public static final String ICON_ASSOCIATION = "ramadda.icon.association";

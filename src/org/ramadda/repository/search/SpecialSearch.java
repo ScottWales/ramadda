@@ -49,6 +49,12 @@ import java.util.List;
  */
 public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
+    public static final String TAB_LIST = "list";
+    public static final String TAB_MAP = "map";
+    public static final String TAB_EARTH = "earth";
+    public static final String TAB_TIMELINE = "timeline";
+
+
     /** _more_ */
     private RequestUrl URL_SEARCH;
 
@@ -70,7 +76,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private List<String> metadataTypes = new ArrayList<String>();
 
-
+    private List<String> tabs=  new ArrayList<String>();
 
     /**
      * _more_
@@ -90,6 +96,16 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 metadataTypes.add(type);
             }
         }
+        String tabsToUse = (String) props.get("tabs");
+        if (tabsToUse != null) {
+            tabs.addAll(StringUtil.split(tabsToUse,",",true,true));
+        } else {
+            tabs.add(TAB_LIST);
+            tabs.add(TAB_MAP);
+            tabs.add(TAB_EARTH);
+            tabs.add(TAB_TIMELINE);
+        }
+
         searchUrl   = (String) props.get("searchurl");
         label       = (String) props.get("label");
         theType     = (String) props.get("type");
@@ -234,7 +250,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         formSB.append(HtmlUtil.formEntry(msgLabel("Location"),
                                          HtmlUtil.table(new Object[] { widget,
                 clearLink })));
-        formSB.append(HtmlUtil.formEntry("", searchType));
+        //        formSB.append(HtmlUtil.formEntry("", searchType));
 
 
         typeHandler.addToSpecialSearchForm(request, formSB);
@@ -276,14 +292,27 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         //Pad it out
         listSB.append(
             "&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>");
-        tabContents.add(listSB.toString());
-        tabTitles.add(msg("List"));
 
-        tabContents.add(mapSB.toString());
-        tabTitles.add(msg("Map"));
 
-        tabContents.add(timelineSB.toString());
-        tabTitles.add(msg("Timeline"));
+        for(String tab: tabs) {
+            if(tab.equals(TAB_LIST)) {
+                tabContents.add(listSB.toString());
+                tabTitles.add(msg("List"));
+            } else   if(tab.equals(TAB_MAP)) {
+                tabContents.add(mapSB.toString());
+                tabTitles.add(msg("Map"));
+            } else   if(tab.equals(TAB_TIMELINE)) {
+                tabContents.add(timelineSB.toString());
+                tabTitles.add(msg("Timeline"));
+            } else   if(tab.equals(TAB_EARTH) &&
+                        getMapManager().isGoogleEarthEnabled(request)) {
+                StringBuffer earthSB = new StringBuffer();
+                getMapManager().getGoogleEarth(request,  
+                                           entries, earthSB, 600,500);
+                tabContents.add(earthSB.toString());
+                tabTitles.add(msg("Earth"));
+            }
+        }
 
         String tabs = OutputHandler.makeTabs(tabTitles, tabContents, true,
                                              "tab_content");
