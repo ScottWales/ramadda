@@ -55,18 +55,26 @@ The Translations field is a quick way to define new phrases to use in place of t
 The Facebook Comments key allows you to integerate the Facebook comments facility. Contact RAMADDA support for more information.
 <p>
 If the Google Maps Key is defined then there is a Google Earth plugin display capability provided. You need to get an 
-<a href="http://code.google.com/apis/maps/signup.html"API key</a>
+<a href="http://code.google.com/apis/maps/signup.html" target="other">API key</a>
 for each domain name you might be running RAMADDA under.
-The format of the admin setting is (one per line):<pre>
-hostname1:API key1
-hostname2:API key2
+The format of the admin setting is (one per line):
+<pre>
+hostname1:API key1:premier_opts
+hostname2:API key2:premier_opts2
 </pre>
 e.g.:
 <pre>
 localhost:ABQIAAAA-JXA0-....
 ramadda.org:ZXQIAAAA-JXA0-....
+noaa.gov::client=gme-<i>yourclientid</i>&sensor=false
 </pre>
-Note: if you are doing development on a local machine you can get an API key for "localhost".
+Notes: 
+<ul>
+<li>If you are doing development on a local machine you can get an API key for "localhost".
+<li>If your organization is using the Google Maps API Premier, the key is left
+blank and you supply the information through the "premier_opts" parameter.  
+See the <a href="http://code.google.com/apis/maps/documentation/premier/guide.html" target="new">
+Google Maps API Premier Developers Guide</a> for more information.  </ul> 
 
 
 
