@@ -1,6 +1,5 @@
-/**
+/*
  * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * Copyright 2010-2011 Don Murray/NOAA
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -150,7 +149,7 @@ public class MapManager extends RepositoryManager {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private List<List<String>> geKeys;
 
     /**
@@ -197,10 +196,16 @@ public class MapManager extends RepositoryManager {
             geKeys = tmpKeys;
         }
         String hostname = request.getServerName();
+        int    port     = request.getServerPort();
+        if (port != 80) {
+            hostname = hostname + ":" + port;
+        }
+        //        System.err.println("hostname:" + hostname);
         for (List<String> tuple : geKeys) {
             String server = tuple.get(0);
             // check to see if this matches me 
-            if (server.equals("*") || (hostname.indexOf(server) >= 0)) {  // match
+            //            System.err.println("    server:" + server);
+            if (server.equals("*") || hostname.endsWith(server)) {
                 String mapsKey = tuple.get(1);
                 if (tuple.size() > 2) {
                     return new String[] { mapsKey, tuple.get(2) };
@@ -219,6 +224,7 @@ public class MapManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
+     * @param sb _more_
      * @param width _more_
      * @param height _more_
      * @param url _more_
@@ -228,8 +234,7 @@ public class MapManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getGoogleEarthPlugin(Request request, Appendable sb,
-                                       int width,
-                                       int height, String url)
+                                       int width, int height, String url)
             throws Exception {
 
 
@@ -240,92 +245,113 @@ public class MapManager extends RepositoryManager {
         }
 
         String otherOpts = "";
-        String mapsKey = "";
-    	if (!keyAndOther[0].isEmpty()) {
+        String mapsKey   = "";
+        if ( !keyAndOther[0].isEmpty()) {
             mapsKey = "?key=" + keyAndOther[0];
-    	}
+        }
         if (keyAndOther[1] != null) {
             otherOpts = ", {\"other_params\":\"" + keyAndOther[1] + "\"}";
         }
         Integer currentId = (Integer) request.getExtraProperty("ge.id");
-        int nextNum  = 1;
-        if(currentId != null) {
-            nextNum = currentId.intValue()+1;
+        int     nextNum   = 1;
+        if (currentId != null) {
+            nextNum = currentId.intValue() + 1;
         }
         request.putExtraProperty("ge.id", new Integer(nextNum));
-        String id =  "map3d" + nextNum;
+        String id = "map3d" + nextNum;
 
         if (request.getExtraProperty("initgooglearth") == null) {
-            sb.append(
-                      HtmlUtil.importJS("http://www.google.com/jsapi" +mapsKey));
-            sb.append(
-                HtmlUtil.importJS(fileUrl("/googleearth.js")));
-            sb.append(HtmlUtil.script(
-                                      "google.load(\"earth\", \"1\"" + otherOpts+");"));
+            sb.append(HtmlUtil.importJS("http://www.google.com/jsapi"
+                                        + mapsKey));
+            sb.append(HtmlUtil.importJS(fileUrl("/googleearth.js")));
+            sb.append(HtmlUtil.script("google.load(\"earth\", \"1\""
+                                      + otherOpts + ");"));
             request.putExtraProperty("initgooglearth", "");
         }
 
 
-        String template = "<div id=\"${id}_container\" style=\"border: 1px solid #888; width: ${width}px; height: ${height}px;\"><div id=\"${id}\" style=\"height: 100%;\"></div></div>";
+        String template =
+            "<div id=\"${id}_container\" style=\"border: 1px solid #888; width: ${width}px; height: ${height}px;\"><div id=\"${id}\" style=\"height: 100%;\"></div></div>";
 
         template = template.replace("${width}", width + "");
         template = template.replace("${height}", height + "");
         template = template.replace("${id}", id);
         template = template.replace("${id}", id);
 
-        sb.append(HtmlUtil.checkbox("tmp","true", true, HtmlUtil.id("googleearth.showdetails")));
+        sb.append(HtmlUtil.checkbox("tmp", "true", true,
+                                    HtmlUtil.id("googleearth.showdetails")));
         sb.append(" ");
         sb.append(msg("Show details"));
-        
+
         sb.append(template);
-        sb.append(HtmlUtil.script("var  " + id + " = new GoogleEarth(" + HtmlUtil.squote(id) +", " + (url==null?"null":HtmlUtil.squote(url))+");\n"));
+        sb.append(HtmlUtil.script("var  " + id + " = new GoogleEarth("
+                                  + HtmlUtil.squote(id) + ", "
+                                  + ((url == null)
+                                     ? "null"
+                                     : HtmlUtil.squote(url)) + ");\n"));
         return id;
     }
 
 
-    public void getGoogleEarth(Request request, 
-                               List<Entry> entries, StringBuffer sb,
-                               int width, int height)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entries _more_
+     * @param sb _more_
+     * @param width _more_
+     * @param height _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getGoogleEarth(Request request, List<Entry> entries,
+                               StringBuffer sb, int width, int height)
             throws Exception {
         sb.append(
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td>");
 
         StringBuffer mapSB = new StringBuffer();
-        
-        String id = getMapManager().getGoogleEarthPlugin(request, mapSB, width, height, null);
 
-        StringBuffer js  = new StringBuffer();
-        List<String> categories  = new ArrayList<String>();
-        Hashtable<String,StringBuffer> catMap = new Hashtable<String,StringBuffer>();
+        String id = getMapManager().getGoogleEarthPlugin(request, mapSB,
+                        width, height, null);
+
+        StringBuffer js         = new StringBuffer();
+        List<String> categories = new ArrayList<String>();
+        Hashtable<String, StringBuffer> catMap = new Hashtable<String,
+                                                     StringBuffer>();
         for (Entry entry : entries) {
-            if (!(entry.hasLocationDefined() || entry.hasAreaDefined())) {
+            if ( !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
                 continue;
             }
-            String category = entry.getTypeHandler().getCategory(entry);
-            StringBuffer catSB = catMap.get(category);
-            if(catSB==null) {
+            String       category = entry.getTypeHandler().getCategory(entry);
+            StringBuffer catSB    = catMap.get(category);
+            if (catSB == null) {
                 catMap.put(category, catSB = new StringBuffer());
                 categories.add(category);
             }
             catSB.append("&nbsp;&nbsp;");
             catSB.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                                                                entry)));
+                    entry)));
             catSB.append(HtmlUtil.space(1));
             double lat = entry.getSouth();
             double lon = entry.getEast();
-            catSB.append("<a href=\"javascript:" + id +".placemarkClick(" +HtmlUtil.squote(entry.getId())+
-                         ");\">"
-                      + entry.getName() + "</a><br>");
-            String icon = getRepository().absoluteUrl(getEntryManager().getIconUrl(request, entry));
-            String pointsString = "null";
-            boolean hasPolygon = false;
-            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+            catSB.append("<a href=\"javascript:" + id + ".placemarkClick("
+                         + HtmlUtil.squote(entry.getId()) + ");\">"
+                         + entry.getName() + "</a><br>");
+            String icon = getRepository().absoluteUrl(
+                              getEntryManager().getIconUrl(request, entry));
+            String  pointsString = "null";
+            boolean hasPolygon   = false;
+            List<Metadata> metadataList =
+                getMetadataManager().getMetadata(entry);
             for (Metadata metadata : metadataList) {
-                if (!metadata.getType().equals(
-                                               MetadataHandler.TYPE_SPATIAL_POLYGON)) continue;
-                List<double[]> points = new ArrayList<double[]>();
-                String         s      = metadata.getAttr1();
-                StringBuffer pointsSB = new StringBuffer();
+                if ( !metadata.getType().equals(
+                        MetadataHandler.TYPE_SPATIAL_POLYGON)) {
+                    continue;
+                }
+                List<double[]> points   = new ArrayList<double[]>();
+                String         s        = metadata.getAttr1();
+                StringBuffer   pointsSB = new StringBuffer();
                 for (String pair : StringUtil.split(s, ";", true, true)) {
                     List<String> toks = StringUtil.splitUpTo(pair, ",", 2);
                     if (toks.size() != 2) {
@@ -333,9 +359,9 @@ public class MapManager extends RepositoryManager {
                     }
                     double polyLat = Misc.decodeLatLon(toks.get(0));
                     double polyLon = Misc.decodeLatLon(toks.get(1));
-                    if(pointsSB.length()==0) {
+                    if (pointsSB.length() == 0) {
                         pointsSB.append("new Array(");
-                    } else  {
+                    } else {
                         pointsSB.append(",");
                     }
                     pointsSB.append(polyLat);
@@ -347,29 +373,28 @@ public class MapManager extends RepositoryManager {
                 pointsString = pointsSB.toString();
             }
 
-            if(!hasPolygon && entry.hasAreaDefined()) {
-                pointsString = "new Array(" + 
-                    entry.getNorth() +"," +
-                    entry.getWest() +"," +
-                    entry.getNorth() +"," +
-                    entry.getEast() +"," +
-                    entry.getSouth() +"," +
-                    entry.getEast() +"," +
-                    entry.getSouth() +"," +
-                    entry.getWest() +"," +
-                    entry.getNorth() +"," +
-                    entry.getWest()+")";
+            if ( !hasPolygon && entry.hasAreaDefined()) {
+                pointsString = "new Array(" + entry.getNorth() + ","
+                               + entry.getWest() + "," + entry.getNorth()
+                               + "," + entry.getEast() + ","
+                               + entry.getSouth() + "," + entry.getEast()
+                               + "," + entry.getSouth() + ","
+                               + entry.getWest() + "," + entry.getNorth()
+                               + "," + entry.getWest() + ")";
             }
-            String desc =  makeInfoBubble(request, entry);
-            js.append(HtmlUtil.call(
-                                    id +".addPlacemark",
-                                    HtmlUtil.comma(HtmlUtil.squote(entry.getId()),HtmlUtil.squote(entry.getName()), HtmlUtil.squote(desc),
-                                                   ""+lat, ""+lon) +"," +
-                                    HtmlUtil.squote(icon) +"," +pointsString));
+            String desc = makeInfoBubble(request, entry);
+            js.append(
+                HtmlUtil.call(
+                    id + ".addPlacemark",
+                    HtmlUtil.comma(
+                        HtmlUtil.squote(entry.getId()),
+                        HtmlUtil.squote(entry.getName()),
+                        HtmlUtil.squote(desc), "" + lat, "" + lon) + ","
+                            + HtmlUtil.squote(icon) + "," + pointsString));
             js.append("\n");
         }
 
-        for(String category: categories) {
+        for (String category : categories) {
             StringBuffer catSB = catMap.get(category);
             sb.append(HtmlUtil.b(category));
             sb.append(HtmlUtil.br());
@@ -384,35 +409,50 @@ public class MapManager extends RepositoryManager {
     }
 
 
-    public String makeInfoBubble(Request request, Entry entry) throws Exception {
-        String fromEntry  = entry.getTypeHandler().getMapInfoBubble(request, entry);
-        if(fromEntry!=null) return fromEntry;
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String makeInfoBubble(Request request, Entry entry)
+            throws Exception {
+        String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
+                               entry);
+        if (fromEntry != null) {
+            return fromEntry;
+        }
         StringBuffer info = new StringBuffer("<table>");
         info.append(entry.getTypeHandler().getInnerEntryContent(entry,
-                                                                request, 
-                                                                OutputHandler.OUTPUT_HTML, 
-                                                                true, false,false));
+                request, OutputHandler.OUTPUT_HTML, true, false, false));
 
         List<String> urls = new ArrayList<String>();
-        getMetadataManager().getThumbnailUrls(request,  entry, urls);
-        if(urls.size()>0) {
-            info.append("<tr><td colspan=2>" +HtmlUtil.img(urls.get(0), "", " width=300 ") +"</td></tr>");
-        } 
+        getMetadataManager().getThumbnailUrls(request, entry, urls);
+        if (urls.size() > 0) {
+            info.append("<tr><td colspan=2>"
+                        + HtmlUtil.img(urls.get(0), "", " width=300 ")
+                        + "</td></tr>");
+        }
         info.append("</table>");
 
         if (entry.getResource().isImage()) {
-            String thumbUrl = getRepository().absoluteUrl(HtmlUtil.url(
-                                                                       request.url(repository.URL_ENTRY_GET)
-                                                                       + "/"
-                                                                       + getStorageManager().getFileTail(
-                                                                                                         entry), ARG_ENTRYID, entry.getId(),
-                                                                       ARG_IMAGEWIDTH, "300"));
-            info.append(HtmlUtil.img(thumbUrl,"",""));
+            String thumbUrl = getRepository().absoluteUrl(
+                                  HtmlUtil.url(
+                                      request.url(repository.URL_ENTRY_GET)
+                                      + "/"
+                                      + getStorageManager().getFileTail(
+                                          entry), ARG_ENTRYID, entry.getId(),
+                                              ARG_IMAGEWIDTH, "300"));
+            info.append(HtmlUtil.img(thumbUrl, "", ""));
 
         }
 
 
-        String infoHtml= info.toString();
+        String infoHtml = info.toString();
         infoHtml = infoHtml.replace("\r", " ");
         infoHtml = infoHtml.replace("\n", " ");
         infoHtml = infoHtml.replace("\"", "\\\"");

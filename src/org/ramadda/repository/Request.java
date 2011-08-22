@@ -1953,8 +1953,22 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getServerName() {
         return getHttpServletRequest().getServerName();
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public int getServerPort() {
+        return getHttpServletRequest().getServerPort();
     }
 
 
