@@ -227,21 +227,22 @@ public class MapManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getGoogleEarthPlugin(Request request, StringBuffer sb,
+    public String getGoogleEarthPlugin(Request request, Appendable sb,
                                        int width,
                                        int height, String url)
             throws Exception {
 
-        String id = "map3d";
-        // fill in the API keys for this machine
-        String   mapsKey     = "";
-        String   otherOpts   = "";
+
         String[] keyAndOther = getGoogleMapsKey(request);
-        if (keyAndOther != null) {
-            mapsKey = "?key=" + keyAndOther[0];
-            if (keyAndOther[1] != null) {
-                otherOpts = ", {\"other_params\":\"" + keyAndOther[1] + "\"}";
-            }
+        if (keyAndOther == null) {
+            sb.append("Google Earth is not enabled");
+            return null;
+        }
+
+        String otherOpts = "";
+        String mapsKey = "?key=" + keyAndOther[0];
+        if (keyAndOther[1] != null) {
+            otherOpts = ", {\"other_params\":\"" + keyAndOther[1] + "\"}";
         }
         Integer currentId = (Integer) request.getExtraProperty("ge.id");
         int nextNum  = 1;
@@ -249,7 +250,7 @@ public class MapManager extends RepositoryManager {
             nextNum = currentId.intValue()+1;
         }
         request.putExtraProperty("ge.id", new Integer(nextNum));
-        id = "map3d" + nextNum;
+        String id =  "map3d" + nextNum;
 
         if (request.getExtraProperty("initgooglearth") == null) {
             sb.append(
@@ -262,12 +263,11 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        String template =
-            getRepository().getResource(
-                "/org/ramadda/repository/resources/googleearth/geplugin.html");
+        String template = "<div id=\"${id}_container\" style=\"border: 1px solid #888; width: ${width}px; height: ${height}px;\"><div id=\"${id}\" style=\"height: 100%;\"></div></div>";
 
         template = template.replace("${width}", width + "");
         template = template.replace("${height}", height + "");
+        template = template.replace("${id}", id);
         template = template.replace("${id}", id);
         sb.append(template);
         sb.append(HtmlUtil.script("var  " + id + " = new GoogleEarth(" + HtmlUtil.squote(id) +", " + (url==null?"null":HtmlUtil.squote(url))+");\n"));

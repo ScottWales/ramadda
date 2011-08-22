@@ -1,6 +1,12 @@
+//
+//Provides a wrapper around using the google earth plugin
+//Supports multiple google earths in one web page
+//
 
+//list of all the GoogleEarth objects 
 var  googleEarths = new Array();
 
+//Class for holding placemark info
 function Placemark(id,name,desc,lat,lon, icon, points) {
     this.id = id;
     this.name = name;
@@ -13,6 +19,7 @@ function Placemark(id,name,desc,lat,lon, icon, points) {
 
 
 
+//Wrapper around an instantiation of a google earth plugin
 function GoogleEarth(id, url) {
     this.googleEarth = null;
     this.placemarksToAdd = new Array();
@@ -48,7 +55,6 @@ function GoogleEarth(id, url) {
         this.googleEarth.getLayerRoot().enableLayerById(this.googleEarth.LAYER_BORDERS, true);
         this.googleEarth.getLayerRoot().enableLayerById(this.googleEarth.LAYER_ROADS, true);
  
-
 
         if(this.url) {
             this.loadKml(url);
@@ -143,12 +149,13 @@ function GoogleEarth(id, url) {
 
 
     this.setLocation = function(lat,lon) {
-        var DEFAULT_RANGE = 4999999;
         if (!this.googleEarth) return;
         var lookAt = this.googleEarth.getView().copyAsLookAt(this.googleEarth.ALTITUDE_RELATIVE_TO_GROUND);
         lookAt.setLatitude(lat);
         lookAt.setLongitude(lon);
-        lookAt.setRange(DEFAULT_RANGE);
+        //Leave the range alone
+        //var DEFAULT_RANGE = 4999999;
+        //lookAt.setRange(DEFAULT_RANGE);
         this.googleEarth.getView().setAbstractView(lookAt);
     }
 
