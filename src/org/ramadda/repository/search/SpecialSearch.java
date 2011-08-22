@@ -78,6 +78,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     private List<String> tabs=  new ArrayList<String>();
 
+    public SpecialSearch(Repository repository) {
+        super(repository);
+    }
+
     /**
      * _more_
      *
@@ -90,6 +94,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public SpecialSearch(Repository repository, Element node, Hashtable props)
             throws Exception {
         super(repository);
+        init(node, props);
+    }
+
+    public void init(Element node, Hashtable props) throws Exception {
         String types = (String) props.get("metadatatypes");
         if (types != null) {
             for (String type : StringUtil.split(types, ",", true, true)) {

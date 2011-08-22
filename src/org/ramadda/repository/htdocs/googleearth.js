@@ -140,6 +140,12 @@ function GoogleEarth(id, url) {
             return;
         }
         this.setLocation(placemark.lat,placemark.lon);
+        var cbx = util.getDomObject("googleearth.showdetails");
+        if(cbx) {
+            if(!cbx.obj.checked) {
+                return;
+            }
+        }
         var content = placemark.description;
         var balloon = this.googleEarth.createHtmlStringBalloon('');
         balloon.setFeature(placemark.placemark);

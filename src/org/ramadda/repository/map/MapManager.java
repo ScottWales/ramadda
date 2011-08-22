@@ -189,7 +189,7 @@ public class MapManager extends RepositoryManager {
             List<List<String>> tmpKeys = new ArrayList<List<String>>();
             for (String line :
                     StringUtil.split(geAPIKeys, "\n", true, true)) {
-                List<String> toks = StringUtil.split(line, ":", true, false);
+                List<String> toks = StringUtil.split(line, ",", true, false);
                 if (toks.size() > 1) {
                     tmpKeys.add(toks);
                 }
@@ -272,6 +272,11 @@ public class MapManager extends RepositoryManager {
         template = template.replace("${height}", height + "");
         template = template.replace("${id}", id);
         template = template.replace("${id}", id);
+
+        sb.append(HtmlUtil.checkbox("tmp","true", true, HtmlUtil.id("googleearth.showdetails")));
+        sb.append(" ");
+        sb.append(msg("Show details"));
+        
         sb.append(template);
         sb.append(HtmlUtil.script("var  " + id + " = new GoogleEarth(" + HtmlUtil.squote(id) +", " + (url==null?"null":HtmlUtil.squote(url))+");\n"));
         return id;
@@ -286,6 +291,7 @@ public class MapManager extends RepositoryManager {
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td>");
 
         StringBuffer mapSB = new StringBuffer();
+        
         String id = getMapManager().getGoogleEarthPlugin(request, mapSB, width, height, null);
 
         StringBuffer js  = new StringBuffer();
