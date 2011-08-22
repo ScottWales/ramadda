@@ -3953,6 +3953,14 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public String getCategory(Entry entry) {
+        return description;
+    }
+
+    public String  getMapInfoBubble(Request request, Entry entry) {
+        return null;
+    }
+
     /**
      * _more_
      *

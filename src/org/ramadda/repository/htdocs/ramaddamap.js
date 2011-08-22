@@ -269,6 +269,9 @@ function RepositoryMap (mapId, params) {
        var newLeft = bounds.left;
        var newRight = bounds.right;
        var extentBounds = this.map.restrictedExtent;
+       if (!extentBounds) {
+           return bounds;
+       }
        if (extentBounds.left < 0) {  // map is -180 to 180
            if (bounds.right > 180) {  //bounds is 0 to 360
               newLeft = bounds.left-360;

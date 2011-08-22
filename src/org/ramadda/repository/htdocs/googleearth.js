@@ -1,8 +1,10 @@
 
 var  googleEarths = new Array();
 
-function Placemark(name,lat,lon, icon, points) {
+function Placemark(id,name,desc,lat,lon, icon, points) {
+    this.id = id;
     this.name = name;
+    this.description = desc;
     this.lat = lat;
     this.lon = lon;
     this.icon = icon;
@@ -14,6 +16,7 @@ function Placemark(name,lat,lon, icon, points) {
 function GoogleEarth(id, url) {
     this.googleEarth = null;
     this.placemarksToAdd = new Array();
+    this.placemarks = new Array();
     this.url = url;
     this.id = id;
     googleEarths[id] = this;
@@ -51,11 +54,17 @@ function GoogleEarth(id, url) {
             this.loadKml(url);
         }
     
-        var placemarks = this.placemarksToAdd;
+        var tmpPlacemarks = this.placemarksToAdd;
         this.placemarksToAdd = new Array();
-        for (i = 0; i < placemarks.length; i++) {
-            var placemark =  placemarks[i];
-            this.addPlacemark(placemark.name, placemark.lat, placemark.lon,placemark.icon,placemark.points);
+        var firstPlacemark = null;
+        for (var i = 0; i < tmpPlacemarks.length; i++) {
+            var placemark =  tmpPlacemarks[i];
+            if(!firstPlacemark) firstPlacemark = placemark;
+            this.addThePlacemark(placemark);
+        }
+        if(firstPlacemark) {
+            this.setLocation(firstPlacemark.lat,
+                             firstPlacemark.lon);
         }
     }
     
@@ -72,42 +81,65 @@ function GoogleEarth(id, url) {
         alert("Failure loading the Google Earth Plugin: " + errorCode);
     }
 
-    this.addPlacemark = function(name, lat,lon, iconUrl, points) {
+    this.addPlacemark = function(id,name, desc, lat,lon, icon, points) {
+        pm = new Placemark(id,name,desc, lat,lon,icon,points)
+        this.placemarks[id] = pm;
+        this.addThePlacemark(pm);
+    }
+
+    this.addThePlacemark = function(pm) {
         if (!this.googleEarth) {
-            this.placemarksToAdd.push(new Placemark(name,lat,lon,iconUrl,points));
+            this.placemarksToAdd.push(pm);
             return;
         }
         var placemark = this.googleEarth.createPlacemark('');
-        placemark.setName(name);
+        pm.placemark = placemark;
+        placemark.setName(pm.name);
+        if(pm.description) {
+            placemark.setDescription(pm.description);
+        }
         var point = this.googleEarth.createPoint('');
-        point.setLatitude(lat);
-        point.setLongitude(lon);
+        point.setLatitude(pm.lat);
+        point.setLongitude(pm.lon);
         placemark.setGeometry(point);
-        if(iconUrl) {
+        if(pm.icon) {
             var icon = this.googleEarth.createIcon('');
-            icon.setHref(iconUrl);
+            icon.setHref(pm.icon);
             var style = this.googleEarth.createStyle(''); 
             style.getIconStyle().setIcon(icon); 
             placemark.setStyleSelector(style); 
         }
-        if(points) {
+        this.googleEarth.getFeatures().appendChild(placemark);
+
+        if(pm.points) {
             var lineStringPlacemark = this.googleEarth.createPlacemark('');
             var lineString = this.googleEarth.createLineString('');
-
+            lineStringPlacemark.setGeometry(lineString);
             lineStringPlacemark.setStyleSelector(this.googleEarth.createStyle(''));
             var lineStyle = lineStringPlacemark.getStyleSelector().getLineStyle();
-            lineStyle.setWidth(5);
-            lineStyle.getColor().set('9900ffff'); 
-            lineStringPlacemark.setGeometry(lineString);
-            for (i = 0; i < points.length; i+=2) {
-                lineString.getCoordinates().pushLatLngAlt(points[i], points[i+1], 0);
+            lineStyle.setWidth(3);
+            lineStyle.getColor().set('ff0000ff');  // aabbggrr format
+            for (i = 0; i < pm.points.length; i+=2) {
+                lineString.getCoordinates().pushLatLngAlt(pm.points[i], pm.points[i+1], 0);
             }
             this.googleEarth.getFeatures().appendChild(lineStringPlacemark);
         }
-
-        this.googleEarth.getFeatures().appendChild(placemark);
     }
 
+
+
+    this.placemarkClick = function(id) {
+        placemark =this.placemarks[id];
+        if(!placemark) {
+            return;
+        }
+        this.setLocation(placemark.lat,placemark.lon);
+        var content = placemark.description;
+        var balloon = this.googleEarth.createHtmlStringBalloon('');
+        balloon.setFeature(placemark.placemark);
+        balloon.setContentString(content);
+        this.googleEarth.setBalloon(balloon);
+    }
 
 
     this.setLocation = function(lat,lon) {

@@ -191,7 +191,7 @@ public class MapOutputHandler extends OutputHandler {
 
         if(outputType.equals(OUTPUT_GEMAP)) {
             getMapManager().getGoogleEarth(request,  
-                                           entriesToUse, sb,700,400);
+                                           entriesToUse, sb, 800,500);
             return makeLinksResult(request, msg("Google Earth"), sb, new State(group));
         }
 
@@ -276,18 +276,7 @@ public class MapOutputHandler extends OutputHandler {
 
 
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                StringBuffer info = new StringBuffer("<table>");
-                info.append(entry.getTypeHandler().getInnerEntryContent(entry,
-                                                                        request, 
-                                                                        OutputHandler.OUTPUT_HTML, 
-                                                                        true, false,false));
-
-                List<String> urls = new ArrayList<String>();
-                getMetadataManager().getThumbnailUrls(request,  entry, urls);
-                if(urls.size()>0) {
-                    info.append("<tr><td colspan=2>" +HtmlUtil.img(urls.get(0), "", " width=300 ") +"</td></tr>");
-                } 
-                info.append("</table>");
+                
 
                 double[]location;
                 if (makeRectangles || !entry.hasAreaDefined()) {
@@ -296,16 +285,6 @@ public class MapOutputHandler extends OutputHandler {
                     location = entry.getCenter();
                 }
 
-                if (entry.getResource().isImage()) {
-                    String thumbUrl = getRepository().absoluteUrl(HtmlUtil.url(
-                                      request.url(repository.URL_ENTRY_GET)
-                                      + "/"
-                                      + getStorageManager().getFileTail(
-                                          entry), ARG_ENTRYID, entry.getId(),
-                                      ARG_IMAGEWIDTH, "300"));
-                    info.append(HtmlUtil.img(thumbUrl,"",""));
-
-                }
                 for(Metadata metadata: metadataList) {
                     if(metadata.getType().equals(JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
                         double dir = Double.parseDouble(metadata.getAttr1());
@@ -318,16 +297,13 @@ public class MapOutputHandler extends OutputHandler {
                 }
 
 
-                String infoHtml= info.toString();
-                infoHtml = infoHtml.replace("\r", " ");
-                infoHtml = infoHtml.replace("\n", " ");
-                infoHtml = infoHtml.replace("\"", "\\\"");
-                infoHtml = infoHtml.replace("'", "\\'");
+                String infoHtml = getMapManager().makeInfoBubble(request, entry);
                 String icon = getEntryManager().getIconUrl(request, entry);
                 map.addMarker(entry.getId(), new LatLonPointImpl(location[0],location[1]), icon, infoHtml);
             }
         }
     }
+
 
     /**
      * _more_

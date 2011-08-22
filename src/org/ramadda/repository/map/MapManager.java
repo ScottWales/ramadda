@@ -23,6 +23,7 @@ package org.ramadda.repository.map;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.MapOutputHandler;
+import org.ramadda.repository.output.OutputHandler;
 
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -43,6 +44,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -229,6 +231,7 @@ public class MapManager extends RepositoryManager {
                                        int width,
                                        int height, String url)
             throws Exception {
+
         String id = "map3d";
         // fill in the API keys for this machine
         String   mapsKey     = "";
@@ -262,6 +265,7 @@ public class MapManager extends RepositoryManager {
         String template =
             getRepository().getResource(
                 "/org/ramadda/repository/resources/googleearth/geplugin.html");
+
         template = template.replace("${width}", width + "");
         template = template.replace("${height}", height + "");
         template = template.replace("${id}", id);
@@ -282,44 +286,101 @@ public class MapManager extends RepositoryManager {
         String id = getMapManager().getGoogleEarthPlugin(request, mapSB, width, height, null);
 
         StringBuffer js  = new StringBuffer();
+        List<String> categories  = new ArrayList<String>();
+        Hashtable<String,StringBuffer> catMap = new Hashtable<String,StringBuffer>();
         for (Entry entry : entries) {
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                sb.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                        entry)));
-                sb.append(HtmlUtil.space(1));
-                double lat = entry.getSouth();
-                double lon = entry.getEast();
-                sb.append("<a href=\"javascript:" + id +".setLocation(" +lat+"," +
-                          lon + ");\">"
-                          + entry.getName() + "</a><br>");
-                String icon = getRepository().absoluteUrl(getEntryManager().getIconUrl(request, entry));
-                String points = "null";
-                if(entry.hasAreaDefined()) {
-                    points = "new Array(" + 
-                        entry.getNorth() +"," +
-                        entry.getWest() +"," +
-                        entry.getNorth() +"," +
-                        entry.getEast() +"," +
-                        entry.getSouth() +"," +
-                        entry.getEast() +"," +
-                        entry.getSouth() +"," +
-                        entry.getWest() +"," +
-                        entry.getNorth() +"," +
-                        entry.getWest()+")";
-                }
-                js.append(HtmlUtil.call(
-                                        id +".addPlacemark",
-                                        HtmlUtil.comma(HtmlUtil.squote(entry.getName()), ""+lat, ""+lon,
-                                                       HtmlUtil.squote(icon),points)));
-                js.append("\n");
+            if (!(entry.hasLocationDefined() || entry.hasAreaDefined())) {
+                continue;
             }
+            String category = entry.getTypeHandler().getCategory(entry);
+            StringBuffer catSB = catMap.get(category);
+            if(catSB==null) {
+                catMap.put(category, catSB = new StringBuffer());
+                categories.add(category);
+            }
+            catSB.append("&nbsp;&nbsp;");
+            catSB.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
+                                                                entry)));
+            catSB.append(HtmlUtil.space(1));
+            double lat = entry.getSouth();
+            double lon = entry.getEast();
+            catSB.append("<a href=\"javascript:" + id +".placemarkClick(" +HtmlUtil.squote(entry.getId())+
+                         ");\">"
+                      + entry.getName() + "</a><br>");
+            String icon = getRepository().absoluteUrl(getEntryManager().getIconUrl(request, entry));
+            String points = "null";
+            if(entry.hasAreaDefined()) {
+                points = "new Array(" + 
+                    entry.getNorth() +"," +
+                    entry.getWest() +"," +
+                    entry.getNorth() +"," +
+                    entry.getEast() +"," +
+                    entry.getSouth() +"," +
+                    entry.getEast() +"," +
+                    entry.getSouth() +"," +
+                    entry.getWest() +"," +
+                    entry.getNorth() +"," +
+                    entry.getWest()+")";
+            }
+            String desc =  makeInfoBubble(request, entry);
+            js.append(HtmlUtil.call(
+                                    id +".addPlacemark",
+                                    HtmlUtil.comma(HtmlUtil.squote(entry.getId()),HtmlUtil.squote(entry.getName()), HtmlUtil.squote(desc),
+                                                   ""+lat, ""+lon) +"," +
+                                    HtmlUtil.squote(icon) +"," +points));
+            js.append("\n");
         }
+
+        for(String category: categories) {
+            StringBuffer catSB = catMap.get(category);
+            sb.append(HtmlUtil.b(category));
+            sb.append(HtmlUtil.br());
+            sb.append(catSB);
+        }
+
+
         sb.append("</td><td>");
         sb.append(mapSB);
         sb.append(HtmlUtil.script(js.toString()));
         sb.append("</td></tr></table>");
     }
 
+
+    public String makeInfoBubble(Request request, Entry entry) throws Exception {
+        String fromEntry  = entry.getTypeHandler().getMapInfoBubble(request, entry);
+        if(fromEntry!=null) return fromEntry;
+        StringBuffer info = new StringBuffer("<table>");
+        info.append(entry.getTypeHandler().getInnerEntryContent(entry,
+                                                                request, 
+                                                                OutputHandler.OUTPUT_HTML, 
+                                                                true, false,false));
+
+        List<String> urls = new ArrayList<String>();
+        getMetadataManager().getThumbnailUrls(request,  entry, urls);
+        if(urls.size()>0) {
+            info.append("<tr><td colspan=2>" +HtmlUtil.img(urls.get(0), "", " width=300 ") +"</td></tr>");
+        } 
+        info.append("</table>");
+
+        if (entry.getResource().isImage()) {
+            String thumbUrl = getRepository().absoluteUrl(HtmlUtil.url(
+                                                                       request.url(repository.URL_ENTRY_GET)
+                                                                       + "/"
+                                                                       + getStorageManager().getFileTail(
+                                                                                                         entry), ARG_ENTRYID, entry.getId(),
+                                                                       ARG_IMAGEWIDTH, "300"));
+            info.append(HtmlUtil.img(thumbUrl,"",""));
+
+        }
+
+
+        String infoHtml= info.toString();
+        infoHtml = infoHtml.replace("\r", " ");
+        infoHtml = infoHtml.replace("\n", " ");
+        infoHtml = infoHtml.replace("\"", "\\\"");
+        infoHtml = infoHtml.replace("'", "\\'");
+        return infoHtml;
+    }
 
 
 }
