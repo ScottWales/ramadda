@@ -157,6 +157,13 @@ public class MapOutputHandler extends OutputHandler {
         List<Entry> entriesToUse = new ArrayList<Entry>();
         entriesToUse.add(entry);
         StringBuffer sb = new StringBuffer();
+
+        if(outputType.equals(OUTPUT_GEMAP)) {
+            getMapManager().getGoogleEarth(request,  
+                                           entriesToUse, sb, 800,500);
+            return makeLinksResult(request, msg("Google Earth"), sb, new State(entry));
+        }
+
         MapInfo map = getMap(request, entriesToUse, sb, 700, 500, new boolean[]{false});
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
     }

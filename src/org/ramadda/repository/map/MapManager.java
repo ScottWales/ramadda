@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * Copyright 2010-2011 Don Murray/NOAA
  * 
@@ -22,6 +22,7 @@ package org.ramadda.repository.map;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.MapOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 
@@ -196,7 +197,6 @@ public class MapManager extends RepositoryManager {
             geKeys = tmpKeys;
         }
         String hostname = request.getServerName();
-        //System.err.println(hostname);
         for (List<String> tuple : geKeys) {
             String server = tuple.get(0);
             // check to see if this matches me 
@@ -308,9 +308,38 @@ public class MapManager extends RepositoryManager {
                          ");\">"
                       + entry.getName() + "</a><br>");
             String icon = getRepository().absoluteUrl(getEntryManager().getIconUrl(request, entry));
-            String points = "null";
-            if(entry.hasAreaDefined()) {
-                points = "new Array(" + 
+            String pointsString = "null";
+            boolean hasPolygon = false;
+            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+            for (Metadata metadata : metadataList) {
+                if (!metadata.getType().equals(
+                                               MetadataHandler.TYPE_SPATIAL_POLYGON)) continue;
+                List<double[]> points = new ArrayList<double[]>();
+                String         s      = metadata.getAttr1();
+                StringBuffer pointsSB = new StringBuffer();
+                for (String pair : StringUtil.split(s, ";", true, true)) {
+                    List<String> toks = StringUtil.splitUpTo(pair, ",", 2);
+                    if (toks.size() != 2) {
+                        continue;
+                    }
+                    double polyLat = Misc.decodeLatLon(toks.get(0));
+                    double polyLon = Misc.decodeLatLon(toks.get(1));
+                    if(pointsSB.length()==0) {
+                        pointsSB.append("new Array(");
+                    } else  {
+                        pointsSB.append(",");
+                    }
+                    pointsSB.append(polyLat);
+                    pointsSB.append(",");
+                    pointsSB.append(polyLon);
+                }
+                hasPolygon = true;
+                pointsSB.append(")");
+                pointsString = pointsSB.toString();
+            }
+
+            if(!hasPolygon && entry.hasAreaDefined()) {
+                pointsString = "new Array(" + 
                     entry.getNorth() +"," +
                     entry.getWest() +"," +
                     entry.getNorth() +"," +
@@ -327,7 +356,7 @@ public class MapManager extends RepositoryManager {
                                     id +".addPlacemark",
                                     HtmlUtil.comma(HtmlUtil.squote(entry.getId()),HtmlUtil.squote(entry.getName()), HtmlUtil.squote(desc),
                                                    ""+lat, ""+lon) +"," +
-                                    HtmlUtil.squote(icon) +"," +points));
+                                    HtmlUtil.squote(icon) +"," +pointsString));
             js.append("\n");
         }
 
