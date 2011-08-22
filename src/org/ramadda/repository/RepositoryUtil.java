@@ -39,13 +39,14 @@ import java.util.TimeZone;
  *
  *
  * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
 public class RepositoryUtil {
 
     /** timezone */
     public static final TimeZone TIMEZONE_DEFAULT =
         TimeZone.getTimeZone("UTC");
+
+    public static final String FILE_SEPARATOR = "_file_";
 
 
     /**
@@ -99,11 +100,11 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getFileTail(String fileName) {
-        int idx = fileName.indexOf(StorageManager.FILE_SEPARATOR);
+        int idx = fileName.indexOf(FILE_SEPARATOR);
         if (idx >= 0) {
             fileName =
                 fileName.substring(idx
-                                   + StorageManager.FILE_SEPARATOR.length());
+                                   +FILE_SEPARATOR.length());
         } else {
             /*
                We had this here for files from old versions of RAMADDA where we did not add the StorageManager.FILE_SEPARATOR delimiter
