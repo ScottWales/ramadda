@@ -189,7 +189,7 @@ public class MapManager extends RepositoryManager {
             List<List<String>> tmpKeys = new ArrayList<List<String>>();
             for (String line :
                     StringUtil.split(geAPIKeys, "\n", true, true)) {
-                List<String> toks = StringUtil.split(line, ":", true, true);
+                List<String> toks = StringUtil.split(line, ":", true, false);
                 if (toks.size() > 1) {
                     tmpKeys.add(toks);
                 }
@@ -240,7 +240,10 @@ public class MapManager extends RepositoryManager {
         }
 
         String otherOpts = "";
-        String mapsKey = "?key=" + keyAndOther[0];
+        String mapsKey = "";
+    	if (!keyAndOther[0].isEmpty()) {
+            mapsKey = "?key=" + keyAndOther[0];
+    	}
         if (keyAndOther[1] != null) {
             otherOpts = ", {\"other_params\":\"" + keyAndOther[1] + "\"}";
         }
