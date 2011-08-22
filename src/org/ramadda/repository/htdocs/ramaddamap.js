@@ -270,20 +270,27 @@ function RepositoryMap (mapId, params) {
        var newRight = bounds.right;
        var extentBounds = this.map.restrictedExtent;
        if (!extentBounds) {
-           return bounds;
+           extendBounds = new OpenLayers.Bounds(-180, -90, 360, 90);
        }
+       /*
        if (extentBounds.left < 0) {  // map is -180 to 180
            if (bounds.right > 180) {  //bounds is 0 to 360
               newLeft = bounds.left-360;
               newRight = bounds.right-360;
            }
        } else { // map is 0 to 360
+       */
+       if (extentBounds.left >= 0) {  // map is 0 to 360+
            if (bounds.left < 0) {  // left edge is -180 to 180
                newLeft = bounds.left+360;
            }
            if (bounds.right < 0) {  // right edge is -180 to 180
                newRight = bounds.right+360;
            }
+       }
+       // just account for crossing the dateline
+       if (newLeft > newRight) {
+           newRight = bounds.right+360;
        }
        newLeft = Math.max(newLeft, extentBounds.left);
        newRight = Math.min(newRight, extentBounds.right);
@@ -337,7 +344,7 @@ function RepositoryMap (mapId, params) {
                     var ur = this.map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
                     theMap.setSelectionBox(ur.lat, ll.lon, ll.lat,ur.lon);
                     var bounds = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat);
-                    bounds = theMap.normalizeBounds(bounds);
+                    //bounds = theMap.normalizeBounds(bounds);
                     theMap.findSelectionFields();
                     if(theMap.fldNorth) {
                         //theMap.fldNorth.obj.value = ur.lat;
