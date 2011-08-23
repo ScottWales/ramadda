@@ -1,6 +1,8 @@
 
+################################################################################################
 #
-#This is an example language translation file. 
+#This is an example language translation file. All of the phrases below were
+#extracted from the RAMADDA source code.
 #
 #RAMADDA looks in the org/ramadda/repository/resources/languages package for
 #any file that ends with ".pack". It then looks in the repository plugins directory
@@ -26,6 +28,9 @@ language.name=Example Language
 #Here is where you do the translation
 #.e.g:
 #Phrase used in RAMADDA=Your translation
+#If you don't have a translation then RAMADDA will just use the English phrase
+#
+################################################################################################
 
 Go=
 Do=
