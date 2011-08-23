@@ -375,7 +375,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private HashSet<String> seenMsg = new HashSet<String>();
 
     /** _more_ */
-    private boolean debugMsg = true;
+    private boolean debugMsg = false;
 
     /** _more_ */
     private PrintWriter allMsgOutput;
