@@ -567,9 +567,9 @@ public abstract class Harvester extends RepositoryManager {
                                          HtmlUtil.SIZE_40)));
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
-        tfos.add(new TwoFacedObject("Absolute (minutes)", UNIT_ABSOLUTE));
-        tfos.add(new TwoFacedObject("Minutes", UNIT_MINUTE));
-        tfos.add(new TwoFacedObject("Hourly", UNIT_HOUR));
+        tfos.add(new TwoFacedObject(msg("Absolute (minutes)"), UNIT_ABSOLUTE));
+        tfos.add(new TwoFacedObject(msg("Minutes"), UNIT_MINUTE));
+        tfos.add(new TwoFacedObject(msg("Hourly"), UNIT_HOUR));
         //        tfos.add(new TwoFacedObject("Daily",UNIT_DAY));
 
         String minutes = "" + sleepMinutes;
@@ -585,12 +585,12 @@ public abstract class Harvester extends RepositoryManager {
             + HtmlUtil.space(3);
 
         if (sleepUnit.equals(UNIT_ABSOLUTE)) {
-            sleepLbl += "Would run in " + sleepMinutes + " minutes";
+            sleepLbl += msg("Would run in") +" "  + sleepMinutes + " " + msg("minutes");
         } else {
             long sleepTime = Misc.getPauseEveryTime((int) sleepMinutes);
             Date now       = new Date();
             Date then      = new Date(now.getTime() + sleepTime);
-            sleepLbl += "Would run at " + then;
+            sleepLbl += msg("Would run at") +" " + then;
         }
 
         StringBuffer runWidgets = new StringBuffer();

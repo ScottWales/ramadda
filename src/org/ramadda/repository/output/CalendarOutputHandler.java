@@ -642,6 +642,16 @@ public class CalendarOutputHandler extends OutputHandler {
             String[] dayNames = {
                 "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
             };
+            /**
+               for phrase extraction
+               msg("Sun")
+               msg("Mon")
+               msg("Tue")
+               msg("Wed")
+               msg("Thu")
+               msg("Fri")
+               msg("Sat")
+            */
             sb.append("<tr>");
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 sb.append("<td width=\"14%\" class=\"calheader\">"

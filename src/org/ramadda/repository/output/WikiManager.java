@@ -512,7 +512,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         if (srcEntry == null) {
-            return msg("Could not find src:" + src);
+            return msgLabel("Could not find src") + src;
         }
 
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, srcEntry);
@@ -565,7 +565,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     (Entry) entry, src);
         }
         if (srcEntry == null) {
-            return msg("Could not find src:" + src);
+            return msgLabel("Could not find src") + src;
         }
         if (attachment == null) {
             if ( !srcEntry.getResource().isImage()) {
@@ -587,7 +587,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
         }
 
-        return msg("Could not find image attachment:" + attachment);
+        return msgLabel("Could not find image attachment") + attachment;
     }
 
 

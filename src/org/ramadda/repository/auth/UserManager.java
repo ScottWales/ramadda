@@ -1345,7 +1345,7 @@ public class UserManager extends RepositoryManager {
                 HtmlUtil.bold(msg("Name")) + HtmlUtil.space(2),
         //                    HtmlUtil.bold(msg("Roles")) + HtmlUtil.space(2),
         HtmlUtil.bold(msg("Email")) + HtmlUtil.space(2), HtmlUtil.bold(
-            msg("Admin?")) + HtmlUtil.space(2), HtmlUtil.bold(
+            msg("Admin")) + HtmlUtil.space(2), HtmlUtil.bold(
             msg("Guest")))));
 
         for (User user : users) {

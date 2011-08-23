@@ -4618,6 +4618,15 @@ public class EntryManager extends RepositoryManager {
 
         PageStyle pageStyle = request.getPageStyle(entry);
 
+        /*
+          puts these here so we can extract the file names for the .pack files
+          msg("File")
+          msg("Edit")
+          msg("View")
+          msg("Connect")
+          msg("Data")
+         */
+
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FILE)
                 && (entryMenu != null)) {
             if (menuItems.size() > 0) {

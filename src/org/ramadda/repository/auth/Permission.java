@@ -116,6 +116,20 @@ public class Permission {
         "Delete", "Comment", "Type specific 1", "Type specific 2"
     };
 
+    /*
+for phrase extraction
+        msg("View")
+        msg("View Children")
+        msg("File")
+        msg("Edit")
+        msg("New")
+        msg("Anon. Upload")
+        msg("Delete")
+        msg("Comment")
+        msg("Type specific 1")
+        msg("Type specific 2")
+     */
+
 
 
     /** _more_ */

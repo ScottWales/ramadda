@@ -149,8 +149,8 @@ public class DirectoryHarvester extends Harvester {
                                                     "" + getSleepMinutes(),
                                                         HtmlUtil
                                                             .SIZE_5) + HtmlUtil
-                                                                .space(1) + msg(
-                                                                    "(minutes)")));
+                                                                .space(1) + "(" +msg(
+                                                                    "minutes")+")"));
 
         String root = (rootDir != null)
                       ? rootDir.toString()
