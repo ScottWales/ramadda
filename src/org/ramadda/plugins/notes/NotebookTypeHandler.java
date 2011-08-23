@@ -70,7 +70,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public int getDefaultQueryLimit(Request request, Entry entry) {
-        if(request.defined(ARG_OUTPUT)) return super.getDefaultQueryLimit(request, entry);
+        if(!isDefaultHtmlOutput(request)) return super.getDefaultQueryLimit(request, entry);
         return 1000;
     }
 
@@ -110,8 +110,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
-        //If the user specifically selected the html output then don't show as a gossary
-        if(request.defined(ARG_OUTPUT)) return null;
+        if(!isDefaultHtmlOutput(request)) return null;
 
         StringBuffer sb = new StringBuffer();
         sb.append(group.getDescription());

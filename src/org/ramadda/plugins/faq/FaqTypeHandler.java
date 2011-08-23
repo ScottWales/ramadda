@@ -98,6 +98,8 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
+        if(!isDefaultHtmlOutput(request)) return null;
+
         StringBuffer sb = new StringBuffer();
 
         boolean canAdd = getAccessManager().canDoAction(request, group,

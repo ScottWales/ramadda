@@ -98,6 +98,8 @@ public class WeblogTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
+        if(!isDefaultHtmlOutput(request)) return null;
+
         if (weblogOutputHandler == null) {
             weblogOutputHandler =
                 (WeblogOutputHandler) getRepository().getOutputHandler(

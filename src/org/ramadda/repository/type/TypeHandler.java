@@ -573,6 +573,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public boolean isDefaultHtmlOutput(Request request){
+        return Misc.equals(OutputHandler.OUTPUT_HTML.getId(),
+                           request.getString(ARG_OUTPUT,
+                                             OutputHandler.OUTPUT_HTML.getId()));
+    }
+
 
 
     /**

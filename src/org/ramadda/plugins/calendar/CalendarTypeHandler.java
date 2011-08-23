@@ -102,6 +102,7 @@ public class CalendarTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
+        if(!isDefaultHtmlOutput(request)) return null;
         if (calendarOutputHandler == null) {
             calendarOutputHandler =
                 (CalendarOutputHandler) getRepository().getOutputHandler(

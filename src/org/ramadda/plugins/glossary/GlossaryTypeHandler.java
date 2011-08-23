@@ -84,7 +84,11 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         if(!request.defined(ARG_LETTER)) return where;
         String letter = request.getString(ARG_LETTER,"A");
         if(letter.equals("all")) return where;
-        where.add(Clause.like(Tables.ENTRIES.COL_NAME,letter+"%"));
+        where.add(
+                  Clause.or(
+                            Clause.like(Tables.ENTRIES.COL_NAME,letter.toLowerCase()+"%"),
+                            Clause.like(Tables.ENTRIES.COL_NAME,letter.toUpperCase()+"%"))
+);
         return where;
     }
 
@@ -109,8 +113,8 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
-        //If the user specifically selected the html output then don't show as a gossary
-        if(request.defined(ARG_OUTPUT)) return null;
+        if(!isDefaultHtmlOutput(request)) return null;
+
 
         StringBuffer sb = new StringBuffer();
         sb.append(group.getDescription());

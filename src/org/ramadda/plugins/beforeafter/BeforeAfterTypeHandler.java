@@ -90,6 +90,7 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
 
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
+        if(!isDefaultHtmlOutput(request)) return null;
         List<Entry> children =  getEntryManager().getChildren(request, entry);
         return getHtmlDisplay(request, entry, new ArrayList<Entry>(), children);
     }
