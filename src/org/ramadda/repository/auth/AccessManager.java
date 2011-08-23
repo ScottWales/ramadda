@@ -813,10 +813,10 @@ public class AccessManager extends RepositoryManager {
                 HtmlUtil.TAG_TABLE,
                 " cellspacing=0 ccellpadding=0 border=1 "));
         StringBuffer header =
-            new StringBuffer(HtmlUtil.cols(HtmlUtil.bold("Entry")));
+            new StringBuffer(HtmlUtil.cols(HtmlUtil.bold(msg("Entry"))));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             header.append(
-                HtmlUtil.cols(HtmlUtil.bold(Permission.ACTION_NAMES[i])));
+                          HtmlUtil.cols(HtmlUtil.bold(msg(Permission.ACTION_NAMES[i]))));
         }
         currentAccess.append(HtmlUtil.rowTop(header.toString()));
 
@@ -840,17 +840,17 @@ public class AccessManager extends RepositoryManager {
         //        sb.append("<table><tr valign=\"top\"><td>");
         sb.append(HtmlUtil.formTable());
         sb.append("<tr valign=top>");
-        sb.append(HtmlUtil.cols(HtmlUtil.bold("Action"),
-                                HtmlUtil.bold("Role") + " (one per line)"));
+        sb.append(HtmlUtil.cols(HtmlUtil.bold(msg("Action")),
+                                HtmlUtil.bold(msg("Role")) + " (" +msg("one per line")+")"));
         sb.append(HtmlUtil.cols(HtmlUtil.space(5)));
         sb.append(
-            "<td rowspan=6><b>All Roles</b><i><br>user:&lt;userid&gt;<br>none<br>");
+                  "<td rowspan=6><b>" + msg("All Roles") +"</b><i><br>user:&lt;userid&gt;<br>none<br>");
         sb.append(StringUtil.join("<br>", getUserManager().getRoles()));
         sb.append("</i></td>");
 
         sb.append(HtmlUtil.cols(HtmlUtil.space(5)));
 
-        sb.append("<td rowspan=6><b>Current settings:</b><i><br>");
+        sb.append("<td rowspan=6><b>" + msgLabel("Current settings") +"</b><i><br>");
         sb.append(currentAccess.toString());
         sb.append("</i></td>");
 
@@ -875,7 +875,7 @@ public class AccessManager extends RepositoryManager {
                                        ICON_HELP)), HtmlUtil.attr(
                                            HtmlUtil.ATTR_TARGET,
                                            "_help")) + HtmlUtil.space(1)
-                + actionName;
+                + msg(actionName);
 
             sb.append(HtmlUtil.rowTop(HtmlUtil.cols(label,
                     HtmlUtil.textArea(ARG_ROLES + "."
@@ -887,11 +887,11 @@ public class AccessManager extends RepositoryManager {
         //        sb.append("All Roles:<br>");
         //        sb.append(StringUtil.join("<br>",getUserManager().getRoles()));
         //        sb.append("</td></tr></table>");
-        sb.append(HtmlUtil.submit("Change Access"));
+        sb.append(HtmlUtil.submit(msg("Change Access")));
         sb.append(HtmlUtil.formClose());
 
         return getEntryManager().makeEntryEditResult(request, entry,
-                "Edit Access", sb);
+                                                     msg("Edit Access"), sb);
 
     }
 

@@ -375,7 +375,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private HashSet<String> seenMsg = new HashSet<String>();
 
     /** _more_ */
-    private boolean debugMsg = false;
+    private boolean debugMsg = true;
 
     /** _more_ */
     private PrintWriter allMsgOutput;
@@ -3494,6 +3494,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if ( !seenMsg.contains(key)) {
                         allMsgOutput.println(key + "=");
                         allMsgOutput.flush();
+                        System.err.println(key);
                         if (value == null) {
                             missingMsgOutput.println(key + "=");
                             missingMsgOutput.flush();

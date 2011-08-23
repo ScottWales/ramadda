@@ -640,7 +640,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return entry.getDescription();
         } else if (include.equals(WIKIPROP_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
-                    Misc.getProperty(props, PROP_TITLE, "Layout"));
+                                                         Misc.getProperty(props, PROP_TITLE, "Layout"));
         } else if (include.equals(WIKIPROP_NAME)) {
             return entry.getName();
         } else if (include.equals(WIKIPROP_DATE_FROM)

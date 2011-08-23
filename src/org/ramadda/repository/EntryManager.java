@@ -2734,22 +2734,22 @@ public class EntryManager extends RepositoryManager {
 
             if (isGroup) {
                 fb.append(HtmlUtil.submit(((entries.size() > 1)
-                                           ? "Copy them to the folder"
-                                           : "Copy it to the folder"), ARG_ACTION_COPY));
+                                           ? msg("Copy them to the folder")
+                                           : msg("Copy it to the folder")), ARG_ACTION_COPY));
                 fb.append(HtmlUtil.space(1));
                 fb.append(HtmlUtil.submit(((entries.size() > 1)
-                                           ? "Move them to the folder"
-                                           : "Move it to the folder"), ARG_ACTION_MOVE));
+                                           ? msg("Move them to the folder")
+                                           : msg("Move it to the folder")), ARG_ACTION_MOVE));
                 fb.append(HtmlUtil.space(1));
             }
 
             if (entries.size() == 1) {
-                fb.append(HtmlUtil.submit("Link it", ARG_ACTION_ASSOCIATE));
+                fb.append(HtmlUtil.submit(msg("Link it"), ARG_ACTION_ASSOCIATE));
                 fb.append(HtmlUtil.space(1));
             }
 
 
-            fb.append(HtmlUtil.submit("Cancel", ARG_CANCEL));
+            fb.append(HtmlUtil.submit(msg("Cancel"), ARG_CANCEL));
             fb.append(HtmlUtil.formClose());
             StringBuffer contents = new StringBuffer(
                                         getRepository().showDialogQuestion(

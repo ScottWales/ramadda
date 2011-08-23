@@ -774,18 +774,18 @@ public class MetadataManager extends RepositoryManager {
         String       header;
         if (doCloud) {
             request.put(ARG_TYPE, "list");
-            header = HtmlUtil.href(request.getUrl(), "List")
+            header = HtmlUtil.href(request.getUrl(), msg("List"))
                      + HtmlUtil.span(
                          "&nbsp;|&nbsp;",
                          HtmlUtil.cssClass("separator")) + HtmlUtil.b(
-                             "Cloud");
+                                                                      msg("Cloud"));
         } else {
             request.put(ARG_TYPE, "cloud");
-            header = HtmlUtil.b("List")
+            header = HtmlUtil.b(msg("List"))
                      + HtmlUtil.span(
                          "&nbsp;|&nbsp;",
                          HtmlUtil.cssClass("separator")) + HtmlUtil.href(
-                             request.getUrl(), "Cloud");
+                                                                         request.getUrl(), msg("Cloud"));
         }
         sb.append(HtmlUtil.center(HtmlUtil.span(header,
                 HtmlUtil.cssClass("pagesubheading"))));

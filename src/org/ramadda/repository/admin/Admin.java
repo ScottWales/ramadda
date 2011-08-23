@@ -779,7 +779,7 @@ public class Admin extends RepositoryManager {
         StringBuffer    sb         = new StringBuffer();
         List<ApiMethod> apiMethods = getRepository().getApiMethods();
         sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.row(HtmlUtil.cols("Name", "Admin?", "Actions")));
+        sb.append(HtmlUtil.row(HtmlUtil.cols("Name", "Admin", "Actions")));
         for (ApiMethod apiMethod : apiMethods) {
             sb.append(HtmlUtil.row(HtmlUtil.cols(apiMethod.getName(),
                     "" + apiMethod.getMustBeAdmin(),
@@ -1670,7 +1670,7 @@ public class Admin extends RepositoryManager {
                                            + ""));
         statusSB.append(
             HtmlUtil.formEntryTop(
-                msgLabel("# Active Requests"),
+                msgLabel("Active Requests"),
                 counter.getCount() + HtmlUtil.space(2)
                 + HtmlUtil.makeShowHideBlock(
                     msg("List"),
@@ -1710,7 +1710,7 @@ public class Admin extends RepositoryManager {
         for (Object[] tuple : tuples) {
             ApiMethod apiMethod = (ApiMethod) tuple[1];
             apiSB.append(HtmlUtil.formEntry(apiMethod.getName(),
-                                            "#" + msgLabel("calls")
+                                            "# " + msgLabel("Calls")
                                             + apiMethod.getNumberOfCalls()));
         }
 

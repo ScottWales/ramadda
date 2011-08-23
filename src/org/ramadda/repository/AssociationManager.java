@@ -130,7 +130,7 @@ public class AssociationManager extends RepositoryManager {
 
 
         StringBuffer sb = new StringBuffer();
-        sb.append(msgHeader("Add assocation"));
+        sb.append(msgHeader("Add Association"));
         sb.append("Add association between " + fromEntry.getLabel());
         sb.append(" and  " + toEntry.getLabel());
         sb.append(request.form(getRepository().URL_ASSOCIATION_ADD, BLANK));

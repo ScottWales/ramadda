@@ -361,8 +361,8 @@ public class OutputHandler extends RepositoryManager {
             StringBuffer stats = new StringBuffer();
             for (OutputType outputType : types) {
                 if (outputType.getNumberOfCalls() > 0) {
-                    stats.append(outputType.getLabel() + " #"
-                                 + msgLabel("calls")
+                    stats.append(outputType.getLabel() + " # "
+                                 + msgLabel("Calls")
                                  + outputType.getNumberOfCalls()
                                  + HtmlUtil.br());
                 }

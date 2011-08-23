@@ -726,7 +726,7 @@ public class MetadataHandler extends RepositoryManager {
                 return;
             }
             List l = trimValues((List<String>) Misc.toList(values));
-            l.add(0, new TwoFacedObject(msg("-all-"), ""));
+            l.add(0, new TwoFacedObject("-"+msg("all")+"-", ""));
             String value = request.getString(argName, "");
             sb.append(HtmlUtil.formEntry(msgLabel(type.getLabel()),
                                          HtmlUtil.select(argName, l, value,
