@@ -118,6 +118,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
+        sb.append(group.getDescription());
         Hashtable<String,StringBuffer> catQuestionMap = new Hashtable<String,StringBuffer>();
         Hashtable<String,StringBuffer> catAnswerMap = new Hashtable<String,StringBuffer>();
         List<String> cats = new ArrayList<String>();
