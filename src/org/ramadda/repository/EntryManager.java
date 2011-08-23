@@ -3200,7 +3200,6 @@ public class EntryManager extends RepositoryManager {
                 }
             }
             if (entriesXml == null) {
-                System.err.println("Checking import handlers");
                 InputStream entriesStream = fis;
                 //Check the import handlers
                 for (ImportHandler importHandler :
