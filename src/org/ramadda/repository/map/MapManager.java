@@ -188,7 +188,7 @@ public class MapManager extends RepositoryManager {
             List<List<String>> tmpKeys = new ArrayList<List<String>>();
             for (String line :
                     StringUtil.split(geAPIKeys, "\n", true, true)) {
-                List<String> toks = StringUtil.split(line, ",", true, false);
+                List<String> toks = StringUtil.split(line, ";", true, false);
                 if (toks.size() > 1) {
                     tmpKeys.add(toks);
                 }
@@ -197,20 +197,21 @@ public class MapManager extends RepositoryManager {
         }
         String hostname = request.getServerName();
         int    port     = request.getServerPort();
-        if (port != 80) {
-            hostname = hostname + ":" + port;
-        }
-        //        System.err.println("hostname:" + hostname);
-        for (List<String> tuple : geKeys) {
-            String server = tuple.get(0);
-            // check to see if this matches me 
-            //            System.err.println("    server:" + server);
-            if (server.equals("*") || hostname.endsWith(server)) {
-                String mapsKey = tuple.get(1);
-                if (tuple.size() > 2) {
-                    return new String[] { mapsKey, tuple.get(2) };
-                } else {
-                    return new String[] { mapsKey, null };
+        String hostnameWithPort = hostname + ":" + port;
+        for (String h : new String[] {hostnameWithPort, hostname}) {
+        
+            // System.err.println("hostname:" + hostname);
+            for (List<String> tuple : geKeys) {
+                String server = tuple.get(0);
+                // check to see if this matches me 
+                //            System.err.println("    server:" + server);
+                if (server.equals("*") || hostname.endsWith(h)) {
+                    String mapsKey = tuple.get(1);
+                    if (tuple.size() > 2) {
+                        return new String[] { mapsKey, tuple.get(2) };
+                    } else {
+                        return new String[] { mapsKey, null };
+                    }
                 }
             }
         }
