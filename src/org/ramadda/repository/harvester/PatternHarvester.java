@@ -329,7 +329,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 String adminLink =
                     HtmlUtil.href(
                         getRepository().getUrlBase()
-                        + "/help/admin.html#filesystemaccess", msg(
+                        + "/userguide/admin.html#filesystemaccess", msg(
                             "More information"), " target=_HELP");
                 extraLabel =
                     HtmlUtil.br()

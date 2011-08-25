@@ -18,6 +18,16 @@ body, a, td {
 }
 
 
+.ramadda-required-field {
+   color: red;
+}
+
+.ramadda-highlight {
+   font-weight: bold; 
+   background: #fffe99;
+   padding: 5px;
+}
+
 .required {
    background: #ffaaaa;
 }

@@ -869,7 +869,7 @@ public class AccessManager extends RepositoryManager {
             }
             String label = HtmlUtil.href(
                                getRepository().getUrlBase()
-                               + "/help/access.html#"
+                               + "/userguide/access.html#"
                                + action, HtmlUtil.img(
                                    getRepository().iconUrl(
                                        ICON_HELP)), HtmlUtil.attr(

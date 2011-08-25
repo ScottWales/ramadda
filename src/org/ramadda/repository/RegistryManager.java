@@ -315,9 +315,10 @@ public class RegistryManager extends RepositoryManager {
         }
         String msg = msgLabel("Servers this server registers with");
         msg = HtmlUtil.space(1)
-              + HtmlUtil.href(HELP_ROOT + "/userguide/remoteservers.html",
-                              msg("Help"),
-                              HtmlUtil.attr(HtmlUtil.ATTR_TARGET, "_help"));
+              + HtmlUtil.href(getRepository().getUrlBase()
+                              + "/userguide/remoteservers.html", msg("Help"),
+                                  HtmlUtil.attr(HtmlUtil.ATTR_TARGET,
+                                      "_help"));
         sb.append(
             HtmlUtil.formEntry(
                 msgLabel("Registry Servers"),
@@ -440,8 +441,9 @@ public class RegistryManager extends RepositoryManager {
      */
     public void addAdminConfig(Request request, StringBuffer csb) {
         String helpLink =
-            HtmlUtil.href("/repository/help/remoteservers.html", msg("Help"),
-                          HtmlUtil.attr(HtmlUtil.ATTR_TARGET, "_help"));
+            HtmlUtil.href(getRepository().getUrlBase()
+                          + "/userguide/remoteservers.html", msg("Help"),
+                              HtmlUtil.attr(HtmlUtil.ATTR_TARGET, "_help"));
         csb.append(
             HtmlUtil.row(HtmlUtil.colspan(msgHeader("Server Registry"), 2)));
 

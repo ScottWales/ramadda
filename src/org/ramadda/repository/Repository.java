@@ -3697,6 +3697,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public List<TwoFacedObject> getTemplateSelectList() {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+        tfos.add(new TwoFacedObject("-default-",""));
         for (HtmlTemplate template : getTemplates()) {
             tfos.add(new TwoFacedObject(template.getName(),
                                         template.getId()));

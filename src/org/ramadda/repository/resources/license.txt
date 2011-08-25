@@ -17,10 +17,12 @@ Other Copyrights/Licenses:
 
 This product includes software developed by:
 
-    * The University Corporation for Atmospheric Research 
+    * The University Corporation for Atmospheric Research  (UCAR)
     * The Apache Software Foundation (http://www.apache.org/).
     * The Jython project (http://www.jython.org)
-    * Icons from the famfamfam icon collection: http://www.famfamfam.com/lab/icons/
+    * Icons from the famfamfam icon collection: 
+      http://www.famfamfam.com/lab/icons/
     * Icons from http://www.splitbrain.org/projects/file_icons
-    * Some Icons are Copyright © Yusuke Kamiyamane. All rights reserved. Licensed under a Creative Commons Attribution 3.0 license.
+    * Some Icons are Copyright &copy; Yusuke Kamiyamane.  All rights reserved.
+      Licensed under a Creative Commons Attribution 3.0 license.
     * Maps Icons Collection http://code.google.com/p/google-maps-icons/ 
