@@ -81,8 +81,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki page type */
     public static String TYPE_WIKIPAGE = "wikipage";
 
+
+
     /** attribute in import tag */
     public static final String PROP_ENTRY = "entry";
+
+    public static final String PROP_ALT = "alt";
+
+    /** _more_          */
+    public static final String PROP_ASSOCIATIONS = "associations";
 
     /** attribute in import tag */
     public static final String PROP_SHOWHIDE = "showhide";
@@ -268,8 +275,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKIPROP_LINKS, WIKIPROP_ENTRYID
     };
 
+    /** _more_          */
     public static final String ID_THIS = "this";
+
+    /** _more_          */
     public static final String ID_PARENT = "parent";
+
+    /** _more_          */
     public static final String ID_GRANDPARENT = "grandparent";
 
 
@@ -344,8 +356,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     }
                     theEntry = findWikiEntry(request, wikiUtil, id, entry);
                     if (theEntry == null) {
-                        return "<b>Could not find entry&lt;" + id
-                               + "&gt;</b>";
+                        return  "<b>Could not find entry&lt;" + id
+                                             + "&gt;</b>";
                     }
                 }
             }
@@ -512,7 +524,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         if (srcEntry == null) {
-            return msgLabel("Could not find src") + src;
+            return getAltMessage(props, msgLabel("Could not find src") + src);
         }
 
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, srcEntry);
@@ -565,11 +577,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     (Entry) entry, src);
         }
         if (srcEntry == null) {
-            return msgLabel("Could not find src") + src;
+            return getAltMessage(props, msgLabel("Could not find src") + src);
         }
         if (attachment == null) {
             if ( !srcEntry.getResource().isImage()) {
-                return msg("Not an image");
+                return getAltMessage(props, msg("Not an image"));
             }
             return getWikiImage(wikiUtil, request,
                                 getHtmlOutputHandler().getImageUrl(request,
@@ -587,7 +599,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
         }
 
-        return msgLabel("Could not find image attachment") + attachment;
+        return getAltMessage(props, msgLabel("Could not find image attachment") + attachment);
+    }
+
+
+
+    public String getAltMessage(Hashtable props, String message) {
+        return  Misc.getProperty(props, PROP_ALT, message);
     }
 
 
@@ -640,7 +658,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return entry.getDescription();
         } else if (include.equals(WIKIPROP_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
-                                                         Misc.getProperty(props, PROP_TITLE, "Layout"));
+                    Misc.getProperty(props, PROP_TITLE, "Layout"));
         } else if (include.equals(WIKIPROP_NAME)) {
             return entry.getName();
         } else if (include.equals(WIKIPROP_DATE_FROM)
@@ -893,7 +911,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
-                return "";
+                return getAltMessage(props, "");
             }
             StringBuffer sb = new StringBuffer();
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
@@ -910,7 +928,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
-                return "";
+                return getAltMessage(props, "");
             }
 
             StringBuffer sb = new StringBuffer();
@@ -929,7 +947,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
-                return "";
+                return getAltMessage(props, "");
             }
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
@@ -940,7 +958,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
-                return "";
+                return getAltMessage(props, "");
             }
 
             String separator = Misc.getProperty(props, PROP_SEPARATOR,
@@ -1031,8 +1049,30 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             throws Exception {
         boolean folders = Misc.getProperty(props, PROP_FOLDERS, false);
         boolean files   = Misc.getProperty(props, PROP_FILES, false);
-        String  type    = (String) props.get(PROP_TYPE);
-        int     level   = Misc.getProperty(props, PROP_LEVEL, 1);
+        boolean doAssociations = Misc.getProperty(props, PROP_ASSOCIATIONS,
+                                     false);
+
+        if (doAssociations) {
+            List<Association> associations =
+                getRepository().getAssociationManager().getAssociations(
+                    request, entry.getId());
+            List<Entry> linkedEntries = new ArrayList<Entry>();
+            for (Association association : associations) {
+                String id = null;
+                if ( !association.getFromId().equals(entry.getId())) {
+                    id = association.getFromId();
+                } else if ( !association.getToId().equals(entry.getId())) {
+                    id = association.getToId();
+                } else {
+                    continue;
+                }
+                linkedEntries.add(getEntryManager().getEntry(request, id));
+            }
+            return linkedEntries;
+        }
+
+        String type  = (String) props.get(PROP_TYPE);
+        int    level = Misc.getProperty(props, PROP_LEVEL, 1);
         List<Entry> children =
             (List<Entry>) wikiUtil.getProperty(entry.getId() + "_children");
         if (children == null) {
