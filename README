@@ -1,5 +1,35 @@
 
 ###########################################################################
+RAMADDA
+###########################################################################
+src:
+The main source of RAMADDA is in src/org/ramadda/repository
+There is a build.xml there that does all of the building. The top level
+build.xml here can be used to build ramadda and the plugins
+
+The plugins are in
+src/org/ramadda/plugins
+src/org/ramadda/geodata
+
+Some old Infocetera Java code for applets (e.g., chat, gantt chart, graph) is in:
+src/com/infocetera/
+
+
+lib:
+Contains all of the jars RAMADDA depends on.
+
+bin:
+Contains a copy of the IDV's document generation package.
+
+apps:
+Contains the start of an Android RAMADDA client.
+
+dist:
+This directory is  created during the build process. All build products
+get placed there.
+
+
+###########################################################################
 Building
 ###########################################################################
 
@@ -21,6 +51,13 @@ ant plugins
 This compiles all of the plugins and installs them in your local
 ~/.ramadda/plugins
 directory
+
+The user guide and the workshop plugins use a tcl script from the IDV source release.
+We have a copy of that in bin/idvdocgen
+
+This relies on having tclsh in your path. If you don't have this then the docs 
+won't be built and included in the plugin.
+
 
 ###########################################################################
 Making a release

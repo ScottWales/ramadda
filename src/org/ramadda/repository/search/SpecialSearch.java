@@ -238,19 +238,19 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
-
         StringBuffer formSB = new StringBuffer();
+        formSB.append("<div style=\"min-width:200px;\">");
         formSB.append(request.form(URL_SEARCH,
                                    HtmlUtil.attr(HtmlUtil.ATTR_NAME,
                                        "apisearchform")));
         formSB.append(HtmlUtil.br());
         formSB.append(HtmlUtil.formTable());
         formSB.append(
-            HtmlUtil.formEntryTop(
+            HtmlUtil.formEntry(
                 msgLabel(typeHandler.getFormLabel(null, ARG_NAME, "Text")),
                 HtmlUtil.input(
                     ARG_TEXT, request.getString(ARG_TEXT, ""),
-                    HtmlUtil.SIZE_20 + " autofocus ")));
+                    HtmlUtil.SIZE_15 + " autofocus ")));
 
         String clearLink  = map.getSelectorClearLink(repository.msg("Clear"));
         String searchType = TypeHandler.getSpatialSearchTypeWidget(request);
@@ -326,10 +326,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                              "tab_content");
         sb.append(
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
+        formSB.append("</div>");
         sb.append(HtmlUtil.col(formSB.toString(),
-                               HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "30%")));
-        sb.append(HtmlUtil.col(tabs,
-                               HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "70%")));
+                               HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "200")));
+        //        sb.append(HtmlUtil.col(tabs,
+        //                               HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "70%")));
+        sb.append(HtmlUtil.col(tabs, " align=left "));
         sb.append("</table>");
 
         sb.append(HtmlUtil.script(js.toString()));

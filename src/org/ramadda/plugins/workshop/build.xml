@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="../../../../../" default="plugin" name="ramadda plugin">
-    
-    <target name="all">
-      <echo message="Generating content"/>
-      <exec dir="${basedir}/src/org/ramadda/plugins/workshop/content" executable="make.sh"/> 
-      <antcall target="plugin"/>
-    </target>
-
 
     <target name="plugin">
+      <echo message="Generating workshop content"/>
+      <exec dir="${basedir}/src/org/ramadda/plugins/workshop/content" executable="make.sh">
+          <arg value="${basedir}/bin/idvdocgen"/> 
+      </exec>
+
       <property name="plugin" value="workshop"/>
       <property file="${basedir}/build.properties"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />

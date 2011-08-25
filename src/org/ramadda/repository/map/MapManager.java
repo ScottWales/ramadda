@@ -199,7 +199,6 @@ public class MapManager extends RepositoryManager {
         int    port     = request.getServerPort();
         String hostnameWithPort = hostname + ":" + port;
         for (String h : new String[] {hostnameWithPort, hostname}) {
-        
             // System.err.println("hostname:" + hostname);
             for (List<String> tuple : geKeys) {
                 String server = tuple.get(0);
@@ -279,7 +278,7 @@ public class MapManager extends RepositoryManager {
         template = template.replace("${id}", id);
         template = template.replace("${id}", id);
 
-        sb.append(HtmlUtil.checkbox("tmp", "true", true,
+        sb.append(HtmlUtil.checkbox("tmp", "true", false,
                                     HtmlUtil.id("googleearth.showdetails")));
         sb.append(" ");
         sb.append(msg("Show details"));
@@ -395,12 +394,16 @@ public class MapManager extends RepositoryManager {
             js.append("\n");
         }
 
+        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, 
+                                HtmlUtil.cssClass("ramadda-earth-entries")+
+                                HtmlUtil.style("max-height:" + height +"px; overflow-y: auto;")));
         for (String category : categories) {
             StringBuffer catSB = catMap.get(category);
             sb.append(HtmlUtil.b(category));
             sb.append(HtmlUtil.br());
             sb.append(catSB);
         }
+        sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
 
 
         sb.append("</td><td>");

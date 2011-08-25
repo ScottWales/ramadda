@@ -1083,6 +1083,10 @@ code.menu {
 }
 
 
+.ramadda-earth-entries {
+   min-width: 150px;
+}
+
 .menuseparator {
    margin-left:2px;
    margin-right:2px;
