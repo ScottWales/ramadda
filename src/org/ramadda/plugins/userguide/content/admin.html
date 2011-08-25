@@ -59,17 +59,18 @@ If the Google Maps Key is defined then there is a Google Earth plugin display ca
 for each domain name and port you might be running RAMADDA under.
 The format of the admin setting is (one per line):
 <pre>
-hostname1,API key1,premier_opts1
-hostname2,API key2,premier_opts2
+hostname1;API key1;premier_opts1
+hostname2;API key2;premier_opts2
+hostname2:9090;API key3
 </pre>
 
 The premier_opts is optional.
  
 e.g.:
 <pre>
-localhost,ABQIAAAA-JXA0-....
-ramadda.org,ZXQIAAAA-JXA0-....
-noaa.gov,,client=gme-<i>yourclientid</i>&sensor=false
+localhost;ABQIAAAA-JXA0-....
+ramadda.org;ZXQIAAAA-JXA0-....
+noaa.gov;;client=gme-<i>yourclientid</i>&sensor=false
 </pre>
 Notes: 
 <ul>

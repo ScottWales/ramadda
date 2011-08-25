@@ -1116,7 +1116,7 @@ public class Admin extends RepositoryManager {
 
         dsb.append(HtmlUtil.formEntryTop(msgLabel("Google Maps Keys"), "<table><tr valign=top><td>"
                 + HtmlUtil.textArea(PROP_GOOGLEAPIKEYS, getProperty(PROP_GOOGLEAPIKEYS, ""), 5, 80)
-                + "</td><td>One per line:<br><i>host domain,apikey</i><br>e.g.:<i>www.yoursite.edu,google api key</i></table>"));
+                + "</td><td>One per line:<br><i>host domain;apikey</i><br>e.g.:<i>www.yoursite.edu;google api key</i></table>"));
 
 
 
