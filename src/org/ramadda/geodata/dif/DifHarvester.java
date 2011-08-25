@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,18 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.dif;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 
@@ -73,7 +73,7 @@ import java.util.Properties;
  * @version $Revision: 1.3 $
  */
 //public class DifHarvester extends Harvester {
-public class DifHarvester  {
+public class DifHarvester {
 
     /*
 <?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
@@ -312,8 +312,15 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
     /** _more_ */
     String url;
 
-    public DifHarvester(Repository repository, String id)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param id _more_
+     *
+     * @throws Exception _more_
+     */
+    public DifHarvester(Repository repository, String id) throws Exception {
         //        super(repository, id);
     }
 
@@ -336,6 +343,11 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDescription() {
         return "DIF";
     }

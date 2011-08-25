@@ -1,6 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -21,12 +20,12 @@
 package org.ramadda.geodata.dif;
 
 
-import org.w3c.dom.*;
-
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;

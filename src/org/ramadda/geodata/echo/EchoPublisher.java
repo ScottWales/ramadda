@@ -20,39 +20,42 @@
 package org.ramadda.geodata.echo;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.database.Tables;
-import org.ramadda.repository.database.DatabaseManager;
-import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.database.DatabaseManager;
+import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
 
-import ucar.unidata.util.HtmlUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.xml.XmlUtil;
+
+import org.w3c.dom.*;
+
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 
-import java.text.SimpleDateFormat;
-import java.util.zip.*;
-import java.util.Date;
+import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.xml.XmlUtil;
+
+
+
+
+import ucar.unidata.xml.XmlUtil;
+
 import java.io.*;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
-
-
-import ucar.unidata.xml.XmlUtil;
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.zip.*;
 
 
 /**
@@ -60,13 +63,17 @@ import java.util.List;
  */
 public class EchoPublisher extends Harvester {
 
+    /** _more_          */
     public static final String ATTR_FTP_URL = "echo.ftp.url";
 
+    /** _more_          */
     public static final String ATTR_FTP_USER = "echo.ftp.user";
 
-    private String ftpUrl="";
+    /** _more_          */
+    private String ftpUrl = "";
 
-    private String ftpUser="";
+    /** _more_          */
+    private String ftpUser = "";
 
     /** _more_ */
     private SimpleDateFormat sdf;
@@ -75,30 +82,32 @@ public class EchoPublisher extends Harvester {
      * _more_
      *
      *
+     *
+     * @param repository _more_
+     * @param id _more_
      * @throws Exception _more_
      */
-    public EchoPublisher(Repository repository, String id)
-        throws Exception {
+    public EchoPublisher(Repository repository, String id) throws Exception {
         super(repository, id);
     }
 
-    /**                                                                                                
-     * _more_                                                                                          
-     *                                                                                                 
-     * @param repository _more_                                                                        
-     * @param element _more_                                                                           
-     *                                                                                                 
-     * @throws Exception _more_                                                                        
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param element _more_
+     *
+     * @throws Exception _more_
      */
     public EchoPublisher(Repository repository, Element element)
-        throws Exception {
+            throws Exception {
         super(repository, element);
     }
 
-    /**                                                                                                
-     * _more_                                                                                          
-     *                                                                                                 
-     * @return _more_                                                                                  
+    /**
+     * _more_
+     *
+     * @return _more_
      */
     public String getDescription() {
         return "ECHO Publisher";
@@ -106,25 +115,46 @@ public class EchoPublisher extends Harvester {
 
 
 
+    /**
+     * _more_
+     *
+     * @param element _more_
+     *
+     * @throws Exception _more_
+     */
     protected void init(Element element) throws Exception {
         super.init(element);
 
-        ftpUrl =  XmlUtil.getAttribute(element, ATTR_FTP_URL,ftpUrl);
-        ftpUser =  XmlUtil.getAttribute(element, ATTR_FTP_USER,ftpUrl);
+        ftpUrl  = XmlUtil.getAttribute(element, ATTR_FTP_URL, ftpUrl);
+        ftpUser = XmlUtil.getAttribute(element, ATTR_FTP_USER, ftpUrl);
 
 
     }
 
+    /**
+     * _more_
+     *
+     * @param t _more_
+     *
+     * @return _more_
+     */
     private String formatDate(long t) {
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         }
-        synchronized(sdf) {
+        synchronized (sdf) {
             return sdf.format(new Date(t)) + "Z";
         }
     }
 
 
+    /**
+     * _more_
+     *
+     * @param element _more_
+     *
+     * @throws Exception _more_
+     */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         element.setAttribute(ATTR_FTP_URL, ftpUrl);
@@ -132,28 +162,54 @@ public class EchoPublisher extends Harvester {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @throws Exception _more_
+     */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
-        ftpUrl = request.getString(ATTR_FTP_URL, ftpUrl);
+        ftpUrl  = request.getString(ATTR_FTP_URL, ftpUrl);
         ftpUser = request.getString(ATTR_FTP_USER, ftpUser);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public void createEditForm(Request request, StringBuffer sb)
-        throws Exception {
+            throws Exception {
 
         super.createEditForm(request, sb);
-        sb.append(HtmlUtil.formEntry(msg("ECHO FTP URL"), HtmlUtil.input(ATTR_FTP_URL, ftpUrl, 60)));
-        sb.append(HtmlUtil.formEntry(msg("ECHO User"), HtmlUtil.input(ATTR_FTP_USER, ftpUser, 60)));
+        sb.append(HtmlUtil.formEntry(msg("ECHO FTP URL"),
+                                     HtmlUtil.input(ATTR_FTP_URL, ftpUrl,
+                                         60)));
+        sb.append(HtmlUtil.formEntry(msg("ECHO User"),
+                                     HtmlUtil.input(ATTR_FTP_USER, ftpUser,
+                                         60)));
     }
 
+    /**
+     * _more_
+     *
+     * @param timestamp _more_
+     *
+     * @throws Exception _more_
+     */
     protected void runInner(int timestamp) throws Exception {
         if ( !canContinueRunning(timestamp)) {
             return;
         }
 
         status = new StringBuffer("");
-        int cnt =0 ;
+        int cnt = 0;
         logHarvesterInfo("EchoPublisher: starting");
         while (canContinueRunning(timestamp)) {
             doPublish();
@@ -175,48 +231,69 @@ public class EchoPublisher extends Harvester {
     }
 
 
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
     protected void doPublish() throws Exception {
         //Find all entries that have attached echo collection data
-        Statement statement = getDatabaseManager().select(
-                                                          SqlUtil.comma(Tables.METADATA.COL_ID,
-                                                                        Tables.METADATA.COL_ENTRY_ID),
-                                                          Tables.METADATA.NAME,
-                                                          Clause.eq(Tables.METADATA.COL_TYPE,
-                                                                    "echo.collection"));
-        SqlUtil.Iterator iterator = getDatabaseManager().getIterator(statement);
-     
-        ResultSet        results;
+        Statement statement =
+            getDatabaseManager().select(SqlUtil.comma(Tables.METADATA.COL_ID,
+                Tables.METADATA.COL_ENTRY_ID), Tables.METADATA.NAME,
+                    Clause.eq(Tables.METADATA.COL_TYPE, "echo.collection"));
+        SqlUtil.Iterator iterator =
+            getDatabaseManager().getIterator(statement);
+
+        ResultSet   results;
         List<Entry> collections = new ArrayList<Entry>();
         while ((results = iterator.getNext()) != null) {
             String metadataId = results.getString(1);
-            String entryId = results.getString(2);
-            Entry entry = getEntryManager().getEntry(getRequest(), entryId);
-            if(entry!=null) collections.add(entry);
+            String entryId    = results.getString(2);
+            Entry  entry = getEntryManager().getEntry(getRequest(), entryId);
+            if (entry != null) {
+                collections.add(entry);
+            }
         }
 
-       if(collections.size()==0) return;
+        if (collections.size() == 0) {
+            return;
+        }
 
 
 
-        File zipFile  = getRepository().getStorageManager().getTmpFile(getRequest(), ".zip");
+        File zipFile =
+            getRepository().getStorageManager().getTmpFile(getRequest(),
+                ".zip");
         OutputStream os = getStorageManager().getFileOutputStream(zipFile);
         writeCollections(collections, os, true);
         IOUtil.close(os);
     }
 
 
-    public void writeCollections(List<Entry> collections, OutputStream os, boolean includeGranules) throws Exception {
-        ZipOutputStream  zos = new ZipOutputStream(os);
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, EchoUtil.TAG_COLLECTIONMETADATAFILE, null,
-                                      new String[] {
-                                          "xmlns:xsi", 
-                                          "http://www.w3.org/2001/XMLSchema-instance",
-                                          "xsi:noNamespaceSchemaLocation",
-                                          "http://www.echo.nasa.gov/ingest/schemas/operations/Collection.xsd"
-                                      });
-        Element collectionsNode = XmlUtil.create(root.getOwnerDocument(), EchoUtil.TAG_COLLECTIONS, root);
-        for(Entry entry: collections) {
+    /**
+     * _more_
+     *
+     * @param collections _more_
+     * @param os _more_
+     * @param includeGranules _more_
+     *
+     * @throws Exception _more_
+     */
+    public void writeCollections(List<Entry> collections, OutputStream os,
+                                 boolean includeGranules)
+            throws Exception {
+        ZipOutputStream zos = new ZipOutputStream(os);
+        Document        doc = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc,
+                                      EchoUtil.TAG_COLLECTIONMETADATAFILE,
+                                      null, new String[] { "xmlns:xsi",
+                "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:noNamespaceSchemaLocation",
+                "http://www.echo.nasa.gov/ingest/schemas/operations/Collection.xsd" });
+        Element collectionsNode = XmlUtil.create(root.getOwnerDocument(),
+                                      EchoUtil.TAG_COLLECTIONS, root);
+        for (Entry entry : collections) {
             makeCollectionNode(entry, collectionsNode);
         }
 
@@ -231,9 +308,19 @@ public class EchoPublisher extends Harvester {
 
 
 
-    private void makeCollectionNode(Entry entry, Element collectionsNode) throws Exception {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param collectionsNode _more_
+     *
+     * @throws Exception _more_
+     */
+    private void makeCollectionNode(Entry entry, Element collectionsNode)
+            throws Exception {
         Document doc = collectionsNode.getOwnerDocument();
-        Element collectionNode = XmlUtil.create(doc, EchoUtil.TAG_COLLECTION, collectionsNode);
+        Element collectionNode = XmlUtil.create(doc, EchoUtil.TAG_COLLECTION,
+                                     collectionsNode);
 
         /*
       <ShortName>${entry.name}</ShortName>
@@ -243,13 +330,20 @@ public class EchoPublisher extends Harvester {
       <Description>${entry.description.cdata}</Description>
         */
 
-        XmlUtil.create(doc, EchoUtil.TAG_SHORTNAME, collectionNode).appendChild(XmlUtil.makeCDataNode(doc, entry.getName(), false));
-        XmlUtil.create(doc, EchoUtil.TAG_DESCRIPTION, collectionNode).appendChild(XmlUtil.makeCDataNode(doc, entry.getDescription(), false));
+        XmlUtil.create(doc, EchoUtil.TAG_SHORTNAME,
+                       collectionNode).appendChild(XmlUtil.makeCDataNode(doc,
+                           entry.getName(), false));
+        XmlUtil.create(doc, EchoUtil.TAG_DESCRIPTION,
+                       collectionNode).appendChild(XmlUtil.makeCDataNode(doc,
+                           entry.getDescription(), false));
 
 
-        XmlUtil.create(doc, EchoUtil.TAG_DATASETID, collectionNode, entry.getId(),null);
-        XmlUtil.create(doc, EchoUtil.TAG_INSERTTIME, collectionNode, formatDate(entry.getCreateDate()),null);
-        XmlUtil.create(doc, EchoUtil.TAG_LASTUPDATE, collectionNode, formatDate(entry.getChangeDate()),null);
+        XmlUtil.create(doc, EchoUtil.TAG_DATASETID, collectionNode,
+                       entry.getId(), null);
+        XmlUtil.create(doc, EchoUtil.TAG_INSERTTIME, collectionNode,
+                       formatDate(entry.getCreateDate()), null);
+        XmlUtil.create(doc, EchoUtil.TAG_LASTUPDATE, collectionNode,
+                       formatDate(entry.getChangeDate()), null);
 
         /*
       <Temporal>
@@ -260,10 +354,14 @@ public class EchoPublisher extends Harvester {
       </Temporal>
         */
 
-        Element temporalNode = XmlUtil.create(doc, EchoUtil.TAG_TEMPORAL, collectionNode);
-        Element rangeNode = XmlUtil.create(doc, EchoUtil.TAG_RANGEDATETIME, temporalNode);
-        XmlUtil.create(doc, EchoUtil.TAG_BEGINNINGDATETIME, rangeNode, formatDate(entry.getStartDate()), null);
-        XmlUtil.create(doc, EchoUtil.TAG_ENDINGDATETIME, rangeNode, formatDate(entry.getEndDate()), null);
+        Element temporalNode = XmlUtil.create(doc, EchoUtil.TAG_TEMPORAL,
+                                   collectionNode);
+        Element rangeNode = XmlUtil.create(doc, EchoUtil.TAG_RANGEDATETIME,
+                                           temporalNode);
+        XmlUtil.create(doc, EchoUtil.TAG_BEGINNINGDATETIME, rangeNode,
+                       formatDate(entry.getStartDate()), null);
+        XmlUtil.create(doc, EchoUtil.TAG_ENDINGDATETIME, rangeNode,
+                       formatDate(entry.getEndDate()), null);
 
 
 
@@ -273,9 +371,8 @@ public class EchoPublisher extends Harvester {
         for (Metadata metadata : metadataList) {
             for (MetadataHandler metadataHandler : metadataHandlers) {
                 if (metadataHandler.canHandle(metadata)) {
-                    metadataHandler.addMetadataToXml(getRequest(),
-                                                     "echo", entry,
-                                                     metadata, doc, collectionNode);
+                    metadataHandler.addMetadataToXml(getRequest(), "echo",
+                            entry, metadata, doc, collectionNode);
                     break;
                 }
             }

@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,17 +14,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.echo;
 
-import org.w3c.dom.*;
-
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.output.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.util.DateUtil;
@@ -38,8 +37,9 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import java.text.SimpleDateFormat;
 import java.io.*;
+
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,8 +66,8 @@ public class EchoOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ECHO_XML =
         new OutputType("Echo-XML", "echo.xml",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
-                       "", "/echo/nasa.png");
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       "/echo/nasa.png");
 
 
     /**
@@ -100,10 +100,9 @@ public class EchoOutputHandler extends OutputHandler {
             return;
         }
         if (state.group != null) {
-            links.add(
-                      makeLink(
-                               request, state.group, OUTPUT_ECHO_XML,
-                               "/" + IOUtil.stripExtension(state.group.getName())
+            links.add(makeLink(request, state.group, OUTPUT_ECHO_XML,
+                               "/"
+                               + IOUtil.stripExtension(state.group.getName())
                                + ".echo.zip"));
         }
     }
@@ -131,8 +130,8 @@ public class EchoOutputHandler extends OutputHandler {
         request.getHttpServletResponse().setContentType("application/zip");
         List<Entry> collections = new ArrayList<Entry>();
         collections.add(group);
-        EchoPublisher publisher = new EchoPublisher(getRepository(),"dummy");
-        publisher.writeCollections(collections,  os, true);
+        EchoPublisher publisher = new EchoPublisher(getRepository(), "dummy");
+        publisher.writeCollections(collections, os, true);
         Result result = new Result();
         result.setNeedToWrite(false);
         return result;

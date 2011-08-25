@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,17 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.geodata.dif;
 
-import org.w3c.dom.*;
 
-import org.ramadda.util.DifUtil;
 import org.ramadda.repository.*;
-import org.ramadda.repository.output.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+
+import org.ramadda.util.DifUtil;
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.util.DateUtil;
@@ -65,15 +66,15 @@ public class DifOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_DIF_XML =
         new OutputType("Dif-XML", "dif.xml",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
-                       "", ICON_DIF);
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       ICON_DIF);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_DIF_TEXT =
         new OutputType("Dif-Text", "dif.text",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
-                       "", ICON_DIF);
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       ICON_DIF);
 
 
     /**
