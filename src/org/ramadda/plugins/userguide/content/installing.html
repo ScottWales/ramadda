@@ -4,54 +4,78 @@
   <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
 </head>
 
+
 <body>
+<%nochildlist%>
+
 First you need to download RAMADDA.
 The RAMADDA downloads area can be accessed at the SourceForge site:<br>
-<a href="https://sourceforge.net/projects/ramadda/">https://sourceforge.net/projects/ramadda/</a>.
+<a href="https://sourceforge.net/projects/ramadda/files">https://sourceforge.net/projects/ramadda/files</a>.
 <p>
 
-RAMADDA can run under Tomcat or can run stand-alone with just Java.
-To run under Tomcat download the repository.war file. 
-To run stand alone download the repository.zip file, unzip it and look at the README.
+RAMADDA can run under <a href="#tomcat">Tomcat</a> or can 
+run <a href="#standalone">stand alone</a>.
 
 
 <subhead intoc="false" id="tomcat">Running under Tomcat</subhead>
+We'll assume you have Tomcat or some other servlet container already installed.
 
-To run under Tomcat just 
-place the repository.war in the tomcat webapps directory. By default the repository is 
-accessed at /repository on the web server. I believe with Tomcat the top-level path can only be a single level and
-corresponds to the name of the war file. If you change the top-level path for Tomcat then you also need to tell 
+<ol>
+<li> First,  download the repository.war file at the
+<a href="http://sourceforge.net/projects/ramadda/files/">RAMADDA SourceForge</a> site. 
+
+<li> Before installing the repository.war you should consult
+how to define the RAMADDA <a href="#home">home directory</a>.
+
+<li> To run under Tomcat just 
+place the repository.war in the tomcat webapps directory. 
+
+<li> Go to the /repository page in your browser to continue the installation process, e.g.:
+<a href="http://localhost:8080/repository">http://localhost:8080/repository</a>.
+
+<li> 
+By default the repository is accessed at /repository on the web server. 
+With Tomcat the top-level path can only be a single level and
+corresponds to the name of the war file. 
+If you change the top-level path for Tomcat then you also need to tell 
 RAMADDA what this path is. You do that in a properties file (see below) with:
 <pre>
 ramadda.html.urlbase=/repository
 </pre>
 
-Depending on what plugins are loaded  (especially the IDV plugin) 
-you may need to change the Java configuration in your Tomcat 
+<li> Depending on what plugins are loaded you may need to change the Java configuration in your Tomcat 
 start up. (especially the IDV plugin)
 Add this argument to your Java properties:<pre>
 java ... -XX:MaxPermSize=256m ...
 </pre>
 
 
+</ol>
 
-<subhead intoc="false" id="jetty">Running Standalone</subhead>
+<subhead intoc="false" id="standalone">Running Standalone</subhead>
 
-You can run RAMADDA stand-alone. This is really useful for development and just requires  Java 1.6 or greater. 
-First, download and ramadda&lt;version&gt;.zip file at:
-<a href="http://sourceforge.net/projects/ramadda/files/">http://sourceforge.net/projects/ramadda/files/</a>.
+You can run RAMADDA stand-alone. This only requires  Java 1.6 or greater. 
+<ol>
+<li> Download  the ramadda&lt;version&gt;.zip file 
+at the 
+<a href="http://sourceforge.net/projects/ramadda/files/">RAMADDA SourceForge</a> site. 
+<li> Unzip the file and consult the README.
 
-<p>
-To run RAMADDA run the ramadda.sh in the release directory. This just does:<pre>
-   java -Xmx512m -jar repository.jar
+<li> Or, just skip reading the documentation (like everyone else does)
+and jump right in and start RAMADDA. 
+In the release directory there are both ramadda.sh and ramadda.bar scripts. Just run them, e.g.:
+<pre>
+   sh ramadda.sh
 </pre>
 
+<li> The rest of the RAMADDA configuration is done through the web at
+<a href="http://localhost:8080/repository">http://localhost:8080/repository</a>.
 
-By default the server is on port 8080.  To change the port do:<pre>
-    java ...  -jar repository.jar -port &lt;some port&gt;
+<li> By default the server is on port 8080.  To change the port do:<pre>
+    sh ramadda.sh -port &lt;some port&gt;
 </pre>
 
-
+</ol>
 
 <subhead intoc="false" id="home">RAMADDA Home Directory</subhead>
 
@@ -61,15 +85,20 @@ java derby database is stored and where any uploaded data files are stored, etc.
 <p>
 By default ramadda will use: <pre>
    &lt;server process home directory&gt;/.ramadda</pre>
-i.e., the home directory of the process that runs is running the server (.e.g., "tomcat").
+i.e., the home directory of the process that is running the server (.e.g., "tomcat").
 <p>
-You can override this a number of ways - some good some not so good. This is the bootstrapping step.
-What ramadda does is look for the property: ramadda_home in a variety of places, in precedence:
+You can override this a number of ways - some good some not so good. 
+What ramadda does is look for the property: <i>ramadda_home</i> in a variety of places, in precedence:
 
 <ol>
 
-<li> In the web.xml<br>
-In the web.xml  in the repository.war you can specify command line properties:<pre>
+<li> When running stand-alone just pass the home directory as a command line argument:
+<pre>
+    sh ramadda.sh -Dramadda_home=&lt;home dir&gt;
+</pre>
+
+
+<li> For Tomcat you can edit the web.xml from the repository.war. Specify the command line property:<pre>
     &lt;param-value&gt;-Dramadda_home=/home/dir&lt;/param-value&gt;
 </pre>
 
@@ -78,18 +107,21 @@ new release of RAMADDA you have to always remember to edit the web.xml file agai
 
 <li> As a Java environment variable<br>
 Wherever you define the arguments that are passed to <i>java</i> when starting Tomcat include:<pre>
--Dramadda_home=/home/dir
+   -Dramadda_home=/home/dir
 </pre>
-e.g.:<pre>java -Xmx512m  -Dramadda_home=/home/dir
+e.g.:<pre>
+    java -Xmx512m  -Dramadda_home=/home/dir
 </pre>
 
 <li> As a process environment variable.<br>
 Environment variables can be set for the tomcat process
-Just define:<pre>ramadda_home=/home/dir</pre>
-</ol>
+Just define:<pre>
+    ramadda_home=/home/dir</pre>
 
 
-RAMADDA will also look for a repository.properties file under the Tomcat &quot;conf&quot; directory.
+
+<li> The best way for Tomcat.
+RAMADDA looks for a repository.properties file under the Tomcat &quot;conf&quot; directory.
 It looks for any of the environment variables:
 <pre>
 CATALINA_BASE
@@ -107,10 +139,10 @@ if found then RAMADDA looks for the property:
 ramadda_home=/path/to/ramadda/home
 </pre>
 
-This is probably the cleanest way to do the initial confifuration of RAMADDA. Assuming you have set the CATALINA_BASE environment variable this does not require editing any files and you only need to do anything when you reinstall Tomcat. 
+This is probably the cleanest way to do the initial confifuration of RAMADDA. Assuming you have set the CATALINA_BASE environment variable this does not require editing any files and you don't 
+need to do anything when you reinstall Tomcat. 
 
-
-
+</ol>
 
 <subhead intoc="false" id="properties">RAMADDA Property Files</subhead>
 
