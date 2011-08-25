@@ -354,7 +354,7 @@ public class Admin extends RepositoryManager {
             title = "Installation";
             sb.append(HtmlUtil.formTable());
             sb.append(
-                "<p>Thank you for installing the RAMADDA Repository. <p>Below is the local file system directory where data is stored and the database information.<br>Now would be a good time to change these settings and restart RAMADDA if this is not what you want.<br>See <a target=\"other\" href=\"http://www.unidata.ucar.edu/software/ramadda/docs/userguide/installing.html\">here</a> for installation instructions.");
+                      "<p>Thank you for installing the RAMADDA Repository. <p>Below is the local file system directory where data is stored and the database information.<br>Now would be a good time to change these settings and restart RAMADDA if this is not what you want.<br>See <a target=\"other\" href=\"http://facdev.unavco.org/repository/help/installing.html\">here</a> for installation instructions.");
             getStorageManager().addInfo(sb);
             getDatabaseManager().addInfo(sb);
             sb.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Next"))));
@@ -444,13 +444,13 @@ public class Admin extends RepositoryManager {
                         "<wiki>\nWelcome to your RAMADDA server.\n\nYou should \n<a href=\""
                         + getRepository().URL_ENTRY_FORM + "?entryid="
                         + topEntry.getId()
-                        + "\">edit this page</a>\n\n<p>\n\nHere are some folders to get you started:<br>\n\n{{children showtoggle=false}}\n");
+                        + "\">edit this page</a>\n\n<p>\n\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
                     getEntryManager().storeEntry(topEntry);
 
 
                     String initEntriesXml =
                         getRepository().getResource(
-                            "/org/ramadda/repository/resources/initentries.xml");
+                            "/org/ramadda/repository/resources/examples/initentries.xml");
                     Element root = XmlUtil.getRoot(initEntriesXml);
                     List<Entry> newEntries =
                         getEntryManager().processEntryXml(
@@ -547,9 +547,9 @@ public class Admin extends RepositoryManager {
             //than the hard coded all plugin
             sb.append(
                 HtmlUtil.formEntry(
-                    msgLabel("Install Plugins"),
-                    HtmlUtil.checkbox(ARG_ADMIN_INSTALLPLUGIN, "true", false)
-                    + " " + "All plugins"));
+                    msgLabel("Plugins"),
+                    HtmlUtil.checkbox(ARG_ADMIN_INSTALLPLUGIN, "true", true)
+                    + " " + "Install all plugins"));
 
 
 

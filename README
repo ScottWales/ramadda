@@ -22,6 +22,21 @@ This compiles all of the plugins and installs them in your local
 ~/.ramadda/plugins
 directory
 
+###########################################################################
+Making a release
+###########################################################################
+Just do: 
+ant release
+
+This does:
+ant purge;  //does a clean and deletes  the dist directory.
+ant plugins; //builds most of the plugins and makes the allplugins.zip file
+ant ramadda
+
+The allplugins.zip gets copied into the
+ramadda/repository/resources/plugins
+dir and is included in the ramadda release.
+
 
 ###########################################################################
 Running stand-alone
