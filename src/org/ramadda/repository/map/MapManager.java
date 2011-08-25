@@ -169,6 +169,10 @@ public class MapManager extends RepositoryManager {
      * @return _more_
      */
     public boolean isGoogleEarthEnabled(Request request) {
+        //Exclude iphone, android and linux
+        if(request.isMobile()) return false;
+        String userAgent = request.getUserAgent("").toLowerCase();
+        if(userAgent.indexOf("linux")>=0) return false;
         return getGoogleMapsKey(request) != null;
     }
 
