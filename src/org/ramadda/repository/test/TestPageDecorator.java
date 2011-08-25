@@ -30,7 +30,7 @@ import org.ramadda.repository.*;
  * jar -cvf testdecorator.jar TestPageDecorator.class
  *
  * Put the jar file in the ramadda plugins directory, e.g.:
- * ~/.unidata/repository/plugins
+ * ~/.ramadda/plugins
  *
  * Now when ramadda runs decorate page will be called with the page html from the templates.
  * Update the html as needed and return it.

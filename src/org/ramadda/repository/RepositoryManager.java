@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -22,17 +20,18 @@
 package org.ramadda.repository;
 
 
-
-import org.w3c.dom.*;
-
 import org.ramadda.repository.admin.*;
-import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
-import org.ramadda.repository.search.*;
 import org.ramadda.repository.harvester.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.WikiManager;
+import org.ramadda.repository.search.*;
+
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -78,7 +77,7 @@ import java.util.Properties;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -87,6 +86,10 @@ import java.util.Properties;
 public class RepositoryManager implements RepositorySource, Constants,
                                           RequestHandler {
 
+
+    /** _more_          */
+    public static final String HELP_ROOT =
+        "http://facdev.unavco.org/repository";
 
 
     /** _more_ */
@@ -124,33 +127,70 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param label _more_
+     * @param contents _more_
+     *
+     * @return _more_
+     */
     public String formEntry(Request request, String label, String contents) {
-        if(request.isMobile()) {
-            return "<tr><td><div class=\"formlabel\">"+ label +"</div>" + contents +"</td></tr>";
+        if (request.isMobile()) {
+            return "<tr><td><div class=\"formlabel\">" + label + "</div>"
+                   + contents + "</td></tr>";
         } else {
-            return "<tr><td><div class=\"formlabel\">"+ label +"</div></td><td>" + contents +"</td></tr>";
+            return "<tr><td><div class=\"formlabel\">" + label
+                   + "</div></td><td>" + contents + "</td></tr>";
             //            return HtmlUtil.formEntry(label, contents);
         }
     }
 
-    public String formEntryTop(Request request, String label, String contents) {
-        if(request.isMobile()) {
-            return "<tr><td><div class=\"formlabel\">"+ label +"</div>" + contents +"</td></tr>";
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param label _more_
+     * @param contents _more_
+     *
+     * @return _more_
+     */
+    public String formEntryTop(Request request, String label,
+                               String contents) {
+        if (request.isMobile()) {
+            return "<tr><td><div class=\"formlabel\">" + label + "</div>"
+                   + contents + "</td></tr>";
         } else {
             return HtmlUtil.formEntryTop(label, contents);
         }
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean getActive() {
-        if(repository == null || !repository.getActive()) return false;
+        if ((repository == null) || !repository.getActive()) {
+            return false;
+        }
         return true;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param result _more_
+     *
+     * @return _more_
+     */
     public Result addHeaderToAncillaryPage(Request request, Result result) {
         return result;
         //        return getEntryManager().addEntryHeader(request, null, result);
-    
+
     }
 
     /**
@@ -566,6 +606,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getMetadataManager();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public WikiManager getWikiManager() {
         return repository.getWikiManager();
     }
@@ -590,6 +635,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getStorageManager();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public MapManager getMapManager() {
         return repository.getMapManager();
     }

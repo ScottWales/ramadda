@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -22,10 +20,10 @@
 package org.ramadda.repository;
 
 
-import org.w3c.dom.*;
-
-
 import org.ramadda.repository.database.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -312,12 +310,14 @@ public class RegistryManager extends RepositoryManager {
      */
     public void addToInstallForm(Request request, StringBuffer sb)
             throws Exception {
-        if(true) return;
+        if (true) {
+            return;
+        }
         String msg = msgLabel("Servers this server registers with");
         msg = HtmlUtil.space(1)
-              + HtmlUtil.href(
-                  "http://www.unidata.ucar.edu/software/ramadda/docs/userguide/remoteservers.html",
-                  msg("Help"), HtmlUtil.attr(HtmlUtil.ATTR_TARGET, "_help"));
+              + HtmlUtil.href(HELP_ROOT + "/userguide/remoteservers.html",
+                              msg("Help"),
+                              HtmlUtil.attr(HtmlUtil.ATTR_TARGET, "_help"));
         sb.append(
             HtmlUtil.formEntry(
                 msgLabel("Registry Servers"),

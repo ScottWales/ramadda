@@ -354,7 +354,7 @@ public class Admin extends RepositoryManager {
             title = "Installation";
             sb.append(HtmlUtil.formTable());
             sb.append(
-                      "<p>Thank you for installing the RAMADDA Repository. <p>Below is the local file system directory where data is stored and the database information.<br>Now would be a good time to change these settings and restart RAMADDA if this is not what you want.<br>See <a target=\"other\" href=\"http://facdev.unavco.org/repository/help/installing.html\">here</a> for installation instructions.");
+                "<p>Thank you for installing the RAMADDA Repository. <p>Below is the local file system directory where data is stored and the database information.<br>Now would be a good time to change these settings and restart RAMADDA if this is not what you want.<br>See <a target=\"other\" href=\"" + HELP_ROOT + "/userguide/installing.html\">here</a> for installation instructions.");
             getStorageManager().addInfo(sb);
             getDatabaseManager().addInfo(sb);
             sb.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Next"))));
@@ -595,9 +595,8 @@ public class Admin extends RepositoryManager {
                 String tableName = tables.getString("TABLE_NAME");
 
                 //Humm, not sure why I get this table name and its giving me an error
-                if (tableName.equals("ENTRY")||
-                    tableName.equals("BASE")
-                    || tableName.equals("AGGGREGATION")) {
+                if (tableName.equals("ENTRY") || tableName.equals("BASE")
+                        || tableName.equals("AGGGREGATION")) {
                     continue;
                 }
 
@@ -1085,12 +1084,11 @@ public class Admin extends RepositoryManager {
             phrases = "#label=new label to use\n#e.g.: Foo=Bar";
         }
 
-        dsb.append(
-            HtmlUtil.formEntryTop(
-                msgLabel("Ignore Page Styles"),
-                HtmlUtil.checkbox(
-                    PROP_NOSTYLE, "true",
-                    getProperty(PROP_NOSTYLE, false))));
+        dsb.append(HtmlUtil.formEntryTop(msgLabel("Ignore Page Styles"),
+                                         HtmlUtil.checkbox(PROP_NOSTYLE,
+                                             "true",
+                                             getProperty(PROP_NOSTYLE,
+                                                 false))));
 
 
         dsb.append(
@@ -1432,6 +1430,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminSettingsDo(Request request) throws Exception {
+
         request.ensureAuthToken();
 
         getRepository().getRegistryManager().applyAdminConfig(request);
@@ -1451,7 +1450,8 @@ public class Admin extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_LDM_QUEUE, true);
         getRepository().writeGlobal(request, PROP_GOOGLEAPIKEYS, true);
         getRepository().writeGlobal(request, PROP_FACEBOOK_CONNECT_KEY);
-        getRepository().writeGlobal(PROP_NOSTYLE,"" + request.get(PROP_NOSTYLE, false));
+        getRepository().writeGlobal(PROP_NOSTYLE,
+                                    "" + request.get(PROP_NOSTYLE, false));
 
 
         String ratings = "" + request.get(PROP_RATINGS_ENABLE, false);
@@ -1533,6 +1533,7 @@ public class Admin extends RepositoryManager {
         }
 
         return new Result(request.url(URL_ADMIN_SETTINGS));
+
     }
 
 

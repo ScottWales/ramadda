@@ -74,7 +74,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -314,9 +314,7 @@ public class StorageManager extends RepositoryManager {
                 repositoryDirProperty =
                     IOUtil.joinDir(Misc.getSystemProperty("user.home", "."),
                                    ".ramadda");
-            } else {
-                //                System.err.println ("RAMADDA: Using old .unidata directory:" +repositoryDirProperty);
-            }
+            } else {}
         }
         repositoryDir = new File(repositoryDirProperty);
 
@@ -766,8 +764,9 @@ public class StorageManager extends RepositoryManager {
             if (filesToScour.size() > 0) {
                 logInfo("StorageManager: scouring " + filesToScour.size()
                         + " files from:" + tmpDir.getDir().getName());
-                System.err.println("StorageManager: scouring " + filesToScour.size()
-                                   + " files from:" + tmpDir);
+                System.err.println("StorageManager: scouring "
+                                   + filesToScour.size() + " files from:"
+                                   + tmpDir);
             }
             List<File> notDeleted = IOUtil.deleteFiles(filesToScour);
             if (notDeleted.size() > 0) {

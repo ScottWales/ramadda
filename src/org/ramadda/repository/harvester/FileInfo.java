@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,15 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository.harvester;
 
 
 import ucar.unidata.util.HtmlUtil;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
 
 import java.io.File;
 
@@ -54,6 +53,7 @@ public class FileInfo {
     /** _more_ */
     boolean isDir;
 
+    /** _more_          */
     private List addedFiles;
 
     /**
@@ -75,7 +75,7 @@ public class FileInfo {
         this.isDir = isDir;
         file       = f;
         time       = file.lastModified();
-        if (!isDir) {
+        if ( !isDir) {
             size = file.length();
         }
         hasInitialized = true;
@@ -114,10 +114,10 @@ public class FileInfo {
      * @return _more_
      */
     public boolean hasChanged() {
-        if (!hasInitialized) {
+        if ( !hasInitialized) {
             if (file.exists()) {
                 time = file.lastModified();
-                if (!isDir) {
+                if ( !isDir) {
                     size = file.length();
                 }
                 hasInitialized = true;
@@ -136,6 +136,9 @@ public class FileInfo {
         return changed;
     }
 
+    /**
+     * _more_
+     */
     public void reset() {
         time = -1;
         size = -1;
@@ -159,13 +162,22 @@ public class FileInfo {
         return file.exists();
     }
 
+    /**
+     * _more_
+     */
     public void clearAddedFiles() {
         addedFiles = null;
     }
 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     */
     public void addFile(Object f) {
-        if(addedFiles == null)
+        if (addedFiles == null) {
             addedFiles = new ArrayList();
+        }
         addedFiles.add(f);
     }
 
@@ -175,12 +187,13 @@ public class FileInfo {
      * @return _more_
      */
     public String toString() {
-        String s =  file.toString();
-        List tmp = addedFiles;
-        if(tmp!=null && tmp.size()>0) {
-            String fileBlock = HtmlUtil.insetDiv("Added files:<br>" +StringUtil.join("<br>", tmp),0,10,0,0);
-            return  HtmlUtil.makeShowHideBlock(s,
-                                               fileBlock, false);
+        String s   = file.toString();
+        List   tmp = addedFiles;
+        if ((tmp != null) && (tmp.size() > 0)) {
+            String fileBlock = HtmlUtil.insetDiv("Added files:<br>"
+                                   + StringUtil.join("<br>", tmp), 0, 10, 0,
+                                       0);
+            return HtmlUtil.makeShowHideBlock(s, fileBlock, false);
         }
         return s;
     }
@@ -220,9 +233,9 @@ public class FileInfo {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        File rootDir = new File("c:/cygwin/home/jeffmc/unidata");
+        File rootDir = new File(".");
         if ( !rootDir.exists()) {
-            rootDir = new File("/data/ldm/gempak/nexrad/NIDS");
+            rootDir = new File("");
         }
         if (args.length > 0) {
             rootDir = new File(args[0]);

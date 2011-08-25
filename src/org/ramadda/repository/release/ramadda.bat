@@ -12,8 +12,9 @@ REM The default above is to use Java Derby as the database
 REM To run with mysql you do:
 REM java -Xmx512m -XX:MaxPermSize=256m -jar ramadda.jar -Dramadda.db=mysql
 
-REM Or see for more information: 
-REM http://www.unidata.ucar.edu/software/ramadda/docs/developer/ 
+REM For more information see:
+REM http://facdev.unavco.org/repository/help/installing.html
+
  
 
 

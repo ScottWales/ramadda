@@ -7,7 +7,7 @@ java -Xmx512m -XX:MaxPermSize=256m -jar lib/@REPOSITORYJAR@ -port 8080 $*
 
 
 
-##This will create a directory under ~/unidata/repository to store content and the database
+##This will create a directory under ~/.ramadda to store content and the database
 #To change the directory do:
 ##java -Xmx512m -XX:MaxPermSize=256m -jar lib/@REPOSITORYJAR@ -port 8080 -Dramadda_home=/some/other/directory
 
@@ -16,9 +16,9 @@ java -Xmx512m -XX:MaxPermSize=256m -jar lib/@REPOSITORYJAR@ -port 8080 $*
 #To run with mysql you do:
 #java -Xmx512m -XX:MaxPermSize=256m -jar ramadda.jar -Dramadda.db=mysql
 
-##Or see for more information: 
-##http://www.unidata.ucar.edu/software/ramadda/docs/developer/ 
- 
+
+#For more information see:
+#http://facdev.unavco.org/repository/help/installing.html
 
 
 

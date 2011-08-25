@@ -9,7 +9,6 @@
 		sleep="3"/>
 
 
-
   <harvester    name="Source Files"
 		grouptemplate = "${dirgroup}"
                 tagtemplate="${extension}"
