@@ -189,13 +189,18 @@ Show the menu actions in a popup:
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
 other groups of entries with:
-[wiki::text {{{property entry="some other entry" folders="true" files="true" type="entries of a specific type" level="1 or 2"}}}]
+[wiki::text {{{property entry="some other entry" folders="true" files="true" type="entries of a specific type" level="1 or 2" associations="true|false"}}}]
 </ul>
 If <i>folders</i> is set then only show folder like entries.<br>
 If <i>files</i> is set then only show non folders.<br>
 If <i>type</i> is set then only show entries of  that type.<br>
 The attribute <i>level</i> can be set to "1" (the default) or "2". Level 1 refers to the immediate children
-entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).
+entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).<br>
+If <i> associations</i> is set to true then the entries that are used are those that
+the current entry has an association to. Associations are named and typed links
+between arbitrary entries.
+
+
 
 <ul>
 
