@@ -3,7 +3,8 @@
     
     <target name="plugin">
       <echo message="Generating user guide content."/>
-      <exec dir="${basedir}/src/org/ramadda/plugins/userguide/content" executable="make.sh">
+      <exec dir="${basedir}/src/org/ramadda/plugins/userguide/content" executable="sh">
+          <arg value="make.sh"/> 
           <arg value="${basedir}/bin/idvdocgen"/> 
       </exec>
       <property name="plugin" value="userguide"/>
