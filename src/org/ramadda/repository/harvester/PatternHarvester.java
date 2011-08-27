@@ -393,9 +393,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                                          descTemplate, HtmlUtil.SIZE_60)));
 
         sb.append(HtmlUtil.formEntry(msgLabel("Entry type"),
-                                     repository.makeTypeSelect(request,
-                                                               false, getTypeHandler().getType(), false,
-                                         null)));
+                                     makeEntryTypeSelector(request, getTypeHandler())));
+
 
 
         sb.append(HtmlUtil.formEntry(msgLabel("Date format"),
@@ -430,7 +429,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
     }
 
-
+    public String makeEntryTypeSelector(Request request, TypeHandler typeHandler) throws Exception {
+        return repository.makeTypeSelect(request,
+                                         false, getTypeHandler().getType(), false,
+                                         null);
+    }
 
 
     /**
