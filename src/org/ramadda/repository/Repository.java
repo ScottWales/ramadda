@@ -2955,7 +2955,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param sb _more_
      */
     public void addAuthToken(Request request, StringBuffer sb) {
-        sb.append(HtmlUtil.hidden(ARG_AUTHTOKEN, request.getSessionId()));
+        String sessionId  = request.getSessionId();
+        if(sessionId!=null) {
+            sb.append(HtmlUtil.hidden(ARG_AUTHTOKEN, sessionId));
+        }
     }
 
 

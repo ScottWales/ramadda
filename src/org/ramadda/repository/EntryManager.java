@@ -640,6 +640,7 @@ public class EntryManager extends RepositoryManager {
         } else {
             sb.append(request.uploadForm(getRepository().URL_ENTRY_CHANGE,
                                          HtmlUtil.attr("name", "entryform")));
+            getRepository().addAuthToken(request, sb);
         }
 
         sb.append(HtmlUtil.formTable());
@@ -855,6 +856,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryChange(final Request request) throws Exception {
         boolean download = request.get(ARG_RESOURCE_DOWNLOAD, false);
+        request.ensureAuthToken();
         if (download) {
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(Object actionId) throws Exception {
@@ -1716,8 +1718,8 @@ public class EntryManager extends RepositoryManager {
                 request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
         }
 
-
         if (request.exists(ARG_DELETE_CONFIRM)) {
+            request.ensureAuthToken();
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
             Entry group = findGroup(request, entry.getParentEntryId());
@@ -1749,6 +1751,7 @@ public class EntryManager extends RepositoryManager {
 
         StringBuffer fb = new StringBuffer();
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
+        getRepository().addAuthToken(request, fb);
         fb.append(RepositoryUtil.buttons(HtmlUtil.submit(msg("OK"),
                 ARG_DELETE_CONFIRM), HtmlUtil.submit(msg("Cancel"),
                     ARG_CANCEL)));
@@ -3056,6 +3059,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryXmlCreate(Request request) throws Exception {
         try {
+            request.ensureAuthToken();
             return processEntryXmlCreateInner(request);
         } catch (Exception exc) {
             if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
@@ -3107,6 +3111,7 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         sb.append(msgHeader("Import Entries"));
         sb.append(request.uploadForm(getRepository().URL_ENTRY_XMLCREATE));
+        getRepository().addAuthToken(request, sb);
         sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
         sb.append(HtmlUtil.formTable());
         sb.append(HtmlUtil.formEntry(msgLabel("File"),
@@ -3769,6 +3774,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processCommentsEdit(Request request) throws Exception {
         Entry entry = getEntry(request);
+        request.ensureAuthToken();
         getDatabaseManager().delete(
             Tables.COMMENTS.NAME,
             Clause.eq(
@@ -3814,6 +3820,7 @@ public class EntryManager extends RepositoryManager {
                 getRepository().showDialogNote(
                     msg("Please enter a comment")));
         } else {
+            request.ensureAuthToken();
             getDatabaseManager().executeInsert(Tables.COMMENTS.INSERT,
                     new Object[] {
                 getRepository().getGUID(), entry.getId(),
@@ -3834,6 +3841,7 @@ public class EntryManager extends RepositoryManager {
         sb.append(msgLabel("Add comment for") + getEntryLink(request, entry));
         //        sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
         sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
+        getRepository().addAuthToken(request, sb);
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.formTable());
         sb.append(HtmlUtil.formEntry(msgLabel("Subject"),
@@ -3905,6 +3913,7 @@ public class EntryManager extends RepositoryManager {
                                               .URL_COMMENTS_EDIT, ARG_DELETE,
                                                   "true", ARG_ENTRYID,
                                                   entry.getId(),
+                                               ARG_AUTHTOKEN, request.getSessionId(),
                                                   ARG_COMMENT_ID,
                                                   comment.getId()), HtmlUtil
                                                       .img(iconUrl(

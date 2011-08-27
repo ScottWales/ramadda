@@ -833,6 +833,7 @@ public class AccessManager extends RepositoryManager {
                     StringUtil.join("\n", permission.getRoles()));
         }
         sb.append(request.form(URL_ACCESS_CHANGE, ""));
+        getRepository().addAuthToken(request, sb);
 
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.submit("Change Access"));
@@ -905,6 +906,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processAccessChange(Request request) throws Exception {
+        request.ensureAuthToken();
         Entry            entry       = getEntryManager().getEntry(request);
         List<Permission> permissions = new ArrayList<Permission>();
         for (int i = 0; i < Permission.ACTIONS.length; i++) {

@@ -770,6 +770,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
+        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, getSessionId()));
         entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
     }
 

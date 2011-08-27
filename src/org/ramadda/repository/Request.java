@@ -1324,8 +1324,11 @@ public class Request implements Constants {
      * _more_
      */
     public void ensureAuthToken() {
+        System.err.println ("checking auth");
         if ( !getString(ARG_AUTHTOKEN, "").equals(getSessionId())) {
-            throw new IllegalArgumentException("Bad authentication token");
+            if ( !getString(ARG_SESSIONID, "").equals(getSessionId())) {
+                throw new IllegalArgumentException("Bad authentication token");
+            }
         }
         //        System.err.println ("token OK");
     }
@@ -1959,7 +1962,10 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getServerName() {
-        return getHttpServletRequest().getServerName();
+        if(httpServletRequest!=null) {
+            httpServletRequest.getServerName();
+        }
+        return repository.getHostname();
     }
 
     /**
@@ -1968,7 +1974,10 @@ public class Request implements Constants {
      * @return _more_
      */
     public int getServerPort() {
-        return getHttpServletRequest().getServerPort();
+        if(httpServletRequest!=null) {
+            httpServletRequest.getServerPort();
+        }
+        return repository.getPort();
     }
 
 
