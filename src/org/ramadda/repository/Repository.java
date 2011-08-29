@@ -2950,6 +2950,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
+    /**
+       Convert the sessionId into a authorization token that is used to verify form
+       submissions, etc.
+    */
+    public String getAuthToken(String sessionId) {
+        //Use the same hash function as for passwords
+        return UserManager.hashPassword(sessionId);
+    }
+
     /**
      * _more_
      *
@@ -2959,7 +2969,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void addAuthToken(Request request, StringBuffer sb) {
         String sessionId  = request.getSessionId();
         if(sessionId!=null) {
-            sb.append(HtmlUtil.hidden(ARG_AUTHTOKEN, sessionId));
+            String authToken = getAuthToken(sessionId);
+            sb.append(HtmlUtil.hidden(ARG_AUTHTOKEN, authToken));
         }
     }
 

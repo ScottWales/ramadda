@@ -3913,7 +3913,7 @@ public class EntryManager extends RepositoryManager {
                                               .URL_COMMENTS_EDIT, ARG_DELETE,
                                                   "true", ARG_ENTRYID,
                                                   entry.getId(),
-                                               ARG_AUTHTOKEN, request.getSessionId(),
+                                               ARG_AUTHTOKEN, getRepository().getAuthToken(request.getSessionId()),
                                                   ARG_COMMENT_ID,
                                                   comment.getId()), HtmlUtil
                                                       .img(iconUrl(
