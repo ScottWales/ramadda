@@ -381,7 +381,7 @@ public class PluginManager extends RepositoryManager {
      */
     public void addStatusInfo(Request request, StringBuffer sb) {
         StringBuffer formBuffer = new StringBuffer();
-        request.uploadFormPostWithAuthToken(
+        request.uploadFormWithAuthToken(
             formBuffer, getAdmin().URL_ADMIN_PLUGIN_UPLOAD, "");
         formBuffer.append(msgLabel("Plugin File"));
         formBuffer.append(HtmlUtil.fileInput(ARG_PLUGIN_FILE,

@@ -297,6 +297,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             throws Exception {
 
         if (request.exists(ARG_MONITOR_DELETE_CONFIRM)) {
+            request.ensureAuthToken();
             deleteMonitor(monitor);
             return new Result(
                 request.url(
@@ -305,6 +306,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         }
 
         if (request.exists(ARG_MONITOR_CHANGE)) {
+            request.ensureAuthToken();
             monitor.applyEditForm(request);
             updateMonitor(monitor);
             return new Result(
@@ -323,10 +325,9 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         sb.append(msgLabel("Monitor"));
         sb.append(HtmlUtil.space(1));
         sb.append(monitor.getName());
-        sb.append(
-            HtmlUtil.formPost(
-                getRepositoryBase().URL_USER_MONITORS.toString(),
-                HtmlUtil.attr(HtmlUtil.ATTR_NAME, "monitorform")));
+        request.formPostWithAuthToken(sb,
+                                      getRepositoryBase().URL_USER_MONITORS,
+                                      HtmlUtil.attr(HtmlUtil.ATTR_NAME, "monitorform"));
         sb.append(HtmlUtil.hidden(ARG_MONITOR_ID, monitor.getId()));
 
         if (request.exists(ARG_MONITOR_DELETE)) {

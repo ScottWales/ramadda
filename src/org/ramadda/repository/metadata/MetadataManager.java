@@ -926,8 +926,7 @@ public class MetadataManager extends RepositoryManager {
             sb.append(msgLabel("Add new metadata"));
             makeAddList(request, entry, sb);
         } else {
-            sb.append(HtmlUtil.uploadForm(request.url(URL_METADATA_CHANGE),
-                                          ""));
+            request.uploadFormWithAuthToken(sb,URL_METADATA_CHANGE);
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
             sb.append(HtmlUtil.submit(msg("Change")));
             sb.append(HtmlUtil.space(2));
@@ -1012,7 +1011,7 @@ public class MetadataManager extends RepositoryManager {
         Entry        entry = getEntryManager().getEntry(request);
         sb.append(HtmlUtil.p());
 
-        if ( !request.exists(ARG_TYPE)) {
+        if (!request.exists(ARG_TYPE)) {
             makeAddList(request, entry, sb);
         } else {
             String type = request.getString(ARG_TYPE, BLANK);
@@ -1059,7 +1058,7 @@ public class MetadataManager extends RepositoryManager {
                 groupMap.put(name, groupSB = new StringBuffer());
                 groups.add(name);
             }
-            groupSB.append(request.uploadForm(URL_METADATA_ADDFORM));
+            request.uploadFormWithAuthToken(groupSB,URL_METADATA_ADDFORM);
             groupSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
             groupSB.append(HtmlUtil.hidden(ARG_TYPE, type.getId()));
             groupSB.append(HtmlUtil.submit(msg("Add")));

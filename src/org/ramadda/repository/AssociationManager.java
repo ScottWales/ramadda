@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -22,14 +20,16 @@
 package org.ramadda.repository;
 
 
-
-import org.w3c.dom.*;
-
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
@@ -111,13 +111,13 @@ public class AssociationManager extends RepositoryManager {
 
 
 
-
         String name = request.getString(ARG_NAME, (String) null);
         if (name != null) {
             String type = request.getString(ARG_TYPE_FREEFORM, "").trim();
             if (type.length() == 0) {
                 type = request.getString(ARG_TYPE, "").trim();
             }
+            request.ensureAuthToken();
             addAssociation(request, fromEntry, toEntry, name, type);
             //            return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW, fromEntry));
             return new Result(
@@ -133,7 +133,7 @@ public class AssociationManager extends RepositoryManager {
         sb.append(msgHeader("Add Association"));
         sb.append("Add association between " + fromEntry.getLabel());
         sb.append(" and  " + toEntry.getLabel());
-        sb.append(request.form(getRepository().URL_ASSOCIATION_ADD, BLANK));
+        request.formPostWithAuthToken(sb, getRepository().URL_ASSOCIATION_ADD, BLANK);
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.formTable());
 
@@ -199,17 +199,20 @@ public class AssociationManager extends RepositoryManager {
 
 
         if (request.exists(ARG_DELETE_CONFIRM)) {
+            request.ensureAuthToken();
             getDatabaseManager().delete(Tables.ASSOCIATIONS.NAME, clause);
             fromEntry.setAssociations(null);
             toEntry.setAssociations(null);
             return new Result(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, fromEntry));
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb     = new StringBuffer();
+        StringBuffer hidden = new StringBuffer();
+        getRepository().addAuthToken(request, hidden);
+        hidden.append(HtmlUtil.hidden(ARG_ASSOCIATION, associationId));
         String form = Repository.makeOkCancelForm(request,
                           getRepository().URL_ASSOCIATION_DELETE,
-                          ARG_DELETE_CONFIRM,
-                          HtmlUtil.hidden(ARG_ASSOCIATION, associationId));
+                          ARG_DELETE_CONFIRM, hidden.toString());
         sb.append(
             getRepository().showDialogQuestion(
                 msg("Are you sure you want to delete the assocation?"),
@@ -261,7 +264,7 @@ public class AssociationManager extends RepositoryManager {
             }
         }
         return addAssociation(request, fromEntry, toEntry,
-                              XmlUtil.getAttribute(node, ATTR_NAME,""),
+                              XmlUtil.getAttribute(node, ATTR_NAME, ""),
                               XmlUtil.getAttribute(node, ATTR_TYPE, ""));
     }
 
@@ -294,10 +297,11 @@ public class AssociationManager extends RepositoryManager {
                     + toEntry);
         }
         //Clear the cached associations
-        String result = addAssociation(request,
-                              new Association(getRepository().getGUID(),
-                                  name, type, fromEntry.getId(),
-                                  toEntry.getId()));
+        String result =
+            addAssociation(request,
+                           new Association(getRepository().getGUID(), name,
+                                           type, fromEntry.getId(),
+                                           toEntry.getId()));
         fromEntry.clearAssociations();
         toEntry.clearAssociations();
         return result;
@@ -316,6 +320,7 @@ public class AssociationManager extends RepositoryManager {
      */
     public String addAssociation(Request request, Association association)
             throws Exception {
+        request.ensureAuthToken();
         String id = getRepository().getGUID();
         getDatabaseManager().executeInsert(Tables.ASSOCIATIONS.INSERT,
                                            new Object[] { association.getId(),
@@ -386,6 +391,7 @@ public class AssociationManager extends RepositoryManager {
      */
     public void deleteAssociation(Request request, Association association)
             throws Exception {
+        request.ensureAuthToken();
         getDatabaseManager().delete(Tables.ASSOCIATIONS.NAME,
                                     Clause.eq(Tables.ASSOCIATIONS.COL_ID,
                                         association.getId()));
@@ -407,14 +413,13 @@ public class AssociationManager extends RepositoryManager {
         if (true) {
             return BLANK;
         }
-        String search = HtmlUtil.href(
-                            request.url(
-                                        getRepository().getSearchManager().URL_SEARCH_FORM,
-                                ARG_ASSOCIATION,
-                                HtmlUtil.urlEncode(
-                                    association)), HtmlUtil.img(
-                                        iconUrl(ICON_SEARCH),
-                                        msg("Search in association")));
+        String search =
+            HtmlUtil.href(
+                request.url(
+                    getRepository().getSearchManager().URL_SEARCH_FORM,
+                    ARG_ASSOCIATION,
+                    HtmlUtil.urlEncode(association)), HtmlUtil.img(
+                        iconUrl(ICON_SEARCH), msg("Search in association")));
 
         return search;
     }
@@ -625,15 +630,16 @@ public class AssociationManager extends RepositoryManager {
         List cols1 = new ArrayList();
         List cols2 = new ArrayList();
 
-        Hashtable<String,StringBuffer> rowMap = new Hashtable<String,StringBuffer>();
+        Hashtable<String, StringBuffer> rowMap = new Hashtable<String,
+                                                     StringBuffer>();
         List<String> rows = new ArrayList<String>();
         for (Association association : associations) {
             Entry fromEntry = null;
             Entry toEntry   = null;
-            List cols;
+            List  cols;
             if ((entry != null)
                     && association.getFromId().equals(entry.getId())) {
-                cols = cols1;
+                cols      = cols1;
                 fromEntry = entry;
             } else {
                 fromEntry = getEntryManager().getEntry(request,
@@ -680,10 +686,10 @@ public class AssociationManager extends RepositoryManager {
                     args))));
         }
 
-        List cols = Misc.toList(new Object[] {
-            "&nbsp;", HtmlUtil.bold(msg("From")), HtmlUtil.bold(msg("Type")),
-            /*HtmlUtil.bold(msg("Name")),*/ "&nbsp;", HtmlUtil.bold(msg("To"))
-        });
+        List cols = Misc.toList(new Object[] { "&nbsp;",
+                HtmlUtil.bold(msg("From")), HtmlUtil.bold(msg("Type")),
+        /*HtmlUtil.bold(msg("Name")),*/
+        "&nbsp;", HtmlUtil.bold(msg("To")) });
 
         cols.addAll(cols1);
         cols.addAll(cols2);
@@ -743,7 +749,8 @@ public class AssociationManager extends RepositoryManager {
                     associations, null, false));
         }
 
-        return getSearchManager().makeResult(request, msg("Search Associations"), sb);
+        return getSearchManager().makeResult(request,
+                                             msg("Search Associations"), sb);
     }
 
 
@@ -761,7 +768,8 @@ public class AssociationManager extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         getAssociationsSearchForm(request, sb);
-        return getSearchManager().makeResult(request, msg("Search Associations"), sb);
+        return getSearchManager().makeResult(request,
+                                             msg("Search Associations"), sb);
     }
 
 
@@ -776,11 +784,10 @@ public class AssociationManager extends RepositoryManager {
      */
     private void getAssociationsSearchForm(Request request, StringBuffer sb)
             throws Exception {
-        sb.append(
-            HtmlUtil.form(
-                request.url(
-                    getRepository().getSearchManager().URL_SEARCH_ASSOCIATIONS, ARG_NAME,
-                    WHAT_ENTRIES), " name=\"searchform\" "));
+        sb.append(HtmlUtil.form(request
+                .url(getRepository().getSearchManager()
+                    .URL_SEARCH_ASSOCIATIONS, ARG_NAME,
+                        WHAT_ENTRIES), " name=\"searchform\" "));
 
         sb.append(HtmlUtil.formTable());
 

@@ -1,8 +1,5 @@
-
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -17,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository;
@@ -103,11 +101,11 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                       "/entry/xmlcreate");
 
 
-    /** _more_          */
+    /** _more_ */
     public final RequestUrl URL_ENTRY_IMPORT = new RequestUrl(this,
                                                    "/entry/import");
 
-    /** _more_          */
+    /** _more_ */
     public final RequestUrl URL_ENTRY_EXPORT = new RequestUrl(this,
                                                    "/entry/export");
 
@@ -228,9 +226,12 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                    "User Profile");
 
     /** _more_ */
-    public final RequestUrl URL_USER_SETTINGS = new RequestUrl(this,
-                                                    "/user/settings",
-                                                    "Settings");
+    public final RequestUrl URL_USER_FORM = new RequestUrl(this,
+                                                "/user/form", "Settings");
+
+    /** _more_ */
+    public final RequestUrl URL_USER_CHANGE = new RequestUrl(this,
+                                                  "/user/change");
 
     /** _more_ */
     public final RequestUrl URL_USER_MONITORS = new RequestUrl(this,
@@ -249,9 +250,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_USER_EDIT = new RequestUrl(this,
                                                 "/user/edit", "Users");
 
-    /** _more_          */
+    /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
-    
+
 
 
     /** _more_ */
@@ -266,6 +267,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     private String hostname = "";
 
+    /** _more_          */
     private String ipAddress = "";
 
     /** _more_ */
@@ -339,7 +341,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String formatYYYYMMDD(Date date) {
-        synchronized(dateSdf) {
+        synchronized (dateSdf) {
             return dateSdf.format(date);
         }
     }
@@ -451,7 +453,7 @@ public class RepositoryBase implements Constants, RepositorySource {
         if (d == null) {
             return BLANK;
         }
-        synchronized(dateFormat) {
+        synchronized (dateFormat) {
             return dateFormat.format(d);
         }
     }
@@ -480,7 +482,7 @@ public class RepositoryBase implements Constants, RepositorySource {
 
         for (SimpleDateFormat fmt : formats) {
             try {
-                synchronized(fmt) {
+                synchronized (fmt) {
                     return fmt.parse(dttm);
                 }
             } catch (Exception noop) {}
@@ -497,15 +499,22 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public String absoluteUrl(String url) {
         int port = getPort();
-        if(port ==80)
-            return getHttpProtocol()+"://" + getHostname() + url;
-        else
-            return getHttpProtocol()+"://" + getHostname() + ":" + port + url;
+        if (port == 80) {
+            return getHttpProtocol() + "://" + getHostname() + url;
+        } else {
+            return getHttpProtocol() + "://" + getHostname() + ":" + port
+                   + url;
+        }
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getHttpProtocol() {
-        if(getProperty(PROP_ALWAYS_HTTPS,false)) {
+        if (getProperty(PROP_ALWAYS_HTTPS, false)) {
             return "https";
         }
         return "http";
@@ -560,7 +569,8 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String httpsUrl(String url) {
         int port = getHttpsPort();
         if (port < 0) {
-            return getHttpProtocol()+"://" + getHostname() + ":" + getPort() + url;
+            return getHttpProtocol() + "://" + getHostname() + ":"
+                   + getPort() + url;
             //            return url;
             //            throw new IllegalStateException("Do not have ssl port defined");
         }
@@ -585,6 +595,11 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /**
      * Note: this is overwritten in the Repository class
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
      */
     public boolean getProperty(String name, boolean dflt) {
         return dflt;
@@ -610,10 +625,20 @@ public class RepositoryBase implements Constants, RepositorySource {
         hostname = value;
     }
 
+    /**
+     * _more_
+     *
+     * @param ip _more_
+     */
     public void setIpAddress(String ip) {
-        ipAddress= ip;
+        ipAddress = ip;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getIpAddress() {
         return ipAddress;
     }

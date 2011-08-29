@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -16,12 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * 
  */
 
 package org.ramadda.repository;
 
 
 import org.ramadda.repository.auth.*;
+
 import ucar.unidata.util.Counter;
 
 import java.lang.reflect.Method;
@@ -71,6 +71,7 @@ public class ApiMethod {
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
+    /** _more_          */
     public static final String ATTR_ID = "id";
 
     /** _more_ */
@@ -82,6 +83,10 @@ public class ApiMethod {
     /** _more_ */
     public static final String ATTR_ADMIN = "admin";
 
+    /** _more_          */
+    public static final String ATTR_POST = "post";
+
+    /** _more_          */
     public static final String ATTR_REQUIRESAUTHTOKEN = "requires_auth_token";
 
     /** _more_ */
@@ -105,6 +110,10 @@ public class ApiMethod {
     /** _more_ */
     private boolean mustBeAdmin = true;
 
+    /** _more_          */
+    private boolean mustBePost = false;
+
+    /** _more_          */
     private boolean requiresAuthToken = false;
 
     /** _more_ */
@@ -152,6 +161,7 @@ public class ApiMethod {
      * @param name _more_
      * @param method _more_
      * @param mustBeAdmin _more_
+     * @param requiresAuthToken _more_
      * @param needsSsl _more_
      * @param authMethod _more_
      * @param checkAuthMethod _more_
@@ -161,22 +171,23 @@ public class ApiMethod {
     public ApiMethod(Repository repository, RequestHandler requestHandler,
                      String request, String name, Method method,
                      boolean mustBeAdmin, boolean requiresAuthToken,
-                     boolean needsSsl,
-                     String authMethod, boolean checkAuthMethod,
-                     boolean canCache, boolean isTopLevel) {
-        this.repository      = repository;
-        this.requestHandler  = requestHandler;
-        this.request         = request;
-        this.name            = name;
-        this.mustBeAdmin     = mustBeAdmin;
+                     boolean needsSsl, String authMethod,
+                     boolean checkAuthMethod, boolean canCache,
+                     boolean isTopLevel) {
+        this.repository        = repository;
+        this.requestHandler    = requestHandler;
+        this.request           = request;
+        this.name              = name;
+        this.mustBeAdmin       = mustBeAdmin;
         this.requiresAuthToken = requiresAuthToken;
-        this.needsSsl        = needsSsl;
-        this.authMethod      = authMethod;
-        this.checkAuthMethod = checkAuthMethod;
+        this.needsSsl          = needsSsl;
+        this.authMethod        = authMethod;
+        this.checkAuthMethod   = checkAuthMethod;
 
-        this.method          = method;
-        this.canCache        = canCache;
-        this.isTopLevel      = isTopLevel;
+
+        this.method            = method;
+        this.canCache          = canCache;
+        this.isTopLevel        = isTopLevel;
     }
 
 
@@ -204,14 +215,14 @@ public class ApiMethod {
             throws Exception {
         User user = request.getUser();
         if (mustBeAdmin) {
-            if(repository.isReadOnly()) {
+            if (repository.isReadOnly()) {
                 return false;
             }
-            if(!user.getAdmin()) {
+            if ( !user.getAdmin()) {
                 return false;
             }
         }
-        if(requiresAuthToken) {
+        if (requiresAuthToken) {
             request.ensureAuthToken();
         }
         if (actions.size() > 0) {
@@ -226,12 +237,21 @@ public class ApiMethod {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @throws Exception _more_
+     */
     public void printDebug(Request request) throws Exception {
-        System.err.println ("Api method requiresAuthToken=" + requiresAuthToken + " must be admin=" +mustBeAdmin);
+        System.err.println("Api method requiresAuthToken="
+                           + requiresAuthToken + " must be admin="
+                           + mustBeAdmin);
         for (int i = 0; i < actions.size(); i++) {
-            if (!repository.getAccessManager().canDoAction(request,
-                                                            (String) actions.get(i))) {
-                System.err.println ("can't do action:" + actions.get(i));
+            if ( !repository.getAccessManager().canDoAction(request,
+                    (String) actions.get(i))) {
+                System.err.println("can't do action:" + actions.get(i));
             }
         }
     }
@@ -384,23 +404,23 @@ public class ApiMethod {
         return mustBeAdmin;
     }
 
-/**
-Set the RequiresAuthToken property.
+    /**
+     * Set the RequiresAuthToken property.
+     *
+     * @param value The new value for RequiresAuthToken
+     */
+    public void setRequiresAuthToken(boolean value) {
+        requiresAuthToken = value;
+    }
 
-@param value The new value for RequiresAuthToken
-**/
-public void setRequiresAuthToken (boolean value) {
-	requiresAuthToken = value;
-}
-
-/**
-Get the RequiresAuthToken property.
-
-@return The RequiresAuthToken
-**/
-public boolean getRequiresAuthToken () {
-	return requiresAuthToken;
-}
+    /**
+     * Get the RequiresAuthToken property.
+     *
+     * @return The RequiresAuthToken
+     */
+    public boolean getRequiresAuthToken() {
+        return requiresAuthToken;
+    }
 
 
 

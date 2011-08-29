@@ -2172,6 +2172,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             Misc.getProperty(props, ApiMethod.ATTR_ADMIN,
                                              true));
 
+
         boolean requiresAuthToken = XmlUtil.getAttributeFromTree(node,
                                         ApiMethod.ATTR_REQUIRESAUTHTOKEN,
                                         Misc.getProperty(props,
@@ -2281,7 +2282,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         ApiMethod apiMethod =
             new ApiMethod(this, handler, request,
                           XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
-                              request), method, admin, requiresAuthToken,
+                                               request), method, admin,
+                          requiresAuthToken,
                                         needsSsl, authMethod,
                                         checkAuthMethod, canCache,
                                         XmlUtil.getAttribute(node,

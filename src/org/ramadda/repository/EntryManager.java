@@ -638,9 +638,8 @@ public class EntryManager extends RepositoryManager {
             sb.append(request.form(getRepository().URL_ENTRY_FORM,
                                    HtmlUtil.attr("name", "entryform")));
         } else {
-            sb.append(request.uploadForm(getRepository().URL_ENTRY_CHANGE,
-                                         HtmlUtil.attr("name", "entryform")));
-            getRepository().addAuthToken(request, sb);
+            request.uploadFormWithAuthToken(sb, getRepository().URL_ENTRY_CHANGE,
+                                            HtmlUtil.attr("name", "entryform"));
         }
 
         sb.append(HtmlUtil.formTable());
@@ -1813,7 +1812,6 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryListDelete(Request request, List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-
         if (request.exists(ARG_CANCEL)) {
             if (entries.size() == 0) {
                 return new Result(
@@ -1825,6 +1823,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (request.exists(ARG_DELETE_CONFIRM)) {
+            request.ensureAuthToken();
             return asynchDeleteEntries(request, entries);
         }
 
@@ -1846,11 +1845,11 @@ public class EntryManager extends RepositoryManager {
         msgSB.append(
             msg(
             "Are you sure you want to delete all of the following entries?"));
-        sb.append(request.formPost(getRepository().URL_ENTRY_DELETELIST));
-        String hidden = HtmlUtil.hidden(ARG_ENTRYIDS, idBuffer.toString());
+        request.formPostWithAuthToken(sb,getRepository().URL_ENTRY_DELETELIST);
+        StringBuffer hidden = new StringBuffer(HtmlUtil.hidden(ARG_ENTRYIDS, idBuffer.toString()));
         String form = Repository.makeOkCancelForm(request,
                           getRepository().URL_ENTRY_DELETELIST,
-                          ARG_DELETE_CONFIRM, hidden);
+                                                  ARG_DELETE_CONFIRM, hidden.toString());
         sb.append(getRepository().showDialogQuestion(msgSB.toString(), form));
         sb.append("<ul>");
         new OutputHandler(getRepository(), "tmp").getBreadcrumbList(request,
@@ -2611,7 +2610,7 @@ public class EntryManager extends RepositoryManager {
                 sb.append(header("Please select a destination folder:"));
             }
 
-            sb.append(request.formPost(getRepository().URL_ENTRY_COPY));
+            request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_COPY);
             sb.append(HtmlUtil.hidden(ARG_FROM, fromIds));
             String select =
                 getRepository().getHtmlOutputHandler().getSelect(request,
@@ -2731,7 +2730,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(toEntry.getName());
             sb.append(HtmlUtil.br());
             StringBuffer fb = new StringBuffer();
-            fb.append(request.formPost(getRepository().URL_ENTRY_COPY));
+            request.formPostWithAuthToken(fb, getRepository().URL_ENTRY_COPY);
             fb.append(HtmlUtil.hidden(ARG_TO, toEntry.getId()));
             fb.append(HtmlUtil.hidden(ARG_FROM, fromIds));
 
@@ -2772,6 +2771,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        request.ensureAuthToken();
         if (request.exists(ARG_ACTION_MOVE)) {
             Entry toGroup = (Entry) toEntry;
             return processEntryMove(request, toGroup, entries);
@@ -3110,8 +3110,7 @@ public class EntryManager extends RepositoryManager {
         Entry        group = findGroup(request);
         StringBuffer sb    = new StringBuffer();
         sb.append(msgHeader("Import Entries"));
-        sb.append(request.uploadForm(getRepository().URL_ENTRY_XMLCREATE));
-        getRepository().addAuthToken(request, sb);
+        request.uploadFormWithAuthToken(sb, getRepository().URL_ENTRY_XMLCREATE);
         sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
         sb.append(HtmlUtil.formTable());
         sb.append(HtmlUtil.formEntry(msgLabel("File"),
@@ -3774,6 +3773,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processCommentsEdit(Request request) throws Exception {
         Entry entry = getEntry(request);
+        //TODO: actually support comment editing
         request.ensureAuthToken();
         getDatabaseManager().delete(
             Tables.COMMENTS.NAME,

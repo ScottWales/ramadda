@@ -766,7 +766,7 @@ public class MetadataType extends MetadataTypeBase {
         StringBuffer sb     = new StringBuffer();
 
         if ( !forEdit) {
-            sb.append(header("Add: " + getName()));
+            sb.append(header(msgLabel("Add")  + getName()));
         }
         sb.append(HtmlUtil.br());
         String lastGroup = null;

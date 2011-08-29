@@ -1,7 +1,5 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * Copyright 2008-2011 Jeff McWhirter/ramadda.org
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -61,8 +59,8 @@ public class UserManager extends RepositoryManager {
 
     /** output type */
     public static final OutputType OUTPUT_CART_ADD =
-        new OutputType("Add to Cart", "user.cart.add", OutputType.TYPE_TOOLBAR,
-                       "", ICON_CART_ADD);
+        new OutputType("Add to Cart", "user.cart.add",
+                       OutputType.TYPE_TOOLBAR, "", ICON_CART_ADD);
 
     /** output type */
     public static final OutputType OUTPUT_CART_REMOVE =
@@ -101,12 +99,16 @@ public class UserManager extends RepositoryManager {
     /** _more_ */
     public static final String USER_ANONYMOUS = "anonymous";
 
-    /** _more_          */
+    /** _more_ */
     public static final String USER_LOCALFILE = "localuser";
 
     /** _more_ */
-    public final RequestUrl URL_USER_NEW_FORM = new RequestUrl(this, "/user/new/form");
-    public final RequestUrl URL_USER_NEW_DO = new RequestUrl(this, "/user/new/do");
+    public final RequestUrl URL_USER_NEW_FORM = new RequestUrl(this,
+                                                    "/user/new/form");
+
+    /** _more_          */
+    public final RequestUrl URL_USER_NEW_DO = new RequestUrl(this,
+                                                  "/user/new/do");
 
 
 
@@ -114,7 +116,7 @@ public class UserManager extends RepositoryManager {
     protected List<RequestUrl> userUrls =
         RepositoryUtil.toList(new RequestUrl[] {
             getRepositoryBase().URL_USER_HOME,
-            getRepositoryBase().URL_USER_SETTINGS,
+            getRepositoryBase().URL_USER_FORM,
             getRepositoryBase().URL_USER_CART,
             getRepositoryBase().URL_USER_MONITORS });
 
@@ -180,7 +182,7 @@ public class UserManager extends RepositoryManager {
      * @return can do login
      */
     public boolean canDoLogin(Request request) {
-        if(getRepository().isReadOnly()) {
+        if (getRepository().isReadOnly()) {
             return false;
         }
         if (allowedIpsForLogin == null) {
@@ -209,11 +211,19 @@ public class UserManager extends RepositoryManager {
     }
 
 
-    private Result addHeader(Request request, Result result)  {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param result _more_
+     *
+     * @return _more_
+     */
+    private Result addHeader(Request request, Result result) {
         //        if(true) return result;
         try {
             return addHeaderToAncillaryPage(request, result);
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
@@ -420,22 +430,21 @@ public class UserManager extends RepositoryManager {
         sb.append(
             HtmlUtil.formPost(getRepositoryBase().URL_USER_LOGIN.toString()));
         if (request.defined(ARG_REDIRECT)) {
-            String redirect =  request.getUnsafeString(ARG_REDIRECT,"");
+            String redirect = request.getUnsafeString(ARG_REDIRECT, "");
             //Um, a bit of a hack
-            if(redirect.indexOf("logout")<0) {
-                sb.append(HtmlUtil.hidden(ARG_REDIRECT,
-                                          redirect));
-            }        
+            if (redirect.indexOf("logout") < 0) {
+                sb.append(HtmlUtil.hidden(ARG_REDIRECT, redirect));
+            }
         }
         sb.append(HtmlUtil.formTable());
-        sb.append(formEntry(request,msgLabel("User"),
-                                     HtmlUtil.input(ARG_USER_ID, id,
-                                         HtmlUtil.cssClass("userfield"))));
-        sb.append(formEntry(request,msgLabel("Password"),
-                                     HtmlUtil.password(ARG_USER_PASSWORD)));
+        sb.append(formEntry(request, msgLabel("User"),
+                            HtmlUtil.input(ARG_USER_ID, id,
+                                           HtmlUtil.cssClass("userfield"))));
+        sb.append(formEntry(request, msgLabel("Password"),
+                            HtmlUtil.password(ARG_USER_PASSWORD)));
         sb.append(extra);
 
-        sb.append(formEntry(request,"", HtmlUtil.submit(msg("Login"))));
+        sb.append(formEntry(request, "", HtmlUtil.submit(msg("Login"))));
         sb.append(HtmlUtil.formClose());
         sb.append(HtmlUtil.formTableClose());
 
@@ -868,7 +877,8 @@ public class UserManager extends RepositoryManager {
             sb.append(buttons);
         }
         sb.append(HtmlUtil.formClose());
-        return getAdmin().makeResult(request, msgLabel("User") + user.getLabel(), sb);
+        return getAdmin().makeResult(request,
+                                     msgLabel("User") + user.getLabel(), sb);
     }
 
 
@@ -887,19 +897,19 @@ public class UserManager extends RepositoryManager {
             throws Exception {
         //        System.err.println ("User:" + user);
         sb.append(HtmlUtil.formTable());
-        sb.append(formEntry(request,msgLabel("Name"),
-                                     HtmlUtil.input(ARG_USER_NAME,
-                                         user.getName(), HtmlUtil.SIZE_40)));
+        sb.append(formEntry(request, msgLabel("Name"),
+                            HtmlUtil.input(ARG_USER_NAME, user.getName(),
+                                           HtmlUtil.SIZE_40)));
         if (includeAdmin) {
             if ( !request.getUser().getAdmin()) {
                 throw new IllegalArgumentException("Need to be admin");
             }
-            sb.append(formEntry(request,msgLabel("Admin"),
-                                         HtmlUtil.checkbox(ARG_USER_ADMIN,
-                                             "true", user.getAdmin())));
-            sb.append(formEntry(request,msgLabel("Guest"),
-                                         HtmlUtil.checkbox(ARG_USER_ISGUEST,
-                                             "true", user.getIsGuest())));
+            sb.append(formEntry(request, msgLabel("Admin"),
+                                HtmlUtil.checkbox(ARG_USER_ADMIN, "true",
+                                    user.getAdmin())));
+            sb.append(formEntry(request, msgLabel("Guest"),
+                                HtmlUtil.checkbox(ARG_USER_ISGUEST, "true",
+                                    user.getIsGuest())));
             String       userRoles = user.getRolesAsString("\n");
             StringBuffer allRoles  = new StringBuffer();
             List         roles     = getRoles();
@@ -921,24 +931,24 @@ public class UserManager extends RepositoryManager {
             String roleEntry =
                 HtmlUtil.hbox(HtmlUtil.textArea(ARG_USER_ROLES, userRoles, 5,
                     20), allRoles.toString());
-            sb.append(formEntryTop(request,msgLabel("Roles"), roleEntry));
+            sb.append(formEntryTop(request, msgLabel("Roles"), roleEntry));
         }
 
-        sb.append(formEntry(request,msgLabel("Email"),
-                                     HtmlUtil.input(ARG_USER_EMAIL,
-                                         user.getEmail(), HtmlUtil.SIZE_40)));
+        sb.append(formEntry(request, msgLabel("Email"),
+                            HtmlUtil.input(ARG_USER_EMAIL, user.getEmail(),
+                                           HtmlUtil.SIZE_40)));
 
         List<TwoFacedObject> templates =
             getRepository().getTemplateSelectList();
-        sb.append(formEntry(request,msgLabel("Page Style"),
-                                     HtmlUtil.select(ARG_TEMPLATE, templates,
-                                         user.getTemplate())));
+        sb.append(formEntry(request, msgLabel("Page Style"),
+                            HtmlUtil.select(ARG_TEMPLATE, templates,
+                                            user.getTemplate())));
 
         List languages = new ArrayList(getRepository().getLanguages());
         languages.add(0, new TwoFacedObject("-default-", ""));
-        sb.append(formEntry(request,msgLabel("Language"),
-                                     HtmlUtil.select(ARG_USER_LANGUAGE,
-                                         languages, user.getLanguage())));
+        sb.append(formEntry(request, msgLabel("Language"),
+                            HtmlUtil.select(ARG_USER_LANGUAGE, languages,
+                                            user.getLanguage())));
         sb.append(HtmlUtil.formTableClose());
     }
 
@@ -956,11 +966,11 @@ public class UserManager extends RepositoryManager {
     private void makePasswordForm(Request request, User user, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtil.formTable());
-        sb.append(formEntry(request,msgLabel("Password"),
-                                     HtmlUtil.password(ARG_USER_PASSWORD1)));
+        sb.append(formEntry(request, msgLabel("Password"),
+                            HtmlUtil.password(ARG_USER_PASSWORD1)));
 
-        sb.append(formEntry(request,msgLabel("Password Again"),
-                                     HtmlUtil.password(ARG_USER_PASSWORD2)));
+        sb.append(formEntry(request, msgLabel("Password Again"),
+                            HtmlUtil.password(ARG_USER_PASSWORD2)));
 
         sb.append(HtmlUtil.formTableClose());
     }
@@ -976,13 +986,23 @@ public class UserManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public Result adminUserNewForm(Request request) throws Exception {
-        StringBuffer sb          = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         makeNewUserForm(request, sb);
         return getAdmin().makeResult(request, msg("New User"), sb);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result adminUserNewDo(Request request) throws Exception {
+        request.ensureAuthToken();
         StringBuffer sb          = new StringBuffer();
         StringBuffer errorBuffer = new StringBuffer();
         List<User>   users       = new ArrayList<User>();
@@ -1155,7 +1175,7 @@ public class UserManager extends RepositoryManager {
         sb.append("</ul>");
 
         if (users.size() > 0) {
-            return addHeader(request,  new Result("", sb));
+            return addHeader(request, new Result("", sb));
         }
 
         if (errorBuffer.toString().length() > 0) {
@@ -1164,47 +1184,57 @@ public class UserManager extends RepositoryManager {
         }
         makeNewUserForm(request, sb);
         return getAdmin().makeResult(request, msg("New User"), sb);
+
     }
 
-    private void makeNewUserForm(Request request, StringBuffer sb) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    private void makeNewUserForm(Request request, StringBuffer sb)
+            throws Exception {
+
         request.formPostWithAuthToken(sb, URL_USER_NEW_DO);
         StringBuffer formSB = new StringBuffer();
-        String id        = request.getString(ARG_USER_ID, "").trim();
-        String name      = request.getString(ARG_USER_NAME, "").trim();
-        String email     = request.getString(ARG_USER_EMAIL, "").trim();
-        boolean admin     = request.get(ARG_USER_ADMIN, false);
+        String       id     = request.getString(ARG_USER_ID, "").trim();
+        String       name   = request.getString(ARG_USER_NAME, "").trim();
+        String       email  = request.getString(ARG_USER_EMAIL, "").trim();
+        boolean      admin  = request.get(ARG_USER_ADMIN, false);
 
         formSB.append(msgHeader("Create a single user"));
         formSB.append(HtmlUtil.formTable());
-        formSB.append(formEntry(request,msgLabel("ID"),
+        formSB.append(formEntry(request, msgLabel("ID"),
                                 HtmlUtil.input(ARG_USER_ID, id,
-                                               HtmlUtil.SIZE_40)));
+                                    HtmlUtil.SIZE_40)));
         formSB.append(formEntry(request, msgLabel("Name"),
                                 HtmlUtil.input(ARG_USER_NAME, name,
-                                               HtmlUtil.SIZE_40)));
+                                    HtmlUtil.SIZE_40)));
 
 
         formSB.append(formEntry(request, msgLabel("Admin"),
-                                HtmlUtil.checkbox(ARG_USER_ADMIN,
-                                                  "true", admin)));
+                                HtmlUtil.checkbox(ARG_USER_ADMIN, "true",
+                                    admin)));
 
         formSB.append(formEntry(request, msgLabel("Email"),
-                                HtmlUtil.input(ARG_USER_EMAIL,
-                                               email, HtmlUtil.SIZE_40)));
+                                HtmlUtil.input(ARG_USER_EMAIL, email,
+                                    HtmlUtil.SIZE_40)));
 
-        formSB.append(
-                      formEntry(request, 
-                                msgLabel("Password"), HtmlUtil.password(ARG_USER_PASSWORD1)));
+        formSB.append(formEntry(request, msgLabel("Password"),
+                                HtmlUtil.password(ARG_USER_PASSWORD1)));
 
-        formSB.append(
-                      formEntry(request, 
-                                msgLabel("Password Again"),
+        formSB.append(formEntry(request, msgLabel("Password Again"),
                                 HtmlUtil.password(ARG_USER_PASSWORD2)));
 
-        formSB.append(HtmlUtil.formEntryTop(msgLabel("Roles"),
-                                            HtmlUtil.textArea(ARG_USER_ROLES,
-                                                              request.getString(ARG_USER_ROLES, ""),
-                                                              3, 25)));
+        formSB.append(
+            HtmlUtil.formEntryTop(
+                msgLabel("Roles"),
+                HtmlUtil.textArea(
+                    ARG_USER_ROLES, request.getString(ARG_USER_ROLES, ""), 3,
+                    25)));
 
 
 
@@ -1212,16 +1242,20 @@ public class UserManager extends RepositoryManager {
             getRepository().getHtmlOutputHandler().getSelect(request,
                 ARG_USER_HOME, HtmlUtil.space(1) + msg("Select"), false, "");
         formSB.append(HtmlUtil.hidden(ARG_USER_HOME + "_hidden", "",
-                                     HtmlUtil.id(ARG_USER_HOME + "_hidden")));
+                                      HtmlUtil.id(ARG_USER_HOME
+                                          + "_hidden")));
 
         String groupMsg =
             "Create a folder using the user's name under this folder";
-        formSB.append(HtmlUtil.formEntry(msgLabel("Home folder"),
-                                         groupMsg+"<br>" +
-                                         HtmlUtil.disabledInput(ARG_USER_HOME, "",
-                                                                HtmlUtil.SIZE_40
-                                                                + HtmlUtil.id(ARG_USER_HOME)) + HtmlUtil.space(1)
-                                         + select));
+        formSB.append(
+            HtmlUtil.formEntry(
+                msgLabel("Home folder"),
+                groupMsg + "<br>"
+                + HtmlUtil.disabledInput(
+                    ARG_USER_HOME, "",
+                    HtmlUtil.SIZE_40
+                    + HtmlUtil.id(ARG_USER_HOME)) + HtmlUtil.space(1)
+                        + select));
 
 
 
@@ -1230,7 +1264,8 @@ public class UserManager extends RepositoryManager {
 
 
         StringBuffer msgSB = new StringBuffer();
-        String msg = "A new RAMADDA account has been created for you.";
+        String       msg   =
+            "A new RAMADDA account has been created for you.";
         msgSB.append(HtmlUtil.checkbox(ARG_USER_SENDMAIL, "true", false));
         msgSB.append(HtmlUtil.space(1));
         msgSB.append(msgLabel("Send an email to the new user with message"));
@@ -1239,15 +1274,17 @@ public class UserManager extends RepositoryManager {
 
         if (getAdmin().isEmailCapable()) {
             formSB.append(HtmlUtil.formEntryTop(msgLabel("Notification"),
-                                                msgSB.toString()));
+                    msgSB.toString()));
         }
 
         formSB.append(HtmlUtil.formTableClose());
         StringBuffer bulkSB = new StringBuffer();
         bulkSB.append(msgHeader("Or create a number of users"));
-        bulkSB.append("one user per line<br><i>user id, password, name, email</i><br>");
-        bulkSB.append(HtmlUtil.textArea(ARG_USER_BULK, 
-                                        request.getString(ARG_USER_BULK,""), 10, 80));
+        bulkSB.append(
+            "one user per line<br><i>user id, password, name, email</i><br>");
+        bulkSB.append(HtmlUtil.textArea(ARG_USER_BULK,
+                                        request.getString(ARG_USER_BULK, ""),
+                                        10, 80));
 
 
 
@@ -1263,6 +1300,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Create User"), ARG_USER_NEW));
         sb.append(HtmlUtil.formClose());
+
 
 
 
@@ -1322,7 +1360,7 @@ public class UserManager extends RepositoryManager {
 
         usersHtml.append(request.form(URL_USER_NEW_FORM));
         usersHtml.append(HtmlUtil.submit(msg("New User")));
-        usersHtml.append("</form>");
+        usersHtml.append(HtmlUtil.formClose());
 
         Statement statement =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
@@ -1345,8 +1383,7 @@ public class UserManager extends RepositoryManager {
                 HtmlUtil.bold(msg("Name")) + HtmlUtil.space(2),
         //                    HtmlUtil.bold(msg("Roles")) + HtmlUtil.space(2),
         HtmlUtil.bold(msg("Email")) + HtmlUtil.space(2), HtmlUtil.bold(
-            msg("Admin")) + HtmlUtil.space(2), HtmlUtil.bold(
-            msg("Guest")))));
+            msg("Admin")) + HtmlUtil.space(2), HtmlUtil.bold(msg("Guest")))));
 
         for (User user : users) {
             String userEditLink = HtmlUtil.href(
@@ -1431,7 +1468,7 @@ public class UserManager extends RepositoryManager {
         tabContent.add(getUserActivities(request, null));
 
 
-        tabTitles.set(showTab,  tabTitles.get(showTab));
+        tabTitles.set(showTab, tabTitles.get(showTab));
         sb.append(HtmlUtil.p());
         sb.append(OutputHandler.makeTabs(tabTitles, tabContent, true));
 
@@ -1773,7 +1810,7 @@ public class UserManager extends RepositoryManager {
      */
     public Result makeResult(Request request, String title, StringBuffer sb) {
         StringBuffer headerSB = new StringBuffer();
-        addUserHeader(request,  headerSB);
+        addUserHeader(request, headerSB);
         headerSB.append(sb);
         sb = headerSB;
         /*
@@ -1791,17 +1828,23 @@ public class UserManager extends RepositoryManager {
         //      Result result = getRepository().makeResult(request, title, sb,
         Result result = new Result(title, sb);
         //        if(true) return result;
-        return addHeader(request,result);
+        return addHeader(request, result);
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     */
     public void addUserHeader(Request request, StringBuffer sb) {
-        List<RequestUrl> links  =  !request.getUser().canEditSettings()
-            ? anonUserUrls
-            : userUrls;
+        List<RequestUrl> links = !request.getUser().canEditSettings()
+                                 ? anonUserUrls
+                                 : userUrls;
 
-        sb.append(getRepository().makeHeader(request, links,""));
+        sb.append(getRepository().makeHeader(request, links, ""));
     }
 
 
@@ -1869,7 +1912,7 @@ public class UserManager extends RepositoryManager {
 
 
 
-        if(getRepository().getPluginManager().getDocUrls().size()>0) {
+        if (getRepository().getPluginManager().getDocUrls().size() > 0) {
             urls.add(request.url(getRepositoryBase().URL_HELP));
             extras.add("");
             labels.add(msg("Help"));
@@ -1905,23 +1948,28 @@ public class UserManager extends RepositoryManager {
         User   user    = request.getUser();
 
         if ( !request.getUser().canEditSettings()) {
-            return addHeader(request,new Result(
-                                        msg("Favorites"),
-                                        new StringBuffer(
-                                                         getRepository().showDialogError(
-                                                                                         "Favorites not allowed"))));
+            return addHeader(
+                request,
+                new Result(
+                    msg("Favorites"),
+                    new StringBuffer(
+                        getRepository().showDialogError(
+                            "Favorites not allowed"))));
         }
         String entryId = request.getString(ARG_ENTRYID, BLANK);
 
         if (request.get(ARG_FAVORITE_ADD, false)) {
             Entry entry = getEntryManager().getEntry(request, entryId);
             if (entry == null) {
-                return addHeader(request,new Result(
-                    msg("Favorites"),
-                    new StringBuffer(
-                        getRepository().showDialogError(
-                            getRepository().translate(
-                                                      request, "Cannot find or access entry")))));
+                return addHeader(
+                    request,
+                    new Result(
+                        msg("Favorites"),
+                        new StringBuffer(
+                            getRepository().showDialogError(
+                                getRepository().translate(
+                                    request,
+                                    "Cannot find or access entry")))));
             }
 
             addFavorites(request, user, (List<Entry>) Misc.newList(entry));
@@ -2012,7 +2060,7 @@ public class UserManager extends RepositoryManager {
             }
             sb.append(getRepository().showDialogWarning(msg));
             sb.append(makeLoginForm(request));
-            return addHeader(request,new Result(msg("User Home"), sb));
+            return addHeader(request, new Result(msg("User Home"), sb));
             //        } else  if (user.getIsGuest()) {
         } else {
             request.appendMessage(sb);
@@ -2082,17 +2130,19 @@ public class UserManager extends RepositoryManager {
 
         sb.append(msgHeader("User Profile"));
         String searchLink =
-            HtmlUtil.href(
-                HtmlUtil.url(
-                    request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
-                    ARG_USER_ID, user.getId()), HtmlUtil.img(
-                        getRepository().iconUrl(ICON_SEARCH),
-                        msg("Search for entries created by this user")));
+            HtmlUtil
+                .href(HtmlUtil
+                    .url(request
+                        .url(getRepository().getSearchManager()
+                            .URL_ENTRY_SEARCH), ARG_USER_ID,
+                                user.getId()), HtmlUtil
+                                    .img(getRepository()
+                                        .iconUrl(ICON_SEARCH), msg(
+                                            "Search for entries created by this user")));
 
         sb.append(HtmlUtil.formTable());
         sb.append(formEntry(request, msgLabel("ID"),
-                                     user.getId() + HtmlUtil.space(2)
-                                     + searchLink));
+                            user.getId() + HtmlUtil.space(2) + searchLink));
         sb.append(formEntry(request, msgLabel("Name"), user.getLabel()));
         String email = user.getEmail();
         if (email.length() > 0) {
@@ -2192,7 +2242,8 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.formClose());
 
         sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.img(getRepository().getUrlBase()+"/images/dilbert.gif"));
+        sb.append(HtmlUtil.img(getRepository().getUrlBase()
+                               + "/images/dilbert.gif"));
         return new Result(msg("Password Reset"), sb);
     }
 
@@ -2267,18 +2318,15 @@ public class UserManager extends RepositoryManager {
             sb.append(msgHeader("Please reset your password"));
             sb.append(HtmlUtil.p());
 
-            request.formPostWithAuthToken(sb, getRepositoryBase().URL_USER_RESETPASSWORD);
+            request.formPostWithAuthToken(
+                sb, getRepositoryBase().URL_USER_RESETPASSWORD);
             sb.append(HtmlUtil.hidden(ARG_USER_PASSWORDKEY, key));
             sb.append(HtmlUtil.formTable());
             sb.append(formEntry(request, msgLabel("User"), user.getId()));
-            sb.append(
-                      formEntry(request, 
-                    msgLabel("Password"),
-                    HtmlUtil.password(ARG_USER_PASSWORD1)));
-            sb.append(
-                      formEntry(request, 
-                    msgLabel("Password Again"),
-                    HtmlUtil.password(ARG_USER_PASSWORD2)));
+            sb.append(formEntry(request, msgLabel("Password"),
+                                HtmlUtil.password(ARG_USER_PASSWORD1)));
+            sb.append(formEntry(request, msgLabel("Password Again"),
+                                HtmlUtil.password(ARG_USER_PASSWORD2)));
             sb.append(formEntry(request, "", HtmlUtil.submit("Submit")));
 
             sb.append(HtmlUtil.formTableClose());
@@ -2312,9 +2360,10 @@ public class UserManager extends RepositoryManager {
             return new Result(msg("Password Reset"), sb);
         }
 
-        
 
-        if ( !request.getUser().canEditSettings() && !request.getUser().getAnonymous()) {
+
+        if ( !request.getUser().canEditSettings()
+                && !request.getUser().getAnonymous()) {
             return new Result(msg("Password Reset"),
                               new StringBuffer(msg("Cannot reset password")));
         }
@@ -2353,7 +2402,8 @@ public class UserManager extends RepositoryManager {
                                       String name) {
         sb.append(msgHeader("Please enter your user ID"));
         sb.append(HtmlUtil.p());
-        request.formPostWithAuthToken(sb, getRepositoryBase().URL_USER_RESETPASSWORD);
+        request.formPostWithAuthToken(
+            sb, getRepositoryBase().URL_USER_RESETPASSWORD);
         sb.append(msgLabel("User ID"));
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.input(ARG_USER_NAME, name, HtmlUtil.SIZE_20));
@@ -2361,7 +2411,8 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.submit(msg("Reset your password")));
         sb.append(HtmlUtil.formClose());
         sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.img(getRepository().getUrlBase()+"/images/dilbert.gif"));
+        sb.append(HtmlUtil.img(getRepository().getUrlBase()
+                               + "/images/dilbert.gif"));
     }
 
 
@@ -2423,7 +2474,7 @@ public class UserManager extends RepositoryManager {
      */
     public Result processLogin(Request request) throws Exception {
 
-        
+
 
         if ( !canDoLogin(request)) {
             return new Result(
@@ -2483,8 +2534,8 @@ public class UserManager extends RepositoryManager {
                             XmlUtil.attr(ATTR_CODE, CODE_OK),
                             request.getSessionId()), MIME_XML);
                 }
-                String destUrl;
-                String destMsg;
+                String       destUrl;
+                String       destMsg;
                 StringBuffer response = new StringBuffer();
                 response.append(
                     getRepository().showDialogNote(msg("You are logged in")));
@@ -2494,11 +2545,20 @@ public class UserManager extends RepositoryManager {
                             request.getUnsafeString(ARG_REDIRECT, "")));
                     response.append(HtmlUtil.href(destUrl, msg("Continue")));
                 } else if ( !user.canEditSettings()) {
-                    response.append(HtmlUtil.href(getRepository().getUrlBase(), msg("Continue")));
+                    response.append(
+                        HtmlUtil.href(
+                            getRepository().getUrlBase(), msg("Continue")));
                 } else {
-                    response.append(HtmlUtil.href(getRepositoryBase().URL_ENTRY_SHOW.toString(), msg("Continue to the top level of the repository")));
+                    response.append(
+                        HtmlUtil.href(
+                            getRepositoryBase().URL_ENTRY_SHOW.toString(),
+                            msg(
+                            "Continue to the top level of the repository")));
                     response.append("<p>");
-                    response.append(HtmlUtil.href(getRepositoryBase().URL_USER_HOME.toString(), msg("Continue to user home")));
+                    response.append(
+                        HtmlUtil.href(
+                            getRepositoryBase().URL_USER_HOME.toString(),
+                            msg("Continue to user home")));
                 }
                 return addHeader(request, new Result("Login", response));
             } else {
@@ -2527,7 +2587,8 @@ public class UserManager extends RepositoryManager {
                             addPasswordResetForm(request, sb, name);
                             getDatabaseManager().closeAndReleaseConnection(
                                 statement);
-                            return addHeader(request, new Result(msg("Login"), sb));
+                            return addHeader(request,
+                                             new Result(msg("Login"), sb));
                         }
                     }
                     getDatabaseManager().closeAndReleaseConnection(statement);
@@ -2589,12 +2650,14 @@ public class UserManager extends RepositoryManager {
                     List<Entry> cart = getCart(request);
                     Link link = makeLink(request, state.getEntry(),
                                          OUTPUT_CART_ADD);
-                    link.setLinkType(OutputType.TYPE_FILE|OutputType.TYPE_TOOLBAR);
+                    link.setLinkType(OutputType.TYPE_FILE
+                                     | OutputType.TYPE_TOOLBAR);
                     links.add(link);
 
                     link = makeLink(request, state.getEntry(),
                                     OUTPUT_CART_REMOVE);
-                    link.setLinkType(OutputType.TYPE_FILE|OutputType.TYPE_ACTION);
+                    link.setLinkType(OutputType.TYPE_FILE
+                                     | OutputType.TYPE_ACTION);
                     links.add(link);
 
                     if ( !request.getUser().getAnonymous()) {
@@ -2649,9 +2712,9 @@ public class UserManager extends RepositoryManager {
                     String redirect =
                         getRepositoryBase().URL_USER_HOME.toString();
                     //                    System.err.println("zzz redirecting to:" + redirect);
-                    return  new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
-                                                                                                   getRepository().translate(request,
-                                                                                                                             "Favorites Added")));
+                    return new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
+                            getRepository().translate(request,
+                                "Favorites Added")));
 
                 }
 
@@ -2832,64 +2895,18 @@ public class UserManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    public Result processSettings(Request request) throws Exception {
+    public Result processForm(Request request) throws Exception {
+        Result result = checkIfUserCanChangeSettings(request);
+        if (result != null) {
+            return result;
+        }
         StringBuffer sb   = new StringBuffer();
-
         User         user = request.getUser();
-        if (user.getAnonymous()) {
-            sb.append(
-                getRepository().showDialogWarning(
-                    msg("You need to be logged in to change user settings")));
-            sb.append(makeLoginForm(request));
-            return addHeader(request, new Result(msg("User Settings"), sb));
-        }
-
-        if ( !request.getUser().canEditSettings()) {
-            sb.append(
-                getRepository().showDialogWarning(
-                    msg("You cannot edit your settings")));
-            return addHeader(request, new Result(msg("User Settings"), sb));
-        }
-
-        if (request.exists(ARG_USER_CHANGE)) {
-            request.ensureAuthToken();
-            boolean settingsOk = true;
-            String  message;
-            if (request.exists(ARG_USER_PASSWORD1)) {
-                settingsOk = checkPasswords(request, user);
-                if ( !settingsOk) {
-                    sb.append(
-                        getRepository().showDialogWarning(
-                            msg("Incorrect passwords")));
-                }
-                message = "Your password has been changed";
-                addActivity(request, request.getUser(),
-                            ACTIVITY_PASSWORD_CHANGE, "");
-            } else {
-                message = "Your settings have been changed";
-            }
-            if (settingsOk) {
-                applyUserProperties(request, user, false);
-                String redirect;
-                //If we are under ssl then redirect to non-ssl
-                if (getRepository().isSSLEnabled(request)) {
-                    redirect =
-                        getRepositoryBase().URL_USER_SETTINGS.getFullUrl("");
-                } else {
-                    redirect =
-                        getRepositoryBase().URL_USER_SETTINGS.toString();
-                }
-                    return  new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
-                                                    getRepository().translate(request, message)));
-            }
-        }
-
         request.appendMessage(sb);
-
-
         sb.append(HtmlUtil.p());
         sb.append(msgHeader("User Settings"));
-        request.formPostWithAuthToken(sb,getRepositoryBase().URL_USER_SETTINGS);
+        request.formPostWithAuthToken(sb,
+                                      getRepositoryBase().URL_USER_CHANGE);
         makeUserForm(request, user, sb, false);
         sb.append(HtmlUtil.submit(msg("Change Settings"), ARG_USER_CHANGE));
         sb.append(HtmlUtil.formClose());
@@ -2897,7 +2914,8 @@ public class UserManager extends RepositoryManager {
         if (user.canChangePassword()) {
             sb.append(HtmlUtil.p());
             sb.append(msgHeader("Password"));
-            request.formPostWithAuthToken(sb,getRepositoryBase().URL_USER_SETTINGS);
+            request.formPostWithAuthToken(
+                sb, getRepositoryBase().URL_USER_CHANGE);
             makePasswordForm(request, user, sb);
             sb.append(HtmlUtil.submit(msg("Change Password"),
                                       ARG_USER_CHANGE));
@@ -2919,6 +2937,95 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.formTableClose());
 
         return makeResult(request, msg("User Settings"), sb);
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result checkIfUserCanChangeSettings(Request request)
+            throws Exception {
+        User user = request.getUser();
+        if (user.getAnonymous()) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(
+                getRepository().showDialogWarning(
+                    msg("You need to be logged in to change user settings")));
+            sb.append(makeLoginForm(request));
+            return addHeader(request, new Result(msg("User Settings"), sb));
+        }
+
+        if ( !user.canEditSettings()) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(
+                getRepository().showDialogWarning(
+                    msg("You cannot edit your settings")));
+            return addHeader(request, new Result(msg("User Settings"), sb));
+        }
+
+        return null;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processChange(Request request) throws Exception {
+        Result result = checkIfUserCanChangeSettings(request);
+        if (result != null) {
+            return result;
+        }
+        if ( !request.exists(ARG_USER_CHANGE)) {
+            return new Result(getRepositoryBase().URL_USER_FORM.toString());
+        }
+        User         user = request.getUser();
+        StringBuffer sb   = new StringBuffer();
+        request.ensureAuthToken();
+        boolean settingsOk = true;
+        String  message;
+        if (request.exists(ARG_USER_PASSWORD1)) {
+            settingsOk = checkPasswords(request, user);
+            if ( !settingsOk) {
+                sb.append(
+                    getRepository().showDialogWarning(
+                        msg("Incorrect passwords")));
+            }
+            //msg("Your password has been changed");
+            message = "Your password has been changed";
+            addActivity(request, request.getUser(), ACTIVITY_PASSWORD_CHANGE,
+                        "");
+        } else {
+            message = "Your settings have been changed";
+            //msg("Your settings have been changed");
+        }
+        if (settingsOk) {
+            applyUserProperties(request, user, false);
+            String redirect;
+            //If we are under ssl then redirect to non-ssl
+            if (getRepository().isSSLEnabled(request)) {
+                redirect = getRepositoryBase().URL_USER_FORM.getFullUrl("");
+            } else {
+                redirect = getRepositoryBase().URL_USER_FORM.toString();
+            }
+            return new Result(HtmlUtil.url(redirect, ARG_MESSAGE,
+                                           getRepository().translate(request,
+                                               message)));
+        }
+        return new Result(getRepositoryBase().URL_USER_FORM.toString());
     }
 
 

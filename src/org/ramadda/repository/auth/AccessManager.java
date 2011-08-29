@@ -832,8 +832,7 @@ public class AccessManager extends RepositoryManager {
             map.put(permission.getAction(),
                     StringUtil.join("\n", permission.getRoles()));
         }
-        sb.append(request.form(URL_ACCESS_CHANGE, ""));
-        getRepository().addAuthToken(request, sb);
+        request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
 
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.submit("Change Access"));

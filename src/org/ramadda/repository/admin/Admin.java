@@ -1801,8 +1801,7 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtil.href(request.url(URL_ADMIN_DUMPDB),
                                 msg("Dump Database")));
         sb.append(HtmlUtil.p());
-        sb.append(request.uploadForm(URL_ADMIN_SQL));
-        getRepository().addAuthToken(request, sb);
+        request.uploadFormWithAuthToken(sb, URL_ADMIN_SQL);
 
         sb.append(HtmlUtil.submit(msg("Execute")));
         sb.append(HtmlUtil.b("Note: be careful what you do here!"));

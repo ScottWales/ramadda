@@ -301,6 +301,21 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setOutputStream(response.getOutputStream());
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
+
+                /*
+                if(request.getMethod().equals("POST")) {
+                    if (!repositoryRequest.defined(ARG_AUTHTOKEN)) {
+                        System.err.println("post with no auth token");
+                        java.awt.Toolkit.getDefaultToolkit().beep();
+                        Misc.sleep(300);
+                        java.awt.Toolkit.getDefaultToolkit().beep();
+                        Misc.sleep(300);
+                        java.awt.Toolkit.getDefaultToolkit().beep();
+                    }
+                }
+                */
+
+
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);

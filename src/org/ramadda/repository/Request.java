@@ -511,9 +511,8 @@ public class Request implements Constants {
      * @param sb _more_
      * @param theUrl _more_
      */
-    public void uploadFormPostWithAuthToken(StringBuffer sb,
-                                            RequestUrl theUrl) {
-        uploadFormPostWithAuthToken(sb, theUrl, null);
+    public void uploadFormWithAuthToken(StringBuffer sb, RequestUrl theUrl) {
+        uploadFormWithAuthToken(sb, theUrl, null);
     }
 
     /**
@@ -523,7 +522,7 @@ public class Request implements Constants {
      * @param theUrl _more_
      * @param extra _more_
      */
-    public void uploadFormPostWithAuthToken(StringBuffer sb,
+    public void uploadFormWithAuthToken(StringBuffer sb,
                                             RequestUrl theUrl, String extra) {
         sb.append(HtmlUtil.uploadForm(url(theUrl), extra));
         repository.addAuthToken(this, sb);
@@ -1324,10 +1323,13 @@ public class Request implements Constants {
      * _more_
      */
     public void ensureAuthToken() {
-        System.err.println ("checking auth");
+        //        System.err.println("checking auth");
+        //        java.awt.Toolkit.getDefaultToolkit().beep();
+
         if ( !getString(ARG_AUTHTOKEN, "").equals(getSessionId())) {
             if ( !getString(ARG_SESSIONID, "").equals(getSessionId())) {
-                throw new IllegalArgumentException("Bad authentication token");
+                throw new IllegalArgumentException(
+                    "Bad authentication token");
             }
         }
         //        System.err.println ("token OK");
@@ -1962,7 +1964,7 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getServerName() {
-        if(httpServletRequest!=null) {
+        if (httpServletRequest != null) {
             httpServletRequest.getServerName();
         }
         return repository.getHostname();
@@ -1974,7 +1976,7 @@ public class Request implements Constants {
      * @return _more_
      */
     public int getServerPort() {
-        if(httpServletRequest!=null) {
+        if (httpServletRequest != null) {
             httpServletRequest.getServerPort();
         }
         return repository.getPort();
