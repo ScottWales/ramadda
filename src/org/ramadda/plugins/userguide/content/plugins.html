@@ -16,13 +16,14 @@ To install a plugin just download the file and copy it to the RAMADDA home direc
 
 
 <h3>How plugins work</h3>
-RAMADDA determines what to do with a plugin file by looking at its file name. If the file is a .zip file RAMADDA will
+RAMADDA determines what to do with a plugin file by looking at its file name. 
+If the file is a .zip file RAMADDA will
 unzip the files in the zip file and load each one as a plugin.
-If the file is a jar file it will crack open the jar file and look at each contained file. It handles the files in the following way:
+If the file is a jar file it will crack open the jar file and look at each contained file. 
+It handles the files in the following way:
 <ul>
 <li> <i>.properties</i><br>
 Any &quot;.properties&quot; files are loaded as  system properties.
-
 
 <a name="languages"></a>
 <li><i>.pack</i><br> 
@@ -37,6 +38,14 @@ at the <a href="http://ramadda.svn.sourceforge.net/viewvc/ramadda/src/org/ramadd
 Any file that ends with &quot;template.html&quot; is treated as an html
 page template.
 More documentation is  <a href="templates.html">available here</a>.
+
+<li> <i>htdocs</i><br>
+If you have an &quot;htdocs/somename&quot; directory in your .jar plugin file then HTML content
+in that directory can be served up by RAMADDA.
+If you have a file &quot;htdocs/somename/index.html&quot; then RAMADDA will include a link
+to that file from the main Help page. RAMADDA will extract the page title from the index.html file.
+This is how this user guide is distributed.
+This allows you to include documentation within your plugin.
 
 
 <li> <i>.class</i><br> 
