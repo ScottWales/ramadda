@@ -39,7 +39,7 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 
 </properties>
 
-${html.imports}
+${imports}
 
 <!-- You can have inline css here -->
 <style type="text/css">
@@ -53,13 +53,13 @@ ${headfinal}
 <!--
 The rest of this file is just html with ${...} macros. The macros include:
 ${root}  - the url root to the RAMADDA server
-${html.imports} - The ramadda specific imports - e.g., style sheet, etc
+${imports} - The ramadda specific imports - e.g., style sheet, etc
 ${headfinal} - Needs to be put at the  end of the head section
 ${repository_name}  - Name defined in the Admin pages
 ${title}  - The current page title (e.g. "Metadata")
 ${entry.breadcrumbs} - Text bread crumbs of  entry hierarchy - used in title
 ${links} - The main navigational links. Can be configured in the properties 
-${userlink} - The user specific links. Can be configured in the properties 
+${userlinks} - The user specific links. Can be configured in the properties 
 ${entry.header} - The Entry menubar, toolbar, breadcrumb header thing
 ${content} - The page content
 ${logo.url} - Url for clicking on logo - specified in the Admin pages
@@ -91,7 +91,7 @@ ${footer} - footer text define in Admin pages
 <td>
 ${links}
 </td>
-<td align="right">${userlink}</td>
+<td align="right">${userlinks}</td>
 </tr>
 </table>
 </td>
