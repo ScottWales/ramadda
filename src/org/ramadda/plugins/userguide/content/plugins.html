@@ -23,6 +23,22 @@ If the file is a jar file it will crack open the jar file and look at each conta
 <li> <i>.properties</i><br>
 Any &quot;.properties&quot; files are loaded as  system properties.
 
+
+<a name="languages"></a>
+<li><i>.pack</i><br> 
+RAMADDA supports multiple language translations. Any plugin file that 
+ends with ".pack" (e.g., sp.pack) is loaded as a language pack.
+See an empty example.pack file
+at the <a href="http://ramadda.svn.sourceforge.net/viewvc/ramadda/src/org/ramadda/repository/resources/example.pack">SourceForge SVN</a> site. There is documentation in the file.
+
+
+<a name="templates"></a>
+<li><i>template.html</i><br> 
+Any file that ends with &quot;template.html&quot; is treated as an html
+page template.
+More documentation is  <a href="templates.html">available here</a>.
+
+
 <li> <i>.class</i><br> 
 Any .class file is loaded via a classloader. Some classes are special:
 <ul>
@@ -49,13 +65,6 @@ If the file ends with &quot;.py&quot; then it defines new jython routines that a
 <li><i>.sql</i><br> 
 If the file ends with &quot;.sql&quot; then the file is evaluated at startup to define new database schemas.
 
-
-<a name="languages"></a>
-<li><i>.pack</i><br> 
-RAMADDA supports multiple language translations.
-You can download an example.pack file that contains all of the phrases
-at the <a href="http://ramadda.svn.sourceforge.net/viewvc/ramadda/src/org/ramadda/repository/resources/example.pack?view=log">SourceForge SVN</a> site. There is documentation
-in the file.
 
 
 </ul>

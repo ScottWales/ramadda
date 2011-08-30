@@ -1,6 +1,7 @@
 
 
 index.html
+
 -repository.dummy_properties
 -map.html
 >overview.html
@@ -11,7 +12,9 @@ index.html
 >access.html
 >configuration.html
 >faq.html
--template.html.txt
+-exampletemplate.html.txt
+-exampletemplate.jar
+
 
 >title:Entries:Documentation for how to use the different types of entries available
 >>localfileview.html
@@ -33,6 +36,7 @@ index.html
 >>database.html
 >>quickinstall.html
 >>plugins.html
+>>templates.html
 >>admin.html
 >>adminusers.html
 >>adminmisc.html
