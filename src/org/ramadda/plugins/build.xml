@@ -53,6 +53,8 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/forum/build.xml" inheritAll="false"/>
 -->
 
+<!--
+Don't include the misc plugins by default
       <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
           <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
      </copy>
@@ -60,6 +62,7 @@
       <copy overwrite="true"  todir="${plugindest_dir}">
           <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
      </copy>
+-->
 
       <copy overwrite="true"  todir="${plugindest_dir}">
           <fileset file="${src_dir}/org/ramadda/plugins/README"/>
