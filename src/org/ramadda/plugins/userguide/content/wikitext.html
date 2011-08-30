@@ -113,6 +113,10 @@ the parent entry (or its parent) of the current entry.
 The Add entry id menu in the editor toolbar allows you to select the entry to use. As a convenience this
 adds both the ID of the entry as well as its name. 
 
+<p>
+Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
+
+[wiki::text [wiki::tag someproperty {message="some message"}]]
 
 
 <subhead intoc="false" id="basic">Basic Wiki Properties</subhead>
@@ -144,7 +148,7 @@ If enabled, display the Google Earth plugin. To enable the Google Earth see the
 <li> [wiki::tagdef breadcrumbs]: Show the breadcrumb path.
 <li> [wiki::tagdef layout]: This shows the "Layout:" toolbar bar for an entry.
 <li> [wiki::tagdef toolbar]: Show the entry toolbar.
-<li> [wiki::tagdef image {src="image source" width="image width" link="true|false" left="absolute position" top="absolute position"}]: Include an image. If src is not given then
+<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position"}]: Include an image. If src is not given then
 this shows the image (if there is one) from the entry.
 If src is specified it can take on the form: <pre>
 src="entry name"
