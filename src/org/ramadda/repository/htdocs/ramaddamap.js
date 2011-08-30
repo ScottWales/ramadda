@@ -270,7 +270,7 @@ function RepositoryMap (mapId, params) {
        var newRight = bounds.right;
        var extentBounds = this.map.restrictedExtent;
        if (!extentBounds) {
-           extendBounds = new OpenLayers.Bounds(-180, -90, 360, 90);
+           extentBounds = new OpenLayers.Bounds(-180, -90, 360, 90);
        }
        /*
        if (extentBounds.left < 0) {  // map is -180 to 180
@@ -280,6 +280,9 @@ function RepositoryMap (mapId, params) {
            }
        } else { // map is 0 to 360
        */
+
+
+
        if (extentBounds.left >= 0) {  // map is 0 to 360+
            if (bounds.left < 0) {  // left edge is -180 to 180
                newLeft = bounds.left+360;
