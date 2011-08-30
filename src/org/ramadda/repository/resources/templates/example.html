@@ -23,13 +23,13 @@ for when ramadda is generating the html for the main nav links, the user links, 
 
 The rest of this file is just html with ${...} macros. The macros include:
 ${root}  - the url root to the RAMADDA server
-${html.imports} - The ramadda specific imports - e.g., style sheet, etc
+${imports} - The ramadda specific imports - e.g., style sheet, etc
 ${headfinal} - Needs to be put at the  end of the head section
 ${repository_name}  - Name defined in the Admin pages
 ${title}  - The current page title (e.g. "Metadata")
 ${entry.breadcrumbs} - Text bread crumbs of  entry hierarchy - used in title
 ${links} - The main navigational links. Can be configured in the properties 
-${userlink} - The user specific links. Can be configured in the properties 
+${userlinkss} - The user specific links. Can be configured in the properties 
 ${entry.header} - The Entry menubar, toolbar, breadcrumb header thing
 ${content} - The page content
 ${logo.url} - Url for clicking on logo - specified in the Admin pages
@@ -44,15 +44,15 @@ id=example
 ramadda.template.link.wrapper =<a href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
 
-ramadda.template.userlink.wrapper =<a href="${url}">${label}</a>
-ramadda.template.userlink.separator=&nbsp;|&nbsp;
+ramadda.template.userlinks.wrapper =<a href="${url}">${label}</a>
+ramadda.template.userlinks.separator=&nbsp;|&nbsp;
 
 ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
 ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 
 </properties>
 
-${html.imports}
+${imports}
 
 <style type="text/css">
 body {
@@ -130,7 +130,7 @@ ${headfinal}
 <td>
 ${links}
 </td>
-<td align="right">${userlink}</td>
+<td align="right">${userlinkss}</td>
 </tr>
 </table>
 </td>

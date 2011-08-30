@@ -13,14 +13,14 @@
 	ramadda.template.link.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 	ramadda.template.link.separator=
 	
-	ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
-	ramadda.template.userlink.separator=
+	ramadda.template.userlinks.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
+	ramadda.template.userlinks.separator=
 	
 	ramadda.template.favorites = <span class="linkslabel"><a href="${root}/user/home" ><img border="0"  src="${root}/icons/star.png" align="center" /> Favorites</a></spam><div class="favorites">${entries}</div>
 	ramadda.template.cart = <span class="linkslabel"><a href="${root}/user/cart"><img border="0"  src="${root}/icons/cart.png" align="center" /> Cart</a></spam><div class="favorites">${entries}</div>
 </properties>
 
-${html.imports}
+${imports}
 
 <style type="text/css">
 
@@ -401,7 +401,7 @@ ${headfinal}
 					<br />
 
 					<span class="linkslabel"><a href="${root}/user/login" ><img border="0"  src="${root}/icons/user.png" alt="User Home" /> User </a> </span>
-					<div class="leftbox">${userlink}</div>
+					<div class="leftbox">${userlinks}</div>
 					<br />
 					${favorites}
 				</div>

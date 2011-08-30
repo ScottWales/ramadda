@@ -130,7 +130,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** html template macro */
     public static final String MACRO_SEARCH_URL = "search.url";
 
-
     /** html template macro */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
 
@@ -151,7 +150,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final String MACRO_HEADER_TITLE = "header.title";
 
     /** html template macro */
-    public static final String MACRO_USERLINK = "userlink";
+    public static final String MACRO_USERLINK = "userlinks";
 
     /** html template macro */
     public static final String MACRO_FAVORITES = "favorites";
@@ -3621,7 +3620,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             "failed to process template:" + path, exc);
                         continue;
                     }
-                    resource = resource.replace("${html.imports}", imports);
+                    String[] changes = {"userlink", 
+                                        MACRO_USERLINK,
+                                        "html.imports",
+                                        "imports",
+                    };
+                    for(int i=0;i<changes.length;i+=2) {
+                        resource = resource.replace("${" + changes[i]+"}", 
+                                                    "${" + changes[i+1] +"}");
+                    }
+
+                    resource = resource.replace("${imports}", imports);
                     HtmlTemplate template = new HtmlTemplate(this, path,
                                                 resource);
                     //Check if we got some other ...template.html file from a plugin
@@ -3685,8 +3694,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             html = html.substring(idx1);
         }
         html = template.toString();
-        if (html.indexOf("${html.imports}") < 0) {
-            html = html.replace("<head>", "<head>\n${html.imports}");
+        if (html.indexOf("${imports}") < 0) {
+            html = html.replace("<head>", "<head>\n${imports}");
         }
         if (html.indexOf("${headfinal}") < 0) {
             html = html.replace("</head>", "${headfinal}\n</head>");
