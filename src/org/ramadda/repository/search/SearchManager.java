@@ -997,7 +997,6 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
      */
     public Result processEntrySearch(Request request) throws Exception {
 
-
         if (request.get(ARG_WAIT, false)) {
             return getRepository().getMonitorManager().processEntryListen(
                 request);

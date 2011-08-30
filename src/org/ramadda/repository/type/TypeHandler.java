@@ -3410,35 +3410,42 @@ public class TypeHandler extends RepositoryManager {
         double  east       = areaValues[2];
         double  north      = areaValues[3];
 
-        if ( !contains) {
-            if (gotThemAll) {
+        if (!contains) { 
+            //           if (gotThemAll) {
+            if(!Double.isNaN(north)) {            
                 areaClause = Clause.le(Tables.ENTRIES.COL_SOUTH, north);
                 areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_SOUTH,
-                            new Double(Entry.NONGEO)), areaClause));
+                                    Clause.and(
+                                               Clause.neq(
+                                                          Tables.ENTRIES.COL_SOUTH,
+                                                          new Double(Entry.NONGEO)), areaClause));
+            }
+            if(!Double.isNaN(south)) {            
                 areaClause = Clause.ge(Tables.ENTRIES.COL_NORTH, south);
                 areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_SOUTH,
-                            new Double(Entry.NONGEO)), areaClause));
+                                    Clause.and(
+                                               Clause.neq(
+                                                          Tables.ENTRIES.COL_SOUTH,
+                                                          new Double(Entry.NONGEO)), areaClause));
+            }
 
+            if(!Double.isNaN(west)) {            
                 areaClause = Clause.ge(Tables.ENTRIES.COL_EAST, west);
                 areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_EAST,
-                            new Double(Entry.NONGEO)), areaClause));
-
+                                    Clause.and(
+                                               Clause.neq(
+                                                          Tables.ENTRIES.COL_EAST,
+                                                          new Double(Entry.NONGEO)), areaClause));
+            }
+            if(!Double.isNaN(east)) {            
                 areaClause = Clause.le(Tables.ENTRIES.COL_WEST, east);
                 areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_WEST,
-                            new Double(Entry.NONGEO)), areaClause));
+                                    Clause.and(
+                                               Clause.neq(
+                                                          Tables.ENTRIES.COL_WEST,
+                                                          new Double(Entry.NONGEO)), areaClause));
             }
+            //        }
         } else {
             for (int i = 0; i < 4; i++) {
                 if ( !Double.isNaN(areaValues[i])) {
