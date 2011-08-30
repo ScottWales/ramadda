@@ -55,7 +55,8 @@
   </handler>
 
 
-  <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Attachments, Contact, Etc.">
+  <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        
+           category="Thumbnails, Page Style,  Etc.">
     <type
        name="Thumbnail Image"
        id="content.thumbnail">
@@ -69,16 +70,8 @@
     </type>
 
     <type
-       name="Logo"
-       id="content.logo">
-      <element name="Logo Image File" datatype="file" thumbnail="false" attachment="false"/>
-      <element name="Logo URL"/>
-      <element name="Page Title"/>
-    </type>
-
-
-    <type
        name="Page Style"
+       showinhtml="false"
        id="content.pagestyle">
       <element name="menus" label="Menus to show" datatype="string" suffix=" Comma separated list: &quot;file,edit,feeds,view,other&quot; or &quot;none&quot;"/>
       <element id="showbreadcrumbs" name="Show Breadcrumbs" datatype="boolean" default="true"/>
@@ -89,16 +82,12 @@
                suffix="Entry type that this page style is applicable to"/>
     </type>
 
-
     <type
-       name="Jython Script"
-       id="content.jython">
-      <element name="Jython File" datatype="file" thumbnail="false"/>
-    </type>
-
-    <type name="Contact" id="content.contact">
-      <element name="Name" />
-      <element name="Email" />
+       name="Logo"
+       id="content.logo">
+      <element name="Logo Image File" datatype="file" thumbnail="false" attachment="false"/>
+      <element name="Logo URL"/>
+      <element name="Page Title"/>
     </type>
 
     <type name="Display Timezone" id="content.timezone">
@@ -106,17 +95,6 @@
          default="GMT"
          name="Timezone"/>
     </type>
-
-
-    <type name="Biography" id="content.biography"       displaycategory="Biography">
-
-      <element  name="Name"/>
-      <element
-         default=""
-         name="Bio"
-	 rows="10"/>
-    </type>
-
 
     <type name="Sort Order" id="content.sort">
       <element
@@ -135,16 +113,20 @@
          datatype="int"/>
 -->
     </type>
+
     <type
        name="Alias"
        id="content.alias">
       <element name="Alias" />
       <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
     </type>
+
   </handler>
 
   <handler adminonly="true" class="org.ramadda.repository.metadata.AdminMetadataHandler" category="Admin">
+<!--
     <type name="Page Template" id="admin.template"/>
+-->
     <type name="Local File Pattern" id="admin.localfile.pattern"/>
     <type name="Anonymous Upload" id="admin.anonymousupload">
       <element name="From" />
@@ -162,12 +144,19 @@
 
 
   <handler class="org.ramadda.repository.metadata.MetadataHandler"        category="Miscellaneous">
+    <type name="Contact" id="content.contact">
+      <element name="Name" />
+      <element name="Email" />
+    </type>
+
+<!--
     <type
        name="Contact Information"
        id="misc.contact">
       <element name="type"/>
       <element name="value"/>
     </type>
+-->
 
     <type
        name="Named Spatial Region"
@@ -180,6 +169,20 @@
        showinhtml="false"
        id="spatial.polygon">
       <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
+    </type>
+
+    <type name="Biography" id="content.biography"       displaycategory="Biography">
+      <element  name="Name"/>
+      <element
+         default=""
+         name="Bio"
+	 rows="10"/>
+    </type>
+
+    <type
+       name="Jython Script"
+       id="content.jython">
+      <element name="Jython File" datatype="file" thumbnail="false"/>
     </type>
 
 
