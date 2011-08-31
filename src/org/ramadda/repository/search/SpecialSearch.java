@@ -277,6 +277,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                              ARG_SEARCH_SUBMIT)));
         formSB.append(HtmlUtil.formTableClose());
         formSB.append(HtmlUtil.formClose());
+        formSB.append("</div>");
 
 
         List<String> tabContents = new ArrayList<String>();
@@ -326,12 +327,14 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                              "tab_content");
         sb.append(
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
-        formSB.append("</div>");
-        sb.append(HtmlUtil.col(formSB.toString(),
-                               HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "200")));
-        //        sb.append(HtmlUtil.col(tabs,
-        //                               HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "70%")));
-        sb.append(HtmlUtil.col(tabs, " align=left "));
+        String searchHtml = HtmlUtil.makeShowHideBlock(HtmlUtil.img(iconUrl(ICON_SEARCH)),
+                                                       formSB.toString(), true);
+        sb.append(HtmlUtil.col(searchHtml,
+                               ""/*HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "200")*/));
+        sb.append(HtmlUtil.col(tabs, 
+                               HtmlUtil.style("min-width:600px;") +
+                               HtmlUtil.attr(HtmlUtil.ATTR_ALIGN, "left")
+                               ));
         sb.append("</table>");
 
         sb.append(HtmlUtil.script(js.toString()));
