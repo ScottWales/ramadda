@@ -53,10 +53,11 @@ This compiles all of the plugins and installs them in your local
 directory
 
 The user guide and the workshop plugins use a tcl script from the IDV source release.
-We have a copy of that in bin/idvdocgen
+We have a copy of that in bin/idvdocgen. This relies on having tclsh in your path. 
+If you don't have this then you can either define the path to tclsh in the build.properties
+file or when you run ant do:
 
-This relies on having tclsh in your path. If you don't have this then the docs 
-won't be built and included in the plugin.
+     ant -Dtclsh=<path to tclsh>
 
 
 ###########################################################################
