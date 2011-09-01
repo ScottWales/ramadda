@@ -727,6 +727,7 @@ public class Entry implements Cloneable {
     public boolean hasAreaDefined() {
         if ((south != NONGEO) && (east != NONGEO) && (north != NONGEO)
                 && (west != NONGEO)) {
+            if(south==north &&  east == west) return false;
             return true;
         }
         return false;

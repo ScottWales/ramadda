@@ -323,8 +323,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             }
         }
 
-        String tabs = OutputHandler.makeTabs(tabTitles, tabContents, true,
-                                             "tab_content");
+        String tabs = tabContents.size()==1?tabContents.get(0):
+            OutputHandler.makeTabs(tabTitles, tabContents, true,
+                                   "tab_content");
         sb.append(
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
         String searchHtml = HtmlUtil.makeShowHideBlock(HtmlUtil.img(iconUrl(ICON_SEARCH)),

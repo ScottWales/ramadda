@@ -333,17 +333,20 @@ public class MapManager extends RepositoryManager {
                 catMap.put(category, catSB = new StringBuffer());
                 categories.add(category);
             }
-            catSB.append("&nbsp;&nbsp;");
-            catSB.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                    entry)));
+            String call = id + ".placemarkClick("
+                + HtmlUtil.squote(entry.getId()) + ");";
+            catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK) +
+                                       HtmlUtil.onMouseClick(call)));
+            String iconUrl = getEntryManager().getIconUrl(request, entry);
+            catSB.append(HtmlUtil.img(iconUrl));
             catSB.append(HtmlUtil.space(1));
             double lat = entry.getSouth();
             double lon = entry.getEast();
-            catSB.append("<a href=\"javascript:" + id + ".placemarkClick("
-                         + HtmlUtil.squote(entry.getId()) + ");\">"
-                         + entry.getName() + "</a><br>");
-            String icon = getRepository().absoluteUrl(
-                              getEntryManager().getIconUrl(request, entry));
+            //            catSB.append("<a href=\"javascript:" + call +"\">"
+            //                         + entry.getName() + "</a><br>");
+            catSB.append(entry.getName());
+            catSB.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
             String  pointsString = "null";
             boolean hasPolygon   = false;
             List<Metadata> metadataList =
@@ -394,18 +397,24 @@ public class MapManager extends RepositoryManager {
                         HtmlUtil.squote(entry.getId()),
                         HtmlUtil.squote(entry.getName()),
                         HtmlUtil.squote(desc), "" + lat, "" + lon) + ","
-                            + HtmlUtil.squote(icon) + "," + pointsString));
+                    + HtmlUtil.squote(request.getAbsoluteUrl(iconUrl)) + "," + pointsString));
             js.append("\n");
         }
 
         sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, 
-                                HtmlUtil.cssClass("ramadda-earth-entries")+
+                                HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES) +
                                 HtmlUtil.style("max-height:" + height +"px; overflow-y: auto;")));
+
+        boolean doToggle = entries.size()>5 &&categories.size()>1;
         for (String category : categories) {
             StringBuffer catSB = catMap.get(category);
-            sb.append(HtmlUtil.b(category));
-            sb.append(HtmlUtil.br());
-            sb.append(catSB);
+            if(doToggle) {
+                sb.append(HtmlUtil.makeShowHideBlock(category, catSB.toString(), true));
+            } else {
+                sb.append(HtmlUtil.b(category));
+                sb.append(HtmlUtil.br());
+                sb.append(catSB);
+            }
         }
         sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
 

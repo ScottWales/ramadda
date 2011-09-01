@@ -324,7 +324,7 @@ public class Admin extends RepositoryManager {
                              "/org/ramadda/repository/resources/license.txt");
         sb.append(HtmlUtil.textArea("", license, 20, 75));
         sb.append("<p>");
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,HtmlUtil.cssClass("ramadda-highlight")));
+        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,HtmlUtil.cssClass(CSS_CLASS_HIGHLIGHT)));
         sb.append(HtmlUtil.checkbox("agree", "1"));
         sb.append(HtmlUtil.space(1));
         sb.append(
@@ -1211,7 +1211,7 @@ public class Admin extends RepositoryManager {
         if ((pqinsertPath.length() > 0) && !new File(pqinsertPath).exists()) {
             ldmExtra1 = HtmlUtil.space(2)
                         + HtmlUtil.span("File does not exist!",
-                                        HtmlUtil.cssClass("errorlabel"));
+                                        HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
         }
 
         asb.append(HtmlUtil.formEntry("Path to pqinsert:",
@@ -1223,7 +1223,7 @@ public class Admin extends RepositoryManager {
         if ((ldmQueue.length() > 0) && !new File(ldmQueue).exists()) {
             ldmExtra2 = HtmlUtil.space(2)
                         + HtmlUtil.span("File does not exist!",
-                                        HtmlUtil.cssClass("errorlabel"));
+                                        HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
         }
 
         asb.append(HtmlUtil.formEntry("Queue Location:",

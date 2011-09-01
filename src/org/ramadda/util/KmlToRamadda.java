@@ -23,6 +23,9 @@ package org.ramadda.util;
 import org.w3c.dom.*;
 
 import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.util.StringUtil;
+
+import java.util.List;
 
 
 /**
@@ -55,7 +58,7 @@ public class KmlToRamadda {
      *
      * @throws Exception _more_
      */
-    public static void process(Element element, String parentId)
+    public static void process(Element element, String parentId, String category)
             throws Exception {
         NodeList elements = XmlUtil.getElements(element);
         for (int i = 0; i < elements.getLength(); i++) {
@@ -65,6 +68,7 @@ public class KmlToRamadda {
                 String id   = getId();
                 String name = XmlUtil.getGrandChildText(child, "name",
                                   "name");
+                /*
                 if (parentId != null) {
                     System.out.println(XmlUtil.tag("entry",
                             XmlUtil.attrs(new String[] {
@@ -76,9 +80,25 @@ public class KmlToRamadda {
                             XmlUtil.attrs(new String[] {
                         "id", id, "name", name, "type", "group"
                     })));
-                }
-                process(child, id);
+                    }*/
+                //                process(child, id, name);
+                process(child, parentId, name);
             } else if (tag.equals("Placemark")) {
+                StringBuffer extra  = new StringBuffer();
+                Element point = XmlUtil.findChild(child, "Point");
+                if(point!=null) {
+                    String coords = XmlUtil.getGrandChildText(point, "coordinates",null);
+                    if(coords!=null) {
+                        List<String> toks  = StringUtil.split(coords, ",", true, true);
+                        extra.append(XmlUtil.attrs(new String[]{
+                                    "north", toks.get(1),
+                                    "south", toks.get(1),
+                                    "west", toks.get(0),
+                                    "east", toks.get(0),
+                                }));
+                    }
+                }
+
                 String id   = getId();
                 String name = XmlUtil.getGrandChildText(child, "name",
                                   "name");
@@ -87,18 +107,22 @@ public class KmlToRamadda {
                 String descNode = XmlUtil.tag("description", "",
                                       XmlUtil.getCdata(desc));
 
+                String attrs;
                 if (parentId != null) {
-                    System.out.println(XmlUtil.tag("entry",
-                            XmlUtil.attrs(new String[] {
-                        "id", id, "name", name, "parent", parentId
-                    }), descNode));
+                    attrs = XmlUtil.attrs(new String[] {
+                            "id", id, "name", name, "parent", parentId, "type","article"});
+
                 } else {
-                    System.out.println(XmlUtil.tag("entry",
-                            XmlUtil.attrs(new String[] { "id",
-                            id, "name", name }), descNode));
+                    attrs =  XmlUtil.attrs(new String[] { "id",
+                                                          id, "name", name, "type","article" });
                 }
+                if(category!=null) {
+                    descNode = descNode+  XmlUtil.tag("category", "",
+                                                      XmlUtil.getCdata(category));
+                }
+                System.out.println(XmlUtil.tag("entry", attrs+extra, descNode));
             } else if (tag.equals("Document")) {
-                process(child, parentId);
+                process(child, parentId, category);
             } else {
                 //                System.err.println(tag);
             }
@@ -114,9 +138,10 @@ public class KmlToRamadda {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        System.out.println(XmlUtil.XML_HEADER);
         System.out.println("<entries>");
         for (String arg : args) {
-            process(XmlUtil.getRoot(arg, KmlToRamadda.class), null);
+            process(XmlUtil.getRoot(arg, KmlToRamadda.class), null,null);
         }
         System.out.println("</entries>");
     }

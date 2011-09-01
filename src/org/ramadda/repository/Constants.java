@@ -1965,4 +1965,20 @@ public interface Constants {
     /** _more_          */
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
+
+    public static final String CSS_CLASS_HIGHLIGHT  = "ramadda-highlight";
+    public static final String CSS_CLASS_ERROR_LABEL  = "ramadda-error-label";
+
+
+    public static final String CSS_CLASS_REQUIRED  = "ramadda-required";
+    public static final String CSS_CLASS_REQUIRED_LABEL  = "ramadda-required-label";
+    public static final String CSS_CLASS_REQUIRED_FIELD  = "ramadda-required-field";
+    public static final String CSS_CLASS_REQUIRED_DISABLED  = "ramadda-required-disabled";
+
+    public static final String CSS_CLASS_EARTH_LINK  = "ramadda-earth-link";
+    public static final String CSS_CLASS_EARTH_ENTRIES  = "ramadda-earth-entries";
+
+
+
+
 }

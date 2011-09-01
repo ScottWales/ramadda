@@ -7,14 +7,14 @@
 var  googleEarths = new Array();
 
 //Class for holding placemark info
-function Placemark(id,name,desc,lat,lon, icon, points) {
+function MyPlacemark(id,name,desc,lat,lon, icon, polygons) {
     this.id = id;
     this.name = name;
     this.description = desc;
     this.lat = lat;
     this.lon = lon;
     this.icon = icon;
-    this.points = points;
+    this.polygons = polygons;
 }
 
 
@@ -88,10 +88,44 @@ function GoogleEarth(id, url) {
     }
 
     this.addPlacemark = function(id,name, desc, lat,lon, icon, points) {
-        pm = new Placemark(id,name,desc, lat,lon,icon,points)
+        var polygons = new Array();
+        if(points) {
+            var tmpArray = new Array();
+            polygons.push(tmpArray);
+            var lastLon = points[1];
+            var lastLat = points[0];
+            for(i=0;i<points.length;i+=2) {
+                var lat = points[i];
+                var lon = points[i+1];
+                //TODO: interpolate the latitude
+                if(false  && lastLon!=lon) {
+                    var crosses = false;
+                    if(lastLon<-90 && lon>90) {
+                        tmpArray.push(lat);
+                        tmpArray.push(-180);
+                        tmpArray = new Array();
+                        tmpArray.push(lat);
+                        tmpArray.push(180);
+                        polygons.push(tmpArray);
+                    } else  if(lastLon>90 && lon<-90) {
+                        tmpArray.push(lat);
+                        tmpArray.push(180);
+                        tmpArray = new Array();
+                        tmpArray.push(lat);
+                        tmpArray.push(-180);
+                        polygons.push(tmpArray);
+                    }
+                    lastLon  = lon;
+                    lastLat  = lat;
+                }
+                tmpArray.push(lat);
+                tmpArray.push(lon);
+            }
+        }
+        pm = new MyPlacemark(id,name,desc, lat,lon,icon, polygons)
         this.placemarks[id] = pm;
         this.addThePlacemark(pm);
-    }
+}
 
     this.addThePlacemark = function(pm) {
         if (!this.googleEarth) {
@@ -117,18 +151,37 @@ function GoogleEarth(id, url) {
         }
         this.googleEarth.getFeatures().appendChild(placemark);
 
-        if(pm.points) {
-            var lineStringPlacemark = this.googleEarth.createPlacemark('');
-            var lineString = this.googleEarth.createLineString('');
-            lineStringPlacemark.setGeometry(lineString);
-            lineStringPlacemark.setStyleSelector(this.googleEarth.createStyle(''));
-            var lineStyle = lineStringPlacemark.getStyleSelector().getLineStyle();
-            lineStyle.setWidth(3);
-            lineStyle.getColor().set('ff0000ff');  // aabbggrr format
-            for (i = 0; i < pm.points.length; i+=2) {
-                lineString.getCoordinates().pushLatLngAlt(pm.points[i], pm.points[i+1], 0);
+        if(pm.polygons) {
+            var colors = ["ffff0000",
+                          "ff00ff00",
+                          "ff0000ff",
+                          "ffffff00",
+                          "ffffffff",
+                          "ff000000"];
+
+            var msg = "";
+            for(polygonIdx=0;polygonIdx<pm.polygons.length;polygonIdx++) {
+                var points = pm.polygons[polygonIdx];
+                var lineString = this.googleEarth.createLineString('');
+                lineString.setTessellate(true);
+                lineString.setAltitudeMode(this.googleEarth.ALTITUDE_CLAMP_TO_GROUND);
+
+                msg += " polygon:";
+                for (i = 0; i < points.length; i+=2) {
+                    msg+= " " +points[i] +" " + points[i+1];
+                    lineString.getCoordinates().pushLatLngAlt(points[i], points[i+1], 0);
+                }
+                msg+="\n";
+
+                var lineStringPlacemark = this.googleEarth.createPlacemark('');
+                lineStringPlacemark.setGeometry(lineString);
+                lineStringPlacemark.setStyleSelector(this.googleEarth.createStyle(''));
+                var lineStyle = lineStringPlacemark.getStyleSelector().getLineStyle();
+                lineStyle.setWidth(2);
+                lineStyle.getColor().set('ff0000ff');  // aabbggrr format
+                //                lineStyle.getColor().set(colors[polygonIdx]);
+                this.googleEarth.getFeatures().appendChild(lineStringPlacemark);
             }
-            this.googleEarth.getFeatures().appendChild(lineStringPlacemark);
         }
     }
 

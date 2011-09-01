@@ -733,6 +733,16 @@ public class Request implements Constants {
         return repository.absoluteUrl(getUrl());
     }
 
+    public String getAbsoluteUrl(String url) {
+        int port = getServerPort();
+        if (port == 80) {
+            return repository.getHttpProtocol() + "://" + getServerName() + url;
+        } else {
+            return repository.getHttpProtocol() + "://" + getServerName() + ":" + port
+                   + url;
+        }
+    }
+
 
 
     /**

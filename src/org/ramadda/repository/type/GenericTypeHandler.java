@@ -239,6 +239,20 @@ public class GenericTypeHandler extends TypeHandler {
         return columns;
     }
 
+    public String getCategory(Entry entry) {
+        for (Column column : columns) {
+            if(column.getName().equals("category")) {
+                Object[]values = entry.getValues();
+                if(values!=null) {
+                    String s = column.getString(values);
+                    if(s!=null) return s;
+                    break;
+                }
+            }
+        }
+        return super.getCategory(entry);
+    }
+
     /**
      * _more_
      *

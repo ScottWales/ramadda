@@ -323,8 +323,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 extraLabel =
                     HtmlUtil.br()
                     + HtmlUtil.span(msg("Directory does not exist"),
-                                    HtmlUtil.cssClass("requiredlabel"));
-                fileFieldExtra = HtmlUtil.cssClass("required");
+                                    HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
+                fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
             } else if ( !getStorageManager().isLocalFileOk(rootDir)) {
                 String adminLink =
                     HtmlUtil.href(
@@ -335,16 +335,16 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     HtmlUtil.br()
                     + HtmlUtil
                         .span(msg("You need to add this directory to the file system access list"),
-                              HtmlUtil.cssClass("requiredlabel")) + HtmlUtil.space(2) + adminLink;
-                fileFieldExtra = HtmlUtil.cssClass("required");
+                              HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL)) + HtmlUtil.space(2) + adminLink;
+                fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
             }
         }
 
         if (root.length() == 0) {
             extraLabel = HtmlUtil.br()
                          + HtmlUtil.span(msg("Required"),
-                                         HtmlUtil.cssClass("requiredlabel"));
-            fileFieldExtra = HtmlUtil.cssClass("required");
+                                         HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
+            fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
 
         }
 

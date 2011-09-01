@@ -18,8 +18,38 @@ body, a, td {
 }
 
 
+.ramadda-earth-entries {
+   min-width: 150px;
+}
+
+.ramadda-earth-link {
+   margin-top:1px;
+   margin-left:10px;
+   border : 1px #ffffff solid;
+   padding:2px;
+   cursor: pointer;
+}
+
+.ramadda-earth-link:hover {
+   border : 1px #888888 solid;
+}
+
+
+.ramadda-required {
+   background: #ffaaaa;
+}
+
 .ramadda-required-field {
    color: red;
+}
+
+.ramadda-required-disabled {
+        border : 0px #888888 solid;
+        background: #ffaaaa;
+}
+
+.ramadda-required-label {
+   color: #ff0000;
 }
 
 .ramadda-highlight {
@@ -28,19 +58,13 @@ body, a, td {
    padding: 5px;
 }
 
-.required {
-   background: #ffaaaa;
+.ramadda-error-label {
+    color:#F00;
+    font-weight: bold;
 }
 
 
-.requireddisabled {
-        border : 0px #888888 solid;
-        background: #ffaaaa;
-}
 
-.requiredlabel {
-   color: #ff0000;
-}
 
 .input:focus, .textarea:focus {
 	background: #fffeec;
@@ -80,10 +104,7 @@ body, a, td {
    text-align:center;
 }
 
-.errorlabel {
-    color:#F00;
-    font-weight: bold;
-}
+
 
 
 
@@ -1083,9 +1104,7 @@ code.menu {
 }
 
 
-.ramadda-earth-entries {
-   min-width: 150px;
-}
+
 
 .menuseparator {
    margin-left:2px;

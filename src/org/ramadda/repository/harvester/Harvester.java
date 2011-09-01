@@ -401,7 +401,7 @@ public abstract class Harvester extends RepositoryManager {
         if (baseGroup == null) {
             extra = HtmlUtil.br()
                     + HtmlUtil.span(msg("Required"),
-                                    HtmlUtil.cssClass("requiredlabel"));
+                                    HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
         }
 
         sb.append(HtmlUtil.hidden(selectId + "_hidden", ((baseGroup != null)
@@ -415,7 +415,7 @@ public abstract class Harvester extends RepositoryManager {
                                           + HtmlUtil.SIZE_60
                                           + ((baseGroup == null)
                                              ? HtmlUtil.cssClass(
-                                             "requireddisabled")
+                                             CSS_CLASS_REQUIRED_DISABLED)
                                              : "")) + baseSelect + extra));
     }
 
