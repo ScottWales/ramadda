@@ -10,16 +10,14 @@
   </type>
 
 
+
+<!--
   <type name="article"  description="Article" >
      <property name="icon" value="/icons/link.png"/>
-<!--
-     <property name="form.date.show" value="false"/>
-     <property name="form.area.show" value="false"/>
--->
      <property name="form.file.show" value="false"/>
      <column name="category"  type="enumerationplus"     label="Category" columns="80"  showinhtml="true" cansearch="true"/>
   </type>
-
+-->
 
 <!--
   <type name="contribution"  description="Contribution" >

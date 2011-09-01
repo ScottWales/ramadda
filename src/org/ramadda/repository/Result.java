@@ -491,6 +491,7 @@ public class Result {
      * @param filename _more_
      */
     public void setReturnFilename(String filename) {
+        filename = filename.replaceAll(" ","_");
         addHttpHeader("Content-disposition",
                       "attachment; filename=" + filename);
     }

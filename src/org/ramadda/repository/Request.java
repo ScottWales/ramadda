@@ -293,6 +293,7 @@ public class Request implements Constants {
      * @param filename _more_
      */
     public void setReturnFilename(String filename) {
+        filename = filename.replaceAll(" ","_");
         httpServletResponse.setHeader("Content-disposition",
                                       "attachment; filename=" + filename);
     }
