@@ -4921,22 +4921,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             Metadata theMetadata = null;
             for (Metadata metadata : metadataList) {
-                String type = metadata.getAttr(6);
-                if ((type == null) || (type.trim().length() == 0)) {
+                String types = metadata.getAttr(6);
+                if ((types == null) || (types.trim().length() == 0)) {
                     theMetadata = metadata;
                     break;
                 }
-                if (type.equals("file") && !entry.isGroup()) {
-                    theMetadata = metadata;
-                    break;
-                }
-                if (type.equals("folder") && entry.isGroup()) {
-                    theMetadata = metadata;
-                    break;
-                }
-                if (type.equals(entry.getType())) {
-                    theMetadata = metadata;
-                    break;
+                for(String type: StringUtil.split(types,",",true,true)) {
+                    if (type.equals("file") && !entry.isGroup()) {
+                        theMetadata = metadata;
+                        break;
+                    }
+                    if (type.equals("folder") && entry.isGroup()) {
+                        theMetadata = metadata;
+                        break;
+                    }
+                    if (entry.getTypeHandler().isType(type)) {
+                        theMetadata = metadata;
+                        break;
+                    }
                 }
             }
 
