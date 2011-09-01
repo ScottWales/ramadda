@@ -85,6 +85,8 @@
             <include name="${plugin_dir}/htdocs/**/*"/>
             <include name="${plugin_dir}/resources/**/*"/>
             <include name="${plugin_dir}/*.xml"/>
+            <include name="${plugin_dir}/*.sql"/>
+            <include name="${plugin_dir}/*.txt"/>
             <include name="${plugin_dir}/*.html"/>
             <include name="${plugin_dir}/*.properties"/>
             <include name="${plugin_dir}/*.jnlp"/>
