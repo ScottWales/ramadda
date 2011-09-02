@@ -289,7 +289,6 @@ public class HtmlOutputHandler extends OutputHandler {
         XmlUtil.appendCdata(xml,
                             getRepository().translate(request, html));
         xml.append("\n</content>");
-        System.err.println(xml);
         return new Result("", xml, "text/xml");
     }
 

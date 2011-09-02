@@ -262,6 +262,7 @@ function GoogleEarth(id, url) {
         util.loadUrl(url, callback,"");
     }
 
+
     this.setBalloon = function(thePlacemark, text) {
         var balloon = this.googleEarth.createHtmlStringBalloon('');
         balloon.setFeature(thePlacemark.placemark);

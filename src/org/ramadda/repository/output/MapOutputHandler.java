@@ -302,9 +302,12 @@ public class MapOutputHandler extends OutputHandler {
                         break;
                     } 
                 }
-
-
                 String infoHtml = getMapManager().makeInfoBubble(request, entry);
+                infoHtml = infoHtml.replace("\r", " ");
+                infoHtml = infoHtml.replace("\n", " ");
+                infoHtml = infoHtml.replace("\"", "\\\"");
+                infoHtml = infoHtml.replace("'", "\\'");
+                infoHtml = getRepository().translate(request, infoHtml);
                 String icon = getEntryManager().getIconUrl(request, entry);
                 map.addMarker(entry.getId(), new LatLonPointImpl(location[0],location[1]), icon, infoHtml);
             }
