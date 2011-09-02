@@ -333,7 +333,7 @@ public class MapManager extends RepositoryManager {
                 catMap.put(category, catSB = new StringBuffer());
                 categories.add(category);
             }
-            String call = id + ".placemarkClick("
+            String call = id + ".entryClicked("
                 + HtmlUtil.squote(entry.getId()) + ");";
             catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK) +
@@ -389,7 +389,14 @@ public class MapManager extends RepositoryManager {
                                + entry.getWest() + "," + entry.getNorth()
                                + "," + entry.getWest() + ")";
             }
-            String desc = makeInfoBubble(request, entry);
+
+            String desc = HtmlUtil.img(iconUrl) + getEntryManager().getEntryLink(request, entry);
+            desc = desc.replace("\r", " ");
+            desc = desc.replace("\n", " ");
+            desc = desc.replace("\"", "\\\"");
+            desc = desc.replace("'", "\\'");
+
+
             js.append(
                 HtmlUtil.call(
                     id + ".addPlacemark",
@@ -469,12 +476,9 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        String infoHtml = info.toString();
-        infoHtml = infoHtml.replace("\r", " ");
-        infoHtml = infoHtml.replace("\n", " ");
-        infoHtml = infoHtml.replace("\"", "\\\"");
-        infoHtml = infoHtml.replace("'", "\\'");
-        return infoHtml;
+        return  info.toString();
+
+
     }
 
 

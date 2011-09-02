@@ -1968,6 +1968,11 @@ public interface Constants {
 
     public static final String CSS_CLASS_HIGHLIGHT  = "ramadda-highlight";
     public static final String CSS_CLASS_ERROR_LABEL  = "ramadda-error-label";
+    public static final String CSS_CLASS_HEADING_1 = "ramadda-heading-1";
+    public static final String CSS_CLASS_HEADING_2 = "ramadda-heading-2";
+    public static final String CSS_CLASS_HEADING_2_LINK = "ramadda-heading-2-link";
+
+    public static final String CSS_CLASS_POPUP = "ramadda-popup";
 
 
     public static final String CSS_CLASS_REQUIRED  = "ramadda-required";
@@ -1977,6 +1982,18 @@ public interface Constants {
 
     public static final String CSS_CLASS_EARTH_LINK  = "ramadda-earth-link";
     public static final String CSS_CLASS_EARTH_ENTRIES  = "ramadda-earth-entries";
+
+    public static final String CSS_CLASS_COMMENT_BLOCK  = "ramadda-comment-block";
+    public static final String CSS_CLASS_COMMENT_COMMENTER  = "ramadda-comment-commenter";
+    public static final String CSS_CLASS_COMMENT_DATE  = "ramadda-comment-date";
+    public static final String CSS_CLASS_COMMENT_INNER  = "ramadda-comment-inner";
+    public static final String CSS_CLASS_COMMENT_SUBJECT  = "ramadda-comment-subject";
+
+    public static final String CSS_CLASS_USER_FIELD  = "ramadda-user-field";
+
+
+    public static final String CSS_CLASS_SEPARATOR  = "ramadda-separator";
+
 
 
 

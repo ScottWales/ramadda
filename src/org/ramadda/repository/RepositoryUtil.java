@@ -40,7 +40,7 @@ import java.util.TimeZone;
  *
  * @author RAMADDA Development Team
  */
-public class RepositoryUtil {
+public class RepositoryUtil implements Constants {
 
     /** timezone */
     public static final TimeZone TIMEZONE_DEFAULT =
@@ -160,7 +160,7 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String header(String h) {
-        return "<div class=\"pageheading\">" + h + "</div>";
+        return HtmlUtil.div(h, HtmlUtil.cssClass(CSS_CLASS_HEADING_1));
     }
 
 

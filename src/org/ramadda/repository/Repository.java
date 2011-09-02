@@ -4639,6 +4639,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String[] url : docUrls) {
             sb.append("<li>");
             sb.append(HtmlUtil.href(url[0], url[1]));
+            sb.append("<p>");
         }
         sb.append("</ul>");
         return new Result("Documentation", sb);
@@ -5042,7 +5043,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public static String msgHeader(String h) {
-        return HtmlUtil.div(msg(h), HtmlUtil.cssClass("pageheading"));
+        return HtmlUtil.div(msg(h), HtmlUtil.cssClass(CSS_CLASS_HEADING_1));
     }
 
 
@@ -5054,7 +5055,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public static String header(String h) {
-        return HtmlUtil.div(h, HtmlUtil.cssClass("pageheading"));
+        return HtmlUtil.div(h, HtmlUtil.cssClass(CSS_CLASS_HEADING_1));
     }
 
 
@@ -5857,7 +5858,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         menu.append(HtmlUtil.div(contents,
                                  HtmlUtil.id(compId)
-                                 + HtmlUtil.cssClass("popup")));
+                                 + HtmlUtil.cssClass(CSS_CLASS_POPUP)));
         return menu.toString();
     }
 
@@ -5885,7 +5886,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         menu.append(HtmlUtil.div(contents,
                                  HtmlUtil.id(compId)
-                                 + HtmlUtil.cssClass("popup")));
+                                 + HtmlUtil.cssClass(CSS_CLASS_POPUP)));
         return menu.toString();
     }
 

@@ -1265,7 +1265,7 @@ public class Admin extends RepositoryManager {
                 outputSB.append(
                     HtmlUtil.div(
                         lastCategoryName, HtmlUtil.cssClass(
-                            "pagesubheading")) + "\n<div style=\"margin-left:20px\">");
+                            CSS_CLASS_HEADING_2)) + "\n<div style=\"margin-left:20px\">");
             }
             outputSB.append(HtmlUtil.checkbox("outputtype." + type.getId(),
                     "true", ok));
@@ -1322,7 +1322,7 @@ public class Admin extends RepositoryManager {
         return HtmlUtil.makeShowHideBlock(
             msg(title),
             HtmlUtil.div(contents, HtmlUtil.cssClass("admin-block-inner")),
-            false, HtmlUtil.cssClass("pagesubheading"),
+            false, HtmlUtil.cssClass(CSS_CLASS_HEADING_2),
             HtmlUtil.cssClass("admin-block"));
     }
 

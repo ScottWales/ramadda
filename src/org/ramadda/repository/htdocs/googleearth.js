@@ -15,6 +15,7 @@ function MyPlacemark(id,name,desc,lat,lon, icon, polygons) {
     this.lon = lon;
     this.icon = icon;
     this.polygons = polygons;
+    this.details = null;
 }
 
 
@@ -193,12 +194,7 @@ function GoogleEarth(id, url) {
             return;
         }
         this.setLocation(placemark.lat,placemark.lon);
-        var cbx = util.getDomObject("googleearth.showdetails");
-        if(cbx) {
-            if(!cbx.obj.checked) {
-                return;
-            }
-        }
+        if(!showDetails()) return;
         var content = placemark.description;
         var balloon = this.googleEarth.createHtmlStringBalloon('');
         balloon.setFeature(placemark.placemark);
@@ -218,17 +214,63 @@ function GoogleEarth(id, url) {
         this.googleEarth.getView().setAbstractView(lookAt);
     }
 
+    this.showDetails = function() {
+        var cbx = util.getDomObject("googleearth.showdetails");
+        if(cbx) {
+            return cbx.obj.checked;
+        }
+        return true;
+    }
+
+    this.getThis = function() {
+        return this;
+    }
+
+    this.googleEarthClickCnt=0;
+    this.entryClicked = function(id) {
+        var _this = this;
+        this.googleEarthClickCnt++;
+        var myClick = this.googleEarthClickCnt;
+        thePlacemark =this.placemarks[id];
+        if(!thePlacemark) {
+            return;
+        }
+        this.googleEarth.setBalloon(null);
+        this.setLocation(thePlacemark.lat,thePlacemark.lon);
+        if(!this.showDetails()) {
+            return;
+        }
+        //Have we gotten the details already?
+        if(thePlacemark.details) {
+            this.setBalloon(thePlacemark,thePlacemark.details); 
+            return;
+        }
+
+        var callback = function(request) {
+            if(myClick != _this.googleEarthClickCnt) {
+                return;
+            }
+            var xmlDoc=request.responseXML.documentElement;
+            text = getChildText(xmlDoc);
+            checkTabs(text);
+            thePlacemark.details = text;
+            thePlacemark.placemark.setDescription(text);
+            _this.setBalloon(thePlacemark,text); 
+        }
+        var url = "${urlroot}/entry/show?entryid=" + id +"&output=mapinfo";
+        util.loadXML(url, callback,"");
+    }
+
+    this.setBalloon = function(thePlacemark, text) {
+        var balloon = this.googleEarth.createHtmlStringBalloon('');
+        balloon.setFeature(thePlacemark.placemark);
+        balloon.setContentString(text);
+        this.googleEarth.setBalloon(balloon);
+    }
+
     var theGoogleEarth = this;
     var callback = function(instance) {
         theGoogleEarth.initCallback(instance);
     }
-
     google.earth.createInstance(this.id, callback, this.failureCallback);
 }
-
-
-
-
-
-
-

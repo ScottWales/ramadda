@@ -104,6 +104,9 @@ public class HtmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_INLINE =
         new OutputType("inline", OutputType.TYPE_INTERNAL);
 
+    public static final OutputType OUTPUT_MAPINFO =
+        new OutputType("mapinfo", OutputType.TYPE_INTERNAL);
+
     /** _more_ */
     public static final OutputType OUTPUT_SELECTXML =
         new OutputType("selectxml", OutputType.TYPE_INTERNAL);
@@ -179,6 +182,7 @@ public class HtmlOutputHandler extends OutputHandler {
         addType(OUTPUT_GRID);
         addType(OUTPUT_GRAPH);
         addType(OUTPUT_INLINE);
+        addType(OUTPUT_MAPINFO);
         addType(OUTPUT_SELECTXML);
         addType(OUTPUT_METADATAXML);
         addType(OUTPUT_LINKSXML);
@@ -267,6 +271,26 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
+
+
+    public Result getMapInfo(Request request, Entry entry)
+            throws Exception {
+        String html;
+        String wikiTemplate = getWikiText(request, entry);
+        if (wikiTemplate != null) {
+            String wiki = getWikiManager().wikifyEntry(request, entry,
+                                                       wikiTemplate);
+            html =  getRepository().translate(request, wiki);
+        } else {
+            html = getMapManager().makeInfoBubble(request, entry);
+        }
+
+        StringBuffer xml = new StringBuffer("<content>\n");
+        XmlUtil.appendCdata(xml,
+                            getRepository().translate(request, html));
+        xml.append("\n</content>");
+        return new Result("", xml, "text/xml");
+    }
 
 
     /**
@@ -363,6 +387,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         if (outputType.equals(OUTPUT_LINKSXML)) {
             return getLinksXml(request, entry);
+        }
+        if (outputType.equals(OUTPUT_MAPINFO)) {
+            return getMapInfo(request, entry);
         }
         if (outputType.equals(OUTPUT_INLINE)) {
             String inline = typeHandler.getInlineHtml(request, entry);
@@ -1206,9 +1233,11 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_SELECTXML)) {
             return getSelectXml(request, subGroups, entries);
         }
-
         if (outputType.equals(OUTPUT_METADATAXML)) {
             return getMetadataXml(request, group);
+        }
+        if (outputType.equals(OUTPUT_MAPINFO)) {
+            return getMapInfo(request, group);
         }
 
         if (outputType.equals(OUTPUT_LINKSXML)) {

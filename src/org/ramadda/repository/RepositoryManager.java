@@ -353,7 +353,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public static String subHeader(String s) {
-        return HtmlUtil.div(s, HtmlUtil.cssClass("pagesubheading"));
+        return HtmlUtil.div(s, HtmlUtil.cssClass(CSS_CLASS_HEADING_2));
     }
 
 
@@ -379,7 +379,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String subHeaderLink(String url, String label) {
         return HtmlUtil.href(url, label,
-                             HtmlUtil.cssClass("pagesubheadinglink"));
+                             HtmlUtil.cssClass(CSS_CLASS_HEADING_2_LINK));
     }
 
 
@@ -399,7 +399,7 @@ public class RepositoryManager implements RepositorySource, Constants,
                                           : ICON_PLUS));
         label = img + HtmlUtil.space(1) + label;
         String html = HtmlUtil.href(url, label,
-                                    HtmlUtil.cssClass("pagesubheadinglink"));
+                                    HtmlUtil.cssClass(CSS_CLASS_HEADING_2_LINK));
         return html;
         //return "<table border=1><tr valign=bottom><td>" + html +"</table>";
     }

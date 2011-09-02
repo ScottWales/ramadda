@@ -503,7 +503,7 @@ public class LogManager extends RepositoryManager {
         sb.append(HtmlUtil.br());
         sb.append(HtmlUtil.space(10));
         sb.append(StringUtil.join(HtmlUtil.span("&nbsp;|&nbsp;",
-                HtmlUtil.cssClass("separator")), header));
+                HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)), header));
         sb.append(HtmlUtil.hr());
 
         if (log.equals("access")) {

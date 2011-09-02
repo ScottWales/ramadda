@@ -1258,7 +1258,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             if (inBlock && (title != null)) {
                 return HtmlUtil.makeShowHideBlock(title, propertyValue, open,
-                        HtmlUtil.cssClass("pagesubheading"), "");
+                        HtmlUtil.cssClass(CSS_CLASS_HEADING_2), "");
                 //                        HtmlUtil.cssClass("wiki-tocheader"),   HtmlUtil.cssClass("wiki-toc"));
             }
             return propertyValue;

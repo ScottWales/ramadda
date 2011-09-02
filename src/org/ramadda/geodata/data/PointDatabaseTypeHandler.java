@@ -1537,7 +1537,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (toks.size() > 0) {
                 cntSB.append(HtmlUtil.space(2));
                 cntSB.append(StringUtil.join(HtmlUtil.span("&nbsp;|&nbsp;",
-                        HtmlUtil.cssClass("separator")), toks));
+                        HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)), toks));
             }
         }
 

@@ -324,7 +324,7 @@ public class OutputHandler extends RepositoryManager {
             }
             if (toks.size() > 0) {
                 sb.append(StringUtil.join(HtmlUtil.span("&nbsp;|&nbsp;",
-                        HtmlUtil.cssClass("separator")), toks));
+                        HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)), toks));
             }
             request.put(ARG_MAX, max);
         }

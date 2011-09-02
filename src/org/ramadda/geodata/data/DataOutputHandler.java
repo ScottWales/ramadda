@@ -1304,12 +1304,12 @@ public class DataOutputHandler extends OutputHandler {
                     + HtmlUtil.arg(ARG_SHORT, HtmlUtil.VALUE_TRUE), msg(
                         "Add time/spatial properties")));
             sb.append(HtmlUtil.span("&nbsp;|&nbsp;",
-                                    HtmlUtil.cssClass("separator")));
+                                    HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)));
 
             sb.append(HtmlUtil.href(request.getUrl(),
                                     msg("Add full properties")));
             sb.append(HtmlUtil.span("&nbsp;|&nbsp;",
-                                    HtmlUtil.cssClass("separator")));
+                                    HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)));
         }
         String tail =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry));

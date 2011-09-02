@@ -777,18 +777,18 @@ public class MetadataManager extends RepositoryManager {
             header = HtmlUtil.href(request.getUrl(), msg("List"))
                      + HtmlUtil.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtil.cssClass("separator")) + HtmlUtil.b(
+                         HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)) + HtmlUtil.b(
                                                                       msg("Cloud"));
         } else {
             request.put(ARG_TYPE, "cloud");
             header = HtmlUtil.b(msg("List"))
                      + HtmlUtil.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtil.cssClass("separator")) + HtmlUtil.href(
+                         HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)) + HtmlUtil.href(
                                                                          request.getUrl(), msg("Cloud"));
         }
         sb.append(HtmlUtil.center(HtmlUtil.span(header,
-                HtmlUtil.cssClass("pagesubheading"))));
+                HtmlUtil.cssClass(CSS_CLASS_HEADING_2))));
         sb.append(HtmlUtil.hr());
         MetadataHandler handler =
             findMetadataHandler(request.getString(ARG_METADATA_TYPE, ""));

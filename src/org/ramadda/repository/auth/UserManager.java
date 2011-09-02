@@ -439,7 +439,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtil.formTable());
         sb.append(formEntry(request, msgLabel("User"),
                             HtmlUtil.input(ARG_USER_ID, id,
-                                           HtmlUtil.cssClass("userfield"))));
+                                           HtmlUtil.cssClass(CSS_CLASS_USER_FIELD))));
         sb.append(formEntry(request, msgLabel("Password"),
                             HtmlUtil.password(ARG_USER_PASSWORD)));
         sb.append(extra);
@@ -1656,7 +1656,7 @@ public class UserManager extends RepositoryManager {
                             ACTION_SPLIT), msg("Split Screen")));
             }
             header.append(HtmlUtil.span("&nbsp;|&nbsp;",
-                                        HtmlUtil.cssClass("separator")));
+                                        HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)));
         }
 
         header.append(

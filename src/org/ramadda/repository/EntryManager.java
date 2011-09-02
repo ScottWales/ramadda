@@ -3926,7 +3926,7 @@ public class EntryManager extends RepositoryManager {
 
 
             String theClass = HtmlUtil.cssClass("listrow" + rowNum);
-            theClass = HtmlUtil.cssClass("comment_block");
+            theClass = HtmlUtil.cssClass(CSS_CLASS_COMMENT_BLOCK);
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
@@ -3936,14 +3936,14 @@ public class EntryManager extends RepositoryManager {
                 HtmlUtil.span(
                     "Posted by "
                     + comment.getUser().getLabel(), HtmlUtil.cssClass(
-                        "comment_commenter")) + " @ "
+                        CSS_CLASS_COMMENT_COMMENTER)) + " @ "
                             + HtmlUtil.span(
                                 formatDate(
                                     request, comment.getDate()), HtmlUtil.cssClass(
-                                    "comment_date")) + HtmlUtil.space(1)
+                                    CSS_CLASS_COMMENT_DATE)) + HtmlUtil.space(1)
                                         + deleteLink;
             content.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                         HtmlUtil.cssClass("comment_inner")));
+                                         HtmlUtil.cssClass(CSS_CLASS_COMMENT_INNER)));
             content.append(comment.getComment());
             content.append(HtmlUtil.br());
             content.append(byLine);
@@ -3954,7 +3954,7 @@ public class EntryManager extends RepositoryManager {
                         HtmlUtil.span(
                             comment.getSubject(),
                             HtmlUtil.cssClass(
-                                "comment_subject")), content.toString(),
+                                CSS_CLASS_COMMENT_SUBJECT)), content.toString(),
                                     true, ""), theClass));
         }
         return sb.toString();
