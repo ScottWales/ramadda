@@ -49,6 +49,37 @@ function Util () {
     }
 
 
+    this.loadUrl = function (url, callback,arg) {
+        var req = false;
+        if(window.XMLHttpRequest) {
+            try {
+                req = new XMLHttpRequest();
+            } catch(e) {
+                req = false;
+            }
+        } else if(window.ActiveXObject)  {
+            try {
+                req = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch(e) {
+                try {
+                    req = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch(e) {
+                    req = false;
+                }
+            }
+        }
+        if(req) {
+            req.onreadystatechange = function () { 
+                if (req.readyState == 4 && req.status == 200)   {
+                    callback(req,arg); 
+                }
+            };
+            req.open("GET", url, true);
+            req.send("");
+        }
+    }
+
+
 
     this.getUrlArg  = function( name, dflt ) {
         name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");

@@ -198,6 +198,7 @@ function GoogleEarth(id, url) {
         var content = placemark.description;
         var balloon = this.googleEarth.createHtmlStringBalloon('');
         balloon.setFeature(placemark.placemark);
+        //        balloon.setMaxHeight(100);
         balloon.setContentString(content);
         this.googleEarth.setBalloon(balloon);
     }
@@ -251,20 +252,21 @@ function GoogleEarth(id, url) {
                 return;
             }
             var xmlDoc=request.responseXML.documentElement;
-            text = getChildText(xmlDoc);
+            var text = getChildText(xmlDoc);
             checkTabs(text);
             thePlacemark.details = text;
             thePlacemark.placemark.setDescription(text);
             _this.setBalloon(thePlacemark,text); 
         }
         var url = "${urlroot}/entry/show?entryid=" + id +"&output=mapinfo";
-        util.loadXML(url, callback,"");
+        util.loadUrl(url, callback,"");
     }
 
     this.setBalloon = function(thePlacemark, text) {
         var balloon = this.googleEarth.createHtmlStringBalloon('');
         balloon.setFeature(thePlacemark.placemark);
         balloon.setContentString(text);
+        balloon.setMaxHeight(300);
         this.googleEarth.setBalloon(balloon);
     }
 
