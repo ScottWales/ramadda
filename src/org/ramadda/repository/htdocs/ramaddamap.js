@@ -515,7 +515,7 @@ function RepositoryMap(mapId, params) {
         if (!marker) {
             return;
         }
-        this.map.setCenter(marker.location);
+        this.map.setCenter(marker.lonlat);
         this.showMarkerPopup(marker);
     }
 
@@ -723,10 +723,10 @@ function RepositoryMap(mapId, params) {
         var markertext = marker.text;
         // set marker text as the location
         if (!markertext || markertext == "") {
-        	markerlocation = this.transformProjPoint(marker.location);
+        	markerlocation = this.transformProjPoint(marker.lonlat);
         	markertext = "Lon: " + location.lat + "<br>" + "Lat: " + location.lon;
         }
-        popup = new OpenLayers.Popup.FramedCloud("popup", marker.location,
+        popup = new OpenLayers.Popup.FramedCloud("popup", marker.lonlat,
                 null, markertext, null, true, function() {
                     theMap.onPopupClose()
                 });
