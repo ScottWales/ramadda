@@ -131,16 +131,24 @@ public class MapManager extends RepositoryManager {
                 HtmlUtil.cssLink(
                     fileUrl("/openlayers/theme/default/style.css")));
             mapInfo.addHtml("\n");
+            mapInfo.addHtml("\n");
             mapInfo.addHtml(
                 HtmlUtil.importJS(fileUrl("/openlayers/OpenLayers.js")));
             mapInfo.addHtml("\n");
+            /*
             mapInfo.addHtml(
                 HtmlUtil.importJS(
                     "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
+            */
+            mapInfo.addHtml(
+                HtmlUtil.importJS(
+                    "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
             mapInfo.addHtml("\n");
             //            mapInfo.addHtml(HtmlUtil.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
             //            mapInfo.addHtml(HtmlUtil.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
             mapInfo.addHtml(HtmlUtil.importJS(fileUrl("/ramaddamap.js")));
+            mapInfo.addHtml("\n");
+            mapInfo.addHtml( HtmlUtil.cssLink( fileUrl("/ramaddamap.css")));
             mapInfo.addHtml("\n");
             request.putExtraProperty("initmap", "");
         }

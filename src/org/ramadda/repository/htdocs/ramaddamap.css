@@ -1,0 +1,13 @@
+.olLayerGoogleCopyright {
+    top:-1000px;
+}
+
+.olControlAttribution {
+    bottom: 0px;
+} 
+
+div.olControlMousePosition {
+ font-size: 1em;
+ font-weight:bold;
+}
+

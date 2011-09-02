@@ -2515,6 +2515,7 @@ public class DataOutputHandler extends OutputHandler {
             request.setReturnFilename(IOUtil.stripExtension(entry.getName())
                                       + ".kml");
         }
+        System.out.println("name: " + request);
 
 
         OutputStream os = request.getHttpServletResponse().getOutputStream();
