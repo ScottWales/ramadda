@@ -4639,7 +4639,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String[] url : docUrls) {
             sb.append("<li>");
             sb.append(HtmlUtil.href(url[0], url[1]));
-            sb.append("<p>");
+            sb.append("<br>&nbsp;");
         }
         sb.append("</ul>");
         return new Result("Documentation", sb);
