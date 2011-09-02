@@ -36,7 +36,7 @@ var initialExtent = new OpenLayers.Bounds(maxLatValue, -180, -maxLatValue, 180);
 var positionMarkerID = "location";
 
 function RepositoryMap(mapId, params) {
-    var map, layer, markers, boxes, lines;
+    var map, layer, markers, boxes, lines, selectorBox, selectorMarker;
 
     this.mapDivId = mapId;
     if (!this.mapDivId) {
@@ -177,8 +177,8 @@ function RepositoryMap(mapId, params) {
         this.map = new OpenLayers.Map(this.mapDivId, options);
         this.addBaseLayers();
 
-        this.vectors = new OpenLayers.Layer.Vector("Drawing");
-        this.map.addLayer(this.vectors);
+        //this.vectors = new OpenLayers.Layer.Vector("Drawing");
+        //this.map.addLayer(this.vectors);
         this.map.addControl(mousecontrols);
         this.map.addControl(new OpenLayers.Control.LayerSwitcher());
         this.map.addControl(new OpenLayers.Control.MousePosition( {
@@ -186,12 +186,6 @@ function RepositoryMap(mapId, params) {
         }));
         this.map.setCenter(this.transformLLPoint(this.initialLocation),
                 this.initialZoom);
-        if (this.markers) {
-            this.map.addLayer(this.markers);
-            var sf = new OpenLayers.Control.SelectFeature(this.markers);
-            this.map.addControl(sf);
-            sf.activate();
-        }
 
         if (this.initialBoxes) {
             this.initBoxes(this.initialBoxes);
@@ -205,9 +199,15 @@ function RepositoryMap(mapId, params) {
             this.map.zoomToExtent(this.transformLLBounds(this.initialBounds));
             // this.map.restrictedExtent = this.initialBounds;
             this.initialBounds = null;
-        } /*
-             * else { this.map.zoomToMaxExtent(); }
+        } /* else { this.map.zoomToMaxExtent(); }
              */
+
+        if (this.markers) {
+            this.map.addLayer(this.markers);
+            var sf = new OpenLayers.Control.SelectFeature(this.markers);
+            this.map.addControl(sf);
+            sf.activate();
+        }
 
         if (this.initialLines) {
             this.map.addLayer(this.initialLines);
@@ -277,19 +277,7 @@ function RepositoryMap(mapId, params) {
 
         if (this.fldLon) {
             this.addClickHandler(this.fldLon.id, this.fldLat.id);
-            latVal = this.fldLat.obj.value;
-            lonVal = this.fldLat.obj.value;
-            if (latVal && lonVal && !(latVal == "" || lonVal == "")) {
-            	posMarker = this.findMarker(positionMarkerID);
-            	position = new OpenLayers.LonLat(lonVal, latVal);
-            	if (!posMarker) {
-            	    this.addMarker(positionMarkerID, position, "", "");
-            	} else {
-            		//posMarker.moveTo(this.transformLLPoint(position));
-            		posMarker.lonlat = this.transformLLPoint(position);
-        	        this.markers.redraw();
-            	}
-            }
+            this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
         }
     }
 
@@ -305,6 +293,11 @@ function RepositoryMap(mapId, params) {
                 this.setSelectionBox(this.fldNorth.obj.value,
                         this.fldWest.obj.value, this.fldSouth.obj.value,
                         this.fldEast.obj.value);
+            }
+            
+            if (this.fldLon) {
+                this.addClickHandler(this.fldLon.id, this.fldLat.id);
+                this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
             }
         }
     }
@@ -329,31 +322,43 @@ function RepositoryMap(mapId, params) {
         this.boxes.redraw();
     }
 
+    this.setSelectionMarker = function(lon, lat) {
+        if (!lon || !lat || lon == "" || lat == "")
+            return;
+        var lonlat = new OpenLayers.LonLat(lon,lat);
+        if (!this.selectorMarker) {
+            this.selectorMarker = this.addMarker(positionMarkerID, lonlat, "", "");
+        } else {
+            this.selectorMarker.lonlat = this.transformLLPoint(lonlat);
+        }
+        this.markers.redraw();
+    }
+    
     this.transformLLBounds = function(bounds) {
         if (!bounds)
             return;
-        llbounds = bounds.clone();
+        var llbounds = bounds.clone();
         return llbounds.transform(earthCS, sphericalMercatorCS);
     }
 
     this.transformLLPoint = function(point) {
         if (!point)
             return;
-        llpoint = point.clone();
+        var llpoint = point.clone();
         return llpoint.transform(earthCS, sphericalMercatorCS);
     }
 
     this.transformProjBounds = function(bounds) {
         if (!bounds)
             return;
-        projbounds = bounds.clone();
+        var projbounds = bounds.clone();
         return projbounds.transform(sphericalMercatorCS, earthCS);
     }
 
     this.transformProjPoint = function(point) {
         if (!point)
             return;
-        projpoint = point.clone();
+        var projpoint = point.clone();
         return projpoint.transform(sphericalMercatorCS, earthCS);
     }
 
@@ -413,7 +418,10 @@ function RepositoryMap(mapId, params) {
             this.boxes.removeMarker(this.selectorBox);
             this.selectorBox = null;
         }
-
+        if (this.selectorMarker && this.markers) {
+        	this.markers.removeMarker(this.selectorMarker);
+        	this.selectorMarker = null;
+        }
     }
 
     this.addRegionSelectorControl = function() {
@@ -569,8 +577,8 @@ function RepositoryMap(mapId, params) {
             return new OpenLayers.Pixel(-(size.w / 2), -size.h);
         };
         var icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
-        location = this.transformLLPoint(location);
-        var marker = new OpenLayers.Marker(location, icon);
+        projPoint = this.transformLLPoint(location);
+        var marker = new OpenLayers.Marker(projPoint, icon);
         marker.id = id;
         marker.text = text;
         marker.location = location;
@@ -783,10 +791,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         if (zoomFld) {
             zoomFld.obj.value = this.theMap.getMap().getZoom();
         }
-        posMarker = this.theMap.findMarker(positionMarkerID);
-        if (posMarker) {
-            posMarker.lonlat = xy;
-        	this.theMap.markers.redraw();
-        }
+        this.theMap.setSelectionMarker(lonlat.lon, lonlat.lat);
     }
 });
