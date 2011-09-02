@@ -280,7 +280,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
-        new OutputType("Subset Spatially", "data.gridsubset.form",
+        new OutputType("Subset Grid", "data.gridsubset.form",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_SUBSET, GROUP_DATA);
 
@@ -2011,6 +2011,30 @@ public class DataOutputHandler extends OutputHandler {
                             + llb + "</table>"));
         }
 
+        if ((dates != null) && (dates.size() > 0)) {
+            List formattedDates = new ArrayList();
+            for (Date date : dates) {
+                formattedDates.add(getRepository().formatDate(request, date));
+            }
+            String fromDate = request.getUnsafeString(ARG_FROMDATE,
+                                  getRepository().formatDate(request,
+                                      dates.get(0)));
+            String toDate = request.getUnsafeString(ARG_TODATE,
+                                getRepository().formatDate(request,
+                                    dates.get(dates.size() - 1)));
+            sb.append(
+                HtmlUtil.formEntry(
+                    msgLabel("Time Range"),
+                    HtmlUtil.checkbox(
+                        ARG_SUBSETTIME, HtmlUtil.VALUE_TRUE,
+                        request.get(ARG_SUBSETTIME, false)) + HtmlUtil.space(
+                            1) + HtmlUtil.select(
+                            ARG_FROMDATE, formattedDates,
+                            fromDate) + HtmlUtil.img(iconUrl(ICON_ARROW))
+                                      + HtmlUtil.select(
+                                          ARG_TODATE, formattedDates,
+                                          toDate)));
+        }
 
         sb.append(HtmlUtil.formEntry(msgLabel("Add Lat/Lon Variables"),
                                      HtmlUtil.checkbox(ARG_ADDLATLON,
