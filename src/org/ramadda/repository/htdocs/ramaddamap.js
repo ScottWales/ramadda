@@ -181,9 +181,19 @@ function RepositoryMap(mapId, params) {
         //this.map.addLayer(this.vectors);
         this.map.addControl(mousecontrols);
         this.map.addControl(new OpenLayers.Control.LayerSwitcher());
-        this.map.addControl(new OpenLayers.Control.MousePosition( {
-            numDigits : 3
-        }));
+        var latLonReadout = util.getDomObject("ramadda-map-latlonreadout");
+        if(latLonReadout) {
+            this.map.addControl(new OpenLayers.Control.MousePosition( {
+                        numDigits : 3,
+                            element: latLonReadout.obj,
+                            prefix: "Position: "
+                    }));
+        } else {
+            this.map.addControl(new OpenLayers.Control.MousePosition( {
+                        numDigits : 3,
+                        prefix: "Position: "
+                    }));
+        }
         this.map.setCenter(this.transformLLPoint(this.initialLocation),
                 this.initialZoom);
 

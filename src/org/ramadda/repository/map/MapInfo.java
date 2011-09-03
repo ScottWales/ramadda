@@ -209,6 +209,9 @@ public class MapInfo {
      */
     private String getMapDiv(String contents) {
         StringBuffer result = new StringBuffer();
+        String readout = HtmlUtil.div("&nbsp;",HtmlUtil.id("ramadda-map-latlonreadout")+
+                                   HtmlUtil.style("font-style:italic; width:" + width +"px;"));
+
         result.append(
             HtmlUtil.div(
                 contents,
@@ -216,6 +219,8 @@ public class MapInfo {
                     "border:1px #888888 solid; background-color:#7391ad; width:"
                     + width + "px; height:" + height + "px") + " "
                         + HtmlUtil.id(mapVarName)));
+        result.append("\n");
+        result.append(readout);
         result.append("\n");
         return result.toString();
     }

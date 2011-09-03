@@ -28,6 +28,7 @@ function GoogleEarth(id, url) {
     this.url = url;
     this.id = id;
     googleEarths[id] = this;
+    var DEFAULT_RANGE = 4999999;
 
     this.urlFinished = function(object) {
         if (!object) {
@@ -39,10 +40,11 @@ function GoogleEarth(id, url) {
             return;
         }
         this.googleEarth.getFeatures().appendChild(object);
-        var la = this.googleEarth.createLookAt('');
-        la.set(40.0, -107, 10000000, this.googleEarth.ALTITUDE_RELATIVE_TO_GROUND,
+        var lookAt = this.googleEarth.createLookAt('');
+        lookAt.set(40.0, -107, 10000000, this.googleEarth.ALTITUDE_RELATIVE_TO_GROUND,
                0,0,0);
-        this.googleEarth.getView().setAbstractView(la);
+        lookAt.setRange(DEFAULT_RANGE);
+        this.googleEarth.getView().setAbstractView(lookAt);
     }
 
     this.initCallback = function(instance) {
@@ -74,7 +76,7 @@ function GoogleEarth(id, url) {
         }
         if(firstPlacemark) {
             this.setLocation(firstPlacemark.lat,
-                             firstPlacemark.lon);
+                             firstPlacemark.lon,DEFAULT_RANGE);
         }
     }
     
@@ -217,14 +219,14 @@ function GoogleEarth(id, url) {
     }
 
 
-    this.setLocation = function(lat,lon) {
+    this.setLocation = function(lat,lon, range) {
         if (!this.googleEarth) return;
         var lookAt = this.googleEarth.getView().copyAsLookAt(this.googleEarth.ALTITUDE_RELATIVE_TO_GROUND);
         lookAt.setLatitude(lat);
         lookAt.setLongitude(lon);
-        //Leave the range alone
-        //var DEFAULT_RANGE = 4999999;
-        //lookAt.setRange(DEFAULT_RANGE);
+        if(range) {
+            lookAt.setRange(DEFAULT_RANGE);
+        }
         this.googleEarth.getView().setAbstractView(lookAt);
     }
 

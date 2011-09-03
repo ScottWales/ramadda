@@ -290,12 +290,13 @@ public class MapManager extends RepositoryManager {
         template = template.replace("${id}", id);
         template = template.replace("${id}", id);
 
-        sb.append(HtmlUtil.checkbox("tmp", "true", false,
-                                    HtmlUtil.id("googleearth.showdetails")));
-        sb.append(" ");
-        sb.append(msg("Show details"));
+
 
         sb.append(template);
+        sb.append(HtmlUtil.checkbox("tmp", "true", false,
+                                    HtmlUtil.id("googleearth.showdetails")));
+        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtil.italics(msg("Show details on click")));
         sb.append(HtmlUtil.script("var  " + id + " = new GoogleEarth("
                                   + HtmlUtil.squote(id) + ", "
                                   + ((url == null)

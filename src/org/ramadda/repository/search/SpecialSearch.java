@@ -114,6 +114,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             tabs.add(TAB_TIMELINE);
         }
 
+
         searchUrl   = (String) props.get("searchurl");
         label       = (String) props.get("label");
         theType     = (String) props.get("type");
@@ -167,8 +168,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
-        int contentsWidth  = 850;
-        int contentsHeight = 400;
+        int contentsWidth  = 750;
+        int contentsHeight = 450;
         int minWidth  = contentsWidth+200;
 
         request.put(ARG_TYPE, theType);
@@ -209,13 +210,15 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
         Rectangle2D.Double bounds = getEntryManager().getBounds(entries);
 
-        if ((bounds != null) && (bounds.getWidth() > 180) && false) {
+
+        //shrink the bounds down
+        if (bounds != null && bounds.getWidth() > 180) {
             double cx = bounds.getX() + bounds.getWidth() / 2;
             double cy = bounds.getY() + bounds.getHeight() / 2;
-            int    f  = 120;
+            int    f  = (int)(bounds.getWidth()/3);
             bounds = new Rectangle2D.Double(cx - f, cy - f / 2, f * 2, f);
         }
-        map.centerOn(bounds);
+        //        map.centerOn(bounds);
         map.addJS(map.getVariableName() + ".initMap(true);\n");
         if (request.defined(ARG_AREA_NORTH) && request.defined(ARG_AREA_WEST)
                 && request.defined(ARG_AREA_SOUTH)
@@ -237,9 +240,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         map.addJS(map.getVariableName() + ".setSelection(" + initParams
                   + ");\n");
         map.centerOn(bounds);
-
-
-
 
 
         StringBuffer formSB = new StringBuffer();
@@ -299,7 +299,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         StringBuffer mapSB =
-            new StringBuffer(msg("Shift-drag to select region"));
+            new StringBuffer(HtmlUtil.italics(msg("Shift-drag to select region")));
         mapSB.append(map.getHtml());
 
         //Pad it out
