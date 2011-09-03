@@ -1316,6 +1316,7 @@ function showPopup(event, srcId, popupId, alignLeft) {
     var popup = util.getDomObject(popupId);
     var srcObj = util.getDomObject(srcId);
     if(!popup || !srcObj) return;
+    eleOffset = jQuery(srcObj.obj).offset();
     event = util.getEvent(event);
     x = util.getEventX(event);
     y = util.getEventY(event);
@@ -1332,9 +1333,12 @@ function showPopup(event, srcId, popupId, alignLeft) {
         x+=3;
     }
 
+
     popupObject = popup;
     showObject(popup);
-    util.setPosition(popup, x,y);
+    popup.obj.css("top", y);
+    popup.obj.css("left",  x);
+    //    util.setPosition(popup, x,y);
 }
 
 

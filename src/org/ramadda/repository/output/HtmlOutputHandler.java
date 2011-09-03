@@ -919,6 +919,8 @@ public class HtmlOutputHandler extends OutputHandler {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
+        entry.getTypeHandler().addToInformationTabs(request, entry, tabTitles, tabContents);
+
         tabTitles.add(msg("Comments"));
         StringBuffer comments = getCommentBlock(request, entry, true);
         //        System.out.println (comments);

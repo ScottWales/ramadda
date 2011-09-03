@@ -47,6 +47,9 @@ function GoogleEarth(id, url) {
 
     this.initCallback = function(instance) {
         this.googleEarth = instance;
+
+
+
         this.googleEarth.getWindow().setVisibility(true);
 
         // add a navigation control
@@ -134,6 +137,13 @@ function GoogleEarth(id, url) {
             return;
         }
         var placemark = this.googleEarth.createPlacemark('');
+        var _this = this;
+        google.earth.addEventListener(placemark, 'click', function(event) {
+                // Prevent the default balloon from appearing.
+                event.preventDefault();
+                _this.entryClicked(pm.id, true);
+            });
+
         pm.placemark = placemark;
         placemark.setName(pm.name);
         if(pm.description) {
@@ -188,13 +198,16 @@ function GoogleEarth(id, url) {
 
 
 
-    this.placemarkClick = function(id) {
+    this.placemarkClick = function(id, popup) {
         placemark =this.placemarks[id];
         if(!placemark) {
+            alert("no placemark");
             return;
         }
         this.setLocation(placemark.lat,placemark.lon);
-        if(!showDetails()) return;
+        if(!popup && !showDetails()) {
+            return;
+        }
         var content = placemark.description;
         var balloon = this.googleEarth.createHtmlStringBalloon('');
         balloon.setFeature(placemark.placemark);
@@ -228,7 +241,7 @@ function GoogleEarth(id, url) {
     }
 
     this.googleEarthClickCnt=0;
-    this.entryClicked = function(id) {
+    this.entryClicked = function(id, force) {
         var _this = this;
         this.googleEarthClickCnt++;
         var myClick = this.googleEarthClickCnt;
@@ -238,7 +251,7 @@ function GoogleEarth(id, url) {
         }
         this.googleEarth.setBalloon(null);
         this.setLocation(thePlacemark.lat,thePlacemark.lon);
-        if(!this.showDetails()) {
+        if(!force && !this.showDetails()) {
             return;
         }
         //Have we gotten the details already?

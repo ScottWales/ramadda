@@ -107,6 +107,8 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_DOWNARROW = "ramadda.icon.downarrow";
 
+    public static final String ICON_DOWNLOAD = "ramadda.icon.download";
+
     /** _more_ */
     public static final String ICON_DOWNDART = "ramadda.icon.downdart";
 
@@ -1980,6 +1982,7 @@ public interface Constants {
     public static final String CSS_CLASS_REQUIRED_FIELD  = "ramadda-required-field";
     public static final String CSS_CLASS_REQUIRED_DISABLED  = "ramadda-required-disabled";
 
+    public static final String CSS_CLASS_EARTH_NAV  = "ramadda-earth-nav";
     public static final String CSS_CLASS_EARTH_LINK  = "ramadda-earth-link";
     public static final String CSS_CLASS_EARTH_ENTRIES  = "ramadda-earth-entries";
 

@@ -572,6 +572,10 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public void addToInformationTabs(Request request, Entry entry, List<String>tabTitles, List<String>tabContents) {
+
+    }
+
 
     public boolean isDefaultHtmlOutput(Request request){
         return Misc.equals(OutputHandler.OUTPUT_HTML.getId(),
@@ -1647,6 +1651,7 @@ public class TypeHandler extends RepositoryManager {
 
             Resource resource     = entry.getResource();
             String   resourceLink = resource.getPath();
+            String resourceLabel = msgLabel("Resource");
             if (resourceLink.length() > 0) {
                 if (entry.getResource().isUrl()) {
                     resourceLink = getResourceUrl(request, entry);
@@ -1658,9 +1663,11 @@ public class TypeHandler extends RepositoryManager {
                     resourceLink =
                         HtmlUtil.urlEncodeExceptSpace(resourceLink);
                     if (getAccessManager().canDownload(request, entry)) {
-                        resourceLink =
+                        resourceLabel = msgLabel("File");
+                        resourceLink = resourceLink +HtmlUtil.space(2) +
                             HtmlUtil.href(getEntryResourceUrl(request,
-                                entry), resourceLink);
+                                                              entry), HtmlUtil.img(iconUrl(ICON_DOWNLOAD),
+                                                                                   msg("Download"),""));
 
                     }
                 }
@@ -1682,7 +1689,8 @@ public class TypeHandler extends RepositoryManager {
                                    + resourceLink;
 
                 }
-                sb.append(formEntry(request, msgLabel("Resource"),
+
+               sb.append(formEntry(request, resourceLabel,
                                     resourceLink));
 
                 if (entry.isFile()) {

@@ -75,6 +75,7 @@ public class MapInfo {
     /** the html */
     private StringBuffer html = new StringBuffer();
 
+    private String selectionLabel;
 
     /**
      * Create a MapInfo for the associated repository
@@ -317,7 +318,7 @@ public class MapInfo {
 
         if (popup) {
             rightSide = HtmlUtil.space(2)
-                        + repository.makeStickyPopup(msg("Select"),
+                + repository.makeStickyPopup(selectionLabel!=null?selectionLabel:msg("Show Map"),
                             sb.toString(),
                             getVariableName()
                             + ".selectionPopupInit();") + HtmlUtil.space(2)
@@ -688,5 +689,10 @@ public class MapInfo {
     public String getVariableName() {
         return mapVarName;
     }
+
+    public void setSelectionLabel(String l) {
+         selectionLabel = l;
+    }
+
 
 }

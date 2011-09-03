@@ -9,6 +9,22 @@ body, a, td {
    font-size: 11pt;
 }
 
+a {
+   color: #0000FF;
+   text-decoration: none;
+}
+
+a:link {
+   color: #0000FF;
+}
+
+
+a:hover {
+   color: #FF0000;
+   text-decoration: underline;
+}
+
+
 .plain {
     font-weight: normal;
 }
@@ -22,17 +38,24 @@ body, a, td {
    min-width: 150px;
 }
 
-.ramadda-earth-link {
+
+.ramadda-earth-nav {
    margin-top:1px;
    margin-left:10px;
-   border : 1px #ffffff solid;
    padding:2px;
-   cursor: pointer;
+   color: #000000;
+}
+
+
+
+.ramadda-earth-link:link {
+    color: #000000;
 }
 
 .ramadda-earth-link:hover {
-   border : 1px #888888 solid;
+    color: #ff0000;
 }
+
 
 
 .ramadda-required {
@@ -200,21 +223,6 @@ a..ramadda-heading-2-link:visited {
 
 
 
-
-a {
-   color: #0000FF;
-   text-decoration: none;
-}
-
-a:link {
-   color: #0000FF;
-}
-
-
-a:hover {
-   color: #FF0000;
-   text-decoration: underline;
-}
 
 
 

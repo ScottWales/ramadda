@@ -59,6 +59,7 @@ import java.util.List;
  */
 public class MapManager extends RepositoryManager {
 
+    public static final int EARTH_ENTRIES_WIDTH = 150;
     /**
      * _more_
      *
@@ -249,7 +250,6 @@ public class MapManager extends RepositoryManager {
                                        int width, int height, String url)
             throws Exception {
 
-
         String[] keyAndOther = getGoogleMapsKey(request);
         if (keyAndOther == null) {
             sb.append("Google Earth is not enabled");
@@ -344,16 +344,19 @@ public class MapManager extends RepositoryManager {
             String call = id + ".entryClicked("
                 + HtmlUtil.squote(entry.getId()) + ");";
             catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK) +
-                                       HtmlUtil.onMouseClick(call)));
+                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_NAV) +
+                                       ""/*HtmlUtil.onMouseClick(call)*/));
             String iconUrl = getEntryManager().getIconUrl(request, entry);
-            catSB.append(HtmlUtil.img(iconUrl));
-            catSB.append(HtmlUtil.space(1));
+            catSB.append(HtmlUtil.href(
+                                       getEntryManager().getEntryURL(request, entry),
+                                       HtmlUtil.img(iconUrl,msg("Click to view entry details"))));
+            catSB.append(HtmlUtil.space(2));
             double lat = entry.getSouth();
             double lon = entry.getEast();
             //            catSB.append("<a href=\"javascript:" + call +"\">"
             //                         + entry.getName() + "</a><br>");
-            catSB.append(entry.getName());
+            //HtmlUtil.onMouseClick(call);
+            catSB.append(HtmlUtil.href("javascript:" + call, entry.getName(),HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
             catSB.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
             String  pointsString = "null";
             boolean hasPolygon   = false;
