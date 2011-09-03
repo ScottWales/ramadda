@@ -193,8 +193,8 @@ function RepositoryMap(mapId, params) {
         }
 
         if (this.initialBounds) {
-            projPoint = this.initialBounds.getCenterLonLat();
-            projPoint = this.transformLLPoint(projPoint);
+            var llPoint = this.initialBounds.getCenterLonLat();
+            var projPoint = this.transformLLPoint(llPoint);
             this.map.setCenter(projPoint);
             this.map.zoomToExtent(this.transformLLBounds(this.initialBounds));
             // this.map.restrictedExtent = this.initialBounds;
@@ -527,8 +527,8 @@ function RepositoryMap(mapId, params) {
                 return;
             }
             // markers are in projection coordinates
-            bounds = this.markers.getDataExtent();
-            bounds = this.transformProjBounds(bounds);
+            var dataBounds = this.markers.getDataExtent();
+            bounds = this.transformProjBounds(dataBounds);
         }
         // alert(bounds);
         if (!this.map) {
