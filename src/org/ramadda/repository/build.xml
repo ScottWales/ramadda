@@ -2,7 +2,7 @@
 
 <project basedir="../../../.." default="all" name="Ramadda">
 
-    <target name="all" depends="repositoryjar,repositorywar,repositoryzip">
+    <target name="all" depends="repository.jar,repository.war,repository.zip">
     </target>
 
 
@@ -10,39 +10,24 @@
        <tstamp>
          <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
        </tstamp>
-        <property  name="version" value="1.3"/>
-        <property  name="_version" value="1_3"/>
+        <property file="${basedir}/build.properties"/>
 
-        <property name="rname" value="ramadda${version}"/>
-
-        <property name="src_dir" value="${basedir}/src"/>
-
-        <property name="dist_dir" value="${basedir}/dist"/>
         <mkdir dir="${dist_dir}"/>
 
-        <property name="lib_dir" value="${basedir}/lib"/>
         <property name="repositoryrelpath" value="org/ramadda/repository" />
         <property name="repository_dir" value="${src_dir}/${repositoryrelpath}" />
 
-        <property name="release_dir" value="${dist_dir}/${rname}" />
+        <property name="release_dir" value="${dist_dir}/${release_name}" />
         <property name="tmpjar_dir" value="${dist_dir}/tmpjardir" />
-        <property name="srcrelease_dir" value="${rname}src${_version}" />
+        <property name="srcrelease_dir" value="${release_name}src${_version}" />
 
-        <property name="repositoryzip" value="${rname}.zip"/>
-        <property name="repositoryjar" value="${rname}.jar"/>
 
-	<property name="docs_dir" value="${dist_dir}/${rname}docs"/>
+
+	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
         <mkdir dir="${docs_dir}"/>
 
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
         <mkdir dir="${docs_javadoc_dest}"/>
-
-        <property name="compile_dir" value="${src_dir}"/>
-        <property  name="build.sysclasspath" value="ignore"/>
-        <property name="failonerror" value="true"/>
-        <property name="srcversion" value="1.6"/>
-        <property name="javatarget" value="1.6"/>
-
 
     </target>
 
@@ -85,7 +70,7 @@
 -->
           <arg value="-Dramadda.cacheresources=false"/>
           <classpath>
-             <pathelement path="${dist_dir}/${repositoryjar}"/>
+             <pathelement path="${dist_dir}/${repository_jar}"/>
              <pathelement path="${classpath}"/>
              <pathelement location=""/>
          </classpath>
@@ -97,9 +82,9 @@
 <!--
         <antcall target="repositorylib"/>
 -->
-        <antcall target="repositoryjar"/>
-        <antcall target="repositoryzip"/>
-        <antcall target="repositorywar"/>
+        <antcall target="repository.jar"/>
+        <antcall target="repository.zip"/>
+        <antcall target="repository.war"/>
         <antcall target="clientjar"/>
     </target>
 
@@ -110,7 +95,7 @@
             keyfile="${user.home}/.ssh/id_dsa"
             passphrase=""
         >
-        <fileset  dir="${lib_dir}" includes="repository.war,repository_src.jar,${repositoryzip},repositoryclient.jar,repositoryclient.zip"/>
+        <fileset  dir="${lib_dir}" includes="${repository_war},repository_src.jar,${repository_zip},repositoryclient.jar,repositoryclient.zip"/>
         </scp>
     </target>
 
@@ -225,7 +210,7 @@
         </javac>
     </target>
 
-    <target name="repositoryjar" depends="init,compile">
+    <target name="repository.jar" depends="init,compile">
         <copy overwrite="true" file="${repository_dir}/resources/version.properties" tofile="${repository_dir}/resources/build.properties">
             <filterset>
                 <filter token="DATE" value="${date}"/>
@@ -236,7 +221,7 @@
             basedir="${src_dir}"
             compress="true"
             update="false"
-            jarfile="${dist_dir}/${repositoryjar}">
+            jarfile="${dist_dir}/${repository_jar}">
            <manifest>
               <attribute name="Implementation-Title" value="Unidata's Ramada"/>
               <attribute name="Implementation-Version" value="1.1"/>
@@ -256,36 +241,36 @@
 
 
     <target name="zip" depends="init">
-        <zip destfile="${dist_dir}/${repositoryzip}">
-          <zipfileset dir="${release_dir}" prefix="${rname}"/>
+        <zip destfile="${dist_dir}/${repository_zip}">
+          <zipfileset dir="${release_dir}" prefix="${release_name}"/>
         </zip>
      </target>
 
-    <target name="repositoryzip" depends="init,repositoryjar">
+    <target name="repository.zip" depends="init,repository.jar">
         <mkdir dir="${release_dir}"/>
         <delete includeemptydirs="true">
             <fileset dir="${release_dir}" includes="**/*"/>
         </delete>
         <mkdir dir="${release_dir}/lib"/>
-        <copy  file="${dist_dir}/${repositoryjar}" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${dist_dir}/${repository_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/idv.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/repositorylib.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/tika-app-0.9.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${repository_dir}/release/ramadda.sh" todir="${release_dir}" overwrite="true">
             <filterset>
-                <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
+                <filter token="REPOSITORYJAR" value="${repository_jar}"/>
             </filterset>
 
         </copy>
         <copy  file="${repository_dir}/release/ramadda.bat" todir="${release_dir}" overwrite="true">
             <filterset>
-                <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
+                <filter token="REPOSITORYJAR" value="${repository_jar}"/>
             </filterset>
 
         </copy>
         <copy  file="${repository_dir}/release/ramaddamysql.sh" todir="${release_dir}" overwrite="true" >
             <filterset>
-                <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
+                <filter token="REPOSITORYJAR" value="${repository_jar}"/>
             </filterset>
 
         </copy>
@@ -293,16 +278,16 @@
         <copy  file="${lib_dir}/repositorytds.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/servlet-api.jar" todir="${release_dir}/lib" overwrite="true" />
         <delete file="${lib_dir}/repository.tar"/>
-        <delete file="${dist_dir}/${repositoryzip}"/>
-        <zip destfile="${dist_dir}/${repositoryzip}">
-          <zipfileset dir="${release_dir}" prefix="${rname}"/>
+        <delete file="${dist_dir}/${repository_zip}"/>
+        <zip destfile="${dist_dir}/${repository_zip}">
+          <zipfileset dir="${release_dir}" prefix="${release_name}"/>
         </zip>
 
 <!--
         <tar 
             destfile="${lib_dir}/repository.tar">
           <tarfileset dir="${release_dir}"
-              prefix="${rname}">
+              prefix="${release_name}">
               <include name="*"/>
          </tarfileset>
 
@@ -319,17 +304,17 @@
     </target>
 
 
-    <target name="war" depends="repositorywar">
+    <target name="war" depends="repository.war">
     </target>
 
 
-    <target name="repositorywar" depends="init">
+    <target name="repository.war" depends="init">
       <delete>
-           <fileset file="${lib_dir}/repository.war"/>
+           <fileset file="${dist_dir}/${repository_war}"/>
        </delete>
-      <war webxml="${repository_dir}/release/web.xml" destfile="${dist_dir}/repository.war">
+      <war webxml="${repository_dir}/release/web.xml" destfile="${dist_dir}/${repository_war}">
           <webinf file="${repository_dir}/release/repository.properties"/>
-          <lib file="${dist_dir}/${repositoryjar}"/>
+          <lib file="${dist_dir}/${repository_jar}"/>
           <lib file="${lib_dir}/idv.jar"/>
           <lib file="${lib_dir}/repositorylib.jar"/>
           <lib file="${lib_dir}/repositorytds.jar"/>
