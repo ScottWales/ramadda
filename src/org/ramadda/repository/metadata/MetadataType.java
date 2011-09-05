@@ -1,29 +1,30 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.metadata;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.ui.ImageUtils;
@@ -207,9 +208,9 @@ public class MetadataType extends MetadataTypeBase {
                                  + node.getTagName(), null);
             }
 
-            Class c =
-                Misc.findClass(XmlUtil.getAttributeFromTree(node, ATTR_CLASS,
-                    "org.ramadda.repository.metadata.MetadataHandler"));
+            Class c = Misc.findClass(XmlUtil.getAttributeFromTree(node,
+                          ATTR_CLASS,
+                          "org.ramadda.repository.metadata.MetadataHandler"));
 
             MetadataHandler handler      = manager.getHandler(c);
             String          id           = XmlUtil.getAttribute(node,
@@ -363,11 +364,13 @@ public class MetadataType extends MetadataTypeBase {
      * @param metadata _more_
      * @param parent _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     public boolean addMetadataToXml(Request request, String templateType,
-                                 Entry entry, Metadata metadata,
-                                 Element parent)
+                                    Entry entry, Metadata metadata,
+                                    Element parent)
             throws Exception {
 
 
@@ -621,8 +624,10 @@ public class MetadataType extends MetadataTypeBase {
         }
 
         try {
-            return HtmlUtil.url(
-                                request.url(handler.getRepository().getSearchManager().URL_ENTRY_SEARCH), args);
+            return HtmlUtil
+                .url(request
+                    .url(handler.getRepository().getSearchManager()
+                        .URL_ENTRY_SEARCH), args);
         } catch (Exception exc) {
             System.err.println("ARGS:" + args);
             throw new RuntimeException(exc);
@@ -630,8 +635,17 @@ public class MetadataType extends MetadataTypeBase {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param sb _more_
+     * @param metadata _more_
+     *
+     * @throws Exception _more_
+     */
     public void getTextCorpus(Entry entry, StringBuffer sb, Metadata metadata)
-        throws Exception {
+            throws Exception {
         for (MetadataElement element : getChildren()) {
             String value = metadata.getAttr(element.getIndex());
             element.getTextCorpus(value, sb);
@@ -687,22 +701,29 @@ public class MetadataType extends MetadataTypeBase {
             }
             content.append(html);
         } else {
-            int     cnt    = 1;
-            boolean didOne = false;
+            int                   cnt      = 1;
+            boolean               didOne   = false;
 
             List<MetadataElement> children = getChildren();
-            if(children.size()>1)
-                content.append("<table border=0 cellpadding=2 cellspacing=2>");
-            else
-                content.append("<table border=0 cellpadding=0 cellspacing=0>");
+            if (children.size() > 1) {
+                content.append(
+                    "<table border=0 cellpadding=2 cellspacing=2>");
+            } else {
+                content.append(
+                    "<table border=0 cellpadding=0 cellspacing=0>");
+            }
             for (MetadataElement element : children) {
-                MetadataElement.FormInfo formInfo = element.getHtml(metadata.getAttr(cnt),0);
-                if (formInfo!=null) {
+                MetadataElement.FormInfo formInfo =
+                    element.getHtml(metadata.getAttr(cnt), 0);
+                if (formInfo != null) {
                     //xxxx
-                    if(!element.isGroup()&& children.size()==1) {
-                        content.append(HtmlUtil.row(HtmlUtil.colspan(formInfo.content, 2)));
-                    } else  {
-                        content.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
+                    if ( !element.isGroup() && (children.size() == 1)) {
+                        content.append(
+                            HtmlUtil.row(
+                                HtmlUtil.colspan(formInfo.content, 2)));
+                    } else {
+                        content.append(HtmlUtil.formEntryTop(formInfo.label,
+                                formInfo.content));
                     }
                     didOne = true;
                 }
@@ -766,7 +787,7 @@ public class MetadataType extends MetadataTypeBase {
         StringBuffer sb     = new StringBuffer();
 
         if ( !forEdit) {
-            sb.append(header(msgLabel("Add")  + getName()));
+            sb.append(header(msgLabel("Add") + getName()));
         }
         sb.append(HtmlUtil.br());
         String lastGroup = null;
@@ -785,9 +806,12 @@ public class MetadataType extends MetadataTypeBase {
             if ((widget == null) || (widget.length() == 0)) {}
             else {
                 String suffixLabel = element.getSuffixLabel();
-                if(suffixLabel==null) suffixLabel = "";
+                if (suffixLabel == null) {
+                    suffixLabel = "";
+                }
 
-                sb.append(HtmlUtil.formEntryTop(elementLbl, widget+suffixLabel));
+                sb.append(HtmlUtil.formEntryTop(elementLbl,
+                        widget + suffixLabel));
             }
         }
 

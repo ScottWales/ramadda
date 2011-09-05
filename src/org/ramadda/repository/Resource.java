@@ -1,22 +1,22 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository;
 
@@ -72,6 +72,7 @@ public class Resource {
     /** _more_ */
     private long fileSize = -1;
 
+    /** _more_          */
     private String md5;
 
     /**
@@ -121,15 +122,23 @@ public class Resource {
      * @param type _more_
      */
     public Resource(String path, String type) {
-        this(path, type,  null,-1);
+        this(path, type, null, -1);
     }
 
+    /**
+     * _more_
+     *
+     * @param path _more_
+     * @param type _more_
+     * @param md5 _more_
+     * @param fileSize _more_
+     */
     public Resource(String path, String type, String md5, long fileSize) {
-        this.path = path;
-        this.type = type;
-        this.md5 = md5;
+        this.path     = path;
+        this.type     = type;
+        this.md5      = md5;
         this.fileSize = fileSize;
-        if(fileSize<0 && path!=null) {
+        if ((fileSize < 0) && (path != null)) {
             fileSize = new File(path).length();
         }
     }
@@ -140,9 +149,9 @@ public class Resource {
      * @param that _more_
      */
     public Resource(Resource that) {
-        this.path = that.path;
-        this.type = that.type;
-        this.md5 = that.md5;
+        this.path     = that.path;
+        this.type     = that.type;
+        this.md5      = that.md5;
         this.fileSize = that.fileSize;
     }
 
@@ -166,17 +175,22 @@ public class Resource {
         }
         String file = path.toLowerCase();
         return file.endsWith(".jpg") || file.endsWith(".jpeg")
-            || file.endsWith(".gif") || file.endsWith(".png")||
-            file.endsWith(".bmp");
+               || file.endsWith(".gif") || file.endsWith(".png")
+               || file.endsWith(".bmp");
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isEditableImage() {
         if (path == null) {
             return false;
         }
         String file = path.toLowerCase();
         return file.endsWith(".jpg") || file.endsWith(".jpeg")
-            || file.endsWith(".gif") || file.endsWith(".png");
+               || file.endsWith(".gif") || file.endsWith(".png");
     }
 
     /**
@@ -202,10 +216,10 @@ public class Resource {
             return fileSize;
         }
         File file = getTheFile();
-        if(file.exists()) {
+        if (file.exists()) {
             fileSize = file.length();
         }
-        return fileSize; 
+        return fileSize;
     }
 
     /**
@@ -328,28 +342,28 @@ public class Resource {
 
 
     /**
-       Set the Md5 property.
-
-       @param value The new value for Md5
-    **/
-    public void setMd5 (String value) {
-	md5 = value;
+     *  Set the Md5 property.
+     *
+     *  @param value The new value for Md5
+     */
+    public void setMd5(String value) {
+        md5 = value;
     }
 
     /**
-       Get the Md5 property.
-
-       @return The Md5
-    **/
-    public String getMd5 () {
-        if(md5==null) {
+     *  Get the Md5 property.
+     *
+     *  @return The Md5
+     */
+    public String getMd5() {
+        if (md5 == null) {
             //For now don't do this because big files take a long time
             //            File file = getTheFile();
             //            if(file.exists()) {
             //                md5 = IOUtil.getMd5(file.toString());
             //            }
         }
-	return md5;
+        return md5;
     }
 
 

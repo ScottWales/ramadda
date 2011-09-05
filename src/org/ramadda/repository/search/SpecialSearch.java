@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.search;
 
@@ -49,9 +50,16 @@ import java.util.List;
  */
 public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
+    /** _more_          */
     public static final String TAB_LIST = "list";
+
+    /** _more_          */
     public static final String TAB_MAP = "map";
+
+    /** _more_          */
     public static final String TAB_EARTH = "earth";
+
+    /** _more_          */
     public static final String TAB_TIMELINE = "timeline";
 
 
@@ -76,8 +84,14 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private List<String> metadataTypes = new ArrayList<String>();
 
-    private List<String> tabs=  new ArrayList<String>();
+    /** _more_          */
+    private List<String> tabs = new ArrayList<String>();
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public SpecialSearch(Repository repository) {
         super(repository);
     }
@@ -97,6 +111,14 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         init(node, props);
     }
 
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param props _more_
+     *
+     * @throws Exception _more_
+     */
     public void init(Element node, Hashtable props) throws Exception {
         String types = (String) props.get("metadatatypes");
         if (types != null) {
@@ -106,7 +128,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
         String tabsToUse = (String) props.get("tabs");
         if (tabsToUse != null) {
-            tabs.addAll(StringUtil.split(tabsToUse,",",true,true));
+            tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
         } else {
             tabs.add(TAB_LIST);
             tabs.add(TAB_MAP);
@@ -170,7 +192,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         int contentsWidth  = 750;
         int contentsHeight = 450;
-        int minWidth  = contentsWidth+200;
+        int minWidth       = contentsWidth + 200;
 
         request.put(ARG_TYPE, theType);
         List[] groupAndEntries =
@@ -212,10 +234,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         //shrink the bounds down
-        if (bounds != null && bounds.getWidth() > 180) {
+        if ((bounds != null) && (bounds.getWidth() > 180)) {
             double cx = bounds.getX() + bounds.getWidth() / 2;
             double cy = bounds.getY() + bounds.getHeight() / 2;
-            int    f  = (int)(bounds.getWidth()/3);
+            int    f  = (int) (bounds.getWidth() / 3);
             bounds = new Rectangle2D.Double(cx - f, cy - f / 2, f * 2, f);
         }
         //        map.centerOn(bounds);
@@ -295,66 +317,74 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         String head =
             getRepository().getHtmlOutputHandler().makeTimeline(request,
                 entries, timelineSB,
-                "width:" + contentsWidth + "px; height: " + contentsHeight + "px;");
+                "width:" + contentsWidth + "px; height: " + contentsHeight
+                + "px;");
 
 
-        StringBuffer mapSB =
-            new StringBuffer(HtmlUtil.italics(msg("Shift-drag to select region")));
+        StringBuffer mapSB = new StringBuffer(
+                                 HtmlUtil.italics(
+                                     msg("Shift-drag to select region")));
         mapSB.append(map.getHtml());
 
         //Pad it out
         listSB.append(
             "&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>");
 
-        if(entries.size()==0) {
+        if (entries.size() == 0) {
             tabTitles.add(msg("Results"));
-            tabContents.add(HtmlUtil.div(
-                                         getRepository().showDialogNote("No entries found"),
-                                         HtmlUtil.style("min-width:" + minWidth +"px")));
+            tabContents.add(
+                HtmlUtil.div(
+                    getRepository().showDialogNote("No entries found"),
+                    HtmlUtil.style("min-width:" + minWidth + "px")));
         }
 
-        for(String tab: tabs) {
-            if(tab.equals(TAB_LIST)) {
-                tabContents.add(HtmlUtil.div(
-                                             listSB.toString(),
-                                             HtmlUtil.style("min-width:" + minWidth +"px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_LIST)) +" " +msg("List"));
-            } else   if(tab.equals(TAB_MAP)) {
-                tabContents.add(HtmlUtil.div(
-                                             mapSB.toString(),
-                                             HtmlUtil.style("min-width:" + minWidth +"px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_MAP)) +" " +msg("Map"));
-            } else   if(tab.equals(TAB_TIMELINE)) {
-                tabContents.add(HtmlUtil.div(
-                                             timelineSB.toString(),
-                                             HtmlUtil.style("min-width:" + minWidth +"px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_TIMELINE)) +" " +msg("Timeline"));
-            } else   if(tab.equals(TAB_EARTH) &&
-                        getMapManager().isGoogleEarthEnabled(request)) {
+        for (String tab : tabs) {
+            if (tab.equals(TAB_LIST)) {
+                tabContents.add(HtmlUtil.div(listSB.toString(),
+                                             HtmlUtil.style("min-width:"
+                                                 + minWidth + "px")));
+                tabTitles.add(HtmlUtil.img(iconUrl(ICON_LIST)) + " "
+                              + msg("List"));
+            } else if (tab.equals(TAB_MAP)) {
+                tabContents.add(HtmlUtil.div(mapSB.toString(),
+                                             HtmlUtil.style("min-width:"
+                                                 + minWidth + "px")));
+                tabTitles.add(HtmlUtil.img(iconUrl(ICON_MAP)) + " "
+                              + msg("Map"));
+            } else if (tab.equals(TAB_TIMELINE)) {
+                tabContents.add(HtmlUtil.div(timelineSB.toString(),
+                                             HtmlUtil.style("min-width:"
+                                                 + minWidth + "px")));
+                tabTitles.add(HtmlUtil.img(iconUrl(ICON_TIMELINE)) + " "
+                              + msg("Timeline"));
+            } else if (tab.equals(TAB_EARTH)
+                       && getMapManager().isGoogleEarthEnabled(request)) {
                 StringBuffer earthSB = new StringBuffer();
-                getMapManager().getGoogleEarth(request,  
-                                               entries, earthSB, contentsWidth-MapManager.EARTH_ENTRIES_WIDTH, contentsHeight);
-                tabContents.add(HtmlUtil.div(
-                                             earthSB.toString(),
-                                             HtmlUtil.style("min-width:" + minWidth +"px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_GOOGLEEARTH)) +" " +msg("Earth"));
+                getMapManager().getGoogleEarth(request, entries, earthSB,
+                        contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
+                        contentsHeight);
+                tabContents.add(HtmlUtil.div(earthSB.toString(),
+                                             HtmlUtil.style("min-width:"
+                                                 + minWidth + "px")));
+                tabTitles.add(HtmlUtil.img(iconUrl(ICON_GOOGLEEARTH)) + " "
+                              + msg("Earth"));
             }
         }
 
-        String tabs = tabContents.size()==1?tabContents.get(0):
-            OutputHandler.makeTabs(tabTitles, tabContents, true,
-                                   "tab_content");
+        String tabs = (tabContents.size() == 1)
+                      ? tabContents.get(0)
+                      : OutputHandler.makeTabs(tabTitles, tabContents, true,
+                          "tab_content");
         sb.append(
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
-        String searchHtml = HtmlUtil.makeShowHideBlock(HtmlUtil.img(iconUrl(ICON_SEARCH)),
-                                                       formSB.toString(), true);
-        sb.append(HtmlUtil.col(searchHtml,
-                               ""
-                              /*HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "200")*/));
-        sb.append(HtmlUtil.col(tabs, 
-                               HtmlUtil.style("min-width:" + minWidth +"px;") +
-                               HtmlUtil.attr(HtmlUtil.ATTR_ALIGN, "left")
-                               ));
+        String searchHtml =
+            HtmlUtil.makeShowHideBlock(HtmlUtil.img(iconUrl(ICON_SEARCH)),
+                                       formSB.toString(), true);
+        sb.append(HtmlUtil.col(searchHtml, ""
+        /*HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "200")*/
+        ));
+        sb.append(HtmlUtil.col(tabs, HtmlUtil.style("min-width:" + minWidth
+                + "px;") + HtmlUtil.attr(HtmlUtil.ATTR_ALIGN, "left")));
         sb.append("</table>");
 
         sb.append(HtmlUtil.script(js.toString()));

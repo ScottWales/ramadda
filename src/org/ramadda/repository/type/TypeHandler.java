@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.type;
 
@@ -255,6 +256,14 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {}
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getWikiTemplate(Request request, Entry entry) {
         return null;
     }
@@ -305,7 +314,7 @@ public class TypeHandler extends RepositoryManager {
     protected void init(Element entryNode) throws Exception {
         forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
         setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
-        if(getType().indexOf(".")>0) {
+        if (getType().indexOf(".") > 0) {
             //            System.err.println("DOT TYPE: " + getType());
         }
 
@@ -572,15 +581,30 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    public void addToInformationTabs(Request request, Entry entry, List<String>tabTitles, List<String>tabContents) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tabTitles _more_
+     * @param tabContents _more_
+     */
+    public void addToInformationTabs(Request request, Entry entry,
+                                     List<String> tabTitles,
+                                     List<String> tabContents) {}
 
-    }
 
-
-    public boolean isDefaultHtmlOutput(Request request){
-        return Misc.equals(OutputHandler.OUTPUT_HTML.getId(),
-                           request.getString(ARG_OUTPUT,
-                                             OutputHandler.OUTPUT_HTML.getId()));
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
+    public boolean isDefaultHtmlOutput(Request request) {
+        return Misc.equals(
+            OutputHandler.OUTPUT_HTML.getId(),
+            request.getString(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId()));
     }
 
 
@@ -1371,11 +1395,13 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     HtmlUtil.url(
                         getRepository().URL_ENTRY_EXPORT.toString() + "/"
-                        + IOUtil.stripExtension(Entry.encodeName(entry.getName()))
-                        + ".zip", new String[] { ARG_ENTRYID,
-                    entry.getId() }), getRepository().iconUrl(ICON_EXPORT),
-                                      "Export Entries",
-                                      OutputType.TYPE_FILE));
+                        + IOUtil.stripExtension(
+                            Entry.encodeName(
+                                entry.getName())) + ".zip", new String[] {
+                                    ARG_ENTRYID,
+                                    entry.getId() }), getRepository().iconUrl(
+                                        ICON_EXPORT), "Export Entries",
+                                            OutputType.TYPE_FILE));
 
             if (canDoNew) {
                 links.add(
@@ -1649,9 +1675,9 @@ public class TypeHandler extends RepositoryManager {
                                 + formatDate(request, entry.getCreateDate(),
                                              entry)));
 
-            Resource resource     = entry.getResource();
-            String   resourceLink = resource.getPath();
-            String resourceLabel = msgLabel("Resource");
+            Resource resource      = entry.getResource();
+            String   resourceLink  = resource.getPath();
+            String   resourceLabel = msgLabel("Resource");
             if (resourceLink.length() > 0) {
                 if (entry.getResource().isUrl()) {
                     resourceLink = getResourceUrl(request, entry);
@@ -1664,10 +1690,11 @@ public class TypeHandler extends RepositoryManager {
                         HtmlUtil.urlEncodeExceptSpace(resourceLink);
                     if (getAccessManager().canDownload(request, entry)) {
                         resourceLabel = msgLabel("File");
-                        resourceLink = resourceLink +HtmlUtil.space(2) +
-                            HtmlUtil.href(getEntryResourceUrl(request,
-                                                              entry), HtmlUtil.img(iconUrl(ICON_DOWNLOAD),
-                                                                                   msg("Download"),""));
+                        resourceLink =
+                            resourceLink + HtmlUtil.space(2)
+                            + HtmlUtil.href(getEntryResourceUrl(request,
+                                entry), HtmlUtil.img(iconUrl(ICON_DOWNLOAD),
+                                    msg("Download"), ""));
 
                     }
                 }
@@ -1690,8 +1717,7 @@ public class TypeHandler extends RepositoryManager {
 
                 }
 
-               sb.append(formEntry(request, resourceLabel,
-                                    resourceLink));
+                sb.append(formEntry(request, resourceLabel, resourceLink));
 
                 if (entry.isFile()) {
                     //                    sb.append(formEntry(request, msgLabel("Size"),
@@ -3418,40 +3444,40 @@ public class TypeHandler extends RepositoryManager {
         double  east       = areaValues[2];
         double  north      = areaValues[3];
 
-        if (!contains) { 
+        if ( !contains) {
             //           if (gotThemAll) {
-            if(!Double.isNaN(north)) {            
+            if ( !Double.isNaN(north)) {
                 areaClause = Clause.le(Tables.ENTRIES.COL_SOUTH, north);
                 areaExpressions.add(
-                                    Clause.and(
-                                               Clause.neq(
-                                                          Tables.ENTRIES.COL_SOUTH,
-                                                          new Double(Entry.NONGEO)), areaClause));
+                    Clause.and(
+                        Clause.neq(
+                            Tables.ENTRIES.COL_SOUTH,
+                            new Double(Entry.NONGEO)), areaClause));
             }
-            if(!Double.isNaN(south)) {            
+            if ( !Double.isNaN(south)) {
                 areaClause = Clause.ge(Tables.ENTRIES.COL_NORTH, south);
                 areaExpressions.add(
-                                    Clause.and(
-                                               Clause.neq(
-                                                          Tables.ENTRIES.COL_SOUTH,
-                                                          new Double(Entry.NONGEO)), areaClause));
+                    Clause.and(
+                        Clause.neq(
+                            Tables.ENTRIES.COL_SOUTH,
+                            new Double(Entry.NONGEO)), areaClause));
             }
 
-            if(!Double.isNaN(west)) {            
+            if ( !Double.isNaN(west)) {
                 areaClause = Clause.ge(Tables.ENTRIES.COL_EAST, west);
                 areaExpressions.add(
-                                    Clause.and(
-                                               Clause.neq(
-                                                          Tables.ENTRIES.COL_EAST,
-                                                          new Double(Entry.NONGEO)), areaClause));
+                    Clause.and(
+                        Clause.neq(
+                            Tables.ENTRIES.COL_EAST,
+                            new Double(Entry.NONGEO)), areaClause));
             }
-            if(!Double.isNaN(east)) {            
+            if ( !Double.isNaN(east)) {
                 areaClause = Clause.le(Tables.ENTRIES.COL_WEST, east);
                 areaExpressions.add(
-                                    Clause.and(
-                                               Clause.neq(
-                                                          Tables.ENTRIES.COL_WEST,
-                                                          new Double(Entry.NONGEO)), areaClause));
+                    Clause.and(
+                        Clause.neq(
+                            Tables.ENTRIES.COL_WEST,
+                            new Double(Entry.NONGEO)), areaClause));
             }
             //        }
         } else {
@@ -3974,11 +4000,26 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getCategory(Entry entry) {
         return description;
     }
 
-    public String  getMapInfoBubble(Request request, Entry entry) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public String getMapInfoBubble(Request request, Entry entry) {
         return null;
     }
 

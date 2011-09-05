@@ -1,22 +1,22 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.database;
 
@@ -28,13 +28,13 @@ import org.apache.commons.dbcp.BasicDataSource;
 
 import org.apache.log4j.Logger;
 
-
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Log4jPrintWriter;
+
+
+import org.w3c.dom.*;
 
 
 
@@ -114,16 +114,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private static final int TIMEOUT = 5000;
 
-    /** _more_          */
+    /** _more_ */
     private Counter numberOfSelects = new Counter();
 
-    /** _more_          */
+    /** _more_ */
     private static final int DUMPTAG_TABLE = 1;
 
-    /** _more_          */
+    /** _more_ */
     private static final int DUMPTAG_ROW = 2;
 
-    /** _more_          */
+    /** _more_ */
     private static final int DUMPTAG_END = 3;
 
 
@@ -151,7 +151,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     private final Object CONNECTION_MUTEX = new Object();
 
-    /** _more_          */
+    /** _more_ */
     private List<ConnectionInfo> connectionInfos =
         new ArrayList<ConnectionInfo>();
 
@@ -182,7 +182,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             throw new IllegalStateException("Must have a " + PROP_DB
                                             + " property defined");
         }
-	db = db.trim();
+        db = db.trim();
     }
 
 
@@ -270,27 +270,31 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
             BasicDataSource ds = new BasicDataSource();
 
-            ds.setMaxActive(getRepository().getProperty(PROP_DB_POOL_MAXACTIVE,
-                                                        100));
-            ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE, 100));
+            ds.setMaxActive(
+                getRepository().getProperty(PROP_DB_POOL_MAXACTIVE, 100));
+            ds.setMaxIdle(getRepository().getProperty(PROP_DB_POOL_MAXIDLE,
+                    100));
 
-            ds.setRemoveAbandonedTimeout(60*10);
+            ds.setRemoveAbandonedTimeout(60 * 10);
             ds.setRemoveAbandoned(false);
 
             String userName = (String) getRepository().getProperty(
-                                                                   PROP_DB_USER.replace("${db}", db));
+                                  PROP_DB_USER.replace("${db}", db));
             String password = (String) getRepository().getProperty(
-                                                                   PROP_DB_PASSWORD.replace("${db}", db));
-            String connectionURL =
-                (String) getRepository().getProperty(PROP_DB_URL.replace("${db}",db));
+                                  PROP_DB_PASSWORD.replace("${db}", db));
+            String connectionURL = (String) getRepository().getProperty(
+                                       PROP_DB_URL.replace("${db}", db));
 
-	    String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}", db);
-	    //	    System.err.println("JDBC Property:" + driverClassPropertyName);
-	    String driverClassName = (String) getRepository().getProperty(driverClassPropertyName);
-	    //	    System.err.println("JDBC driver class:" + driverClassName);
+            String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}",
+                                                 db);
+            //      System.err.println("JDBC Property:" + driverClassPropertyName);
+            String driverClassName =
+                (String) getRepository().getProperty(driverClassPropertyName);
+            //      System.err.println("JDBC driver class:" + driverClassName);
             Misc.findClass(driverClassName);
 
-            System.err.println("RAMADDA: DatabaseManager connection url:"  + connectionURL+" user name:" + userName);
+            System.err.println("RAMADDA: DatabaseManager connection url:"
+                               + connectionURL + " user name:" + userName);
 
             ds.setDriverClassName(driverClassName);
             ds.setUsername(userName);
@@ -298,8 +302,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             ds.setUrl(connectionURL);
             ds.setLogWriter(new Log4jPrintWriter(LOG));
             return ds;
-        } catch(Exception exc) {
-            System.err.println("RAMADDA: error initializing database connection:" + exc);
+        } catch (Exception exc) {
+            System.err.println(
+                "RAMADDA: error initializing database connection:" + exc);
             exc.printStackTrace();
             throw exc;
         }
@@ -476,7 +481,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             String url =
                 HtmlUtil.href(
                     request.url(
-                        getRepository().getSearchManager().URL_SEARCH_FORM, ARG_TYPE,
+                        getRepository().getSearchManager().URL_SEARCH_FORM,
+                        ARG_TYPE,
                         typeHandler.getType()), typeHandler.getLabel());
             dbSB.append(HtmlUtil.row(HtmlUtil.cols("" + cnt, url)));
         }
@@ -665,15 +671,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @throws Exception _more_
      */
     public void shutdown() throws Exception {
-        if(dataSource!=null) {
+        if (dataSource != null) {
             dataSource.close();
             dataSource = null;
         }
-        if(isDatabaseDerby()) {
-            System.err.println ("RAMADDA: Shutting down derby");
+        if (isDatabaseDerby()) {
+            System.err.println("RAMADDA: Shutting down derby");
             try {
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");
-            } catch(Exception ignoreThis) {}
+            } catch (Exception ignoreThis) {}
         }
     }
 
@@ -773,8 +779,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
-    public void initSelectStatement(Statement stmt) {
-    }
+    /**
+     * _more_
+     *
+     * @param stmt _more_
+     */
+    public void initSelectStatement(Statement stmt) {}
 
     /**
      * _more_
@@ -934,60 +944,57 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 List             valueList = new ArrayList();
                 boolean          didDelete = false;
                 while ((results = iter.getNext()) != null) {
-                        if ( !didDelete) {
-                            didDelete = true;
-                            IOUtil.write(os,
-                                         "delete from  "
-                                         + tableName.toLowerCase() + ";\n");
+                    if ( !didDelete) {
+                        didDelete = true;
+                        IOUtil.write(os,
+                                     "delete from  "
+                                     + tableName.toLowerCase() + ";\n");
+                    }
+                    totalRowCnt++;
+                    rowCnt++;
+                    StringBuffer value = new StringBuffer("(");
+                    for (int i = 1; i <= colCnt; i++) {
+                        int type = ((Integer) types.get(i - 1)).intValue();
+                        if (i > 1) {
+                            value.append(",");
                         }
-                        totalRowCnt++;
-                        rowCnt++;
-                        StringBuffer value = new StringBuffer("(");
-                        for (int i = 1; i <= colCnt; i++) {
-                            int type = ((Integer) types.get(i
-                                           - 1)).intValue();
-                            if (i > 1) {
-                                value.append(",");
-                            }
-                            if (type == java.sql.Types.TIMESTAMP) {
-                                Timestamp ts = results.getTimestamp(i);
-                                //                            sb.append(SqlUtil.format(new Date(ts.getTime())));
-                                if (ts == null) {
-                                    value.append("null");
-                                } else {
-                                    value.append(
-                                        HtmlUtil.squote(ts.toString()));
-                                }
-
-                            } else if (type == java.sql.Types.VARCHAR) {
-                                String s = results.getString(i);
-                                if (s != null) {
-                                    //If the target isn't mysql:
-                                    //s = s.replace("'", "''");
-                                    //If the target is mysql:
-                                    s = s.replace("'", "\\'");
-                                    s = s.replace("\r", "\\r");
-                                    s = s.replace("\n", "\\n");
-                                    value.append("'" + s + "'");
-                                } else {
-                                    value.append("null");
-                                }
+                        if (type == java.sql.Types.TIMESTAMP) {
+                            Timestamp ts = results.getTimestamp(i);
+                            //                            sb.append(SqlUtil.format(new Date(ts.getTime())));
+                            if (ts == null) {
+                                value.append("null");
                             } else {
-                                String s = results.getString(i);
-                                value.append(s);
+                                value.append(HtmlUtil.squote(ts.toString()));
                             }
+
+                        } else if (type == java.sql.Types.VARCHAR) {
+                            String s = results.getString(i);
+                            if (s != null) {
+                                //If the target isn't mysql:
+                                //s = s.replace("'", "''");
+                                //If the target is mysql:
+                                s = s.replace("'", "\\'");
+                                s = s.replace("\r", "\\r");
+                                s = s.replace("\n", "\\n");
+                                value.append("'" + s + "'");
+                            } else {
+                                value.append("null");
+                            }
+                        } else {
+                            String s = results.getString(i);
+                            value.append(s);
                         }
-                        value.append(")");
-                        valueList.add(value.toString());
-                        if (valueList.size() > 50) {
-                            IOUtil.write(os,
-                                         "insert into "
-                                         + tableName.toLowerCase() + colNames
-                                         + " values ");
-                            IOUtil.write(os, StringUtil.join(",", valueList));
-                            IOUtil.write(os, ";\n");
-                            valueList = new ArrayList();
-                        }
+                    }
+                    value.append(")");
+                    valueList.add(value.toString());
+                    if (valueList.size() > 50) {
+                        IOUtil.write(os,
+                                     "insert into " + tableName.toLowerCase()
+                                     + colNames + " values ");
+                        IOUtil.write(os, StringUtil.join(",", valueList));
+                        IOUtil.write(os, ";\n");
+                        valueList = new ArrayList();
+                    }
                 }
                 if (valueList.size() > 0) {
                     if ( !didDelete) {
@@ -1349,7 +1356,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                             size = 36000;
                         }
                     }
-                    System.err.println("\tcol:" + colName + " type:" + type  + " name:" + typeName + " size:" + size);
+                    System.err.println("\tcol:" + colName + " type:" + type
+                                       + " name:" + typeName + " size:"
+                                       + size);
                     columns.add(new ColumnInfo(colName, typeName, type,
                             size));
                 }
@@ -1363,9 +1372,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             System.err.println("Exporting database");
             for (TableInfo tableInfo : tableInfos) {
                 //Hummm
-                if(tableInfo.getName().equalsIgnoreCase("base")) continue;
-                if(tableInfo.getName().equalsIgnoreCase("agggregation")) continue;
-                if(tableInfo.getName().equalsIgnoreCase("entry")) continue;
+                if (tableInfo.getName().equalsIgnoreCase("base")) {
+                    continue;
+                }
+                if (tableInfo.getName().equalsIgnoreCase("agggregation")) {
+                    continue;
+                }
+                if (tableInfo.getName().equalsIgnoreCase("entry")) {
+                    continue;
+                }
                 System.err.println("Exporting table: " + tableInfo.getName());
                 List<ColumnInfo> columns   = tableInfo.getColumns();
                 List             valueList = new ArrayList();
@@ -1376,45 +1391,42 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 dos.writeInt(DUMPTAG_TABLE);
                 writeString(dos, tableInfo.getName());
                 while ((results = iter.getNext()) != null) {
-                        dos.writeInt(DUMPTAG_ROW);
-                        rowCnt++;
-                        if ((rowCnt % 1000) == 0) {
-                            if (actionId != null) {
-                                getActionManager().setActionMessage(actionId,
-                                        "Written " + rowCnt
-                                        + " database rows");
-                            }
-                            System.err.println("rows:" + rowCnt);
+                    dos.writeInt(DUMPTAG_ROW);
+                    rowCnt++;
+                    if ((rowCnt % 1000) == 0) {
+                        if (actionId != null) {
+                            getActionManager().setActionMessage(actionId,
+                                    "Written " + rowCnt + " database rows");
                         }
-                        for (int i = 1; i <= columns.size(); i++) {
-                            ColumnInfo colInfo = columns.get(i - 1);
-                            int        type    = colInfo.getType();
-                            if (type == ColumnInfo.TYPE_TIMESTAMP) {
-                                Timestamp ts = results.getTimestamp(i);
-                                if (ts == null) {
-                                    dos.writeLong((long) -1);
-                                } else {
-                                    dos.writeLong(ts.getTime());
-                                }
-                            } else if (type == ColumnInfo.TYPE_VARCHAR) {
-                                writeString(dos, results.getString(i));
-                            } else if (type == ColumnInfo.TYPE_INTEGER) {
-                                writeInteger(dos,
-                                             (Integer) results.getObject(i));
-                            } else if (type == ColumnInfo.TYPE_DOUBLE) {
-                                writeDouble(dos,
-                                            (Double) results.getObject(i));
-                            } else if (type == ColumnInfo.TYPE_CLOB) {
-                                writeString(dos, results.getString(i));
-                            } else if (type == ColumnInfo.TYPE_BIGINT) {
-                                writeLong(dos, results.getLong(i));
+                        System.err.println("rows:" + rowCnt);
+                    }
+                    for (int i = 1; i <= columns.size(); i++) {
+                        ColumnInfo colInfo = columns.get(i - 1);
+                        int        type    = colInfo.getType();
+                        if (type == ColumnInfo.TYPE_TIMESTAMP) {
+                            Timestamp ts = results.getTimestamp(i);
+                            if (ts == null) {
+                                dos.writeLong((long) -1);
                             } else {
-                                Object object = results.getObject(i);
-                                throw new IllegalArgumentException(
-                                    "Unknown type:" + type + "  c:"
-                                    + object.getClass().getName());
+                                dos.writeLong(ts.getTime());
                             }
+                        } else if (type == ColumnInfo.TYPE_VARCHAR) {
+                            writeString(dos, results.getString(i));
+                        } else if (type == ColumnInfo.TYPE_INTEGER) {
+                            writeInteger(dos, (Integer) results.getObject(i));
+                        } else if (type == ColumnInfo.TYPE_DOUBLE) {
+                            writeDouble(dos, (Double) results.getObject(i));
+                        } else if (type == ColumnInfo.TYPE_CLOB) {
+                            writeString(dos, results.getString(i));
+                        } else if (type == ColumnInfo.TYPE_BIGINT) {
+                            writeLong(dos, results.getLong(i));
+                        } else {
+                            Object object = results.getObject(i);
+                            throw new IllegalArgumentException(
+                                "Unknown type:" + type + "  c:"
+                                + object.getClass().getName());
                         }
+                    }
                 }
             }
             System.err.println("Wrote " + rowCnt + " rows");
@@ -1607,13 +1619,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
-    public Date getTimestamp(ResultSet results, int col, boolean makeDflt) throws Exception {
+    public Date getTimestamp(ResultSet results, int col, boolean makeDflt)
+            throws Exception {
         Date date = results.getTimestamp(col, Repository.calendar);
         if (date != null) {
             return date;
         }
-        if(makeDflt)
+        if (makeDflt) {
             return new Date();
+        }
         return null;
     }
 
@@ -1659,9 +1673,23 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
-    public Date getDate(ResultSet results, int col, Date dflt) throws Exception {
+    /**
+     * _more_
+     *
+     * @param results _more_
+     * @param col _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Date getDate(ResultSet results, int col, Date dflt)
+            throws Exception {
         Date date = getDate(results, col, false);
-        if(date == null) return dflt;
+        if (date == null) {
+            return dflt;
+        }
         return date;
     }
 
@@ -1680,7 +1708,19 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return getDate(results, col, true);
     }
 
-    public Date getDate(ResultSet results, int col, boolean makeDflt) throws Exception {
+    /**
+     * _more_
+     *
+     * @param results _more_
+     * @param col _more_
+     * @param makeDflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Date getDate(ResultSet results, int col, boolean makeDflt)
+            throws Exception {
         //        if (!db.equals(DB_MYSQL)) {
         if (true || !db.equals(DB_MYSQL)) {
             return getTimestamp(results, col, makeDflt);
@@ -1689,8 +1729,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (date != null) {
             return date;
         }
-        if(makeDflt)
+        if (makeDflt) {
             return new Date();
+        }
         return null;
     }
 
@@ -1884,18 +1925,23 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         Statement statement = connection.createStatement();
         try {
             List<SqlUtil.SqlError> errors = new ArrayList<SqlUtil.SqlError>();
-            SqlUtil.loadSql(sql, statement, ignoreErrors, printStatus, errors);
+            SqlUtil.loadSql(sql, statement, ignoreErrors, printStatus,
+                            errors);
             int existsCnt = 0;
-            for(SqlUtil.SqlError error: errors) {
-                String errorString = error.getException().toString().toLowerCase();
-                if(errorString.indexOf("already exists")<0  && errorString.indexOf("duplicate")<0) {
-                    System.err.println("RAMADDA: Error in DatabaseManager.loadSql: "  + error.getException() +"\nsql:" + error.getSql()); 
+            for (SqlUtil.SqlError error : errors) {
+                String errorString =
+                    error.getException().toString().toLowerCase();
+                if ((errorString.indexOf("already exists") < 0)
+                        && (errorString.indexOf("duplicate") < 0)) {
+                    System.err.println(
+                        "RAMADDA: Error in DatabaseManager.loadSql: "
+                        + error.getException() + "\nsql:" + error.getSql());
                 } else {
                     //                    System.err.println("EXISTS: "+error.getSql());
                     existsCnt++;
                 }
             }
-            if(existsCnt>0) {
+            if (existsCnt > 0) {
                 //                System.err.println("DatabaseManager.loadSql: Some tables and indices already exist");
             }
         } finally {
@@ -2094,7 +2140,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public Statement select(final String what, final List tables,
                             final Clause clause, String extra, final int max)
             throws Exception {
-       if (extra != null) {
+        if (extra != null) {
             extra = escapeString(extra);
         }
         SelectInfo selectInfo = new SelectInfo(what, tables, clause, extra,
@@ -2124,7 +2170,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         try {
             numberOfSelects.incr();
             Statement statement = SqlUtil.select(connection, what, tables,
-                                                 clause, extra, max, TIMEOUT);
+                                      clause, extra, max, TIMEOUT);
 
             done[0] = true;
             return statement;
@@ -2300,8 +2346,23 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
-    public void addTextSearch(Request request, TypeHandler typeHandler, String textToSearch, StringBuffer searchCriteria, List<Clause> where) throws Exception {
-        typeHandler.addTextSearch(request,  textToSearch,  searchCriteria, where);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param typeHandler _more_
+     * @param textToSearch _more_
+     * @param searchCriteria _more_
+     * @param where _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addTextSearch(Request request, TypeHandler typeHandler,
+                              String textToSearch,
+                              StringBuffer searchCriteria, List<Clause> where)
+            throws Exception {
+        typeHandler.addTextSearch(request, textToSearch, searchCriteria,
+                                  where);
     }
 
 

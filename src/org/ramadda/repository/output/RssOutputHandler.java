@@ -1,36 +1,38 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.*;
-
-import org.ramadda.util.RssUtil;
-
-import ucar.unidata.ui.ImageUtils;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.RssUtil;
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.sql.SqlUtil;
+
+import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
@@ -71,7 +73,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -91,6 +93,7 @@ public class RssOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String TAG_RSS_GEOLON = "georss:lon";
 
+    /** _more_          */
     public static final String TAG_RSS_GEOBOX = "georss:box";
 
     /** _more_ */
@@ -115,27 +118,28 @@ public class RssOutputHandler extends OutputHandler {
     public static final String TAG_RSS_DESCRIPTION = "description";
 
 
+    /** _more_          */
     public static final String ICON_RSS = "ramadda.icon.rss";
 
     /** _more_ */
     public static String MIME_RSS = "application/rss+xml";
 
 
-    /** _more_          */
+    /** _more_ */
     SimpleDateFormat rssSdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
     /** _more_ */
     public static final OutputType OUTPUT_RSS_FULL =
-        new OutputType("Full RSS Feed", "rss.full", 
-                       OutputType.TYPE_FEEDS| OutputType.TYPE_TOOLBAR,
-                       "", ICON_RSS);
+        new OutputType("Full RSS Feed", "rss.full",
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_TOOLBAR, "",
+                       ICON_RSS);
 
     /** _more_ */
     public static final OutputType OUTPUT_RSS_SUMMARY =
         new OutputType("RSS Feed", "rss.summary",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH| OutputType.TYPE_TOOLBAR,
-                       "", ICON_RSS);
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH
+                       | OutputType.TYPE_TOOLBAR, "", ICON_RSS);
 
 
     /**
@@ -220,6 +224,17 @@ public class RssOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param outputType _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -233,13 +248,15 @@ public class RssOutputHandler extends OutputHandler {
      * _more_
      *
      * @param request _more_
+     * @param parentEntry _more_
      * @param entries _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private Result outputEntries(Request request, Entry parentEntry, List<Entry> entries)
+    private Result outputEntries(Request request, Entry parentEntry,
+                                 List<Entry> entries)
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
@@ -252,14 +269,18 @@ public class RssOutputHandler extends OutputHandler {
         OutputType             output = request.getOutput();
         request.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML);
         for (Entry entry : entries) {
-            StringBuffer extra = new StringBuffer();
-            String resource = entry.getResource().getPath();
-            if(ImageUtils.isImage(resource)) {
-                String imageUrl = repository.absoluteUrl(HtmlUtil.url(
-                                                                      getRepository().URL_ENTRY_GET + entry.getId()
-                                                                      + IOUtil.getFileExtension(
-                                                                                                resource), ARG_ENTRYID, entry.getId()
-                                                                      /*,                                                                    ARG_IMAGEWIDTH, "75"*/));
+            StringBuffer extra    = new StringBuffer();
+            String       resource = entry.getResource().getPath();
+            if (ImageUtils.isImage(resource)) {
+                String imageUrl = repository.absoluteUrl(
+                                      HtmlUtil.url(
+                                          getRepository().URL_ENTRY_GET
+                                          + entry.getId()
+                                          + IOUtil.getFileExtension(
+                                              resource), ARG_ENTRYID,
+                                                  entry.getId()
+                /*,                                                                    ARG_IMAGEWIDTH, "75"*/
+                ));
                 extra.append(HtmlUtil.br());
                 extra.append(HtmlUtil.img(imageUrl));
             }
@@ -281,9 +302,10 @@ public class RssOutputHandler extends OutputHandler {
                 XmlUtil.appendCdata(
                     sb,
                     entry.getTypeHandler().getEntryContent(
-                                                           entry, request, true, false).toString());
+                        entry, request, true, false).toString());
             } else {
-                XmlUtil.appendCdata(sb, entry.getTypeHandler().getEntryText(entry)+extra);
+                XmlUtil.appendCdata(
+                    sb, entry.getTypeHandler().getEntryText(entry) + extra);
             }
 
             sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
@@ -295,9 +317,10 @@ public class RssOutputHandler extends OutputHandler {
             } else if (entry.hasAreaDefined()) {
                 //For now just include the southeast point
                 sb.append(XmlUtil.tag(RssUtil.TAG_GEOBOX, "",
-                                      entry.getSouth()+","+entry.getWest()+"," +
-                                      entry.getNorth() +"," +
-                                      entry.getEast()));
+                                      entry.getSouth() + ","
+                                      + entry.getWest() + ","
+                                      + entry.getNorth() + ","
+                                      + entry.getEast()));
             }
 
 

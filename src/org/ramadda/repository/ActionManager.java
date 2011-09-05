@@ -1,22 +1,22 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository;
 
@@ -135,7 +135,7 @@ public class ActionManager extends RepositoryManager {
                 sb.append(HtmlUtil.href(request.url(URL_STATUS,
                         ARG_ACTION_ID, id), msg("Reload")));
                 sb.append("<p>");
-                if(action.getExtraHtml()!=null) {
+                if (action.getExtraHtml() != null) {
                     sb.append(action.getExtraHtml());
                 }
                 String msg = JobManager.getManager().getDialogLabel2(id);
@@ -152,8 +152,9 @@ public class ActionManager extends RepositoryManager {
             }
         }
         Result result = new Result(msg("Status"), sb);
-        if(action.entry!=null) {
-            return getEntryManager().addEntryHeader(request, action.entry, result);
+        if (action.entry != null) {
+            return getEntryManager().addEntryHeader(request, action.entry,
+                    result);
         }
         return result;
     }
@@ -185,7 +186,7 @@ public class ActionManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public  boolean getActionOk(Object id) {
+    public boolean getActionOk(Object id) {
         ActionInfo action = getAction(id);
         if (action == null) {
             return false;
@@ -241,6 +242,7 @@ public class ActionManager extends RepositoryManager {
      *
      * @param msg _more_
      * @param continueHtml _more_
+     * @param entry _more_
      *
      * @return _more_
      */
@@ -263,10 +265,21 @@ public class ActionManager extends RepositoryManager {
      * @return _more_
      */
     public Result doAction(Request request, final Action runnable,
-                              String name, String continueHtml) {
+                           String name, String continueHtml) {
         return doAction(request, runnable, name, continueHtml, null);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param runnable _more_
+     * @param name _more_
+     * @param continueHtml _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public Result doAction(Request request, final Action runnable,
                            String name, String continueHtml, Entry entry) {
         Object actionId = runAction(runnable, name, continueHtml, entry);
@@ -289,6 +302,16 @@ public class ActionManager extends RepositoryManager {
         return runAction(runnable, name, continueHtml, null);
     }
 
+    /**
+     * _more_
+     *
+     * @param runnable _more_
+     * @param name _more_
+     * @param continueHtml _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     protected Object runAction(final Action runnable, String name,
                                String continueHtml, Entry entry) {
         final Object actionId = addAction(name, continueHtml, entry);
@@ -336,8 +359,9 @@ public class ActionManager extends RepositoryManager {
      * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
-    public  class ActionInfo {
+    public class ActionInfo {
 
+        /** _more_          */
         private String id;
 
         /** _more_ */
@@ -356,8 +380,10 @@ public class ActionManager extends RepositoryManager {
         private String error = null;
 
 
+        /** _more_          */
         private String extraHtml;
 
+        /** _more_          */
         private Entry entry;
 
         /**
@@ -365,30 +391,31 @@ public class ActionManager extends RepositoryManager {
          *
          * @param name _more_
          * @param continueHtml _more_
+         * @param entry _more_
          */
         public ActionInfo(String name, String continueHtml, Entry entry) {
             this.name         = name;
             this.continueHtml = continueHtml;
-            this.id = getRepository().getGUID();
-            this.entry = entry;
+            this.id           = getRepository().getGUID();
+            this.entry        = entry;
         }
 
 
         /**
-           Set the Id property.
-
-           @param value The new value for Id
-        **/
-        public void setId (String value) {
+         *  Set the Id property.
+         *
+         *  @param value The new value for Id
+         */
+        public void setId(String value) {
             id = value;
         }
 
         /**
-           Get the Id property.
-
-           @return The Id
-        **/
-        public String getId () {
+         *  Get the Id property.
+         *
+         *  @return The Id
+         */
+        public String getId() {
             return id;
         }
 
@@ -452,20 +479,20 @@ public class ActionManager extends RepositoryManager {
 
 
         /**
-           Set the ExtraHtml property.
-
-           @param value The new value for ExtraHtml
-        **/
-        public void setExtraHtml (String value) {
+         *  Set the ExtraHtml property.
+         *
+         *  @param value The new value for ExtraHtml
+         */
+        public void setExtraHtml(String value) {
             extraHtml = value;
         }
 
         /**
-           Get the ExtraHtml property.
-
-           @return The ExtraHtml
-        **/
-        public String getExtraHtml () {
+         *  Get the ExtraHtml property.
+         *
+         *  @return The ExtraHtml
+         */
+        public String getExtraHtml() {
             return extraHtml;
         }
 

@@ -1,32 +1,32 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
-
-
-import org.w3c.dom.*;
 
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
@@ -78,7 +78,9 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
-    public static final String ARG_IMAGE_APPLY_TO_GROUP = "image.applytogroup";
+    /** _more_          */
+    public static final String ARG_IMAGE_APPLY_TO_GROUP =
+        "image.applytogroup";
 
     /** _more_ */
     public static final String ARG_IMAGE_UNDO = "image.undo";
@@ -111,9 +113,11 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT =
         "image.edit.rotate.left";
 
+    /** _more_          */
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_X =
         "image.edit.rotate.left.x";
 
+    /** _more_          */
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_Y =
         "image.edit.rotate.left.y";
 
@@ -193,7 +197,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (state.entry != null) {
             if (getAccessManager().canDoAction(request, state.entry,
-                                               Permission.ACTION_EDIT)) {
+                    Permission.ACTION_EDIT)) {
                 if (state.entry.getResource().isEditableImage()) {
                     File f = state.entry.getFile();
                     if ((f != null) && f.canWrite()) {
@@ -291,30 +295,33 @@ public class ImageOutputHandler extends OutputHandler {
 
 
 
-        StringBuffer sb          = new StringBuffer();
+        StringBuffer sb             = new StringBuffer();
 
-        String       url         = getImageUrl(request, entry, true);
+        String       url            = getImageUrl(request, entry, true);
 
-        Image image = null;
-        boolean shouldRedirect = false;
+        Image        image          = null;
+        boolean      shouldRedirect = false;
 
 
         boolean applyToGroup = request.get(ARG_IMAGE_APPLY_TO_GROUP, false);
 
-        if(!applyToGroup) {
-            image       = getImage(entry);
-            shouldRedirect =  processImage(request, entry, image);
+        if ( !applyToGroup) {
+            image          = getImage(entry);
+            shouldRedirect = processImage(request, entry, image);
         } else {
-            List<Entry> entries =getEntryManager().getChildren(request, entry.getParentEntry());
-            for(Entry childEntry: entries) {
-                if(!childEntry.getResource().isEditableImage()) continue;
-                image       = getImage(childEntry);
-                shouldRedirect =  processImage(request, childEntry, image);
+            List<Entry> entries = getEntryManager().getChildren(request,
+                                      entry.getParentEntry());
+            for (Entry childEntry : entries) {
+                if ( !childEntry.getResource().isEditableImage()) {
+                    continue;
+                }
+                image          = getImage(childEntry);
+                shouldRedirect = processImage(request, childEntry, image);
             }
         }
 
 
-        if(shouldRedirect) {
+        if (shouldRedirect) {
             request.remove(ARG_IMAGE_EDIT_RESIZE);
             request.remove(ARG_IMAGE_EDIT_REDEYE);
             request.remove(ARG_IMAGE_EDIT_CROP);
@@ -329,12 +336,12 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
 
-        
-        if(image == null) {
-            image       = getImage(entry);
+
+        if (image == null) {
+            image = getImage(entry);
         }
-        int          imageWidth  = image.getWidth(null);
-        int          imageHeight = image.getHeight(null);
+        int imageWidth  = image.getWidth(null);
+        int imageHeight = image.getHeight(null);
 
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
 
@@ -370,10 +377,12 @@ public class ImageOutputHandler extends OutputHandler {
 
         sb.append(HtmlUtil.space(2));
         sb.append(HtmlUtil.submitImage(iconUrl(ICON_ANTIROTATE),
-                                       ARG_IMAGE_EDIT_ROTATE_LEFT, msg("Rotate Left")));
+                                       ARG_IMAGE_EDIT_ROTATE_LEFT,
+                                       msg("Rotate Left")));
         sb.append(HtmlUtil.space(2));
         sb.append(HtmlUtil.submitImage(iconUrl(ICON_ROTATE),
-                                       ARG_IMAGE_EDIT_ROTATE_RIGHT, msg("Rotate Right")));
+                                       ARG_IMAGE_EDIT_ROTATE_RIGHT,
+                                       msg("Rotate Right")));
         File entryDir = getStorageManager().getEntryDir(entry.getId(), false);
         File original = new File(entryDir + "/" + "originalimage");
         if (original.exists()) {
@@ -382,7 +391,8 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         sb.append(HtmlUtil.space(20));
-        sb.append(HtmlUtil.checkbox(ARG_IMAGE_APPLY_TO_GROUP,"true", applyToGroup));
+        sb.append(HtmlUtil.checkbox(ARG_IMAGE_APPLY_TO_GROUP, "true",
+                                    applyToGroup));
         sb.append(HtmlUtil.space(1));
         sb.append(msg("Apply to siblings"));
 
@@ -397,7 +407,8 @@ public class ImageOutputHandler extends OutputHandler {
                              HtmlUtil.squote(ARG_IMAGE_CROPX2),
                              HtmlUtil.squote(ARG_IMAGE_CROPY2));
 
-        sb.append(HtmlUtil.importJS(getRepository().fileUrl("/editimage.js")));
+        sb.append(
+            HtmlUtil.importJS(getRepository().fileUrl("/editimage.js")));
 
         String call = HtmlUtil.onMouseClick(HtmlUtil.call("editImageClick",
                           clickParams));
@@ -407,15 +418,27 @@ public class ImageOutputHandler extends OutputHandler {
     }
 
 
-    private boolean processImage(Request request, Entry entry, Image image) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param image _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private boolean processImage(Request request, Entry entry, Image image)
+            throws Exception {
         if ( !getAccessManager().canDoAction(request, entry,
                                              Permission.ACTION_EDIT)) {
             throw new AccessException("Cannot edit image", null);
         }
 
-        int          imageWidth  = image.getWidth(null);
-        int          imageHeight = image.getHeight(null);
-        Image        newImage    = null;
+        int   imageWidth  = image.getWidth(null);
+        int   imageHeight = image.getHeight(null);
+        Image newImage    = null;
         if (request.exists(ARG_IMAGE_UNDO)) {
             File f = entry.getFile();
             if ((f != null) && f.canWrite()) {
@@ -452,13 +475,13 @@ public class ImageOutputHandler extends OutputHandler {
                                            new int[] { x1,
                         y1 }, new int[] { x2, y2 });
             }
-        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT) ||
-                   request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT_X)) {
+        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT)
+                   || request.exists(ARG_IMAGE_EDIT_ROTATE_LEFT_X)) {
             newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
                                            true);
 
-        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT) ||
-                   request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT_X)) {
+        } else if (request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT)
+                   || request.exists(ARG_IMAGE_EDIT_ROTATE_RIGHT_X)) {
             newImage = ImageUtils.rotate90(ImageUtils.toBufferedImage(image),
                                            false);
 

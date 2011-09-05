@@ -1,32 +1,32 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.auth;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
+
+
+import org.w3c.dom.*;
 
 
 
@@ -126,8 +126,9 @@ public class AccessManager extends RepositoryManager {
     public void initTopGroup(Entry mainEntry) throws Exception {
         mainEntry.addPermission(new Permission(Permission.ACTION_VIEW,
                 getUserManager().ROLE_ANY));
-        mainEntry.addPermission(new Permission(Permission.ACTION_VIEWCHILDREN,
-                getUserManager().ROLE_ANY));
+        mainEntry.addPermission(
+            new Permission(
+                Permission.ACTION_VIEWCHILDREN, getUserManager().ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_FILE,
                 getUserManager().ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_EDIT,
@@ -155,11 +156,11 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, String action)
             throws Exception {
 
-        if(getRepository().isReadOnly()) {
-            if(!(action.equals(Permission.ACTION_VIEW) ||
-                 action.equals(Permission.ACTION_VIEWCHILDREN))) {
-                   return false;
-               }
+        if (getRepository().isReadOnly()) {
+            if ( !(action.equals(Permission.ACTION_VIEW)
+                    || action.equals(Permission.ACTION_VIEWCHILDREN))) {
+                return false;
+            }
         }
 
         User user = request.getUser();
@@ -273,11 +274,12 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, Entry entry, String action,
                                boolean log)
             throws Exception {
-        if(getRepository().isReadOnly()) {
-            if(!(action.equals(Permission.ACTION_VIEW) ||
-                 action.equals(Permission.ACTION_VIEWCHILDREN))) {
-                   return false;
-               }
+
+        if (getRepository().isReadOnly()) {
+            if ( !(action.equals(Permission.ACTION_VIEW)
+                    || action.equals(Permission.ACTION_VIEWCHILDREN))) {
+                return false;
+            }
         }
 
 
@@ -374,6 +376,7 @@ public class AccessManager extends RepositoryManager {
         }
         recentPermissions.put(key, new Object[] { now, new Boolean(result) });
         return result;
+
     }
 
     /**
@@ -561,7 +564,7 @@ public class AccessManager extends RepositoryManager {
         if ((entry.getResource() != null)
                 && Misc.equals(entry.getResource().getType(),
                                Resource.TYPE_FILE)) {
-            if (!entry.getResource().getTheFile().exists()) {
+            if ( !entry.getResource().getTheFile().exists()) {
                 getEntryManager().entryFileIsMissing(entry);
                 //                System.err.println ("missing:" + entry.getResource());
                 return null;
@@ -636,12 +639,32 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canDoType1Action(Request request, Entry entry)
             throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE1);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canDoType2Action(Request request, Entry entry)
             throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE2);
@@ -753,7 +776,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Permission> getPermissions(Entry entry) throws Exception {
-        if (entry.isGroup() &&  entry.isDummy()) {
+        if (entry.isGroup() && entry.isDummy()) {
             return new ArrayList<Permission>();
         }
         List<Permission> permissions = entry.getPermissions();
@@ -816,7 +839,8 @@ public class AccessManager extends RepositoryManager {
             new StringBuffer(HtmlUtil.cols(HtmlUtil.bold(msg("Entry"))));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             header.append(
-                          HtmlUtil.cols(HtmlUtil.bold(msg(Permission.ACTION_NAMES[i]))));
+                HtmlUtil.cols(
+                    HtmlUtil.bold(msg(Permission.ACTION_NAMES[i]))));
         }
         currentAccess.append(HtmlUtil.rowTop(header.toString()));
 
@@ -841,16 +865,18 @@ public class AccessManager extends RepositoryManager {
         sb.append(HtmlUtil.formTable());
         sb.append("<tr valign=top>");
         sb.append(HtmlUtil.cols(HtmlUtil.bold(msg("Action")),
-                                HtmlUtil.bold(msg("Role")) + " (" +msg("one per line")+")"));
+                                HtmlUtil.bold(msg("Role")) + " ("
+                                + msg("one per line") + ")"));
         sb.append(HtmlUtil.cols(HtmlUtil.space(5)));
-        sb.append(
-                  "<td rowspan=6><b>" + msg("All Roles") +"</b><i><br>user:&lt;userid&gt;<br>none<br>");
+        sb.append("<td rowspan=6><b>" + msg("All Roles")
+                  + "</b><i><br>user:&lt;userid&gt;<br>none<br>");
         sb.append(StringUtil.join("<br>", getUserManager().getRoles()));
         sb.append("</i></td>");
 
         sb.append(HtmlUtil.cols(HtmlUtil.space(5)));
 
-        sb.append("<td rowspan=6><b>" + msgLabel("Current settings") +"</b><i><br>");
+        sb.append("<td rowspan=6><b>" + msgLabel("Current settings")
+                  + "</b><i><br>");
         sb.append(currentAccess.toString());
         sb.append("</i></td>");
 
@@ -861,21 +887,21 @@ public class AccessManager extends RepositoryManager {
                 roles = "";
             }
             String actionName = Permission.ACTION_NAMES[i];
-            String action = Permission.ACTIONS[i];
-            if(action.equals(Permission.ACTION_TYPE1)) {
-                actionName = entry.getTypeHandler().getTypePermissionName(Permission.ACTION_TYPE1);
-            } else  if(action.equals(Permission.ACTION_TYPE2)) {
-                actionName = entry.getTypeHandler().getTypePermissionName(Permission.ACTION_TYPE2);
+            String action     = Permission.ACTIONS[i];
+            if (action.equals(Permission.ACTION_TYPE1)) {
+                actionName = entry.getTypeHandler().getTypePermissionName(
+                    Permission.ACTION_TYPE1);
+            } else if (action.equals(Permission.ACTION_TYPE2)) {
+                actionName = entry.getTypeHandler().getTypePermissionName(
+                    Permission.ACTION_TYPE2);
             }
-            String label = HtmlUtil.href(
-                               getRepository().getUrlBase()
-                               + "/userguide/access.html#"
-                               + action, HtmlUtil.img(
-                                   getRepository().iconUrl(
-                                       ICON_HELP)), HtmlUtil.attr(
-                                           HtmlUtil.ATTR_TARGET,
-                                           "_help")) + HtmlUtil.space(1)
-                + msg(actionName);
+            String label =
+                HtmlUtil.href(
+                    getRepository().getUrlBase() + "/userguide/access.html#"
+                    + action, HtmlUtil.img(
+                        getRepository().iconUrl(ICON_HELP)), HtmlUtil.attr(
+                        HtmlUtil.ATTR_TARGET, "_help")) + HtmlUtil.space(1)
+                            + msg(actionName);
 
             sb.append(HtmlUtil.rowTop(HtmlUtil.cols(label,
                     HtmlUtil.textArea(ARG_ROLES + "."
@@ -891,7 +917,7 @@ public class AccessManager extends RepositoryManager {
         sb.append(HtmlUtil.formClose());
 
         return getEntryManager().makeEntryEditResult(request, entry,
-                                                     msg("Edit Access"), sb);
+                msg("Edit Access"), sb);
 
     }
 

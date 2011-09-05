@@ -1,35 +1,36 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.map.*;
+import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
-import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -43,6 +44,8 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
+
+import java.awt.geom.Rectangle2D;
 
 
 import java.io.*;
@@ -61,8 +64,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-import java.awt.geom.Rectangle2D;
 
 
 import java.util.regex.*;
@@ -85,6 +86,7 @@ public class MapOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 
+    /** _more_          */
     public static final OutputType OUTPUT_GEMAP =
         new OutputType("Google Earth", "map.gemap",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -102,7 +104,7 @@ public class MapOutputHandler extends OutputHandler {
     public MapOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        if(getMapManager().showMaps()) {
+        if (getMapManager().showMaps()) {
             addType(OUTPUT_MAP);
             addType(OUTPUT_GEMAP);
         }
@@ -131,7 +133,7 @@ public class MapOutputHandler extends OutputHandler {
         }
         if (ok) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
-            if(getMapManager().isGoogleEarthEnabled(request)) {
+            if (getMapManager().isGoogleEarthEnabled(request)) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_GEMAP));
             }
 
@@ -158,13 +160,15 @@ public class MapOutputHandler extends OutputHandler {
         entriesToUse.add(entry);
         StringBuffer sb = new StringBuffer();
 
-        if(outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request,  
-                                           entriesToUse, sb, 800,500);
-            return makeLinksResult(request, msg("Google Earth"), sb, new State(entry));
+        if (outputType.equals(OUTPUT_GEMAP)) {
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, 800,
+                                           500);
+            return makeLinksResult(request, msg("Google Earth"), sb,
+                                   new State(entry));
         }
 
-        MapInfo map = getMap(request, entriesToUse, sb, 700, 500, new boolean[]{false});
+        MapInfo map = getMap(request, entriesToUse, sb, 700, 500,
+                             new boolean[] { false });
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
     }
 
@@ -196,16 +200,18 @@ public class MapOutputHandler extends OutputHandler {
                                    new State(group, subGroups, entries));
         }
 
-        if(outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request,  
-                                           entriesToUse, sb, 800,500);
-            return makeLinksResult(request, msg("Google Earth"), sb, new State(group));
+        if (outputType.equals(OUTPUT_GEMAP)) {
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, 800,
+                                           500);
+            return makeLinksResult(request, msg("Google Earth"), sb,
+                                   new State(group));
         }
 
         sb.append(
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td width=700>");
-        boolean [] haveBearingLines = {false};
-        MapInfo map =  getMap(request, entriesToUse, sb, 700, 500, haveBearingLines);
+        boolean[] haveBearingLines = { false };
+        MapInfo map = getMap(request, entriesToUse, sb, 700, 500,
+                             haveBearingLines);
         sb.append("</td><td>");
 
 
@@ -214,7 +220,8 @@ public class MapOutputHandler extends OutputHandler {
                 sb.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
                         entry)));
                 sb.append(HtmlUtil.space(1));
-                sb.append("<a href=\"javascript:" + map.getVariableName() +".hiliteMarker("+sqt(entry.getId()) + ");\">"
+                sb.append("<a href=\"javascript:" + map.getVariableName()
+                          + ".hiliteMarker(" + sqt(entry.getId()) + ");\">"
                           + entry.getName() + "</a><br>");
             }
         }
@@ -234,17 +241,21 @@ public class MapOutputHandler extends OutputHandler {
      * @param sb _more_
      * @param width _more_
      * @param height _more_
+     * @param haveBearingLines _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public MapInfo getMap(Request request, List<Entry> entriesToUse,
-                         StringBuffer sb, int width, int height,
-                          boolean []haveBearingLines)
+                          StringBuffer sb, int width, int height,
+                          boolean[] haveBearingLines)
             throws Exception {
-        MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
-        if(map == null) return map;
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          width, height, false);
+        if (map == null) {
+            return map;
+        }
         addToMap(request, map, entriesToUse, haveBearingLines, true);
 
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
@@ -253,8 +264,20 @@ public class MapOutputHandler extends OutputHandler {
         return map;
     }
 
-    public void addToMap(Request request, MapInfo map, List<Entry> entriesToUse,
-                         boolean []haveBearingLines, boolean screenBigRects)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param map _more_
+     * @param entriesToUse _more_
+     * @param haveBearingLines _more_
+     * @param screenBigRects _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToMap(Request request, MapInfo map,
+                         List<Entry> entriesToUse,
+                         boolean[] haveBearingLines, boolean screenBigRects)
             throws Exception {
         int cnt = 0;
         for (Entry entry : entriesToUse) {
@@ -264,18 +287,22 @@ public class MapOutputHandler extends OutputHandler {
         }
 
 
-        boolean makeRectangles = cnt <= 20;
-        MapProperties mapProperties = new MapProperties("blue", true);
+        boolean       makeRectangles = cnt <= 20;
+        MapProperties mapProperties  = new MapProperties("blue", true);
 
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
-            List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
+            List<Metadata> metadataList =
+                getMetadataManager().getMetadata(entry);
 
-            if(makeRectangles) {
-                boolean didMetadata= map.addSpatialMetadata(entry, metadataList);
+            if (makeRectangles) {
+                boolean didMetadata = map.addSpatialMetadata(entry,
+                                          metadataList);
                 entry.getTypeHandler().addToMap(request, entry, map);
                 if (entry.hasAreaDefined() && !didMetadata) {
-                    if(!screenBigRects || Math.abs(entry.getEast()-entry.getWest()) < 90) {
+                    if ( !screenBigRects
+                            || (Math.abs(entry.getEast() - entry.getWest())
+                                < 90)) {
                         map.addBox(entry, mapProperties);
                     }
                 }
@@ -283,33 +310,41 @@ public class MapOutputHandler extends OutputHandler {
 
 
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                
 
-                double[]location;
+
+                double[] location;
                 if (makeRectangles || !entry.hasAreaDefined()) {
                     location = entry.getLocation();
                 } else {
                     location = entry.getCenter();
                 }
 
-                for(Metadata metadata: metadataList) {
-                    if(metadata.getType().equals(JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
+                for (Metadata metadata : metadataList) {
+                    if (metadata.getType().equals(
+                            JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
                         double dir = Double.parseDouble(metadata.getAttr1());
-                        LatLonPointImpl fromPt = new LatLonPointImpl(location[0],location[1]);
-                        LatLonPointImpl pt = Bearing.findPoint(fromPt,dir,0.25,null);
+                        LatLonPointImpl fromPt =
+                            new LatLonPointImpl(location[0], location[1]);
+                        LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
+                                                 0.25, null);
                         map.addLine(entry.getId(), fromPt, pt);
-                        if(haveBearingLines!=null)haveBearingLines[0] = true;
+                        if (haveBearingLines != null) {
+                            haveBearingLines[0] = true;
+                        }
                         break;
-                    } 
+                    }
                 }
-                String infoHtml = getMapManager().makeInfoBubble(request, entry);
+                String infoHtml = getMapManager().makeInfoBubble(request,
+                                      entry);
                 infoHtml = infoHtml.replace("\r", " ");
                 infoHtml = infoHtml.replace("\n", " ");
                 infoHtml = infoHtml.replace("\"", "\\\"");
                 infoHtml = infoHtml.replace("'", "\\'");
                 infoHtml = getRepository().translate(request, infoHtml);
                 String icon = getEntryManager().getIconUrl(request, entry);
-                map.addMarker(entry.getId(), new LatLonPointImpl(location[0],location[1]), icon, infoHtml);
+                map.addMarker(entry.getId(),
+                              new LatLonPointImpl(location[0], location[1]),
+                              icon, infoHtml);
             }
         }
     }
@@ -339,6 +374,14 @@ public class MapOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param lat _more_
+     * @param lon _more_
+     *
+     * @return _more_
+     */
     public static String llp(double lat, double lon) {
         if (lat < -90) {
             lat = -90;
@@ -355,6 +398,6 @@ public class MapOutputHandler extends OutputHandler {
         return "new OpenLayers.LonLat(" + lon + "," + lat + ")";
     }
 
-    
+
 
 }

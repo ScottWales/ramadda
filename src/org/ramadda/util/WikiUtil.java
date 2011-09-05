@@ -1,33 +1,32 @@
-/**
- *
- * Copyright 1997-2005 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-
+/*
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.util;
 
 
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
+
+
+import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,15 +50,19 @@ import java.util.regex.*;
  */
 public class WikiUtil {
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable properties;
 
-    private List categoryLinks=new ArrayList();
+    /** _more_          */
+    private List categoryLinks = new ArrayList();
 
+    /** _more_          */
     private List floatBoxes = new ArrayList();
 
+    /** _more_          */
     private boolean makeHeadings = true;
 
+    /** _more_          */
     private boolean replaceNewlineWithP = true;
 
 
@@ -77,6 +80,11 @@ public class WikiUtil {
         this.properties = properties;
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     */
     public void removeProperty(Object key) {
         if (properties == null) {
             properties = new Hashtable();
@@ -98,6 +106,11 @@ public class WikiUtil {
         properties.put(key, value);
     }
 
+    /**
+     * _more_
+     *
+     * @param link _more_
+     */
     public void addCategoryLink(String link) {
         categoryLinks.add(link);
     }
@@ -158,47 +171,58 @@ public class WikiUtil {
      */
     public String getInfoBox(String property) {
         StringBuffer sb = new StringBuffer();
-        List<String> toks =( List<String>)StringUtil.split(property,"\n",true,true);
+        List<String> toks = (List<String>) StringUtil.split(property, "\n",
+                                true, true);
         String firstLine = toks.get(0);
         toks.remove(0);
         /*
           {{Infobox file format
           | name = Network Common Data Form
-          | icon = 
+          | icon =
           | extension = .nc<br/>.cdf
           | mime = application/netcdf<br/>application/x-netcdf
           | owner = [[University Corporation for Atmospheric Research|UCAR]]
-          | typecode = 
+          | typecode =
           | magic = CDF\001
           | genre = scientific binary data
-          | containerfor = 
-          | containedby = 
+          | containerfor =
+          | containedby =
           | extendedfrom = [[Common Data Format|CDF]]
-          | extendedto = 
+          | extendedto =
           | standard =
           }}
         */
         sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE));
         String title = "";
-        for(String line: toks) {
-            String[] toks2 = StringUtil.split(line,"=",2);
-            if(toks2==null) continue;
+        for (String line : toks) {
+            String[] toks2 = StringUtil.split(line, "=", 2);
+            if (toks2 == null) {
+                continue;
+            }
             String name = toks2[0].trim();
-            if(name.startsWith("|")) name = name.substring(1).trim();
-            if(name.equals("name")) {
+            if (name.startsWith("|")) {
+                name = name.substring(1).trim();
+            }
+            if (name.equals("name")) {
                 title = toks2[1].trim();
-            }  else if(toks2[1].trim().length()>0){
-                sb.append(HtmlUtil.rowTop(HtmlUtil.col(name,HtmlUtil.cssClass("wiki-infobox-entry-title"))
-                                       +HtmlUtil.col(toks2[1],HtmlUtil.cssClass("wiki-infobox-entry"))));
+            } else if (toks2[1].trim().length() > 0) {
+                sb.append(
+                    HtmlUtil.rowTop(
+                        HtmlUtil.col(
+                            name,
+                            HtmlUtil.cssClass(
+                                "wiki-infobox-entry-title")) + HtmlUtil.col(
+                                    toks2[1],
+                                    HtmlUtil.cssClass(
+                                        "wiki-infobox-entry"))));
 
             }
         }
         sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
-        String div =   HtmlUtil.makeShowHideBlock(title,
-                                                      sb.toString(), true,
-                                                      HtmlUtil.cssClass("wiki-infobox-title"),
-                                                      HtmlUtil.cssClass("wiki-infobox"));
-        div =    wikify(div,null);
+        String div = HtmlUtil.makeShowHideBlock(title, sb.toString(), true,
+                         HtmlUtil.cssClass("wiki-infobox-title"),
+                         HtmlUtil.cssClass("wiki-infobox"));
+        div = wikify(div, null);
         floatBoxes.add(div);
         return "";
         //        return "<table class=\"wiki-toc-wrapper\" align=\"right\" width=\"30%\"><tr><td>"
@@ -233,9 +257,9 @@ public class WikiUtil {
 
         s = s.replace("\\\\[", "_BRACKETOPEN_");
 
-	if(getReplaceNewlineWithP()) {
-	    s = s.replaceAll("\r\n\r\n", "\n<p>\n");
-	}
+        if (getReplaceNewlineWithP()) {
+            s = s.replaceAll("\r\n\r\n", "\n<p>\n");
+        }
         //        s = s.replaceAll("\r\r","<p>");
         //        System.err.println (s);
         s = s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
@@ -309,19 +333,18 @@ public class WikiUtil {
             String prefix = matcher.group(1).trim();
             String label  = matcher.group(2).trim();
             //            System.err.println("MATCH " + prefix + ":" + label);
-            int start = matcher.start(0);
-            int end   = matcher.end(0);
-            int level = prefix.length();
-            String value; 
-            if(label.startsWith("{{")) {
-                value = "<div class=\"wiki-h" + level + "\">"
-                    + label + "</div>";
+            int    start = matcher.start(0);
+            int    end   = matcher.end(0);
+            int    level = prefix.length();
+            String value;
+            if (label.startsWith("{{")) {
+                value = "<div class=\"wiki-h" + level + "\">" + label
+                        + "</div>";
             } else {
-                value = "<a name=\"" + label
-                    + "\"></a><div class=\"wiki-h" + level + "\">"
-                    + label + "</div>";
-            //            if(level==1)
-            //                value = value+"<hr class=\"wiki-hr\">";
+                value = "<a name=\"" + label + "\"></a><div class=\"wiki-h"
+                        + level + "\">" + label + "</div>";
+                //            if(level==1)
+                //                value = value+"<hr class=\"wiki-hr\">";
                 headings.add(new Object[] { new Integer(level), label });
             }
             s       = s.substring(0, start) + value + s.substring(end);
@@ -337,8 +360,8 @@ public class WikiUtil {
         int          ulCnt = 0;
         int          olCnt = 0;
         StringBuffer buff  = new StringBuffer();
-        for (String line : (List<String>) StringUtil.split(s, "\n", false,
-                false)) {
+        for (String line :
+                (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
             if (tline.equals("----")) {
                 buff.append("<hr>");
@@ -436,46 +459,53 @@ public class WikiUtil {
             }
             sb.append(s.substring(baseIdx, idx1));
             String property = s.substring(idx1 + 2, idx2);
-	    baseIdx = idx2 + 2;
+            baseIdx = idx2 + 2;
 
-	    if(property.equals("noheading")) {
-		makeHeadings = false;
-	    } else {
-		String value = null;
-		if (handler != null) {
-		    value = handler.getWikiPropertyValue(this, property);
-		}
-		if (value == null) {
-		    value = "Unknown property:" + property;
-		}
-		sb.append(value);
-	    }
+            if (property.equals("noheading")) {
+                makeHeadings = false;
+            } else {
+                String value = null;
+                if (handler != null) {
+                    value = handler.getWikiPropertyValue(this, property);
+                }
+                if (value == null) {
+                    value = "Unknown property:" + property;
+                }
+                sb.append(value);
+            }
         }
-        s       = sb.toString();
+        s = sb.toString();
 
 
         /*
           <block title="foo">xxxxx</block>
          */
         sb = new StringBuffer();
-        while(true) {
+        while (true) {
             int idx1 = s.indexOf("<block");
-            if(idx1<0) break;
-            int idx2 = s.indexOf(">",idx1);
-            if(idx2<0) break;
-            int idx3 = s.indexOf("</block>",idx2);
-            if(idx3<0) break;
-            String first  = s.substring(0, idx1);
-            String attrs  = s.substring(idx1+6,idx2);
-            String inner  = s.substring(idx2+1,idx3);
-            Hashtable props= StringUtil.parseHtmlProperties(attrs);
-            
-            boolean open = Misc.getProperty(props,"open",true);
-            String title = Misc.getProperty(props,"title","");
+            if (idx1 < 0) {
+                break;
+            }
+            int idx2 = s.indexOf(">", idx1);
+            if (idx2 < 0) {
+                break;
+            }
+            int idx3 = s.indexOf("</block>", idx2);
+            if (idx3 < 0) {
+                break;
+            }
+            String    first = s.substring(0, idx1);
+            String    attrs = s.substring(idx1 + 6, idx2);
+            String    inner = s.substring(idx2 + 1, idx3);
+            Hashtable props = StringUtil.parseHtmlProperties(attrs);
+
+            boolean   open  = Misc.getProperty(props, "open", true);
+            String    title = Misc.getProperty(props, "title", "");
             sb.append(first);
-            sb.append(HtmlUtil.makeShowHideBlock(title,inner,open,HtmlUtil.cssClass("wiki-blockheader"),
-                                                 HtmlUtil.cssClass("wiki-block")));
-            s  = s.substring(idx3+"</block>".length());
+            sb.append(HtmlUtil.makeShowHideBlock(title, inner, open,
+                    HtmlUtil.cssClass("wiki-blockheader"),
+                    HtmlUtil.cssClass("wiki-block")));
+            s = s.substring(idx3 + "</block>".length());
         }
         sb.append(s);
         s = sb.toString();
@@ -486,24 +516,30 @@ public class WikiUtil {
         //        s = s.replaceAll("(\n\r)+","<br>\n");
         //        s = s.replaceAll("\n+","<br>\n");
 
-	if(getMakeHeadings()) {
-	    if (headings.size() >= 2) {
-		StringBuffer toc = new StringBuffer();
-		makeHeadings(headings, toc, -1, "");
-		String block = HtmlUtil.makeShowHideBlock("Contents",
-							  toc.toString(), true,
-							  HtmlUtil.cssClass("wiki-tocheader"),
-							  HtmlUtil.cssClass("wiki-toc"));
-		floatBoxes.add(block);
+        if (getMakeHeadings()) {
+            if (headings.size() >= 2) {
+                StringBuffer toc = new StringBuffer();
+                makeHeadings(headings, toc, -1, "");
+                String block = HtmlUtil.makeShowHideBlock("Contents",
+                                   toc.toString(), true,
+                                   HtmlUtil.cssClass("wiki-tocheader"),
+                                   HtmlUtil.cssClass("wiki-toc"));
+                floatBoxes.add(block);
 
-		String blocks =                 "<table class=\"wiki-toc-wrapper\" align=\"right\" width=\"30%\"><tr><td>" +
-		    StringUtil.join("<br>", floatBoxes) + "</td></tr></table>";
-		s = blocks + s;
-	    }
-	}
+                String blocks =
+                    "<table class=\"wiki-toc-wrapper\" align=\"right\" width=\"30%\"><tr><td>"
+                    + StringUtil.join("<br>", floatBoxes)
+                    + "</td></tr></table>";
+                s = blocks + s;
+            }
+        }
 
-        if(categoryLinks.size()>0) {
-            s = s + HtmlUtil.div("<b>Categories:</b> " + StringUtil.join("&nbsp;|&nbsp; ", categoryLinks),HtmlUtil.cssClass("wiki-categories"));
+        if (categoryLinks.size() > 0) {
+            s = s + HtmlUtil.div(
+                "<b>Categories:</b> "
+                + StringUtil.join(
+                    "&nbsp;|&nbsp; ", categoryLinks), HtmlUtil.cssClass(
+                    "wiki-categories"));
         }
 
 
@@ -567,50 +603,49 @@ public class WikiUtil {
         try {
             String contents = IOUtil.readContents(new java.io.File(args[0]));
             contents = new WikiUtil().wikify(contents, null);
-            System.out.println("\ncontents:" +contents);
+            System.out.println("\ncontents:" + contents);
         } catch (Exception exc) {
             exc.printStackTrace();
         }
     }
 
-/**
-Set the MakeHeadings property.
+    /**
+     * Set the MakeHeadings property.
+     *
+     * @param value The new value for MakeHeadings
+     */
+    public void setMakeHeadings(boolean value) {
+        this.makeHeadings = value;
+    }
 
-@param value The new value for MakeHeadings
-**/
-public void setMakeHeadings (boolean value) {
-	this.makeHeadings = value;
+    /**
+     * Get the MakeHeadings property.
+     *
+     * @return The MakeHeadings
+     */
+    public boolean getMakeHeadings() {
+        return this.makeHeadings;
+    }
+
+
+    /**
+     * Set the ReplaceNewlineWithP property.
+     *
+     * @param value The new value for ReplaceNewlineWithP
+     */
+    public void setReplaceNewlineWithP(boolean value) {
+        this.replaceNewlineWithP = value;
+    }
+
+    /**
+     * Get the ReplaceNewlineWithP property.
+     *
+     * @return The ReplaceNewlineWithP
+     */
+    public boolean getReplaceNewlineWithP() {
+        return this.replaceNewlineWithP;
+    }
+
+
+
 }
-
-/**
-Get the MakeHeadings property.
-
-@return The MakeHeadings
-**/
-public boolean getMakeHeadings () {
-	return this.makeHeadings;
-}
-
-
-/**
-Set the ReplaceNewlineWithP property.
-
-@param value The new value for ReplaceNewlineWithP
-**/
-public void setReplaceNewlineWithP (boolean value) {
-	this.replaceNewlineWithP = value;
-}
-
-/**
-Get the ReplaceNewlineWithP property.
-
-@return The ReplaceNewlineWithP
-**/
-public boolean getReplaceNewlineWithP () {
-	return this.replaceNewlineWithP;
-}
-
-
-
-}
-

@@ -1,267 +1,690 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.util;
 
 
 import org.w3c.dom.*;
+
 import ucar.unidata.xml.XmlUtil;
 
-import java.util.Date;
-
 import java.text.SimpleDateFormat;
+
+import java.util.Date;
 
 
 /**
  */
 public class IsoUtil {
-    public static final String METADATA_STANDARD_NAME ="ISO 19115 Geographic Information - Metadata First Edition";
-    public static final String METADATA_STANDARD_VERSION ="ISO 19115:2003";
+
+    /** _more_          */
+    public static final String METADATA_STANDARD_NAME =
+        "ISO 19115 Geographic Information - Metadata First Edition";
+
+    /** _more_          */
+    public static final String METADATA_STANDARD_VERSION = "ISO 19115:2003";
 
 
-    public static final String HEADER =  "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+    /** _more_          */
+    public static final String HEADER =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
 
+    /** _more_          */
     public static final String XMLNS_GCO = "http://www.isotc211.org/2005/gco";
-    public static final String XMLNS_GMD = "http://www.isotc211.org/2005/gmd";
-    public static final String XMLNS_GMI = "http://eden.ign.fr/xsd/isotc211/isofull/20090316/gmi/";
-    public static final String XMLNS_GML = "http://www.opengis.net/gml";
-    public static final String XMLNS_GTS = "http://www.isotc211.org/2005/gts";
-    public static final String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
 
+    /** _more_          */
+    public static final String XMLNS_GMD = "http://www.isotc211.org/2005/gmd";
+
+    /** _more_          */
+    public static final String XMLNS_GMI =
+        "http://eden.ign.fr/xsd/isotc211/isofull/20090316/gmi/";
+
+    /** _more_          */
+    public static final String XMLNS_GML = "http://www.opengis.net/gml";
+
+    /** _more_          */
+    public static final String XMLNS_GTS = "http://www.isotc211.org/2005/gts";
+
+    /** _more_          */
+    public static final String XMLNS_XSI =
+        "http://www.w3.org/2001/XMLSchema-instance";
+
+    /** _more_          */
     public static final String TAG_GMI_MI_METADATA = "gmi:MI_Metadata";
+
+    /** _more_          */
     public static final String TAG_GMD_LANGUAGE = "gmd:language";
-    public static final String TAG_GCO_CHARACTERSTRING = "gco:CharacterString";
+
+    /** _more_          */
+    public static final String TAG_GCO_CHARACTERSTRING =
+        "gco:CharacterString";
+
+    /** _more_          */
     public static final String TAG_GMD_CHARACTERSET = "gmd:characterSet";
-    public static final String TAG_GMD_MD_CHARACTERSETCODE = "gmd:MD_CharacterSetCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_CHARACTERSETCODE =
+        "gmd:MD_CharacterSetCode";
+
+    /** _more_          */
     public static final String TAG_GMD_HIERARCHYLEVEL = "gmd:hierarchyLevel";
+
+    /** _more_          */
     public static final String TAG_GMD_MD_SCOPECODE = "gmd:MD_ScopeCode";
-    public static final String TAG_GMD_HIERARCHYLEVELNAME = "gmd:hierarchyLevelName";
+
+    /** _more_          */
+    public static final String TAG_GMD_HIERARCHYLEVELNAME =
+        "gmd:hierarchyLevelName";
+
+    /** _more_          */
     public static final String TAG_GMD_CONTACT = "gmd:contact";
-    public static final String TAG_GMD_CI_RESPONSIBLEPARTY = "gmd:CI_ResponsibleParty";
+
+    /** _more_          */
+    public static final String TAG_GMD_CI_RESPONSIBLEPARTY =
+        "gmd:CI_ResponsibleParty";
+
+    /** _more_          */
     public static final String TAG_GMD_INDIVIDUALNAME = "gmd:individualName";
-    public static final String TAG_GMD_ORGANISATIONNAME = "gmd:organisationName";
+
+    /** _more_          */
+    public static final String TAG_GMD_ORGANISATIONNAME =
+        "gmd:organisationName";
+
+    /** _more_          */
     public static final String TAG_GMD_POSITIONNAME = "gmd:positionName";
+
+    /** _more_          */
     public static final String TAG_GMD_CONTACTINFO = "gmd:contactInfo";
+
+    /** _more_          */
     public static final String TAG_GMD_CI_CONTACT = "gmd:CI_Contact";
+
+    /** _more_          */
     public static final String TAG_GMD_PHONE = "gmd:phone";
+
+    /** _more_          */
     public static final String TAG_GMD_CI_TELEPHONE = "gmd:CI_Telephone";
+
+    /** _more_          */
     public static final String TAG_GMD_VOICE = "gmd:voice";
+
+    /** _more_          */
     public static final String TAG_GMD_ADDRESS = "gmd:address";
+
+    /** _more_          */
     public static final String TAG_GMD_CI_ADDRESS = "gmd:CI_Address";
+
+    /** _more_          */
     public static final String TAG_GMD_DELIVERYPOINT = "gmd:deliveryPoint";
+
+    /** _more_          */
     public static final String TAG_GMD_CITY = "gmd:city";
-    public static final String TAG_GMD_ADMINISTRATIVEAREA = "gmd:administrativeArea";
+
+    /** _more_          */
+    public static final String TAG_GMD_ADMINISTRATIVEAREA =
+        "gmd:administrativeArea";
+
+    /** _more_          */
     public static final String TAG_GMD_POSTALCODE = "gmd:postalCode";
+
+    /** _more_          */
     public static final String TAG_GMD_COUNTRY = "gmd:country";
-    public static final String TAG_GMD_ELECTRONICMAILADDRESS = "gmd:electronicMailAddress";
+
+    /** _more_          */
+    public static final String TAG_GMD_ELECTRONICMAILADDRESS =
+        "gmd:electronicMailAddress";
+
+    /** _more_          */
     public static final String TAG_GMD_ONLINERESOURCE = "gmd:onlineResource";
-    public static final String TAG_GMD_CI_ONLINERESOURCE = "gmd:CI_OnlineResource";
+
+    /** _more_          */
+    public static final String TAG_GMD_CI_ONLINERESOURCE =
+        "gmd:CI_OnlineResource";
+
+    /** _more_          */
     public static final String TAG_GMD_LINKAGE = "gmd:linkage";
+
+    /** _more_          */
     public static final String TAG_GMD_URL = "gmd:URL";
+
+    /** _more_          */
     public static final String TAG_GMD_ROLE = "gmd:role";
+
+    /** _more_          */
     public static final String TAG_GMD_CI_ROLECODE = "gmd:CI_RoleCode";
+
+    /** _more_          */
     public static final String TAG_GMD_DATESTAMP = "gmd:dateStamp";
+
+    /** _more_          */
     public static final String TAG_GCO_DATE = "gco:Date";
+
+    /** _more_          */
     public static final String TAG_GCO_DATETIME = "gco:DateTime";
-    public static final String TAG_GMD_METADATASTANDARDNAME = "gmd:metadataStandardName";
-    public static final String TAG_GMD_METADATASTANDARDVERSION = "gmd:metadataStandardVersion";
+
+    /** _more_          */
+    public static final String TAG_GMD_METADATASTANDARDNAME =
+        "gmd:metadataStandardName";
+
+    /** _more_          */
+    public static final String TAG_GMD_METADATASTANDARDVERSION =
+        "gmd:metadataStandardVersion";
+
+    /** _more_          */
     public static final String TAG_GMD_DATASETURI = "gmd:dataSetURI";
-    public static final String TAG_GMD_IDENTIFICATIONINFO = "gmd:identificationInfo";
-    public static final String TAG_GMD_MD_DATAIDENTIFICATION = "gmd:MD_DataIdentification";
+
+    /** _more_          */
+    public static final String TAG_GMD_IDENTIFICATIONINFO =
+        "gmd:identificationInfo";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_DATAIDENTIFICATION =
+        "gmd:MD_DataIdentification";
+
+    /** _more_          */
     public static final String TAG_GMD_CITATION = "gmd:citation";
+
+    /** _more_          */
     public static final String TAG_GMD_CI_CITATION = "gmd:CI_Citation";
+
+    /** _more_          */
     public static final String TAG_GMD_TITLE = "gmd:title";
+
+    /** _more_          */
     public static final String TAG_GMD_DATE = "gmd:date";
+
+    /** _more_          */
     public static final String TAG_GMD_CI_DATE = "gmd:CI_Date";
+
+    /** _more_          */
     public static final String TAG_GMD_DATETYPE = "gmd:dateType";
-    public static final String TAG_GMD_CI_DATETYPECODE = "gmd:CI_DateTypeCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_CI_DATETYPECODE =
+        "gmd:CI_DateTypeCode";
+
+    /** _more_          */
     public static final String TAG_GMD_EDITIONDATE = "gmd:editionDate";
+
+    /** _more_          */
     public static final String TAG_GMD_IDENTIFIER = "gmd:identifier";
+
+    /** _more_          */
     public static final String TAG_GMD_MD_IDENTIFIER = "gmd:MD_Identifier";
+
+    /** _more_          */
     public static final String TAG_GMD_CODE = "gmd:code";
-    public static final String TAG_GMD_CITEDRESPONSIBLEPARTY = "gmd:citedResponsibleParty";
+
+    /** _more_          */
+    public static final String TAG_GMD_CITEDRESPONSIBLEPARTY =
+        "gmd:citedResponsibleParty";
+
+    /** _more_          */
     public static final String TAG_GMD_ABSTRACT = "gmd:abstract";
+
+    /** _more_          */
     public static final String TAG_GMD_PURPOSE = "gmd:purpose";
+
+    /** _more_          */
     public static final String TAG_GMD_CREDIT = "gmd:credit";
+
+    /** _more_          */
     public static final String TAG_GMD_STATUS = "gmd:status";
-    public static final String TAG_GMD_MD_PROGRESSCODE = "gmd:MD_ProgressCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_PROGRESSCODE =
+        "gmd:MD_ProgressCode";
+
+    /** _more_          */
     public static final String TAG_GMD_POINTOFCONTACT = "gmd:pointOfContact";
-    public static final String TAG_GMD_RESOURCEMAINTENANCE = "gmd:resourceMaintenance";
-    public static final String TAG_GMD_MD_MAINTENANCEINFORMATION = "gmd:MD_MaintenanceInformation";
-    public static final String TAG_GMD_MAINTENANCEANDUPDATEFREQUENCY = "gmd:maintenanceAndUpdateFrequency";
-    public static final String TAG_GMD_MD_MAINTENANCEFREQUENCYCODE = "gmd:MD_MaintenanceFrequencyCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_RESOURCEMAINTENANCE =
+        "gmd:resourceMaintenance";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_MAINTENANCEINFORMATION =
+        "gmd:MD_MaintenanceInformation";
+
+    /** _more_          */
+    public static final String TAG_GMD_MAINTENANCEANDUPDATEFREQUENCY =
+        "gmd:maintenanceAndUpdateFrequency";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_MAINTENANCEFREQUENCYCODE =
+        "gmd:MD_MaintenanceFrequencyCode";
+
+    /** _more_          */
     public static final String TAG_GMD_UPDATESCOPE = "gmd:updateScope";
-    public static final String TAG_GMD_GRAPHICOVERVIEW = "gmd:graphicOverview";
-    public static final String TAG_GMD_MD_BROWSEGRAPHIC = "gmd:MD_BrowseGraphic";
+
+    /** _more_          */
+    public static final String TAG_GMD_GRAPHICOVERVIEW =
+        "gmd:graphicOverview";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_BROWSEGRAPHIC =
+        "gmd:MD_BrowseGraphic";
+
+    /** _more_          */
     public static final String TAG_GMD_FILENAME = "gmd:fileName";
-    public static final String TAG_GMD_FILEDESCRIPTION = "gmd:fileDescription";
+
+    /** _more_          */
+    public static final String TAG_GMD_FILEDESCRIPTION =
+        "gmd:fileDescription";
+
+    /** _more_          */
     public static final String TAG_GMD_FILETYPE = "gmd:fileType";
-    public static final String TAG_GMD_DESCRIPTIVEKEYWORDS = "gmd:descriptiveKeywords";
+
+    /** _more_          */
+    public static final String TAG_GMD_DESCRIPTIVEKEYWORDS =
+        "gmd:descriptiveKeywords";
+
+    /** _more_          */
     public static final String TAG_GMD_MD_KEYWORDS = "gmd:MD_Keywords";
+
+    /** _more_          */
     public static final String TAG_GMD_KEYWORD = "gmd:keyword";
+
+    /** _more_          */
     public static final String TAG_GMD_TYPE = "gmd:type";
-    public static final String TAG_GMD_MD_KEYWORDTYPECODE = "gmd:MD_KeywordTypeCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_KEYWORDTYPECODE =
+        "gmd:MD_KeywordTypeCode";
+
+    /** _more_          */
     public static final String TAG_GMD_THESAURUSNAME = "gmd:thesaurusName";
-    public static final String TAG_GMD_RESOURCECONSTRAINTS = "gmd:resourceConstraints";
-    public static final String TAG_GMD_MD_LEGALCONSTRAINTS = "gmd:MD_LegalConstraints";
-    public static final String TAG_GMD_ACCESSCONSTRAINTS = "gmd:accessConstraints";
-    public static final String TAG_GMD_MD_RESTRICTIONCODE = "gmd:MD_RestrictionCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_RESOURCECONSTRAINTS =
+        "gmd:resourceConstraints";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_LEGALCONSTRAINTS =
+        "gmd:MD_LegalConstraints";
+
+    /** _more_          */
+    public static final String TAG_GMD_ACCESSCONSTRAINTS =
+        "gmd:accessConstraints";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_RESTRICTIONCODE =
+        "gmd:MD_RestrictionCode";
+
+    /** _more_          */
     public static final String TAG_GMD_USECONSTRAINTS = "gmd:useConstraints";
-    public static final String TAG_GMD_OTHERCONSTRAINTS = "gmd:otherConstraints";
+
+    /** _more_          */
+    public static final String TAG_GMD_OTHERCONSTRAINTS =
+        "gmd:otherConstraints";
+
+    /** _more_          */
     public static final String TAG_GMD_TOPICCATEGORY = "gmd:topicCategory";
-    public static final String TAG_GMD_MD_TOPICCATEGORYCODE = "gmd:MD_TopicCategoryCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_TOPICCATEGORYCODE =
+        "gmd:MD_TopicCategoryCode";
+
+    /** _more_          */
     public static final String TAG_GMD_EXTENT = "gmd:extent";
+
+    /** _more_          */
     public static final String TAG_GMD_EX_EXTENT = "gmd:EX_Extent";
-    public static final String TAG_GMD_GEOGRAPHICELEMENT = "gmd:geographicElement";
-    public static final String TAG_GMD_EX_GEOGRAPHICBOUNDINGBOX = "gmd:EX_GeographicBoundingBox";
-    public static final String TAG_GMD_WESTBOUNDLONGITUDE = "gmd:westBoundLongitude";
+
+    /** _more_          */
+    public static final String TAG_GMD_GEOGRAPHICELEMENT =
+        "gmd:geographicElement";
+
+    /** _more_          */
+    public static final String TAG_GMD_EX_GEOGRAPHICBOUNDINGBOX =
+        "gmd:EX_GeographicBoundingBox";
+
+    /** _more_          */
+    public static final String TAG_GMD_WESTBOUNDLONGITUDE =
+        "gmd:westBoundLongitude";
+
+    /** _more_          */
     public static final String TAG_GCO_DECIMAL = "gco:Decimal";
-    public static final String TAG_GMD_EASTBOUNDLONGITUDE = "gmd:eastBoundLongitude";
-    public static final String TAG_GMD_SOUTHBOUNDLATITUDE = "gmd:southBoundLatitude";
-    public static final String TAG_GMD_NORTHBOUNDLATITUDE = "gmd:northBoundLatitude";
-    public static final String TAG_GMD_TEMPORALELEMENT = "gmd:temporalElement";
-    public static final String TAG_GMD_EX_TEMPORALEXTENT = "gmd:EX_TemporalExtent";
+
+    /** _more_          */
+    public static final String TAG_GMD_EASTBOUNDLONGITUDE =
+        "gmd:eastBoundLongitude";
+
+    /** _more_          */
+    public static final String TAG_GMD_SOUTHBOUNDLATITUDE =
+        "gmd:southBoundLatitude";
+
+    /** _more_          */
+    public static final String TAG_GMD_NORTHBOUNDLATITUDE =
+        "gmd:northBoundLatitude";
+
+    /** _more_          */
+    public static final String TAG_GMD_TEMPORALELEMENT =
+        "gmd:temporalElement";
+
+    /** _more_          */
+    public static final String TAG_GMD_EX_TEMPORALEXTENT =
+        "gmd:EX_TemporalExtent";
+
+    /** _more_          */
     public static final String TAG_GMD_TIMEPERIOD = "gmd:TimePeriod";
+
+    /** _more_          */
     public static final String TAG_GMD_BEGINPOSITION = "gmd:beginPosition";
+
+    /** _more_          */
     public static final String TAG_GMD_ENDPOSITION = "gmd:endPosition";
-    public static final String TAG_GMD_DISTRIBUTIONINFO = "gmd:distributionInfo";
-    public static final String TAG_GMD_MD_DISTRIBUTION = "gmd:MD_Distribution";
-    public static final String TAG_GMD_DISTRIBUTIONFORMAT = "gmd:distributionFormat";
+
+    /** _more_          */
+    public static final String TAG_GMD_DISTRIBUTIONINFO =
+        "gmd:distributionInfo";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_DISTRIBUTION =
+        "gmd:MD_Distribution";
+
+    /** _more_          */
+    public static final String TAG_GMD_DISTRIBUTIONFORMAT =
+        "gmd:distributionFormat";
+
+    /** _more_          */
     public static final String TAG_GMD_MD_FORMAT = "gmd:MD_Format";
+
+    /** _more_          */
     public static final String TAG_GMD_NAME = "gmd:name";
+
+    /** _more_          */
     public static final String TAG_GMD_VERSION = "gmd:version";
+
+    /** _more_          */
     public static final String TAG_GMD_SPECIFICATION = "gmd:specification";
+
+    /** _more_          */
     public static final String TAG_GMD_DISTRIBUTOR = "gmd:distributor";
+
+    /** _more_          */
     public static final String TAG_GMD_MD_DISTRIBUTOR = "gmd:MD_Distributor";
-    public static final String TAG_GMD_DISTRIBUTORCONTACT = "gmd:distributorContact";
-    public static final String TAG_GMD_TRANSFEROPTIONS = "gmd:transferOptions";
-    public static final String TAG_GMD_MD_DIGITALTRANSFEROPTIONS = "gmd:MD_DigitalTransferOptions";
+
+    /** _more_          */
+    public static final String TAG_GMD_DISTRIBUTORCONTACT =
+        "gmd:distributorContact";
+
+    /** _more_          */
+    public static final String TAG_GMD_TRANSFEROPTIONS =
+        "gmd:transferOptions";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_DIGITALTRANSFEROPTIONS =
+        "gmd:MD_DigitalTransferOptions";
+
+    /** _more_          */
     public static final String TAG_GMD_ONLINE = "gmd:onLine";
+
+    /** _more_          */
     public static final String TAG_GMD_DESCRIPTION = "gmd:description";
+
+    /** _more_          */
     public static final String TAG_GMD_FUNCTION = "gmd:function";
-    public static final String TAG_GMD_CI_ONLINEFUNCTIONCODE = "gmd:CI_OnLineFunctionCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_CI_ONLINEFUNCTIONCODE =
+        "gmd:CI_OnLineFunctionCode";
+
+    /** _more_          */
     public static final String TAG_GMD_OFFLINE = "gmd:offLine";
+
+    /** _more_          */
     public static final String TAG_GMD_MD_MEDIUM = "gmd:MD_Medium";
-    public static final String TAG_GMD_MD_MEDIUMNAMECODE = "gmd:MD_MediumNameCode";
+
+    /** _more_          */
+    public static final String TAG_GMD_MD_MEDIUMNAMECODE =
+        "gmd:MD_MediumNameCode";
+
+    /** _more_          */
     public static final String TAG_GMD_DENSITY = "gmd:density";
+
+    /** _more_          */
     public static final String TAG_GCO_REAL = "gco:Real";
+
+    /** _more_          */
     public static final String TAG_GMD_DENSITYUNITS = "gmd:densityUnits";
+
+    /** _more_          */
     public static final String TAG_GMD_MEDIUMNOTE = "gmd:mediumNote";
-    public static final String TAG_GMI_ACQUISITIONINFORMATION = "gmi:acquisitionInformation";
-    public static final String TAG_GMI_MI_ACQUISITIONINFORMATION = "gmi:MI_AcquisitionInformation";
+
+    /** _more_          */
+    public static final String TAG_GMI_ACQUISITIONINFORMATION =
+        "gmi:acquisitionInformation";
+
+    /** _more_          */
+    public static final String TAG_GMI_MI_ACQUISITIONINFORMATION =
+        "gmi:MI_AcquisitionInformation";
+
+    /** _more_          */
     public static final String TAG_GMI_INSTRUMENT = "gmi:instrument";
+
+    /** _more_          */
     public static final String TAG_GMI_MI_INSTRUMENT = "gmi:MI_Instrument";
+
+    /** _more_          */
     public static final String TAG_GMI_IDENTIFIER = "gmi:identifier";
+
+    /** _more_          */
     public static final String TAG_GMI_TYPE = "gmi:type";
+
+    /** _more_          */
     public static final String TAG_GMI_PLATFORM = "gmi:platform";
+
+    /** _more_          */
     public static final String TAG_GMI_MI_PLATFORM = "gmi:MI_Platform";
+
+    /** _more_          */
     public static final String TAG_GMI_DESCRIPTION = "gmi:description";
 
+    /** _more_          */
     public static final String ATTR_VERSION = "version";
+
+    /** _more_          */
     public static final String ATTR_XMLNS_GCO = "xmlns:gco";
+
+    /** _more_          */
     public static final String ATTR_XMLNS_GMD = "xmlns:gmd";
+
+    /** _more_          */
     public static final String ATTR_XMLNS_GMI = "xmlns:gmi";
+
+    /** _more_          */
     public static final String ATTR_XMLNS_GML = "xmlns:gml";
+
+    /** _more_          */
     public static final String ATTR_XMLNS_GTS = "xmlns:gts";
+
+    /** _more_          */
     public static final String ATTR_XMLNS_XSI = "xmlns:xsi";
 
+    /** _more_          */
     public static final String ATTR_CODELIST = "codeList";
+
+    /** _more_          */
     public static final String ATTR_CODELISTVALUE = "codeListValue";
+
+    /** _more_          */
     public static final String ATTR_ID = "id";
 
 
     /*        <gmi:MI_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmi="http://eden.ign.fr/xsd/isotc211/isofull/20090316/gmi/" version="1.0">
-        
+
      */
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static Element makeRoot() throws Exception {
-        return XmlUtil.getRoot(makeRootTag() +XmlUtil.closeTag(TAG_GMI_MI_METADATA));
+        return XmlUtil.getRoot(makeRootTag()
+                               + XmlUtil.closeTag(TAG_GMI_MI_METADATA));
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public static String makeRootTag() {
         return XmlUtil.openTag(TAG_GMI_MI_METADATA,
-                               XmlUtil.attrs(new String[]{
-                                   ATTR_XMLNS_GCO, XMLNS_GCO,
-                                   ATTR_XMLNS_GMD, XMLNS_GMD,
-                                   ATTR_XMLNS_GML, XMLNS_GML,
-                                   ATTR_XMLNS_GTS, XMLNS_GTS,
-                                   ATTR_XMLNS_XSI, XMLNS_XSI,
-                                   ATTR_XMLNS_GMI, XMLNS_GMI,
-                                   ATTR_VERSION,"1.0"
-                                   })
-                               );
+                               XmlUtil.attrs(new String[] {
+            ATTR_XMLNS_GCO, XMLNS_GCO, ATTR_XMLNS_GMD, XMLNS_GMD,
+            ATTR_XMLNS_GML, XMLNS_GML, ATTR_XMLNS_GTS, XMLNS_GTS,
+            ATTR_XMLNS_XSI, XMLNS_XSI, ATTR_XMLNS_GMI, XMLNS_GMI,
+            ATTR_VERSION, "1.0"
+        }));
     }
 
 
-    public static String format(Date date) throws Exception  {
+    /**
+     * _more_
+     *
+     * @param date _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String format(Date date) throws Exception {
         return ucar.unidata.util.DateUtil.getTimeAsISO8601(date);
     }
 
-    
 
 
-    public static void  addDateStamp(Element parent, Date date) throws Exception  {
-        Element dateStamp = XmlUtil.create(TAG_GMD_DATESTAMP,parent);
-        Element dateTag = XmlUtil.create(TAG_GCO_DATETIME, dateStamp, format(date));
+
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param date _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void addDateStamp(Element parent, Date date)
+            throws Exception {
+        Element dateStamp = XmlUtil.create(TAG_GMD_DATESTAMP, parent);
+        Element dateTag = XmlUtil.create(TAG_GCO_DATETIME, dateStamp,
+                                         format(date));
     }
 
-    
 
 
-    public static void addMetadataStandardTag(Element parent) throws Exception  {
-        addTextTag(parent, TAG_GMD_METADATASTANDARDNAME,METADATA_STANDARD_NAME);
-        addTextTag(parent, TAG_GMD_METADATASTANDARDVERSION,METADATA_STANDARD_VERSION);
-        
+
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void addMetadataStandardTag(Element parent)
+            throws Exception {
+        addTextTag(parent, TAG_GMD_METADATASTANDARDNAME,
+                   METADATA_STANDARD_NAME);
+        addTextTag(parent, TAG_GMD_METADATASTANDARDVERSION,
+                   METADATA_STANDARD_VERSION);
+
     }
-    
 
 
-    public static void xaddCharacterTag(Element parent, String contents) throws Exception  {
-        Element node =  XmlUtil.create(TAG_GCO_CHARACTERSTRING,parent,(String)null);
+
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param contents _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void xaddCharacterTag(Element parent, String contents)
+            throws Exception {
+        Element node = XmlUtil.create(TAG_GCO_CHARACTERSTRING, parent,
+                                      (String) null);
         XmlUtil.createCDataNode(node, contents);
     }
 
 
-  
 
+
+    /**
+     * _more_
+     *
+     * @param contents _more_
+     *
+     * @return _more_
+     */
     public static String makeCharacterTag(String contents) {
-        return XmlUtil.tag(TAG_GCO_CHARACTERSTRING,XmlUtil.getCdata(contents));
+        return XmlUtil.tag(TAG_GCO_CHARACTERSTRING,
+                           XmlUtil.getCdata(contents));
     }
 
 
 
-    public static Element addTextTag(Element parent, String tagName, String contents) throws Exception  {
-        Element node =  XmlUtil.create(tagName,parent,(String)null);
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param tagName _more_
+     * @param contents _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Element addTextTag(Element parent, String tagName,
+                                     String contents)
+            throws Exception {
+        Element node = XmlUtil.create(tagName, parent, (String) null);
         addCharacterTag(node, contents);
         return node;
     }
 
 
-    public static void addCharacterTag(Element parent, String contents) throws Exception  {
-        Element node =  XmlUtil.create(TAG_GCO_CHARACTERSTRING,parent,(String)null);
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param contents _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void addCharacterTag(Element parent, String contents)
+            throws Exception {
+        Element node = XmlUtil.create(TAG_GCO_CHARACTERSTRING, parent,
+                                      (String) null);
 
-        node.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(), contents, false));
+        node.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(),
+                contents, false));
     }
 
 
-    
+
 
 }

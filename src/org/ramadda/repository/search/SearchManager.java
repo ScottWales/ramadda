@@ -1,22 +1,22 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.search;
 
@@ -122,7 +122,8 @@ import java.util.zip.*;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class SearchManager extends RepositoryManager implements EntryChecker, AdminHandler {
+public class SearchManager extends RepositoryManager implements EntryChecker,
+        AdminHandler {
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
@@ -184,31 +185,31 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
 
 
 
-    /** _more_          */
+    /** _more_ */
     private static final String FIELD_ENTRYID = "entryid";
 
-    /** _more_          */
+    /** _more_ */
     private static final String FIELD_PATH = "path";
 
-    /** _more_          */
+    /** _more_ */
     private static final String FIELD_CONTENTS = "contents";
 
-    /** _more_          */
+    /** _more_ */
     private static final String FIELD_MODIFIED = "modified";
 
-    /** _more_          */
+    /** _more_ */
     private static final String FIELD_DESCRIPTION = "description";
 
-    /** _more_          */
+    /** _more_ */
     private static final String FIELD_METADATA = "metadata";
 
-    /** _more_          */
+    /** _more_ */
     private IndexSearcher luceneSearcher;
 
-    /** _more_          */
+    /** _more_ */
     private IndexReader luceneReader;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isLuceneEnabled = true;
 
     /**
@@ -224,6 +225,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean includeMetadata() {
         return getProperty(PROP_SEARCH_SHOW_METADATA, true);
     }
@@ -255,28 +261,57 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<RequestUrl> getAdminUrls() {
         return null;
     }
 
+    /**
+     * _more_
+     *
+     * @param block _more_
+     * @param asb _more_
+     */
     public void addToAdminSettingsForm(String block, StringBuffer asb) {
-        if(!block.equals(Admin.BLOCK_ACCESS)) return;
+        if ( !block.equals(Admin.BLOCK_ACCESS)) {
+            return;
+        }
         asb.append(HtmlUtil.colspan(msgHeader("Search"), 2));
-        asb.append(HtmlUtil.formEntry("",
-                                      HtmlUtil.checkbox(PROP_SEARCH_LUCENE_ENABLED,
-                                          "true",
-                                                        isLuceneEnabled())
-                                      + HtmlUtil.space(2)
-                                      + msg("Enable Lucene Indexing and Search")));
+        asb.append(
+            HtmlUtil
+                .formEntry(
+                    "",
+                    HtmlUtil
+                        .checkbox(
+                            PROP_SEARCH_LUCENE_ENABLED, "true",
+                            isLuceneEnabled()) + HtmlUtil.space(2)
+                                + msg("Enable Lucene Indexing and Search")));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @throws Exception _more_
+     */
     public void applyAdminSettingsForm(Request request) throws Exception {
-        getRepository().writeGlobal(PROP_SEARCH_LUCENE_ENABLED,
-                                    isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, false));
+        getRepository().writeGlobal(
+            PROP_SEARCH_LUCENE_ENABLED,
+            isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, false));
 
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getId() {
         return "searchmanager";
     }
@@ -329,7 +364,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
                           entry.getName() + " " + entry.getDescription(),
                           Field.Store.NO, Field.Index.ANALYZED));
 
-        if(metadataSB.length()>0) {
+        if (metadataSB.length() > 0) {
             doc.add(new Field(FIELD_METADATA, metadataSB.toString(),
                               Field.Store.NO, Field.Index.ANALYZED));
         }
@@ -346,21 +381,36 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
     }
 
 
-    private void addContentField(Entry entry, org.apache.lucene.document.Document doc, File f) throws Exception {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param doc _more_
+     * @param f _more_
+     *
+     * @throws Exception _more_
+     */
+    private void addContentField(Entry entry,
+                                 org.apache.lucene.document.Document doc,
+                                 File f)
+            throws Exception {
         //org.apache.lucene.document.Document doc
         InputStream stream = getStorageManager().getFileInputStream(f);
         try {
-            org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
-            org.apache.tika.parser.AutoDetectParser parser = new org.apache.tika.parser.AutoDetectParser();
-            org.apache.tika.sax.BodyContentHandler handler = new org.apache.tika.sax.BodyContentHandler();
+            org.apache.tika.metadata.Metadata metadata =
+                new org.apache.tika.metadata.Metadata();
+            org.apache.tika.parser.AutoDetectParser parser =
+                new org.apache.tika.parser.AutoDetectParser();
+            org.apache.tika.sax.BodyContentHandler handler =
+                new org.apache.tika.sax.BodyContentHandler();
             parser.parse(stream, handler, metadata);
             String contents = handler.toString();
             //            System.err.println("contents: " + contents);
-            if(contents!=null && contents.length()>0) {
+            if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
                                   Field.Index.ANALYZED));
             }
- 
+
             /*
             String[] names = metadata.names();
             for (String name : names) {
@@ -370,7 +420,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
                                   Field.Index.ANALYZED));
             }
             */
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             System.err.println("error harvesting corpus from:" + f);
             exc.printStackTrace();
         } finally {
@@ -698,17 +748,18 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             buttons = HtmlUtil.submit(msg("Search"), ARG_SEARCH_SUBMIT);
         }
         sb.append(HtmlUtil.p());
-        if (!justText) {
+        if ( !justText) {
             sb.append(buttons);
             sb.append(HtmlUtil.p());
         }
 
         if (justText) {
-            String value           = (String) request.getString(ARG_TEXT, "");
-            sb.append(HtmlUtil.span(msgLabel("Text"), HtmlUtil.cssClass("formlabel")) + " " + 
-                      HtmlUtil.input(ARG_TEXT, value,
-                                     HtmlUtil.SIZE_50
-                                     + " autofocus ") + " " + buttons);
+            String value = (String) request.getString(ARG_TEXT, "");
+            sb.append(HtmlUtil.span(msgLabel("Text"),
+                                    HtmlUtil.cssClass("formlabel")) + " "
+                                        + HtmlUtil.input(ARG_TEXT, value,
+                                            HtmlUtil.SIZE_50
+                                            + " autofocus ") + " " + buttons);
             /*            sb.append(
                 "<table width=\"100%\" border=\"0\"><tr><td width=\"60\">");
             typeHandler.addTextSearch(request, sb);
@@ -725,13 +776,13 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             typeHandler.addToSearchForm(request, sb, where, true);
 
 
-            if(includeMetadata()) {
+            if (includeMetadata()) {
                 StringBuffer metadataSB = new StringBuffer();
                 metadataSB.append(HtmlUtil.formTable());
                 getMetadataManager().addToSearchForm(request, metadataSB);
                 metadataSB.append(HtmlUtil.formTableClose());
                 sb.append(HtmlUtil.makeShowHideBlock(msg("Properties"),
-                                                     metadataSB.toString(), false));
+                        metadataSB.toString(), false));
             }
 
             StringBuffer outputForm = new StringBuffer(HtmlUtil.formTable());
@@ -823,7 +874,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
 
 
 
-        if(!justText) {
+        if ( !justText) {
             sb.append(HtmlUtil.p());
             sb.append(buttons);
             sb.append(HtmlUtil.p());
@@ -983,7 +1034,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
         headerSB.append(sb);
         sb = headerSB;
         Result result = new Result(title, sb);
-        return  addHeaderToAncillaryPage(request, result);
+        return addHeaderToAncillaryPage(request, result);
     }
 
     /**
@@ -1010,7 +1061,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
         }
 
 
-        boolean textSearch = isLuceneEnabled() && request.getString(ARG_SEARCH_TYPE,"").equals(SEARCH_TYPE_TEXT);
+        boolean textSearch = isLuceneEnabled()
+                             && request.getString(ARG_SEARCH_TYPE,
+                                 "").equals(SEARCH_TYPE_TEXT);
 
         StringBuffer     searchCriteriaSB = new StringBuffer();
         boolean          searchThis       = true;
@@ -1127,8 +1180,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
             searchForm.append(msg("Search Criteria") + "<br><table>" + s
                               + "</table>");
         }
-        boolean foundAny = groups.size()>0 || entries.size()>0;
-        if(foundAny) {
+        boolean foundAny = (groups.size() > 0) || (entries.size() > 0);
+        if (foundAny) {
             String searchUrl = request.getUrl();
             searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
             searchForm.append(HtmlUtil.br());
@@ -1148,7 +1201,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
                 ""));
         header.append(msgHeader("Search Results"));
 
-        if(foundAny) {
+        if (foundAny) {
             header.append(form);
         } else {
             header.append(searchForm);
@@ -1164,9 +1217,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker, Ad
                                              request.getOutput(), theGroup,
                                              groups, entries);
         //        return makeResult(request, msg("Search Results"), sb);
-        if(theGroup.isDummy()) {
+        if (theGroup.isDummy()) {
             return addHeaderToAncillaryPage(request, result);
-        } 
+        }
         return getEntryManager().addEntryHeader(request, theGroup, result);
     }
 

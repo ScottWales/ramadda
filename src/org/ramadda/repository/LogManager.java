@@ -1,42 +1,45 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository;
 
-
-
-
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.IOUtil;
-import java.io.*;
 
 import org.apache.log4j.Logger;
 
 
 
 import org.ramadda.repository.auth.*;
+
 import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
+
+
+
+
+
+import ucar.unidata.util.StringUtil;
+
+import java.io.*;
 
 import java.io.FileNotFoundException;
 
@@ -57,9 +60,10 @@ import java.util.List;
 public class LogManager extends RepositoryManager {
 
     /** _more_ */
-    private  Logger LOGGER;
+    private Logger LOGGER;
 
-    private  boolean LOGGER_OK = true;
+    /** _more_          */
+    private boolean LOGGER_OK = true;
 
     /** _more_ */
     public static boolean debug = true;
@@ -107,16 +111,20 @@ public class LogManager extends RepositoryManager {
 
     /**
      * Create if needed and return the logger
+     *
+     * @return _more_
      */
     private Logger getLogger() {
         //Check if we've already had an error
-        if(!LOGGER_OK) return null;
-        if(LOGGER == null) {
+        if ( !LOGGER_OK) {
+            return null;
+        }
+        if (LOGGER == null) {
             try {
                 LOGGER = Logger.getLogger(LogManager.class);
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 LOGGER_OK = false;
-                System.err.println ("Error getting logger: " + exc);
+                System.err.println("Error getting logger: " + exc);
                 exc.printStackTrace();
             }
         }
@@ -131,10 +139,10 @@ public class LogManager extends RepositoryManager {
      */
     public void debug(String message) {
         Logger logger = getLogger();
-        if(logger!=null)  {
+        if (logger != null) {
             logger.debug(message);
         } else {
-            System.err.println ("RAMADDA DEBUG:" + message);
+            System.err.println("RAMADDA DEBUG:" + message);
         }
     }
 
@@ -190,10 +198,10 @@ public class LogManager extends RepositoryManager {
      */
     public void logInfo(String message) {
         Logger logger = getLogger();
-        if(logger!=null) {
+        if (logger != null) {
             logger.info(message);
         } else {
-            System.err.println ("RAMADDA INFO:" + message);
+            System.err.println("RAMADDA INFO:" + message);
         }
     }
 
@@ -205,10 +213,10 @@ public class LogManager extends RepositoryManager {
      */
     public void logError(String message) {
         Logger logger = getLogger();
-        if(logger!=null) {
+        if (logger != null) {
             logger.error(message);
         } else {
-            System.err.println ("RAMADDA ERROR:" + message);
+            System.err.println("RAMADDA ERROR:" + message);
         }
     }
 
@@ -219,11 +227,11 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logWarning(String message) {
-        Logger logger = getLogger();        
-        if(logger!=null) {
+        Logger logger = getLogger();
+        if (logger != null) {
             logger.warn(message);
         } else {
-            System.err.println ("RAMADDA WARNING:" + message);
+            System.err.println("RAMADDA WARNING:" + message);
         }
     }
 
@@ -267,8 +275,8 @@ public class LogManager extends RepositoryManager {
         }
 
 
-        if(log==null) {
-            System.err.println ("RAMADDA ERROR:" + message + " " + thr);
+        if (log == null) {
+            System.err.println("RAMADDA ERROR:" + message + " " + thr);
         }
 
 
@@ -459,6 +467,15 @@ public class LogManager extends RepositoryManager {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result adminLog(Request request) throws Exception {
         StringBuffer sb       = new StringBuffer();
         List<String> header   = new ArrayList();
@@ -474,8 +491,11 @@ public class LogManager extends RepositoryManager {
         if (log.equals("access")) {
             header.add(HtmlUtil.bold("Recent Access"));
         } else {
-            header.add(HtmlUtil.href(HtmlUtil.url(getAdmin().URL_ADMIN_LOG.toString(),
-                    ARG_LOG, "access"), "Recent Access"));
+            header.add(
+                HtmlUtil.href(
+                    HtmlUtil.url(
+                        getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
+                        "access"), "Recent Access"));
         }
 
         for (File logFile : logFiles) {
@@ -495,7 +515,8 @@ public class LogManager extends RepositoryManager {
                 header.add(
                     HtmlUtil.href(
                         HtmlUtil.url(
-                            getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG, name), label));
+                            getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
+                            name), label));
             }
         }
 
@@ -539,12 +560,15 @@ public class LogManager extends RepositoryManager {
                 sb.append(
                     HtmlUtil.href(
                         HtmlUtil.url(
-                            getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG, log,
-                            ARG_BYTES, numBytes + 2000), "More..."));
+                            getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
+                            log, ARG_BYTES, numBytes + 2000), "More..."));
             }
             sb.append(HtmlUtil.space(2));
-            sb.append(HtmlUtil.href(HtmlUtil.url(getAdmin().URL_ADMIN_LOG.toString(),
-                    ARG_LOG, log, ARG_BYTES, numBytes - 2000), "Less..."));
+            sb.append(
+                HtmlUtil.href(
+                    HtmlUtil.url(
+                        getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG, log,
+                        ARG_BYTES, numBytes - 2000), "Less..."));
 
             sb.append(HtmlUtil.br());
             if (offset > 0) {

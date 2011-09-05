@@ -1,32 +1,32 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.metadata;
-
-
-import org.w3c.dom.*;
 
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
+
+
+import org.w3c.dom.*;
 
 
 
@@ -211,8 +211,15 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-    public void getTextCorpus(Entry entry, StringBuffer sb)
-            throws Exception {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getTextCorpus(Entry entry, StringBuffer sb) throws Exception {
         for (Metadata metadata : getMetadata(entry)) {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
             handler.getTextCorpus(entry, sb, metadata);
@@ -452,14 +459,28 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-    public void addMetadata(Request request, Entry entry, ZipOutputStream zos, Document doc, Element parent)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param zos _more_
+     * @param doc _more_
+     * @param parent _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addMetadata(Request request, Entry entry,
+                            ZipOutputStream zos, Document doc, Element parent)
             throws Exception {
         List<Metadata> metadataList = getMetadata(entry);
         for (Metadata metadata : metadataList) {
-            MetadataHandler metadataHandler  = findMetadataHandler(metadata);
-            if(metadataHandler == null) continue;
-            metadataHandler.addMetadata(request,entry, zos,
-                                        metadata,  parent);
+            MetadataHandler metadataHandler = findMetadataHandler(metadata);
+            if (metadataHandler == null) {
+                continue;
+            }
+            metadataHandler.addMetadata(request, entry, zos, metadata,
+                                        parent);
 
         }
     }
@@ -565,15 +586,20 @@ public class MetadataManager extends RepositoryManager {
      *
      *
      * @param metadataDefFiles _more_
+     *
+     * @param pluginManager _more_
      * @throws Exception _more_
      */
     public void loadMetadataHandlers(PluginManager pluginManager)
             throws Exception {
-        List<String> metadataDefFiles = getRepository().getPluginManager().getMetadataDefFiles();
+        List<String> metadataDefFiles =
+            getRepository().getPluginManager().getMetadataDefFiles();
         for (String file : metadataDefFiles) {
             try {
                 file = getStorageManager().localizePath(file);
-                if(pluginManager.haveSeen(file)) continue;
+                if (pluginManager.haveSeen(file)) {
+                    continue;
+                }
                 Element root = XmlUtil.getRoot(file, getClass());
                 if (root == null) {
                     continue;
@@ -750,7 +776,8 @@ public class MetadataManager extends RepositoryManager {
                 }
             }
             entry.setMetadata(null);
-            Misc.run(getRepository(), "checkModifiedEntries", Misc.newList(entry));
+            Misc.run(getRepository(), "checkModifiedEntries",
+                     Misc.newList(entry));
             return new Result(request.url(URL_METADATA_FORM, ARG_ENTRYID,
                                           entry.getId()));
         }
@@ -778,14 +805,15 @@ public class MetadataManager extends RepositoryManager {
                      + HtmlUtil.span(
                          "&nbsp;|&nbsp;",
                          HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)) + HtmlUtil.b(
-                                                                      msg("Cloud"));
+                             msg("Cloud"));
         } else {
             request.put(ARG_TYPE, "cloud");
             header = HtmlUtil.b(msg("List"))
                      + HtmlUtil.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)) + HtmlUtil.href(
-                                                                         request.getUrl(), msg("Cloud"));
+                         HtmlUtil.cssClass(
+                             CSS_CLASS_SEPARATOR)) + HtmlUtil.href(
+                                 request.getUrl(), msg("Cloud"));
         }
         sb.append(HtmlUtil.center(HtmlUtil.span(header,
                 HtmlUtil.cssClass(CSS_CLASS_HEADING_2))));
@@ -866,7 +894,9 @@ public class MetadataManager extends RepositoryManager {
             }
         }
 
-        return getSearchManager().makeResult(request, msg(type.getLabel() + " Cloud"), sb);
+        return getSearchManager().makeResult(request,
+                                             msg(type.getLabel() + " Cloud"),
+                                             sb);
     }
 
 
@@ -926,7 +956,7 @@ public class MetadataManager extends RepositoryManager {
             sb.append(msgLabel("Add new metadata"));
             makeAddList(request, entry, sb);
         } else {
-            request.uploadFormWithAuthToken(sb,URL_METADATA_CHANGE);
+            request.uploadFormWithAuthToken(sb, URL_METADATA_CHANGE);
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
             sb.append(HtmlUtil.submit(msg("Change")));
             sb.append(HtmlUtil.space(2));
@@ -1011,7 +1041,7 @@ public class MetadataManager extends RepositoryManager {
         Entry        entry = getEntryManager().getEntry(request);
         sb.append(HtmlUtil.p());
 
-        if (!request.exists(ARG_TYPE)) {
+        if ( !request.exists(ARG_TYPE)) {
             makeAddList(request, entry, sb);
         } else {
             String type = request.getString(ARG_TYPE, BLANK);
@@ -1058,7 +1088,7 @@ public class MetadataManager extends RepositoryManager {
                 groupMap.put(name, groupSB = new StringBuffer());
                 groups.add(name);
             }
-            request.uploadFormWithAuthToken(groupSB,URL_METADATA_ADDFORM);
+            request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
             groupSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
             groupSB.append(HtmlUtil.hidden(ARG_TYPE, type.getId()));
             groupSB.append(HtmlUtil.submit(msg("Add")));
@@ -1109,7 +1139,8 @@ public class MetadataManager extends RepositoryManager {
                 insertMetadata(metadata);
             }
             entry.setMetadata(null);
-            Misc.run(getRepository(), "checkModifiedEntries", Misc.newList(entry));
+            Misc.run(getRepository(), "checkModifiedEntries",
+                     Misc.newList(entry));
             return new Result(request.url(URL_METADATA_FORM, ARG_ENTRYID,
                                           entry.getId()));
 

@@ -1,44 +1,46 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.plugins.feed;
-
-import ucar.unidata.util.DateUtil;
-
-import java.text.SimpleDateFormat;
-
-
-import org.w3c.dom.*;
 
 
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-import ucar.unidata.util.HtmlUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.xml.XmlUtil;
+import org.ramadda.util.AtomUtil;
 
 import org.ramadda.util.RssUtil;
-import org.ramadda.util.AtomUtil;
+
+
+import org.w3c.dom.*;
+
+import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.xml.XmlUtil;
+
 import java.net.URL;
+
+import java.text.SimpleDateFormat;
 
 
 import java.util.ArrayList;
@@ -86,7 +88,9 @@ public class FeedTypeHandler extends GenericTypeHandler {
             return ids;
         }
         ids = new ArrayList<String>();
-        if(synthId!=null) return ids;
+        if (synthId != null) {
+            return ids;
+        }
 
         for (Entry item : getFeedEntries(request, mainEntry)) {
             ids.add(item.getId());
@@ -95,6 +99,14 @@ public class FeedTypeHandler extends GenericTypeHandler {
         return ids;
     }
 
+    /**
+     * _more_
+     *
+     * @param parentEntry _more_
+     * @param subId _more_
+     *
+     * @return _more_
+     */
     public String getSynthId(Entry parentEntry, String subId) {
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
     }
@@ -129,58 +141,93 @@ public class FeedTypeHandler extends GenericTypeHandler {
 
 
 
-    public void processRss(Request request, Entry mainEntry, List<Entry> items, Element root) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param items _more_
+     * @param root _more_
+     *
+     * @throws Exception _more_
+     */
+    public void processRss(Request request, Entry mainEntry,
+                           List<Entry> items, Element root)
+            throws Exception {
+        SimpleDateFormat sdf =
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
         Element channel = XmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
-        if(channel==null) throw new IllegalArgumentException("No channel tag");
+        if (channel == null) {
+            throw new IllegalArgumentException("No channel tag");
+        }
         NodeList children = XmlUtil.getElements(channel, RssUtil.TAG_ITEM);
-        for (int childIdx = 0; childIdx < children.getLength();
-             childIdx++) {
+        for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
-            String title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,"");
-            String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,"");
-            String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,"");
-            String desc = XmlUtil.getGrandChildText(item, RssUtil.TAG_DESCRIPTION,"");
-            String pubDate = XmlUtil.getGrandChildText(item, RssUtil.TAG_PUBDATE,"").trim();
+            String title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
+                               "");
+            String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,
+                              "");
+            String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,
+                              "");
+            String desc = XmlUtil.getGrandChildText(item,
+                              RssUtil.TAG_DESCRIPTION, "");
+            String pubDate = XmlUtil.getGrandChildText(item,
+                                 RssUtil.TAG_PUBDATE, "").trim();
 
-            String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,"").trim();
-            if(lat.length()==0)
-                lat = XmlUtil.getGrandChildText(item, "lat","").trim();
-            String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,"").trim();
-            if(lon.length()==0)
-                lon = XmlUtil.getGrandChildText(item, "long","").trim();
+            String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,
+                             "").trim();
+            if (lat.length() == 0) {
+                lat = XmlUtil.getGrandChildText(item, "lat", "").trim();
+            }
+            String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,
+                             "").trim();
+            if (lon.length() == 0) {
+                lon = XmlUtil.getGrandChildText(item, "long", "").trim();
+            }
 
             Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
-            Date dttm = new Date();
+            Date  dttm  = new Date();
             try {
                 dttm = sdf.parse(pubDate);
             } catch (Exception exc) {
-                dttm  =DateUtil.parse(pubDate);
+                dttm = DateUtil.parse(pubDate);
             }
 
-            if(lat.length()>0  && lon.length()>0 ) {
+            if ((lat.length() > 0) && (lon.length() > 0)) {
                 entry.setLocation(Double.parseDouble(lat),
-                                  Double.parseDouble(lon),0);
+                                  Double.parseDouble(lon), 0);
             }
             //Tue, 25 Jan 2011 05:00:00 GMT
             Resource resource = new Resource(link);
             entry.initEntry(title, desc, mainEntry, mainEntry.getUser(),
-                               resource, "", dttm.getTime(),
-                               dttm.getTime(), dttm.getTime(),
-                               dttm.getTime(), null);
+                            resource, "", dttm.getTime(), dttm.getTime(),
+                            dttm.getTime(), dttm.getTime(), null);
 
             items.add(entry);
             getEntryManager().cacheEntry(entry);
         }
     }
 
-    public List<Entry> getFeedEntries(Request request, Entry mainEntry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getFeedEntries(Request request, Entry mainEntry)
+            throws Exception {
         List<Entry> items = new ArrayList<Entry>();
-        String url =  mainEntry.getResource().getPath();
-        if(url==null || url.trim().length()==0) return items;
+        String      url   = mainEntry.getResource().getPath();
+        if ((url == null) || (url.trim().length() == 0)) {
+            return items;
+        }
 
         Element root = XmlUtil.getRoot(url, getClass());
-        if(root.getTagName().equals(RssUtil.TAG_RSS)) {
+        if (root.getTagName().equals(RssUtil.TAG_RSS)) {
             processRss(request, mainEntry, items, root);
         }
 
@@ -203,7 +250,9 @@ public class FeedTypeHandler extends GenericTypeHandler {
             throws Exception {
         id = getSynthId(mainEntry, id);
         for (Entry item : getFeedEntries(request, mainEntry)) {
-            if(item.getId().equals(id)) return item;
+            if (item.getId().equals(id)) {
+                return item;
+            }
         }
         return null;
     }
@@ -218,6 +267,16 @@ public class FeedTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String getIconUrl(Request request, Entry entry) throws Exception {
         return iconUrl("/feed/blog_icon.png");
     }
@@ -235,5 +294,3 @@ public class FeedTypeHandler extends GenericTypeHandler {
 
 
 }
-
-

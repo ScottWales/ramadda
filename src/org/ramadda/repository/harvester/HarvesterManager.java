@@ -1,27 +1,24 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.harvester;
-
-
-import org.w3c.dom.*;
 
 
 
@@ -29,6 +26,9 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -64,7 +64,7 @@ import java.util.Properties;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -83,12 +83,13 @@ public class HarvesterManager extends RepositoryManager {
                                                "/harvester/new");
 
 
+    /** _more_          */
     public RequestUrl URL_HARVESTERS_FORM = new RequestUrl(this,
                                                 "/harvester/form");
 
     /** _more_ */
     public RequestUrl URL_HARVESTERS_CHANGE = new RequestUrl(this,
-                                                "/harvester/change");
+                                                  "/harvester/change");
 
 
     /** _more_ */
@@ -97,6 +98,7 @@ public class HarvesterManager extends RepositoryManager {
     /** _more_ */
     private Hashtable harvesterMap = new Hashtable();
 
+    /** _more_          */
     List<TwoFacedObject> harvesterTypes = new ArrayList<TwoFacedObject>();
 
 
@@ -112,21 +114,28 @@ public class HarvesterManager extends RepositoryManager {
         addHarvesterType(DirectoryHarvester.class);
     }
 
-    
-    public void addHarvesterType(Class c)  {
+
+    /**
+     * _more_
+     *
+     * @param c _more_
+     */
+    public void addHarvesterType(Class c) {
         try {
             Constructor ctor = Misc.findConstructor(c,
-                                                    new Class[] { Repository.class,
-                                                                  String.class });
-            if(ctor == null) {
-                throw new IllegalArgumentException("Could not find constructor for harvester:" + c.getName());
+                                   new Class[] { Repository.class,
+                    String.class });
+            if (ctor == null) {
+                throw new IllegalArgumentException(
+                    "Could not find constructor for harvester:"
+                    + c.getName());
             }
-            Harvester dummy =
-                (Harvester) ctor.newInstance(new Object[] {
-                        getRepository(),
-                        ""});
-            harvesterTypes.add(new TwoFacedObject(dummy.getDescription(), c.getName()));
-        } catch(Exception exc) {
+            Harvester dummy = (Harvester) ctor.newInstance(new Object[] {
+                                  getRepository(),
+                                  "" });
+            harvesterTypes.add(new TwoFacedObject(dummy.getDescription(),
+                    c.getName()));
+        } catch (Exception exc) {
             logError("Error creating harvester: " + c.getName(), exc);
         }
     }
@@ -174,9 +183,14 @@ public class HarvesterManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void initHarvesters() throws Exception {
-        Misc.run(this,"initHarvestersInThread");
+        Misc.run(this, "initHarvestersInThread");
     }
 
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
     public void initHarvestersInThread() throws Exception {
         List<String> harvesterFiles =
             getRepository().getResourcePaths(PROP_HARVESTERS);
@@ -207,21 +221,22 @@ public class HarvesterManager extends RepositoryManager {
                 c = Misc.findClass(className);
             } catch (ClassNotFoundException cnfe1) {
                 className = className.replace("repository.",
-                                              "repository.harvester.");
+                        "repository.harvester.");
                 try {
                     c = Misc.findClass(className);
-                }  catch (ClassNotFoundException cnfe2) {
-                    getRepository().getLogManager().logError("HarvesterManager: Could not load harvester class: " + className);
+                } catch (ClassNotFoundException cnfe2) {
+                    getRepository().getLogManager().logError(
+                        "HarvesterManager: Could not load harvester class: "
+                        + className);
                     continue;
                 }
             }
             Constructor ctor = Misc.findConstructor(c,
-                                                    new Class[] { Repository.class,
-                                                                  String.class });
-            Harvester harvester =
-                (Harvester) ctor.newInstance(new Object[] {
-                        getRepository(),
-                        id });
+                                   new Class[] { Repository.class,
+                    String.class });
+            Harvester harvester = (Harvester) ctor.newInstance(new Object[] {
+                                      getRepository(),
+                                      id });
 
             harvester.initFromContent(content);
             harvesters.add(harvester);
@@ -337,10 +352,8 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(HtmlUtil.formEntry(msgLabel("Name"),
                                      HtmlUtil.input(ARG_NAME, "",
                                          HtmlUtil.SIZE_40)));
-        String typeInput =
-            HtmlUtil.select(
-                ARG_HARVESTER_CLASS,
-                harvesterTypes);
+        String typeInput = HtmlUtil.select(ARG_HARVESTER_CLASS,
+                                           harvesterTypes);
         sb.append(HtmlUtil.formEntry(msgLabel("Type"), typeInput));
         sb.append(HtmlUtil.formEntry("",
                                      HtmlUtil.submit(msg("Create"))
@@ -395,7 +408,7 @@ public class HarvesterManager extends RepositoryManager {
             xml = XmlUtil.tag(Harvester.TAG_HARVESTERS, "", xml);
             return new Result("",
                               new StringBuffer(XmlUtil.getHeader() + "\n"
-                                               + xml), "text/xml");
+                                  + xml), "text/xml");
         }
 
         if ( !harvester.getIsEditable()) {
@@ -408,18 +421,18 @@ public class HarvesterManager extends RepositoryManager {
         makeFormHeader(request, harvester, sb);
 
 
-        String xmlLink =
-            HtmlUtil.href(
-                          HtmlUtil.url(
-                                       URL_HARVESTERS_FORM.toString() + "/harvester.xml",
-                                       ARG_HARVESTER_GETXML, "true", ARG_HARVESTER_ID,
-                                       harvester.getId()), msg("Download"));
+        String xmlLink = HtmlUtil.href(
+                             HtmlUtil.url(
+                                 URL_HARVESTERS_FORM.toString()
+                                 + "/harvester.xml", ARG_HARVESTER_GETXML,
+                                     "true", ARG_HARVESTER_ID,
+                                     harvester.getId()), msg("Download"));
 
         String buttons = HtmlUtil.submit(msg("Change"), ARG_CHANGE)
-            + HtmlUtil.space(1)
-            + HtmlUtil.submit(msg("Delete"), ARG_DELETE)
-            + HtmlUtil.space(1)
-            + HtmlUtil.submit(msg("Cancel"), ARG_CANCEL);
+                         + HtmlUtil.space(1)
+                         + HtmlUtil.submit(msg("Delete"), ARG_DELETE)
+                         + HtmlUtil.space(1)
+                         + HtmlUtil.submit(msg("Cancel"), ARG_CANCEL);
 
 
 
@@ -438,6 +451,15 @@ public class HarvesterManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processChange(Request request) throws Exception {
         Harvester harvester =
             findHarvester(request.getString(ARG_HARVESTER_ID));
@@ -459,8 +481,8 @@ public class HarvesterManager extends RepositoryManager {
                                         Clause.eq(Tables.HARVESTERS.COL_ID,
                                             harvester.getId()));
             return new Result(request.url(URL_HARVESTERS_LIST));
-        } 
-        
+        }
+
         if (request.exists(ARG_DELETE)) {
             StringBuffer sb = new StringBuffer();
             makeFormHeader(request, harvester, sb);
@@ -472,24 +494,32 @@ public class HarvesterManager extends RepositoryManager {
                         HtmlUtil.submit(msg("Cancel"), ARG_CANCEL_DELETE))));
             sb.append(HtmlUtil.formClose());
             return getAdmin().makeResult(request, msg("Edit Harvester"), sb);
-        } 
+        }
         if (request.exists(ARG_CHANGE)) {
             harvester.applyEditForm(request);
-            getDatabaseManager().delete(
-                                        Tables.HARVESTERS.NAME,
-                                        Clause.eq(Tables.HARVESTERS.COL_ID, harvester.getId()));
+            getDatabaseManager().delete(Tables.HARVESTERS.NAME,
+                                        Clause.eq(Tables.HARVESTERS.COL_ID,
+                                            harvester.getId()));
             getDatabaseManager().executeInsert(Tables.HARVESTERS.INSERT,
-                                               new Object[] { harvester.getId(),
-                                                              harvester.getClass().getName(),
-                                                              harvester.getContent() });
+                    new Object[] { harvester.getId(),
+                                   harvester.getClass().getName(),
+                                   harvester.getContent() });
 
         }
-        return new Result(request.url(URL_HARVESTERS_FORM,
-                                      ARG_HARVESTER_ID, harvester.getId()));
+        return new Result(request.url(URL_HARVESTERS_FORM, ARG_HARVESTER_ID,
+                                      harvester.getId()));
     }
 
 
-    private void makeFormHeader(Request request, Harvester harvester, StringBuffer sb) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param harvester _more_
+     * @param sb _more_
+     */
+    private void makeFormHeader(Request request, Harvester harvester,
+                                StringBuffer sb) {
         sb.append(header(msgLabel("Harvester") + harvester.getName()));
         request.formPostWithAuthToken(sb, URL_HARVESTERS_CHANGE);
         sb.append(HtmlUtil.hidden(ARG_HARVESTER_ID, harvester.getId()));

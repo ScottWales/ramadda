@@ -1,27 +1,38 @@
 /*
- * Copyright 2010 ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.*;
+import com.drew.imaging.jpeg.*;
+import com.drew.lang.*;
+
+
+
+import com.drew.metadata.*;
+import com.drew.metadata.exif.*;
 
 import org.ramadda.repository.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.util.HtmlUtil;
@@ -40,15 +51,9 @@ import java.io.File;
 
 
 import java.net.*;
-import java.util.List;
+
 import java.util.Iterator;
-
-
-
-import com.drew.metadata.*;
-import com.drew.metadata.exif.*;
-import com.drew.imaging.jpeg.*;
-import com.drew.lang.*;
+import java.util.List;
 
 
 
@@ -96,8 +101,12 @@ public class JpegMetadataOutputHandler extends OutputHandler {
             throws Exception {
         if (state.entry != null) {
             String path = state.entry.getResource().getPath();
-            if(!(path.toLowerCase().endsWith(".jpg") || path.toLowerCase().endsWith(".jpeg"))) return;
-            links.add(makeLink(request, state.getEntry(), OUTPUT_JPEG_METADATA));
+            if ( !(path.toLowerCase().endsWith(".jpg")
+                    || path.toLowerCase().endsWith(".jpeg"))) {
+                return;
+            }
+            links.add(makeLink(request, state.getEntry(),
+                               OUTPUT_JPEG_METADATA));
         }
     }
 
@@ -116,25 +125,28 @@ public class JpegMetadataOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        StringBuffer sb          = new StringBuffer();
-        File jpegFile = new File(entry.getResource().getPath()); 
-        com.drew.metadata.Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
+        StringBuffer sb = new StringBuffer();
+        File jpegFile = new File(entry.getResource().getPath());
+        com.drew.metadata.Metadata metadata =
+            JpegMetadataReader.readMetadata(jpegFile);
 
         sb.append("<ul>");
-        Iterator directories = metadata.getDirectoryIterator(); 
-        while (directories.hasNext()) { 
-            Directory directory = (Directory)directories.next(); 
+        Iterator directories = metadata.getDirectoryIterator();
+        while (directories.hasNext()) {
+            Directory directory = (Directory) directories.next();
             sb.append("<li> ");
             sb.append(directory.getName());
             sb.append("<ul>");
-            Iterator tags = directory.getTagIterator(); 
-            while (tags.hasNext()) { 
-                Tag tag = (Tag)tags.next(); 
-                if(tag.getTagName().indexOf("Unknown")>=0) continue;
+            Iterator tags = directory.getTagIterator();
+            while (tags.hasNext()) {
+                Tag tag = (Tag) tags.next();
+                if (tag.getTagName().indexOf("Unknown") >= 0) {
+                    continue;
+                }
                 sb.append("<li> ");
-                sb.append(tag.getTagName());            
+                sb.append(tag.getTagName());
                 sb.append(":");
-                sb.append(tag.getDescription());            
+                sb.append(tag.getDescription());
             }
             sb.append("</ul>");
         }

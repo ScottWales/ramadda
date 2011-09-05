@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.admin;
 
@@ -324,7 +325,8 @@ public class Admin extends RepositoryManager {
                              "/org/ramadda/repository/resources/license.txt");
         sb.append(HtmlUtil.textArea("", license, 20, 75));
         sb.append("<p>");
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,HtmlUtil.cssClass(CSS_CLASS_HIGHLIGHT)));
+        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                HtmlUtil.cssClass(CSS_CLASS_HIGHLIGHT)));
         sb.append(HtmlUtil.checkbox("agree", "1"));
         sb.append(HtmlUtil.space(1));
         sb.append(
@@ -376,7 +378,8 @@ public class Admin extends RepositoryManager {
             if (request.exists(UserManager.ARG_USER_ID)) {
                 triedOnce = true;
                 id = request.getString(UserManager.ARG_USER_ID, "").trim();
-                name = request.getString(UserManager.ARG_USER_NAME, "").trim();
+                name = request.getString(UserManager.ARG_USER_NAME,
+                                         "").trim();
                 String password1 =
                     request.getString(UserManager.ARG_USER_PASSWORD1,
                                       "").trim();
@@ -436,7 +439,7 @@ public class Admin extends RepositoryManager {
 
                     sb.append(
                         getRepository().showDialogNote(
-                                                       "Initial configuration process is complete."));
+                            "Initial configuration process is complete."));
                     sb.append(HtmlUtil.p());
 
                     Entry topEntry = getEntryManager().getTopGroup();
@@ -481,16 +484,19 @@ public class Admin extends RepositoryManager {
             }
 
             sb.append("Please enter the following information.");
-            sb.append(" This information is used to configure your RAMADDA server and is not sent anywhere.");
-            String required1 = " <span class=\"ramadda-required-field\">* required</span>";
-            String required2 = " <span class=\"ramadda-required-field\">*</span>";
+            sb.append(
+                " This information is used to configure your RAMADDA server and is not sent anywhere.");
+            String required1 =
+                " <span class=\"ramadda-required-field\">* required</span>";
+            String required2 =
+                " <span class=\"ramadda-required-field\">*</span>";
             sb.append(request.form(getRepository().URL_INSTALL));
             sb.append(HtmlUtil.formTable());
             sb.append(HtmlUtil.colspan(msgHeader("Administrator Login"), 2));
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("ID"),
-                    HtmlUtil.input(UserManager.ARG_USER_ID, id)+required1));
+                    HtmlUtil.input(UserManager.ARG_USER_ID, id) + required1));
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Name"),
@@ -504,11 +510,13 @@ public class Admin extends RepositoryManager {
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Password"),
-                    HtmlUtil.password(UserManager.ARG_USER_PASSWORD1)+required2));
+                    HtmlUtil.password(UserManager.ARG_USER_PASSWORD1)
+                    + required2));
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Password Again"),
-                    HtmlUtil.password(UserManager.ARG_USER_PASSWORD2)+required2));
+                    HtmlUtil.password(UserManager.ARG_USER_PASSWORD2)
+                    + required2));
 
             sb.append(HtmlUtil.colspan(msgHeader("Server Information"), 2));
             String hostname = "";
@@ -551,13 +559,13 @@ public class Admin extends RepositoryManager {
 
             sb.append(
                 HtmlUtil.formEntry(
-                                   "",
-                                   "RAMADDA comes with a set of plugins that add functionality. You can install them now or later if you wish."));
+                    "",
+                    "RAMADDA comes with a set of plugins that add functionality. You can install them now or later if you wish."));
             //TODO: read the plugins.xml file and offer more plugins
             //than the hard coded all plugin
             sb.append(
                 HtmlUtil.formEntry(
-                                   "",
+                    "",
                     HtmlUtil.checkbox(ARG_ADMIN_INSTALLPLUGIN, "true", true)
                     + " " + "Install all plugins"));
 
@@ -1209,9 +1217,10 @@ public class Admin extends RepositoryManager {
         String pqinsertPath = getProperty(PROP_LDM_PQINSERT, "");
         String ldmExtra1    = "";
         if ((pqinsertPath.length() > 0) && !new File(pqinsertPath).exists()) {
-            ldmExtra1 = HtmlUtil.space(2)
-                        + HtmlUtil.span("File does not exist!",
-                                        HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
+            ldmExtra1 =
+                HtmlUtil.space(2)
+                + HtmlUtil.span("File does not exist!",
+                                HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
         }
 
         asb.append(HtmlUtil.formEntry("Path to pqinsert:",
@@ -1221,9 +1230,10 @@ public class Admin extends RepositoryManager {
         String ldmQueue  = getProperty(PROP_LDM_QUEUE, "");
         String ldmExtra2 = "";
         if ((ldmQueue.length() > 0) && !new File(ldmQueue).exists()) {
-            ldmExtra2 = HtmlUtil.space(2)
-                        + HtmlUtil.span("File does not exist!",
-                                        HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
+            ldmExtra2 =
+                HtmlUtil.space(2)
+                + HtmlUtil.span("File does not exist!",
+                                HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
         }
 
         asb.append(HtmlUtil.formEntry("Queue Location:",

@@ -1,35 +1,34 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * Copyright 2010- ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.harvester;
 
-
-import org.w3c.dom.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -132,7 +131,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     /** _more_ */
     private Hashtable dirMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private HashSet seenFiles = new HashSet();
 
     /** _more_ */
@@ -179,8 +178,12 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     }
 
 
-    public void initEntry(Entry entry) {
-    }
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     */
+    public void initEntry(Entry entry) {}
 
     /**
      * _more_
@@ -320,10 +323,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         if (rootDir != null) {
             if ( !rootDir.exists()) {
-                extraLabel =
-                    HtmlUtil.br()
-                    + HtmlUtil.span(msg("Directory does not exist"),
-                                    HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
+                extraLabel = HtmlUtil.br()
+                             + HtmlUtil.span(
+                                 msg("Directory does not exist"),
+                                 HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
                 fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
             } else if ( !getStorageManager().isLocalFileOk(rootDir)) {
                 String adminLink =
@@ -334,16 +337,18 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 extraLabel =
                     HtmlUtil.br()
                     + HtmlUtil
-                        .span(msg("You need to add this directory to the file system access list"),
-                              HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL)) + HtmlUtil.space(2) + adminLink;
+                        .span(msg(
+                            "You need to add this directory to the file system access list"), HtmlUtil
+                                .cssClass(CSS_CLASS_REQUIRED_LABEL)) + HtmlUtil.space(2) + adminLink;
                 fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
             }
         }
 
         if (root.length() == 0) {
-            extraLabel = HtmlUtil.br()
-                         + HtmlUtil.span(msg("Required"),
-                                         HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
+            extraLabel =
+                HtmlUtil.br()
+                + HtmlUtil.span(msg("Required"),
+                                HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
             fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
 
         }
@@ -367,12 +372,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         sb.append(
             HtmlUtil.colspan(
-                msgHeader(
-                          "Then create an entry with") + HtmlUtil.space(2)
-                    + HtmlUtil.href(
-                        getRepository().getUrlBase()
-                        + "/help/harvesters.html", "(" + msg("Help")+ ")",
-                            " target=_HELP"), 2));
+                msgHeader("Then create an entry with") + HtmlUtil.space(2)
+                + HtmlUtil.href(
+                    getRepository().getUrlBase() + "/help/harvesters.html",
+                    "(" + msg("Help") + ")", " target=_HELP"), 2));
 
 
         //        sb.append(
@@ -393,7 +396,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                                          descTemplate, HtmlUtil.SIZE_60)));
 
         sb.append(HtmlUtil.formEntry(msgLabel("Entry type"),
-                                     makeEntryTypeSelector(request, getTypeHandler())));
+                                     makeEntryTypeSelector(request,
+                                         getTypeHandler())));
 
 
 
@@ -429,9 +433,21 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
     }
 
-    public String makeEntryTypeSelector(Request request, TypeHandler typeHandler) throws Exception {
-        return repository.makeTypeSelect(request,
-                                         false, getTypeHandler().getType(), false,
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param typeHandler _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String makeEntryTypeSelector(Request request,
+                                        TypeHandler typeHandler)
+            throws Exception {
+        return repository.makeTypeSelect(request, false,
+                                         getTypeHandler().getType(), false,
                                          null);
     }
 
@@ -611,7 +627,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         dirs.add(new FileInfo(rootDir));
         dirs.addAll(FileInfo.collectDirs(rootDir));
 
-        logHarvesterInfo("Found " + dirs.size() + " directories under top-level dir");
+        logHarvesterInfo("Found " + dirs.size()
+                         + " directories under top-level dir");
 
         long tt2 = System.currentTimeMillis();
         status = new StringBuffer("");
@@ -679,17 +696,20 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         for (int dirIdx = 0; dirIdx < tmpDirs.size(); dirIdx++) {
             FileInfo fileInfo = tmpDirs.get(dirIdx);
             logHarvesterInfo("Looking at directory:" + fileInfo.getFile());
-            if (!fileInfo.exists()) {
-                logHarvesterInfo("Directory does not exist" + fileInfo.getFile());
+            if ( !fileInfo.exists()) {
+                logHarvesterInfo("Directory does not exist"
+                                 + fileInfo.getFile());
                 removeDir(fileInfo);
                 continue;
             }
-            if (!alwaysLookAtDirs) {
-                if (!firstTime && !fileInfo.hasChanged()) {
-                    logHarvesterInfo("Nothing has changed in directory since last time:" + fileInfo.getFile());
+            if ( !alwaysLookAtDirs) {
+                if ( !firstTime && !fileInfo.hasChanged()) {
+                    logHarvesterInfo(
+                        "Nothing has changed in directory since last time:"
+                        + fileInfo.getFile());
                     File[] files = fileInfo.getFile().listFiles();
                     if (files != null) {
-                        for (File f:files) {
+                        for (File f : files) {
                             logHarvesterInfo("\t File:" + f);
                         }
                     }
@@ -699,7 +719,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             fileInfo.clearAddedFiles();
             File[] files = fileInfo.getFile().listFiles();
             if (files == null) {
-                logHarvesterInfo("No files in directory:" + fileInfo.getFile());
+                logHarvesterInfo("No files in directory:"
+                                 + fileInfo.getFile());
                 continue;
             }
             files = IOUtil.sortFilesOnName(files);
@@ -749,7 +770,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                             getEntryManager().getUniqueEntries(entries,
                                 nonUniqueOnes);
                         for (Entry e : nonUniqueOnes) {
-                            logHarvesterInfo("**** Have a non unique entry:" + e.getResource());
+                            logHarvesterInfo("**** Have a non unique entry:"
+                                             + e.getResource());
                         }
                         newEntryCnt += uniqueEntries.size();
                         needToAdd.addAll(uniqueEntries);
@@ -781,7 +803,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     getEntryManager().getUniqueEntries(entries,
                         nonUniqueOnes);
                 for (Entry e : nonUniqueOnes) {
-                    logHarvesterInfo("**** Have a non unique entry:" + e.getResource());
+                    logHarvesterInfo("**** Have a non unique entry:"
+                                     + e.getResource());
                 }
                 for (Entry newEntry : uniqueEntries) {
                     logHarvesterInfo("**** New entry:"
@@ -941,7 +964,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         if (notfilePattern != null) {
             matcher = notfilePattern.matcher(fileName);
             if (matcher.find()) {
-                logHarvesterInfo("excluding file because it matches the NOT pattern:" + fileName);
+                logHarvesterInfo(
+                    "excluding file because it matches the NOT pattern:"
+                    + fileName);
                 return null;
             }
         }
@@ -951,27 +976,31 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         logHarvesterInfo("file:" + fileName + " matches pattern");
 
         if ( !getTestMode()) {
-            /*** TRY THIS
-            if (haveProcessedFile(fileName)) {
-                logHarvesterInfo("Already processed file:" + fileName);
-                debug("Already harvested file:" + fileName);
-                return null;
-            }
-            putProcessedFile(fileName);
-            **/
+
+            /**
+             * * TRY THIS
+             * if (haveProcessedFile(fileName)) {
+             *   logHarvesterInfo("Already processed file:" + fileName);
+             *   debug("Already harvested file:" + fileName);
+             *   return null;
+             * }
+             * putProcessedFile(fileName);
+             */
         }
 
-        TypeHandler  typeHandler = getTypeHandler();
-        /** For now don't do this
-        if(typeHandler.getType().equals(typeHandler.TYPE_FILE)) {
-            for(TypeHandler otherTypeHandler: getRepository().getTypeHandlers()) {
-                if(otherTypeHandler.canHarvestFile(f)) {
-                    typeHandler = otherTypeHandler;
-                    break;
-                }            
-            }
-        }
-        */
+        TypeHandler typeHandler = getTypeHandler();
+
+        /**
+         * For now don't do this
+         * if(typeHandler.getType().equals(typeHandler.TYPE_FILE)) {
+         *   for(TypeHandler otherTypeHandler: getRepository().getTypeHandlers()) {
+         *       if(otherTypeHandler.canHarvestFile(f)) {
+         *           typeHandler = otherTypeHandler;
+         *           break;
+         *       }
+         *   }
+         * }
+         */
 
         String dirPath = f.getParent().toString();
         dirPath = dirPath.substring(rootDir.toString().length());
@@ -1039,7 +1068,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         if (ext.startsWith(".")) {
             ext = ext.substring(1);
         }
-        tag       = tag.replace("${extension}", ext);
+        tag = tag.replace("${extension}", ext);
         String filename = f.getName();
         groupName = groupName.replace("${dirgroup}", dirGroup);
         groupName = applyMacros(groupName, createDate, fromDate, toDate,
@@ -1065,7 +1094,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         boolean createIfNeeded = !getTestMode();
         Entry group = getEntryManager().findEntryFromName(groupName,
-                                                          getUser(), createIfNeeded, getLastGroupType(), this);
+                          getUser(), createIfNeeded, getLastGroupType(),
+                          this);
         Entry    entry = typeHandler.createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
@@ -1096,7 +1126,17 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //        return entry;
     }
 
-    public Entry initializeNewEntry(FileInfo fileInfo, File originalFile, Entry entry) {
+    /**
+     * _more_
+     *
+     * @param fileInfo _more_
+     * @param originalFile _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public Entry initializeNewEntry(FileInfo fileInfo, File originalFile,
+                                    Entry entry) {
         return entry;
     }
 

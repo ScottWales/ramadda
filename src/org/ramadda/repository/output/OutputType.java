@@ -1,30 +1,31 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.Counter;
@@ -64,7 +65,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -87,8 +88,11 @@ public class OutputType {
     /** The extra categorized menu */
     public static final int TYPE_OTHER = 1 << 4;
 
-    public static final int TYPE_CATEGORY  = TYPE_OTHER;
-    public static final int TYPE_CONNECT  = TYPE_FEEDS;
+    /** _more_          */
+    public static final int TYPE_CATEGORY = TYPE_OTHER;
+
+    /** _more_          */
+    public static final int TYPE_CONNECT = TYPE_FEEDS;
 
     /** for the  toolbar */
     public static final int TYPE_TOOLBAR = 1 << 5;
@@ -98,14 +102,14 @@ public class OutputType {
 
     /** for internal uses */
     public static final int TYPE_INTERNAL = 1 << 7;
-    
+
     /** Shows up in the search result format list */
     public static final int TYPE_FORSEARCH = 1 << 8;
 
     /** All types */
     public static final int TYPE_ALL = TYPE_VIEW | TYPE_ACTION | TYPE_FEEDS
-                                       | TYPE_FILE | TYPE_EDIT
-                                       | TYPE_TOOLBAR | TYPE_OTHER;
+                                       | TYPE_FILE | TYPE_EDIT | TYPE_TOOLBAR
+                                       | TYPE_OTHER;
 
 
     /** _more_ */
@@ -129,6 +133,7 @@ public class OutputType {
     /** _more_ */
     private String groupName = "";
 
+    /** _more_          */
     private String category = "";
 
 
@@ -178,16 +183,26 @@ public class OutputType {
      */
     public OutputType(String label, String id, int type, String suffix,
                       String icon) {
-        this(label,  id,  type,  suffix, icon,null);
+        this(label, id, type, suffix, icon, null);
     }
 
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param id _more_
+     * @param type _more_
+     * @param suffix _more_
+     * @param icon _more_
+     * @param category _more_
+     */
     public OutputType(String label, String id, int type, String suffix,
                       String icon, String category) {
-        this.label  = label;
-        this.id     = id;
-        this.type   = type;
-        this.suffix = suffix;
-        this.icon   = icon;
+        this.label    = label;
+        this.id       = id;
+        this.type     = type;
+        this.suffix   = suffix;
+        this.icon     = icon;
         this.category = category;
     }
 
@@ -218,15 +233,30 @@ public class OutputType {
         this.suffix = suffix;
     }
 
+    /**
+     * _more_
+     *
+     * @param menuIds _more_
+     *
+     * @return _more_
+     */
     public static int getTypeMask(List<String> menuIds) {
-        if(menuIds.size()==0) return TYPE_ALL;
+        if (menuIds.size() == 0) {
+            return TYPE_ALL;
+        }
         int type = 0;
-        for(String menu: menuIds) {
-            if(menu.equals(PageStyle.MENU_FILE)) type|= TYPE_FILE;
-            else if(menu.equals(PageStyle.MENU_EDIT)) type|= TYPE_EDIT;
-            else if(menu.equals(PageStyle.MENU_VIEW)) type|= TYPE_VIEW;
-            else if(menu.equals(PageStyle.MENU_FEEDS)) type|= TYPE_FEEDS;
-            else if(menu.equals(PageStyle.MENU_OTHER)) type|= TYPE_OTHER;
+        for (String menu : menuIds) {
+            if (menu.equals(PageStyle.MENU_FILE)) {
+                type |= TYPE_FILE;
+            } else if (menu.equals(PageStyle.MENU_EDIT)) {
+                type |= TYPE_EDIT;
+            } else if (menu.equals(PageStyle.MENU_VIEW)) {
+                type |= TYPE_VIEW;
+            } else if (menu.equals(PageStyle.MENU_FEEDS)) {
+                type |= TYPE_FEEDS;
+            } else if (menu.equals(PageStyle.MENU_OTHER)) {
+                type |= TYPE_OTHER;
+            }
         }
         return type;
     }
@@ -353,6 +383,11 @@ public class OutputType {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getCategory() {
         return category;
     }

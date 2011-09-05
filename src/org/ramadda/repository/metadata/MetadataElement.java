@@ -1,30 +1,31 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.metadata;
 
 
+import org.ramadda.repository.*;
+
+
 import org.w3c.dom.*;
 
-import java.text.SimpleDateFormat;
-import org.ramadda.repository.*;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -42,6 +43,8 @@ import java.io.OutputStream;
 
 import java.net.URL;
 import java.net.URLConnection;
+
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,6 +67,7 @@ public class MetadataElement extends MetadataTypeBase {
     /** _more_ */
     public static final String TYPE_STRING = "string";
 
+    /** _more_          */
     public static final String TYPE_WIKI = "wiki";
 
     /** _more_ */
@@ -299,9 +303,8 @@ public class MetadataElement extends MetadataTypeBase {
      * @return _more_
      */
     private boolean isString(String type) {
-        return dataType.equals(TYPE_STRING) ||
-            dataType.equals(TYPE_WIKI) || dataType.equals(TYPE_EMAIL)
-               || dataType.equals(TYPE_URL);
+        return dataType.equals(TYPE_STRING) || dataType.equals(TYPE_WIKI)
+               || dataType.equals(TYPE_EMAIL) || dataType.equals(TYPE_URL);
     }
 
 
@@ -342,20 +345,25 @@ public class MetadataElement extends MetadataTypeBase {
      *
      * @param sb _more_
      * @param value _more_
+     * @param depth _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public FormInfo getHtml(String value, int depth) throws Exception {
-        if(value == null  || dataType.equals(TYPE_SKIP)) {
+
+        if ((value == null) || dataType.equals(TYPE_SKIP)) {
             return null;
         }
         //For now skip showing files
         if (dataType.equals(TYPE_FILE)) {
             return null;
         }
-        String tab = "";    for(int i=0;i<depth;i++) tab = tab +"    ";
+        String tab = "";
+        for (int i = 0; i < depth; i++) {
+            tab = tab + "    ";
+        }
         String html = null;
         if (getDataType().equals(TYPE_GROUP)) {
             List<Metadata> childMetadata = getGroupData(value);
@@ -363,33 +371,39 @@ public class MetadataElement extends MetadataTypeBase {
                 return null;
             }
             List<StringBuffer> subEntries = new ArrayList<StringBuffer>();
-            boolean anyChildrenGroups = false;
+            boolean            anyChildrenGroups = false;
             for (Metadata metadata : childMetadata) {
-                List<FormInfo> formInfos = new ArrayList<FormInfo>();
-                List<MetadataElement> children = getChildren();
+                List<FormInfo>        formInfos = new ArrayList<FormInfo>();
+                List<MetadataElement> children  = getChildren();
                 for (MetadataElement element : children) {
-                    FormInfo formInfo = element.getHtml(metadata.getAttr(element.getIndex()), depth+1);
-                    if(formInfo==null) {
+                    FormInfo formInfo =
+                        element.getHtml(metadata.getAttr(element.getIndex()),
+                                        depth + 1);
+                    if (formInfo == null) {
                         continue;
                     }
-                    formInfo.isGroup = element.getDataType().equals(TYPE_GROUP);
-                    if(formInfo.isGroup) {
+                    formInfo.isGroup =
+                        element.getDataType().equals(TYPE_GROUP);
+                    if (formInfo.isGroup) {
                         anyChildrenGroups = true;
                     }
                     formInfos.add(formInfo);
                 }
                 StringBuffer subEntrySB = null;
-                for(FormInfo formInfo: formInfos) {
-                    if(formInfo.content.length()>0 || children.size()>1) {
-                        if(subEntrySB==null) {
+                for (FormInfo formInfo : formInfos) {
+                    if ((formInfo.content.length() > 0)
+                            || (children.size() > 1)) {
+                        if (subEntrySB == null) {
                             subEntrySB = new StringBuffer();
                             subEntries.add(subEntrySB);
                         }
-                        if(formInfo.isGroup) {
+                        if (formInfo.isGroup) {
                             //                            subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
                         }
-                        subEntrySB.append(HtmlUtil.formEntryTop(formInfo.label, formInfo.content));
-                        if(formInfo.isGroup) {
+                        subEntrySB.append(
+                            HtmlUtil.formEntryTop(
+                                formInfo.label, formInfo.content));
+                        if (formInfo.isGroup) {
                             //                            subEntrySB.append("</td></tr>\n");
                         }
                     }
@@ -397,35 +411,41 @@ public class MetadataElement extends MetadataTypeBase {
             }
 
 
-            StringBuffer entriesSB = new StringBuffer();
-            boolean haveSubEntries = subEntries.size()!=0;
-            int entryCnt=0;
-            for(StringBuffer subEntrySB: subEntries) {
+            StringBuffer entriesSB      = new StringBuffer();
+            boolean      haveSubEntries = subEntries.size() != 0;
+            int          entryCnt       = 0;
+            for (StringBuffer subEntrySB : subEntries) {
                 entryCnt++;
-                if(anyChildrenGroups || children.size()>1) {
-                    StringBuffer tmp  = new StringBuffer();
-                    tmp.append("<table border=0 cellpadding=2 cellspacing=2>");
+                if (anyChildrenGroups || (children.size() > 1)) {
+                    StringBuffer tmp = new StringBuffer();
+                    tmp.append(
+                        "<table border=0 cellpadding=2 cellspacing=2>");
                     tmp.append(subEntrySB);
                     tmp.append("</table>");
-                    entriesSB.append(HtmlUtil.makeToggleInline(entryCnt + ") "
-                                                               + subName, tmp.toString(), true));
+                    entriesSB.append(HtmlUtil.makeToggleInline(entryCnt
+                            + ") " + subName, tmp.toString(), true));
                     entriesSB.append("<br>");
                 } else {
-                    entriesSB.append("<table border=0 cellpadding=2 cellspacing=2>");
+                    entriesSB.append(
+                        "<table border=0 cellpadding=2 cellspacing=2>");
                     entriesSB.append(subEntrySB);
                     entriesSB.append("</table>");
                 }
             }
-            if(haveSubEntries) {
-                String[] toggle = HtmlUtil.getToggle("", true);
-                String id = toggle[0];
-                String link= toggle[1];
-                String initJS = toggle[2];
-                StringBuffer tmp = new StringBuffer();
-                tmp.append("<table cellspacing=0 celladding=0 border=0><tr valign=top><td width=1%>" + link+"</td><td>" +
-                           HtmlUtil.div(entriesSB.toString(), HtmlUtil.id(id)+HtmlUtil.cssClass("metadatagroup")) +
-                           "</td></tr></table>");
-                if(initJS.length()>0) {
+            if (haveSubEntries) {
+                String[]     toggle = HtmlUtil.getToggle("", true);
+                String       id     = toggle[0];
+                String       link   = toggle[1];
+                String       initJS = toggle[2];
+                StringBuffer tmp    = new StringBuffer();
+                tmp.append(
+                    "<table cellspacing=0 celladding=0 border=0><tr valign=top><td width=1%>"
+                    + link + "</td><td>"
+                    + HtmlUtil.div(
+                        entriesSB.toString(),
+                        HtmlUtil.id(id)
+                        + HtmlUtil.cssClass("metadatagroup")) + "</td></tr></table>");
+                if (initJS.length() > 0) {
                     tmp.append(HtmlUtil.script(initJS));
                 }
                 html = tmp.toString();
@@ -453,15 +473,25 @@ public class MetadataElement extends MetadataTypeBase {
                 name = HtmlUtil.space(1);
             }
             //            sb.append(HtmlUtil.formEntryTop(name, html));
-            return new FormInfo(name,html);
+            return new FormInfo(name, html);
         }
         return null;
+
     }
 
 
 
-    public void getTextCorpus(String value, StringBuffer sb) throws Exception {
-        if(value == null  || dataType.equals(TYPE_SKIP)) {
+    /**
+     * _more_
+     *
+     * @param value _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getTextCorpus(String value, StringBuffer sb)
+            throws Exception {
+        if ((value == null) || dataType.equals(TYPE_SKIP)) {
             return;
         }
         //For now skip showing files
@@ -476,7 +506,8 @@ public class MetadataElement extends MetadataTypeBase {
             }
             for (Metadata metadata : childMetadata) {
                 for (MetadataElement element : getChildren()) {
-                    element.getTextCorpus(metadata.getAttr(element.getIndex()), sb);
+                    element.getTextCorpus(
+                        metadata.getAttr(element.getIndex()), sb);
                 }
             }
             return;
@@ -494,16 +525,42 @@ public class MetadataElement extends MetadataTypeBase {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Sep 5, '11
+     * @author         Enter your name here...    
+     */
     public static class FormInfo {
+
+        /** _more_          */
         public String label;
+
+        /** _more_          */
         public String content;
-        public boolean isGroup  = false;
-        public FormInfo(String label,  String content) {
-            this.label = label;
+
+        /** _more_          */
+        public boolean isGroup = false;
+
+        /**
+         * _more_
+         *
+         * @param label _more_
+         * @param content _more_
+         */
+        public FormInfo(String label, String content) {
+            this.label   = label;
             this.content = content;
         }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public String toString() {
-            return "formInfo:" + label +" " + content;
+            return "formInfo:" + label + " " + content;
         }
     }
 
@@ -720,18 +777,20 @@ public class MetadataElement extends MetadataTypeBase {
                  ? dflt
                  : value);
         if (isString(dataType)) {
-            if(dataType.equals(TYPE_WIKI)) {
+            if (dataType.equals(TYPE_WIKI)) {
                 String buttons =
-                    getRepository().getWikiManager().makeWikiEditBar(
-                            request, entry, arg) + HtmlUtil.br();
-                return buttons+HtmlUtil.textArea(arg, value, rows, columns, HtmlUtil.id(arg));
+                    getRepository().getWikiManager().makeWikiEditBar(request,
+                        entry, arg) + HtmlUtil.br();
+                return buttons
+                       + HtmlUtil.textArea(arg, value, rows, columns,
+                                           HtmlUtil.id(arg));
             } else {
                 if (rows > 1) {
                     return HtmlUtil.textArea(arg, value, rows, columns);
                 }
                 return HtmlUtil.input(arg, value,
                                       HtmlUtil.attr(HtmlUtil.ATTR_SIZE,
-                                                    "" + columns));
+                                          "" + columns));
             }
         } else if (dataType.equals(TYPE_BOOLEAN)) {
             return HtmlUtil.checkbox(arg, "true", Misc.equals(value, "true"));
@@ -744,7 +803,7 @@ public class MetadataElement extends MetadataTypeBase {
             } else {
                 date = new Date();
             }
-            return  getRepository().makeDateInput(request, arg, "", date);
+            return getRepository().makeDateInput(request, arg, "", date);
         } else if (dataType.equals(TYPE_DATE)) {
             Date date;
             if (values != null) {
@@ -752,7 +811,8 @@ public class MetadataElement extends MetadataTypeBase {
             } else {
                 date = new Date();
             }
-            return getRepository().makeDateInput(request, arg, "", date, null, false);
+            return getRepository().makeDateInput(request, arg, "", date,
+                    null, false);
         } else if (dataType.equals(TYPE_ENUMERATION)) {
             return HtmlUtil.select(arg, values, value);
         } else if (dataType.equals(TYPE_ENUMERATIONPLUS)) {
@@ -863,6 +923,13 @@ public class MetadataElement extends MetadataTypeBase {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     *
+     * @return _more_
+     */
     private Date parseDate(String value) {
         return null;
     }

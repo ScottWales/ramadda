@@ -1,22 +1,22 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.geodata.data;
 
@@ -25,6 +25,13 @@ import org.apache.commons.net.ftp.*;
 
 import org.python.core.*;
 import org.python.util.*;
+
+import org.ramadda.geodata.data.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
+
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
 
 
 import org.w3c.dom.*;
@@ -35,12 +42,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.data.DataSource;
 
 import ucar.unidata.data.grid.GeoGridDataSource;
-import org.ramadda.repository.*;
-import org.ramadda.geodata.data.*;
-import org.ramadda.repository.metadata.*;
-
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.*;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
@@ -195,24 +196,24 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
      *
      *
      * @version        Enter version here..., Mon, May 3, '10
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DataProcessInfo extends JythonTypeHandler
         .ProcessInfo {
 
-        /** _more_          */
+        /** _more_ */
         List<String> ncPaths = new ArrayList<String>();
 
-        /** _more_          */
+        /** _more_ */
         List<NetcdfDataset> ncData = new ArrayList<NetcdfDataset>();
 
-        /** _more_          */
+        /** _more_ */
         List<String> gridPaths = new ArrayList<String>();
 
-        /** _more_          */
+        /** _more_ */
         List<GridDataset> gridData = new ArrayList<GridDataset>();
 
-        /** _more_          */
+        /** _more_ */
         List<DataSource> dataSources = new ArrayList<DataSource>();
     }
 

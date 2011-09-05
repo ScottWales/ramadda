@@ -1,33 +1,34 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
-
-import org.w3c.dom.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.sql.*;
 
 
@@ -71,7 +72,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -123,6 +124,7 @@ public class GraphOutputHandler extends OutputHandler {
 
 
 
+    /** _more_          */
     static long cnt = System.currentTimeMillis();
 
     /**
@@ -144,7 +146,8 @@ public class GraphOutputHandler extends OutputHandler {
 
         String counter = "" + (cnt++);
         //        counter = "_newjar";
-        graphAppletTemplate = graphAppletTemplate.replace("${counter}",counter);
+        graphAppletTemplate = graphAppletTemplate.replace("${counter}",
+                counter);
         String type = request.getString(ARG_NODETYPE, (String) null);
         if (type == null) {
             type = entry.getTypeHandler().getNodeType();
@@ -213,8 +216,8 @@ public class GraphOutputHandler extends OutputHandler {
 
             if (other != null) {
                 String imageAttr = XmlUtil.attrs("imagepath",
-                                                 getEntryManager().getIconUrl(request,
-                                                                              other));
+                                       getEntryManager().getIconUrl(request,
+                                           other));
 
                 sb.append(
                     XmlUtil.tag(
@@ -243,33 +246,46 @@ public class GraphOutputHandler extends OutputHandler {
 
 
 
-    private void addNodeTag(Request request, StringBuffer sb, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    private void addNodeTag(Request request, StringBuffer sb, Entry entry)
+            throws Exception {
         String imageUrl = null;
         if (ImageUtils.isImage(entry.getResource().getPath())) {
-            imageUrl = HtmlUtil.url(
-                                    getRepository().URL_ENTRY_GET + entry.getId()
-                                    + IOUtil.getFileExtension(entry.getResource().getPath()), ARG_ENTRYID, entry.getId(),
-                                    ARG_IMAGEWIDTH, "75");                                    
+            imageUrl =
+                HtmlUtil.url(
+                    getRepository().URL_ENTRY_GET + entry.getId()
+                    + IOUtil.getFileExtension(
+                        entry.getResource().getPath()), ARG_ENTRYID,
+                            entry.getId(), ARG_IMAGEWIDTH, "75");
         } else {
-            List<String>urls = new ArrayList<String>();
-            getMetadataManager().getThumbnailUrls(request,  entry,urls);
-            if(urls.size()>0) {
-                imageUrl = urls.get(0) +"&thumbnail=true";
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
+            if (urls.size() > 0) {
+                imageUrl = urls.get(0) + "&thumbnail=true";
             }
         }
 
-        String imageAttr = XmlUtil.attrs("imagepath",
-                                         getEntryManager().getIconUrl(request,
-                                                                      entry));
+        String imageAttr =
+            XmlUtil.attrs("imagepath",
+                          getEntryManager().getIconUrl(request, entry));
 
         String nodeType = entry.getTypeHandler().getNodeType();
-        if(imageUrl!=null) {
+        if (imageUrl != null) {
             nodeType = "imageentry";
         }
-        String attrs = imageAttr  + XmlUtil.attrs(ATTR_TYPE, nodeType,
-                                     ATTR_ID, entry.getId(), ATTR_TOOLTIP,
-                                                  getTooltip(entry), ATTR_TITLE,
-                                                  getGraphNodeTitle(entry.getName()));
+        String attrs = imageAttr
+                       + XmlUtil.attrs(ATTR_TYPE, nodeType, ATTR_ID,
+                                       entry.getId(), ATTR_TOOLTIP,
+                                       getTooltip(entry), ATTR_TITLE,
+                                       getGraphNodeTitle(entry.getName()));
 
         if (imageUrl != null) {
             attrs = attrs + " " + XmlUtil.attr("image", imageUrl);
@@ -281,15 +297,32 @@ public class GraphOutputHandler extends OutputHandler {
     }
 
 
-    private void addEdgeTag(StringBuffer sb, Entry from, Entry to, String type) {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param from _more_
+     * @param to _more_
+     * @param type _more_
+     */
+    private void addEdgeTag(StringBuffer sb, Entry from, Entry to,
+                            String type) {
         addEdgeTag(sb, from.getId(), to.getId(), type);
     }
 
-    private void addEdgeTag(StringBuffer sb, String  from, String to, String type) {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param from _more_
+     * @param to _more_
+     * @param type _more_
+     */
+    private void addEdgeTag(StringBuffer sb, String from, String to,
+                            String type) {
         sb.append(XmlUtil.tag(TAG_EDGE,
-                              XmlUtil.attrs(ATTR_TYPE, type,
-                                            ATTR_FROM, from, ATTR_TO,
-                                            to)));
+                              XmlUtil.attrs(ATTR_TYPE, type, ATTR_FROM, from,
+                                            ATTR_TO, to)));
         sb.append("\n");
 
     }
@@ -346,11 +379,11 @@ public class GraphOutputHandler extends OutputHandler {
             type = typeHandler.getNodeType();
         }
         StringBuffer sb = new StringBuffer();
-        addNodeTag(request,sb, entry);
+        addNodeTag(request, sb, entry);
         getAssociationsGraph(request, entry.getId(), sb);
         Entry parent = entry.getParentEntry();
         if (parent != null) {
-            addNodeTag(request,sb, parent);
+            addNodeTag(request, sb, parent);
             addEdgeTag(sb, parent, entry, "groupedby");
         }
 
@@ -370,19 +403,23 @@ public class GraphOutputHandler extends OutputHandler {
                 actualCnt++;
 
                 String imageAttr = XmlUtil.attrs("imagepath",
-                                                 getEntryManager().getIconUrl(request,
-                                                                              subGroup));
+                                       getEntryManager().getIconUrl(request,
+                                           subGroup));
 
                 sb.append(
                     XmlUtil.tag(
                         TAG_NODE,
-                        imageAttr+XmlUtil.attrs(
+                        imageAttr
+                        + XmlUtil.attrs(
                             ATTR_TYPE, NODETYPE_GROUP, ATTR_ID,
                             subGroup.getId(), ATTR_TOOLTIP,
                             getTooltip(subGroup), ATTR_TITLE,
                             getGraphNodeTitle(subGroup.getName()))));
 
-                addEdgeTag(sb, (haveSkip ? originalId : entry.getId()), subGroup.getId(), "groupedby");
+                addEdgeTag(sb, (haveSkip
+                                ? originalId
+                                : entry.getId()), subGroup.getId(),
+                                "groupedby");
                 if (actualCnt >= MAX_EDGES) {
                     String skipId = "skip_" + type + "_" + (actualCnt + skip)
                                     + "_" + id;
@@ -396,19 +433,20 @@ public class GraphOutputHandler extends OutputHandler {
             }
 
 
-            List<Entry> children  = getEntryManager().getChildren(request, entry);
+            List<Entry> children = getEntryManager().getChildren(request,
+                                       entry);
             cnt       = 0;
             actualCnt = 0;
-            for(Entry child: children) {
+            for (Entry child : children) {
                 cnt++;
                 if (cnt <= skip) {
                     continue;
                 }
                 actualCnt++;
-                addNodeTag(request,sb, child);
+                addNodeTag(request, sb, child);
                 addEdgeTag(sb, (haveSkip
                                 ? originalId
-                                : entry.getId()), child.getId(),"groupedby");
+                                : entry.getId()), child.getId(), "groupedby");
                 if (actualCnt >= MAX_EDGES) {
                     String skipId = "skip_" + type + "_" + (actualCnt + skip)
                                     + "_" + id;
@@ -416,7 +454,7 @@ public class GraphOutputHandler extends OutputHandler {
                                           XmlUtil.attrs(ATTR_TYPE, "skip",
                                               ATTR_ID, skipId, ATTR_TITLE,
                                                   "...")));
-                    addEdgeTag(sb, originalId, skipId,"etc");
+                    addEdgeTag(sb, originalId, skipId, "etc");
                     break;
                 }
             }
@@ -449,10 +487,19 @@ public class GraphOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private String getTooltip(Entry entry) {
-        if(true) return entry.getName();
+        if (true) {
+            return entry.getName();
+        }
         String desc = entry.getDescription();
-        if(desc==null || desc.length()==0) {
+        if ((desc == null) || (desc.length() == 0)) {
             desc = entry.getName();
         }
         return desc;

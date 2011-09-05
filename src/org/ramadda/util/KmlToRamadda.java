@@ -1,29 +1,31 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.util;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.StringUtil;
+
+import ucar.unidata.xml.XmlUtil;
 
 import java.util.List;
 
@@ -33,11 +35,11 @@ import java.util.List;
  *
  *
  * @version        $version$, Wed, Aug 31, '11
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class KmlToRamadda {
 
-    /** _more_          */
+    /** _more_ */
     static int counter = 0;
 
     /**
@@ -55,10 +57,12 @@ public class KmlToRamadda {
      *
      * @param element _more_
      * @param parentId _more_
+     * @param category _more_
      *
      * @throws Exception _more_
      */
-    public static void process(Element element, String parentId, String category)
+    public static void process(Element element, String parentId,
+                               String category)
             throws Exception {
         NodeList elements = XmlUtil.getElements(element);
         for (int i = 0; i < elements.getLength(); i++) {
@@ -84,18 +88,18 @@ public class KmlToRamadda {
                 //                process(child, id, name);
                 process(child, parentId, name);
             } else if (tag.equals("Placemark")) {
-                StringBuffer extra  = new StringBuffer();
-                Element point = XmlUtil.findChild(child, "Point");
-                if(point!=null) {
-                    String coords = XmlUtil.getGrandChildText(point, "coordinates",null);
-                    if(coords!=null) {
-                        List<String> toks  = StringUtil.split(coords, ",", true, true);
-                        extra.append(XmlUtil.attrs(new String[]{
-                                    "north", toks.get(1),
-                                    "south", toks.get(1),
-                                    "west", toks.get(0),
-                                    "east", toks.get(0),
-                                }));
+                StringBuffer extra = new StringBuffer();
+                Element      point = XmlUtil.findChild(child, "Point");
+                if (point != null) {
+                    String coords = XmlUtil.getGrandChildText(point,
+                                        "coordinates", null);
+                    if (coords != null) {
+                        List<String> toks = StringUtil.split(coords, ",",
+                                                true, true);
+                        extra.append(XmlUtil.attrs(new String[] {
+                            "north", toks.get(1), "south", toks.get(1),
+                            "west", toks.get(0), "east", toks.get(0),
+                        }));
                     }
                 }
 
@@ -110,17 +114,22 @@ public class KmlToRamadda {
                 String attrs;
                 if (parentId != null) {
                     attrs = XmlUtil.attrs(new String[] {
-                            "id", id, "name", name, "parent", parentId, "type","article"});
+                        "id", id, "name", name, "parent", parentId, "type",
+                        "article"
+                    });
 
                 } else {
-                    attrs =  XmlUtil.attrs(new String[] { "id",
-                                                          id, "name", name, "type","article" });
+                    attrs = XmlUtil.attrs(new String[] {
+                        "id", id, "name", name, "type", "article"
+                    });
                 }
-                if(category!=null) {
-                    descNode = descNode+  XmlUtil.tag("category", "",
-                                                      XmlUtil.getCdata(category));
+                if (category != null) {
+                    descNode = descNode
+                               + XmlUtil.tag("category", "",
+                                             XmlUtil.getCdata(category));
                 }
-                System.out.println(XmlUtil.tag("entry", attrs+extra, descNode));
+                System.out.println(XmlUtil.tag("entry", attrs + extra,
+                        descNode));
             } else if (tag.equals("Document")) {
                 process(child, parentId, category);
             } else {
@@ -141,7 +150,7 @@ public class KmlToRamadda {
         System.out.println(XmlUtil.XML_HEADER);
         System.out.println("<entries>");
         for (String arg : args) {
-            process(XmlUtil.getRoot(arg, KmlToRamadda.class), null,null);
+            process(XmlUtil.getRoot(arg, KmlToRamadda.class), null, null);
         }
         System.out.println("</entries>");
     }

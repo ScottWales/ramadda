@@ -1,36 +1,30 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.plugins.db;
 
 
 
-import org.w3c.dom.*;
-
-import ucar.unidata.data.gis.KmlUtil;
-import ucar.unidata.util.IOUtil;
-
-
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.repository.output.MapOutputHandler;
@@ -38,11 +32,18 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.type.*;
-import ucar.unidata.sql.*;
-import ucar.unidata.util.DateUtil;
+
+
+
+import org.w3c.dom.*;
+
+import ucar.unidata.data.gis.KmlUtil;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.sql.*;
+import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -77,169 +78,172 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String ATTR_RSS_VERSION = "version";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_DBVALUES = "dbvalues";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String OUTPUT_HTML = "html";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OUTPUT_CSV = "csv";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_NEW = "new";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_TABLE = "table";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_CALENDAR = "calendar";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_ICAL = "ical";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_TIMELINE = "timeline";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_MAP = "map";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_SEARCH = "search";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_CHART = "chart";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_GRID = "grid";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_CATEGORY = "category";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_CSV = "csv";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_KML = "kml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_STICKYNOTES = "stickynotes";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VIEW_RSS = "rss";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
 
 
+    /** _more_          */
     public static final String ARG_ENUM_ICON = "db.icon";
+
+    /** _more_          */
     public static final String ARG_ENUM_COLOR = "db.color";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_BULKCOL = "db.bulkcol";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_BULK = "db.bulk";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_DO = "db.do";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_SORTBY = "db.sortby";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_SORTDIR = "db.sortdir";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_OUTPUT = "db.output";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_NEWFORM = "db.newform";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_SEARCHFORM = "db.searchform";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_SEARCH = "db.search";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_LIST = "db.list";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_EDITFORM = "db.editform";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_SETPOS = "db.setpos";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_ENTRY = "db.entry";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_CREATE = "db.create";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_EDIT = "db.edit";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_COPY = "db.copy";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_COLUMN = "db.column";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_DELETE = "db.delete";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_DELETECONFIRM = "db.delete.confirm";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_ACTION = "db.action";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_STICKYLABEL = "db.stickylabel";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DBID = "dbid";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DBIDS = "dbids";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DBID_SELECTED = "dbid_selected";
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_LIST = "db.list";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_DELETE = "db.delete";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_EMAIL = "db.email";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_CALENDAR = "db.calendar";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_MAP = "db.map";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_CSV = "db.csv";
 
 
     /** _more_ */
     public static String ARG_EMAIL_FROMADDRESS = "email.fromaddress";
 
-    /** _more_          */
+    /** _more_ */
     public static String ARG_EMAIL_TO = "email.to";
 
     /** _more_ */
@@ -254,120 +258,123 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static String ARG_EMAIL_BCC = "email.bcc";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_STICKY_LABELS = "sticky.labels";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_STICKY_POSX = "sticky.posx";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_STICKY_POSY = "sticky.posy";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_CAT_COLOR = "cat.color";
 
+    /** _more_          */
     public static final String PROP_CAT_ICON = "cat.icon";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String COL_DBID = "db_id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COL_DBUSER = "db_user";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COL_DBCREATEDATE = "db_createdate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COL_DBPROPS = "db_props";
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DBID = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DBUSER = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DBCREATEDATE = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DBPROPS = 3;
 
-    /** _more_          */
+    /** _more_ */
     private DbAdminHandler dbAdmin;
 
-    /** _more_          */
+    /** _more_ */
     private GenericTypeHandler tableHandler;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, Column> columnMap = new Hashtable<String,
                                                       Column>();
 
-    /** _more_          */
+    /** _more_ */
     private boolean hasLocation = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean hasEmail = false;
 
+    /** _more_          */
     private List<String> icons;
 
-    /** _more_          */
+    /** _more_ */
     private boolean[] doSums;
 
-    /** _more_          */
+    /** _more_ */
     private boolean doSum = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean hasDate = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean hasNumber = false;
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> numberColumns = new ArrayList<Column>();
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> dateColumns = new ArrayList<Column>();
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> categoryColumns = new ArrayList<Column>();
 
+    /** _more_          */
     private List<Column> enumColumns = new ArrayList<Column>();
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> columns;
 
-    /** _more_          */
+    /** _more_ */
     private Column dfltSortColumn;
 
-    /** _more_          */
+    /** _more_ */
     private boolean dfltSortAsc = true;
 
-    /** _more_          */
+    /** _more_ */
     private Column labelColumn;
 
-    /** _more_          */
+    /** _more_ */
     private Column descColumn;
 
-    /** _more_          */
+    /** _more_ */
     private Column urlColumn;
 
-    /** _more_          */
+    /** _more_ */
     private Column latLonColumn;
 
-    /** _more_          */
+    /** _more_ */
     private List<TwoFacedObject> viewList;
 
-    /** _more_          */
+    /** _more_ */
     private String tableIcon = "";
 
-    /** _more_          */
+    /** _more_ */
     SimpleDateFormat rssSdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
-    /** _more_          */
+    /** _more_ */
     XmlEncoder xmlEncoder = new XmlEncoder();
 
     /**
@@ -563,7 +570,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         int cnt = 0;
         numberColumns   = new ArrayList<Column>();
         categoryColumns = new ArrayList<Column>();
-        enumColumns = new ArrayList<Column>();
+        enumColumns     = new ArrayList<Column>();
         dateColumns     = new ArrayList<Column>();
         hasDate         = false;
         labelColumn     = null;
@@ -975,7 +982,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         if (categoryColumns.size() > 0) {
             String theColumn = request.getString(ARG_DB_COLUMN,
-                                                 categoryColumns.get(0).getName());
+                                   categoryColumns.get(0).getName());
             for (Column column : categoryColumns) {
                 String label = column.getLabel();
                 if (view.equals(VIEW_CATEGORY + column.getName())) {
@@ -1205,7 +1212,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         super.addToEntryForm(request, formBuffer, entry);
         Hashtable props = getProperties(entry);
-        if(entry!=null) {
+        if (entry != null) {
             addEnumerationAttributes(request, entry, formBuffer);
         }
 
@@ -1221,96 +1228,116 @@ public class DbTypeHandler extends BlobTypeHandler {
         if (stickyLabelString == null) {
             stickyLabelString = "";
         }
-        formBuffer.append(
-                          formEntry(request,
-                msg("Labels"),
-                HtmlUtil.textArea(
-                    PROP_STICKY_LABELS, stickyLabelString, 5, 30)));
+        formBuffer.append(formEntry(request, msg("Labels"),
+                                    HtmlUtil.textArea(PROP_STICKY_LABELS,
+                                        stickyLabelString, 5, 30)));
 
 
     }
 
-    private void addEnumerationAttributes(Request request, Entry entry, StringBuffer formBuffer) throws Exception {
-        if(enumColumns.size()==0) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param formBuffer _more_
+     *
+     * @throws Exception _more_
+     */
+    private void addEnumerationAttributes(Request request, Entry entry,
+                                          StringBuffer formBuffer)
+            throws Exception {
+        if (enumColumns.size() == 0) {
             return;
         }
-        Hashtable props = getProperties(entry);
-            
-        String[] colors = {
-            "#fff",
-            "#000",
-            "#444",
-            "#888",
-            "#eee",
-            "red",
-            "orange",
-            "yellow",
-            "green",
-            "blue",
-            "cyan",
-            "purple",
+        Hashtable props  = getProperties(entry);
+
+        String[]  colors = {
+            "#fff", "#000", "#444", "#888", "#eee", "red", "orange", "yellow",
+            "green", "blue", "cyan", "purple",
         };
 
         //        if(icons == null) {
-            icons = StringUtil.split(getRepository().getResource("/org/ramadda/plugins/db/icons.txt"),"\n",true, true);
-            //        }
+        icons = StringUtil.split(
+            getRepository().getResource("/org/ramadda/plugins/db/icons.txt"),
+            "\n", true, true);
+        //        }
 
-        for(Column col: enumColumns) {
+        for (Column col : enumColumns) {
             formBuffer.append(
-                              HtmlUtil.row(
-                                           HtmlUtil.colspan(
-                                                            HtmlUtil.div(
-                                                                         msg("Settings for") + " " + col.getName(),
-                                                                         HtmlUtil.cssClass("formgroupheader")), 2)));
+                HtmlUtil.row(
+                    HtmlUtil.colspan(
+                        HtmlUtil.div(
+                            msg("Settings for") + " " + col.getName(),
+                            HtmlUtil.cssClass("formgroupheader")), 2)));
 
-            String colorID = PROP_CAT_COLOR+"." + col.getName();
-            String iconID = PROP_CAT_ICON+"." + col.getName();
-            Hashtable<String,String> colorMap = (Hashtable<String,String>) props.get(colorID);
-            if(colorMap==null) {
-                colorMap = new Hashtable<String,String>();
+            String colorID = PROP_CAT_COLOR + "." + col.getName();
+            String iconID = PROP_CAT_ICON + "." + col.getName();
+            Hashtable<String, String> colorMap =
+                (Hashtable<String, String>) props.get(colorID);
+            if (colorMap == null) {
+                colorMap = new Hashtable<String, String>();
             }
-            Hashtable<String,String> iconMap = (Hashtable<String,String>) props.get(iconID);
-            if(iconMap==null) {
-                iconMap = new Hashtable<String,String>();
+            Hashtable<String, String> iconMap =
+                (Hashtable<String, String>) props.get(iconID);
+            if (iconMap == null) {
+                iconMap = new Hashtable<String, String>();
             }
             StringBuffer sb = new StringBuffer("");
-            for(String value:   getEnumValues(entry, col)) {
+            for (String value : getEnumValues(entry, col)) {
                 String currentColor = colorMap.get(value);
-                String currentIcon = iconMap.get(value);
-                if(currentColor==null) currentColor="";
-                if(currentIcon==null) currentIcon="";
-                String colorArg = colorID +"." + value;
-                String iconArg = iconID +"." + value;
-                StringBuffer colorSB = new StringBuffer();
-                colorSB.append(HtmlUtil.radio(colorArg,"",currentColor.equals("")));
+                String currentIcon  = iconMap.get(value);
+                if (currentColor == null) {
+                    currentColor = "";
+                }
+                if (currentIcon == null) {
+                    currentIcon = "";
+                }
+                String       colorArg = colorID + "." + value;
+                String       iconArg  = iconID + "." + value;
+                StringBuffer colorSB  = new StringBuffer();
+                colorSB.append(HtmlUtil.radio(colorArg, "",
+                        currentColor.equals("")));
                 colorSB.append(msg("None"));
                 colorSB.append(" ");
-                for(String c: colors) {
-                    colorSB.append(HtmlUtil.span(HtmlUtil.radio(colorArg,c,currentColor.equals(c)), HtmlUtil.style("margin-left:2px; margin-right:2px; padding-left:5px; padding-right:7px; border:1px solid #000; background-color:" + c)));
+                for (String c : colors) {
+                    colorSB.append(
+                        HtmlUtil.span(
+                            HtmlUtil.radio(
+                                colorArg, c,
+                                currentColor.equals(c)), HtmlUtil.style(
+                                    "margin-left:2px; margin-right:2px; padding-left:5px; padding-right:7px; border:1px solid #000; background-color:"
+                                    + c)));
                 }
                 StringBuffer iconSB = new StringBuffer();
-                iconSB.append(HtmlUtil.radio(iconArg,"", currentIcon.equals("")));
+                iconSB.append(HtmlUtil.radio(iconArg, "",
+                                             currentIcon.equals("")));
                 iconSB.append(msg("None"));
                 iconSB.append(" ");
-                for(String icon: icons) {
-                    if(icon.startsWith("#")) {
+                for (String icon : icons) {
+                    if (icon.startsWith("#")) {
                         continue;
                     }
-                    if(icon.equals("br")) {
+                    if (icon.equals("br")) {
                         iconSB.append("<br>");
                         continue;
                     }
-                    iconSB.append(HtmlUtil.radio(iconArg,icon,currentIcon.equals(icon)));
-                    iconSB.append(HtmlUtil.img(getIconUrl(icon), IOUtil.getFileTail(icon)));
+                    iconSB.append(HtmlUtil.radio(iconArg, icon,
+                            currentIcon.equals(icon)));
+                    iconSB.append(HtmlUtil.img(getIconUrl(icon),
+                            IOUtil.getFileTail(icon)));
                 }
-                formBuffer.append(HtmlUtil.formEntry(msgLabel("Value"), value));
-                formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Color"), colorSB.toString()));
+                formBuffer.append(HtmlUtil.formEntry(msgLabel("Value"),
+                        value));
+                formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Color"),
+                        colorSB.toString()));
                 String iconMsg = "";
-                if(currentIcon.length()>0) {
+                if (currentIcon.length() > 0) {
                     iconMsg = HtmlUtil.img(getIconUrl(currentIcon));
                 }
-                formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Icon"), HtmlUtil.makeShowHideBlock(iconMsg,
-                                                                                                        iconSB.toString(),false)));
+                formBuffer.append(HtmlUtil.formEntryTop(msgLabel("Icon"),
+                        HtmlUtil.makeShowHideBlock(iconMsg,
+                            iconSB.toString(), false)));
             }
             formBuffer.append(HtmlUtil.formEntry("", sb.toString()));
         }
@@ -1318,9 +1345,18 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     *
+     * @return _more_
+     */
     private String getIconUrl(String icon) {
-        if(icon.startsWith("http:")) return icon;
-        return getRepository().getUrlBase()+ "/db/icons/" + icon;
+        if (icon.startsWith("http:")) {
+            return icon;
+        }
+        return getRepository().getUrlBase() + "/db/icons/" + icon;
     }
 
 
@@ -1345,40 +1381,42 @@ public class DbTypeHandler extends BlobTypeHandler {
                                   StringUtil.split(stickyLabelString, "\n",
                                       true, true)));
 
-        for(Column col: enumColumns) {
-            String colorID = PROP_CAT_COLOR+"." + col.getName();
-            Hashtable<String,String> colorMap = (Hashtable<String,String>) props.get(colorID);
-            if(colorMap==null) {
-                colorMap = new Hashtable<String,String>();
+        for (Column col : enumColumns) {
+            String colorID = PROP_CAT_COLOR + "." + col.getName();
+            Hashtable<String, String> colorMap =
+                (Hashtable<String, String>) props.get(colorID);
+            if (colorMap == null) {
+                colorMap = new Hashtable<String, String>();
             }
 
-            String iconID = PROP_CAT_ICON+"." + col.getName();
-            Hashtable<String,String> iconMap = (Hashtable<String,String>) props.get(iconID);
-            if(iconMap==null) {
-                iconMap = new Hashtable<String,String>();
+            String iconID = PROP_CAT_ICON + "." + col.getName();
+            Hashtable<String, String> iconMap =
+                (Hashtable<String, String>) props.get(iconID);
+            if (iconMap == null) {
+                iconMap = new Hashtable<String, String>();
             }
             List<String> enumValues = getEnumValues(entry, col);
-            for(String value:   enumValues) {
-                String iconArg = iconID +"." + value;
+            for (String value : enumValues) {
+                String iconArg   = iconID + "." + value;
                 String iconValue = request.getString(iconArg, "");
-                if(iconValue.equals("")) {
+                if (iconValue.equals("")) {
                     iconMap.remove(value);
                 } else {
                     iconMap.put(value, iconValue);
                 }
 
             }
-            for(String value:   enumValues) {
-                String colorArg = colorID +"." + value;
+            for (String value : enumValues) {
+                String colorArg   = colorID + "." + value;
                 String colorValue = request.getString(colorArg, "");
-                if(colorValue.equals("")) {
+                if (colorValue.equals("")) {
                     colorMap.remove(value);
                 } else {
                     colorMap.put(value, colorValue);
                 }
             }
-            props.put(colorID,colorMap);
-            props.put(iconID,iconMap);
+            props.put(colorID, colorMap);
+            props.put(iconID, iconMap);
         }
 
 
@@ -1411,20 +1449,19 @@ public class DbTypeHandler extends BlobTypeHandler {
         for (Column column : columns) {
             column.addToSearchForm(request, sb, where, entry);
         }
-        sb.append(formEntry(request,msgLabel("View Results As"),
-                                     HtmlUtil.select(ARG_DB_VIEW, viewList,
-                                         request.getString(ARG_DB_VIEW,
-                                             ""))));
+        sb.append(formEntry(request, msgLabel("View Results As"),
+                            HtmlUtil.select(ARG_DB_VIEW, viewList,
+                                            request.getString(ARG_DB_VIEW,
+                                                ""))));
 
-        sb.append(formEntry(request,msgLabel("Count"),
-                                     HtmlUtil.input(ARG_MAX,
-                                         request.get(ARG_MAX, 100),
-                                         HtmlUtil.SIZE_5)));
-        sb.append(formEntry(request,"",
-                                     HtmlUtil.submit(msg("Search"),
-                                         ARG_DB_SEARCH) + HtmlUtil.space(2)
-                                             + HtmlUtil.submit(msg("Cancel"),
-                                                 ARG_DB_LIST)));
+        sb.append(formEntry(request, msgLabel("Count"),
+                            HtmlUtil.input(ARG_MAX,
+                                           request.get(ARG_MAX, 100),
+                                           HtmlUtil.SIZE_5)));
+        sb.append(formEntry(request, "",
+                            HtmlUtil.submit(msg("Search"), ARG_DB_SEARCH)
+                            + HtmlUtil.space(2)
+                            + HtmlUtil.submit(msg("Cancel"), ARG_DB_LIST)));
 
         sb.append(HtmlUtil.formTableClose());
         return sb;
@@ -1731,7 +1768,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     }
 
-    /** _more_          */
+    /** _more_ */
     private String[] namesArray;
 
 
@@ -1815,24 +1852,24 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(formEntry(request, msgLabel("From name"),
-                                     HtmlUtil.input(ARG_EMAIL_FROMNAME,
-                                         request.getUser().getName(),
-                                         HtmlUtil.SIZE_40)));
+                            HtmlUtil.input(ARG_EMAIL_FROMNAME,
+                                           request.getUser().getName(),
+                                           HtmlUtil.SIZE_40)));
         sb.append(formEntry(request, msgLabel("From email"),
-                                     HtmlUtil.input(ARG_EMAIL_FROMADDRESS,
-                                         request.getUser().getEmail(),
-                                         HtmlUtil.SIZE_40)));
+                            HtmlUtil.input(ARG_EMAIL_FROMADDRESS,
+                                           request.getUser().getEmail(),
+                                           HtmlUtil.SIZE_40)));
         String bcc = HtmlUtil.checkbox(ARG_EMAIL_BCC, "true", false)
                      + HtmlUtil.space(1) + msg("Send as BCC");
 
         sb.append(
             formEntry(
-                      request, msgLabel("Subject"),
+                request, msgLabel("Subject"),
                 HtmlUtil.input(ARG_EMAIL_SUBJECT, "", HtmlUtil.SIZE_40)
                 + HtmlUtil.space(2) + bcc));
         sb.append(HtmlUtil.formEntryTop(msgLabel("Message"),
                                         HtmlUtil.textArea(ARG_EMAIL_MESSAGE,
-                                                          "", 30, 60)));
+                                            "", 30, 60)));
         sb.append(HtmlUtil.formTableClose());
         sb.append(HtmlUtil.submit(msg("Send Message")));
 
@@ -2033,15 +2070,15 @@ public class DbTypeHandler extends BlobTypeHandler {
                           StringBuffer sb, boolean doForm)
             throws Exception {
 
-        Hashtable entryProps     = getProperties(entry);
+        Hashtable entryProps = getProperties(entry);
 
         if (doForm) {
             String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
             sb.append(HtmlUtil.form(formUrl));
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         }
-        boolean   canEdit = getAccessManager().canEditEntry(request, entry);
-        HashSet<String> except  = new HashSet<String>();
+        boolean canEdit = getAccessManager().canEditEntry(request, entry);
+        HashSet<String> except = new HashSet<String>();
         except.add(ARG_DB_SORTBY);
         except.add(ARG_DB_SORTDIR);
 
@@ -2191,24 +2228,29 @@ public class DbTypeHandler extends BlobTypeHandler {
 
                 if (column.isEnumeration()) {
                     StringBuffer prefix = new StringBuffer();
-                    String iconID = PROP_CAT_ICON+"." + column.getName();
-                    Hashtable<String,String> iconMap = (Hashtable<String,String>) entryProps.get(iconID);
-                    if(iconMap!=null) {
-                        String icon = iconMap.get((String)values[column.getOffset()]);
-                        if(icon!=null) {
+                    String iconID = PROP_CAT_ICON + "." + column.getName();
+                    Hashtable<String, String> iconMap =
+                        (Hashtable<String, String>) entryProps.get(iconID);
+                    if (iconMap != null) {
+                        String icon =
+                            iconMap.get((String) values[column.getOffset()]);
+                        if (icon != null) {
                             prefix.append(HtmlUtil.img(getIconUrl(icon)));
                             prefix.append(" ");
                         }
                     }
                     String style = "";
                     String content = "&nbsp;&nbsp;&nbsp;&nbsp;";
-                    String colorID = PROP_CAT_COLOR+"." + column.getName();
-                    Hashtable<String,String> colorMap = (Hashtable<String,String>) entryProps.get(colorID);
-                    if(colorMap!=null) {
-                        String bgColor = colorMap.get((String)values[column.getOffset()]);
-                        if(bgColor!=null) {
-                            style = style+"background-color:" + bgColor;
-                            prefix.append(HtmlUtil.span(content, HtmlUtil.style(style)));
+                    String colorID = PROP_CAT_COLOR + "." + column.getName();
+                    Hashtable<String, String> colorMap =
+                        (Hashtable<String, String>) entryProps.get(colorID);
+                    if (colorMap != null) {
+                        String bgColor =
+                            colorMap.get((String) values[column.getOffset()]);
+                        if (bgColor != null) {
+                            style = style + "background-color:" + bgColor;
+                            prefix.append(HtmlUtil.span(content,
+                                    HtmlUtil.style(style)));
                         }
                     }
                     sb.append(prefix.toString());
@@ -2261,34 +2303,83 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
-    private String getIconFor(Entry entry, Hashtable entryProps, Object[] values) {
-        for(Column column: enumColumns) {
-            String value  = column.getString(values);
-            String attrIcon = getIconFor(entry, entryProps, column,  value);
-            if(attrIcon!=null) return attrIcon;
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param entryProps _more_
+     * @param values _more_
+     *
+     * @return _more_
+     */
+    private String getIconFor(Entry entry, Hashtable entryProps,
+                              Object[] values) {
+        for (Column column : enumColumns) {
+            String value    = column.getString(values);
+            String attrIcon = getIconFor(entry, entryProps, column, value);
+            if (attrIcon != null) {
+                return attrIcon;
+            }
         }
         return null;
     }
 
 
 
-    private String getIconFor(Entry entry, Hashtable entryProps, Column column, String value) {
-        return getAttributeFor(entry, entryProps, column, value, PROP_CAT_ICON);
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param entryProps _more_
+     * @param column _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    private String getIconFor(Entry entry, Hashtable entryProps,
+                              Column column, String value) {
+        return getAttributeFor(entry, entryProps, column, value,
+                               PROP_CAT_ICON);
     }
 
-    private String getColorFor(Entry entry, Hashtable entryProps, Column column, String value) {
-        return getAttributeFor(entry, entryProps, column, value, PROP_CAT_COLOR);
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param entryProps _more_
+     * @param column _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    private String getColorFor(Entry entry, Hashtable entryProps,
+                               Column column, String value) {
+        return getAttributeFor(entry, entryProps, column, value,
+                               PROP_CAT_COLOR);
     }
 
 
-    private String getAttributeFor(Entry entry, Hashtable entryProps, Column column, String value, String type) {
-        if (!column.isEnumeration() || value == null) {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param entryProps _more_
+     * @param column _more_
+     * @param value _more_
+     * @param type _more_
+     *
+     * @return _more_
+     */
+    private String getAttributeFor(Entry entry, Hashtable entryProps,
+                                   Column column, String value, String type) {
+        if ( !column.isEnumeration() || (value == null)) {
             return null;
         }
-        String iconID = type+"." + column.getName();
-        Hashtable<String,String> map = (Hashtable<String,String>) entryProps.get(iconID);
-        if(map!=null) {
-            return  map.get(value);
+        String iconID = type + "." + column.getName();
+        Hashtable<String, String> map = (Hashtable<String,
+                                            String>) entryProps.get(iconID);
+        if (map != null) {
+            return map.get(value);
         }
         return null;
     }
@@ -2343,10 +2434,10 @@ public class DbTypeHandler extends BlobTypeHandler {
                                 List<Object[]> valueList, boolean fromSearch)
             throws Exception {
 
-        Hashtable entryProps     = getProperties(entry);
+        Hashtable    entryProps = getProperties(entry);
         boolean      canEdit = getAccessManager().canEditEntry(request,
                                    entry);
-        StringBuffer sb      = new StringBuffer();
+        StringBuffer sb         = new StringBuffer();
         addViewHeader(request, entry, sb, VIEW_MAP, valueList.size(),
                       fromSearch);
         Column  theColumn = null;
@@ -2367,9 +2458,10 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-        int          width      = 800;
-        int          height     = 500;
-        MapInfo map = getRepository().getMapManager().createMap(request, width, height, false);
+        int width  = 800;
+        int height = 500;
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          width, height, false);
         boolean      makeRectangles = valueList.size() <= 20;
 
         String       icon           = getRepository().getUrlBase()
@@ -2397,13 +2489,14 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
 
             if (bbox) {
-                map.addBox("", new MapProperties("red", false),  north, west , south,east);
+                map.addBox("", new MapProperties("red", false), north, west,
+                           south, east);
             }
             rightSide.append("\n");
             String iconToUse = icon;
             String attrIcon  = getIconFor(entry, entryProps, values);
-            if(attrIcon!=null) {
-                iconToUse =  getIconUrl(attrIcon);
+            if (attrIcon != null) {
+                iconToUse = getIconUrl(attrIcon);
                 rightSide.append(HtmlUtil.img(iconToUse));
             }
             if (canEdit) {
@@ -2423,7 +2516,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                         getRepository().getUrlBase() + "/db/database_go.png",
                         msg("View entry"))));
             rightSide.append(" ");
-            rightSide.append(map.getHiliteHref(dbid, getLabel(entry, values)));
+            rightSide.append(map.getHiliteHref(dbid,
+                    getLabel(entry, values)));
 
 
             rightSide.append(HtmlUtil.br());
@@ -2432,12 +2526,16 @@ public class DbTypeHandler extends BlobTypeHandler {
             info = info.replace("\n", " ");
             info = info.replace("\"", "\\\"");
             if ( !bbox) {
-                map.addMarker(dbid,  new LatLonPointImpl(lat,lon), iconToUse, info);
+                map.addMarker(dbid, new LatLonPointImpl(lat, lon), iconToUse,
+                              info);
             } else {
                 if ( !makeRectangles) {
-                    map.addMarker(dbid, new LatLonPointImpl(south, east), iconToUse, info);
+                    map.addMarker(dbid, new LatLonPointImpl(south, east),
+                                  iconToUse, info);
                 } else {
-                    map.addMarker(dbid, new LatLonPointImpl(south+ (north - south) / 2, west + (east - west) / 2), icon, info);
+                    map.addMarker(dbid, new LatLonPointImpl(south
+                            + (north - south) / 2, west
+                                + (east - west) / 2), icon, info);
                 }
             }
         }
@@ -2699,15 +2797,19 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
         List<String> enumValues = getEnumValues(entry, gridColumn);
-        
+
 
         sb.append(
             "\n<style type=\"text/css\">\n.gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}\n.gridon {background: #88C957;}\n.gridoff {background: #eee;}</style>\n");
         sb.append(
             "<table cellspacing=0 cellpadding=0 border=1 width=100% class=\"gridtable\">\n");
         sb.append("<tr>");
-        int width = 100/(enumValues.size()+1);
-        sb.append(HtmlUtil.col("&nbsp;", HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,width+"%")+HtmlUtil.cssClass("dbtableheader")));
+        int width = 100 / (enumValues.size() + 1);
+        sb.append(
+            HtmlUtil.col(
+                "&nbsp;",
+                HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, width + "%")
+                + HtmlUtil.cssClass("dbtableheader")));
         String key = tableHandler.getTableName() + "." + gridColumn.getName();
         for (String value : enumValues) {
             String searchUrl =
@@ -2718,7 +2820,8 @@ public class DbTypeHandler extends BlobTypeHandler {
             sb.append(
                 HtmlUtil.col(
                     "&nbsp;" + HtmlUtil.href(searchUrl, value),
-                    HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,""+width+"%") + HtmlUtil.cssClass("dbtableheader")));
+                    HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width + "%")
+                    + HtmlUtil.cssClass("dbtableheader")));
         }
         for (Object[] valuesArray : valueList) {
             sb.append("<tr>\n");
@@ -2752,13 +2855,24 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
-        private List<String> getEnumValues(Entry entry, Column column) throws Exception {
-            if (column.getType().equals(Column.TYPE_ENUMERATION)) {
-                return (List<String>) column.getValues();
-            } else {
-                return  (List<String>) tableHandler.getEnumValues(column, entry);
-            }
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param column _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private List<String> getEnumValues(Entry entry, Column column)
+            throws Exception {
+        if (column.getType().equals(Column.TYPE_ENUMERATION)) {
+            return (List<String>) column.getValues();
+        } else {
+            return (List<String>) tableHandler.getEnumValues(column, entry);
         }
+    }
 
 
     /**
@@ -3684,7 +3798,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             StringBuffer tmpSb = new StringBuffer();
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
             sb.append(formEntry(request, column.getLabel() + ":",
-                                         tmpSb.toString()));
+                                tmpSb.toString()));
         }
         sb.append(HtmlUtil.formTableClose());
 
@@ -3780,7 +3894,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             StringBuffer tmpSb = new StringBuffer();
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
             sb.append(formEntry(request, column.getLabel() + ":",
-                                         tmpSb.toString()));
+                                tmpSb.toString()));
         }
         sb.append(HtmlUtil.formTableClose());
         return sb.toString();

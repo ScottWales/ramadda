@@ -1,26 +1,24 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.geodata.data;
-
-
-import org.w3c.dom.*;
 
 
 import org.ramadda.repository.*;
@@ -29,6 +27,9 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -76,11 +77,18 @@ import java.util.regex.*;
  * @version $Revision: 1.3 $
  */
 public class GridAggregationHarvester extends PatternHarvester {
-    
-    public static final String ATTR_AGGREGATIONTYPE = "aggregationtype";
-    public static final String ATTR_AGGREGATIONCOORDINATE = "aggregationcoordinate";
 
+    /** _more_          */
+    public static final String ATTR_AGGREGATIONTYPE = "aggregationtype";
+
+    /** _more_          */
+    public static final String ATTR_AGGREGATIONCOORDINATE =
+        "aggregationcoordinate";
+
+    /** _more_          */
     private String aggregationType = NcmlUtil.AGG_JOINEXISTING;
+
+    /** _more_          */
     private String aggregationCoordinate = "time";
 
     /**
@@ -119,54 +127,99 @@ public class GridAggregationHarvester extends PatternHarvester {
         return GridAggregationTypeHandler.TYPE_GRIDAGGREGATION;
     }
 
+    /**
+     * _more_
+     *
+     * @param element _more_
+     *
+     * @throws Exception _more_
+     */
     protected void init(Element element) throws Exception {
         super.init(element);
 
-        aggregationCoordinate = XmlUtil.getAttribute(element, ATTR_AGGREGATIONCOORDINATE,
-        		aggregationCoordinate);
+        aggregationCoordinate = XmlUtil.getAttribute(element,
+                ATTR_AGGREGATIONCOORDINATE, aggregationCoordinate);
         aggregationType = XmlUtil.getAttribute(element, ATTR_AGGREGATIONTYPE,
-                                               aggregationType);
-    
+                aggregationType);
+
     }
 
+    /**
+     * _more_
+     *
+     * @param element _more_
+     *
+     * @throws Exception _more_
+     */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
-        element.setAttribute(ATTR_AGGREGATIONCOORDINATE,aggregationCoordinate);
-        element.setAttribute(ATTR_AGGREGATIONTYPE,aggregationType);
+        element.setAttribute(ATTR_AGGREGATIONCOORDINATE,
+                             aggregationCoordinate);
+        element.setAttribute(ATTR_AGGREGATIONTYPE, aggregationType);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @throws Exception _more_
+     */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
-        aggregationCoordinate = request.getString(ATTR_AGGREGATIONCOORDINATE,aggregationCoordinate);
-        aggregationType = request.getString(ATTR_AGGREGATIONTYPE,aggregationType);
+        aggregationCoordinate = request.getString(ATTR_AGGREGATIONCOORDINATE,
+                aggregationCoordinate);
+        aggregationType = request.getString(ATTR_AGGREGATIONTYPE,
+                                            aggregationType);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         super.createEditForm(request, sb);
-        List<String> types = (List<String>)Misc.newList(NcmlUtil.AGG_JOINEXISTING, 
-                                                        NcmlUtil.AGG_UNION);
-        
-        sb.append(HtmlUtil.formEntry(msgLabel("Time Coordinate:"),
-                HtmlUtil.input(ATTR_AGGREGATIONCOORDINATE,
-                    aggregationCoordinate, HtmlUtil.SIZE_60)));
+        List<String> types =
+            (List<String>) Misc.newList(NcmlUtil.AGG_JOINEXISTING,
+                                        NcmlUtil.AGG_UNION);
+
+        sb.append(
+            HtmlUtil.formEntry(
+                msgLabel("Time Coordinate:"),
+                HtmlUtil.input(
+                    ATTR_AGGREGATIONCOORDINATE, aggregationCoordinate,
+                    HtmlUtil.SIZE_60)));
         sb.append(HtmlUtil.formEntry(msgLabel("Aggregation type"),
-                                     HtmlUtil.select(ATTR_AGGREGATIONTYPE, types, aggregationType)));
+                                     HtmlUtil.select(ATTR_AGGREGATIONTYPE,
+                                         types, aggregationType)));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     */
     public void initEntry(Entry entry) {
         super.initEntry(entry);
-        if(entry.getType().equals(GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if (entry.getType().equals(
+                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             //We're not using these 3 parameters
-            String fields = "";
-            String files = "";
+            String fields  = "";
+            String files   = "";
             String pattern = "";
-            entry.setValues(new Object[]{aggregationType,aggregationCoordinate, fields, files, pattern});
-        	 
+            entry.setValues(new Object[] { aggregationType,
+                                           aggregationCoordinate, fields,
+                                           files, pattern });
+
         }
     }
-    
+
 
 
     /**

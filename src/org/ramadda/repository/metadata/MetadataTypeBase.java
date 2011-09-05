@@ -1,29 +1,30 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.metadata;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.ui.ImageUtils;
@@ -32,8 +33,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
-import java.text.SimpleDateFormat;
 import ucar.unidata.xml.XmlUtil;
 
 import java.awt.Image;
@@ -44,6 +43,8 @@ import java.io.InputStream;
 
 import java.net.URL;
 import java.net.URLConnection;
+
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,7 +86,10 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
+    /** _more_          */
     public static final String ATTR_LABEL = "label";
+
+    /** _more_          */
     public static final String ATTR_SUFFIX = "suffix";
 
     /** _more_ */
@@ -117,7 +121,10 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     private String name;
 
+    /** _more_          */
     private String label;
+
+    /** _more_          */
     private String suffixLabel;
 
     /** _more_ */
@@ -246,7 +253,7 @@ public class MetadataTypeBase extends RepositoryManager {
             return null;
         }
         //Remove newlines??
-        template = template.replaceAll("\n","");
+        template = template.replaceAll("\n", "");
         template = template.replace("${root}", getRepository().getUrlBase());
 
 
@@ -255,11 +262,16 @@ public class MetadataTypeBase extends RepositoryManager {
 
         template = template.replace("${entry.id}", entry.getId());
         template = template.replace("${entry.name}", entry.getName());
-        template = template.replace("${entry.name.cdata}", wrapCdata(entry.getName()));
-        template = template.replace("${entry.description}", entry.getDescription());
-        template = template.replace("${entry.description.cdata}", wrapCdata(entry.getDescription()));
-        template = template.replace("${entry.publishdate}", formatDate(entry.getCreateDate()));
-        template = template.replace("${entry.changedate}", formatDate(entry.getChangeDate()));
+        template = template.replace("${entry.name.cdata}",
+                                    wrapCdata(entry.getName()));
+        template = template.replace("${entry.description}",
+                                    entry.getDescription());
+        template = template.replace("${entry.description.cdata}",
+                                    wrapCdata(entry.getDescription()));
+        template = template.replace("${entry.publishdate}",
+                                    formatDate(entry.getCreateDate()));
+        template = template.replace("${entry.changedate}",
+                                    formatDate(entry.getChangeDate()));
 
         for (MetadataElement element : getChildren()) {
             String value = element.getValueForXml(templateType, entry,
@@ -273,6 +285,13 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public String wrapCdata(String s) {
         return "<![CDATA[" + s + "]]>";
     }
@@ -336,8 +355,15 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isSimple() {
-        if(getChildren().size()>1) return false;
+        if (getChildren().size() > 1) {
+            return false;
+        }
         return !getChildren().get(0).getDataType().equals(TYPE_GROUP);
     }
 
@@ -362,8 +388,9 @@ public class MetadataTypeBase extends RepositoryManager {
      */
     public void init(Element node) throws Exception {
         setName(XmlUtil.getAttribute(node, ATTR_NAME, ""));
-        setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String)null));
-        setSuffixLabel(XmlUtil.getAttribute(node, ATTR_SUFFIX, (String)null));
+        setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String) null));
+        setSuffixLabel(XmlUtil.getAttribute(node, ATTR_SUFFIX,
+                                            (String) null));
 
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
         setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
@@ -472,7 +499,8 @@ public class MetadataTypeBase extends RepositoryManager {
 
             String tail = getStorageManager().getFileTail(f.toString());
             if (matchFile != null) {
-                if(!matchFile.equals("*") && !Misc.equals(matchFile, tail)) {
+                if ( !matchFile.equals("*")
+                        && !Misc.equals(matchFile, tail)) {
                     continue;
                 }
             }
@@ -558,11 +586,18 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param t _more_
+     *
+     * @return _more_
+     */
     private String formatDate(long t) {
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         }
-        synchronized(sdf) {
+        synchronized (sdf) {
             return sdf.format(new Date(t)) + "Z";
         }
     }
@@ -639,11 +674,18 @@ public class MetadataTypeBase extends RepositoryManager {
      * @return _more_
      */
     public String getLabel() {
-        if(label!=null) return label;
+        if (label != null) {
+            return label;
+        }
         return getName();
     }
 
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setLabel(String value) {
         label = value;
     }
@@ -658,6 +700,11 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setSuffixLabel(String value) {
         suffixLabel = value;
     }

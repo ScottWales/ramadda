@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository;
 
@@ -47,6 +48,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_ARROW = "ramadda.icon.arrow";
+
+    /** _more_          */
     public static final String ICON_GOOGLEEARTH = "ramadda.icon.googleearth";
 
     /** _more_ */
@@ -74,7 +77,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_CLOCK = "ramadda.icon.clock";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TIMELINE = "ramadda.icon.timeline";
 
     /** _more_ */
@@ -107,6 +110,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_DOWNARROW = "ramadda.icon.downarrow";
 
+    /** _more_          */
     public static final String ICON_DOWNLOAD = "ramadda.icon.download";
 
     /** _more_ */
@@ -192,7 +196,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_INFORMATION = "ramadda.icon.information";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TREE = "ramadda.icon.tree";
 
     /** _more_ */
@@ -310,7 +314,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_XML = "ramadda.icon.xml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_JSON = "ramadda.icon.json";
 
 
@@ -465,6 +469,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_URL = "url";
 
+    /** _more_          */
     public static final String ATTR_DOWNLOAD = "download";
 
     /** _more_ */
@@ -515,6 +520,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ADMIN_WHAT = "what";
 
+    /** _more_          */
     public static final String ARG_PLUGIN_FILE = "plugin.file";
 
     /** _more_ */
@@ -584,7 +590,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CANCEL = "cancel";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_COLUMNS = "columns";
 
     /** _more_ */
@@ -665,7 +671,7 @@ public interface Constants {
     /** _more_ */
     public static final String DATE_SEARCHMODE_CONTAINS = "contains";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DATE_SEARCHMODE_DEFAULT =
         DATE_SEARCHMODE_OVERLAPS;
 
@@ -735,7 +741,7 @@ public interface Constants {
         "file.preservedirectoryfile";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_FORMAT = "format";
 
 
@@ -758,13 +764,13 @@ public interface Constants {
     public static final String ARG_FROMDATE_TIME = ARG_FROMDATE + ".time";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATA_DATE = "datadate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_CREATE_DATE = "createdate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_CHANGE_DATE = "changedate";
 
 
@@ -773,29 +779,29 @@ public interface Constants {
      *
      *
      * @version        $version$, Thu, Jul 14, '11
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static final class DateArg {
 
-        /** _more_          */
+        /** _more_ */
         public String suffix;
 
-        /** _more_          */
+        /** _more_ */
         public boolean hasRange;
 
-        /** _more_          */
+        /** _more_ */
         public String label;
 
-        /** _more_          */
+        /** _more_ */
         public String from;
 
-        /** _more_          */
+        /** _more_ */
         public String to;
 
-        /** _more_          */
+        /** _more_ */
         public String mode;
 
-        /** _more_          */
+        /** _more_ */
         public String relative;
 
         /**
@@ -851,19 +857,19 @@ public interface Constants {
 
     }
 
-    /** _more_          */
+    /** _more_ */
     public static final DateArg dataDate = new DateArg(ARG_DATA_DATE,
                                                "Data Date", true);
 
-    /** _more_          */
+    /** _more_ */
     public static final DateArg createDate = new DateArg(ARG_CREATE_DATE,
                                                  "Create Date", false);
 
-    /** _more_          */
+    /** _more_ */
     public static final DateArg changeDate = new DateArg(ARG_CHANGE_DATE,
                                                  "Change Date", false);
 
-    /** _more_          */
+    /** _more_ */
     public static final Constants.DateArg[] DATEARGS = { Constants.dataDate,
             Constants.createDate, Constants.changeDate };
 
@@ -994,7 +1000,7 @@ public interface Constants {
         "ramadda.monitor.enable.exec";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_READ_ONLY = "ramadda.readonly";
 
     /** _more_ */
@@ -1151,13 +1157,13 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SEARCHMETADATA = "searchmetadata";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SEARCH_TYPE = "search.type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SEARCH_TYPE_TEXT = "search.type.text";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SEARCH_TYPE_ADVANCED = "search.type.advanced";
 
 
@@ -1167,7 +1173,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SESSIONID = "sessionid";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_AUTHTOKEN = "authtoken";
 
     /** _more_ */
@@ -1446,21 +1452,22 @@ public interface Constants {
     public static final String PROP_FTP_PASSIVEPORTS =
         "ramadda.ftp.passiveports";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SHOWMAP = "ramadda.showmap";
 
+    /** _more_          */
     public static final String PROP_NOSTYLE = "nostyle";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SEARCH_LUCENE_ENABLED =
         "ramadda.search.lucene.enabled";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SEARCH_SHOW_METADATA =
         "ramadda.search.show.metadata";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PROPERTIES = "ramadda.properties";
 
 
@@ -1579,7 +1586,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ENTRY_HEADER = "ramadda.entryheader";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ENTRY_FOOTER = "ramadda.entryfooter";
 
 
@@ -1599,6 +1606,7 @@ public interface Constants {
     public static final String PROP_HARVESTERS = "ramadda.harvesters";
 
 
+    /** _more_          */
     public static final String PROP_ALWAYS_HTTPS = "ramadda.always_https";
 
     /** _more_ */
@@ -1649,7 +1657,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_HTML_TEMPLATES = "ramadda.html.templates";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_HTML_TEMPLATE_DEFAULT =
         "ramadda.html.template.default";
 
@@ -1865,10 +1873,10 @@ public interface Constants {
     /** _more_ */
     public static final int DB_MAX_ROWS = 1000;
 
-    /** _more_          */
+    /** _more_ */
     public static final int DB_VIEW_ROWS = 50;
 
-    /** _more_          */
+    /** _more_ */
     public static final int VIEW_MAX_ROWS = DB_VIEW_ROWS;
 
 
@@ -1964,38 +1972,81 @@ public interface Constants {
     public static final String PROP_PROXY_PORT = "ramadda.proxy.port";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
 
-    public static final String CSS_CLASS_HIGHLIGHT  = "ramadda-highlight";
-    public static final String CSS_CLASS_ERROR_LABEL  = "ramadda-error-label";
-    public static final String CSS_CLASS_HEADING_1 = "ramadda-heading-1";
-    public static final String CSS_CLASS_HEADING_2 = "ramadda-heading-2";
-    public static final String CSS_CLASS_HEADING_2_LINK = "ramadda-heading-2-link";
+    /** _more_          */
+    public static final String CSS_CLASS_HIGHLIGHT = "ramadda-highlight";
 
+    /** _more_          */
+    public static final String CSS_CLASS_ERROR_LABEL = "ramadda-error-label";
+
+    /** _more_          */
+    public static final String CSS_CLASS_HEADING_1 = "ramadda-heading-1";
+
+    /** _more_          */
+    public static final String CSS_CLASS_HEADING_2 = "ramadda-heading-2";
+
+    /** _more_          */
+    public static final String CSS_CLASS_HEADING_2_LINK =
+        "ramadda-heading-2-link";
+
+    /** _more_          */
     public static final String CSS_CLASS_POPUP = "ramadda-popup";
 
 
-    public static final String CSS_CLASS_REQUIRED  = "ramadda-required";
-    public static final String CSS_CLASS_REQUIRED_LABEL  = "ramadda-required-label";
-    public static final String CSS_CLASS_REQUIRED_FIELD  = "ramadda-required-field";
-    public static final String CSS_CLASS_REQUIRED_DISABLED  = "ramadda-required-disabled";
+    /** _more_          */
+    public static final String CSS_CLASS_REQUIRED = "ramadda-required";
 
-    public static final String CSS_CLASS_EARTH_NAV  = "ramadda-earth-nav";
-    public static final String CSS_CLASS_EARTH_LINK  = "ramadda-earth-link";
-    public static final String CSS_CLASS_EARTH_ENTRIES  = "ramadda-earth-entries";
+    /** _more_          */
+    public static final String CSS_CLASS_REQUIRED_LABEL =
+        "ramadda-required-label";
 
-    public static final String CSS_CLASS_COMMENT_BLOCK  = "ramadda-comment-block";
-    public static final String CSS_CLASS_COMMENT_COMMENTER  = "ramadda-comment-commenter";
-    public static final String CSS_CLASS_COMMENT_DATE  = "ramadda-comment-date";
-    public static final String CSS_CLASS_COMMENT_INNER  = "ramadda-comment-inner";
-    public static final String CSS_CLASS_COMMENT_SUBJECT  = "ramadda-comment-subject";
+    /** _more_          */
+    public static final String CSS_CLASS_REQUIRED_FIELD =
+        "ramadda-required-field";
 
-    public static final String CSS_CLASS_USER_FIELD  = "ramadda-user-field";
+    /** _more_          */
+    public static final String CSS_CLASS_REQUIRED_DISABLED =
+        "ramadda-required-disabled";
+
+    /** _more_          */
+    public static final String CSS_CLASS_EARTH_NAV = "ramadda-earth-nav";
+
+    /** _more_          */
+    public static final String CSS_CLASS_EARTH_LINK = "ramadda-earth-link";
+
+    /** _more_          */
+    public static final String CSS_CLASS_EARTH_ENTRIES =
+        "ramadda-earth-entries";
+
+    /** _more_          */
+    public static final String CSS_CLASS_COMMENT_BLOCK =
+        "ramadda-comment-block";
+
+    /** _more_          */
+    public static final String CSS_CLASS_COMMENT_COMMENTER =
+        "ramadda-comment-commenter";
+
+    /** _more_          */
+    public static final String CSS_CLASS_COMMENT_DATE =
+        "ramadda-comment-date";
+
+    /** _more_          */
+    public static final String CSS_CLASS_COMMENT_INNER =
+        "ramadda-comment-inner";
+
+    /** _more_          */
+    public static final String CSS_CLASS_COMMENT_SUBJECT =
+        "ramadda-comment-subject";
+
+    /** _more_          */
+    public static final String CSS_CLASS_USER_FIELD = "ramadda-user-field";
 
 
-    public static final String CSS_CLASS_SEPARATOR  = "ramadda-separator";
+    /** _more_          */
+    public static final String CSS_CLASS_SEPARATOR = "ramadda-separator";
 
 
 

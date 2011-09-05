@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository;
 
@@ -104,7 +105,7 @@ public class Entry implements Cloneable {
     /** _more_ */
     private long createDate;
 
-    /** _more_          */
+    /** _more_ */
     private long changeDate;
 
 
@@ -141,10 +142,10 @@ public class Entry implements Cloneable {
     /** _more_ */
     private double west = NONGEO;
 
-    /** _more_          */
+    /** _more_ */
     private double altitudeBottom = NONGEO;
 
-    /** _more_          */
+    /** _more_ */
     private double altitudeTop = NONGEO;
 
     /** _more_ */
@@ -165,11 +166,11 @@ public class Entry implements Cloneable {
     /** _more_ */
     private String propertiesString;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable transientProperties = new Hashtable();
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean isGroup = false;
 
 
@@ -180,7 +181,7 @@ public class Entry implements Cloneable {
     List<Entry> subEntries;
 
 
-    /** _more_          */
+    /** _more_ */
     private List<String> childIds;
 
 
@@ -727,7 +728,9 @@ public class Entry implements Cloneable {
     public boolean hasAreaDefined() {
         if ((south != NONGEO) && (east != NONGEO) && (north != NONGEO)
                 && (west != NONGEO)) {
-            if(south==north &&  east == west) return false;
+            if ((south == north) && (east == west)) {
+                return false;
+            }
             return true;
         }
         return false;
@@ -1519,12 +1522,21 @@ public class Entry implements Cloneable {
         return metadata.contains(value);
     }
 
+    /**
+     * _more_
+     *
+     * @param type _more_
+     *
+     * @return _more_
+     */
     public boolean hasMetadataOfType(String type) {
         if (metadata == null) {
             return false;
         }
-        for(Metadata myMetadata: metadata) {
-            if(myMetadata.getType().equals(type)) return true;
+        for (Metadata myMetadata : metadata) {
+            if (myMetadata.getType().equals(type)) {
+                return true;
+            }
         }
         return false;
     }

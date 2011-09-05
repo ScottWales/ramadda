@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository;
 
@@ -2281,8 +2282,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         ApiMethod apiMethod =
             new ApiMethod(this, handler, request,
                           XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
-                                               request), method, admin,
-                          requiresAuthToken,
+                              request), method, admin, requiresAuthToken,
                                         needsSsl, authMethod,
                                         checkAuthMethod, canCache,
                                         XmlUtil.getAttribute(node,
@@ -2951,9 +2951,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /**
-       Convert the sessionId into a authorization token that is used to verify form
-       submissions, etc.
-    */
+     *  Convert the sessionId into a authorization token that is used to verify form
+     *  submissions, etc.
+     *
+     * @param sessionId _more_
+     *
+     * @return _more_
+     */
     public String getAuthToken(String sessionId) {
         //Use the same hash function as for passwords
         return UserManager.hashPassword(sessionId);
@@ -2966,8 +2970,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param sb _more_
      */
     public void addAuthToken(Request request, StringBuffer sb) {
-        String sessionId  = request.getSessionId();
-        if(sessionId!=null) {
+        String sessionId = request.getSessionId();
+        if (sessionId != null) {
             String authToken = getAuthToken(sessionId);
             sb.append(HtmlUtil.hidden(ARG_AUTHTOKEN, authToken));
         }
@@ -3620,14 +3624,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             "failed to process template:" + path, exc);
                         continue;
                     }
-                    String[] changes = {"userlink", 
-                                        MACRO_USERLINK,
-                                        "html.imports",
-                                        "imports",
-                    };
-                    for(int i=0;i<changes.length;i+=2) {
-                        resource = resource.replace("${" + changes[i]+"}", 
-                                                    "${" + changes[i+1] +"}");
+                    String[] changes = { "userlink", MACRO_USERLINK,
+                                         "html.imports", "imports", };
+                    for (int i = 0; i < changes.length; i += 2) {
+                        resource = resource.replace("${" + changes[i] + "}",
+                                "${" + changes[i + 1] + "}");
                     }
 
                     resource = resource.replace("${imports}", imports);
@@ -3722,7 +3723,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public List<TwoFacedObject> getTemplateSelectList() {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
-        tfos.add(new TwoFacedObject("-default-",""));
+        tfos.add(new TwoFacedObject("-default-", ""));
         for (HtmlTemplate template : getTemplates()) {
             tfos.add(new TwoFacedObject(template.getName(),
                                         template.getId()));
@@ -4927,7 +4928,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     theMetadata = metadata;
                     break;
                 }
-                for(String type: StringUtil.split(types,",",true,true)) {
+                for (String type : StringUtil.split(types, ",", true, true)) {
                     if (type.equals("file") && !entry.isGroup()) {
                         theMetadata = metadata;
                         break;
@@ -5753,16 +5754,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                        ? timeArg
                                        : timeFormat.format(date));
 
-        String inputId = "dateinput" + (HtmlUtil.blockCnt++);
-        
-        
-        String js = "<script>jQuery(function() {$( " + HtmlUtil.squote("#" + inputId) +" ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false });});</script>";
+        String           inputId    = "dateinput" + (HtmlUtil.blockCnt++);
 
-        if(true) {
-            return "\n" + js +"\n" +
-                HtmlUtil.input(name, dateString,
-                               HtmlUtil.SIZE_10 + HtmlUtil.id(inputId)
-                               + HtmlUtil.title(dateHelp));
+
+        String js =
+            "<script>jQuery(function() {$( " + HtmlUtil.squote("#" + inputId)
+            + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false });});</script>";
+
+        if (true) {
+            return "\n" + js + "\n"
+                   + HtmlUtil.input(name, dateString,
+                                    HtmlUtil.SIZE_10 + HtmlUtil.id(inputId)
+                                    + HtmlUtil.title(dateHelp));
         }
 
         return HtmlUtil.input(

@@ -1,29 +1,30 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.metadata;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.util.DateUtil;
@@ -41,13 +42,13 @@ import ucar.unidata.xml.XmlUtil;
 
 
 import java.io.*;
-import java.util.zip.*;
 
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.zip.*;
 
 
 
@@ -86,6 +87,7 @@ public class MetadataHandler extends RepositoryManager {
     public static String ARG_ATTR4 = "attr4";
 
 
+    /** _more_          */
     public static final String TYPE_SPATIAL_POLYGON = "spatial.polygon";
 
     /** _more_ */
@@ -179,29 +181,33 @@ public class MetadataHandler extends RepositoryManager {
         //TODO: Handle the extra attributes
         String extra = XmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,
                            "");
-        Metadata metadata =
-            new Metadata(getRepository().getGUID(), entry.getId(), type,
-                         XmlUtil.getAttribute(node, ATTR_INHERITED,
-                                              DFLT_INHERITED));
-        int attrIndex = Metadata.INDEX_BASE-1;
-        while(true) {
+        Metadata metadata = new Metadata(getRepository().getGUID(),
+                                         entry.getId(), type,
+                                         XmlUtil.getAttribute(node,
+                                             ATTR_INHERITED, DFLT_INHERITED));
+        int attrIndex = Metadata.INDEX_BASE - 1;
+        while (true) {
             attrIndex++;
-            if(!XmlUtil.hasAttribute(node, ATTR_ATTR+attrIndex)) {
+            if ( !XmlUtil.hasAttribute(node, ATTR_ATTR + attrIndex)) {
                 break;
             }
-            metadata.setAttr(attrIndex,XmlUtil.getAttribute(node,
-                                                            ATTR_ATTR+attrIndex, ""));
+            metadata.setAttr(attrIndex,
+                             XmlUtil.getAttribute(node,
+                                 ATTR_ATTR + attrIndex, ""));
         }
         metadata.setExtra(extra);
 
-        NodeList      children = XmlUtil.getElements(node);
+        NodeList children = XmlUtil.getElements(node);
         for (int i = 0; i < children.getLength(); i++) {
             Element childNode = (Element) children.item(i);
-            if(!childNode.getTagName().equals(Metadata.TAG_ATTR)) {
+            if ( !childNode.getTagName().equals(Metadata.TAG_ATTR)) {
                 continue;
             }
-            int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX, -1);
-            String value = new String(XmlUtil.decodeBase64(XmlUtil.getChildText(childNode)));
+            int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX,
+                                             -1);
+            String value = new String(
+                               XmlUtil.decodeBase64(
+                                   XmlUtil.getChildText(childNode)));
             metadata.setAttr(index, value);
         }
 
@@ -255,8 +261,16 @@ public class MetadataHandler extends RepositoryManager {
 
 
 
-    public void getTextCorpus(Entry entry, StringBuffer sb,
-                              Metadata metadata)
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param sb _more_
+     * @param metadata _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getTextCorpus(Entry entry, StringBuffer sb, Metadata metadata)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
@@ -465,18 +479,34 @@ public class MetadataHandler extends RepositoryManager {
 
 
 
-    public void addMetadata(Request request, 
-                            Entry entry, ZipOutputStream zos,
-                            Metadata metadata,
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param zos _more_
+     * @param metadata _more_
+     * @param node _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addMetadata(Request request, Entry entry,
+                            ZipOutputStream zos, Metadata metadata,
                             Element node)
             throws Exception {
         Document doc = node.getOwnerDocument();
-        Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node, new String[] {
-                ATTR_TYPE, metadata.getType()});
-        for(int i=Metadata.INDEX_BASE;true;i++) {
-            String value  = metadata.getAttr(i);
-            if(value== null) break;
-            Element attrNode = XmlUtil.create(doc, Metadata.TAG_ATTR, metadataNode, new String[] {Metadata.ATTR_INDEX,""+i});
+        Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
+                                   new String[] { ATTR_TYPE,
+                metadata.getType() });
+        for (int i = Metadata.INDEX_BASE; true; i++) {
+            String value = metadata.getAttr(i);
+            if (value == null) {
+                break;
+            }
+            Element attrNode = XmlUtil.create(doc, Metadata.TAG_ATTR,
+                                   metadataNode,
+                                   new String[] { Metadata.ATTR_INDEX,
+                    "" + i });
             //true means to base encode the text
             attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, true));
         }
@@ -486,7 +516,7 @@ public class MetadataHandler extends RepositoryManager {
 
         String fileName = null;
         //TODO: add the file
-        if(zos!=null && fileName!=null) {
+        if ((zos != null) && (fileName != null)) {
             zos.putNextEntry(new ZipEntry(fileName));
             InputStream fis =
                 getStorageManager().getFileInputStream(fileName);
@@ -512,17 +542,20 @@ public class MetadataHandler extends RepositoryManager {
      * @param doc _more_
      * @param datasetNode _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     public boolean addMetadataToXml(Request request, String xmlType,
-                                 Entry entry, Metadata metadata,
-                                 Document doc, Element datasetNode)
+                                    Entry entry, Metadata metadata,
+                                    Document doc, Element datasetNode)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
             return false;
         }
-        return type.addMetadataToXml(request, xmlType, entry, metadata, datasetNode);
+        return type.addMetadataToXml(request, xmlType, entry, metadata,
+                                     datasetNode);
     }
 
 
@@ -588,8 +621,16 @@ public class MetadataHandler extends RepositoryManager {
         return type.getHtml(request, entry, metadata);
     }
 
-    public boolean isSimple(Metadata metadata)
-            throws Exception {
+    /**
+     * _more_
+     *
+     * @param metadata _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean isSimple(Metadata metadata) throws Exception {
         MetadataType type = getType(metadata.getType());
         if ((type == null) || !type.hasElements()) {
             return false;
@@ -675,8 +716,9 @@ public class MetadataHandler extends RepositoryManager {
         //        args.add(type.toString());
         args.add(ARG_METADATA_ATTR1 + "." + type.getId());
         args.add(value);
-        return HtmlUtil.url(request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
-                            args);
+        return HtmlUtil.url(
+            request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
+            args);
     }
 
 
@@ -726,7 +768,7 @@ public class MetadataHandler extends RepositoryManager {
                 return;
             }
             List l = trimValues((List<String>) Misc.toList(values));
-            l.add(0, new TwoFacedObject("-"+msg("all")+"-", ""));
+            l.add(0, new TwoFacedObject("-" + msg("all") + "-", ""));
             String value = request.getString(argName, "");
             sb.append(HtmlUtil.formEntry(msgLabel(type.getLabel()),
                                          HtmlUtil.select(argName, l, value,
@@ -760,7 +802,8 @@ public class MetadataHandler extends RepositoryManager {
                     getRepository().getMetadataManager().URL_METADATA_LIST,
                     ARG_METADATA_TYPE, type.toString()), HtmlUtil.img(
                         getRepository().iconUrl(ICON_LIST), "View Listing"));
-        String url = request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH);
+        String url =
+            request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH);
         String[] values = getMetadataManager().getDistinctValues(request,
                               this, type);
         if ((values == null) || (values.length == 0)) {
@@ -842,8 +885,8 @@ public class MetadataHandler extends RepositoryManager {
         }
 
         if (entry != null) {
-            request.uploadFormWithAuthToken(sb,
-                                            getMetadataManager().URL_METADATA_ADD);
+            request.uploadFormWithAuthToken(
+                sb, getMetadataManager().URL_METADATA_ADD);
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         } else {
             sb.append(HtmlUtil.row(HtmlUtil.colspan(header(html[0]), 2)));

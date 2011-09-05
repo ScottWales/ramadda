@@ -1,26 +1,25 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.plugins.beforeafter;
 
-
-import org.w3c.dom.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -29,11 +28,15 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 
+import org.w3c.dom.*;
+
+
 import ucar.unidata.sql.Clause;
 
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
+import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.HtmlUtil;
@@ -44,7 +47,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.WikiUtil;
 import ucar.unidata.xml.XmlUtil;
-import ucar.unidata.ui.ImageUtils;
+
+import java.awt.Dimension;
 
 
 import java.awt.Image;
@@ -59,8 +63,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-import java.awt.Dimension;
-
 
 /**
  *
@@ -68,7 +70,9 @@ import java.awt.Dimension;
  */
 public class BeforeAfterTypeHandler extends GenericTypeHandler {
 
-    private Hashtable<String,Dimension> dimensions = new Hashtable<String,Dimension>();
+    /** _more_          */
+    private Hashtable<String, Dimension> dimensions = new Hashtable<String,
+                                                          Dimension>();
 
 
     /**
@@ -84,18 +88,37 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isGroup() {
         return true;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        if(!isDefaultHtmlOutput(request)) return null;
-        List<Entry> children =  getEntryManager().getChildren(request, entry);
-        return getHtmlDisplay(request, entry, new ArrayList<Entry>(), children);
+        if ( !isDefaultHtmlOutput(request)) {
+            return null;
+        }
+        List<Entry> children = getEntryManager().getChildren(request, entry);
+        return getHtmlDisplay(request, entry, new ArrayList<Entry>(),
+                              children);
     }
 
-    private static 	int cnt = 0;
+    /** _more_          */
+    private static int cnt = 0;
 
 
     /**
@@ -114,78 +137,94 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-	StringBuffer divs = new StringBuffer();
-	int col =1;
-	sb.append(HtmlUtil.importJS(getRepository().getUrlBase()+"/beforeandafter/jquery.beforeafter.js"));
-        String template = getRepository().getResource("/org/ramadda/plugins/beforeafter/template.html");
-	//	sb.append(template);
+        StringBuffer sb   = new StringBuffer();
+        StringBuffer divs = new StringBuffer();
+        int          col  = 1;
+        sb.append(
+            HtmlUtil.importJS(
+                getRepository().getUrlBase()
+                + "/beforeandafter/jquery.beforeafter.js"));
+        String template =
+            getRepository().getResource(
+                "/org/ramadda/plugins/beforeafter/template.html");
+        //      sb.append(template);
 
         List<Entry> entriesToUse = new ArrayList<Entry>();
-	for (Entry child : entries) {
-	    if ( !child.getResource().isImage()) {
-		continue;
-	    }
+        for (Entry child : entries) {
+            if ( !child.getResource().isImage()) {
+                continue;
+            }
             entriesToUse.add(child);
         }
 
-        for(int i=0;i<entriesToUse.size();i+=2) {
-            if(i>=entriesToUse.size()-1) break;
-            Entry entry1 = entriesToUse.get(i);
-            Entry entry2 = entriesToUse.get(i+1);
-            Dimension dim =  dimensions.get(entry1.getId());
+        for (int i = 0; i < entriesToUse.size(); i += 2) {
+            if (i >= entriesToUse.size() - 1) {
+                break;
+            }
+            Entry     entry1 = entriesToUse.get(i);
+            Entry     entry2 = entriesToUse.get(i + 1);
+            Dimension dim    = dimensions.get(entry1.getId());
 
-            if(dim == null) {
-               Image image =
-                   ImageUtils.readImage(entry1.getResource().getPath());
-               ImageUtils.waitOnImage(image);
-               dim = new Dimension(image.getWidth(null),image.getHeight(null));
-               if(dim.width>0 && dim.height>0) {
-                   dimensions.put(entry1.getId(), dim);
-               }
-               System.err.println(dim);
+            if (dim == null) {
+                Image image =
+                    ImageUtils.readImage(entry1.getResource().getPath());
+                ImageUtils.waitOnImage(image);
+                dim = new Dimension(image.getWidth(null),
+                                    image.getHeight(null));
+                if ((dim.width > 0) && (dim.height > 0)) {
+                    dimensions.put(entry1.getId(), dim);
+                }
+                System.err.println(dim);
             }
 
-            int width =  600;
-            int height =  366;
+            int width  = 600;
+            int height = 366;
 
-            if(dim.width>0 && dim.height>0) {
-                width = dim.width;
+            if ((dim.width > 0) && (dim.height > 0)) {
+                width  = dim.width;
                 height = dim.height;
             }
 
 
-            if(entry1.getCreateDate()>entry2.getCreateDate()) {
+            if (entry1.getCreateDate() > entry2.getCreateDate()) {
                 Entry tmp = entry1;
                 entry1 = entry2;
                 entry2 = tmp;
             }
-	    String id = "bandacontainer" + (cnt++);
-            divs.append("<div id=\"" +  id +"\">\n");
-	    String url1 = HtmlUtil.url(
-				      request.url(repository.URL_ENTRY_GET) + "/"
-				      + getStorageManager().getFileTail(
-									entry1), ARG_ENTRYID, entry1.getId());
-	    String url2 = HtmlUtil.url(
-				      request.url(repository.URL_ENTRY_GET) + "/"
-				      + getStorageManager().getFileTail(
-									entry2), ARG_ENTRYID, entry2.getId());
+            String id = "bandacontainer" + (cnt++);
+            divs.append("<div id=\"" + id + "\">\n");
+            String url1 = HtmlUtil.url(
+                              request.url(repository.URL_ENTRY_GET) + "/"
+                              + getStorageManager().getFileTail(
+                                  entry1), ARG_ENTRYID, entry1.getId());
+            String url2 = HtmlUtil.url(
+                              request.url(repository.URL_ENTRY_GET) + "/"
+                              + getStorageManager().getFileTail(
+                                  entry2), ARG_ENTRYID, entry2.getId());
 
-	    divs.append(HtmlUtil.div("<img src=\"" + url1  +"\"" + 
-				     HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,""+width)+
-				     HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT,""+height) +">",""));
+            divs.append(
+                HtmlUtil.div(
+                    "<img src=\"" + url1 + "\""
+                    + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width)
+                    + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, "" + height)
+                    + ">", ""));
 
-	    divs.append(HtmlUtil.div("<img src=\"" + url2  +"\"" + 
-				     HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,""+width)+
-				     HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT,""+height) +">",""));
+            divs.append(
+                HtmlUtil.div(
+                    "<img src=\"" + url2 + "\""
+                    + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width)
+                    + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, "" + height)
+                    + ">", ""));
             divs.append("</div>\n");
-            String path = getRepository().getUrlBase() +"/beforeandafter/";
-            String args = "{imagePath:'" + path +"'}";
+            String path = getRepository().getUrlBase() + "/beforeandafter/";
+            String args = "{imagePath:'" + path + "'}";
             sb.append("\n");
-            sb.append(HtmlUtil.script("\n$(function(){$('#" +  id +"').beforeAfter(" + args +");});\n"));
-	}
-	sb.append("\n");
-	sb.append(divs);
+            sb.append(HtmlUtil.script("\n$(function(){$('#" + id
+                                      + "').beforeAfter(" + args
+                                      + ");});\n"));
+        }
+        sb.append("\n");
+        sb.append(divs);
         return new Result(msg("Before/After Image"), sb);
     }
 

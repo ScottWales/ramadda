@@ -1,31 +1,32 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -67,7 +68,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -78,15 +79,15 @@ public class XmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_XML =
         new OutputType("XML", "xml.xml",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
-                       "", ICON_XML);
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       ICON_XML);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_XMLENTRY =
         new OutputType("XML Entry", "xml.xmlentry",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH,
-                       "", ICON_XML);
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       ICON_XML);
 
 
 
@@ -141,10 +142,10 @@ public class XmlOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document  doc = XmlUtil.makeDocument();
-        Element root     = getEntryTag(request, entry, null, doc, null, false,
-                                       true);
-        StringBuffer sb  = new StringBuffer(XmlUtil.toString(root));
+        Document doc = XmlUtil.makeDocument();
+        Element root = getEntryTag(request, entry, null, doc, null, false,
+                                   true);
+        StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
@@ -192,6 +193,7 @@ public class XmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param zos _more_
      * @param doc _more_
      * @param parent _more_
      * @param forExport _more_
@@ -201,8 +203,8 @@ public class XmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Element getEntryTag(Request request, Entry entry, ZipOutputStream zos,
-                               Document doc,
+    public Element getEntryTag(Request request, Entry entry,
+                               ZipOutputStream zos, Document doc,
                                Element parent, boolean forExport,
                                boolean includeParentId)
             throws Exception {
@@ -225,10 +227,12 @@ public class XmlOutputHandler extends OutputHandler {
             node.setAttribute(ATTR_ALTITUDE, "" + entry.getAltitude());
         } else {
             if (entry.hasAltitudeBottom()) {
-                node.setAttribute(ATTR_ALTITUDE_BOTTOM, "" + entry.getAltitudeBottom());
+                node.setAttribute(ATTR_ALTITUDE_BOTTOM,
+                                  "" + entry.getAltitudeBottom());
             }
             if (entry.hasAltitudeTop()) {
-                node.setAttribute(ATTR_ALTITUDE_TOP, "" + entry.getAltitudeTop());
+                node.setAttribute(ATTR_ALTITUDE_TOP,
+                                  "" + entry.getAltitudeTop());
             }
         }
 
@@ -253,12 +257,12 @@ public class XmlOutputHandler extends OutputHandler {
                         resource.getPath(), ATTR_RESOURCE_TYPE,
                         resource.getType() });
                 String md5 = resource.getMd5();
-                if(md5!=null) {
+                if (md5 != null) {
                     node.setAttribute(ATTR_MD5, md5);
                 }
                 long filesize = resource.getFileSize();
-                if(filesize>=0) {
-                    node.setAttribute(ATTR_FILESIZE, ""+filesize);
+                if (filesize >= 0) {
+                    node.setAttribute(ATTR_FILESIZE, "" + filesize);
                 }
             }
 
@@ -289,8 +293,8 @@ public class XmlOutputHandler extends OutputHandler {
                 && (entry.getDescription().length() > 0)) {
             Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, node);
             descNode.setAttribute("encoded", "true");
-            descNode.appendChild(XmlUtil.makeCDataNode(doc, entry.getDescription(),
-                                                       true));
+            descNode.appendChild(XmlUtil.makeCDataNode(doc,
+                    entry.getDescription(), true));
         }
         getMetadataManager().addMetadata(request, entry, zos, doc, node);
         entry.getTypeHandler().addToEntryNode(entry, node);
@@ -314,7 +318,8 @@ public class XmlOutputHandler extends OutputHandler {
     private Element getGroupTag(Request request, Entry group, Document doc,
                                 Element parent)
             throws Exception {
-        Element node = getEntryTag(request, group, null, doc, parent, false, true);
+        Element node = getEntryTag(request, group, null, doc, parent, false,
+                                   true);
         boolean canDoNew = getAccessManager().canDoAction(request, group,
                                Permission.ACTION_NEW);
         boolean canDoUpload = getAccessManager().canDoAction(request, group,

@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
@@ -67,7 +68,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -82,7 +83,7 @@ public class HtmlOutputHandler extends OutputHandler {
     //OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, 
     OutputType.TYPE_FORSEARCH, "", ICON_TIMELINE);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_GRID =
         new OutputType("Grid Layout", "html.grid",
     //                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -104,6 +105,7 @@ public class HtmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_INLINE =
         new OutputType("inline", OutputType.TYPE_INTERNAL);
 
+    /** _more_          */
     public static final OutputType OUTPUT_MAPINFO =
         new OutputType("mapinfo", OutputType.TYPE_INTERNAL);
 
@@ -121,46 +123,46 @@ public class HtmlOutputHandler extends OutputHandler {
         new OutputType("linksxml", OutputType.TYPE_INTERNAL);
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_DATA = "data";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_EVENT = "event";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_WIKI_SECTION = "wiki-section";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_WIKI_URL = "wiki-url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_IMAGE = "image";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LINK = "link";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_START = "start";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TITLE = "title";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_END = "end";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_EARLIESTEND = "earliestEnd";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ISDURATION = "isDuration";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LATESTSTART = "latestStart";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COLOR = "color";
 
 
@@ -211,10 +213,19 @@ public class HtmlOutputHandler extends OutputHandler {
         if (entry.isDummy() || !entry.isGroup()) {
             return "";
         }
-        return makeHtmlHeader(request, entry,"Change layout");
+        return makeHtmlHeader(request, entry, "Change layout");
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param title _more_
+     *
+     * @return _more_
+     */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
         OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_GRID,
                 OUTPUT_TIMELINE, CalendarOutputHandler.OUTPUT_CALENDAR };
@@ -273,21 +284,29 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
-    public Result getMapInfo(Request request, Entry entry)
-            throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result getMapInfo(Request request, Entry entry) throws Exception {
         String html;
         String wikiTemplate = getWikiText(request, entry);
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(request, entry,
-                                                       wikiTemplate);
-            html =  getRepository().translate(request, wiki);
+                              wikiTemplate);
+            html = getRepository().translate(request, wiki);
         } else {
             html = getMapManager().makeInfoBubble(request, entry);
         }
 
         StringBuffer xml = new StringBuffer("<content>\n");
-        XmlUtil.appendCdata(xml,
-                            getRepository().translate(request, html));
+        XmlUtil.appendCdata(xml, getRepository().translate(request, html));
         xml.append("\n</content>");
         return new Result("", xml, "text/xml");
     }
@@ -462,15 +481,25 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
-    public String getAttachmentsHtml(Request request, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getAttachmentsHtml(Request request, Entry entry)
+            throws Exception {
         StringBuffer metadataSB = new StringBuffer();
-        getMetadataManager().decorateEntry(request, entry, metadataSB,
-                                           false);
+        getMetadataManager().decorateEntry(request, entry, metadataSB, false);
         String metataDataHtml = metadataSB.toString();
         if (metataDataHtml.length() > 0) {
             return HtmlUtil.makeShowHideBlock(msg("Attachments"),
-                                              "<div class=\"description\">" + metadataSB
-                                              + "</div>", false);
+                    "<div class=\"description\">" + metadataSB + "</div>",
+                    false);
         }
         return "";
     }
@@ -509,7 +538,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
-        } else if (output.equals(OUTPUT_HTML)||output.equals(OUTPUT_TREE)) {
+        } else if (output.equals(OUTPUT_HTML) || output.equals(OUTPUT_TREE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else {
             return super.getMimeType(output);
@@ -919,7 +948,8 @@ public class HtmlOutputHandler extends OutputHandler {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
-        entry.getTypeHandler().addToInformationTabs(request, entry, tabTitles, tabContents);
+        entry.getTypeHandler().addToInformationTabs(request, entry,
+                tabTitles, tabContents);
 
         tabTitles.add(msg("Comments"));
         StringBuffer comments = getCommentBlock(request, entry, true);
@@ -927,7 +957,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(comments);
 
         String attachments = getAttachmentsHtml(request, entry);
-        if(attachments.length()>0) {
+        if (attachments.length() > 0) {
             tabTitles.add(msg("Attachments"));
             tabContents.add(attachments);
         }
@@ -1301,7 +1331,9 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String wikiTemplate = null;
         //If the user specifically selected an output listing then don't do the wiki text
-        if (!request.exists(ARG_OUTPUT) || Misc.equals(request.getString(ARG_OUTPUT,""),OUTPUT_HTML.getId())) {
+        if ( !request.exists(ARG_OUTPUT)
+                || Misc.equals(request.getString(ARG_OUTPUT, ""),
+                               OUTPUT_HTML.getId())) {
             wikiTemplate = getWikiText(request, group);
         }
 
@@ -1411,17 +1443,18 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     private String getWikiText(Request request, Entry entry)
             throws Exception {
-        String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request, entry);
-        if(wikiTemplate!=null) {
+        String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
+                                  entry);
+        if (wikiTemplate != null) {
             return wikiTemplate;
         }
 
-        PageStyle pageStyle   = request.getPageStyle(entry);
+        PageStyle pageStyle = request.getPageStyle(entry);
         if (TypeHandler.isWikiText(entry.getDescription())) {
             return entry.getDescription();
         }
         wikiTemplate = pageStyle.getWikiTemplate(entry);
-        if(wikiTemplate!=null) {
+        if (wikiTemplate != null) {
             return wikiTemplate;
         }
         return null;

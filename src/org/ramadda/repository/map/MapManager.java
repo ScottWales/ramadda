@@ -1,21 +1,22 @@
 /*
- * Copyright 2008-2011 Jeff McWhirter/ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.map;
 
@@ -59,7 +60,9 @@ import java.util.List;
  */
 public class MapManager extends RepositoryManager {
 
+    /** _more_          */
     public static final int EARTH_ENTRIES_WIDTH = 150;
+
     /**
      * _more_
      *
@@ -149,7 +152,7 @@ public class MapManager extends RepositoryManager {
             //            mapInfo.addHtml(HtmlUtil.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
             mapInfo.addHtml(HtmlUtil.importJS(fileUrl("/ramaddamap.js")));
             mapInfo.addHtml("\n");
-            mapInfo.addHtml( HtmlUtil.cssLink( fileUrl("/ramaddamap.css")));
+            mapInfo.addHtml(HtmlUtil.cssLink(fileUrl("/ramaddamap.css")));
             mapInfo.addHtml("\n");
             request.putExtraProperty("initmap", "");
         }
@@ -179,9 +182,13 @@ public class MapManager extends RepositoryManager {
      */
     public boolean isGoogleEarthEnabled(Request request) {
         //Exclude iphone, android and linux
-        if(request.isMobile()) return false;
+        if (request.isMobile()) {
+            return false;
+        }
         String userAgent = request.getUserAgent("").toLowerCase();
-        if(userAgent.indexOf("linux")>=0) return false;
+        if (userAgent.indexOf("linux") >= 0) {
+            return false;
+        }
         return getGoogleMapsKey(request) != null;
     }
 
@@ -208,10 +215,10 @@ public class MapManager extends RepositoryManager {
             }
             geKeys = tmpKeys;
         }
-        String hostname = request.getServerName();
-        int    port     = request.getServerPort();
+        String hostname         = request.getServerName();
+        int    port             = request.getServerPort();
         String hostnameWithPort = hostname + ":" + port;
-        for (String h : new String[] {hostnameWithPort, hostname}) {
+        for (String h : new String[] { hostnameWithPort, hostname }) {
             // System.err.println("hostname:" + hostname);
             for (List<String> tuple : geKeys) {
                 String server = tuple.get(0);
@@ -320,6 +327,7 @@ public class MapManager extends RepositoryManager {
     public void getGoogleEarth(Request request, List<Entry> entries,
                                StringBuffer sb, int width, int height)
             throws Exception {
+
         sb.append(
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td>");
 
@@ -343,21 +351,26 @@ public class MapManager extends RepositoryManager {
                 categories.add(category);
             }
             String call = id + ".entryClicked("
-                + HtmlUtil.squote(entry.getId()) + ");";
+                          + HtmlUtil.squote(entry.getId()) + ");";
             catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_NAV) +
-                                       ""/*HtmlUtil.onMouseClick(call)*/));
+                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_NAV)
+                                       + "" /*HtmlUtil.onMouseClick(call)*/));
             String iconUrl = getEntryManager().getIconUrl(request, entry);
-            catSB.append(HtmlUtil.href(
-                                       getEntryManager().getEntryURL(request, entry),
-                                       HtmlUtil.img(iconUrl,msg("Click to view entry details"))));
+            catSB.append(
+                HtmlUtil.href(
+                    getEntryManager().getEntryURL(request, entry),
+                    HtmlUtil.img(
+                        iconUrl, msg("Click to view entry details"))));
             catSB.append(HtmlUtil.space(2));
             double lat = entry.getSouth();
             double lon = entry.getEast();
             //            catSB.append("<a href=\"javascript:" + call +"\">"
             //                         + entry.getName() + "</a><br>");
             //HtmlUtil.onMouseClick(call);
-            catSB.append(HtmlUtil.href("javascript:" + call, entry.getName(),HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
+            catSB.append(
+                HtmlUtil.href(
+                    "javascript:" + call, entry.getName(),
+                    HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
             catSB.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
             String  pointsString = "null";
             boolean hasPolygon   = false;
@@ -402,7 +415,8 @@ public class MapManager extends RepositoryManager {
                                + "," + entry.getWest() + ")";
             }
 
-            String desc = HtmlUtil.img(iconUrl) + getEntryManager().getEntryLink(request, entry);
+            String desc = HtmlUtil.img(iconUrl)
+                          + getEntryManager().getEntryLink(request, entry);
             desc = desc.replace("\r", " ");
             desc = desc.replace("\n", " ");
             desc = desc.replace("\"", "\\\"");
@@ -416,19 +430,23 @@ public class MapManager extends RepositoryManager {
                         HtmlUtil.squote(entry.getId()),
                         HtmlUtil.squote(entry.getName()),
                         HtmlUtil.squote(desc), "" + lat, "" + lon) + ","
-                    + HtmlUtil.squote(request.getAbsoluteUrl(iconUrl)) + "," + pointsString));
+                            + HtmlUtil.squote(
+                                request.getAbsoluteUrl(iconUrl)) + ","
+                                    + pointsString));
             js.append("\n");
         }
 
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, 
-                                HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES) +
-                                HtmlUtil.style("max-height:" + height +"px; overflow-y: auto;")));
+        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES)
+                                + HtmlUtil.style("max-height:" + height
+                                    + "px; overflow-y: auto;")));
 
-        boolean doToggle = entries.size()>5 &&categories.size()>1;
+        boolean doToggle = (entries.size() > 5) && (categories.size() > 1);
         for (String category : categories) {
             StringBuffer catSB = catMap.get(category);
-            if(doToggle) {
-                sb.append(HtmlUtil.makeShowHideBlock(category, catSB.toString(), true));
+            if (doToggle) {
+                sb.append(HtmlUtil.makeShowHideBlock(category,
+                        catSB.toString(), true));
             } else {
                 sb.append(HtmlUtil.b(category));
                 sb.append(HtmlUtil.br());
@@ -442,6 +460,7 @@ public class MapManager extends RepositoryManager {
         sb.append(mapSB);
         sb.append(HtmlUtil.script(js.toString()));
         sb.append("</td></tr></table>");
+
     }
 
 
@@ -488,7 +507,7 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        return  info.toString();
+        return info.toString();
 
 
     }

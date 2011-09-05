@@ -1,22 +1,22 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.database;
 
@@ -25,7 +25,7 @@ import ucar.unidata.sql.SqlUtil;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -71,9 +71,10 @@ public class Tables {
                                                        + ".resource_type";
 
         /** _more_ */
-        public static final String COL_MD5 = NAME     + ".md5";
+        public static final String COL_MD5 = NAME + ".md5";
 
-        public static final String COL_FILESIZE = NAME  + ".filesize";
+        /** _more_          */
+        public static final String COL_FILESIZE = NAME + ".filesize";
 
         /** _more_ */
         public static final String COL_DATATYPE = NAME + ".datatype";
@@ -81,6 +82,7 @@ public class Tables {
         /** _more_ */
         public static final String COL_CREATEDATE = NAME + ".createdate";
 
+        /** _more_          */
         public static final String COL_CHANGEDATE = NAME + ".changedate";
 
         /** _more_ */
@@ -101,18 +103,20 @@ public class Tables {
         /** _more_ */
         public static final String COL_WEST = NAME + ".west";
 
+        /** _more_          */
         public static final String COL_ALTITUDETOP = NAME + ".altitudetop";
-        public static final String COL_ALTITUDEBOTTOM = NAME + ".altitudebottom";
+
+        /** _more_          */
+        public static final String COL_ALTITUDEBOTTOM = NAME
+                                                        + ".altitudebottom";
 
         /** _more_ */
         public static final String[] ARRAY = new String[] {
             COL_ID, COL_TYPE, COL_NAME, COL_DESCRIPTION, COL_PARENT_GROUP_ID,
-            COL_USER_ID, COL_RESOURCE, COL_RESOURCE_TYPE, COL_MD5, COL_FILESIZE, COL_DATATYPE,
-            COL_CREATEDATE, COL_CHANGEDATE, COL_FROMDATE, COL_TODATE, COL_SOUTH, COL_NORTH,
-            COL_EAST, 
-            COL_WEST,
-            COL_ALTITUDETOP,
-            COL_ALTITUDEBOTTOM
+            COL_USER_ID, COL_RESOURCE, COL_RESOURCE_TYPE, COL_MD5,
+            COL_FILESIZE, COL_DATATYPE, COL_CREATEDATE, COL_CHANGEDATE,
+            COL_FROMDATE, COL_TODATE, COL_SOUTH, COL_NORTH, COL_EAST,
+            COL_WEST, COL_ALTITUDETOP, COL_ALTITUDEBOTTOM
         };
 
         /** _more_ */
@@ -370,12 +374,14 @@ public class Tables {
         /** _more_ */
         public static final String COL_ISGUEST = NAME + ".isguest";
 
+        /** _more_          */
         public static final String COL_PROPERTIES = NAME + ".properties";
 
         /** _more_ */
         public static final String[] ARRAY = new String[] {
             COL_ID, COL_NAME, COL_EMAIL, COL_QUESTION, COL_ANSWER,
-            COL_PASSWORD, COL_ADMIN, COL_LANGUAGE, COL_TEMPLATE, COL_ISGUEST, COL_PROPERTIES
+            COL_PASSWORD, COL_ADMIN, COL_LANGUAGE, COL_TEMPLATE, COL_ISGUEST,
+            COL_PROPERTIES
         };
 
 

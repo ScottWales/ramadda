@@ -1,31 +1,32 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.type;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.metadata.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
@@ -194,16 +195,17 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
+
         //        System.err.println("getSynthIds " + mainEntry);
         List<String> ids    = new ArrayList<String>();
         Object[]     values = mainEntry.getValues();
         if (values == null) {
             return ids;
         }
-        int  max  = request.get(ARG_MAX, VIEW_MAX_ROWS);
-        int  skip = request.get(ARG_SKIP, 0);
+        int  max     = request.get(ARG_MAX, VIEW_MAX_ROWS);
+        int  skip    = request.get(ARG_SKIP, 0);
 
-        long t1   = System.currentTimeMillis();
+        long t1      = System.currentTimeMillis();
         File rootDir = new File((String) values[0]);
         if ( !rootDir.exists()) {
             throw new RepositoryUtil.MissingEntryException(
@@ -295,6 +297,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         long t2 = System.currentTimeMillis();
         //        System.err.println ("Time:" + (t2-t1) + " ids:" + ids.size());
         return ids;
+
 
     }
 
@@ -459,12 +462,13 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
                     false, false);
         }
 
-        entry.initEntry(name, "", parent, getUserManager().getLocalFileUser(),
+        entry.initEntry(name, "", parent,
+                        getUserManager().getLocalFileUser(),
                         new Resource(targetFile, (targetFile.isDirectory()
                 ? Resource.TYPE_LOCAL_DIRECTORY
                 : Resource.TYPE_LOCAL_FILE)), "", targetFile.lastModified(),
-                        targetFile.lastModified(),
-                targetFile.lastModified(), targetFile.lastModified(), null);
+                targetFile.lastModified(), targetFile.lastModified(),
+                targetFile.lastModified(), null);
 
         if (templateEntry != null) {
             entry.initWith(templateEntry);

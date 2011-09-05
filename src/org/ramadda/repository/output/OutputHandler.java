@@ -1,37 +1,38 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * Copyright 2010- ramadda.org
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.Element;
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.BufferMapList;
+
+import org.ramadda.util.WikiUtil;
+
+
+import org.w3c.dom.Element;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -46,8 +47,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-import org.ramadda.util.WikiUtil;
-
 import java.io.*;
 
 import java.io.File;
@@ -58,10 +57,11 @@ import java.net.*;
 
 import java.text.SimpleDateFormat;
 
-import java.util.GregorianCalendar;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -74,7 +74,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -94,6 +94,7 @@ public class OutputHandler extends RepositoryManager {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_INFORMATION);
 
+    /** _more_          */
     public static final OutputType OUTPUT_TREE =
         new OutputType("Information", "tree.html",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -135,6 +136,11 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean allowSpiders() {
         return false;
     }
@@ -826,16 +832,16 @@ public class OutputHandler extends RepositoryManager {
                                    String type, Entry entry, boolean addClear)
             throws Exception {
 
-        String selectorId =  elementId+"_" + type;
+        String selectorId = elementId + "_" + type;
         String event = HtmlUtil.call("selectInitialClick",
                                      HtmlUtil.comma("event",
-                                                    HtmlUtil.squote(selectorId),
-                                                    HtmlUtil.squote(elementId),
-                                                    HtmlUtil.squote("" + allEntries),
-                                                    HtmlUtil.squote(type)) + ","
-                                     + ((entry != null)
-                                        ? HtmlUtil.squote(entry.getId())
-                                        : "null"));
+                                         HtmlUtil.squote(selectorId),
+                                         HtmlUtil.squote(elementId),
+                                         HtmlUtil.squote("" + allEntries),
+                                         HtmlUtil.squote(type)) + ","
+                                             + ((entry != null)
+                ? HtmlUtil.squote(entry.getId())
+                : "null"));
         String clearEvent = HtmlUtil.call("clearSelect",
                                           HtmlUtil.squote(selectorId));
         String link = HtmlUtil.mouseClickHref(event, label,
@@ -971,7 +977,7 @@ public class OutputHandler extends RepositoryManager {
         link = new Link(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                          entry, ARG_OUTPUT, output, ARG_NEXT,
                                          "true"), iconUrl(ICON_RIGHT),
-                        "View Next Entry");
+                                             "View Next Entry");
         link.setLinkType(OutputType.TYPE_VIEW);
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
         links.add(link);
@@ -1027,7 +1033,7 @@ public class OutputHandler extends RepositoryManager {
             "Sort by date descending"
         };
 
-        if(request.isMobile()) {
+        if (request.isMobile()) {
             sb.append(HtmlUtil.br());
         }
         sb.append(HtmlUtil.span(msgLabel("Sort"),
@@ -1364,21 +1370,24 @@ public class OutputHandler extends RepositoryManager {
             String crumbs = "";
             if (showCrumbs) {
                 crumbs = getEntryManager().getBreadCrumbs(request,
-                                                          (hideParents||true
-                                                           ? entry.getParentEntry()
-                                                           : entry), null, 60);
+                        ((hideParents || true)
+                         ? entry.getParentEntry()
+                         : entry), null, 60);
                 if (hideParents) {
-                    crumbs = HtmlUtil.makeToggleInline("",
-                                                       crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR), false);
+                    crumbs = HtmlUtil.makeToggleInline(
+                        "", crumbs
+                        + HtmlUtil.pad(
+                            Repository.BREADCRUMB_SEPARATOR), false);
                 } else {
-                    crumbs = crumbs + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR);
+                    crumbs = crumbs
+                             + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR);
                 }
-                
+
             }
 
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                                                entry, entry.getLabel(), null,
-                                                                true, crumbs);
+                                      entry, entry.getLabel(), null, true,
+                                      crumbs);
             entryLink.setLink(cbxSB + entryLink.getLink());
             decorateEntryRow(request, entry, sb, entryLink, rowId, "");
         }
@@ -1457,7 +1466,7 @@ public class OutputHandler extends RepositoryManager {
 
         }
 
-        if(request.isMobile()) {
+        if (request.isMobile()) {
             sb.append("<td align=right><div class=entryrowlabel>");
         } else {
             sb.append("<td align=right width=200><div class=entryrowlabel>");
@@ -1667,8 +1676,8 @@ public class OutputHandler extends RepositoryManager {
         }
 
         String url = entry.getResource().getPath();
-        if(url!=null) {
-            if(url.startsWith("ftp:") || url.startsWith("http:")) {
+        if (url != null) {
+            if (url.startsWith("ftp:") || url.startsWith("http:")) {
                 return url;
             }
         }
@@ -1698,7 +1707,7 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
         StringBuffer  sb       = new StringBuffer();
         List<Comment> comments = getEntryManager().getComments(request,
-                                                               entry);
+                                     entry);
         if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
             sb.append(getEntryManager().getCommentHtml(request, entry));
         }
@@ -1765,10 +1774,24 @@ public class OutputHandler extends RepositoryManager {
         }
     }
 
+    /** _more_          */
     public static final String CLASS_TAB_CONTENT = "tab_content";
-    public static final String CLASS_TAB_CONTENTS = "tab_contents";
-    private static int tabCnt=0;
 
+    /** _more_          */
+    public static final String CLASS_TAB_CONTENTS = "tab_contents";
+
+    /** _more_          */
+    private static int tabCnt = 0;
+
+    /**
+     * _more_
+     *
+     * @param titles _more_
+     * @param contents _more_
+     * @param skipEmpty _more_
+     *
+     * @return _more_
+     */
     public static String makeTabs(List titles, List contents,
                                   boolean skipEmpty) {
         return makeTabs(titles, contents, skipEmpty, CLASS_TAB_CONTENT);
@@ -1790,28 +1813,46 @@ public class OutputHandler extends RepositoryManager {
                         CLASS_TAB_CONTENTS);
     }
 
-    public static String makeTabs(List titles, List tabs,
-                                  boolean skipEmpty, String tabContentClass,
+    /**
+     * _more_
+     *
+     * @param titles _more_
+     * @param tabs _more_
+     * @param skipEmpty _more_
+     * @param tabContentClass _more_
+     * @param wrapperClass _more_
+     *
+     * @return _more_
+     */
+    public static String makeTabs(List titles, List tabs, boolean skipEmpty,
+                                  String tabContentClass,
                                   String wrapperClass) {
         StringBuffer tabHtml = new StringBuffer();
         String       tabId   = "tabId" + (tabCnt++);
         tabHtml.append("\n\n");
-        tabHtml.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                     HtmlUtil.id(tabId)));
+        tabHtml.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.id(tabId)));
         tabHtml.append(HtmlUtil.open(HtmlUtil.TAG_UL));
         int cnt = 1;
-        for(int i=0;i<titles.size();i++) {
-            String title = titles.get(i).toString();
+        for (int i = 0; i < titles.size(); i++) {
+            String title       = titles.get(i).toString();
             String tabContents = tabs.get(i).toString();
-            if(skipEmpty && (tabContents==null || tabContents.length()==0)) continue;
-            tabHtml.append("<li><a href=\"#" + tabId + "-" + (cnt++)
-                           + "\">" + title + "</a></li>");
+            if (skipEmpty
+                    && ((tabContents == null)
+                        || (tabContents.length() == 0))) {
+                continue;
+            }
+            tabHtml.append("<li><a href=\"#" + tabId + "-" + (cnt++) + "\">"
+                           + title + "</a></li>");
         }
         tabHtml.append(HtmlUtil.close(HtmlUtil.TAG_UL));
         cnt = 1;
-        for(int i=0;i<titles.size();i++) {
+        for (int i = 0; i < titles.size(); i++) {
             String tabContents = tabs.get(i).toString();
-            if(skipEmpty && (tabContents==null || tabContents.length()==0)) continue;
+            if (skipEmpty
+                    && ((tabContents == null)
+                        || (tabContents.length() == 0))) {
+                continue;
+            }
             tabHtml.append(HtmlUtil.div(tabContents,
                                         HtmlUtil.id(tabId + "-" + (cnt++))));
             tabHtml.append("\n");
@@ -1819,10 +1860,8 @@ public class OutputHandler extends RepositoryManager {
 
         tabHtml.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
         tabHtml.append("\n");
-        tabHtml.append(
-                       HtmlUtil.script(
-                        "\njQuery(function(){\njQuery('#" + tabId
-                        + "').tabs();\n});\n"));
+        tabHtml.append(HtmlUtil.script("\njQuery(function(){\njQuery('#"
+                                       + tabId + "').tabs();\n});\n"));
         tabHtml.append("\n\n");
         return tabHtml.toString();
     }
@@ -1841,8 +1880,8 @@ public class OutputHandler extends RepositoryManager {
      * @return _more_
      */
     public static String makeTabsx(List titles, List contents,
-                                  boolean skipEmpty, String tabContentClass,
-                                  String wrapperClass) {
+                                   boolean skipEmpty, String tabContentClass,
+                                   String wrapperClass) {
 
         String       id        = "tab_" + (tabCnt++);
         String       ids       = "tab_" + (tabCnt++) + "_ids";
@@ -1938,7 +1977,7 @@ public class OutputHandler extends RepositoryManager {
      * @return _more_
      */
     public String htmlInput(Request request, String arg, String dflt,
-                             int width) {
+                            int width) {
         return HtmlUtil.input(arg, request.getString(arg, dflt),
                               HtmlUtil.attr(HtmlUtil.ATTR_SIZE, "" + width));
     }
@@ -1957,13 +1996,27 @@ public class OutputHandler extends RepositoryManager {
         return htmlInput(request, arg, dflt, 5);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param parent _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean canAddTo(Request request, Entry parent) throws Exception {
         return getEntryManager().canAddTo(request, parent);
     }
 
 
     /**
-     * Did the user choose an entry to publish to 
+     * Did the user choose an entry to publish to
+     *
+     * @param request _more_
+     *
+     * @return _more_
      */
     public boolean doingPublish(Request request) {
         return request.defined(ARG_PUBLISH_ENTRY + "_hidden");
@@ -1971,33 +2024,44 @@ public class OutputHandler extends RepositoryManager {
 
     /**
      * If the user is not anonymous then add the "Publish to" widget.
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param header _more_
+     *
+     * @throws Exception _more_
      */
-    public void addPublishWidget(Request request, Entry entry, StringBuffer sb, String header) throws Exception { 
+    public void addPublishWidget(Request request, Entry entry,
+                                 StringBuffer sb, String header)
+            throws Exception {
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
-            sb.append(HtmlUtil.hidden(ARG_PUBLISH_ENTRY + "_hidden",
-                                             "",
-                                             HtmlUtil.id(ARG_PUBLISH_ENTRY
-                                                 + "_hidden")));
-            sb.append(
-                      HtmlUtil.row(HtmlUtil.cols("",
-                                                 header)));
+            sb.append(HtmlUtil.hidden(ARG_PUBLISH_ENTRY + "_hidden", "",
+                                      HtmlUtil.id(ARG_PUBLISH_ENTRY
+                                          + "_hidden")));
+            sb.append(HtmlUtil.row(HtmlUtil.cols("", header)));
 
             String select = OutputHandler.getSelect(request,
                                 ARG_PUBLISH_ENTRY, "Select folder", false,
                                 null, entry);
-            String addMetadata=  HtmlUtil.checkbox(
-                                                   ARG_METADATA_ADD, HtmlUtil.VALUE_TRUE,
-                                                   request.get(ARG_METADATA_ADD, false)) + 
-                msg("Add properties");
-            sb.append(HtmlUtil.formEntry(msgLabel("Folder"),
-                    HtmlUtil.disabledInput(ARG_PUBLISH_ENTRY, "",
-                                           HtmlUtil.id(ARG_PUBLISH_ENTRY)
-                                           + HtmlUtil.SIZE_60) + select+HtmlUtil.space(2) +addMetadata));
+            String addMetadata = HtmlUtil.checkbox(ARG_METADATA_ADD,
+                                     HtmlUtil.VALUE_TRUE,
+                                     request.get(ARG_METADATA_ADD,
+                                         false)) + msg("Add properties");
+            sb.append(
+                HtmlUtil.formEntry(
+                    msgLabel("Folder"),
+                    HtmlUtil.disabledInput(
+                        ARG_PUBLISH_ENTRY, "",
+                        HtmlUtil.id(ARG_PUBLISH_ENTRY)
+                        + HtmlUtil.SIZE_60) + select + HtmlUtil.space(2)
+                                            + addMetadata));
 
             sb.append(HtmlUtil.formEntry(msgLabel("Name"),
-                    htmlInput(request, ARG_PUBLISH_NAME, "", 30)));
-            
+                                         htmlInput(request, ARG_PUBLISH_NAME,
+                                             "", 30)));
+
         }
     }
 

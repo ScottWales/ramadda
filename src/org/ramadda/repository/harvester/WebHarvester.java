@@ -1,33 +1,34 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.harvester;
 
-
-import org.w3c.dom.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.SqlUtil;
@@ -139,7 +140,8 @@ public class WebHarvester extends Harvester {
     protected void init(Element element) throws Exception {
         super.init(element);
         rootDir = new File(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""));
-        List children = XmlUtil.findChildren(element, HarvesterEntry.TAG_URLENTRY);
+        List children = XmlUtil.findChildren(element,
+                                             HarvesterEntry.TAG_URLENTRY);
         urlEntries = new ArrayList<HarvesterEntry>();
         for (int i = 0; i < children.size(); i++) {
             Element node = (Element) children.get(i);
@@ -148,6 +150,11 @@ public class WebHarvester extends Harvester {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDescription() {
         return "URL";
     }
@@ -197,13 +204,13 @@ public class WebHarvester extends Harvester {
         HarvesterEntry lastEntry = null;
         while (true) {
             System.err.println("loop:" + cnt);
-            String urlArg = ATTR_URL+cnt;
+            String urlArg = ATTR_URL + cnt;
             if ( !request.exists(urlArg)) {
-                System.err.println("done cnt:" +cnt);
+                System.err.println("done cnt:" + cnt);
                 break;
             }
             if ( !request.defined(urlArg)) {
-                System.err.println(urlArg + " not defined cnt = " +cnt);
+                System.err.println(urlArg + " not defined cnt = " + cnt);
                 cnt++;
                 continue;
             }
@@ -214,13 +221,12 @@ public class WebHarvester extends Harvester {
             groupName = groupName.replace(" > ", "/");
             groupName = groupName.replace(">", "/");
 
-            System.err.println("cnt:" +cnt);
+            System.err.println("cnt:" + cnt);
             System.err.println(groupName + " " + baseGroupId);
-            lastEntry =
-                new HarvesterEntry(request.getUnsafeString(urlArg, ""), 
-                                   request.getUnsafeString(ATTR_NAME + cnt,
-                                                           ""), request.getUnsafeString(ATTR_DESCRIPTION
-                                                                                        + cnt, ""), groupName, baseGroupId);
+            lastEntry = new HarvesterEntry(request.getUnsafeString(urlArg,
+                    ""), request.getUnsafeString(ATTR_NAME + cnt, ""),
+                         request.getUnsafeString(ATTR_DESCRIPTION + cnt, ""),
+                         groupName, baseGroupId);
             urlEntries.add(lastEntry);
             cnt++;
         }
@@ -229,9 +235,16 @@ public class WebHarvester extends Harvester {
 
 
 
-    public void addToEditForm(Request request, StringBuffer superSB) throws Exception {
-
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param superSB _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToEditForm(Request request, StringBuffer superSB)
+            throws Exception {}
 
     /**
      * _more_
@@ -250,10 +263,12 @@ public class WebHarvester extends Harvester {
         formSB.append(HtmlUtil.formTableClose());
         superSB.append(HtmlUtil.formTable());
         super.createEditForm(request, superSB);
-        superSB.append(HtmlUtil.formEntry(msgLabel("Entry type"),
-                                          repository.makeTypeSelect(request,
-                                              false, getTypeHandler().getType(),
-                                                  false, null)));
+        superSB.append(
+            HtmlUtil.formEntry(
+                msgLabel("Entry type"),
+                repository.makeTypeSelect(
+                    request, false, getTypeHandler().getType(), false,
+                    null)));
 
 
         superSB.append(HtmlUtil.formEntry(msgLabel("User"),
@@ -276,7 +291,7 @@ public class WebHarvester extends Harvester {
         sb.append("Enter urls and the folders to add them to.");
 
 
-        int cnt = 1;
+        int          cnt = 1;
 
         StringBuffer entrySB;
         for (HarvesterEntry urlEntry : urlEntries) {
@@ -294,7 +309,7 @@ public class WebHarvester extends Harvester {
 
             entrySB.append(HtmlUtil.formEntry(msgLabel("Fetch URL"),
                     urlInput));
-            addEntryToForm(request, entrySB, urlEntry,cnt);
+            addEntryToForm(request, entrySB, urlEntry, cnt);
             entrySB.append(HtmlUtil.formTableClose());
             sb.append(HtmlUtil.makeShowHideBlock("URL #" + cnt,
                     entrySB.toString(), true));
@@ -344,59 +359,86 @@ public class WebHarvester extends Harvester {
     }
 
 
+    /** _more_          */
     public static final String templateHelp =
         "Use macros: ${filename}, ${fromdate}, ${todate}, etc.";
 
 
 
-    protected void addEntryToForm(Request request, StringBuffer  entrySB, HarvesterEntry urlEntry, int cnt) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entrySB _more_
+     * @param urlEntry _more_
+     * @param cnt _more_
+     *
+     * @throws Exception _more_
+     */
+    protected void addEntryToForm(Request request, StringBuffer entrySB,
+                                  HarvesterEntry urlEntry, int cnt)
+            throws Exception {
         entrySB.append(
-                       RepositoryManager.tableSubHeader(
-                                                        "Then create an entry with"));
+            RepositoryManager.tableSubHeader("Then create an entry with"));
 
-        entrySB.append(HtmlUtil.formEntry(msgLabel("Name"),
-                                          HtmlUtil.input(ATTR_NAME + cnt, urlEntry.name,
-                                                         HtmlUtil.SIZE_80
-                                                         + HtmlUtil.title(templateHelp))));
-        entrySB.append(HtmlUtil.formEntry(msgLabel("Description"),
-                                          HtmlUtil.input(ATTR_DESCRIPTION + cnt,
-                                                         urlEntry.description,
-                                                         HtmlUtil.SIZE_80
-                                                         + HtmlUtil.title(templateHelp))));
+        entrySB.append(
+            HtmlUtil.formEntry(
+                msgLabel("Name"),
+                HtmlUtil.input(
+                    ATTR_NAME + cnt, urlEntry.name,
+                    HtmlUtil.SIZE_80 + HtmlUtil.title(templateHelp))));
+        entrySB.append(
+            HtmlUtil.formEntry(
+                msgLabel("Description"),
+                HtmlUtil.input(
+                    ATTR_DESCRIPTION + cnt, urlEntry.description,
+                    HtmlUtil.SIZE_80 + HtmlUtil.title(templateHelp))));
 
         addBaseFolderToForm(request, entrySB, urlEntry, cnt);
 
         String fieldId = ATTR_GROUP + cnt;
         entrySB.append(
-                       HtmlUtil.formEntry(
-                                          msgLabel("Sub-Folder Template"),
-                                          HtmlUtil.input(
-                                                         fieldId, urlEntry.group,
-                                                         HtmlUtil.SIZE_80 + HtmlUtil.id(fieldId)
-                                                         + HtmlUtil.title(templateHelp))));
+            HtmlUtil.formEntry(
+                msgLabel("Sub-Folder Template"),
+                HtmlUtil.input(
+                    fieldId, urlEntry.group,
+                    HtmlUtil.SIZE_80 + HtmlUtil.id(fieldId)
+                    + HtmlUtil.title(templateHelp))));
 
     }
 
 
-    protected void addBaseFolderToForm(Request request, StringBuffer  entrySB, HarvesterEntry urlEntry, int cnt) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entrySB _more_
+     * @param urlEntry _more_
+     * @param cnt _more_
+     *
+     * @throws Exception _more_
+     */
+    protected void addBaseFolderToForm(Request request, StringBuffer entrySB,
+                                       HarvesterEntry urlEntry, int cnt)
+            throws Exception {
         String baseGroupFieldId = ATTR_BASEGROUP + cnt;
         Entry  baseGroup        = ((urlEntry.baseGroupId.length() == 0)
                                    ? null
                                    : getEntryManager().findGroup(request,
-                                                                 urlEntry.baseGroupId));
+                                       urlEntry.baseGroupId));
         String baseSelect = OutputHandler.getGroupSelect(request,
-                                                         baseGroupFieldId);
+                                baseGroupFieldId);
         entrySB.append(HtmlUtil.hidden(baseGroupFieldId + "_hidden",
                                        urlEntry.baseGroupId,
                                        HtmlUtil.id(baseGroupFieldId
-                                                   + "_hidden")));
-        entrySB.append(HtmlUtil.formEntry(msgLabel("Base Folder"),
-                                          HtmlUtil.disabledInput(baseGroupFieldId,
-                                                                 ((baseGroup != null)
-                                                                  ? baseGroup.getFullName()
-                                                                  : ""), HtmlUtil
-                                                                 .id(baseGroupFieldId) + HtmlUtil
-                                                                 .SIZE_60) + baseSelect));
+                                           + "_hidden")));
+        entrySB.append(
+            HtmlUtil.formEntry(
+                msgLabel("Base Folder"),
+                HtmlUtil.disabledInput(baseGroupFieldId, ((baseGroup != null)
+                ? baseGroup.getFullName()
+                : ""), HtmlUtil.id(baseGroupFieldId)
+                       + HtmlUtil.SIZE_60) + baseSelect));
 
     }
 
@@ -485,23 +527,35 @@ public class WebHarvester extends Harvester {
             if ( !getActive()) {
                 return;
             }
-            if(!processEntry(urlEntry,entries)) {
+            if ( !processEntry(urlEntry, entries)) {
                 break;
             }
         }
         newEntryCnt += entries.size();
-        if(entries.size()>0) {
+        if (entries.size() > 0) {
             getEntryManager().insertEntries(entries, true, true);
         }
     }
 
 
-    protected boolean processEntry(HarvesterEntry urlEntry, List<Entry> entries) throws Exception {
+    /**
+     * _more_
+     *
+     * @param urlEntry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    protected boolean processEntry(HarvesterEntry urlEntry,
+                                   List<Entry> entries)
+            throws Exception {
 
         Entry baseGroup = ((urlEntry.baseGroupId.length() == 0)
                            ? null
                            : getEntryManager().findGroup(null,
-                                                         urlEntry.baseGroupId));
+                               urlEntry.baseGroupId));
         Entry entry = processUrl(urlEntry.url, urlEntry.name,
                                  urlEntry.description, baseGroup,
                                  urlEntry.group);
@@ -511,7 +565,7 @@ public class WebHarvester extends Harvester {
                 statusMessages = new ArrayList<String>();
             }
             String crumbs = getEntryManager().getBreadCrumbs(null, entry,
-                                                             true)[1];
+                                true)[1];
             crumbs = crumbs.replace("class=", "xclass=");
             statusMessages.add(crumbs);
             entryCnt++;
@@ -585,8 +639,8 @@ public class WebHarvester extends Harvester {
 
         //        System.err.println ("WebHarvester: " + getName() +" adding entry: " + name);
         entry.initEntry(name, desc, group, getUser(), resource, "",
-                        createDate.getTime(), createDate.getTime(), fromDate.getTime(),
-                        toDate.getTime(), null);
+                        createDate.getTime(), createDate.getTime(),
+                        fromDate.getTime(), toDate.getTime(), null);
         if (tag.length() > 0) {
             List tags = StringUtil.split(tag, ",", true, true);
             for (int i = 0; i < tags.size(); i++) {

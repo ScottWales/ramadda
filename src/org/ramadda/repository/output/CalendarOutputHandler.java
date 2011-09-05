@@ -1,31 +1,32 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.output;
 
 
-import org.w3c.dom.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
@@ -67,7 +68,7 @@ import java.util.zip.*;
 
 
 /**
- * 
+ *
  *
  *
  * @author RAMADDA Development Team
@@ -385,7 +386,8 @@ public class CalendarOutputHandler extends OutputHandler {
                 label = label.substring(0, 19) + "...";
             }
             String url = HtmlUtil.nobr(getEntryManager().getAjaxLink(request,
-                                                                     entry, label, null, true,null,false).toString());
+                             entry, label, null, true, null,
+                             false).toString());
 
 
             calEntries.add(new CalendarEntry(entryDate, url, entry));
@@ -611,7 +613,7 @@ public class CalendarOutputHandler extends OutputHandler {
             getRepository().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
-            if(request.isMobile()) {
+            if (request.isMobile()) {
                 sb.append("</td></tr><tr valign=top><td>");
             }
 
@@ -642,16 +644,17 @@ public class CalendarOutputHandler extends OutputHandler {
             String[] dayNames = {
                 "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
             };
+
             /**
-               for phrase extraction
-               msg("Sun")
-               msg("Mon")
-               msg("Tue")
-               msg("Wed")
-               msg("Thu")
-               msg("Fri")
-               msg("Sat")
-            */
+             *  for phrase extraction
+             *  msg("Sun")
+             *  msg("Mon")
+             *  msg("Tue")
+             *  msg("Wed")
+             *  msg("Thu")
+             *  msg("Fri")
+             *  msg("Sat")
+             */
             sb.append("<tr>");
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 sb.append("<td width=\"14%\" class=\"calheader\">"
@@ -720,17 +723,17 @@ public class CalendarOutputHandler extends OutputHandler {
      *
      *
      * @version        Enter version here..., Mon, May 3, '10
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class CalendarEntry {
 
-        /** _more_          */
+        /** _more_ */
         Date date;
 
-        /** _more_          */
+        /** _more_ */
         String label;
 
-        /** _more_          */
+        /** _more_ */
         Object dayObject;
 
         /**
@@ -976,7 +979,7 @@ public class CalendarOutputHandler extends OutputHandler {
             getRepository().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
-            if(request.isMobile()) {
+            if (request.isMobile()) {
                 sb.append("</td></tr><tr valign=top><td>");
             }
             request.put(ARG_MONTH, "" + selected[IDX_MONTH]);
