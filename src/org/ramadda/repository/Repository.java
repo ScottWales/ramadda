@@ -5753,6 +5753,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                        ? timeArg
                                        : timeFormat.format(date));
 
+        String inputId = "dateinput" + (HtmlUtil.blockCnt++);
+        
+        
+        String js = "<script>jQuery(function() {$( " + HtmlUtil.squote("#" + inputId) +" ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false });});</script>";
+
+        if(true) {
+            return "\n" + js +"\n" +
+                HtmlUtil.input(name, dateString,
+                               HtmlUtil.SIZE_10 + HtmlUtil.id(inputId)
+                               + HtmlUtil.title(dateHelp));
+        }
+
         return HtmlUtil.input(
             name, dateString,
             HtmlUtil.SIZE_10 + HtmlUtil.id(name)

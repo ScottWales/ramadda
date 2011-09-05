@@ -77,6 +77,7 @@
 
 /*border: 1px solid #aaaaaa; */
 /*jeffmc: background: #cccccc url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x; */
+/*background: #cccccc url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x; */
 
 color: #222222; font-weight: bold; }
 .ui-widget-header a { color: #222222; }
@@ -551,6 +552,14 @@ display: block;  padding: 1em 1.4em; background: none;
  */
 .ui-datepicker { width: 17em; padding: .2em .2em 0; }
 .ui-datepicker .ui-datepicker-header { position:relative; padding:.2em 0; }
+
+/*jeffmc: added these*/
+.ui-datepicker .ui-datepicker-header { 
+background: #cccccc url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x;  }
+.ui-datepicker { border: 1px solid #aaaaaa;}
+
+
+
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { position:absolute; top: 2px; width: 1.8em; height: 1.8em; }
 .ui-datepicker .ui-datepicker-prev-hover, .ui-datepicker .ui-datepicker-next-hover { top: 1px; }
 .ui-datepicker .ui-datepicker-prev { left:2px; }
