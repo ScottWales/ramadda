@@ -11,24 +11,14 @@
          <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
        </tstamp>
         <property file="${basedir}/build.properties"/>
-
         <mkdir dir="${dist_dir}"/>
-
         <property name="ramadda_relpath" value="org/ramadda/repository" />
         <property name="ramadda_dir" value="${src_dir}/${ramadda_relpath}" />
-
         <property name="release_dir" value="${dist_dir}/${release_name}" />
         <property name="tmpjar_dir" value="${dist_dir}/tmpjardir" />
         <property name="srcrelease_dir" value="${release_name}src${_version}" />
-
-
-
 	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
-        <mkdir dir="${docs_dir}"/>
-
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
-        <mkdir dir="${docs_javadoc_dest}"/>
-
     </target>
 
     <target name="init" depends="initbasic,initcore,initfull">
@@ -367,6 +357,8 @@
 
 
     <target name="javadoc" depends="init">
+        <mkdir dir="${docs_dir}"/>
+        <mkdir dir="${docs_javadoc_dest}"/>
         <javadoc
             Author="true"
             Doctitle="RAMADDA"

@@ -142,11 +142,11 @@ public class OwlConverter extends ImportHandler {
         Properties topLevelMap = new Properties();
         topLevelMap.load(
             IOUtil.getInputStream(
-                "/org.ramadda.plugins.ontology/toplevel.properties",
+                "/org/ramadda/plugins/ontology/toplevel.properties",
                 OwlConverter.class));
         names.load(
             IOUtil.getInputStream(
-                "/org.ramadda.plugins.ontology/names.properties",
+                "/org/ramadda/plugins/ontology/names.properties",
                 OwlConverter.class));
 
         File         f   = new File("owl");
