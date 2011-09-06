@@ -6,6 +6,8 @@ To run RAMADDA stand-alone just do:
 
 This will run RAMADDA on port 8080.  To change the port edit ramadda.sh
 
+This uses the default java runtime in your path. To change this edit ramadda.sh
+
 When you first start up ramadda you can complete the initialization and configuration at:
 http://localhost:8080/repository
 
@@ -18,16 +20,3 @@ By default RAMADDA will use ~/.ramadda as its home directory. To change this use
 
 For further information see the docs at:
 http://facdev.unavco.org/repository/userguide/installing.html
-
-
-
-
-
-
-
-
-
-
-
-
-
