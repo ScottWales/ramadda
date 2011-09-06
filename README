@@ -1,33 +1,4 @@
 
-###########################################################################
-RAMADDA
-###########################################################################
-src:
-The main source of RAMADDA is in src/org/ramadda/repository
-There is a build.xml there that does all of the building. The top level
-build.xml here can be used to build ramadda and the plugins
-
-The plugins are in
-src/org/ramadda/plugins
-src/org/ramadda/geodata
-
-Some old Infocetera Java code for applets (e.g., chat, gantt chart, graph) is in:
-src/com/infocetera/
-
-
-lib:
-Contains all of the jars RAMADDA depends on.
-
-bin:
-Contains a copy of the IDV's document generation package.
-
-apps:
-Contains the start of an Android RAMADDA client.
-
-dist:
-This directory is  created during the build process. All build products
-get placed there.
-
 
 ###########################################################################
 Building
@@ -83,8 +54,38 @@ You can run RAMADDA stand-alone from the source tree. After building it
 you can run:
     ant runserver
 or:
-   cd  dist/ramadda1.3b/
-   source ramadda.sh
+   cd  dist/ramadda1.3/
+   sh ramadda.sh
+
+
+###########################################################################
+RAMADDA SVN Tree
+###########################################################################
+src:
+The main source of RAMADDA is in src/org/ramadda/repository
+There is a build.xml there that does all of the building. The top level
+build.xml here can be used to build ramadda and the plugins
+
+The plugins are in
+src/org/ramadda/plugins
+src/org/ramadda/geodata
+
+Some old Infocetera Java code for applets (e.g., chat, gantt chart, graph) is in:
+src/com/infocetera/
+
+
+lib:
+Contains all of the jars RAMADDA depends on.
+
+bin:
+Contains a copy of the IDV's document generation package.
+
+apps:
+Contains the start of an Android RAMADDA client.
+
+dist:
+This directory is  created during the build process. All build products
+get placed there.
 
 
 
