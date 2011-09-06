@@ -239,7 +239,7 @@
             </filterset>
 
         </copy>
-        <copy  file="${ramadda_dir}/README" todir="${release_dir}" overwrite="true" />
+        <copy  file="${ramadda_dir}/release/README" todir="${release_dir}" overwrite="true" />
         <copy  file="${lib_dir}/repositorytds.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/servlet-api.jar" todir="${release_dir}/lib" overwrite="true" />
         <delete file="${lib_dir}/repository.tar"/>

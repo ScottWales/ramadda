@@ -784,6 +784,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             });
         */
 
+        //This stops jython from processing jars and printing out its annoying message
+        System.setProperty("python.cachedir.skip", "true");
+
         CacheManager.setDoCache(false);
         initProperties(properties);
         initServer();
@@ -820,8 +823,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void initProperties(Properties contextProperties)
             throws Exception {
 
-        System.err.println("RAMADDA: initializing properties");
-
+        //        System.err.println("RAMADDA: initializing properties");
         /*
           order in which we load properties files
           system
@@ -4020,7 +4022,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          getProperty(PROP_DB_SCRIPT));
         sql = getDatabaseManager().convertSql(sql);
 
-        System.err.println("RAMADDA: loading schema");
+        //        System.err.println("RAMADDA: loading schema");
         //        SqlUtil.showLoadingSql = true;
         getDatabaseManager().loadSql(sql, true, false);
         //        SqlUtil.showLoadingSql = false;

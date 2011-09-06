@@ -671,7 +671,7 @@ public class StorageManager extends RepositoryManager {
 
             File log4JFile = new File(f + "/" + "log4j.properties");
             //For now always write out the log from the jar
-            System.err.println("log4j file=" + log4JFile);
+            //System.err.println("log4j file=" + log4JFile);
 
             if (true || !log4JFile.exists()) {
                 try {
