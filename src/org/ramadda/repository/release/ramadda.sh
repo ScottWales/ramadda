@@ -14,7 +14,7 @@ java -Xmx512m -XX:MaxPermSize=256m -jar lib/@REPOSITORYJAR@ -port 8080 $*
 
 #The default above is to use Java Derby as the database
 #To run with mysql you do:
-#java -Xmx512m -XX:MaxPermSize=256m -jar ramadda.jar -Dramadda.db=mysql
+#java -Xmx512m -XX:MaxPermSize=256m -jar @REPOSITORYJAR@ -Dramadda.db=mysql
 
 
 #For more information see:

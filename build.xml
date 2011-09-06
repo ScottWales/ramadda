@@ -16,15 +16,10 @@
 
     <target name="release" depends="init">
       <antcall target="purge"/>
-      <antcall target="all"/>
-    </target>
-
-    <target name="all" depends="init">
       <antcall target="plugins"/>
       <copy overwrite="true" file="${allplugins}"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
-      <antcall target="ramadda"/>
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
     </target>
-
 
     <target name="ramadda" depends="init">
       <echo message="Building RAMADDA"/>

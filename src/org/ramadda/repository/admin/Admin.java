@@ -375,6 +375,7 @@ public class Admin extends RepositoryManager {
             String  name      = "Administrator";
 
             boolean triedOnce = false;
+            StringBuffer errorBuffer = new StringBuffer();
             if (request.exists(UserManager.ARG_USER_ID)) {
                 triedOnce = true;
                 id = request.getString(UserManager.ARG_USER_ID, "").trim();
@@ -387,7 +388,6 @@ public class Admin extends RepositoryManager {
                     request.getString(UserManager.ARG_USER_PASSWORD2,
                                       "").trim();
                 boolean      okToAdd     = true;
-                StringBuffer errorBuffer = new StringBuffer();
                 if (id.length() == 0) {
                     okToAdd = false;
                     errorBuffer.append(HtmlUtil.space(2));
@@ -473,16 +473,16 @@ public class Admin extends RepositoryManager {
                         getRepository().installPlugin(plugin);
                     }
 
-
-
+                    if(errorBuffer.length()>0) {
+                        sb.append(getRepository().showDialogError(msg("Error")+"<br>" + errorBuffer));
+                    }
                     return new Result("", sb);
                 }
-                sb.append(msg("Error"));
-                sb.append(HtmlUtil.br());
-                sb.append(errorBuffer);
-                sb.append(HtmlUtil.p());
             }
 
+            if(errorBuffer.length()>0) {
+                sb.append(getRepository().showDialogError(msg("Error")+"<br>" + errorBuffer));
+            }
             sb.append("Please enter the following information.");
             sb.append(
                 " This information is used to configure your RAMADDA server and is not sent anywhere.");
