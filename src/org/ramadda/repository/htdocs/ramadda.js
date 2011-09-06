@@ -3,18 +3,15 @@ var root = "${urlroot}";
 var urlroot = "${urlroot}";
 var icon_close = "${urlroot}/icons/close.gif";
 var icon_rightarrow = "${urlroot}/icons/grayrightarrow.gif";
-
 var icon_downdart ="${urlroot}/icons/downdart.gif";
 //var icon_downdart ="${urlroot}/icons/bullet_arrow_down.png";
 var icon_rightdart ="${urlroot}/icons/rightdart.gif";
-
 var icon_progress = "${urlroot}/icons/progress.gif";
 var icon_information = "${urlroot}/icons/information.png";
 var icon_folderclosed = "${urlroot}/icons/folderclosed.png";
 var icon_folderopen = "${urlroot}/icons/togglearrowdown.gif";
 var icon_menuarrow = "${urlroot}/icons/downdart.gif";
 var icon_blank = "${urlroot}/icons/blank.gif";
-
 
 
 function Util () {
@@ -200,8 +197,7 @@ function Util () {
 util = new Util();
 
 
-
-  function HtmlUtil() {
+function HtmlUtil() {
      this.qt = function (value) {
         return "'" + value +"'";
      }
@@ -257,9 +253,9 @@ function noop() {
 
 
 
-
-
 var popupObject;
+var popupSrcId;
+
 document.onmousemove = mouseMove;
 document.onmousedown = mouseDown;
 document.onmouseup   = mouseUp;
@@ -280,6 +276,7 @@ function hidePopupObject() {
     if(popupObject) {
         hideObject(popupObject);
         popupObject = null;
+        popupSrcId = null;
     }
 }
 
@@ -290,7 +287,6 @@ function mouseDown(event) {
 	objectToHide = popupObject;
         setTimeout("hidePopupObject()",500);
     }
-
     event = util.getEvent(event);
     mouseIsDown = 1;
     mouseMoveCnt =0;
@@ -1312,6 +1308,10 @@ function handleAjaxPopup(request, srcId) {
 
 
 function showPopup(event, srcId, popupId, alignLeft) {
+    if(popupSrcId == srcId) {
+        hidePopupObject();
+        return;
+    }
     hidePopupObject();
     var popup = util.getDomObject(popupId);
     var srcObj = util.getDomObject(srcId);
@@ -1335,6 +1335,7 @@ function showPopup(event, srcId, popupId, alignLeft) {
 
 
     popupObject = popup;
+    popupSrcId = srcId;
     showObject(popup);
     popup.obj.css("top", y);
     popup.obj.css("left",  x);
