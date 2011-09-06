@@ -13,6 +13,9 @@
       <mkdir dir="${dist_dir}"/>
     </target>
 
+    <target name="all" depends="init">
+      <antcall target="release"/>
+   </target>
 
     <target name="release" depends="init">
       <antcall target="purge"/>
