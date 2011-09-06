@@ -175,7 +175,7 @@ public class CatalogImporter extends OutputHandler {
                     + msg("Just add spatial/temporal metadata")
                     + HtmlUtil.space(1)
                     + HtmlUtil.checkbox(ARG_RESOURCE_DOWNLOAD, "true", false)
-                    + HtmlUtil.space(1) + msg("Download URLS")));
+                    + HtmlUtil.space(1) + msg("Download URLs")));
             sb.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Go"))));
             sb.append(HtmlUtil.formTableClose());
             sb.append(HtmlUtil.formClose());

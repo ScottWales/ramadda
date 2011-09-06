@@ -421,7 +421,7 @@ public class UserManager extends RepositoryManager {
         if ( !canDoLogin(request)) {
             sb.append(
                 getRepository().showDialogWarning(
-                    "Sorry, login is not allowed"));
+                                                  msg("Login is not allowed")));
             return sb.toString();
         }
 
@@ -2273,7 +2273,7 @@ public class UserManager extends RepositoryManager {
                 msg("Password Reset"),
                 new StringBuffer(
                     getRepository().showDialogWarning(
-                        "Sorry, login is not allowed")));
+                                                      msg("Login is not allowed"))));
         }
 
 
@@ -2488,7 +2488,7 @@ public class UserManager extends RepositoryManager {
                 msg("Login"),
                 new StringBuffer(
                     getRepository().showDialogWarning(
-                        "Sorry, login is not allowed")));
+                                                      msg("Login is not allowed"))));
         }
 
         boolean responseAsXml = request.getString(ARG_RESPONSE,
@@ -2588,8 +2588,7 @@ public class UserManager extends RepositoryManager {
                         if ((password == null) || (password.length() == 0)) {
                             sb.append(
                                 getRepository().showDialogNote(
-                                    msg(
-                                    "Sorry, we were doing some cleanup and have reset your password")));
+                                                               "Sorry, we were doing some cleanup and have reset your password"));
 
                             addPasswordResetForm(request, sb, name);
                             getDatabaseManager().closeAndReleaseConnection(

@@ -2291,7 +2291,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 sb.append(HtmlUtil.br());
                 sb.append(
                     getRepository().showDialogNote(
-                        msg("No entries in: " + getTitle())));
+                                                   msgLabel("No entries in") + getTitle()));
             } else {
                 sb.append(
                     getRepository().showDialogNote(msg("Nothing found")));

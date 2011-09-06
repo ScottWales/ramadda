@@ -1338,7 +1338,7 @@ public class IdvOutputHandler extends OutputHandler {
                                           "-default-") + " " + img;
 
             }
-            ctsb.append(HtmlUtil.table(new Object[] { msgLabel("Color table"),
+            ctsb.append(HtmlUtil.table(new Object[] { msgLabel("Color Table"),
                     HtmlUtil.div(ctDiv,
                                  HtmlUtil.id(ARG_COLORTABLE + "_html"
                                              + displayIdx)) }, 2));

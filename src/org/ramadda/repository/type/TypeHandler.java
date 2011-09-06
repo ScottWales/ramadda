@@ -2893,7 +2893,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         List dateSelect = new ArrayList();
-        dateSelect.add(new TwoFacedObject(msg("---"), "none"));
+        dateSelect.add(new TwoFacedObject("---", "none"));
         dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
         dateSelect.add(new TwoFacedObject(msg("Last 3 hours"), "-3 hours"));
         dateSelect.add(new TwoFacedObject(msg("Last 6 hours"), "-6 hours"));

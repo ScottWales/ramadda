@@ -190,7 +190,7 @@ public class GridAggregationHarvester extends PatternHarvester {
 
         sb.append(
             HtmlUtil.formEntry(
-                msgLabel("Time Coordinate:"),
+                msgLabel("Time coordinate"),
                 HtmlUtil.input(
                     ATTR_AGGREGATIONCOORDINATE, aggregationCoordinate,
                     HtmlUtil.SIZE_60)));

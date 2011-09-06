@@ -692,8 +692,8 @@ public class DataOutputHandler extends OutputHandler {
         poolStats.append("</pre>");
         sb.append(
             HtmlUtil.formEntryTop(
-                msgLabel("Data Cache Size"),
-                msgLabel("NC File Pool") + ncFilePool.getSize()
+                                  "Data Cache Size:",
+                                  "NC File Pool:" + ncFilePool.getSize()
                 + " have ncfile cache:"
                 + (NetcdfDataset.getNetcdfFileCache() != null) + " "
                 + " Count:  Create:" + ncCreateCounter.getCount()
@@ -701,10 +701,10 @@ public class DataOutputHandler extends OutputHandler {
                 + ncGetCounter.getCount() + " Put:" + ncPutCounter.getCount()
                 + "<br>" + " Ext Count:" + extCounter.getCount()
                 + " Dap Count:" + opendapCounter.getCount() + poolStats
-                + HtmlUtil.br() + msgLabel("Grid Pool") + gridPool.getSize()
-                + HtmlUtil.br() + msgLabel("Point Pool")
+                + HtmlUtil.br() + "Grid Pool:" + gridPool.getSize()
+                + HtmlUtil.br() + "Point Pool:"
                 + pointPool.getSize() + HtmlUtil.br()
-                + msgLabel("Trajectory Pool") + trajectoryPool.getSize()
+                + "Trajectory Pool:" + trajectoryPool.getSize()
                 + HtmlUtil.br()));
 
     }
@@ -1301,7 +1301,7 @@ public class DataOutputHandler extends OutputHandler {
                 HtmlUtil.href(
                     request.getUrl() + "&"
                     + HtmlUtil.arg(ARG_SHORT, HtmlUtil.VALUE_TRUE), msg(
-                        "Add time/spatial properties")));
+                        "Add temporal and spatial properties")));
             sb.append(HtmlUtil.span("&nbsp;|&nbsp;",
                                     HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)));
 
@@ -1713,7 +1713,7 @@ public class DataOutputHandler extends OutputHandler {
 
 
         addPublishWidget(request, entry, sb,
-                         msg("Select a folder to publish the point data to"));
+                         msg("Select a folder to publish the results to"));
         sb.append(HtmlUtil.formTableClose());
         sb.append("<hr>");
         sb.append(msgLabel("Select Variables"));
@@ -2041,7 +2041,7 @@ public class DataOutputHandler extends OutputHandler {
                                          request.get(ARG_ADDLATLON, true))));
 
         addPublishWidget(request, entry, sb,
-                         msg("Select a folder to publish the subset to"));
+                         msg("Select a folder to publish the results to"));
         sb.append(HtmlUtil.formTableClose());
         sb.append("<hr>");
         sb.append(msgLabel("Select Variables"));

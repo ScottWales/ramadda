@@ -425,7 +425,7 @@ public abstract class Harvester extends RepositoryManager {
         sb.append(HtmlUtil.hidden(selectId + "_hidden", ((baseGroup != null)
                 ? baseGroup.getId()
                 : ""), HtmlUtil.id(selectId + "_hidden")));
-        sb.append(HtmlUtil.formEntry(msgLabel("Base folder"),
+        sb.append(HtmlUtil.formEntry(msgLabel("Base Folder"),
                                      HtmlUtil.disabledInput(selectId,
                                          ((baseGroup != null)
                                           ? baseGroup.getFullName()

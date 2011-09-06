@@ -189,10 +189,10 @@ public class EchoPublisher extends Harvester {
             throws Exception {
 
         super.createEditForm(request, sb);
-        sb.append(HtmlUtil.formEntry(msg("ECHO FTP URL"),
+        sb.append(HtmlUtil.formEntry("ECHO FTP URL",
                                      HtmlUtil.input(ATTR_FTP_URL, ftpUrl,
                                          60)));
-        sb.append(HtmlUtil.formEntry(msg("ECHO User"),
+        sb.append(HtmlUtil.formEntry("ECHO User",
                                      HtmlUtil.input(ATTR_FTP_USER, ftpUser,
                                          60)));
     }

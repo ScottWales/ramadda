@@ -115,7 +115,7 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
             sb.append(OutputHandler.makeTabs(tabTitles, tabs, true));
         }
 
-        return new Result(msg("MultiSearch"), sb);
+        return new Result("MultiSearch", sb);
     }
 
 

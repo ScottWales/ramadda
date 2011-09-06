@@ -356,7 +356,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             headerRow.append(HtmlUtil.col("&nbsp;",
                                           HtmlUtil.cssClass("poll-header")));
         }
-        headerRow.append(HtmlUtil.col(HtmlUtil.b(msg("What/Who")),
+        headerRow.append(HtmlUtil.col(HtmlUtil.b(msg("What or who")),
                                       HtmlUtil.cssClass("poll-header")));
         for (String choice : choices) {
             headerRow.append(HtmlUtil.col(HtmlUtil.b(choice),
