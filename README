@@ -8,10 +8,17 @@ To build RAMADDA run:
 ant
 This builds:
 dist/repository.war  - For Tomcat
-dist/ramadda1.3.zip  - Stand-alone release
+dist/ramadda<version>.zip  - Stand-alone release
 
 The war is created with the "repository" name so the context path for tomcat
 is /repository
+
+###########################################################################
+Running stand-alone
+###########################################################################
+You can run RAMADDA stand-alone from the source tree. After building do:
+   cd  dist/ramadda<version>/
+   sh ramadda.sh
 
 
 ###########################################################################
@@ -46,16 +53,12 @@ The allplugins.zip gets copied into the
 ramadda/repository/resources/plugins
 dir and is included in the ramadda release.
 
+The result of the release target is:
+dist/repository.war  - The war to be used by Tomcat
+dist/ramadda<version>.zip  - The zip file that holds the stand-alone RAMADDA release (which uses Jetty)
+dist/repositoryclient.jar  - Used by 3rd party clients (e.g., IDV, JGRASS) 
+dist/repositoryclient.zip  - To run the stand-alone command line client
 
-###########################################################################
-Running stand-alone
-###########################################################################
-You can run RAMADDA stand-alone from the source tree. After building it
-you can run:
-    ant runserver
-or:
-   cd  dist/ramadda1.3/
-   sh ramadda.sh
 
 
 ###########################################################################
