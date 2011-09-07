@@ -10,12 +10,12 @@ index.html
 
 
 >title:The RAMADDA User Interface
->>ui/index.html
->>ui/crud.html
->>ui/listing.html
->>ui/views.html
->>ui/metadata.html
->>ui/search.html
+>>entries/index.html
+>>entries/crud.html
+>>entries/listing.html
+>>entries/views.html
+>>entries/metadata.html
+>>entries/search.html
 
 
 
