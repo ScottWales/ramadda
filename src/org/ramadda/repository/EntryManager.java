@@ -1509,7 +1509,7 @@ public class EntryManager extends RepositoryManager {
                          ARG_ENTRYID, entry.getId());
         //j-
         String[] macros = {
-            "entryid", entry.getId(), "resourcepath",
+            "entryid", entry.getId(), "parentid", entry.getParentEntryId(), "resourcepath",
             entry.getResource().getPath(), "resourcename",
             getStorageManager().getFileTail(entry.getResource().getPath()),
             "filename",
