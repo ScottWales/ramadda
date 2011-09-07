@@ -43,6 +43,17 @@
    </target>
 
 
+    <target name="allplugins" depends="init,purgeplugins">
+      <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false" target="allplugins"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false" target="allplugins"/>
+   </target>
+
+    <target name="otherplugins" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false" target="otherplugins"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false" target="otherplugins"/>
+   </target>
+
+
 
     <target name="runserver" depends="init">
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="runserver"/>

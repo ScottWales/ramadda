@@ -26,7 +26,6 @@
 
     <target name="plugins" depends="init">
       <echo message="Building RAMADDA plugins"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/aap/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/beforeafter/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/blog/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/calendar/build.xml" inheritAll="false"/>
@@ -38,40 +37,44 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/gdata/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/glossary/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/multisearch/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/notes/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/ontology/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/pasteit/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/poll/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/slideshow/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/twittersearch/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/userguide/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/weather/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/wiki/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
-<!--
-      <ant antfile="${src_dir}/org/ramadda/plugins/workshop/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/personfinder/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/forum/build.xml" inheritAll="false"/>
--->
-
-<!--
-Don't include the misc plugins by default
-      <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
-          <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
-     </copy>
-
-      <copy overwrite="true"  todir="${plugindest_dir}">
-          <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
-     </copy>
--->
-
       <copy overwrite="true"  todir="${plugindest_dir}">
           <fileset file="${src_dir}/org/ramadda/plugins/README"/>
      </copy>
-
-
     </target>
 
 
+    <target name="allplugins" depends="init">
+      <antcall target="plugins"/>
+      <antcall target="otherplugins"/>
+  </target>
 
 
+    <target name="otherplugins" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/plugins/aap/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/slideshow/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/trip/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/workshop/build.xml" inheritAll="false"/>
+<!--
+      <ant antfile="${src_dir}/org/ramadda/plugins/forum/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/personfinder/build.xml" inheritAll="false"/>
+-->
+
+      <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
+          <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
+      </copy>
+     <copy overwrite="true"  todir="${plugindest_dir}">
+          <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
+     </copy>
+  </target>
+    
 </project>
