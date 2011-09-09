@@ -720,7 +720,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             Result result = getHtmlOutputHandler().getHtmlResult(request,
                                 OutputHandler.OUTPUT_HTML, entry);
             return new String(result.getContent());
-        } else if (include.equals(WIKIPROP_MAP)) {
+        } else if (include.equals(WIKIPROP_MAP) || include.equals(WIKIPROP_EARTH)) {
             StringBuffer mapSB  = new StringBuffer();
             int          width  = Misc.getProperty(props, PROP_WIDTH, 400);
             int          height = Misc.getProperty(props, PROP_HEIGHT, 300);
@@ -731,10 +731,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
 
-            if (googleEarth) {
+           if (googleEarth) {
                 getMapManager().getGoogleEarth(request, children, mapSB,
-                        Misc.getProperty(props, PROP_WIDTH, 400),
-                        Misc.getProperty(props, PROP_HEIGHT, 300));
+                        Misc.getProperty(props, PROP_WIDTH, -1),
+                        Misc.getProperty(props, PROP_HEIGHT, -1));
             } else {
                 MapOutputHandler mapOutputHandler =
                     (MapOutputHandler) getRepository().getOutputHandler(
@@ -1458,17 +1458,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         //            HtmlUtil.img(iconUrl("/icons/wiki/button_import.png"),
         //                         "Import Entry Property");
         String importButton = getRepository().makePopupLink(importMenuLabel,
-                                  HtmlUtil.hbox(importMenu.toString(),
-                                      importOutputMenu.toString()));
-
+                                                            HtmlUtil.hbox(importMenu.toString(),
+                                                                          importOutputMenu.toString()));
         String addEntry = OutputHandler.getSelect(request, textAreaId,
                               "Add entry id", true, "entryid", entry, false);
 
         String addLink = OutputHandler.getSelect(request, textAreaId,
                              "Add entry link", true, "wikilink", entry,
                              false);
-
-
 
         buttons.append(HtmlUtil.space(2));
         buttons.append(importButton);

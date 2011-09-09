@@ -34,8 +34,14 @@ a:hover {
 }
 
 
+.ramadda-earth-container {
+   border: 1px solid #888;
+}
+
 .ramadda-earth-entries {
    min-width: 150px;
+   max-width: 250px;
+   overflow-x: auto;
 }
 
 
@@ -1024,9 +1030,18 @@ code.menu {
 .selectdiv {
    position: absolute; 
    visibility: hidden; 
-   z-index: 1;
+   z-index: 1000;
    border: 1px #666666 solid;   
-   background-color : #FFFFCC;
+   background-color : #FFF;
+//Shadow effect
+  /* offset left, top, thickness, color with alpha */
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
 

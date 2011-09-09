@@ -60,6 +60,10 @@ import java.util.List;
  */
 public class MapManager extends RepositoryManager {
 
+
+    public static int    DFLT_EARTH_HEIGHT = 500;
+
+
     /** _more_          */
     public static final int EARTH_ENTRIES_WIDTH = 150;
 
@@ -289,19 +293,23 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        String template =
-            "<div id=\"${id}_container\" style=\"border: 1px solid #888; width: ${width}px; height: ${height}px;\"><div id=\"${id}\" style=\"height: 100%;\"></div></div>";
 
-        template = template.replace("${width}", width + "");
-        template = template.replace("${height}", height + "");
-        template = template.replace("${id}", id);
-        template = template.replace("${id}", id);
+        String style = "";
+        if(width>0) {
+            style+="width:"+ width+"px; ";
+        }
+        if(height<=0) {
+            height =DFLT_EARTH_HEIGHT;
+        }
+        style+="height:"+ height+"px; ";
 
-
-
-        sb.append(template);
-        sb.append(HtmlUtil.checkbox("tmp", "true", false,
+        String earthHtml =HtmlUtil.div("", HtmlUtil.id(id) + HtmlUtil.style(style) +
+                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_CONTAINER));
+        sb.append("\n");
+        sb.append(earthHtml);
+        sb.append(HtmlUtil.checkbox("tmp", "true", true,
                                     HtmlUtil.id("googleearth.showdetails")));
+        sb.append("\n");
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.italics(msg("Show details on click")));
         sb.append(HtmlUtil.script("var  " + id + " = new GoogleEarth("
@@ -329,7 +337,7 @@ public class MapManager extends RepositoryManager {
             throws Exception {
 
         sb.append(
-            "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td>");
+            "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td width=\"250\" style=\"max-width:250px;\">");
 
         StringBuffer mapSB = new StringBuffer();
 
@@ -436,6 +444,7 @@ public class MapManager extends RepositoryManager {
             js.append("\n");
         }
 
+        if(height<=0) height = DFLT_EARTH_HEIGHT;
         sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                 HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES)
                                 + HtmlUtil.style("max-height:" + height
@@ -455,8 +464,7 @@ public class MapManager extends RepositoryManager {
         }
         sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
 
-
-        sb.append("</td><td>");
+        sb.append("</td><td align=left>");
         sb.append(mapSB);
         sb.append(HtmlUtil.script(js.toString()));
         sb.append("</td></tr></table>");

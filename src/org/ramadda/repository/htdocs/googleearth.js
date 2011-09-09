@@ -283,6 +283,7 @@ function GoogleEarth(id, url) {
         balloon.setFeature(thePlacemark.placemark);
         balloon.setContentString(text);
         balloon.setMaxHeight(300);
+        balloon.setMaxWidth(500);
         this.googleEarth.setBalloon(balloon);
     }
 

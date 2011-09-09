@@ -1158,7 +1158,10 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
             x+=20;
         }
         
+        hidePopupObject();
         util.setPosition(this.div, x+10,y);
+        popupObject = this.div;
+        popupSrcId = "";
         showObject(this.div);
         url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + this.id+"&noredirect=true";
         if(localeId) {
@@ -1168,8 +1171,6 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         util.loadXML( url, handleSelect,this.id);
         return false;
     }
-
-
     this.handleClick(event);
 }
 
@@ -1316,30 +1317,14 @@ function showPopup(event, srcId, popupId, alignLeft) {
     var popup = util.getDomObject(popupId);
     var srcObj = util.getDomObject(srcId);
     if(!popup || !srcObj) return;
-    eleOffset = jQuery(srcObj.obj).offset();
-    event = util.getEvent(event);
-    x = util.getEventX(event);
-    y = util.getEventY(event);
-    if(srcObj.obj.offsetLeft && srcObj.obj.offsetWidth) {
-        x = util.getLeft(srcObj.obj);
-        y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
-    } 
-
-    if(alignLeft) {
-        x = util.getLeft(srcObj.obj);
-        y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
-    } else {
-        x+=2;
-        x+=3;
-    }
-
-
     popupObject = popup;
     popupSrcId = srcId;
     showObject(popup);
-    popup.obj.css("top", y);
-    popup.obj.css("left",  x);
-    //    util.setPosition(popup, x,y);
+    jQuery("#"+popupId ).position({
+                of: jQuery( "#" + srcId ),
+                my: 'left bottom',
+                at: 'left top'
+                });
 }
 
 

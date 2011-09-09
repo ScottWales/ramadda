@@ -161,8 +161,8 @@ public class MapOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
 
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, 800,
-                                           500);
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1,
+                                           -1);
             return makeLinksResult(request, msg("Google Earth"), sb,
                                    new State(entry));
         }
@@ -201,8 +201,8 @@ public class MapOutputHandler extends OutputHandler {
         }
 
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, 800,
-                                           500);
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1,
+                                           -1);
             return makeLinksResult(request, msg("Google Earth"), sb,
                                    new State(group));
         }

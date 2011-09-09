@@ -37,10 +37,12 @@ import java.util.List;
  * @version        $version$, Wed, Aug 31, '11
  * @author         Enter your name here...
  */
-public class KmlToRamadda {
+public class KmlToRamadda implements org.ramadda.repository.Constants {
 
     /** _more_ */
     static int counter = 0;
+
+    static int count = 0;
 
     /**
      * _more_
@@ -108,27 +110,24 @@ public class KmlToRamadda {
                                   "name");
                 String desc = XmlUtil.getGrandChildText(child, "description",
                                   "");
-                String descNode = XmlUtil.tag("description", "",
+                String descNode = XmlUtil.tag(TAG_DESCRIPTION, "",
                                       XmlUtil.getCdata(desc));
 
-                String attrs;
+                String attrs =  XmlUtil.attrs(new String[] {
+                        ATTR_ID, id, ATTR_NAME, name,  ATTR_TYPE,
+                        "wikipage"
+                    });
                 if (parentId != null) {
-                    attrs = XmlUtil.attrs(new String[] {
-                        "id", id, "name", name, "parent", parentId, "type",
-                        "article"
-                    });
-
-                } else {
-                    attrs = XmlUtil.attrs(new String[] {
-                        "id", id, "name", name, "type", "article"
-                    });
+                    attrs+= XmlUtil.attrs(new String[] {
+                            ATTR_PARENT, parentId});
                 }
                 if (category != null) {
                     descNode = descNode
                                + XmlUtil.tag("category", "",
                                              XmlUtil.getCdata(category));
                 }
-                System.out.println(XmlUtil.tag("entry", attrs + extra,
+                //                if(count++>50) return;
+                System.out.println(XmlUtil.tag(TAG_ENTRY, attrs + extra,
                         descNode));
             } else if (tag.equals("Document")) {
                 process(child, parentId, category);

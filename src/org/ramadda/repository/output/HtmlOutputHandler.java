@@ -295,18 +295,30 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result getMapInfo(Request request, Entry entry) throws Exception {
-        String html;
-        String wikiTemplate = getWikiText(request, entry);
-        if (wikiTemplate != null) {
-            String wiki = getWikiManager().wikifyEntry(request, entry,
-                              wikiTemplate);
-            html = getRepository().translate(request, wiki);
-        } else {
-            html = getMapManager().makeInfoBubble(request, entry);
+        String html=null;
+        Result typeResult = entry.getTypeHandler().getHtmlDisplay(request, entry);
+        if (typeResult != null) {
+            byte[]content = typeResult.getContent();
+            if(content!=null) {
+                html = new String(content);
+            }
         }
 
-        StringBuffer xml = new StringBuffer("<content>\n");
-        XmlUtil.appendCdata(xml, getRepository().translate(request, html));
+        if(html==null) {
+            String wikiTemplate = getWikiText(request, entry);
+            if (wikiTemplate != null) {
+                String wiki = getWikiManager().wikifyEntry(request, entry,
+                                                           wikiTemplate);
+                html = getRepository().translate(request, wiki);
+            } else {
+                html = getMapManager().makeInfoBubble(request, entry);
+            }
+        }
+        html = getRepository().translate(request, html);
+
+        StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
+        xml.append("\n<content>\n");
+        XmlUtil.appendCdata(xml, html);
         xml.append("\n</content>");
         return new Result("", xml, "text/xml");
     }

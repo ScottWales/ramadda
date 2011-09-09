@@ -9,5 +9,4 @@
      <column name="category" type="string"  label="Wiki Page Category" cansearch="true" isindex="true" searchtype="select" showinhtml="false"/>
 </type>
 
-
 </types>

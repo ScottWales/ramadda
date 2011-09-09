@@ -2021,6 +2021,9 @@ public interface Constants {
     public static final String CSS_CLASS_EARTH_ENTRIES =
         "ramadda-earth-entries";
 
+    public static final String CSS_CLASS_EARTH_CONTAINER =
+        "ramadda-earth-container";
+
     /** _more_          */
     public static final String CSS_CLASS_COMMENT_BLOCK =
         "ramadda-comment-block";
