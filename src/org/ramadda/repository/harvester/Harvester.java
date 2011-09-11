@@ -242,6 +242,8 @@ public abstract class Harvester extends RepositoryManager {
     private int testCount = 100;
 
 
+    protected String printTab = "";
+
     /**
      * _more_
      *
@@ -852,8 +854,8 @@ public abstract class Harvester extends RepositoryManager {
      * @param message _more_
      */
     public void logHarvesterInfo(String message) {
-        //        System.err.println (message);
-        LOG.info(getName() + " " + message);
+        //        System.err.println (printTab+message);
+        LOG.info(getName() + ": " + printTab +message);
     }
 
 
@@ -901,7 +903,12 @@ public abstract class Harvester extends RepositoryManager {
      * _more_
      */
     protected void doPause() {
-        Misc.pauseEvery((int) getSleepMinutes());
+        double minutes = getSleepMinutes();
+        if(minutes<1) {
+            Misc.sleep((long)(1000*60*minutes));
+            return;
+        }
+        Misc.pauseEvery((int) minutes);
     }
 
     /**

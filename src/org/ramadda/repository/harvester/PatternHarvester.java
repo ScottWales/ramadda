@@ -95,6 +95,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
 
 
+    private static final int FILE_CHANGED_TIME_THRESHOLD_MS = 60*1000;
+
     /** _more_ */
     private String dateFormat = "yyyyMMdd_HHmm";
 
@@ -129,7 +131,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     private List<FileInfo> dirs;
 
     /** _more_ */
-    private Hashtable dirMap = new Hashtable();
+    private HashSet<File> dirMap = new HashSet<File>();
 
     /** _more_ */
     private HashSet seenFiles = new HashSet();
@@ -249,7 +251,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
      * @return _more_
      */
     public String getDescription() {
-        return "Local Files";
+        return "Server File System";
     }
 
     /**
@@ -582,7 +584,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     private FileInfo addDir(File dir) {
         FileInfo fileInfo = new FileInfo(dir, true);
         dirs.add(fileInfo);
-        dirMap.put(dir, dir);
+        dirMap.add(dir);
         return fileInfo;
     }
 
@@ -594,7 +596,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
      * @return _more_
      */
     private boolean hasDir(File dir) {
-        return dirMap.get(dir) != null;
+        return dirMap.contains(dir);
     }
 
 
@@ -636,16 +638,18 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //                           + dirs.size());
 
         for (FileInfo dir : dirs) {
-            dirMap.put(dir.getFile(), dir);
+            dirMap.add(dir.getFile());
         }
 
         int cnt = 0;
 
         while (canContinueRunning(timestamp)) {
             long t1 = System.currentTimeMillis();
-            logHarvesterInfo("Looking for new files");
+            logHarvesterInfo("Start scanning");
+            printTab = "\t";
             harvestEntries((cnt == 0), timestamp);
-            logHarvesterInfo("Done looking for new files");
+            printTab = "";
+            logHarvesterInfo("Done scanning");
             lastRunTime = System.currentTimeMillis();
             long t2 = System.currentTimeMillis();
             cnt++;
@@ -687,68 +691,63 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         entryCnt    = 0;
         newEntryCnt = 0;
 
-        boolean anyNewThingsToLookAt = false;
+        boolean checkIfDirHasChanged = true;
 
         //For now lets always look at each dir even if it hasn't changed
         //It seems as though sometimes files come in or have been changed
         //and we skip them then we miss them the next time through
-        boolean alwaysLookAtDirs = false;
-        for (int dirIdx = 0; dirIdx < tmpDirs.size(); dirIdx++) {
-            FileInfo fileInfo = tmpDirs.get(dirIdx);
-            logHarvesterInfo("Looking at directory:" + fileInfo.getFile());
-            if ( !fileInfo.exists()) {
-                logHarvesterInfo("Directory does not exist"
-                                 + fileInfo.getFile());
-                removeDir(fileInfo);
+        checkIfDirHasChanged = true;
+
+        //Iterate by size because we can add new dirs to the list
+        for (int fileIdx=0;fileIdx<tmpDirs.size();fileIdx++) {
+            printTab = "\t";
+            FileInfo dirInfo = tmpDirs.get(fileIdx);
+            if (!dirInfo.exists()) {
+                logHarvesterInfo("Directory:" + dirInfo.getFile() +" * does not exist *");
+                removeDir(dirInfo);
                 continue;
             }
-            if ( !alwaysLookAtDirs) {
-                if ( !firstTime && !fileInfo.hasChanged()) {
-                    logHarvesterInfo(
-                        "Nothing has changed in directory since last time:"
-                        + fileInfo.getFile());
-                    File[] files = fileInfo.getFile().listFiles();
-                    if (files != null) {
-                        for (File f : files) {
-                            logHarvesterInfo("\t File:" + f);
-                        }
-                    }
-                    continue;
-                }
-            }
-            fileInfo.clearAddedFiles();
-            File[] files = fileInfo.getFile().listFiles();
-            if (files == null) {
-                logHarvesterInfo("No files in directory:"
-                                 + fileInfo.getFile());
+            boolean directoryChanged = dirInfo.hasChanged();
+            if (checkIfDirHasChanged && !firstTime && !directoryChanged) {
+                logHarvesterInfo("Directory:" + dirInfo.getFile() +"  * no change *");
                 continue;
             }
+
+            File[] files = dirInfo.getFile().listFiles();
+            dirInfo.clearAddedFiles();
+            if (files == null || files.length==0) {
+                logHarvesterInfo("Directory:" + dirInfo.getFile() +" * no files *");
+                continue;
+            }
+
+            logHarvesterInfo("Directory:" + dirInfo.getFile() +" * scanning *");
+
+            printTab = "\t\t";
             files = IOUtil.sortFilesOnName(files);
 
-            for (int fileIdx = 0; fileIdx < files.length; fileIdx++) {
-                File f = files[fileIdx];
+            for (File f: files) {
                 if (f.isDirectory()) {
                     //If this is a directory then check if we already have it 
                     //in the list. If not then add it to the main list and the local list
                     if ( !hasDir(f)) {
-                        logHarvesterInfo("Found new directory:" + f);
-                        FileInfo newFileInfo = addDir(f);
-                        tmpDirs.add(newFileInfo);
+                        logHarvesterInfo("New directory:" + f);
+                        tmpDirs.add(addDir(f));
                     }
                     continue;
                 }
                 long fileTime = f.lastModified();
-                if ((fileTime - lastRunTime) < 1000) {
+                //time diff threshold = 1 minute
+                long now = System.currentTimeMillis();
+                if ((now-fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
                     logHarvesterInfo(
-                        "Skipping this file since its recently changed:" + f);
+                                     "Skipping recently modified file:" + f);
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
-                    fileInfo.reset();
+                    dirInfo.reset();
                     continue;
                 }
-                anyNewThingsToLookAt = true;
                 Entry entry = null;
                 try {
-                    entry = processFile(fileInfo, f);
+                    entry = processFile(dirInfo, f);
                 } catch (Exception exc) {
                     logHarvesterError("Error creating entry:" + f, exc);
                 }
@@ -761,7 +760,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 if (getTestMode() && (entryCnt >= getTestCount())) {
                     return;
                 }
-                if ( !getTestMode()) {
+                if (!getTestMode()) {
                     //Check every time
                     //                    if (entries.size() > 1000) {
                     if (entries.size() > 0) {
@@ -770,15 +769,15 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                             getEntryManager().getUniqueEntries(entries,
                                 nonUniqueOnes);
                         for (Entry e : nonUniqueOnes) {
-                            logHarvesterInfo("**** Have a non unique entry:"
+                            logHarvesterInfo("Entry already exists:"
                                              + e.getResource());
                         }
                         newEntryCnt += uniqueEntries.size();
                         needToAdd.addAll(uniqueEntries);
                         for (Entry newEntry : uniqueEntries) {
-                            logHarvesterInfo("**** New entry:"
+                            logHarvesterInfo("New entry:"
                                              + newEntry.getResource());
-                            fileInfo.addFile(
+                            dirInfo.addFile(
                                 newEntry.getResource().getPath());
                         }
                         entries = new ArrayList();
@@ -795,7 +794,6 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             }
         }
 
-        logHarvesterInfo("Out of loop");
         if ( !getTestMode()) {
             if (entries.size() > 0) {
                 List<Entry> nonUniqueOnes = new ArrayList<Entry>();
@@ -803,11 +801,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     getEntryManager().getUniqueEntries(entries,
                         nonUniqueOnes);
                 for (Entry e : nonUniqueOnes) {
-                    logHarvesterInfo("**** Have a non unique entry:"
+                    logHarvesterInfo("Entry already exists:"
                                      + e.getResource());
                 }
                 for (Entry newEntry : uniqueEntries) {
-                    logHarvesterInfo("**** New entry:"
+                    logHarvesterInfo("New entry:"
                                      + newEntry.getResource());
                 }
                 newEntryCnt += uniqueEntries.size();
@@ -816,9 +814,6 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             addEntries(needToAdd);
         }
 
-        if ( !anyNewThingsToLookAt) {
-            logHarvesterInfo("Nothing on disk has changed since last time");
-        }
 
     }
 
@@ -973,7 +968,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
 
         debug("file:<i>" + fileName + "</i> matches pattern");
-        logHarvesterInfo("file:" + fileName + " matches pattern");
+        //        logHarvesterInfo("Matches pattern:" + fileName);
 
         if ( !getTestMode()) {
 
@@ -1121,7 +1116,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                         DFLT_INHERITED, (String) tags.get(i), "", "", ""));
             }
             }*/
-        logHarvesterInfo("Creating new entry:" + f);
+        //        logHarvesterInfo("Created entry:" + f);
         return initializeNewEntry(fileInfo, f, entry);
         //        return entry;
     }

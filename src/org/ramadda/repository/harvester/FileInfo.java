@@ -40,19 +40,22 @@ import java.util.List;
 public class FileInfo {
 
     /** tracks whether we have initialized ourselves */
-    boolean hasInitialized = false;
+    private     boolean hasInitialized = false;
 
     /** The file */
-    File file;
+    private     File file;
 
     /** _more_ */
-    long time;
+    private     long time;
 
     /** _more_ */
-    long size = 0;
+    private     long size = 0;
 
     /** _more_ */
-    boolean isDir;
+    private int fileCount = 0;
+
+    /** _more_ */
+    private     boolean isDir;
 
     /** _more_ */
     private List addedFiles;
@@ -75,12 +78,24 @@ public class FileInfo {
     public FileInfo(File f, boolean isDir) {
         this.isDir = isDir;
         file       = f;
-        time       = file.lastModified();
-        if ( !isDir) {
+    }
+
+    private void doInit() {
+        time  = file.lastModified();
+        if (!isDir) {
             size = file.length();
+        } else {
+            File[] files = file.listFiles();
+            if(files!=null) {
+                fileCount = files.length;
+                for(File child: files) {
+                    size+= child.length();
+                }
+            }
         }
         hasInitialized = true;
     }
+
 
     /**
      * override hashcode
@@ -115,25 +130,30 @@ public class FileInfo {
      * @return _more_
      */
     public boolean hasChanged() {
-        if ( !hasInitialized) {
-            if (file.exists()) {
-                time = file.lastModified();
-                if ( !isDir) {
-                    size = file.length();
-                }
-                hasInitialized = true;
-                return true;
-            } else {
-                return false;
-            }
+        if (!hasInitialized) {
+            doInit();
+            return true;
         }
         long    newTime = file.lastModified();
-        long    newSize = (isDir
-                           ? 0
-                           : file.length());
-        boolean changed = (newTime != time) || (newSize != size);
+        long    newSize =  0;
+        int     newFileCount = 0;
+
+        if(isDir) {
+            File[] files = this.file.listFiles();
+            if(files!=null) {
+                newFileCount = files.length;
+                for(File child: files) {
+                    newSize+= child.length();
+                }
+            }
+        } else {
+            newSize = file.length();
+        }
+
+        boolean changed = (newTime != time) || (newSize != size) || (newFileCount!=fileCount);
         time = newTime;
         size = newSize;
+        fileCount = newFileCount;
         return changed;
     }
 
@@ -143,6 +163,7 @@ public class FileInfo {
     public void reset() {
         time = -1;
         size = -1;
+        fileCount = 0;
     }
 
     /**

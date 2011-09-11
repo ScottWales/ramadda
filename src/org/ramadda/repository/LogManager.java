@@ -609,12 +609,14 @@ public class LogManager extends RepositoryManager {
                     stackSB = null;
                 } else if (stackSB != null) {
                     line = HtmlUtil.entityEncode(line);
+                    line = line.replaceAll("\t","&nbsp;");
                     stackSB.append(line);
                     stackSB.append("<br>");
                 } else if (line.startsWith("<stack>")) {
                     stackSB = new StringBuffer();
                 } else {
                     line = HtmlUtil.entityEncode(line);
+                    line = line.replaceAll("\t","&nbsp;");
                     sb.append(line);
                     sb.append("<br>");
                     sb.append("\n");
