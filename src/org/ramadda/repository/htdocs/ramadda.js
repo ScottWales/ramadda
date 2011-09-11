@@ -271,7 +271,7 @@ var objectToHide;
 
 function hidePopupObject() {
     if(objectToHide!=popupObject) {
-	return;
+        //	return;
     }
     if(popupObject) {
         hideObject(popupObject);
@@ -284,7 +284,7 @@ function hidePopupObject() {
 
 function mouseDown(event) {
     if(popupObject) {
-	objectToHide = popupObject;
+        objectToHide = popupObject;
         setTimeout("hidePopupObject()",500);
     }
     event = util.getEvent(event);
@@ -1160,8 +1160,8 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         
         hidePopupObject();
         util.setPosition(this.div, x+10,y);
-        popupObject = this.div;
-        popupSrcId = "";
+        //        popupObject = this.div;
+        //        popupSrcId = "";
         showObject(this.div);
         url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + this.id+"&noredirect=true";
         if(localeId) {
@@ -1319,6 +1319,7 @@ function showPopup(event, srcId, popupId, alignLeft) {
     if(!popup || !srcObj) return;
     popupObject = popup;
     popupSrcId = srcId;
+
     showObject(popup);
     jQuery("#"+popupId ).position({
                 of: jQuery( "#" + srcId ),
