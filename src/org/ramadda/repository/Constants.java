@@ -1976,14 +1976,18 @@ public interface Constants {
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
 
-    /** _more_          */
+    public static final String CSS_CLASS_MENUBAR = "ramadda-menubar";
+
     public static final String CSS_CLASS_MENU_LINK = "ramadda-menu-link";
 
     /** _more_          */
-    public static final String CSS_CLASS_MENU_TD = "ramadda-menu-td";
+    public static final String CSS_CLASS_MENUITEM_LINK = "ramadda-menuitem-link";
 
     /** _more_          */
-    public static final String CSS_CLASS_MENU_ROW = "ramadda-menu-row";
+    public static final String CSS_CLASS_MENUITEM_TD = "ramadda-menuitem-td";
+
+    /** _more_          */
+    public static final String CSS_CLASS_MENUITEM_ROW = "ramadda-menuitem-row";
 
     /** _more_ */
     public static final String CSS_CLASS_HIGHLIGHT = "ramadda-highlight";

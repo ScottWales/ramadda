@@ -292,10 +292,16 @@ function mouseDown(event) {
     if(popupObject) {
         if(checkToHidePopup()) {
             theObjectToHide = popupObject;
+            thePopupSrcId  = popupSrcId;
             var callback = function() {
+                var shouldClear = (popupObject == theObjectToHide);
                 hideObject(theObjectToHide);
+                if(shouldClear) {
+                    popupSrcId = null;
+                    popupObject = null;
+                }
             }
-            setTimeout(callback,500);
+            setTimeout(callback,250);
         }
     }
     event = util.getEvent(event);
@@ -1336,7 +1342,6 @@ function showPopup(event, srcId, popupId, alignLeft) {
             return;
         }
     }
-    
 
     popupTime = new Date();
     hidePopupObject();
@@ -1352,7 +1357,8 @@ function showPopup(event, srcId, popupId, alignLeft) {
     jQuery("#"+popupId ).position({
                 of: jQuery( "#" + srcId ),
                 my: 'left top',
-                at: 'left bottom'
+                at: 'left bottom',
+                collision: "none none"
                 });
 }
 

@@ -253,6 +253,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             for (Association newAssociation :
                     (List<Association>) new ArrayList(newAssociations)) {
                 if ( !associations.contains(newAssociation)) {
+                    getRepository().addAuthToken(request);
                     getAssociationManager().addAssociation(request,
                             newAssociation);
                 }

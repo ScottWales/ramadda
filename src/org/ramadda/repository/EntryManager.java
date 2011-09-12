@@ -4504,10 +4504,10 @@ public class EntryManager extends RepositoryManager {
 
             sb.append(HtmlUtil
                 .open(HtmlUtil.TAG_TR, HtmlUtil
-                    .cssClass(CSS_CLASS_MENU_ROW)) + HtmlUtil
+                    .cssClass(CSS_CLASS_MENUITEM_ROW)) + HtmlUtil
                         .open(HtmlUtil.TAG_TD) + HtmlUtil
                         .open(HtmlUtil.TAG_DIV, HtmlUtil
-                            .cssClass(CSS_CLASS_MENU_TD)));
+                            .cssClass(CSS_CLASS_MENUITEM_TD)));
             if (link.getIcon() == null) {
                 sb.append(HtmlUtil.space(1));
             } else {
@@ -4516,9 +4516,9 @@ public class EntryManager extends RepositoryManager {
             }
             sb.append(HtmlUtil.space(1));
             sb.append("</div></td><td><div "
-                      + HtmlUtil.cssClass(CSS_CLASS_MENU_TD) + ">");
+                      + HtmlUtil.cssClass(CSS_CLASS_MENUITEM_TD) + ">");
             sb.append(HtmlUtil.href(link.getUrl(), msg(link.getLabel()),
-                                    HtmlUtil.cssClass(CSS_CLASS_MENU_LINK)));
+                                    HtmlUtil.cssClass(CSS_CLASS_MENUITEM_LINK)));
             sb.append("</div></td></tr>");
         }
 
@@ -4622,7 +4622,7 @@ public class EntryManager extends RepositoryManager {
                                   HtmlUtil.cssClass("menuseparator"));
 
 
-        String menuClass = HtmlUtil.cssClass("entrymenulink");
+        String menuClass = HtmlUtil.cssClass(CSS_CLASS_MENU_LINK);
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_OTHER)) {
                 categoryMenu = getEntryActionsTable(request, entry,
@@ -4976,7 +4976,7 @@ public class EntryManager extends RepositoryManager {
             if (showToolbar || showMenubar) {
                 menubar =
                     HtmlUtil.leftRight(menubar, toolbar,
-                                       HtmlUtil.cssClass("entrymenubar"));
+                                       HtmlUtil.cssClass(CSS_CLASS_MENUBAR));
             } else {
                 menubar = "";
             }

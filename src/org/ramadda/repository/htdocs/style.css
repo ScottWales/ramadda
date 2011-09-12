@@ -944,9 +944,6 @@ ul {
 
 
 
-.ramadda-menu-row {
-}
-
 .menuentryseparator {
     margin:2px;
     margin-bottom:3px;
@@ -955,7 +952,32 @@ ul {
     height:1px;
 }
 
-.ramadda-menu-td {
+
+.ramadda-menubar {
+   background-repeat: repeat-x;
+   background-image:url(${urlroot}/images/gradient.jpg);
+   padding-left:10px;
+   padding-right:10px;
+   padding-top:5px;
+   padding-bottom:1px;
+   margin-bottom:2px;
+   border-bottom: 1px #aaa solid; 
+}
+
+.ramadda-menu-link {
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.ramadda-menu-link:hover {
+    color: #000000;
+}
+
+.ramadda-menuitem-row {
+}
+
+.ramadda-menuitem-td {
    margin-left:2px;
    margin-right:2px;
    margin-top:1px;
@@ -963,12 +985,25 @@ ul {
    padding-bottom:2px;
 }
 
-a.ramadda-menu-link:hover {
+a.ramadda-menuitem-link:hover {
    text-decoration: underline;
 }
 
-a.ramadda-menu-link {
+a.ramadda-menuitem-link {
    text-decoration: none;
+}
+
+.ramadda-menuitem-link {
+    color: #000000;
+    font-weight: normal;
+}
+
+.ramadda-menuitem-link a {
+   text-decoration: none;
+}
+
+.ramadda-menuitem-link a:hover {
+   color:#000000;
 }
 
 
@@ -1090,16 +1125,6 @@ code.menu {
 }
 
 
-.entrymenubar {
-   background-repeat: repeat-x;
-   background-image:url(${urlroot}/images/gradient.jpg);
-   padding-left:10px;
-   padding-right:10px;
-   padding-top:5px;
-   padding-bottom:1px;
-   margin-bottom:2px;
-   border-bottom: 1px #aaa solid; 
-}
 
 
 .entryheader {
@@ -1107,32 +1132,6 @@ code.menu {
    margin-bottom:5px;
 }
 
-.entrymenulink {
-    color: #000000;
-    font-weight: normal;
-    font-weight: bold;
-}
-
-
-.entrymenubar a {
-   text-decoration: none;
-   color:#000000;
-}
-
-
-.entrymenulink a {
-   text-decoration: none;
-}
-
- .entrymenulink a:hover {
-   color:#000000;
-}
-
-
-.entrymenubar a:hover {
-   text-decoration: underline;
-   color:#ff0000;
-}
 
 
 
