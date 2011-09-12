@@ -68,9 +68,9 @@ function RepositoryMap(mapId, params) {
     this.addBaseLayers = function() {
         if (!this.mapLayers) {
             this.mapLayers = [ 
+                map_google_terrain, 
                 map_google_streets, 
                 map_google_satellite,
-                map_google_terrain, 
                 map_google_hybrid, 
                 map_wms_openlayers,
                 // these don't play well with google projection
@@ -159,7 +159,7 @@ function RepositoryMap(mapId, params) {
         return this.map;
     }
 
-    this.initMap = function(forSelection) {
+    this.initMap = function(doRegion) {
         if (this.inited)
             return;
         this.inited = true;
@@ -224,7 +224,7 @@ function RepositoryMap(mapId, params) {
             this.initialLines = null;
         }
 
-        if (forSelection) {
+        if (doRegion) {
             this.addRegionSelectorControl();
         }
     }
@@ -258,6 +258,7 @@ function RepositoryMap(mapId, params) {
     }
 
     this.setSelection = function(argBase, doRegion, absolute) {
+    	this.selectRegion = doRegion;
         this.argBase = argBase;
         if (!util) {
             return;
@@ -293,7 +294,7 @@ function RepositoryMap(mapId, params) {
 
     this.selectionPopupInit = function() {
         if (!this.inited) {
-            this.initMap(true);
+            this.initMap(this.selectRegion);
             if (this.argBase && !this.fldNorth) {
                 this.setSelection(this.argBase);
             }
