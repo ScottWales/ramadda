@@ -205,11 +205,6 @@ public class DataOutputHandler extends OutputHandler {
     /** add lat lon argument */
     public static final String ARG_ADDLATLON = "addlatlon";
 
-    /** subset area argument */
-    public static final String ARG_SUBSETAREA = "subsetarea";
-
-    /** subset time argument */
-    public static final String ARG_SUBSETTIME = "subsettime";
 
     /** horizontal stride */
     public static final String ARG_HSTRIDE = "hstride";
@@ -225,6 +220,13 @@ public class DataOutputHandler extends OutputHandler {
 
     /** format */
     public static final String ARG_IMAGE_HEIGHT = "image_height";
+
+    private static final  String[] SPATIALARGS = new String[]{
+                ARG_AREA_NORTH,
+                ARG_AREA_WEST,
+                ARG_AREA_SOUTH,
+                ARG_AREA_EAST,
+            };
 
     /** chart format */
     private static final String FORMAT_TIMESERIES = "timeseries";
@@ -1483,12 +1485,16 @@ public class DataOutputHandler extends OutputHandler {
         double levelVal   = request.get(ARG_LEVEL, Double.NaN);
 
         int    timeStride = 1;
-        Date[] dates      = new Date[] { request.get(ARG_SUBSETTIME, false)
+        Date[] dates      = new Date[] { request.defined(ARG_FROMDATE)
                                          ? request.getDate(ARG_FROMDATE, null)
                                          : null,
-                                         request.get(ARG_SUBSETTIME, false)
+                                         request.defined(ARG_TODATE)
                                          ? request.getDate(ARG_TODATE, null)
                                          : null };
+        //have to have both dates
+        if(dates[0]!=null && dates[1]==null) dates[0] = null;
+        if(dates[1]!=null && dates[0]==null) dates[1] = null;
+
         if ((dates[0] != null) && (dates[1] != null)
                 && (dates[0].getTime() > dates[1].getTime())) {
             sb.append(
@@ -1673,22 +1679,16 @@ public class DataOutputHandler extends OutputHandler {
 
         if ((dates != null) && (dates.size() > 0)) {
             List formattedDates = new ArrayList();
+            formattedDates.add(new TwoFacedObject("---", ""));
             for (Date date : dates) {
                 formattedDates.add(getRepository().formatDate(request, date));
             }
-            String fromDate = request.getUnsafeString(ARG_FROMDATE,
-                                  getRepository().formatDate(request,
-                                      dates.get(0)));
-            String toDate = request.getUnsafeString(ARG_TODATE,
-                                getRepository().formatDate(request,
-                                    dates.get(dates.size() - 1)));
+            String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
+            String toDate = request.getUnsafeString(ARG_TODATE,"");
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Time Range"),
-                    HtmlUtil.checkbox(
-                        ARG_SUBSETTIME, HtmlUtil.VALUE_TRUE,
-                        request.get(ARG_SUBSETTIME, false)) + HtmlUtil.space(
-                            1) + HtmlUtil.select(
+                    HtmlUtil.select(
                             ARG_FROMDATE, formattedDates,
                             fromDate) + HtmlUtil.img(iconUrl(ICON_ARROW))
                                       + HtmlUtil.select(
@@ -1908,7 +1908,24 @@ public class DataOutputHandler extends OutputHandler {
             }
             //            System.err.println(varNames);
             LatLonRect llr = null;
-            if (request.get(ARG_SUBSETAREA, false)) {
+            boolean anySpatialDifferent = false;
+            boolean haveAllSpatialArgs = true;
+
+            for(String spatialArg: SPATIALARGS) {
+                if(!Misc.equals(request.getString(spatialArg,""),
+                                request.getString(spatialArg+".original",""))) {
+                    anySpatialDifferent = true;
+                    break;
+                }
+            }
+            for(String spatialArg: SPATIALARGS) {
+                if(!request.defined(spatialArg)) {
+                    haveAllSpatialArgs  =false;
+                    break;
+                }
+            }
+
+            if (haveAllSpatialArgs && anySpatialDifferent) {
                 llr = new LatLonRect(
                     new LatLonPointImpl(
                         request.get(ARG_AREA_NORTH, 90.0), request.get(
@@ -1921,12 +1938,15 @@ public class DataOutputHandler extends OutputHandler {
             int     zStride       = 1;
             boolean includeLatLon = request.get(ARG_ADDLATLON, false);
             int     timeStride    = 1;
-            Date[]  dates = new Date[] { request.get(ARG_SUBSETTIME, false)
+            Date[]  dates = new Date[] { request.defined(ARG_FROMDATE)
                                          ? request.getDate(ARG_FROMDATE, null)
                                          : null,
-                                         request.get(ARG_SUBSETTIME, false)
+                                         request.defined(ARG_TODATE)
                                          ? request.getDate(ARG_TODATE, null)
                                          : null };
+            //have to have both dates
+            if(dates[0]!=null && dates[1]==null) dates[0] = null;
+            if(dates[1]!=null && dates[0]==null) dates[1] = null;
             if ((dates[0] != null) && (dates[1] != null)
                     && (dates[0].getTime() > dates[1].getTime())) {
                 sb.append(
@@ -1996,38 +2016,43 @@ public class DataOutputHandler extends OutputHandler {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
             map.addBox("", llr, new MapProperties("blue", false, true));
+            String[] points = new String[] { "" + llr.getLatMax(),
+                                             "" + llr.getLonMin(), 
+                                             "" + llr.getLatMin(),
+                                             "" + llr.getLonMax(), };
+
+            for(int i=0;i<points.length;i++) {
+                sb.append(HtmlUtil.hidden(SPATIALARGS[i]+".original", points[i]));
+            }
             String llb = map.makeSelector(ARG_AREA, true,
-                                          new String[] { "" + llr.getLatMax(),
-                    "" + llr.getLonMin(), "" + llr.getLatMin(),
-                    "" + llr.getLonMax(), });
+                                          points);
             sb.append(
                 HtmlUtil.formEntryTop(
                     msgLabel("Subset Spatially"),
-                    "<table cellpadding=0 cellspacing=0><tr valign=top><td>"
-                    + HtmlUtil.checkbox(
-                        ARG_SUBSETAREA, HtmlUtil.VALUE_TRUE,
-                        request.get(ARG_SUBSETAREA, false)) + "</td><td>"
-                            + llb + "</table>"));
+                    llb));
         }
 
         if ((dates != null) && (dates.size() > 0)) {
             List formattedDates = new ArrayList();
+            formattedDates.add(new TwoFacedObject("---", ""));
             for (Date date : dates) {
                 formattedDates.add(getRepository().formatDate(request, date));
             }
+            /*
+              for now default to "" for dates
             String fromDate = request.getUnsafeString(ARG_FROMDATE,
                                   getRepository().formatDate(request,
                                       dates.get(0)));
             String toDate = request.getUnsafeString(ARG_TODATE,
                                 getRepository().formatDate(request,
                                     dates.get(dates.size() - 1)));
+            */
+            String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
+            String toDate = request.getUnsafeString(ARG_TODATE, "");
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Time Range"),
-                    HtmlUtil.checkbox(
-                        ARG_SUBSETTIME, HtmlUtil.VALUE_TRUE,
-                        request.get(ARG_SUBSETTIME, false)) + HtmlUtil.space(
-                            1) + HtmlUtil.select(
+                    HtmlUtil.select(
                             ARG_FROMDATE, formattedDates,
                             fromDate) + HtmlUtil.img(iconUrl(ICON_ARROW))
                                       + HtmlUtil.select(
