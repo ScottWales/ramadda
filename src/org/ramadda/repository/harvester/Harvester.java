@@ -22,7 +22,6 @@ package org.ramadda.repository.harvester;
 
 
 import org.apache.log4j.Logger;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
@@ -78,6 +77,8 @@ import java.util.regex.*;
  * @version $Revision: 1.3 $
  */
 public abstract class Harvester extends RepositoryManager {
+
+    private static final boolean PRINT_DEBUG = false;
 
     /** _more_          */
     private static final Logger LOG =
@@ -854,7 +855,9 @@ public abstract class Harvester extends RepositoryManager {
      * @param message _more_
      */
     public void logHarvesterInfo(String message) {
-        //        System.err.println (printTab+message);
+        if(PRINT_DEBUG) {
+            System.err.println (printTab+message);
+        }
         LOG.info(getName() + ": " + printTab +message);
     }
 

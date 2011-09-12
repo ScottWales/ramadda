@@ -255,6 +255,7 @@ function noop() {
 
 var popupObject;
 var popupSrcId;
+var popupTime;
 
 document.onmousemove = mouseMove;
 document.onmousedown = mouseDown;
@@ -282,10 +283,20 @@ function hidePopupObject() {
 
 
 
+function hideObjectToHide() {
+    if(objectToHide) {
+    }
+}
+
 function mouseDown(event) {
     if(popupObject) {
-        objectToHide = popupObject;
-        setTimeout("hidePopupObject()",500);
+        if(checkToHidePopup()) {
+            theObjectToHide = popupObject;
+            var callback = function() {
+                hideObject(theObjectToHide);
+            }
+            setTimeout(callback,500);
+        }
     }
     event = util.getEvent(event);
     mouseIsDown = 1;
@@ -1308,11 +1319,26 @@ function handleAjaxPopup(request, srcId) {
 }
 
 
+function checkToHidePopup() {
+    if(popupTime) {
+        var now = new Date();
+        timeDiff = now-popupTime;
+        if(timeDiff>1000)  {
+            return 1;
+        }
+    }
+}
+
 function showPopup(event, srcId, popupId, alignLeft) {
     if(popupSrcId == srcId) {
-        hidePopupObject();
-        return;
+        if(checkToHidePopup()) {
+            hidePopupObject();
+            return;
+        }
     }
+    
+
+    popupTime = new Date();
     hidePopupObject();
     var popup = util.getDomObject(popupId);
     var srcObj = util.getDomObject(srcId);
@@ -1321,10 +1347,12 @@ function showPopup(event, srcId, popupId, alignLeft) {
     popupSrcId = srcId;
 
     showObject(popup);
+    //    var options = {};
+    //    $( "#"+popupId ).show( "blind", options,"slow");
     jQuery("#"+popupId ).position({
                 of: jQuery( "#" + srcId ),
-                my: 'left bottom',
-                at: 'left top'
+                my: 'left top',
+                at: 'left bottom'
                 });
 }
 

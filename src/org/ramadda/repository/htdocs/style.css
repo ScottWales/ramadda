@@ -92,16 +92,10 @@ a:hover {
     font-weight: bold;
 }
 
-
-
-.ramadda-popup a:hover {
-   text-decoration: underline;
-}
-
 .ramadda-popup {
    padding:1px;
    text-decoration: none;
-   border : 1px #000 solid;
+   border : 1px #888 solid;
    background-color : #FFFFFF;
    position: absolute; 
    visibility: hidden; 
@@ -116,6 +110,13 @@ a:hover {
   /* slightly different syntax for IE8 */
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
+
+.ramadda-popup a:hover {
+   text-decoration: underline;
+   color:black;
+}
+
+
 
 
 
@@ -480,9 +481,6 @@ a..ramadda-heading-2-link:visited {
 .subnavoffcomp a:hover {
    color:red;
 }
-
-
-
 
 
 
@@ -946,7 +944,7 @@ ul {
 
 
 
-.menurow {
+.ramadda-menu-row {
 }
 
 .menuentryseparator {
@@ -957,7 +955,7 @@ ul {
     height:1px;
 }
 
-.menutd {
+.ramadda-menu-td {
    margin-left:2px;
    margin-right:2px;
    margin-top:1px;
@@ -965,18 +963,13 @@ ul {
    padding-bottom:2px;
 }
 
-
-
-
-a.menulink:hover {
+a.ramadda-menu-link:hover {
    text-decoration: underline;
 }
 
-a.menulink {
+a.ramadda-menu-link {
    text-decoration: none;
-   color:black;
 }
-
 
 
 .image_edit_box {

@@ -1509,8 +1509,8 @@ public class EntryManager extends RepositoryManager {
                          ARG_ENTRYID, entry.getId());
         //j-
         String[] macros = {
-            "entryid", entry.getId(), "parentid", entry.getParentEntryId(), "resourcepath",
-            entry.getResource().getPath(), "resourcename",
+            "entryid", entry.getId(), "parentid", entry.getParentEntryId(),
+            "resourcepath", entry.getResource().getPath(), "resourcename",
             getStorageManager().getFileTail(entry.getResource().getPath()),
             "filename",
             getStorageManager().getFileTail(entry.getResource().getPath()),
@@ -4501,7 +4501,13 @@ public class EntryManager extends RepositoryManager {
             if (needToAddHr) {
                 continue;
             }
-            sb.append("<tr class=\"menurow\"><td><div  class=\"menutd\">");
+
+            sb.append(HtmlUtil
+                .open(HtmlUtil.TAG_TR, HtmlUtil
+                    .cssClass(CSS_CLASS_MENU_ROW)) + HtmlUtil
+                        .open(HtmlUtil.TAG_TD) + HtmlUtil
+                        .open(HtmlUtil.TAG_DIV, HtmlUtil
+                            .cssClass(CSS_CLASS_MENU_TD)));
             if (link.getIcon() == null) {
                 sb.append(HtmlUtil.space(1));
             } else {
@@ -4509,9 +4515,10 @@ public class EntryManager extends RepositoryManager {
                                         HtmlUtil.img(link.getIcon())));
             }
             sb.append(HtmlUtil.space(1));
-            sb.append("</div></td><td><div  class=\"menutd\">");
+            sb.append("</div></td><td><div "
+                      + HtmlUtil.cssClass(CSS_CLASS_MENU_TD) + ">");
             sb.append(HtmlUtil.href(link.getUrl(), msg(link.getLabel()),
-                                    HtmlUtil.cssClass("menulink")));
+                                    HtmlUtil.cssClass(CSS_CLASS_MENU_LINK)));
             sb.append("</div></td></tr>");
         }
 
@@ -4628,6 +4635,8 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
+
         PageStyle pageStyle = request.getPageStyle(entry);
 
         /*
@@ -4697,12 +4706,12 @@ public class EntryManager extends RepositoryManager {
             menuItems.add(categoryMenu);
         }
 
-
         String leftTable;
         leftTable = HtmlUtil.table(
             HtmlUtil.row(
                 HtmlUtil.cols(Misc.listToStringArray(menuItems)),
                 " cellpadding=0 cellspacing=0 border=0 "));
+
         return leftTable;
     }
 
@@ -5582,6 +5591,7 @@ public class EntryManager extends RepositoryManager {
         }
         insertEntries(Misc.newList(newEntry), true);
         if (associatedEntry != null) {
+            getRepository().addAuthToken(request);
             getAssociationManager().addAssociation(request, associatedEntry,
                     newEntry, "", associationType);
         }

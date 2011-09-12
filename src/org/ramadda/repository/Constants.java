@@ -49,7 +49,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_ARROW = "ramadda.icon.arrow";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_GOOGLEEARTH = "ramadda.icon.googleearth";
 
     /** _more_ */
@@ -110,7 +110,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_DOWNARROW = "ramadda.icon.downarrow";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DOWNLOAD = "ramadda.icon.download";
 
     /** _more_ */
@@ -469,7 +469,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DOWNLOAD = "download";
 
     /** _more_ */
@@ -520,7 +520,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ADMIN_WHAT = "what";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_PLUGIN_FILE = "plugin.file";
 
     /** _more_ */
@@ -1455,7 +1455,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_SHOWMAP = "ramadda.showmap";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_NOSTYLE = "nostyle";
 
 
@@ -1606,7 +1606,7 @@ public interface Constants {
     public static final String PROP_HARVESTERS = "ramadda.harvesters";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ALWAYS_HTTPS = "ramadda.always_https";
 
     /** _more_ */
@@ -1977,78 +1977,88 @@ public interface Constants {
 
 
     /** _more_          */
+    public static final String CSS_CLASS_MENU_LINK = "ramadda-menu-link";
+
+    /** _more_          */
+    public static final String CSS_CLASS_MENU_TD = "ramadda-menu-td";
+
+    /** _more_          */
+    public static final String CSS_CLASS_MENU_ROW = "ramadda-menu-row";
+
+    /** _more_ */
     public static final String CSS_CLASS_HIGHLIGHT = "ramadda-highlight";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_ERROR_LABEL = "ramadda-error-label";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_HEADING_1 = "ramadda-heading-1";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_HEADING_2 = "ramadda-heading-2";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_HEADING_2_LINK =
         "ramadda-heading-2-link";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_POPUP = "ramadda-popup";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_REQUIRED = "ramadda-required";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_REQUIRED_LABEL =
         "ramadda-required-label";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_REQUIRED_FIELD =
         "ramadda-required-field";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_REQUIRED_DISABLED =
         "ramadda-required-disabled";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_EARTH_NAV = "ramadda-earth-nav";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_EARTH_LINK = "ramadda-earth-link";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_EARTH_ENTRIES =
         "ramadda-earth-entries";
 
+    /** _more_          */
     public static final String CSS_CLASS_EARTH_CONTAINER =
         "ramadda-earth-container";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_COMMENT_BLOCK =
         "ramadda-comment-block";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_COMMENT_COMMENTER =
         "ramadda-comment-commenter";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_COMMENT_DATE =
         "ramadda-comment-date";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_COMMENT_INNER =
         "ramadda-comment-inner";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_COMMENT_SUBJECT =
         "ramadda-comment-subject";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_USER_FIELD = "ramadda-user-field";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_SEPARATOR = "ramadda-separator";
 
 

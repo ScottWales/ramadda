@@ -2979,6 +2979,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
+    public void addAuthToken(Request request) {
+        String sessionId = request.getSessionId();
+        if (sessionId != null) {
+            String authToken = getAuthToken(sessionId);
+            request.put(ARG_AUTHTOKEN, authToken);
+        }
+    }
+
 
 
     /**
