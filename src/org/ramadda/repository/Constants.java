@@ -1979,9 +1979,12 @@ public interface Constants {
     public static final String CSS_CLASS_MENUBAR = "ramadda-menubar";
 
     public static final String CSS_CLASS_MENU_LINK = "ramadda-menu-link";
+    public static final String CSS_CLASS_MENU_SEPARATOR = "ramadda-menu-separator";
 
     /** _more_          */
     public static final String CSS_CLASS_MENUITEM_LINK = "ramadda-menuitem-link";
+
+    public static final String CSS_CLASS_MENUITEM_SEPARATOR = "ramadda-menuitem-separator";
 
     /** _more_          */
     public static final String CSS_CLASS_MENUITEM_TD = "ramadda-menuitem-td";

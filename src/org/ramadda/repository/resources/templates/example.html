@@ -29,7 +29,7 @@ ${repository_name}  - Name defined in the Admin pages
 ${title}  - The current page title (e.g. "Metadata")
 ${entry.breadcrumbs} - Text bread crumbs of  entry hierarchy - used in title
 ${links} - The main navigational links. Can be configured in the properties 
-${userlinkss} - The user specific links. Can be configured in the properties 
+${userlinks} - The user specific links. Can be configured in the properties 
 ${entry.header} - The Entry menubar, toolbar, breadcrumb header thing
 ${content} - The page content
 ${logo.url} - Url for clicking on logo - specified in the Admin pages
@@ -44,8 +44,8 @@ id=example
 ramadda.template.link.wrapper =<a href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
 
-ramadda.template.userlinks.wrapper =<a href="${url}">${label}</a>
-ramadda.template.userlinks.separator=&nbsp;|&nbsp;
+ramadda.template.userlink.wrapper =<a href="${url}">${label}</a>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
 
 ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
 ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
@@ -92,7 +92,7 @@ body {
    padding-left: 5px;
 }
 
-.entrymenubar {
+.ramadda-menubar {
    margin-top:5px;
    background-repeat: repeat-x;
    background-image:none;
@@ -130,7 +130,7 @@ ${headfinal}
 <td>
 ${links}
 </td>
-<td align="right">${userlinkss}</td>
+<td align="right">${userlinks}</td>
 </tr>
 </table>
 </td>

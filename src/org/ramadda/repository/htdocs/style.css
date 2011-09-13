@@ -18,7 +18,6 @@ a:link {
    color: #0000FF;
 }
 
-
 a:hover {
    color: #FF0000;
    text-decoration: underline;
@@ -143,8 +142,6 @@ a:hover {
    font-style:italic;
 }
 
-
-
 .ramadda-separator {
    font-size: 9pt;
 //   font-weight: bold;
@@ -226,15 +223,6 @@ a..ramadda-heading-2-link:visited {
    text-align:center;
 }
 
-
-
-
-
-
-
-
-
-
 .footer {
    margin:10px;
    margin-left: auto;
@@ -243,22 +231,9 @@ a..ramadda-heading-2-link:visited {
 }
 
 
-
-
 .entryrow {
   margin-top:2px;
   border:1px #fff solid;
-}
-
-.left-element {
-   position: absolute;
-   left: 0px;
-}
-
-.right-element {
-   position: absolute;
-   right:0px;
-   text-align: right;
 }
 
 .entrymenuarrow {
@@ -944,14 +919,6 @@ ul {
 
 
 
-.menuentryseparator {
-    margin:2px;
-    margin-bottom:3px;
-    padding:0px;
-    width: 100%;
-    height:1px;
-}
-
 
 .ramadda-menubar {
    background-repeat: repeat-x;
@@ -971,8 +938,23 @@ ul {
 }
 
 .ramadda-menu-link:hover {
-    color: #000000;
+  text-decoration: underline;
+  color: #000000;
 }
+
+.ramadda-menu-link:link {
+  text-decoration: underline;
+  color: #000000;
+}
+
+.ramadda-menu-separator {
+    margin:2px;
+    margin-bottom:3px;
+    padding:0px;
+}
+
+
+
 
 .ramadda-menuitem-row {
 }
@@ -985,8 +967,10 @@ ul {
    padding-bottom:2px;
 }
 
+
 a.ramadda-menuitem-link:hover {
    text-decoration: underline;
+   color:#000;
 }
 
 a.ramadda-menuitem-link {
@@ -998,6 +982,14 @@ a.ramadda-menuitem-link {
     font-weight: normal;
 }
 
+.ramadda-menuitem-link:visited {
+    color: #000000;
+}
+
+.ramadda-menuitem-link:link {
+    color: #000000;
+}
+
 .ramadda-menuitem-link a {
    text-decoration: none;
 }
@@ -1005,6 +997,14 @@ a.ramadda-menuitem-link {
 .ramadda-menuitem-link a:hover {
    color:#000000;
 }
+
+
+.ramadda-menuitem-separator {
+    margin:2px;
+    margin-bottom:3px;
+    padding:0px;
+}
+
 
 
 .image_edit_box {
@@ -1131,13 +1131,6 @@ code.menu {
    border-bottom : 1px #ddd solid;
    margin-bottom:5px;
 }
-
-
-
-
-
-
-
 
 .entryname {
    font-size: 12pt;
@@ -1364,118 +1357,5 @@ a.wiki-link-noexist {
 	color:#aa0000;
 }
 
-.cpYearNavigation, .cpMonthNavigation {
-    background-color:#006699;
-    text-align:center;
-    vertical-align:center;
-    text-decoration:none;
-    color:#FFFFFF;
-    font-weight:bold;
-    padding:2px;
-}
-.cpMonthNavigation   {
-  padding-left:5px;
-  padding-right:5px;
-  padding-top:4px;
-  padding-bottom:2px;
-  margin:0px;
-}
-
-.cpMonthNavigation  a {
-   color: white;
-}
-
-.cpDayColumnHeader,
-.cpYearNavigation,
-.cpMonthNavigation,
-.cpCurrentMonthDate,
-.cpCurrentMonthDateDisabled,
-.cpOtherMonthDate,
-.cpOtherMonthDateDisabled,
-.cpCurrentDate,
-.cpCurrentDateDisabled,
-.cpTodayText,
-.cpTodayTextDisabled,
-.cpText	{
-    font-family:arial;
-    font-family:helvetica;
-    font-size:12pt;
-}
-
-
-TD.cpDayColumnHeader {
-	text-align:center;
-	border-bottom:solid thin #6677DD;
-        padding-top:5px;
-}
-
-.cpOtherMonthDate {
-   background-color:#efefef;
-}
-
-.cpCurrentMonthDate, .cpOtherMonthDate, .cpCurrentDate	{
-    text-align:right;
-    text-decoration:none;
-    padding:2px;
-    padding-right:2px;
-    padding-leftt:2px;
-}
-
-.cpCurrentMonthDateDisabled, .cpOtherMonthDateDisabled, .cpCurrentDateDisabled	{
-    color:#D0D0D0;
-    text-align:right;
-    text-decoration:line-through;
-}
-
-.cpCurrentMonthDate {
-    color:#6677DD;
-}
-
-.cpCurrentDate	{
-    color: #000;
-    font-weight:bold;
-}
-
-.cpOtherMonthDate {
-   color:#808080;
-}
-
-
-TD.cpCurrentDate {
-color:#FFFFFF;
-background-color: #6677DD;
-background-color: #ccc;
-border-width:1px;
-border:solid thin #000000;
-}
-
-TD.cpCurrentDateDisabled {
-border-width:1px;
-border:solid thin #FFAAAA;
-}
-
-TD.cpTodayText, TD.cpTodayTextDisabled {
-   border-top:solid thin #6677DD;
-   padding-top:3px;
-}
-
-A.cpTodayText, SPAN.cpTodayTextDisabled {
-}
-
-A.cpTodayText {
-color:#6677DD;
-}
-
-
-
-SPAN.cpTodayTextDisabled {
-   color:#D0D0D0;
-}
-
-.cpBorder {
-  border:solid 1px #6677DD;
-  margin:0px;
-  padding:0px;
-}
 
 

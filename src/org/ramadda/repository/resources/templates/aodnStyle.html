@@ -13,8 +13,8 @@
 	ramadda.template.link.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 	ramadda.template.link.separator=
 	
-	ramadda.template.userlinks.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
-	ramadda.template.userlinks.separator=
+	ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
+	ramadda.template.userlink.separator=
 	
 	ramadda.template.favorites = <span class="linkslabel"><a href="${root}/user/home" ><img border="0"  src="${root}/icons/star.png" align="center" /> Favorites</a></spam><div class="favorites">${entries}</div>
 	ramadda.template.cart = <span class="linkslabel"><a href="${root}/user/cart"><img border="0"  src="${root}/icons/cart.png" align="center" /> Cart</a></spam><div class="favorites">${entries}</div>
@@ -32,12 +32,12 @@ body {
 
 /* Top menu bar */
 
-.entrymenubar {
+.ramadda-menubar {
 	background-color: #3c668d;
 	opacity: 0.9;
-	padding-top: 10px;
+	padding-top: 5px;
 	padding-right: 20px;
-	padding-bottom: 10px;
+	padding-bottom: 3px;
 	padding-left: 20px;
 /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
@@ -66,18 +66,19 @@ body {
 }
 
 
-.entrymenulink {
+.ramadda-menu-link, .ramadda-menu-link:hover {
   color: white;
   font-weight: bold;
 }
-.menuseparator {
+
+.ramadda-menu-separator {
 	margin-left: 2px;
 	margin-right: 2px;
 	padding-bottom: 2px;
 	color: white;
 }
 
-.popup {
+.ramadda-popup {
   padding:1px;
    text-decoration: none;
    border : 1px #000 solid;

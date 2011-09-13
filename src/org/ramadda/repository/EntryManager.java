@@ -4495,7 +4495,7 @@ public class EntryManager extends RepositoryManager {
             //Only add the hr if we have more things in the list
             if ((cnt < 2) && needToAddHr) {
                 sb.append(
-                    "<tr><td colspan=2><hr class=\"menuentryseparator\"></td></tr>");
+                          "<tr><td colspan=2><hr " + HtmlUtil.cssClass(CSS_CLASS_MENUITEM_SEPARATOR) +"></td></tr>");
             }
             needToAddHr = link.getHr();
             if (needToAddHr) {
@@ -4619,7 +4619,7 @@ public class EntryManager extends RepositoryManager {
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
         String sep = HtmlUtil.div("&nbsp;|&nbsp;",
-                                  HtmlUtil.cssClass("menuseparator"));
+                                  HtmlUtil.cssClass(CSS_CLASS_MENU_SEPARATOR));
 
 
         String menuClass = HtmlUtil.cssClass(CSS_CLASS_MENU_LINK);
