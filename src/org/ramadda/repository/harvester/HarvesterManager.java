@@ -589,7 +589,8 @@ public class HarvesterManager extends RepositoryManager {
                                     StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.formTable());
+        //        sb.append(HtmlUtil.formTable());
+        sb.append("<table cellpadding=4 cellspacing=0>");
         sb.append(HtmlUtil.row(HtmlUtil.cols("", HtmlUtil.bold(msg("Name")),
                                              HtmlUtil.bold(msg("State")),
                                              HtmlUtil.bold(msg("Action")),
@@ -615,9 +616,15 @@ public class HarvesterManager extends RepositoryManager {
                                       msg("Edit")));
             }
             cnt++;
-            sb.append(HtmlUtil.rowTop(HtmlUtil.cols(edit,
+            String rowAttributes = HtmlUtil.attr(HtmlUtil.ATTR_VALIGN, HtmlUtil.VALUE_TOP);
+            
+            if(harvester.getActive()) {
+                rowAttributes += HtmlUtil.cssClass(CSS_CLASS_HARVESTER_ACTIVE);
+            }
+
+            sb.append(HtmlUtil.tag(HtmlUtil.TAG_TR, rowAttributes, HtmlUtil.cols(edit,
                     harvester.getName(), (harvester.getActive()
-                                          ? msg("Active")
+                                          ? HtmlUtil.bold(msg("Active"))
                                           : msg("Stopped")) + HtmlUtil.space(
                                           2), harvester.getRunLink(
                                           request, false), removeLink,

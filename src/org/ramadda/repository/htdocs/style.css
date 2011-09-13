@@ -70,7 +70,7 @@ form {
 
 .ramadda-highlight {
    font-weight: bold; 
-   background: #fffe99;
+   background: #FFFFCC;
    padding: 5px;
 }
 
@@ -101,6 +101,11 @@ form {
 .ramadda-popup a:hover {
    text-decoration: underline;
    color:black;
+}
+
+.ramadda-harvester-active {
+  background: #FFFFCC;
+//  background-color: #ddd;
 }
 
 .ramadda-comment-block {

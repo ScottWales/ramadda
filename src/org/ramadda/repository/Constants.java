@@ -1976,36 +1976,65 @@ public interface Constants {
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
 
+    /** _more_          */
+    public static final String CSS_CLASS_HARVESTER_ACTIVE =
+        "ramadda-harvester-active";
+
+    /** _more_          */
     public static final String CSS_CLASS_ENTRY_ROW = "ramadda-entry-row";
-    public static final String CSS_CLASS_ENTRY_ROW_LABEL = "ramadda-entry-row-label";
 
-    public static final String CSS_CLASS_FOLDER_BLOCK = "ramadda-folder-block";
+    /** _more_          */
+    public static final String CSS_CLASS_ENTRY_ROW_LABEL =
+        "ramadda-entry-row-label";
+
+    /** _more_          */
+    public static final String CSS_CLASS_FOLDER_BLOCK =
+        "ramadda-folder-block";
+
+    /** _more_          */
     public static final String CSS_CLASS_SERVER = "ramadda-server";
-    public static final String CSS_CLASS_SERVER_BLOCK = "ramadda-server-block";
 
+    /** _more_          */
+    public static final String CSS_CLASS_SERVER_BLOCK =
+        "ramadda-server-block";
+
+    /** _more_          */
     public static final String CSS_CLASS_STACK = "ramadda-stack";
 
+    /** _more_          */
     public static final String CSS_CLASS_SMALLLINK = "ramadda-smalllink";
+
+    /** _more_          */
     public static final String CSS_CLASS_SMALLHELP = "ramadda-smallhelp";
 
+    /** _more_          */
     public static final String CSS_CLASS_MENUBAR = "ramadda-menubar";
 
+    /** _more_          */
     public static final String CSS_CLASS_MENUBUTTON = "ramadda-menubutton";
-    public static final String CSS_CLASS_MENUBUTTON_SEPARATOR = "ramadda-menubutton-separator";
 
+    /** _more_          */
+    public static final String CSS_CLASS_MENUBUTTON_SEPARATOR =
+        "ramadda-menubutton-separator";
+
+    /** _more_          */
     public static final String CSS_CLASS_DATETIME = "ramadda-datetime";
 
 
-    /** _more_          */
-    public static final String CSS_CLASS_MENUITEM_LINK = "ramadda-menuitem-link";
+    /** _more_ */
+    public static final String CSS_CLASS_MENUITEM_LINK =
+        "ramadda-menuitem-link";
 
-    public static final String CSS_CLASS_MENUITEM_SEPARATOR = "ramadda-menuitem-separator";
-
     /** _more_          */
+    public static final String CSS_CLASS_MENUITEM_SEPARATOR =
+        "ramadda-menuitem-separator";
+
+    /** _more_ */
     public static final String CSS_CLASS_MENUITEM_TD = "ramadda-menuitem-td";
 
-    /** _more_          */
-    public static final String CSS_CLASS_MENUITEM_ROW = "ramadda-menuitem-row";
+    /** _more_ */
+    public static final String CSS_CLASS_MENUITEM_ROW =
+        "ramadda-menuitem-row";
 
     /** _more_ */
     public static final String CSS_CLASS_HIGHLIGHT = "ramadda-highlight";
@@ -2052,7 +2081,7 @@ public interface Constants {
     public static final String CSS_CLASS_EARTH_ENTRIES =
         "ramadda-earth-entries";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_EARTH_CONTAINER =
         "ramadda-earth-container";
 
