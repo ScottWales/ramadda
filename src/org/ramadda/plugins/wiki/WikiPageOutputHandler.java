@@ -187,7 +187,7 @@ public class WikiPageOutputHandler extends OutputHandler {
 
         header = HtmlUtil.leftRight(header,
                                     HtmlUtil.div(detailsView + " " + rawLink,
-                                        HtmlUtil.cssClass("smalllink")));
+                                        HtmlUtil.cssClass(CSS_CLASS_SMALLLINK)));
         WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {
                                 OutputHandler.PROP_REQUEST,
                                 request, OutputHandler.PROP_ENTRY, entry }));

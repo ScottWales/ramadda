@@ -1976,10 +1976,25 @@ public interface Constants {
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
 
+    public static final String CSS_CLASS_ENTRY_ROW = "ramadda-entry-row";
+    public static final String CSS_CLASS_ENTRY_ROW_LABEL = "ramadda-entry-row-label";
+
+    public static final String CSS_CLASS_FOLDER_BLOCK = "ramadda-folder-block";
+    public static final String CSS_CLASS_SERVER = "ramadda-server";
+    public static final String CSS_CLASS_SERVER_BLOCK = "ramadda-server-block";
+
+    public static final String CSS_CLASS_STACK = "ramadda-stack";
+
+    public static final String CSS_CLASS_SMALLLINK = "ramadda-smalllink";
+    public static final String CSS_CLASS_SMALLHELP = "ramadda-smallhelp";
+
     public static final String CSS_CLASS_MENUBAR = "ramadda-menubar";
 
-    public static final String CSS_CLASS_MENU_LINK = "ramadda-menu-link";
-    public static final String CSS_CLASS_MENU_SEPARATOR = "ramadda-menu-separator";
+    public static final String CSS_CLASS_MENUBUTTON = "ramadda-menubutton";
+    public static final String CSS_CLASS_MENUBUTTON_SEPARATOR = "ramadda-menubutton-separator";
+
+    public static final String CSS_CLASS_DATETIME = "ramadda-datetime";
+
 
     /** _more_          */
     public static final String CSS_CLASS_MENUITEM_LINK = "ramadda-menuitem-link";

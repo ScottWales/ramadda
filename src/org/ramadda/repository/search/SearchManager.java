@@ -868,7 +868,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                     msg("Remote Search Settings"),
                     HtmlUtil.div(
                         serverSB.toString(),
-                        HtmlUtil.cssClass("serverdiv")), false));
+                        HtmlUtil.cssClass(CSS_CLASS_SERVER)), false));
         }
 
 
@@ -988,7 +988,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 getRepository().showDialogNote(msg("No servers selected")));
         } else {
             sb.append(HtmlUtil.div(serverSB.toString(),
-                                   HtmlUtil.cssClass("serverblock")));
+                                   HtmlUtil.cssClass(CSS_CLASS_SERVER_BLOCK)));
             sb.append(HtmlUtil.p());
         }
         sb.append(HtmlUtil.p());

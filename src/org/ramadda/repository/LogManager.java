@@ -604,7 +604,7 @@ public class LogManager extends RepositoryManager {
                                 "Stack trace",
                                 HtmlUtil.div(
                                     stackSB.toString(),
-                                    HtmlUtil.cssClass("stack")), false), 10));
+                                    HtmlUtil.cssClass(CSS_CLASS_STACK)), false), 10));
                     sb.append("<br>");
                     stackSB = null;
                 } else if (stackSB != null) {
@@ -625,7 +625,7 @@ public class LogManager extends RepositoryManager {
             if (stackSB != null) {
                 sb.append(HtmlUtil.makeShowHideBlock("Stack trace",
                         HtmlUtil.div(stackSB.toString(),
-                                     HtmlUtil.cssClass("stack")), false));
+                                     HtmlUtil.cssClass(CSS_CLASS_STACK)), false));
             }
 
             //        sb.append("</pre>");

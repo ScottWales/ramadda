@@ -352,8 +352,7 @@ public class HtmlOutputHandler extends OutputHandler {
                            OutputType.TYPE_ALL);
         String contents =
             OutputHandler.makeTabs(Misc.newList(msg("Information"),
-                msg(LABEL_LINKS)), Misc.newList(sb.toString(), links), true,
-                                   "tab_content");
+                msg(LABEL_LINKS)), Misc.newList(sb.toString(), links), true);
 
         contents = getInformationTabs(request, entry, true, true);
         //        String       contents = sb.toString();
@@ -990,12 +989,7 @@ public class HtmlOutputHandler extends OutputHandler {
         //                OutputType.TYPE_ALL));
 
 
-        return OutputHandler.makeTabs(tabTitles, tabContents, true,
-                                      (fixedHeight
-                                       ? "tab_content_fixedheight"
-                                       : "tab_content"));
-
-
+        return OutputHandler.makeTabs(tabTitles, tabContents, true);
     }
 
 

@@ -70,14 +70,14 @@ color:black
 
 
 
-.header a:hover  {color:red;}
-.header a {color:white;}
-.header_label {
+.ramadda-header a:hover  {color:red;}
+.ramadda-header a {color:white;}
+.ramadda-header-label {
     font-size:24px;
     color:white;
     }
 
-.header {
+.ramadda-header {
    background:#030361;
    background-repeat: no-repeat;
    background-image:url(${root}/images/globe_top.png);
@@ -124,14 +124,14 @@ color:black
    color:white;
 }
 
-.footer {
+.ramadda-footer {
         background: white;
 	padding: 5px;
         border-top: 2px #000066 solid;
 	margin: 0px;
 }
 
-.footer a {
+.ramadda-footer a {
 	color: black;
 }
 
@@ -143,10 +143,10 @@ ${headfinal}
 
 <body>
 <div id="container">
-<div class="header">
+<div class="ramadda-header">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr valign="bottom">
-<td><span class="header_label">${header.title} - ${title}</span></td>
+<td><span class="ramadda-header-label">${header.title} - ${title}</span></td>
 <td align="right" style="color:white;">${userlinks}</td>
 </tr></table>
 </div> 
@@ -159,7 +159,7 @@ ${headfinal}
 </div>
 </div>
 
-<div class="footer">
+<div class="ramadda-footer">
 ${footer}
 <center><a href="${logo.url}" target="external"><img border="0"  src="${logo.image}" align="center"></a>
 </div>

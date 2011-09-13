@@ -794,9 +794,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                       child), child.getName());
                 tabContents.add(content + "<br>" + href);
             }
-            return OutputHandler.makeTabs(tabTitles, tabContents, true, (true
-                    ? "tab_content_fixedheight"
-                    : "tab_content"));
+            return OutputHandler.makeTabs(tabTitles, tabContents, true);
 
         } else if (include.equals(WIKIPROP_GRID)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
@@ -1043,10 +1041,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return "none";
         }
         if (tabTitles.size() > 1) {
-            return OutputHandler.makeTabs(tabTitles, tabContents, true, (true
-                    ? "tab_content_fixedheight"
-                    : "tab_content"));
-
+            return OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
         return tabContents.get(0).toString();
 

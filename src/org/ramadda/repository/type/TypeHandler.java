@@ -2545,8 +2545,7 @@ public class TypeHandler extends RepositoryManager {
                         formEntryTop(
                             request, msgLabel("Resource"),
                             OutputHandler.makeTabs(
-                                tabTitles, tabContent, true, "tab_content",
-                                "tab_contents_noborder") + extra));
+                                tabTitles, tabContent, true) + extra));
                 } else if (tabTitles.size() == 1) {
                     sb.append(formEntry(request, tabTitles.get(0) + ":",
                                         tabContent.get(0) + extra));
@@ -2573,8 +2572,7 @@ public class TypeHandler extends RepositoryManager {
                             sb.append(formEntryTop(request,
                                     msgLabel("Resource"),
                                     OutputHandler.makeTabs(tabTitles,
-                                        tabContent, true, "tab_content",
-                                        "tab_contents_noborder") + extra));
+                                        tabContent, true) + extra));
                         }
                     } else if (tabTitles.size() == 1) {
                         sb.append(formEntry(request, "",

@@ -348,7 +348,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
                                 80, HtmlUtil.id(ARG_WIKI_TEXT));
 
         String right = HtmlUtil.div(help.toString(),
-                                    HtmlUtil.cssClass("smallhelp"));
+                                    HtmlUtil.cssClass(CSS_CLASS_SMALLHELP));
         right = "";
         textWidget = "<table><tr valign=\"top\"><td>" + textWidget
                      + "</td><td>" + right + "</td></tr></table>";

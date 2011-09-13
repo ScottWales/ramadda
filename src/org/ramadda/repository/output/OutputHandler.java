@@ -929,7 +929,7 @@ public class OutputHandler extends RepositoryManager {
         sb.append(HtmlUtil.div("",
                                HtmlUtil.attrs(HtmlUtil.ATTR_STYLE,
                                    "display:none;visibility:hidden",
-                                   HtmlUtil.ATTR_CLASS, "folderblock",
+                                   HtmlUtil.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
                                    HtmlUtil.ATTR_ID, uid)));
         return sb.toString();
     }
@@ -1330,7 +1330,7 @@ public class OutputHandler extends RepositoryManager {
             sb.append(tuple[2]);
         }
         sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                HtmlUtil.cssClass("folderblock")));
+                                HtmlUtil.cssClass(CSS_CLASS_FOLDER_BLOCK)));
         sb.append("\n\n");
         int          cnt  = 0;
         StringBuffer jsSB = new StringBuffer();
@@ -1422,7 +1422,7 @@ public class OutputHandler extends RepositoryManager {
         sb.append(
             HtmlUtil.open(
                 HtmlUtil.TAG_DIV,
-                HtmlUtil.id(rowId) + HtmlUtil.cssClass("entryrow")
+                HtmlUtil.id(rowId) + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW)
                 + HtmlUtil.onMouseClick(
                     HtmlUtil.call(
                         "entryRowClick",
@@ -1467,15 +1467,15 @@ public class OutputHandler extends RepositoryManager {
         }
 
         if (request.isMobile()) {
-            sb.append("<td align=right><div class=entryrowlabel>");
+            sb.append("<td align=right><div "+ HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)+">");
         } else {
-            sb.append("<td align=right width=200><div class=entryrowlabel>");
+            sb.append("<td align=right width=200><div "+HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)+">");
         }
         sb.append(getRepository().formatDateShort(request,
                 new Date(entry.getStartDate()),
                 getEntryManager().getTimezone(entry), extraAlt.toString()));
         sb.append(
-            "</div></td><td width=\"1%\" align=right class=entryrowlabel>");
+            "</div></td><td width=\"1%\" align=right " + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)+">");
         sb.append(HtmlUtil.space(1));
 
         //      sb.append(HtmlUtil.jsLink(toggleJS,"X"));
@@ -1783,35 +1783,7 @@ public class OutputHandler extends RepositoryManager {
     /** _more_          */
     private static int tabCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param titles _more_
-     * @param contents _more_
-     * @param skipEmpty _more_
-     *
-     * @return _more_
-     */
-    public static String makeTabs(List titles, List contents,
-                                  boolean skipEmpty) {
-        return makeTabs(titles, contents, skipEmpty, CLASS_TAB_CONTENT);
-    }
 
-    /**
-     * _more_
-     *
-     * @param titles _more_
-     * @param contents _more_
-     * @param skipEmpty _more_
-     * @param tabContentClass _more_
-     *
-     * @return _more_
-     */
-    public static String makeTabs(List titles, List contents,
-                                  boolean skipEmpty, String tabContentClass) {
-        return makeTabs(titles, contents, skipEmpty, tabContentClass,
-                        CLASS_TAB_CONTENTS);
-    }
 
     /**
      * _more_
@@ -1819,14 +1791,10 @@ public class OutputHandler extends RepositoryManager {
      * @param titles _more_
      * @param tabs _more_
      * @param skipEmpty _more_
-     * @param tabContentClass _more_
-     * @param wrapperClass _more_
      *
      * @return _more_
      */
-    public static String makeTabs(List titles, List tabs, boolean skipEmpty,
-                                  String tabContentClass,
-                                  String wrapperClass) {
+    public static String makeTabs(List titles, List tabs, boolean skipEmpty) {
         StringBuffer tabHtml = new StringBuffer();
         String       tabId   = "tabId" + (tabCnt++);
         tabHtml.append("\n\n");
@@ -1865,104 +1833,6 @@ public class OutputHandler extends RepositoryManager {
         tabHtml.append("\n\n");
         return tabHtml.toString();
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param titles _more_
-     * @param contents _more_
-     * @param skipEmpty _more_
-     * @param tabContentClass _more_
-     * @param wrapperClass _more_
-     *
-     * @return _more_
-     */
-    public static String makeTabsx(List titles, List contents,
-                                   boolean skipEmpty, String tabContentClass,
-                                   String wrapperClass) {
-
-        String       id        = "tab_" + (tabCnt++);
-        String       ids       = "tab_" + (tabCnt++) + "_ids";
-        StringBuffer titleSB   = new StringBuffer("");
-        StringBuffer contentSB = new StringBuffer();
-        StringBuffer idArray   = new StringBuffer("new Array(");
-        int          cnt       = 0;
-        for (int i = 0; i < titles.size(); i++) {
-            String content = contents.get(i).toString();
-            if (skipEmpty && (content.length() == 0)) {
-                continue;
-            }
-
-            String tabId = id + "_" + i;
-            if (cnt > 0) {
-                idArray.append(",");
-            }
-            cnt++;
-            idArray.append(HtmlUtil.squote(tabId));
-        }
-        if ((cnt == 1) && skipEmpty) {
-            return contents.get(0).toString();
-        }
-
-        idArray.append(")");
-
-        String selectedOne = null;
-        for (int i = 0; i < titles.size(); i++) {
-            String content = contents.get(i).toString();
-            if (skipEmpty && (content.length() == 0)) {
-                continue;
-            }
-            String title = titles.get(i).toString();
-            if (title.startsWith("selected:")) {
-                selectedOne = title;
-                break;
-            }
-        }
-
-        boolean didone = false;
-        for (int i = 0; i < titles.size(); i++) {
-            String content = contents.get(i).toString();
-            if (skipEmpty && (content.length() == 0)) {
-                continue;
-            }
-            String title = titles.get(i).toString();
-            String tabId = id + "_" + i;
-            contentSB.append("\n");
-            boolean selected = ((selectedOne == null)
-                                ? !didone
-                                : Misc.equals(title, selectedOne));
-            if (selected && (selectedOne != null)) {
-                title = title.substring("selected:".length());
-            }
-            contentSB.append(HtmlUtil.div(content,
-                                          HtmlUtil.cssClass(tabContentClass
-                                              + (selected
-                    ? "_on"
-                    : "_off")) + HtmlUtil.id("content_" + tabId)
-                               + HtmlUtil.style("display:" + (selected
-                    ? "block"
-                    : "none") + ";visibility:" + (selected
-                    ? "visible"
-                    : "hidden"))));
-            String link = HtmlUtil.href("javascript:" + "tabPress("
-                                        + HtmlUtil.squote(id) + "," + idArray
-                                        + "," + HtmlUtil.squote(tabId)
-                                        + ")", title);
-            titleSB.append(HtmlUtil.span(link, (selected
-                    ? HtmlUtil.cssClass("tab_title_on")
-                    : HtmlUtil.cssClass("tab_title_off")) + HtmlUtil.id(
-                        "title_" + tabId)));
-            didone = true;
-        }
-
-        return HtmlUtil.div(
-            titleSB.toString(),
-            HtmlUtil.cssClass("tab_titles")) + HtmlUtil.div(
-                contentSB.toString(), HtmlUtil.cssClass(wrapperClass));
-    }
-
 
 
 

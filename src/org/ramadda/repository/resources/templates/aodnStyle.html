@@ -66,12 +66,12 @@ body {
 }
 
 
-.ramadda-menu-link, .ramadda-menu-link:hover {
+.ramadda-menubutton, .ramadda-menubutton:hover {
   color: white;
   font-weight: bold;
 }
 
-.ramadda-menu-separator {
+.ramadda-menubutton-separator {
 	margin-left: 2px;
 	margin-right: 2px;
 	padding-bottom: 2px;
@@ -200,26 +200,26 @@ font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
 
 
 /* Left Column  */
-.header-leftcolumn {
+.ramadda-header-leftcolumn {
   border-bottom : 2px #888888 solid;
   color: #000000;
   padding-top:10px;
   padding-right:5px;
 }
-a.header-leftcolumn  {
+a.ramadda-header-leftcolumn  {
     color:black;
 }
-.header-leftcolumn a:hover  {
+.ramadda-header-leftcolumn a:hover  {
     color:red;
 }
 
-.header-leftcolumn-title {
+.ramadda-header-leftcolumn-title {
   font-size: 24px;
   color: black;
   margin-top:5px;
 }
 
-.header-leftcolumn a {
+.ramadda-header-leftcolumn a {
 	color:black;
 }
 
@@ -342,7 +342,7 @@ a.header-leftcolumn  {
 	color:white;
 }
 
-.footer {
+.ramadda-footer {
 	margin:10px;
 	padding:10px;
 	margin-right: 10px;
@@ -354,7 +354,7 @@ a.header-leftcolumn  {
 	color: #435e78;
 }
 
-.footer a, .footer a:hover, .footer td{
+.ramadda-footer a, .ramadda-footer a:hover, .ramadda-footer td{
 	font-size: 10px;
 	color: #435e78;
 }
@@ -372,16 +372,9 @@ hr {
 
 
 
-.cpYearNavigation, .cpMonthNavigation {
-	background-color:transparent;
-}
 
 
 
-.cpDayColumnHeader, .cpYearNavigation, .cpMonthNavigation, .cpCurrentMonthDate, .cpCurrentMonthDateDisabled, .cpOtherMonthDate, .cpOtherMonthDateDisabled, .cpCurrentDate, .cpCurrentDateDisabled, .cpTodayText, .cpTodayTextDisabled, .cpText 
-{ 
-	color: #666666;
-}
 
 </style>
 ${headfinal}
@@ -393,7 +386,7 @@ ${headfinal}
 	<tr valign="top">
 		<td width="100">
 			<div class="leftside">
-				<div class="logo">
+				<div class="ramadda-logo">
 					<a href="${logo.url}" target="external"><img border="0" width="150px" src="${logo.image}" alt="${logo.url}" /></a>
 				</div>
 				<div class="leftcolumn">
@@ -414,7 +407,7 @@ ${headfinal}
 				<div class="innercontent">${content}</div> 
 				<div class="entryFooter">${entry.footer}</div>
 			</div>
-			<div class="footer">${footer}</div>
+			<div class="ramadda-footer">${footer}</div>
 		</td>
 	</tr>
 </table>

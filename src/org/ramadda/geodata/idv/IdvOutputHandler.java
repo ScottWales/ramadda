@@ -1489,7 +1489,7 @@ public class IdvOutputHandler extends OutputHandler {
 
 
             String innerTab = OutputHandler.makeTabs(innerTabTitles,
-                                  innerTabContents, true, "tab_content");
+                                  innerTabContents, true);
             tab.append(HtmlUtil.inset(HtmlUtil.p() + innerTab, 10));
 
             tabLabels.add(
@@ -1535,8 +1535,7 @@ public class IdvOutputHandler extends OutputHandler {
         }
 
 
-        sb.append(OutputHandler.makeTabs(tabLabels, tabContents, true,
-                                         "tab_content"));
+        sb.append(OutputHandler.makeTabs(tabLabels, tabContents, true));
 
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit(msg("Make Image"), ARG_SUBMIT));

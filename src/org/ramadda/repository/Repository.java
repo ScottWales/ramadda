@@ -704,7 +704,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             result = sdf.format(d);
         }
         return HtmlUtil.span(result,
-                             HtmlUtil.cssClass("time")
+                             HtmlUtil.cssClass(CSS_CLASS_DATETIME)
                              + HtmlUtil.attr(HtmlUtil.ATTR_TITLE,
                                              fullDate + extraAlt));
     }

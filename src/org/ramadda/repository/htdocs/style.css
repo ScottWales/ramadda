@@ -23,45 +23,33 @@ a:hover {
    text-decoration: underline;
 }
 
-
-.plain {
-    font-weight: normal;
+ul {
+   margin-top:5px;
 }
+
+
+form {
+    margin:0px;
+    padding: 0px;
+}
+
 
 .input, .password, .fileinput,.textarea,.select {
   border : 1px #888888 solid;
 }
 
-
-.ramadda-earth-container {
-   border: 1px solid #888;
+.input:focus, .textarea:focus {
+	background: #fffeec;
 }
 
-.ramadda-earth-entries {
-   min-width: 150px;
-   max-width: 250px;
-   overflow-x: auto;
+.disabledinput {
+   border : 0px #888888 solid;
+   background: #dfdfdf;
 }
 
-
-.ramadda-earth-nav {
-   margin-top:1px;
-   margin-left:10px;
-   padding:2px;
-   color: #000000;
+.hiddeninput {
+  border :none;
 }
-
-
-
-.ramadda-earth-link:link {
-    color: #000000;
-}
-
-.ramadda-earth-link:hover {
-//    color: #ff0000;
-}
-
-
 
 .ramadda-required {
    background: #ffaaaa;
@@ -72,8 +60,8 @@ a:hover {
 }
 
 .ramadda-required-disabled {
-        border : 0px #888888 solid;
-        background: #ffaaaa;
+    border : 0px #888888 solid;
+    background: #ffaaaa;
 }
 
 .ramadda-required-label {
@@ -115,10 +103,6 @@ a:hover {
    color:black;
 }
 
-
-
-
-
 .ramadda-comment-block {
    border-bottom : 1px #aaaaaa dashed;
    padding-bottom:5px;
@@ -137,7 +121,6 @@ a:hover {
     padding-left:20px;
 }
 
-
 .ramadda-comment-date {
    font-style:italic;
 }
@@ -149,13 +132,40 @@ a:hover {
 }
 
 
+.ramadda-earth-container {
+   border: 1px solid #888;
+}
+
+.ramadda-earth-entries {
+   min-width: 150px;
+   max-width: 250px;
+   overflow-x: auto;
+}
+
+
+.ramadda-earth-nav {
+   margin-top:1px;
+   margin-left:10px;
+   padding:2px;
+   color: #000000;
+}
+
+
+
+.ramadda-earth-link:link {
+    color: #000000;
+}
+
+.ramadda-earth-link:hover {
+//    color: #ff0000;
+}
+
 .ramadda-user-field {
    padding-left: 18px;
    border : 1px #888888 solid;
    background: URL(${urlroot}/icons/user.png) no-repeat;
    background-position: 1px 1px;
 }
-
 
 .ramadda-heading-1 {
    border-bottom: 1px #999 solid;
@@ -165,9 +175,7 @@ a:hover {
    padding-bottom: 0px;
    margin-bottom:4px;
    margin-top:4px;
-
 }
-
 
 .ramadda-heading-2 {
    margin:0px;
@@ -192,61 +200,7 @@ a..ramadda-heading-2-link:visited {
 }
 
 
-
-
-.input:focus, .textarea:focus {
-	background: #fffeec;
-}
-
-
-.disabledinput {
-   border : 0px #888888 solid;
-   background: #dfdfdf;
-}
-
-
-
-
-.hidden {
-   visibility: hidden; 
-   display:none;
-}
-
-.hiddeninput {
-  border :none;
-}
-
-.logo {
-   margin: 5px;
-   margin-left: auto;
-   margin-right: auto;
-   text-align:center;
-}
-
-.footer {
-   margin:10px;
-   margin-left: auto;
-   margin-right: auto;
-   text-align:center;
-}
-
-
-.entryrow {
-  margin-top:2px;
-  border:1px #fff solid;
-}
-
-.entrymenuarrow {
-  padding-left:5px;
-  padding-right:5px;
-}
-
-.entryrowlabel {
-    font-style:italic;
-    white-space:nowrap;
-}
-
-.time {
+.ramadda-datetime {
    font-size:9px;
    color:#666;
    font-style:italic;
@@ -254,8 +208,169 @@ a..ramadda-heading-2-link:visited {
    white-space:nowrap;
 }
 
+.ramadda-logo {
+   margin: 5px;
+   margin-left: auto;
+   margin-right: auto;
+   text-align:center;
+}
 
-.folderblock {
+.ramadda-footer {
+   margin:10px;
+   margin-left: auto;
+   margin-right: auto;
+   text-align:center;
+}
+
+.ramadda-smalllink {
+  font-size:80%;
+}
+
+.ramadda-smallhelp {
+   font-size: 9pt;
+}
+
+.ramadda-stack {
+  background-color : #eee;
+  border: 1px #666666 solid;
+  margin-left:10px;
+}
+
+.ramadda-header-title {
+  font-size: 200%;
+}
+
+.ramadda-header a  {
+    color:#000;
+    font-weight:bold;
+}
+
+.ramadda-header a:hover  {
+   color:red;
+}
+
+.ramadda-menubar {
+   background-repeat: repeat-x;
+   background-image:url(${urlroot}/images/gradient.jpg);
+   padding-left:10px;
+   padding-right:10px;
+   padding-top:5px;
+   padding-bottom:1px;
+   margin-bottom:2px;
+   border-bottom: 1px #aaa solid; 
+}
+
+.ramadda-menubutton {
+    margin:1px;
+    padding:5px;
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.ramadda-menubutton:hover {
+  text-decoration: none;
+  color: #000000;
+}
+
+.ramadda-menubutton:link {
+  text-decoration: none;
+  color: #000000;
+}
+
+.ramadda-menubutton-separator {
+    padding:0px;
+    margin:0px;
+    margin-bottom:3px;
+}
+
+.ramadda-menubutton-separator:after {
+    content: "|";
+}
+
+.ramadda-menuitem-row {
+}
+
+.ramadda-menuitem-td {
+   margin-left:2px;
+   margin-right:2px;
+   margin-top:1px;
+   margin-bottom:1px;
+   padding-bottom:2px;
+}
+
+a.ramadda-menuitem-link:hover {
+   text-decoration: underline;
+   color:#000;
+}
+
+a.ramadda-menuitem-link {
+   text-decoration: none;
+}
+
+.ramadda-menuitem-link {
+    color: #000000;
+    font-weight: normal;
+}
+
+.ramadda-menuitem-link:visited {
+    color: #000000;
+}
+
+.ramadda-menuitem-link:link {
+    color: #000000;
+}
+
+.ramadda-menuitem-link a {
+   text-decoration: none;
+}
+
+.ramadda-menuitem-link a:hover {
+   color:#000000;
+}
+
+
+.ramadda-menuitem-separator {
+    margin:2px;
+    margin-bottom:3px;
+    padding:0px;
+}
+
+
+
+
+.ramadda-server {
+   max-height: 350px; 
+   overflow-y: auto;
+   margin-left:20px;
+}
+
+.ramadda-server-block {
+   max-height: 100px; 
+   overflow-y: auto;
+   margin-left: 20px;
+}
+
+
+.hidden {
+   visibility: hidden; 
+   display:none;
+}
+
+.ramadda-entry-row {
+  margin-top:2px;
+  border:1px #fff solid;
+}
+
+.ramadda-entry-row-label {
+    font-style:italic;
+    white-space:nowrap;
+}
+
+
+
+
+.ramadda-folder-block {
    border : 0px;
    margin:0px;
    padding:0px;
@@ -265,9 +380,6 @@ a..ramadda-heading-2-link:visited {
 .inline {
    max-height: 300px; 
    overflow-y: auto;
-}
-
-.entrylistform {
 }
 
 .sortlinkon  {
@@ -291,45 +403,15 @@ a..ramadda-heading-2-link:visited {
 }
 
 
-.stack {
-  background-color : #eee;
-  border: 1px #666666 solid;
-  margin-left:10px;
-}
-
-.smalllink {
-  font-size:80%;
-}
-.smallhelp {
-   font-size: 9pt;
-}
-
-
-.header-title {
-  font-size: 200%;
-}
-
-.header a  {
-    color:#000;
-    font-weight:bold;
-}
-
-.header a:hover  {
-   color:red;
-}
-
-
 .subheader-container {
    margin-top:10px;
 }
 
 .subheader {
-   xborder-bottom: 1px #666 solid;
    display:inline;
 }
 
 .subheader-sep {
-   xdisplay:none;
 }
 
 .subheader-on, .subheader-off  {
@@ -340,37 +422,11 @@ a..ramadda-heading-2-link:visited {
    padding-right: 2px;
 }
 
-.xsubheader-on, .xsubheader-off  {
-   margin-left:3px;
-   margin-right:3px;
-   padding-top: 2px;
-   padding-left: 10px;
-   padding-right: 10px;
-   border: 1px #ccc solid;
-   border-bottom: 1px #666 solid;
-
-   border-top-left-radius: 6px;
-   border-top-right-radius: 6px;
-   -moz-border-radius-topleft: 6px;
-   -moz-border-radius-topright: 6px;
-   -webkit-border-top-left-radius: 6px;
-   -webkit-border-top-right-radius: 6px;
-}
-
 .subheader-on {
-     font-weight: bold;
-}
-
-.xsubheader-on {
-   border: 1px #666 solid;
-   border-bottom: 1px #fff solid;
+   font-weight: bold;
 }
 
 .subheader-off a {
-}
-
-.xsubheader-off {
-   background-color:#ececec;
 }
 
 .arrow {
@@ -378,25 +434,16 @@ a..ramadda-heading-2-link:visited {
       margin-bottom:4px;
 }
 
-
 .nav {
    font-weight: bold;
    color: black;
 }
 
 .metadatagroup {
-  xborder : 1px #888888 solid;
-  xbackground-color : #eeeeee;
   padding-right: 5px;
-  xmargin-left: 20px;
 }
 
 
-
-
-/*################################################################################
-## Styles for the page templates
-################################################################################*/
 .subnav {
    margin:10px;
    margin-left:0px;
@@ -408,8 +455,6 @@ a..ramadda-heading-2-link:visited {
 .subnav a:hover  {
    color:red;
 }
-
-
 
 .subnavoncomp  {
    background-color:#ffffff;
@@ -452,13 +497,9 @@ a..ramadda-heading-2-link:visited {
    color:#444;
 }
 
-
 .subnavoffcomp a:hover {
    color:red;
 }
-
-
-
 
 .cimg {
     text-align:center;
@@ -498,7 +539,6 @@ a..ramadda-heading-2-link:visited {
     margin: 10px;
     margin-left: 30px;
 }
-
 
 
 .pagesubsubtitle {
@@ -564,13 +604,6 @@ a..ramadda-heading-2-link:visited {
 }
 
 
-
-
-.mapcanvas {
-	width:200px;
-	height:200px;
-}
-
 .result-table {
    border-color: #666;
    border-width: 0px 0px 1px 1px;
@@ -603,14 +636,12 @@ a..ramadda-heading-2-link:visited {
     border-color: #666;
     border-width: 0px 0px 1px 1px;
     border-style: solid;
-
 }
 
 .calnavtable {
     border-color: #666;
     border-width: 1px 1px 1px 1px;
     border-style: solid;
-
 }
 
 .calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
@@ -619,10 +650,6 @@ a..ramadda-heading-2-link:visited {
     border-style: solid;
     margin: 0px;
 }
-
-
-
-
 
 .calheader {
    padding-top:10px;
@@ -680,7 +707,6 @@ a..ramadda-heading-2-link:visited {
    font-size: 8pt;
 }
 
-
 .calnavtheday {
    text-align:right;
    font-size: 8pt;
@@ -719,7 +745,6 @@ a..ramadda-heading-2-link:visited {
    padding-bottom:0px;
 }
 
-
 .description {
    margin-left:20px;
    margin-bottom:10px;
@@ -741,124 +766,6 @@ a..ramadda-heading-2-link:visited {
    overflow-y: auto;
 }
 
-.serverdiv {
-   max-height: 350px; 
-   overflow-y: auto;
-   margin-left:20px;
-
-}
-
-
-
-
-
-
-ul {
-   margin-top:5px;
-}
-
-.tab_titles {
-   margin:0px;
-   padding:0px;
-}
-
-.tab_contents {
-   border-left : 1px #000000 solid;
-   border-right : 1px #000000 solid;
-   border-bottom : 1px #000000 solid;
-   border-top : 1px #000000 solid;
-   margin:0px;
-   padding:0px;
-
-
-
-}
-
-.tab_contents_noborder {
-   border-top : 1px #000000 solid;
-}
-
-.tab_content_fixedheight_off {
-   min-height: 100px;
-   max-height: 200px; 
-   overflow-y: auto;
-   padding:5px;
-}
-
-
-
-.tab_content_fixedheight_on {
-   background-color:#ffffff;
-   min-height: 100px;
-   max-height: 200px; 
-   overflow-y: auto;
-   padding:5px;
-}
-
-
-.tab_content_off {
-   padding:5px;
-}
-
-.tab_content_on {
-   background-color:#ffffff;
-   padding:5px;
-}
-
-
-.tab_title_on {
-   background-color:#ffffff;
-   border: 1px #000 solid;
-   border-bottom:2px #ffffff  solid;
-   font-weight: bold;
-   margin-bottom:0px;
-   margin-left:3px;
-   margin-right:3px;
-   padding-bottom:0px;
-   padding-top:2px;
-   padding-left:6px;
-   padding-right:6px;
-}
-
-
-.tab_title_off {
-   background-color:#dddddd;
-   border-left: 1px #000000 solid;
-   border-right: 1px #000000 solid;
-   border-top: 1px #000000 solid;
-   border-bottom:1px #000000  solid;
-
-   font-weight: bold;
-   margin-left:3px;
-   margin-right:3px;
-   margin-bottom:1px;
-
-   padding-bottom:0px;
-   padding-top:2px;
-   padding-left:6px;
-   padding-right:6px;
-
-}
-
-
-
-.tab_title_on a {
-	color:#000000;
-	text-decoration: none;
-}
-
-
-.tab_title_off a {
-	color:#000000;
-	text-decoration: none;
-}
-
-
-
-.smallmessage {
-  font-size: 8pt;
-  font-style: italic;
-}
 
 
 .toolbar-selected {
@@ -917,96 +824,6 @@ ul {
 }
 
 
-
-
-
-.ramadda-menubar {
-   background-repeat: repeat-x;
-   background-image:url(${urlroot}/images/gradient.jpg);
-   padding-left:10px;
-   padding-right:10px;
-   padding-top:5px;
-   padding-bottom:1px;
-   margin-bottom:2px;
-   border-bottom: 1px #aaa solid; 
-}
-
-.ramadda-menu-link {
-    color: #000000;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.ramadda-menu-link:hover {
-  text-decoration: underline;
-  color: #000000;
-}
-
-.ramadda-menu-link:link {
-  text-decoration: underline;
-  color: #000000;
-}
-
-.ramadda-menu-separator {
-    margin:2px;
-    margin-bottom:3px;
-    padding:0px;
-}
-
-
-
-
-.ramadda-menuitem-row {
-}
-
-.ramadda-menuitem-td {
-   margin-left:2px;
-   margin-right:2px;
-   margin-top:1px;
-   margin-bottom:1px;
-   padding-bottom:2px;
-}
-
-
-a.ramadda-menuitem-link:hover {
-   text-decoration: underline;
-   color:#000;
-}
-
-a.ramadda-menuitem-link {
-   text-decoration: none;
-}
-
-.ramadda-menuitem-link {
-    color: #000000;
-    font-weight: normal;
-}
-
-.ramadda-menuitem-link:visited {
-    color: #000000;
-}
-
-.ramadda-menuitem-link:link {
-    color: #000000;
-}
-
-.ramadda-menuitem-link a {
-   text-decoration: none;
-}
-
-.ramadda-menuitem-link a:hover {
-   color:#000000;
-}
-
-
-.ramadda-menuitem-separator {
-    margin:2px;
-    margin-bottom:3px;
-    padding:0px;
-}
-
-
-
 .image_edit_box {
    border : 3px red solid;
    #padding:10px;
@@ -1018,7 +835,6 @@ a.ramadda-menuitem-link {
 }
 
 
-
 .latlon_box {
    border : 3px red solid;
    padding:0px;
@@ -1027,14 +843,6 @@ a.ramadda-menuitem-link {
    position: absolute; 
    visibility: hidden; 
    #z-index: 1;
-}
-
-
-
-code.menu {
-         font-size: 11pt;
-         font-family: SansSerif, Arial, Helvetica, sans-serif;       
-         font-weight: bold;
 }
 
 
@@ -1089,7 +897,6 @@ code.menu {
 }
 
 
-
 .breadcrumbsseparator {
    font-size: 11pt;
 }
@@ -1112,10 +919,6 @@ code.menu {
    color: red;
 }
 
-
-
-
-
 .content {
   border: 1px #aaa solid;
   min-height:800px;
@@ -1125,6 +928,10 @@ code.menu {
 }
 
 
+.entrymenuarrow {
+  padding-left:5px;
+  padding-right:5px;
+}
 
 
 .entryheader {
@@ -1149,15 +956,6 @@ code.menu {
 }
 
 
-
-
-.menuseparator {
-   margin-left:2px;
-   margin-right:2px;
-   padding-bottom:2px;
-}
-
-
 .navlink {
    margin-top: 2px;
 }
@@ -1166,13 +964,9 @@ code.menu {
    color:black;
 }
 
-
 .navlink a:link {
    color:black;
 }
-
-
-
 
 .hideshowblock {
    margin-top:0px;
@@ -1180,13 +974,6 @@ code.menu {
 
 .block {
    margin-top:2px;
-}
-
-
-.serverblock {
-   max-height: 100px; 
-   overflow-y: auto;
-   margin-left: 20px;
 }
 
 
@@ -1202,26 +989,17 @@ code.menu {
    padding:0px;   
 }
 
-
-
 a.toggleblocklabellink {
    color:black;
    text-decoration: none;
 }
 
-
 a.toggleblocklabellink:visited {
    text-decoration: none;
 }
 
-
 .toggleblocklabel {
   font-weight: bold;
-}
-
-form {
-    margin:0px;
-    padding: 0px;
 }
 
 .formlabel, .formlabeltop {
@@ -1233,11 +1011,9 @@ form {
    padding-top:6px;
 }
 
-
 .innernote {
    padding-top:10px;
 }
-
 
 .note {
   z-index: 1;
@@ -1257,13 +1033,8 @@ form {
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
-
-
-
 .notetext {
 }
-
-
 
 
 .admin-block {
@@ -1333,9 +1104,6 @@ form {
 	border: 0px;
 	margin: .2em 0px .2em 0px;
 }
-
-
-
 
 
 .wiki-link {

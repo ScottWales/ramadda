@@ -4270,7 +4270,7 @@ public class EntryManager extends RepositoryManager {
                                : HtmlUtil.div("",
                                    HtmlUtil.attrs(HtmlUtil.ATTR_STYLE,
                                        "display:none;visibility:hidden",
-                                       HtmlUtil.ATTR_CLASS, "folderblock",
+                                       HtmlUtil.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
                                        HtmlUtil.ATTR_ID, uid)));
 
         //        link = link + HtmlUtil.br()
@@ -4618,11 +4618,11 @@ public class EntryManager extends RepositoryManager {
 
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
-        String sep = HtmlUtil.div("&nbsp;|&nbsp;",
-                                  HtmlUtil.cssClass(CSS_CLASS_MENU_SEPARATOR));
+        String sep = HtmlUtil.div("",
+                                  HtmlUtil.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
 
 
-        String menuClass = HtmlUtil.cssClass(CSS_CLASS_MENU_LINK);
+        String menuClass = HtmlUtil.cssClass(CSS_CLASS_MENUBUTTON);
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_OTHER)) {
                 categoryMenu = getEntryActionsTable(request, entry,
