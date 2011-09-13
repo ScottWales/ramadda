@@ -110,7 +110,7 @@ public class KmlToRamadda implements org.ramadda.repository.Constants {
                                   "name");
                 String desc = XmlUtil.getGrandChildText(child, "description",
                                   "");
-                String descNode = XmlUtil.tag(TAG_DESCRIPTION, "",
+                String descNode = XmlUtil.tag("wikitext", "",
                                       XmlUtil.getCdata(desc));
 
                 String attrs =  XmlUtil.attrs(new String[] {
