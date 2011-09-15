@@ -497,7 +497,6 @@ function Tooltip () {
         util.print(msg);
     }
     this.keyPressed = function (event) {
-        alert("key")
         tooltip.doHide();
         return;
         if(state==STATE_INIT) return;
@@ -581,6 +580,8 @@ function Tooltip () {
 
 
     this.showLink = function(moveId,x,y,id,linkId) {
+        //Don't do this for now
+        if(true) return;
         if(lastMove!=moveId) return;
 	if(state!=STATE_INIT) return;
         currentID = id;
@@ -610,8 +611,7 @@ function Tooltip () {
 }
 
 tooltip = new Tooltip();
-
-document.onkeypress = tooltip.keyPressed;
+//document.onkeypress = tooltip.keyPressed;
 var keyEvent;
 
 
