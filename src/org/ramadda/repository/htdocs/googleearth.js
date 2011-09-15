@@ -5,6 +5,66 @@
 
 //list of all the GoogleEarth objects 
 var  googleEarths = new Array();
+var RAMADDA_EARTH_DEFAULT_RANGE = 4999999;
+
+function MyBounds() {
+    this.maxLat = -90;
+    this.minLat = 90;
+    this.maxLon = -180;
+    this.minLon = 180;
+
+
+    this.getCenterLat = function() {
+        return this.minLat + (this.maxLat-this.minLat)/2;
+    }
+    this.getCenterLon = function() {
+        return this.minLon + (this.maxLon-this.minLon)/2;
+    }
+
+    this.merge = function(that) {
+        this.maxLat =  Math.max (this.maxLat, that.maxLat);
+        this.maxLon =  Math.max (this.maxLon, that.maxLon);
+        this.minLat =  Math.min (this.minLat, that.minLat);
+        this.minLon =  Math.min (this.minLon, that.minLon);
+    }
+
+    this.setLatLon = function(lat, lon) {
+        this.maxLat =  Math.max (this.maxLat, lat);
+        this.maxLon =  Math.max (this.maxLon, lon);
+        this.minLat =  Math.min (this.minLat, lat);
+        this.minLon =  Math.min (this.minLon, lon);
+    }
+
+
+    this.isLargeArea = function() {
+        return (this.maxLon-this.minLon)>300;
+    }
+    this.getRange = function() {
+        if(this.minLat == this.maxLat) {
+            return  10000;
+        }
+
+        if(this.isLargeArea()) {
+            return RAMADDA_EARTH_DEFAULT_RANGE;
+        }
+
+        //figure out the range based on the bounds
+        var len, altV, altH, alt;
+        len = ( this.maxLon - this.minLon) *
+        60000 * Math.cos( Math.PI / 180 * (( this.maxLat +
+                                             this.minLat) / 2 ) );
+        altV = len * 1;
+
+        len = ( this.maxLat - this.minLat ) * 60000;
+        altH = len * 1 ;
+        range =  Math.max (altH, altV) 
+        //A fudge factor
+        range = range*3;
+        return range;
+    }
+}
+
+
 
 //Class for holding placemark info
 function MyPlacemark(id,name,desc,lat,lon, icon, polygons) {
@@ -16,6 +76,7 @@ function MyPlacemark(id,name,desc,lat,lon, icon, polygons) {
     this.icon = icon;
     this.polygons = polygons;
     this.details = null;
+    this.bounds = new MyBounds();
 }
 
 
@@ -28,7 +89,6 @@ function GoogleEarth(id, url) {
     this.url = url;
     this.id = id;
     googleEarths[id] = this;
-    var DEFAULT_RANGE = 4999999;
 
     this.urlFinished = function(object) {
         if (!object) {
@@ -43,14 +103,12 @@ function GoogleEarth(id, url) {
         var lookAt = this.googleEarth.createLookAt('');
         lookAt.set(40.0, -107, 10000000, this.googleEarth.ALTITUDE_RELATIVE_TO_GROUND,
                0,0,0);
-        lookAt.setRange(DEFAULT_RANGE);
+        lookAt.setRange(RAMADDA_EARTH_DEFAULT_RANGE);
         this.googleEarth.getView().setAbstractView(lookAt);
     }
 
     this.initCallback = function(instance) {
         this.googleEarth = instance;
-
-
 
         this.googleEarth.getWindow().setVisibility(true);
 
@@ -60,26 +118,30 @@ function GoogleEarth(id, url) {
         // add some layers
         this.googleEarth.getLayerRoot().enableLayerById(this.googleEarth.LAYER_BORDERS, true);
         this.googleEarth.getLayerRoot().enableLayerById(this.googleEarth.LAYER_ROADS, true);
- 
+        this.googleEarth.getOptions().setFlyToSpeed(0.5);
+        this.googleEarth.getOptions().setOverviewMapVisibility(true);
+
 
         if(this.url) {
-            this.loadKml(url);
+            this.loadKml(this.url);
         }
     
         var tmpPlacemarks = this.placemarksToAdd;
         this.placemarksToAdd = new Array();
         var firstPlacemark = null;
+        var bounds = new MyBounds();
         for (var i = 0; i < tmpPlacemarks.length; i++) {
             var placemark =  tmpPlacemarks[i];
             if(!firstPlacemark) firstPlacemark = placemark;
-            this.addThePlacemark(placemark);
+            this.addThePlacemark(placemark, placemark.bounds);
+            bounds.merge(placemark.bounds);
         }
+
         if(firstPlacemark) {
-            this.setLocation(firstPlacemark.lat,
-                             firstPlacemark.lon,DEFAULT_RANGE);
+            this.setLocation(bounds.getCenterLat(),bounds.getCenterLon(),
+                             bounds.getRange());
         }
     }
-    
 
     this.loadKml = function(url) {
         var theGoogleEarth = this;
@@ -131,13 +193,17 @@ function GoogleEarth(id, url) {
         pm = new MyPlacemark(id,name,desc, lat,lon,icon, polygons)
         this.placemarks[id] = pm;
         this.addThePlacemark(pm);
-}
+    }
 
-    this.addThePlacemark = function(pm) {
+    this.addThePlacemark = function(pm, bounds) {
         if (!this.googleEarth) {
             this.placemarksToAdd.push(pm);
             return;
         }
+        if(bounds) {
+            bounds.setLatLon(pm.lat, pm.lon);
+        }
+
         var placemark = this.googleEarth.createPlacemark('');
         var _this = this;
         google.earth.addEventListener(placemark, 'click', function(event) {
@@ -182,6 +248,9 @@ function GoogleEarth(id, url) {
                 msg += " polygon:";
                 for (i = 0; i < points.length; i+=2) {
                     msg+= " " +points[i] +" " + points[i+1];
+                    if(bounds) {
+                        bounds.setLatLon(points[i],points[i+1])
+                    }
                     lineString.getCoordinates().pushLatLngAlt(points[i], points[i+1], 0);
                 }
                 msg+="\n";
@@ -206,7 +275,8 @@ function GoogleEarth(id, url) {
             alert("no placemark");
             return;
         }
-        this.setLocation(placemark.lat,placemark.lon);
+        this.goToPlacemark(placemark);
+
         if(!popup && !showDetails()) {
             return;
         }
@@ -225,7 +295,7 @@ function GoogleEarth(id, url) {
         lookAt.setLatitude(lat);
         lookAt.setLongitude(lon);
         if(range) {
-            lookAt.setRange(DEFAULT_RANGE);
+            lookAt.setRange(range);
         }
         this.googleEarth.getView().setAbstractView(lookAt);
     }
@@ -238,11 +308,37 @@ function GoogleEarth(id, url) {
         return true;
     }
 
+    this.zoomOnClick = function() {
+        var cbx = util.getDomObject("googleearth.zoomonclick");
+        if(cbx) {
+            return cbx.obj.checked;
+        }
+        return true;
+    }
+
     this.getThis = function() {
         return this;
     }
 
     this.googleEarthClickCnt=0;
+    this.goToPlacemark = function(placemark) {
+        if(this.zoomOnClick()) {
+            if(placemark.bounds.isLargeArea()) {
+                this.setLocation(placemark.lat,placemark.lon,
+                                 placemark.bounds.getRange());
+            } else {
+                this.setLocation(placemark.bounds.getCenterLat(),placemark.bounds.getCenterLon(),
+                                 placemark.bounds.getRange());
+            }
+        } else {
+            if(placemark.bounds.isLargeArea()) {
+                this.setLocation(placemark.lat,placemark.lon); 
+            } else {
+                this.setLocation(placemark.bounds.getCenterLat(),placemark.bounds.getCenterLon());
+            }
+        }
+    }
+
     this.entryClicked = function(id, force) {
         var _this = this;
         this.googleEarthClickCnt++;
@@ -252,7 +348,7 @@ function GoogleEarth(id, url) {
             return;
         }
         this.googleEarth.setBalloon(null);
-        this.setLocation(thePlacemark.lat,thePlacemark.lon);
+        this.goToPlacemark(thePlacemark);
         if(!force && !this.showDetails()) {
             return;
         }
