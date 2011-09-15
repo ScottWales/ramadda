@@ -783,7 +783,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                         entries = new ArrayList();
                     }
                     if (needToAdd.size() > 1000) {
-                        addEntries(needToAdd);
+                        addEntries(needToAdd, timestamp);
                         needToAdd = new ArrayList<Entry>();
                     }
                 }
@@ -794,6 +794,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             }
         }
 
+        if (!canContinueRunning(timestamp)) {
+            return;
+        }
+
+        //Uggh, cut-and-paste from above
         if ( !getTestMode()) {
             if (entries.size() > 0) {
                 List<Entry> nonUniqueOnes = new ArrayList<Entry>();
@@ -811,7 +816,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 newEntryCnt += uniqueEntries.size();
                 needToAdd.addAll(uniqueEntries);
             }
-            addEntries(needToAdd);
+            addEntries(needToAdd,timestamp);
         }
 
 
@@ -825,13 +830,16 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
      *
      * @throws Exception _more_
      */
-    private void addEntries(List<Entry> entries) throws Exception {
+    private void addEntries(List<Entry> entries, int timestamp) throws Exception {
         if (getTestMode() || (entries.size() == 0)) {
             return;
         }
         List<Entry> entriesToAdd = new ArrayList<Entry>();
         for (Entry newEntry : entries) {
             try {
+                if (!canContinueRunning(timestamp)) {
+                    return;
+                }
                 newEntry.getTypeHandler().initializeNewEntry(newEntry);
                 entriesToAdd.add(newEntry);
             } catch (Exception exc) {
