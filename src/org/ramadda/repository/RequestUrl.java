@@ -134,6 +134,15 @@ public class RequestUrl {
             repositorySource.getRepositoryBase().getUrlBase() + path);
     }
 
+
+    public String getUrlPath() {
+        checkInit();
+        if (needsSsl) {
+            return getHttpsUrl();
+        }
+        return repositorySource.getRepositoryBase().getUrlBase() + path;
+    }
+
     /**
      * _more_
      */

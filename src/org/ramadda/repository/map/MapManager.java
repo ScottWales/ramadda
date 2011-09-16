@@ -437,14 +437,21 @@ public class MapManager extends RepositoryManager {
             desc = desc.replace("'", "\\'");
 
 
+
+            
+            
+        String detailsUrl = 
+            HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
+                         new String[]{ARG_ENTRYID, entry.getId(), ARG_OUTPUT, "mapinfo"});
             js.append(
                 HtmlUtil.call(
                     id + ".addPlacemark",
                     HtmlUtil.comma(
                         HtmlUtil.squote(entry.getId()),
                         HtmlUtil.squote(entry.getName()),
-                        HtmlUtil.squote(desc), "" + lat, "" + lon) + ","
-                            + HtmlUtil.squote(
+                        HtmlUtil.squote(desc), "" + lat, "" + lon) + "," +
+                    HtmlUtil.squote(detailsUrl)  +"," +
+                    HtmlUtil.squote(
                                 request.getAbsoluteUrl(iconUrl)) + ","
                                     + pointsString));
             js.append("\n");

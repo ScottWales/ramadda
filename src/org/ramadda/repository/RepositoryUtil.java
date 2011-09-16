@@ -23,6 +23,7 @@ package org.ramadda.repository;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
@@ -34,7 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  *
@@ -77,7 +80,18 @@ public class RepositoryUtil implements Constants {
     }
 
 
-
+    public static String hashPassword(String password) {
+        try {
+            //            MessageDigest md = MessageDigest.getInstance("SHA");
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(password.getBytes("UTF-8"));
+            return XmlUtil.encodeBase64(md.digest()).trim();
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new IllegalStateException(nsae.getMessage());
+        } catch (UnsupportedEncodingException uee) {
+            throw new IllegalStateException(uee.getMessage());
+        }
+    }
 
     /**
      * _more_

@@ -1346,15 +1346,18 @@ public class Request implements Constants {
         //        System.err.println("RAMADDA: checking auth");
         //java.awt.Toolkit.getDefaultToolkit().beep();
         String authToken = getString(ARG_AUTHTOKEN, (String) null);
-        if (authToken != null) {
-            String sessionId = repository.getAuthToken(getSessionId());
-            if (authToken.equals(sessionId)) {
+        String sessionId = getSessionId();
+        System.err.println("auth:" + authToken +" session:" + sessionId);
+        if (authToken != null && sessionId!=null) {
+            if (authToken.equals(repository.getAuthToken(sessionId))) {
                 return;
             }
         }
-        if ( !getString(ARG_SESSIONID, "").equals(getSessionId())) {
-            throw new IllegalArgumentException("Bad authentication token");
+        String sessionIdFromArg = getString(ARG_SESSIONID, "badsessionid");
+        if (sessionIdFromArg.length()>0 && sessionIdFromArg.equals(sessionId)) {
+            return;
         }
+        throw new IllegalArgumentException("Bad authentication token");
     }
 
 

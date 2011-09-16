@@ -2961,8 +2961,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String getAuthToken(String sessionId) {
-        //Use the same hash function as for passwords
-        return UserManager.hashPassword(sessionId);
+        return RepositoryUtil.hashPassword(sessionId);
     }
 
     /**

@@ -330,7 +330,7 @@ public class RepositoryClient extends RepositoryBase {
         bos.close();
 
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
-        postEntries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
+        postEntries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
         postEntries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         postEntries.add(new HttpFormEntry(ARG_FILE, "entries.zip",
                                           bos.toByteArray()));
@@ -772,7 +772,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
-        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, getSessionId()));
+        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
         entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
     }
 

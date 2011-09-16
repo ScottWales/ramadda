@@ -7,7 +7,7 @@
 var  googleEarths = new Array();
 var RAMADDA_EARTH_DEFAULT_RANGE = 4999999;
 
-function MyBounds() {
+function RamaddaBounds() {
     this.maxLat = -90;
     this.minLat = 90;
     this.maxLon = -180;
@@ -67,16 +67,17 @@ function MyBounds() {
 
 
 //Class for holding placemark info
-function MyPlacemark(id,name,desc,lat,lon, icon, polygons) {
+function RamaddaPlacemark(id,name,desc,lat,lon, detailsUrl, icon, polygons) {
     this.id = id;
     this.name = name;
     this.description = desc;
+    this.detailsUrl = detailsUrl;
     this.lat = lat;
     this.lon = lon;
     this.icon = icon;
     this.polygons = polygons;
     this.details = null;
-    this.bounds = new MyBounds();
+    this.bounds = new RamaddaBounds();
 }
 
 
@@ -109,7 +110,6 @@ function GoogleEarth(id, url) {
 
     this.initCallback = function(instance) {
         this.googleEarth = instance;
-
         this.googleEarth.getWindow().setVisibility(true);
 
         // add a navigation control
@@ -124,16 +124,17 @@ function GoogleEarth(id, url) {
 
         if(this.url) {
             this.loadKml(this.url);
+            this.url = null;
         }
     
         var tmpPlacemarks = this.placemarksToAdd;
         this.placemarksToAdd = new Array();
         var firstPlacemark = null;
-        var bounds = new MyBounds();
+        var bounds = new RamaddaBounds();
         for (var i = 0; i < tmpPlacemarks.length; i++) {
             var placemark =  tmpPlacemarks[i];
             if(!firstPlacemark) firstPlacemark = placemark;
-            this.addThePlacemark(placemark, placemark.bounds);
+            this.addRamaddaPlacemark(placemark, placemark.bounds);
             bounds.merge(placemark.bounds);
         }
 
@@ -155,7 +156,7 @@ function GoogleEarth(id, url) {
         alert("Failure loading the Google Earth Plugin: " + errorCode);
     }
 
-    this.addPlacemark = function(id,name, desc, lat,lon, icon, points) {
+    this.addPlacemark = function(id,name, desc, lat,lon, detailsUrl, icon, points) {
         var polygons = new Array();
         if(points) {
             var tmpArray = new Array();
@@ -190,12 +191,12 @@ function GoogleEarth(id, url) {
                 tmpArray.push(lon);
             }
         }
-        pm = new MyPlacemark(id,name,desc, lat,lon,icon, polygons)
+        pm = new RamaddaPlacemark(id, name, desc, lat,lon,detailsUrl, icon, polygons)
         this.placemarks[id] = pm;
-        this.addThePlacemark(pm);
+        this.addRamaddaPlacemark(pm);
     }
 
-    this.addThePlacemark = function(pm, bounds) {
+    this.addRamaddaPlacemark = function(pm, bounds) {
         if (!this.googleEarth) {
             this.placemarksToAdd.push(pm);
             return;
@@ -204,31 +205,31 @@ function GoogleEarth(id, url) {
             bounds.setLatLon(pm.lat, pm.lon);
         }
 
-        var placemark = this.googleEarth.createPlacemark('');
+        var gePlacemark = this.googleEarth.createPlacemark('');
         var _this = this;
-        google.earth.addEventListener(placemark, 'click', function(event) {
+        google.earth.addEventListener(gePlacemark, 'click', function(event) {
                 // Prevent the default balloon from appearing.
                 event.preventDefault();
                 _this.entryClicked(pm.id, true);
             });
 
-        pm.placemark = placemark;
-        placemark.setName(pm.name);
+        pm.placemark = gePlacemark;
+        gePlacemark.setName(pm.name);
         if(pm.description) {
-            placemark.setDescription(pm.description);
+            gePlacemark.setDescription(pm.description);
         }
         var point = this.googleEarth.createPoint('');
         point.setLatitude(pm.lat);
         point.setLongitude(pm.lon);
-        placemark.setGeometry(point);
+        gePlacemark.setGeometry(point);
         if(pm.icon) {
             var icon = this.googleEarth.createIcon('');
             icon.setHref(pm.icon);
             var style = this.googleEarth.createStyle(''); 
             style.getIconStyle().setIcon(icon); 
-            placemark.setStyleSelector(style); 
+            gePlacemark.setStyleSelector(style); 
         }
-        this.googleEarth.getFeatures().appendChild(placemark);
+        this.googleEarth.getFeatures().appendChild(gePlacemark);
 
         if(pm.polygons) {
             var colors = ["ffff0000",
@@ -343,18 +344,18 @@ function GoogleEarth(id, url) {
         var _this = this;
         this.googleEarthClickCnt++;
         var myClick = this.googleEarthClickCnt;
-        thePlacemark =this.placemarks[id];
-        if(!thePlacemark) {
+        ramaddaPlacemark =this.placemarks[id];
+        if(!ramaddaPlacemark) {
             return;
         }
         this.googleEarth.setBalloon(null);
-        this.goToPlacemark(thePlacemark);
+        this.goToPlacemark(ramaddaPlacemark);
         if(!force && !this.showDetails()) {
             return;
         }
         //Have we gotten the details already?
-        if(thePlacemark.details) {
-            this.setBalloon(thePlacemark,thePlacemark.details); 
+        if(ramaddaPlacemark.details) {
+            this.setBalloon(ramaddaPlacemark,ramaddaPlacemark.details); 
             return;
         }
 
@@ -365,18 +366,19 @@ function GoogleEarth(id, url) {
             var xmlDoc=request.responseXML.documentElement;
             var text = getChildText(xmlDoc);
             checkTabs(text);
-            thePlacemark.details = text;
-            thePlacemark.placemark.setDescription(text);
-            _this.setBalloon(thePlacemark,text); 
+            ramaddaPlacemark.details = text;
+            ramaddaPlacemark.placemark.setDescription(text);
+            _this.setBalloon(ramaddaPlacemark,text); 
         }
-        var url = "${urlroot}/entry/show?entryid=" + id +"&output=mapinfo";
-        util.loadUrl(url, callback,"");
+        if(ramaddaPlacemark.detailsUrl) {
+            util.loadUrl(ramaddaPlacemark.detailsUrl, callback,"");
+        }
     }
 
 
-    this.setBalloon = function(thePlacemark, text) {
+    this.setBalloon = function(ramaddaPlacemark, text) {
         var balloon = this.googleEarth.createHtmlStringBalloon('');
-        balloon.setFeature(thePlacemark.placemark);
+        balloon.setFeature(ramaddaPlacemark.placemark);
         balloon.setContentString(text);
         balloon.setMaxHeight(300);
         balloon.setMaxWidth(500);

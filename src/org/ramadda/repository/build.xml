@@ -105,7 +105,7 @@
             compress="true"
             jarfile="${dist_dir}/repositoryclient.jar">
            <manifest>
-              <attribute name="Implementation-Title" value="Unidata's Ramada Client"/>
+              <attribute name="Implementation-Title" value="Ramadda Client"/>
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="org.ramadda.repository.client.RepositoryClient"/>

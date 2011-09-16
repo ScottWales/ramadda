@@ -367,7 +367,7 @@ public class EntryManager extends RepositoryManager {
 
         if (entry.getIsRemoteEntry()) {
             String redirectUrl = entry.getRemoteServer()
-                                 + getRepository().URL_ENTRY_SHOW.getPath();
+                + getRepository().URL_ENTRY_SHOW.getPath();
             String[] tuple = getRemoteEntryInfo(entry.getId());
             request.put(ARG_ENTRYID, tuple[1]);
             request.put(ARG_FULLURL, "true");
