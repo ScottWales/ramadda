@@ -1339,6 +1339,7 @@ public class Request implements Constants {
     }
 
 
+    //.../?sessionid=foobar
     /**
      * _more_
      */
@@ -1347,15 +1348,16 @@ public class Request implements Constants {
         //java.awt.Toolkit.getDefaultToolkit().beep();
         String authToken = getString(ARG_AUTHTOKEN, (String) null);
         String sessionId = getSessionId();
-        System.err.println("auth:" + authToken +" session:" + sessionId);
+        if(sessionId==null) {
+            sessionId = getString(ARG_SESSIONID, (String) null);
+        }
+        //        System.err.println("session:" + sessionId);
+        //        System.err.println("auth token:" + authToken);
+        //        System.err.println("session hashed:" + repository.getAuthToken(sessionId));
         if (authToken != null && sessionId!=null) {
             if (authToken.equals(repository.getAuthToken(sessionId))) {
                 return;
             }
-        }
-        String sessionIdFromArg = getString(ARG_SESSIONID, "badsessionid");
-        if (sessionIdFromArg.length()>0 && sessionIdFromArg.equals(sessionId)) {
-            return;
         }
         throw new IllegalArgumentException("Bad authentication token");
     }

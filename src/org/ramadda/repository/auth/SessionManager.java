@@ -410,7 +410,7 @@ public class SessionManager extends RepositoryManager {
             }
         }
 
-
+        //Check for the session id as a url argument
         if ((user == null) && request.hasParameter(ARG_SESSIONID)) {
             Session session = getSession(request.getString(ARG_SESSIONID));
             if (session != null) {

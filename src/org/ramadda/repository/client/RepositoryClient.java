@@ -33,6 +33,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 
+
+
 import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
@@ -58,6 +60,11 @@ import java.util.zip.*;
  * @author RAMADDA Development Team
  */
 public class RepositoryClient extends RepositoryBase {
+
+    //Note: This is also defined in SessionManager
+
+    /** _more_          */
+    public static final String COOKIE_NAME = "repositorysession";
 
     /** _more_ */
     private static final String ID_PREVIOUS = "previous";
@@ -195,8 +202,25 @@ public class RepositoryClient extends RepositoryBase {
      */
     public String[] doPost(RequestUrl url, List<HttpFormEntry> entries)
             throws Exception {
-        return HttpFormEntry.doPost(entries, url.getFullUrl());
+        return doPost(url.getFullUrl(), entries);
     }
+
+    /**
+     * _more_
+     *
+     * @param url _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String[] doPost(String url, List<HttpFormEntry> entries)
+            throws Exception {
+        return HttpFormEntry.doPost(entries, url);
+    }
+
+
 
 
     /**
@@ -330,7 +354,9 @@ public class RepositoryClient extends RepositoryBase {
         bos.close();
 
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
-        postEntries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
+        postEntries.add(
+            HttpFormEntry.hidden(
+                ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
         postEntries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         postEntries.add(new HttpFormEntry(ARG_FILE, "entries.zip",
                                           bos.toByteArray()));
@@ -739,8 +765,7 @@ public class RepositoryClient extends RepositoryBase {
             addUrlArgs(entries);
             entries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
                                           xml.getBytes()));
-            String[] result = HttpFormEntry.doPost(entries,
-                                  URL_ENTRY_XMLCREATE.getFullUrl());
+            String[] result = doPost(URL_ENTRY_XMLCREATE, entries);
 
             if (result[0] != null) {
                 handleError("Error creating folder:\n" + result[0], null);
@@ -772,7 +797,9 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
-        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
+        entries.add(
+            HttpFormEntry.hidden(
+                ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
         entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
     }
 
@@ -1421,7 +1448,6 @@ public class RepositoryClient extends RepositoryBase {
             super(message);
         }
     }
-
 
 
 

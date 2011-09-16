@@ -27,7 +27,12 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
+import java.io.UnsupportedEncodingException;
+
 import java.net.*;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import java.text.SimpleDateFormat;
 
@@ -35,9 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  *
@@ -50,7 +52,7 @@ public class RepositoryUtil implements Constants {
     public static final TimeZone TIMEZONE_DEFAULT =
         TimeZone.getTimeZone("UTC");
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILE_SEPARATOR = "_file_";
 
 
@@ -80,6 +82,13 @@ public class RepositoryUtil implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param password _more_
+     *
+     * @return _more_
+     */
     public static String hashPassword(String password) {
         try {
             //            MessageDigest md = MessageDigest.getInstance("SHA");
