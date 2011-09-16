@@ -369,6 +369,12 @@ public class MapManager extends RepositoryManager {
             catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_NAV)
                                        + "" /*HtmlUtil.onMouseClick(call)*/));
+            catSB.append(HtmlUtil.checkbox("tmp", "true", true,
+                                           HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;") +
+                                           HtmlUtil.id("googleearth.visibility." +entry.getId()) +
+                                           HtmlUtil.onMouseClick(id + ".togglePlacemarkVisible(" +
+                                                                 HtmlUtil.squote(entry.getId())+")")));
+
             String iconUrl = getEntryManager().getIconUrl(request, entry);
             catSB.append(
                 HtmlUtil.href(
@@ -381,6 +387,7 @@ public class MapManager extends RepositoryManager {
             //            catSB.append("<a href=\"javascript:" + call +"\">"
             //                         + entry.getName() + "</a><br>");
             //HtmlUtil.onMouseClick(call);
+
             catSB.append(
                 HtmlUtil.href(
                     "javascript:" + call, entry.getName(),
