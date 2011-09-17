@@ -85,12 +85,19 @@ function RamaddaPlacemark(googleEarth, id, name, desc, lat,lon, detailsUrl, icon
     this.addFeature = function(feature) {
         this.features.push(feature);
     }
-    this.checkVisibility = function() {
+    this.isVisible = function() {
         var cbx = util.getDomObject("googleearth.visibility." + this.id);
         if(!cbx) {
-            return;
+            return true;
         }
-        var visible = cbx.obj.checked;
+        return  cbx.obj.checked;
+    }
+
+    this.checkVisibility = function() {
+        var visible = this.isVisible();
+        if(visible && !this.placemark) {
+        }
+
         if(visible && !this.kmlFeature && this.kmlUrl) {
             this.googleEarth.loadKml(this.kmlUrl, this);
         }
@@ -117,23 +124,6 @@ function GoogleEarth(id, url) {
     this.id = id;
     googleEarths[id] = this;
 
-    this.kmlUrlFinished = function(object, ramaddaPlacemark) {
-        if (!object) {
-            // wrap alerts in API callbacks and event handlers
-            // in a setTimeout to prevent deadlock in some browsers
-            setTimeout(function() {
-                    alert('Bad or null KML.');
-                }, 0);
-            return;
-        }
-        this.googleEarth.getFeatures().appendChild(object);
-
-        alert("got kml"); 
-       if(ramaddaPlacemark) {
-        alert(" and placmark"); 
-            ramaddaPlacemark.kmlFeature = object;
-        }
-    }
 
     this.initCallback = function(instance) {
         this.googleEarth = instance;
@@ -178,6 +168,34 @@ function GoogleEarth(id, url) {
         }
         google.earth.fetchKml(this.googleEarth, url, callback);
     }
+
+    this.kmlUrlFinished = function(object, ramaddaPlacemark) {
+        if (!object) {
+            // wrap alerts in API callbacks and event handlers
+            // in a setTimeout to prevent deadlock in some browsers
+            setTimeout(function() {
+                    alert('Bad or null KML.');
+                }, 0);
+            return;
+        }
+        this.googleEarth.getFeatures().appendChild(object);
+        object.setVisibility(true);
+        /*
+        if(object.getFeatures) {
+            var features = object.getFeatures();
+            var children = features.getChildNodes();
+            for(i=0;i<children.getLength();i++) {
+                var child = children.item(i);
+
+            }
+            alert(children);
+            }*/
+
+        if(ramaddaPlacemark) {
+            ramaddaPlacemark.kmlFeature = object;
+        }
+    }
+
 
     function failureCallback(errorCode) {
         alert("Failure loading the Google Earth Plugin: " + errorCode);
@@ -260,29 +278,17 @@ function GoogleEarth(id, url) {
         this.googleEarth.getFeatures().appendChild(gePlacemark);
 
         if(ramaddaPlacemark.polygons) {
-            var colors = ["ffff0000",
-                          "ff00ff00",
-                          "ff0000ff",
-                          "ffffff00",
-                          "ffffffff",
-                          "ff000000"];
-
-            var msg = "";
             for(polygonIdx=0;polygonIdx<ramaddaPlacemark.polygons.length;polygonIdx++) {
                 var points = ramaddaPlacemark.polygons[polygonIdx];
                 var lineString = this.googleEarth.createLineString('');
                 lineString.setTessellate(true);
                 lineString.setAltitudeMode(this.googleEarth.ALTITUDE_CLAMP_TO_GROUND);
-
-                msg += " polygon:";
                 for (i = 0; i < points.length; i+=2) {
-                    msg+= " " +points[i] +" " + points[i+1];
                     if(bounds) {
                         bounds.setLatLon(points[i],points[i+1])
                     }
                     lineString.getCoordinates().pushLatLngAlt(points[i], points[i+1], 0);
                 }
-                msg+="\n";
 
                 var lineStringPlacemark = this.googleEarth.createPlacemark('');
                 lineStringPlacemark.setGeometry(lineString);
@@ -290,11 +296,11 @@ function GoogleEarth(id, url) {
                 var lineStyle = lineStringPlacemark.getStyleSelector().getLineStyle();
                 lineStyle.setWidth(2);
                 lineStyle.getColor().set('ff0000ff');  // aabbggrr format
-                //                lineStyle.getColor().set(colors[polygonIdx]);
                 ramaddaPlacemark.addFeature(lineStringPlacemark);
                 this.googleEarth.getFeatures().appendChild(lineStringPlacemark);
             }
         }
+
         ramaddaPlacemark.checkVisibility();
     }
 
