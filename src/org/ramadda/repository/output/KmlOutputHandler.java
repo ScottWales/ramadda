@@ -250,22 +250,8 @@ public class KmlOutputHandler extends OutputHandler {
                 }
             }
 
-            String resource = entry.getResource().getPath();
-            if ((resource != null)
-                    && (IOUtil.hasSuffix(resource, "kml")
-                        || IOUtil.hasSuffix(resource, "kmz"))) {
-                String url;
-                if (entry.getResource().isFile()) {
-                    String fileTail = getStorageManager().getFileTail(entry);
-                    url = HtmlUtil.url(
-                        request.url(getRepository().URL_ENTRY_GET) + "/"
-                        + fileTail, ARG_ENTRYID, entry.getId());
-                    url = getRepository().absoluteUrl(url);
-                } else if (entry.getResource().isUrl()) {
-                    url = resource;
-                } else {
-                    continue;
-                }
+            String url = getKmlUrl(request, entry);
+            if(url!=null) {
                 Element link = KmlUtil.networkLink(folder, entry.getName(),
                                    url);
 
@@ -346,6 +332,34 @@ public class KmlOutputHandler extends OutputHandler {
 
     }
 
+
+    public static String getKmlUrl(Request request, Entry entry) {
+        if(!isKml(entry)) {
+            return null;
+        }
+        String url;
+        if (entry.getResource().isFile()) {
+            String fileTail = request.getRepository().getStorageManager().getFileTail(entry);
+            url = HtmlUtil.url(
+                               request.url(request.getRepository().URL_ENTRY_GET) + "/"
+                               + fileTail, ARG_ENTRYID, entry.getId());
+            return request.getRepository().absoluteUrl(url);
+        } else if (entry.getResource().isUrl()) {
+            return entry.getResource().getPath();
+        }
+        return null;
+    }
+
+
+    public static boolean isKml(Entry entry) {
+        String resource = entry.getResource().getPath();
+        if ((resource != null)
+            && (IOUtil.hasSuffix(resource, "kml")
+                || IOUtil.hasSuffix(resource, "kmz"))) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * _more_

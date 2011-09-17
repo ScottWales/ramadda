@@ -219,6 +219,10 @@ public class Request implements Constants {
     }
 
 
+    public Repository getRepository() {
+        return repository;
+    }
+
     /**
      * _more_
      *

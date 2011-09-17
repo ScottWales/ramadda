@@ -33,6 +33,7 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.awt.geom.Rectangle2D;
@@ -77,6 +78,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     /** _more_ */
     private String searchUrl;
+
+    private boolean searchOpen=true;;
 
     /** _more_ */
     private String label;
@@ -137,6 +140,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
 
+        searchOpen  = Misc.getProperty(props, "searchopen", true);
         searchUrl   = (String) props.get("searchurl");
         label       = (String) props.get("label");
         theType     = (String) props.get("type");
@@ -378,7 +382,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
         String searchHtml =
             HtmlUtil.makeShowHideBlock(HtmlUtil.img(iconUrl(ICON_SEARCH)),
-                                       formSB.toString(), true);
+                                       formSB.toString(), searchOpen);
         sb.append(HtmlUtil.col(searchHtml, ""
         /*HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "200")*/
         ));

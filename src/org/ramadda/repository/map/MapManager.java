@@ -24,7 +24,9 @@ package org.ramadda.repository.map;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.MapOutputHandler;
+import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
+
 
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -355,9 +357,11 @@ public class MapManager extends RepositoryManager {
         Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
         for (Entry entry : entries) {
-            if ( !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
+            String kmlUrl = KmlOutputHandler.getKmlUrl(request, entry);
+            if (kmlUrl == null &&  !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
                 continue;
             }
+
             String       category = entry.getTypeHandler().getCategory(entry);
             StringBuffer catSB    = catMap.get(category);
             if (catSB == null) {
@@ -442,14 +446,16 @@ public class MapManager extends RepositoryManager {
             desc = desc.replace("\n", " ");
             desc = desc.replace("\"", "\\\"");
             desc = desc.replace("'", "\\'");
-
-
-
             
-            
-        String detailsUrl = 
-            HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
-                         new String[]{ARG_ENTRYID, entry.getId(), ARG_OUTPUT, "mapinfo"});
+            if(kmlUrl==null) {
+                kmlUrl = "null";
+            } else {
+                kmlUrl = HtmlUtil.squote(kmlUrl);
+            }
+
+            String detailsUrl = 
+                HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
+                             new String[]{ARG_ENTRYID, entry.getId(), ARG_OUTPUT, "mapinfo"});
             js.append(
                 HtmlUtil.call(
                     id + ".addPlacemark",
@@ -460,7 +466,7 @@ public class MapManager extends RepositoryManager {
                     HtmlUtil.squote(detailsUrl)  +"," +
                     HtmlUtil.squote(
                                 request.getAbsoluteUrl(iconUrl)) + ","
-                                    + pointsString));
+                    + pointsString+"," + kmlUrl));
             js.append("\n");
         }
 
