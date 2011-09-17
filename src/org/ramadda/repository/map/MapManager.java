@@ -288,7 +288,8 @@ public class MapManager extends RepositoryManager {
         if (request.getExtraProperty("initgooglearth") == null) {
             sb.append(HtmlUtil.importJS("http://www.google.com/jsapi"
                                         + mapsKey));
-            sb.append(HtmlUtil.importJS(fileUrl("/googleearth.js")));
+            sb.append(HtmlUtil.importJS(fileUrl("/google/googleearth.js")));
+            sb.append(HtmlUtil.importJS(fileUrl("/google/extensions-0.2.1.pack.js")));
             sb.append(HtmlUtil.script("google.load(\"earth\", \"1\""
                                       + otherOpts + ");"));
             request.putExtraProperty("initgooglearth", "");
@@ -320,7 +321,7 @@ public class MapManager extends RepositoryManager {
         sb.append(HtmlUtil.italics(msg("Zoom on click")));
 
 
-        sb.append(HtmlUtil.script("var  " + id + " = new GoogleEarth("
+        sb.append(HtmlUtil.script("var  " + id + " = new RamaddaEarth("
                                   + HtmlUtil.squote(id) + ", "
                                   + ((url == null)
                                      ? "null"
@@ -356,6 +357,7 @@ public class MapManager extends RepositoryManager {
         List<String> categories = new ArrayList<String>();
         Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
+        int kmlCnt =0;
         for (Entry entry : entries) {
             String kmlUrl = KmlOutputHandler.getKmlUrl(request, entry);
             if (kmlUrl == null &&  !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
@@ -373,7 +375,12 @@ public class MapManager extends RepositoryManager {
             catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_NAV)
                                        + "" /*HtmlUtil.onMouseClick(call)*/));
-            catSB.append(HtmlUtil.checkbox("tmp", "true", true,
+            boolean visible = true;
+            //If there are lots of kmls then don't load all of them
+            if(kmlUrl!=null) {
+                visible = (kmlCnt++<3);
+            }
+            catSB.append(HtmlUtil.checkbox("tmp", "true", visible,
                                            HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;") +
                                            HtmlUtil.id("googleearth.visibility." +entry.getId()) +
                                            HtmlUtil.onMouseClick(id + ".togglePlacemarkVisible(" +
@@ -430,7 +437,7 @@ public class MapManager extends RepositoryManager {
                 pointsString = pointsSB.toString();
             }
 
-            if ( !hasPolygon && entry.hasAreaDefined()) {
+            if (kmlUrl==null &&  !hasPolygon && entry.hasAreaDefined()) {
                 pointsString = "new Array(" + entry.getNorth() + ","
                                + entry.getWest() + "," + entry.getNorth()
                                + "," + entry.getEast() + ","

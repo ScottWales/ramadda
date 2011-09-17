@@ -3,8 +3,8 @@
 //Supports multiple google earths in one web page
 //
 
-//list of all the GoogleEarth objects 
-var  googleEarths = new Array();
+//list of all the RamaddaEarth objects 
+var  ramaddaEarths = new Array();
 var RAMADDA_EARTH_DEFAULT_RANGE = 4999999;
 
 function RamaddaBounds() {
@@ -67,8 +67,8 @@ function RamaddaBounds() {
 
 
 //Class for holding placemark info
-function RamaddaPlacemark(googleEarth, id, name, desc, lat,lon, detailsUrl, icon, polygons, kmlUrl) {
-    this.googleEarth = googleEarth;
+function RamaddaPlacemark(ramaddaEarth, id, name, desc, lat,lon, detailsUrl, icon, polygons, kmlUrl) {
+    this.ramaddaEarth = ramaddaEarth;
     this.id = id;
     this.name = name;
     this.description = desc;
@@ -99,7 +99,7 @@ function RamaddaPlacemark(googleEarth, id, name, desc, lat,lon, detailsUrl, icon
         }
 
         if(visible && !this.kmlFeature && this.kmlUrl) {
-            this.googleEarth.loadKml(this.kmlUrl, this);
+            this.ramaddaEarth.loadKml(this.kmlUrl, this);
         }
 
         if(this.kmlFeature) {
@@ -116,13 +116,13 @@ function RamaddaPlacemark(googleEarth, id, name, desc, lat,lon, detailsUrl, icon
 
 
 //Wrapper around an instantiation of a google earth plugin
-function GoogleEarth(id, url) {
+function  RamaddaEarth(id, url) {
     this.googleEarth = null;
     this.placemarksToAdd = new Array();
     this.placemarks = new Array();
     this.url = url;
     this.id = id;
-    googleEarths[id] = this;
+    ramaddaEarths[id] = this;
 
 
     this.initCallback = function(instance) {
@@ -137,6 +137,9 @@ function GoogleEarth(id, url) {
         this.googleEarth.getLayerRoot().enableLayerById(this.googleEarth.LAYER_ROADS, true);
         this.googleEarth.getOptions().setFlyToSpeed(0.5);
         this.googleEarth.getOptions().setOverviewMapVisibility(true);
+
+        this.gex= new GEarthExtensions(this.googleEarth);
+
 
 
         if(this.url) {
@@ -162,9 +165,9 @@ function GoogleEarth(id, url) {
     }
 
     this.loadKml = function(url, ramaddaPlacemark) {
-        var theGoogleEarth = this;
+        var theRamaddaEarth = this;
         var callback = function(object) {
-            theGoogleEarth.kmlUrlFinished(object,ramaddaPlacemark);
+            theRamaddaEarth.kmlUrlFinished(object,ramaddaPlacemark);
         }
         google.earth.fetchKml(this.googleEarth, url, callback);
     }
@@ -359,6 +362,10 @@ function GoogleEarth(id, url) {
     this.googleEarthClickCnt=0;
     this.goToPlacemark = function(placemark) {
         if(this.zoomOnClick()) {
+            if(placemark.kmlFeature) {
+                this.gex.util.flyToObject(placemark.kmlFeature);
+                return;
+            }
             if(placemark.bounds.isLargeArea()) {
                 this.setLocation(placemark.lat,placemark.lon,
                                  placemark.bounds.getRange());
@@ -430,9 +437,9 @@ function GoogleEarth(id, url) {
         this.googleEarth.setBalloon(balloon);
     }
 
-    var theGoogleEarth = this;
+    var theRamaddaEarth = this;
     var callback = function(instance) {
-        theGoogleEarth.initCallback(instance);
+        theRamaddaEarth.initCallback(instance);
     }
     google.earth.createInstance(this.id, callback, this.failureCallback);
 }
