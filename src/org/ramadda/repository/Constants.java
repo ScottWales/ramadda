@@ -1098,6 +1098,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_PREVIOUS = "previous";
 
+    public static final String ARG_VISIBLE = "visible";
+
     /** _more_ */
     public static final String ARG_PRODUCT = "product";
 

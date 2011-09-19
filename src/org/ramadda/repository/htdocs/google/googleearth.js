@@ -82,6 +82,8 @@ function RamaddaPlacemark(ramaddaEarth, id, name, desc, lat,lon, detailsUrl, ico
     this.visible = true;
     this.features = new Array();
     this.kmlUrl = kmlUrl;
+    this.fromTime = null;
+    this.toTime = null;
     this.addFeature = function(feature) {
         this.features.push(feature);
     }
@@ -196,6 +198,9 @@ function  RamaddaEarth(id, url) {
 
         if(ramaddaPlacemark) {
             ramaddaPlacemark.kmlFeature = object;
+            if(ramaddaPlacemark.timePrimitive) {
+                ramaddaPlacemark.kmlFeature.setTimePrimitive(ramaddaPlacemark.timePrimitive);
+            }
         }
     }
 
@@ -204,7 +209,7 @@ function  RamaddaEarth(id, url) {
         alert("Failure loading the Google Earth Plugin: " + errorCode);
     }
 
-    this.addPlacemark = function(id,name, desc, lat,lon, detailsUrl, icon, points, kmlUrl) {
+    this.addPlacemark = function(id,name, desc, lat,lon, detailsUrl, icon, points, kmlUrl, fromTime, toTime) {
         var polygons = new Array();
         if(points) {
             var tmpArray = new Array();
@@ -240,6 +245,8 @@ function  RamaddaEarth(id, url) {
             }
         }
         pm = new RamaddaPlacemark(this, id, name, desc, lat,lon,detailsUrl, icon, polygons,kmlUrl)
+        pm.fromTime = fromTime;
+        pm.toTime = toTime;
         this.placemarks[id] = pm;
         this.addRamaddaPlacemark(pm);
     }
@@ -260,6 +267,24 @@ function  RamaddaEarth(id, url) {
                 event.preventDefault();
                 _this.entryClicked(ramaddaPlacemark.id, true);
             });
+
+        if(ramaddaPlacemark.fromTime!=null) {
+            if(ramaddaPlacemark.toTime) {
+                var timeSpan = this.googleEarth.createTimeSpan(ramaddaPlacemark.id);
+                timeSpan.getBegin().set(ramaddaPlacemark.fromTime.replace("GMT",""));
+                timeSpan.getEnd().set(ramaddaPlacemark.toTime.replace("GMT",""));
+                ramaddaPlacemark.timePrimitive  = timeSpan;
+            } else {
+                var timeStamp = this.googleEarth.createTimeStamp(ramaddaPlacemark.id);
+                time = ramaddaPlacemark.fromTime.replace("GMT","");
+                timeStamp.getWhen().set(time);
+                ramaddaPlacemark.timePrimitive = timeStamp;
+            }
+        }
+
+        
+        if(ramaddaPlacemark.timePrimitive)
+            gePlacemark.setTimePrimitive(ramaddaPlacemark.timePrimitive);
 
         ramaddaPlacemark.placemark = gePlacemark;
         ramaddaPlacemark.addFeature(gePlacemark);
@@ -299,6 +324,8 @@ function  RamaddaEarth(id, url) {
                 var lineStyle = lineStringPlacemark.getStyleSelector().getLineStyle();
                 lineStyle.setWidth(2);
                 lineStyle.getColor().set('ff0000ff');  // aabbggrr format
+                if(ramaddaPlacemark.timePrimitive)
+                    lineStringPlacemark.setTimePrimitive(ramaddaPlacemark.timePrimitive);
                 ramaddaPlacemark.addFeature(lineStringPlacemark);
                 this.googleEarth.getFeatures().appendChild(lineStringPlacemark);
             }

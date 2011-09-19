@@ -463,6 +463,16 @@ public class MapManager extends RepositoryManager {
             String detailsUrl = 
                 HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
                              new String[]{ARG_ENTRYID, entry.getId(), ARG_OUTPUT, "mapinfo"});
+            
+            String fromTime = "null";
+            String toTime = "null";
+            if(entry.getCreateDate()!=entry.getStartDate()) {
+                fromTime = HtmlUtil.squote(DateUtil.getTimeAsISO8601(entry.getStartDate()));
+                if(entry.getStartDate()!=entry.getEndDate()) {
+                    toTime = HtmlUtil.squote(DateUtil.getTimeAsISO8601(entry.getEndDate()));
+                }
+            }
+
             js.append(
                 HtmlUtil.call(
                     id + ".addPlacemark",
@@ -473,7 +483,7 @@ public class MapManager extends RepositoryManager {
                     HtmlUtil.squote(detailsUrl)  +"," +
                     HtmlUtil.squote(
                                 request.getAbsoluteUrl(iconUrl)) + ","
-                    + pointsString+"," + kmlUrl));
+                    + pointsString+"," + kmlUrl+"," + fromTime +"," + toTime));
             js.append("\n");
         }
 

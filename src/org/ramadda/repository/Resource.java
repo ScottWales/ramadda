@@ -170,6 +170,10 @@ public class Resource {
      * @return _more_
      */
     public boolean isImage() {
+        return isImage(path);
+    }
+
+    public static boolean isImage(String path) {
         if (path == null) {
             return false;
         }

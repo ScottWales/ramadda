@@ -179,7 +179,7 @@ public class KmlOutputHandler extends OutputHandler {
                           ? entries.get(0).getName()
                           : group.getFullName());
         Element root   = KmlUtil.kml(title);
-        Element folder = KmlUtil.folder(root, title, false);
+        Element folder = KmlUtil.folder(root, title, request.get(ARG_VISIBLE,false));
         KmlUtil.open(folder, false);
         if (group.getDescription().length() > 0) {
             KmlUtil.description(folder, group.getDescription());
@@ -199,7 +199,7 @@ public class KmlOutputHandler extends OutputHandler {
                 KmlUtil.description(link, childGroup.getDescription());
             }
 
-            KmlUtil.visible(link, false);
+            KmlUtil.visible(link, request.get(ARG_VISIBLE,false));
             KmlUtil.open(link, false);
             link.setAttribute(KmlUtil.ATTR_ID, childGroup.getId());
         }
@@ -232,12 +232,13 @@ public class KmlOutputHandler extends OutputHandler {
                                  + "/" + fileTail, ARG_ENTRYID,
                                      entry.getId());
                 url = getRepository().absoluteUrl(url);
-                KmlUtil.groundOverlay(folder, entry.getName(),
+                myGroundOverlay(folder, entry.getName(),
                                       entry.getDescription(), url,
                                       getLocation(entry.getNorth(), 90),
                                       getLocation(entry.getSouth(), -90),
                                       getLocation(entry.getEast(), 180),
-                                      getLocation(entry.getWest(), -180));
+                                getLocation(entry.getWest(), -180),
+                                request.get(ARG_VISIBLE, false));
                 continue;
             }
 
@@ -333,7 +334,34 @@ public class KmlOutputHandler extends OutputHandler {
     }
 
 
+
+    public static Element myGroundOverlay(Element parent, String name,
+                                        String description, String url,
+                                        double north, double south,
+                                          double east, double west, boolean visible) {
+        Element node = KmlUtil.makeElement(parent, KmlUtil.TAG_GROUNDOVERLAY);
+        KmlUtil.name(node, name);
+        KmlUtil.description(node, description);
+        KmlUtil.visible(node, visible);
+        Element icon = KmlUtil.makeElement(node, KmlUtil.TAG_ICON);
+        Element href = KmlUtil.makeText(icon, KmlUtil.TAG_HREF, url);
+        Element llb  = KmlUtil.makeElement(node, KmlUtil.TAG_LATLONBOX);
+        KmlUtil.makeText(llb, KmlUtil.TAG_NORTH, "" + north);
+        KmlUtil.makeText(llb, KmlUtil.TAG_SOUTH, "" + south);
+        KmlUtil.makeText(llb, KmlUtil.TAG_EAST, "" + east);
+        KmlUtil.makeText(llb, KmlUtil.TAG_WEST, "" + west);
+        return node;
+    }
+
+
+
     public static String getKmlUrl(Request request, Entry entry) {
+        if(isLatLonImage(entry)) {
+            return  request.getRepository().absoluteUrl(
+                                                request.url(
+                                                            request.getRepository().URL_ENTRY_SHOW, ARG_ENTRYID,
+                                                            entry.getId(), ARG_OUTPUT, OUTPUT_KML, ARG_VISIBLE, "true"));
+        }
         if(!isKml(entry)) {
             return null;
         }

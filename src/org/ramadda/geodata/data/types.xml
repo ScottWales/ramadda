@@ -27,7 +27,7 @@
    </type>
 
 
-  <type name="latlonimage"  description="Lat/Lon Image" datatype="latlonimage" category="Geo Data">
+  <type name="latlonimage"  description="WMS Image" datatype="latlonimage" category="Geo Data">
      <property name="icon" value="/icons/map.png"/>
   </type>
 
