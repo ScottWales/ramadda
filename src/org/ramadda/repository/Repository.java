@@ -525,10 +525,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
         setPort(port);
         xmlEncoder = getEncoder();
         LogUtil.setTestMode(true);
-        java.net.InetAddress localMachine =
-            java.net.InetAddress.getLocalHost();
-        setHostname(localMachine.getHostName());
-        setIpAddress(localMachine.getHostAddress());
+        try {
+            java.net.InetAddress localMachine =
+                java.net.InetAddress.getLocalHost();
+            setHostname(localMachine.getHostName());
+            setIpAddress(localMachine.getHostAddress());
+        } catch(Exception exc) {
+            System.err.println ("Got exception accessing local hostname");
+            exc.printStackTrace();
+            setHostname("unknown");
+            setIpAddress("unknown");
+        }
         this.args = args;
     }
 
