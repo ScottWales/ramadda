@@ -1,2 +1,3 @@
+fr.pack
 sp.pack
 zh-cn.pack

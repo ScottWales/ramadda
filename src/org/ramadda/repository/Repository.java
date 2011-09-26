@@ -530,8 +530,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 java.net.InetAddress.getLocalHost();
             setHostname(localMachine.getHostName());
             setIpAddress(localMachine.getHostAddress());
-        } catch(Exception exc) {
-            System.err.println ("Got exception accessing local hostname");
+        } catch (Exception exc) {
+            System.err.println("Got exception accessing local hostname");
             exc.printStackTrace();
             setHostname("unknown");
             setIpAddress("unknown");
@@ -1360,6 +1360,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /** _more_          */
+    private HashSet<String> seenPack = new HashSet<String>();
 
     /**
      * _more_
@@ -1378,9 +1380,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if ( !path.endsWith(".pack")) {
                     continue;
                 }
-                if (getPluginManager().haveSeen(path)) {
+                if (seenPack.contains(path)) {
                     continue;
                 }
+                seenPack.add(path);
                 String content =
                     getStorageManager().readUncheckedSystemResource(path,
                         (String) null);
@@ -2985,6 +2988,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     */
     public void addAuthToken(Request request) {
         String sessionId = request.getSessionId();
         if (sessionId != null) {
@@ -3728,6 +3736,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        FileInputStream is     = new FileInputStream("testfr.html");
+        final char[]    buffer = new char[0x10000];
+        StringBuilder   out    = new StringBuilder();
+        Reader          in     = new InputStreamReader(is, "UTF-8");
+        int             read;
+        do {
+            read = in.read(buffer, 0, buffer.length);
+            if (read > 0) {
+                out.append(buffer, 0, read);
+            }
+        } while (read >= 0);
+
+        FileOutputStream fos = new FileOutputStream("test.txt");
+        PrintWriter      pw  = new PrintWriter(fos);
+        pw.print(out.toString());
+        pw.close();
+        fos.close();
         //        String html = ":before:<include href=\"http://www.unavco.org/lib/uv-header-webapps.html\">:during:<include href=\"http://www.unavco.org/lib/uv-footer-webapps.html\">:after:";
         //        System.err.println(processTemplate(html));
     }
