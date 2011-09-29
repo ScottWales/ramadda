@@ -268,7 +268,9 @@ function  RamaddaEarth(id, url) {
                 _this.entryClicked(ramaddaPlacemark.id, true);
             });
 
-        if(ramaddaPlacemark.fromTime!=null) {
+        /*
+          Don't set the time for now since the GE time animation widget is so bad
+          if(ramaddaPlacemark.fromTime!=null) {
             if(ramaddaPlacemark.toTime) {
                 var timeSpan = this.googleEarth.createTimeSpan(ramaddaPlacemark.id);
                 timeSpan.getBegin().set(ramaddaPlacemark.fromTime.replace("GMT",""));
@@ -281,6 +283,7 @@ function  RamaddaEarth(id, url) {
                 ramaddaPlacemark.timePrimitive = timeStamp;
             }
         }
+        */
 
         
         if(ramaddaPlacemark.timePrimitive)

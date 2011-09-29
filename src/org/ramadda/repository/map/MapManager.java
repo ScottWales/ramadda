@@ -310,15 +310,18 @@ public class MapManager extends RepositoryManager {
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_CONTAINER));
         sb.append("\n");
         sb.append(earthHtml);
+        sb.append(HtmlUtil.italics(msgLabel("On click")));
+        sb.append(HtmlUtil.space(2));
         sb.append(HtmlUtil.checkbox("tmp", "true", true,
                                     HtmlUtil.id("googleearth.showdetails")));
         sb.append("\n");
         sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.italics(msg("Show details on click")));
-        sb.append(HtmlUtil.space(3));
+        sb.append(HtmlUtil.italics(msg("Show details")));
+        sb.append(HtmlUtil.space(2));
         sb.append(HtmlUtil.checkbox("tmp", "true", true,
                                     HtmlUtil.id("googleearth.zoomonclick")));
-        sb.append(HtmlUtil.italics(msg("Zoom on click")));
+        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtil.italics(msg("Zoom")));
 
 
         sb.append(HtmlUtil.script("var  " + id + " = new RamaddaEarth("
