@@ -1352,8 +1352,13 @@ function showPopup(event, srcId, popupId, alignLeft) {
     popupSrcId = srcId;
 
     showObject(popup);
-    //    var options = {};
-    //    $( "#"+popupId ).show( "blind", options,"slow");
+    jQuery("#"+popupId ).position({
+                of: jQuery( "#" + srcId ),
+                my: 'left top',
+                at: 'left bottom',
+                collision: "none none"
+                });
+    //Do it again to fix a bug on safari
     jQuery("#"+popupId ).position({
                 of: jQuery( "#" + srcId ),
                 my: 'left top',
@@ -1430,10 +1435,9 @@ function showMore(base) {
 function showObject(obj, display) {
     if(!obj) return 0;
     if(!display) display = "block";
-
     var style = util.getStyle(obj);
     if(!style) {
-        alert("no style");
+        //        alert("no style");
         return 0;
     }
     style.visibility = "visible";

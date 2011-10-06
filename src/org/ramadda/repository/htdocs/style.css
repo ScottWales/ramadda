@@ -85,7 +85,7 @@ form {
    border : 1px #888 solid;
    background-color : #FFFFFF;
    position: absolute; 
-   visibility: hidden; 
+   left:-10000px; 
    z-index: 1000;
 //Shadow effect
   /* offset left, top, thickness, color with alpha */
