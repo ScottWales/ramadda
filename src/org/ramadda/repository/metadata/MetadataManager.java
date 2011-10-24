@@ -129,6 +129,9 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+    private Hashtable<String,Hashtable<String,String>> metadataTypeToTemplate  = 
+        new Hashtable<String,Hashtable<String,String>>();
+
     /** _more_ */
     protected Hashtable distinctMap = new Hashtable();
 
@@ -188,6 +191,28 @@ public class MetadataManager extends RepositoryManager {
     public void addMetadataType(MetadataType type) {
         metadataTypes.add(type);
         typeMap.put(type.getId(), type);
+    }
+
+
+    public void addTemplate(String metadataType,
+                            String templateType,
+                            String templateContents) {
+        Hashtable<String,String> templatesForType = metadataTypeToTemplate.get(metadataType);
+        if(templatesForType==null) {
+            templatesForType = new Hashtable<String,String>();
+            metadataTypeToTemplate.put(metadataType,templatesForType);
+           
+        }
+        templatesForType.put(templateType, templateContents);
+    }
+
+    public String getTemplate(String metadataType,
+                              String templateType) {
+        Hashtable<String,String> templatesForType = metadataTypeToTemplate.get(metadataType);
+        if(templatesForType==null) {
+            return null;
+        }
+        return templatesForType.get(templateType);
     }
 
 

@@ -130,14 +130,14 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     private boolean showInHtml = true;
 
-
-    /** _more_ */
-    List<MetadataElement> children = new ArrayList<MetadataElement>();
-
-
     /** _more_ */
     private Hashtable<String, String> templates = new Hashtable<String,
                                                       String>();
+
+
+
+    /** _more_ */
+    List<MetadataElement> children = new ArrayList<MetadataElement>();
 
 
     /** _more_ */
@@ -411,17 +411,7 @@ public class MetadataTypeBase extends RepositoryManager {
         for (int i = 0; i < children.getLength(); i++) {
             Element childNode = (Element) children.item(i);
             if (childNode.getTagName().equals(TAG_TEMPLATE)) {
-                String templateType = XmlUtil.getAttribute(childNode,
-                                          ATTR_TYPE);
-                if (XmlUtil.hasAttribute(childNode, ATTR_FILE)) {
-                    templates.put(
-                        templateType,
-                        getStorageManager().readSystemResource(
-                            XmlUtil.getAttribute(childNode, ATTR_FILE)));
-                } else {
-                    templates.put(templateType,
-                                  XmlUtil.getChildText(childNode));
-                }
+                processTemplateTag(childNode);
             } else if (childNode.getTagName().equals(TAG_ELEMENT)) {}
             else {
                 logError("Unknown metadata xml tag:"
@@ -446,6 +436,25 @@ public class MetadataTypeBase extends RepositoryManager {
             addElement(element);
         }
 
+    }
+
+
+    public void processTemplate(String templateType, String template) {
+        templates.put(templateType, template);
+    }
+
+
+    public void processTemplateTag(Element childNode) throws Exception {
+        String templateType = XmlUtil.getAttribute(childNode,
+                                                   ATTR_TYPE);
+        if (XmlUtil.hasAttribute(childNode, ATTR_FILE)) {
+
+            processTemplate(templateType,
+                            XmlUtil.getAttribute(childNode, ATTR_FILE));
+        } else {
+            processTemplate(templateType,
+                          XmlUtil.getChildText(childNode));
+        }
     }
 
 

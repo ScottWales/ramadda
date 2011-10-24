@@ -64,10 +64,14 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     public static final String TAG_TYPE = "type";
 
+    public static final String TAG_TEMPLATE = "template";
+
 
     /** _more_ */
     public static final String TAG_HANDLER = "handler";
 
+
+    public static final String ATTR_METADATATYPE = "metadatatype";
 
     /** _more_ */
     public static final String ATTR_CLASS = "class";
@@ -203,6 +207,23 @@ public class MetadataType extends MetadataTypeBase {
                 parse(node, manager, types);
                 continue;
             }
+
+            if (node.getTagName().equals(TAG_TEMPLATE)) {
+                String templateType = XmlUtil.getAttribute(node,
+                                                           ATTR_TYPE);
+                String metadataType = XmlUtil.getAttribute(node,ATTR_METADATATYPE);
+
+                if (XmlUtil.hasAttribute(node, ATTR_FILE)) {
+                manager.addTemplate(metadataType, templateType,
+                                    manager.getStorageManager().readSystemResource(
+                                                                                        XmlUtil.getAttribute(node, ATTR_FILE)));
+                
+                } else {
+                    manager.addTemplate(metadataType, templateType,
+                                                     XmlUtil.getChildText(node));
+                }
+                continue;
+            }
             if ( !node.getTagName().equals(TAG_TYPE)) {
                 manager.logError("Unknown metadata xml tag:"
                                  + node.getTagName(), null);
@@ -212,9 +233,9 @@ public class MetadataType extends MetadataTypeBase {
                           ATTR_CLASS,
                           "org.ramadda.repository.metadata.MetadataHandler"));
 
-            MetadataHandler handler      = manager.getHandler(c);
             String          id           = XmlUtil.getAttribute(node,
-                                               ATTR_ID);
+                                                                ATTR_ID);
+            MetadataHandler handler      = manager.getHandler(c);
             MetadataType    metadataType = new MetadataType(id, handler);
             metadataType.init(node);
             handler.addMetadataType(metadataType);
@@ -246,7 +267,6 @@ public class MetadataType extends MetadataTypeBase {
         setCategory(XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
                 handler.getHandlerGroupName()));
     }
-
 
 
 
@@ -652,6 +672,11 @@ public class MetadataType extends MetadataTypeBase {
         }
     }
 
+    public String getTemplate(String type) {
+        String template  =super.getTemplate(type);
+        if(template!=null) return template;
+        return getMetadataManager().getTemplate(id, type);
+    }
 
 
 

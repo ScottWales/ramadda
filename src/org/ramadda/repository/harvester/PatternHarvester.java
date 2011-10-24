@@ -993,17 +993,15 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         TypeHandler typeHandler = getTypeHandler();
 
-        /**
-         * For now don't do this
-         * if(typeHandler.getType().equals(typeHandler.TYPE_FILE)) {
-         *   for(TypeHandler otherTypeHandler: getRepository().getTypeHandlers()) {
-         *       if(otherTypeHandler.canHarvestFile(f)) {
-         *           typeHandler = otherTypeHandler;
-         *           break;
-         *       }
-         *   }
-         * }
-         */
+        if(typeHandler.getType().equals(typeHandler.TYPE_FILE)) {
+            for(TypeHandler otherTypeHandler: getRepository().getTypeHandlers()) {
+                if(otherTypeHandler.canHarvestFile(f)) {
+                    typeHandler = otherTypeHandler;
+                    break;
+                }
+            }
+        }
+
 
         String dirPath = f.getParent().toString();
         dirPath = dirPath.substring(rootDir.toString().length());

@@ -282,8 +282,8 @@ public class AtomOutputHandler extends OutputHandler {
                 for (MetadataHandler metadataHandler : metadataHandlers) {
                     if (metadataHandler.canHandle(metadata)) {
                         if ( !metadataHandler.addMetadataToXml(request,
-                                "dif", entry, metadata, doc, root)) {
-                            metadataHandler.addMetadataToXml(request, "atom",
+                                "atom", entry, metadata, doc, root)) {
+                            metadataHandler.addMetadataToXml(request, "dif",
                                     entry, metadata, doc, root);
 
                         }
