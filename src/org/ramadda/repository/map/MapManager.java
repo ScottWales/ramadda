@@ -440,6 +440,7 @@ public class MapManager extends RepositoryManager {
                 pointsString = pointsSB.toString();
             }
 
+
             if (kmlUrl==null &&  !hasPolygon && entry.hasAreaDefined()) {
                 pointsString = "new Array(" + entry.getNorth() + ","
                                + entry.getWest() + "," + entry.getNorth()

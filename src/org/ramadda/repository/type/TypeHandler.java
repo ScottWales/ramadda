@@ -2431,13 +2431,17 @@ public class TypeHandler extends RepositoryManager {
         if (okToShowInForm(entry, ARG_DESCRIPTION)) {
             String desc    = "";
             String buttons = "";
-            int    rows    = getProperty(entry, "form.description.rows", 3);
+            int    rows    = getProperty(entry, "form.description.rows", 
+                                         getRepository().getProperty("ramadda.edit.rows", 3));
+            boolean showHtmlEditor = getProperty(entry, "form.description.html", 
+                                                 getProperty("ramadda.edit.html", false));
             if (entry != null) {
                 desc = entry.getDescription();
                 if (desc.length() > 100) {
                     rows = rows * 2;
                 }
                 if (isWikiText(desc)) {
+                    showHtmlEditor = false;
                     rows = 20;
                     buttons =
                         getRepository().getWikiManager().makeWikiEditBar(
@@ -2453,6 +2457,14 @@ public class TypeHandler extends RepositoryManager {
                                     ARG_DESCRIPTION, desc, rows, getProperty(
                                         entry, "form.description.columns", 60), HtmlUtil.id(
                                         ARG_DESCRIPTION))));
+
+            if(showHtmlEditor) {
+                String js =  HtmlUtil.importJS(getRepository().fileUrl("/tiny_mce/tiny_mce.js")) + 
+                    HtmlUtil.script("tinyMCE.init({mode : \"textareas\", theme : \"simple\" });");
+                sb.append(js);
+            }
+
+
         }
 
 
