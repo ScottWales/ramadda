@@ -155,6 +155,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private TypeHandler parent;
 
+    private static String tinyMceTemplate;
+
     /** _more_ */
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
 
@@ -2459,12 +2461,12 @@ public class TypeHandler extends RepositoryManager {
                                         ARG_DESCRIPTION))));
 
             if(showHtmlEditor) {
-                String js =  HtmlUtil.importJS(getRepository().fileUrl("/tiny_mce/tiny_mce.js")) + 
-                    HtmlUtil.script("tinyMCE.init({mode : \"textareas\", theme : \"simple\" });");
-                sb.append(js);
+                sb.append(HtmlUtil.importJS(getRepository().fileUrl("/tiny_mce/tiny_mce.js"))); 
+                if(tinyMceTemplate == null) {
+                    tinyMceTemplate  = getRepository().getResource(getProperty("ramadda.edit.tinymce",
+                                                                               "/org/ramadda/repository/resources/tinymce.js.template"));
+                sb.append(HtmlUtil.script(tinyMceTemplate));
             }
-
-
         }
 
 
