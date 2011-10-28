@@ -129,8 +129,9 @@ public class MetadataManager extends RepositoryManager {
 
 
 
-    private Hashtable<String,Hashtable<String,String>> metadataTypeToTemplate  = 
-        new Hashtable<String,Hashtable<String,String>>();
+    /** _more_          */
+    private Hashtable<String, Hashtable<String, String>> metadataTypeToTemplate =
+        new Hashtable<String, Hashtable<String, String>>();
 
     /** _more_ */
     protected Hashtable distinctMap = new Hashtable();
@@ -194,22 +195,37 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-    public void addTemplate(String metadataType,
-                            String templateType,
+    /**
+     * _more_
+     *
+     * @param metadataType _more_
+     * @param templateType _more_
+     * @param templateContents _more_
+     */
+    public void addTemplate(String metadataType, String templateType,
                             String templateContents) {
-        Hashtable<String,String> templatesForType = metadataTypeToTemplate.get(metadataType);
-        if(templatesForType==null) {
-            templatesForType = new Hashtable<String,String>();
-            metadataTypeToTemplate.put(metadataType,templatesForType);
-           
+        Hashtable<String, String> templatesForType =
+            metadataTypeToTemplate.get(metadataType);
+        if (templatesForType == null) {
+            templatesForType = new Hashtable<String, String>();
+            metadataTypeToTemplate.put(metadataType, templatesForType);
+
         }
         templatesForType.put(templateType, templateContents);
     }
 
-    public String getTemplate(String metadataType,
-                              String templateType) {
-        Hashtable<String,String> templatesForType = metadataTypeToTemplate.get(metadataType);
-        if(templatesForType==null) {
+    /**
+     * _more_
+     *
+     * @param metadataType _more_
+     * @param templateType _more_
+     *
+     * @return _more_
+     */
+    public String getTemplate(String metadataType, String templateType) {
+        Hashtable<String, String> templatesForType =
+            metadataTypeToTemplate.get(metadataType);
+        if (templatesForType == null) {
             return null;
         }
         return templatesForType.get(templateType);
@@ -333,6 +349,49 @@ public class MetadataManager extends RepositoryManager {
         return result;
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Metadata> getInheritedMetadata(Entry entry) throws Exception {
+        List<Metadata> result = new ArrayList<Metadata>();
+        findInheritedMetadata(getEntryManager().getParent(null, entry),
+                              result);
+        return result;
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param result _more_
+     *
+     * @throws Exception _more_
+     */
+    private void findInheritedMetadata(Entry entry, List<Metadata> result)
+            throws Exception {
+
+        if (entry == null) {
+            return;
+        }
+        for (Metadata metadata : getMetadata(entry)) {
+            if ( !metadata.getInherited()) {
+                continue;
+            }
+
+            result.add(metadata);
+        }
+        findInheritedMetadata(getEntryManager().getParent(null, entry),
+                              result);
+    }
+
+
+
 
     /**
      * _more_
@@ -357,7 +416,11 @@ public class MetadataManager extends RepositoryManager {
             if ( !firstTime && !metadata.getInherited()) {
                 continue;
             }
-            if (metadata.getType().equals(type)) {
+            if (type != null) {
+                if (metadata.getType().equals(type)) {
+                    result.add(metadata);
+                }
+            } else {
                 result.add(metadata);
             }
         }
