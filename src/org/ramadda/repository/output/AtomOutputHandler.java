@@ -240,6 +240,8 @@ public class AtomOutputHandler extends OutputHandler {
             Element      root  = doc.getDocumentElement();
             typeHandler.addMetadataToXml(entry, root, extra, "atom");
 
+            List<Metadata> inheritedMetadata = getMetadataManager().getInheritedMetadata(entry);
+
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
             List<MetadataHandler> metadataHandlers =
@@ -277,20 +279,16 @@ public class AtomOutputHandler extends OutputHandler {
                     extra.append(firstLon);
                     extra.append(" ");
                     extra.append("</georss:polygon>\n");
+                    continue;
                 }
 
-                for (MetadataHandler metadataHandler : metadataHandlers) {
-                    if (metadataHandler.canHandle(metadata)) {
-                        if ( !metadataHandler.addMetadataToXml(request,
-                                "atom", entry, metadata, doc, root)) {
-                            metadataHandler.addMetadataToXml(request, "dif",
-                                    entry, metadata, doc, root);
-
-                        }
-                        break;
-                    }
-                }
+                addMetadata(request, entry,  doc, root, metadata, metadataHandlers);
             }
+
+            for (Metadata metadata : inheritedMetadata) {
+                addMetadata(request, entry,  doc, root, metadata, metadataHandlers);
+            }
+
 
             if (entry.hasAreaDefined()) {
                 extra.append("<georss:box>" + entry.getSouth() + " "
@@ -313,6 +311,21 @@ public class AtomOutputHandler extends OutputHandler {
         sb.append(AtomUtil.closeFeed());
         return new Result("", sb, MIME_ATOM);
     }
+
+    private void addMetadata(Request request, Entry entry, Document doc, Element root, Metadata metadata, List<MetadataHandler> metadataHandlers) throws Exception {
+        for (MetadataHandler metadataHandler : metadataHandlers) {
+            if (metadataHandler.canHandle(metadata)) {
+                if ( !metadataHandler.addMetadataToXml(request,
+                                                       "atom", entry, metadata, doc, root)) {
+                    metadataHandler.addMetadataToXml(request, "dif",
+                                                     entry, metadata, doc, root);
+                    
+                }
+                break;
+            }
+        }
+    }
+
 
 
 }
