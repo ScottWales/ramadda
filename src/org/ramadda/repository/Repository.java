@@ -1360,7 +1360,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private HashSet<String> seenPack = new HashSet<String>();
 
     /**

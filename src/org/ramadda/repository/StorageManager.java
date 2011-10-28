@@ -392,7 +392,9 @@ public class StorageManager extends RepositoryManager {
      * @return _more_
      */
     public String localizePath(String path) {
-        path = path.replace("%repositorydir%", getRepositoryDir().toString());
+        String repositoryDir = getRepositoryDir().toString();
+        path = path.replace("%repositorydir%", repositoryDir);
+        path = path.replace("${repositorydir}", repositoryDir);
         path = path.replace("%resourcedir%",
                             "/org/ramadda/repository/resources");
         return path;

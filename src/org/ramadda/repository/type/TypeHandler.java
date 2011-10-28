@@ -2434,9 +2434,9 @@ public class TypeHandler extends RepositoryManager {
             String desc    = "";
             String buttons = "";
             int    rows    = getProperty(entry, "form.description.rows", 
-                                         getRepository().getProperty("ramadda.edit.rows", 3));
+                                         getRepository().getProperty("ramadda.edit.rows", 5));
             boolean showHtmlEditor = getProperty(entry, "form.description.html", 
-                                                 getProperty("ramadda.edit.html", false));
+                                                 getRepository().getProperty("ramadda.edit.html", false));
             if (entry != null) {
                 desc = entry.getDescription();
                 if (desc.length() > 100) {
@@ -2463,9 +2463,10 @@ public class TypeHandler extends RepositoryManager {
             if(showHtmlEditor) {
                 sb.append(HtmlUtil.importJS(getRepository().fileUrl("/tiny_mce/tiny_mce.js"))); 
                 if(tinyMceTemplate == null) {
-                    tinyMceTemplate  = getRepository().getResource(getProperty("ramadda.edit.tinymce",
-                                                                               "/org/ramadda/repository/resources/tinymce.js.template"));
-                sb.append(HtmlUtil.script(tinyMceTemplate));
+                    tinyMceTemplate  = getRepository().getResource(getRepository().getProperty("ramadda.edit.tinymce",
+                                                                                               "/org/ramadda/repository/resources/tinymce.js.template"));
+                    sb.append(HtmlUtil.script(tinyMceTemplate));
+                }
             }
         }
 
