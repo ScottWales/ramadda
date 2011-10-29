@@ -2465,8 +2465,8 @@ public class TypeHandler extends RepositoryManager {
                 if(tinyMceTemplate == null) {
                     tinyMceTemplate  = getRepository().getResource(getRepository().getProperty("ramadda.edit.tinymce",
                                                                                                "/org/ramadda/repository/resources/tinymce.js.template"));
-                    sb.append(HtmlUtil.script(tinyMceTemplate));
                 }
+                sb.append(HtmlUtil.script(tinyMceTemplate));
             }
         }
 
