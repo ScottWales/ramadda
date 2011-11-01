@@ -2481,7 +2481,7 @@ public class IdvOutputHandler extends OutputHandler {
             StringBuffer args = new StringBuffer();
             args.append("<argument>-b64isl</argument>");
             args.append("<argument>"
-                        + XmlUtil.encodeBase64(isl.toString().getBytes())
+                        + RepositoryUtil.encodeBase64(isl.toString().getBytes())
                         + "</argument>");
             jnlp = jnlp.replace("${args}", args.toString());
             return new Result("data.jnlp", new StringBuffer(jnlp),
@@ -2954,7 +2954,7 @@ public class IdvOutputHandler extends OutputHandler {
                 StringBuffer args = new StringBuffer();
                 args.append("<argument>-b64isl</argument>");
                 args.append("<argument>"
-                            + XmlUtil.encodeBase64(isl.toString().getBytes())
+                            + RepositoryUtil.encodeBase64(isl.toString().getBytes())
                             + "</argument>");
                 jnlp = jnlp.replace("${args}", args.toString());
                 return new Result("data.jnlp", new StringBuffer(jnlp),

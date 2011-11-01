@@ -24,6 +24,10 @@
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
     </target>
 
+    <target name="client" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="client"/>
+    </target>
+
     <target name="ramadda" depends="init">
       <echo message="Building RAMADDA"/>
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false"/>

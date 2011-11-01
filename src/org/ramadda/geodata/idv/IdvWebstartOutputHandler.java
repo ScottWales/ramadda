@@ -264,7 +264,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                             embeddedBundle =
                                 embeddedBundle.replace("${datasource}",
                                     opendapUrl);
-                            embeddedBundle = XmlUtil.encodeBase64(
+                            embeddedBundle = RepositoryUtil.encodeBase64(
                                 embeddedBundle.getBytes());
                             break;
                         }

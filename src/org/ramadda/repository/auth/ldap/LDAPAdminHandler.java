@@ -255,7 +255,7 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
         if (value.length() == 0) {
             return value;
         }
-        return new String(XmlUtil.encodeBase64(value.getBytes()));
+        return new String(RepositoryUtil.encodeBase64(value.getBytes()));
     }
 
     /**
@@ -273,7 +273,7 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
         if (value.length() == 0) {
             return value;
         }
-        return new String(XmlUtil.decodeBase64(value));
+        return new String(RepositoryUtil.decodeBase64(value));
     }
 
 

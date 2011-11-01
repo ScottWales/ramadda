@@ -133,7 +133,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
     private String[] parseId(String id) {
         if (id.startsWith(ID_PREFIX_SYNTH)) {
             id = id.substring(ID_PREFIX_SYNTH.length());
-            id = new String(XmlUtil.decodeBase64(id));
+            id = new String(RepositoryUtil.decodeBase64(id));
         }
         int idx = id.indexOf(":id:");
         if (idx < 0) {
@@ -245,7 +245,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     private String getCatalogId(Entry mainEntry, String id) {
-        id = XmlUtil.encodeBase64(id.getBytes());
+        id = RepositoryUtil.encodeBase64(id.getBytes());
         return ID_PREFIX_SYNTH + id;
     }
 

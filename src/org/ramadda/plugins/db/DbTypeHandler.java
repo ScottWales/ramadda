@@ -465,7 +465,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
         List<Object[]> valueList = (List<Object[]>) xmlEncoder.toObject(
                                        new String(
-                                           XmlUtil.decodeBase64(values)));
+                                           RepositoryUtil.decodeBase64(values)));
         if (valueList == null) {
             throw new IllegalArgumentException(
                 "Could not read database value list");
