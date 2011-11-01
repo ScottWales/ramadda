@@ -3449,7 +3449,7 @@ public class EntryManager extends RepositoryManager {
                         && XmlUtil.getAttribute(descriptionNode, "encoded",
                             false)) {
                     description =
-                        new String(XmlUtil.decodeBase64(description));
+                        new String(RepositoryUtil.decodeBase64(description));
                 }
             }
         }
@@ -5104,7 +5104,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getRemoteEntryId(String server, String id) {
-        return ID_PREFIX_REMOTE + XmlUtil.encodeBase64(server.getBytes())
+        return ID_PREFIX_REMOTE + RepositoryUtil.encodeBase64(server.getBytes())
                + ":" + id;
     }
 
@@ -5125,7 +5125,7 @@ public class EntryManager extends RepositoryManager {
         if (pair == null) {
             return new String[] { "", "" };
         }
-        pair[0] = new String(XmlUtil.decodeBase64(pair[0]));
+        pair[0] = new String(RepositoryUtil.decodeBase64(pair[0]));
         return pair;
     }
 

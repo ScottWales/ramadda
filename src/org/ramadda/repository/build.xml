@@ -75,10 +75,10 @@
         <antcall target="ramadda.jar"/>
         <antcall target="ramadda.zip"/>
         <antcall target="repository.war"/>
-        <antcall target="clientjar"/>
+        <antcall target="client"/>
     </target>
 
-    <target name="clientjar" depends="init,clean">
+    <target name="client" depends="init,clean">
         <javac
             verbose="false"
             classpath="${classpath}"

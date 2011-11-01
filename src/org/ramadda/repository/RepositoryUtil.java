@@ -91,16 +91,42 @@ public class RepositoryUtil implements Constants {
      */
     public static String hashPassword(String password) {
         try {
-            //            MessageDigest md = MessageDigest.getInstance("SHA");
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             md.update(password.getBytes("UTF-8"));
-            return XmlUtil.encodeBase64(md.digest()).trim();
+            byte[] bytes  = md.digest();
+            String result = encodeBase64(bytes);
+            return result.trim();
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
         } catch (UnsupportedEncodingException uee) {
             throw new IllegalStateException(uee.getMessage());
         }
     }
+
+    /**
+     * _more_
+     *
+     * @param b _more_
+     *
+     * @return _more_
+     */
+    public static String encodeBase64(byte[] b) {
+        return javax.xml.bind.DatatypeConverter.printBase64Binary(b);
+    }
+
+    /**
+     * Decode the given base64 String
+     *
+     * @param s Holds the base64 encoded bytes
+     * @return The decoded bytes
+     */
+    public static byte[] decodeBase64(String s) {
+        return javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
+    }
+
+
+
+
 
     /**
      * _more_

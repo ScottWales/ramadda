@@ -954,7 +954,7 @@ public class Request implements Constants {
         String s = o.toString();
         try {
             if (s.indexOf("/") >= 0) {
-                s = "b64:" + XmlUtil.encodeBase64(s.getBytes()).trim();
+                s = "b64:" + RepositoryUtil.encodeBase64(s.getBytes()).trim();
             }
             //            s = java.net.URLEncoder.encode(s, "UTF-8");
             return s;
@@ -976,7 +976,7 @@ public class Request implements Constants {
             if (s.startsWith("b64:")) {
                 s = s.substring(4);
                 //s = java.net.URLDecoder.decode(s, "UTF-8");     
-                s = new String(XmlUtil.decodeBase64(s));
+                s = new String(RepositoryUtil.decodeBase64(s));
             }
             return s;
         } catch (Exception exc) {
@@ -1348,8 +1348,8 @@ public class Request implements Constants {
      * _more_
      */
     public void ensureAuthToken() {
-        //        System.err.println("RAMADDA: checking auth");
         //java.awt.Toolkit.getDefaultToolkit().beep();
+
         String authToken = getString(ARG_AUTHTOKEN, (String) null);
         String sessionId = getSessionId();
         if(sessionId==null) {

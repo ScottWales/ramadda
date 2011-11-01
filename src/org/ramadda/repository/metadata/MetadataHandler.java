@@ -206,7 +206,7 @@ public class MetadataHandler extends RepositoryManager {
             int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX,
                                              -1);
             String value = new String(
-                               XmlUtil.decodeBase64(
+                               RepositoryUtil.decodeBase64(
                                    XmlUtil.getChildText(childNode)));
             metadata.setAttr(index, value);
         }

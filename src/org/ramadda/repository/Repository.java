@@ -2691,7 +2691,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (authMethod.equals(AuthorizationMethod.AUTH_HTML)) {
                     sb.append(showDialogError(inner.getMessage()));
                     String redirect =
-                        XmlUtil.encodeBase64(request.getUrl().getBytes());
+                        RepositoryUtil.encodeBase64(request.getUrl().getBytes());
                     sb.append(getUserManager().makeLoginForm(request,
                             HtmlUtil.hidden(ARG_REDIRECT, redirect)));
                 } else {
@@ -2706,7 +2706,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         If authenticated then it redirects the client back to the original non ssl request
                         */
                         String redirectUrl =
-                            XmlUtil.encodeBase64(request.getUrl().getBytes());
+                            RepositoryUtil.encodeBase64(request.getUrl().getBytes());
                         String url = HtmlUtil.url(URL_SSLREDIRECT.toString(),
                                          ARG_REDIRECT, redirectUrl);
                         result = new Result(url);
@@ -3444,7 +3444,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
                     if (prop.startsWith("bsf:")) {
                         prop = new String(
-                            XmlUtil.decodeBase64(prop.substring(4)));
+                            RepositoryUtil.decodeBase64(prop.substring(4)));
                     }
                     result.append(prop);
                 }
@@ -4737,7 +4737,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throw new AccessException("Cannot access data", request);
         }
         String url = request.getString(ARG_REDIRECT, "");
-        url = new String(XmlUtil.decodeBase64(url));
+        url = new String(RepositoryUtil.decodeBase64(url));
         return new Result(url);
     }
 

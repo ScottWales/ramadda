@@ -637,7 +637,7 @@ public class Admin extends RepositoryManager {
 
                 ResultSet columns = dbmd.getColumns(null, null, tableName,
                                         null);
-                String encoded = new String(XmlUtil.encodeBase64(("text:?"
+                String encoded = new String(RepositoryUtil.encodeBase64(("text:?"
                                      + tableName).getBytes()));
 
                 int cnt = 0;

@@ -134,7 +134,7 @@ public abstract class PasswordAction extends MonitorAction {
         if (value == null) {
             password = null;
         } else {
-            password = new String(XmlUtil.decodeBase64(new String(value)));
+            password = new String(RepositoryUtil.decodeBase64(new String(value)));
         }
     }
 
@@ -149,7 +149,7 @@ public abstract class PasswordAction extends MonitorAction {
         if (password == null) {
             return null;
         }
-        return XmlUtil.encodeBase64(password.getBytes()).getBytes();
+        return RepositoryUtil.encodeBase64(password.getBytes()).getBytes();
     }
 
     /**

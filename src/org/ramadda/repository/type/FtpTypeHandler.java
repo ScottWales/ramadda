@@ -287,7 +287,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
         if ((id == null) || (id.length() == 0)) {
             return baseDir;
         }
-        return new String(XmlUtil.decodeBase64(id));
+        return new String(RepositoryUtil.decodeBase64(id));
     }
 
     /**
@@ -303,7 +303,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              String parentPath, FTPFile file) {
         String id = parentPath + "/" + file.getName();
-        id = XmlUtil.encodeBase64(id.getBytes()).replace("\n", "");
+        id = RepositoryUtil.encodeBase64(id.getBytes()).replace("\n", "");
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
@@ -320,7 +320,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              String parentPath) {
         String id = parentPath;
-        id = XmlUtil.encodeBase64(id.getBytes()).replace("\n", "");
+        id = RepositoryUtil.encodeBase64(id.getBytes()).replace("\n", "");
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
@@ -621,7 +621,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
             file.setType(FTPFile.DIRECTORY_TYPE);
             return new MyFTPFile(file, baseDir);
         } else {
-            path = new String(XmlUtil.decodeBase64(id));
+            path = new String(RepositoryUtil.decodeBase64(id));
         }
         FTPFile ftpFile = getCache(parentEntry).get(path);
         if (ftpFile != null) {

@@ -421,7 +421,7 @@ public class GenericTypeHandler extends TypeHandler {
             if (child != null) {
                 value = XmlUtil.getChildText(child);
                 if (XmlUtil.getAttribute(child, "encoded", false)) {
-                    value = new String(XmlUtil.decodeBase64(value));
+                    value = new String(RepositoryUtil.decodeBase64(value));
                 }
             }
             if (value == null) {

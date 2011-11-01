@@ -771,7 +771,7 @@ public class Column implements Constants {
         } else if (isType(TYPE_PASSWORD)) {
             if (values[offset] != null) {
                 String value =
-                    new String(XmlUtil.encodeBase64(toString(values,
+                    new String(RepositoryUtil.encodeBase64(toString(values,
                         offset).getBytes()).getBytes());
                 statement.setString(statementIdx, value);
             } else {
@@ -869,7 +869,7 @@ public class Column implements Constants {
         } else if (isType(TYPE_PASSWORD)) {
             String value = results.getString(valueIdx);
             if (value != null) {
-                byte[] bytes = XmlUtil.decodeBase64(value);
+                byte[] bytes = RepositoryUtil.decodeBase64(value);
                 if (bytes != null) {
                     value = new String(bytes);
                 }

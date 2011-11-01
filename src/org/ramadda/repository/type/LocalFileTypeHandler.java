@@ -138,7 +138,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if ((id == null) || (id.length() == 0)) {
             return baseFile;
         }
-        String subPath = new String(XmlUtil.decodeBase64(id));
+        String subPath = new String(RepositoryUtil.decodeBase64(id));
         File   file    = new File(IOUtil.joinDir(baseFile, subPath));
         if ( !IOUtil.isADescendent(baseFile, file)) {
             throw new IllegalArgumentException("Bad file path:" + subPath);
@@ -369,7 +369,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
-        subId = XmlUtil.encodeBase64(subId.getBytes()).replace("\n", "");
+        subId = RepositoryUtil.encodeBase64(subId.getBytes()).replace("\n", "");
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
     }
 

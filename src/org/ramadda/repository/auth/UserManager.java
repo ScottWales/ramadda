@@ -1873,7 +1873,7 @@ public class UserManager extends RepositoryManager {
                 request.remove(ARG_MESSAGE);
                 request.remove(ARG_REDIRECT);
                 String redirect =
-                    XmlUtil.encodeBase64(request.getUrl().getBytes());
+                    RepositoryUtil.encodeBase64(request.getUrl().getBytes());
                 extras.add("");
                 //            System.err.println ("initial url " + request.getUrl());
                 urls.add(request.url(getRepositoryBase().URL_USER_LOGIN,
@@ -2538,7 +2538,7 @@ public class UserManager extends RepositoryManager {
                     getRepository().showDialogNote(msg("You are logged in")));
                 if (request.exists(ARG_REDIRECT)) {
                     destUrl = new String(
-                        XmlUtil.decodeBase64(
+                        RepositoryUtil.decodeBase64(
                             request.getUnsafeString(ARG_REDIRECT, "")));
                     response.append(HtmlUtil.href(destUrl, msg("Continue")));
                 } else if ( !user.canEditSettings()) {

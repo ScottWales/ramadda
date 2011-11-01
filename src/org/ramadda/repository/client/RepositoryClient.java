@@ -335,7 +335,7 @@ public class RepositoryClient extends RepositoryBase {
          * write the xml definition into the zip file
          */
         String xml = XmlUtil.toString(root);
-        System.out.println(xml);
+        //        System.out.println(xml);
         zos.putNextEntry(new ZipEntry("entries.xml"));
         byte[] bytes = xml.getBytes();
         zos.write(bytes, 0, bytes.length);
@@ -797,9 +797,10 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
+        String authToken = RepositoryUtil.hashPassword(getSessionId());
         entries.add(
             HttpFormEntry.hidden(
-                ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
+                ARG_AUTHTOKEN, authToken));
         entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
     }
 
@@ -981,9 +982,9 @@ public class RepositoryClient extends RepositoryBase {
                                   new String[] { ARG_RESPONSE,
                 RESPONSE_XML });
 
-        System.err.println("url:" + url);
+        //        System.err.println("url:" + url);
         String contents = IOUtil.readContents(url, getClass());
-        System.err.println(contents);
+        //        System.err.println(contents);
         Element root = XmlUtil.getRoot(contents);
 
         String sslPortProp = XmlUtil.getGrandChildText(root,
@@ -1013,7 +1014,7 @@ public class RepositoryClient extends RepositoryBase {
         if (value == null) {
             password = null;
         } else {
-            password = new String(XmlUtil.decodeBase64(new String(value)));
+            password = new String(RepositoryUtil.decodeBase64(new String(value)));
         }
     }
 
@@ -1027,7 +1028,7 @@ public class RepositoryClient extends RepositoryBase {
         if (password == null) {
             return null;
         }
-        return XmlUtil.encodeBase64(password.getBytes()).getBytes();
+        return RepositoryUtil.encodeBase64(password.getBytes()).getBytes();
     }
 
     /**
