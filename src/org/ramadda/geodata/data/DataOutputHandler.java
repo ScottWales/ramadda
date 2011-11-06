@@ -22,11 +22,6 @@ package org.ramadda.geodata.data;
 
 
 import opendap.dap.DAP2Exception;
-
-
-
-//import opendap.dap.parser.ParseException;
-
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
@@ -348,7 +343,6 @@ public class DataOutputHandler extends OutputHandler {
     /** opendap counter */
     Counter opendapCounter = new Counter();
 
-
     /** grid open counter */
     Counter gridOpenCounter = new Counter();
 
@@ -647,8 +641,6 @@ public class DataOutputHandler extends OutputHandler {
         // Apply settings for the opendap.dap
         //        opendap.dap.DConnect2.setHttpClient(getRepository().getHttpClient());
 
-
-
         //Set the temp file and the cache policy
         ucar.nc2.util.DiskCache.setRootDirectory(nj22Dir.getDir().toString());
         ucar.nc2.util.DiskCache.setCachePolicy(true);
@@ -743,12 +735,11 @@ public class DataOutputHandler extends OutputHandler {
     public void addToEntryNode(Request request, Entry entry, Element node)
             throws Exception {
         super.addToEntryNode(request, entry, node);
-        if ( !getRepository().getAccessManager().canAccessFile(request,
-                entry)) {
+        if ( !canLoadAsCdm(entry)) {
             return;
         }
-
-        if ( !canLoadAsCdm(entry)) {
+        if ( !getRepository().getAccessManager().canAccessFile(request,
+                entry)) {
             return;
         }
         String  url         = getFullTdsUrl(entry);
@@ -2784,9 +2775,6 @@ public class DataOutputHandler extends OutputHandler {
             throw new AccessException("Cannot access data", request);
         }
 
-
-
-
         if (outputType.equals(OUTPUT_CDL)) {
             return outputCdl(request, entry);
         }
@@ -2803,11 +2791,9 @@ public class DataOutputHandler extends OutputHandler {
             return outputGridAsPoint(request, entry);
         }
 
-
         if (outputType.equals(OUTPUT_TRAJECTORY_MAP)) {
             return outputTrajectoryMap(request, entry);
         }
-
 
         if (outputType.equals(OUTPUT_POINT_MAP)) {
             return outputPointMap(request, entry);
@@ -2927,17 +2913,14 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputOpendap(final Request request, final Entry entry)
             throws Exception {
-        //jeffmc: this used to be synchronized and I just don't know why
-        //whether there was a critical section here or what
-        //But it has the potential to lock all access to this object
-        //if opening a file hangs. So, lets remove the synchronized
-        //    public synchronized Result outputOpendap(final Request request,
 
-
+        //Get the file location for the entry
         String     location = getPath(request, entry);
+
+        //Get the ncFile from the pool
         NetcdfFile ncFile   = ncFilePool.get(location);
         opendapCounter.incr();
-        //        try {
+
         //Bridge the ramadda servlet to the opendap servlet
         NcDODSServlet servlet = new NcDODSServlet(request, entry, ncFile) {
             public ServletConfig getServletConfig() {
@@ -2954,12 +2937,13 @@ public class DataOutputHandler extends OutputHandler {
             }
         };
 
+        //If we are running as a normal servlet then init the ncdods servlet with the servlet config info
         if ((request.getHttpServlet() != null)
                 && (request.getHttpServlet().getServletConfig() != null)) {
             servlet.init(request.getHttpServlet().getServletConfig());
         }
 
-
+        //Do the work
         servlet.doGet(request.getHttpServletRequest(),
                       request.getHttpServletResponse());
         //We have to pass back a result though we set needtowrite to false because the opendap servlet handles the writing
@@ -2968,9 +2952,6 @@ public class DataOutputHandler extends OutputHandler {
         opendapCounter.decr();
         ncFilePool.put(location, ncFile);
         return result;
-        //        } finally {
-        //        }
-
     }
 
 
@@ -3315,8 +3296,6 @@ public class DataOutputHandler extends OutputHandler {
 
 
     }
-
-
 
 
     /**

@@ -247,6 +247,17 @@ public class Metadata implements Constants {
         }
     }
 
+    public Metadata(String id, String entryId, String type,
+                    String []attrs) {
+        this.id        = id;
+        this.entryId   = entryId;
+        this.type      = type;
+        for(int i=0;i<attrs.length;i++) {
+            this.setAttr(i+1, attrs[i]);
+        }
+    }
+
+
     /**
      * _more_
      *
