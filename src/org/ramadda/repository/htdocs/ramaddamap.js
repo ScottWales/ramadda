@@ -35,8 +35,16 @@ var initialExtent = new OpenLayers.Bounds(maxLatValue, -180, -maxLatValue, 180);
 
 var positionMarkerID = "location";
 
+var latlonReadoutID = "ramadda-map-latlonreadout";
+
 function RepositoryMap(mapId, params) {
-    var map, layer, markers, boxes, lines, selectorBox, selectorMarker;
+    var map;
+    var layer;
+    var markers;
+    var boxes;
+    var lines;
+    var selectorBox;
+    var selectorMarker;
 
     this.mapDivId = mapId;
     if (!this.mapDivId) {
@@ -51,6 +59,9 @@ function RepositoryMap(mapId, params) {
     }
     if (!this.initialZoom) {
         this.initialZoom = defaultZoomLevel;
+    }
+    if (!this.latlonReadout) {
+        this.latlonReadout = latlonReadoutID;
     }
 
     this.addWMSLayer = function(name, url, layer) {
@@ -159,6 +170,10 @@ function RepositoryMap(mapId, params) {
         return this.map;
     }
 
+    this.setLatLonReadout = function(llr) {
+        this.latlonReadout = llr;
+    }
+
     this.initMap = function(doRegion) {
         if (this.inited)
             return;
@@ -181,7 +196,7 @@ function RepositoryMap(mapId, params) {
         //this.map.addLayer(this.vectors);
         this.map.addControl(mousecontrols);
         this.map.addControl(new OpenLayers.Control.LayerSwitcher());
-        var latLonReadout = util.getDomObject("ramadda-map-latlonreadout");
+        var latLonReadout = util.getDomObject(this.latlonReadout);
         if(latLonReadout) {
             this.map.addControl(new OpenLayers.Control.MousePosition( {
                         numDigits : 3,
@@ -522,12 +537,12 @@ function RepositoryMap(mapId, params) {
     }
 
     this.hiliteMarker = function(id) {
-        marker = this.findMarker(id);
-        if (!marker) {
+        var mymarker = this.findMarker(id);
+        if (!mymarker) {
             return;
         }
-        this.map.setCenter(marker.lonlat);
-        this.showMarkerPopup(marker);
+        this.map.setCenter(mymarker.lonlat);
+        this.showMarkerPopup(mymarker);
     }
 
     // bounds are in lat/lon
