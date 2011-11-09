@@ -18,6 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
+
 package org.ramadda.util;
 
 
@@ -30,6 +31,8 @@ import java.util.Date;
 
 import java.util.List;
 
+import java.util.TimeZone;
+
 
 /**
  * A collection of utilities for atom feeds xml.
@@ -40,13 +43,22 @@ import java.util.List;
 public class AtomUtil {
 
     /** _more_ */
-    public static final SimpleDateFormat atomSdf =
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z");
+    public static final TimeZone TIMEZONE_DEFAULT =
+        TimeZone.getTimeZone("UTC");
+
+
+    /** _more_ */
+    public static final SimpleDateFormat atomSdf;
+
+    static {
+        atomSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        atomSdf.setTimeZone(TIMEZONE_DEFAULT);
+    }
 
     /** _more_ */
     public static final String XMLNS = "http://www.w3.org/2005/Atom";
 
-    /** _more_          */
+    /** _more_ */
     public static final String XMLNS_GEORSS = "http://www.georss.org/georss";
 
 
@@ -56,11 +68,14 @@ public class AtomUtil {
     /** _more_ */
     public static final String REL_IMAGE = "image";
 
+    /** _more_ */
+    public static final String REL_ALTERNATE = "alternate";
+
 
     /** _more_ */
     public static final String TAG_FEED = "feed";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_PUBLISHED = "published";
 
     /** _more_ */
@@ -106,7 +121,7 @@ public class AtomUtil {
     /** _more_ */
     public static final String ATTR_XMLNS = "xmlns";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_XMLNS_GEORSS = "xmlns:georss";
 
 
@@ -131,7 +146,10 @@ public class AtomUtil {
      * @return _more_
      */
     public static String format(Date date) {
-        return atomSdf.format(date);
+        synchronized (atomSdf) {
+            //The sdf produces a time zone that isn't RFC3399 compatible so we just tack on the "Z"
+            return atomSdf.format(date) + "Z";
+        }
     }
 
 
@@ -168,12 +186,12 @@ public class AtomUtil {
     public static String makeLink(Link link) {
         if (link.title != null) {
             return XmlUtil.tag(TAG_LINK,
-                               XmlUtil.attrs(ATTR_TYPE, link.rel, ATTR_HREF,
+                               XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
                                              link.url, ATTR_TITLE,
                                              link.title));
         }
         return XmlUtil.tag(TAG_LINK,
-                           XmlUtil.attrs(ATTR_TYPE, link.rel, ATTR_HREF,
+                           XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
                                          link.url));
     }
 
@@ -188,9 +206,9 @@ public class AtomUtil {
      *
      * @return _more_
      */
-    public static String makeLink(String type, String href) {
+    public static String makeLink(String rel, String href) {
         return XmlUtil.tag(TAG_LINK,
-                           XmlUtil.attrs(ATTR_TYPE, type, ATTR_HREF, href));
+                           XmlUtil.attrs(ATTR_REL, rel, ATTR_HREF, href));
     }
 
 
@@ -210,13 +228,18 @@ public class AtomUtil {
     /**
      * _more_
      *
+     *
+     * @param id _more_
      * @return _more_
      */
-    public static String openFeed() {
-        return XmlUtil.openTag(TAG_FEED,
-                               XmlUtil.attrs(ATTR_XMLNS, XMLNS,
-                                             ATTR_XMLNS_GEORSS,
-                                             XMLNS_GEORSS));
+    public static String openFeed(String id) {
+        return XmlUtil.openTag(
+            TAG_FEED,
+            XmlUtil.attrs(
+                ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEORSS,
+                XMLNS_GEORSS)) + XmlUtil.tag(TAG_ID, "", id)
+                               + XmlUtil.tag(
+                                   TAG_UPDATED, "", format(new Date()));
     }
 
     /**
@@ -252,6 +275,8 @@ public class AtomUtil {
      * @param updated _more_
      * @param summary _more_
      * @param content _more_
+     * @param author _more_
+     * @param authorUrl _more_
      * @param links _more_
      * @param extraStuff _more_
      *
@@ -259,9 +284,13 @@ public class AtomUtil {
      */
     public static String makeEntry(String title, String id, Date published,
                                    Date updated, String summary,
-                                   String content, List<Link> links,
+                                   String content, String author,
+                                   String authorUrl, List<Link> links,
                                    String extraStuff) {
         StringBuffer sb = new StringBuffer();
+        if (updated == null) {
+            updated = published;
+        }
         /* <entry>
    <title>Batman thoughts</title>
    <id>tag:xahlee.org,2006-09-09:015218</id>
@@ -275,6 +304,7 @@ public class AtomUtil {
    </content>
   <link rel="alternate" href="pd.html"/>
   </entry>*/
+
         sb.append(XmlUtil.openTag(TAG_ENTRY));
         sb.append(XmlUtil.tag(TAG_TITLE, "", title));
         sb.append(XmlUtil.tag(TAG_ID, "", id));
@@ -282,24 +312,32 @@ public class AtomUtil {
 
         if (published != null) {
             sb.append(XmlUtil.tag(TAG_PUBLISHED, "", format(published)));
-            if ((updated != null)
-                    && (updated.getTime() > published.getTime())) {
-                sb.append(XmlUtil.tag(TAG_UPDATED, "", format(updated)));
-            }
         }
+        if (updated != null) {
+            sb.append(XmlUtil.tag(TAG_UPDATED, "", format(updated)));
+        }
+
+        sb.append(makeAuthor(author, authorUrl));
+
+
         if ((summary != null) && (summary.length() > 0)) {
             sb.append(XmlUtil.tag(TAG_SUMMARY, "",
                                   XmlUtil.getCdata(summary)));
         }
-        if (content != null) {
-            sb.append(XmlUtil.getCdata(content));
+        if ((content != null) && (content.length() > 0)) {
+            sb.append(XmlUtil.tag(TAG_CONTENT, "",
+                                  XmlUtil.getCdata(content)));
         }
 
-        sb.append(extraStuff);
+        if (extraStuff != null) {
+            sb.append(extraStuff);
+        }
 
-        for (Link link : links) {
-            sb.append(makeLink(link));
-            sb.append("\n");
+        if (links != null) {
+            for (Link link : links) {
+                sb.append(makeLink(link));
+                sb.append("\n");
+            }
         }
         sb.append(XmlUtil.closeTag(TAG_ENTRY));
         sb.append("\n");

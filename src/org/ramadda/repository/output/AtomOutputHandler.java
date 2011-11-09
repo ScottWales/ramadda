@@ -188,7 +188,7 @@ public class AtomOutputHandler extends OutputHandler {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(AtomUtil.openFeed());
+        sb.append(AtomUtil.openFeed(""));
         sb.append("\n");
         sb.append(AtomUtil.makeTitle(parentEntry.getName()
                                      + " ATOM Site Feed"));
@@ -305,7 +305,9 @@ public class AtomOutputHandler extends OutputHandler {
             sb.append(AtomUtil.makeEntry(entry.getName(), selfUrl,
                                          new Date(entry.getCreateDate()),
                                          new Date(entry.getChangeDate()),
-                                         desc, null, links,
+                                         desc, null, "ramadda",
+                                         "",
+                                         links,
                                          extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
