@@ -257,11 +257,17 @@ public class MetadataElement extends MetadataTypeBase {
         setSearchable(XmlUtil.getAttribute(node, ATTR_SEARCHABLE, false));
         required = XmlUtil.getAttribute(node, ATTR_REQUIRED, false);
         setThumbnail(XmlUtil.getAttribute(node, ATTR_THUMBNAIL, false));
+
         if (dataType.equals(MetadataElement.TYPE_ENUMERATION)
                 || dataType.equals(MetadataElement.TYPE_ENUMERATIONPLUS)) {
+            String delimiter = ":";
             String       values    = XmlUtil.getAttribute(node, ATTR_VALUES);
             List<String> tmpValues = null;
             if (values.startsWith("file:")) {
+                //If it is a .properties file then the delimiter is =
+                if(values.endsWith(".properties")) {
+                    delimiter = "=";
+                }
                 String tagValues = getStorageManager().readSystemResource(
                                        values.substring(5));
                 tmpValues = (List<String>) StringUtil.split(tagValues, "\n",
@@ -273,13 +279,15 @@ public class MetadataElement extends MetadataTypeBase {
 
             List enumValues = new ArrayList();
             for (String tok : tmpValues) {
-                int idx = tok.indexOf(":");
+                //Check for comment line
+                if(tok.startsWith("#")) continue;
+                int idx = tok.indexOf(delimiter);
                 if (idx < 0) {
                     valueMap.put(tok, tok);
                     enumValues.add(tok);
                     continue;
                 }
-                String[] toks = StringUtil.split(tok, ":", 2);
+                String[] toks = StringUtil.split(tok, delimiter, 2);
                 if (toks == null) {
                     valueMap.put(tok, tok);
                     enumValues.add(tok);
