@@ -79,13 +79,13 @@
     </target>
 
     <target name="client" depends="init,clean">
-        <javac
+       <javac
             verbose="false"
             classpath="${classpath}"
             debug="true"
             deprecation="false" 
             destdir="${compile_dir}"
-            failonerror="${failonerror}" 
+            failonerror="${javac.failonerror}" 
             nowarn="true"
             srcdir="${src_dir}"
             fork="true"
@@ -136,13 +136,12 @@
     <target name="compile" depends="init,clean,jc"/>
 
     <target name="jc" depends="init">
-
         <javac
             classpath="${classpath}"
             debug="true"
             deprecation="false" 
             destdir="${compile_dir}"
-            failonerror="${failonerror}" 
+            failonerror="${javac.failonerror}" 
             nowarn="true"
             srcdir="${src_dir}"
 	    fork="true"
@@ -382,7 +381,7 @@
             debug="true"
             deprecation="false" 
             destdir="${compile_dir}"
-            failonerror="${failonerror}" 
+            failonerror="${javac.failonerror}" 
             nowarn="true"
             srcdir="${src_dir}"
 	    fork="true"
@@ -410,7 +409,7 @@
             debug="true"
             deprecation="false" 
             destdir="${compile_dir}"
-            failonerror="${failonerror}" 
+            failonerror="${javac.failonerror}" 
             nowarn="true"
             srcdir="${src_dir}"
             fork="true"
