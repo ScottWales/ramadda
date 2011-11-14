@@ -228,7 +228,7 @@ public class EntryManager extends RepositoryManager {
     public void cacheEntry(Entry entry) {
         synchronized (MUTEX_ENTRY) {
             //If we are read only then don't cache
-            if (getRepository().isReadOnly()) {
+            if (getRepository().doCache()) {
                 return;
             }
             if (entryCache.size() > ENTRY_CACHE_LIMIT) {
@@ -367,7 +367,7 @@ public class EntryManager extends RepositoryManager {
 
         if (entry.getIsRemoteEntry()) {
             String redirectUrl = entry.getRemoteServer()
-                + getRepository().URL_ENTRY_SHOW.getPath();
+                                 + getRepository().URL_ENTRY_SHOW.getPath();
             String[] tuple = getRemoteEntryInfo(entry.getId());
             request.put(ARG_ENTRYID, tuple[1]);
             request.put(ARG_FULLURL, "true");
@@ -4270,7 +4270,8 @@ public class EntryManager extends RepositoryManager {
                                : HtmlUtil.div("",
                                    HtmlUtil.attrs(HtmlUtil.ATTR_STYLE,
                                        "display:none;visibility:hidden",
-                                       HtmlUtil.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
+                                       HtmlUtil.ATTR_CLASS,
+                                       CSS_CLASS_FOLDER_BLOCK,
                                        HtmlUtil.ATTR_ID, uid)));
 
         //        link = link + HtmlUtil.br()
@@ -4494,8 +4495,9 @@ public class EntryManager extends RepositoryManager {
             }
             //Only add the hr if we have more things in the list
             if ((cnt < 2) && needToAddHr) {
-                sb.append(
-                          "<tr><td colspan=2><hr " + HtmlUtil.cssClass(CSS_CLASS_MENUITEM_SEPARATOR) +"></td></tr>");
+                sb.append("<tr><td colspan=2><hr "
+                          + HtmlUtil.cssClass(CSS_CLASS_MENUITEM_SEPARATOR)
+                          + "></td></tr>");
             }
             needToAddHr = link.getHr();
             if (needToAddHr) {
@@ -4503,11 +4505,11 @@ public class EntryManager extends RepositoryManager {
             }
 
             sb.append(HtmlUtil
-                .open(HtmlUtil.TAG_TR, HtmlUtil
-                    .cssClass(CSS_CLASS_MENUITEM_ROW)) + HtmlUtil
-                        .open(HtmlUtil.TAG_TD) + HtmlUtil
-                        .open(HtmlUtil.TAG_DIV, HtmlUtil
-                            .cssClass(CSS_CLASS_MENUITEM_TD)));
+                .open(HtmlUtil.TAG_TR,
+                      HtmlUtil.cssClass(CSS_CLASS_MENUITEM_ROW)) + HtmlUtil
+                          .open(HtmlUtil.TAG_TD) + HtmlUtil
+                          .open(HtmlUtil.TAG_DIV,
+                                HtmlUtil.cssClass(CSS_CLASS_MENUITEM_TD)));
             if (link.getIcon() == null) {
                 sb.append(HtmlUtil.space(1));
             } else {
@@ -4517,8 +4519,10 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtil.space(1));
             sb.append("</div></td><td><div "
                       + HtmlUtil.cssClass(CSS_CLASS_MENUITEM_TD) + ">");
-            sb.append(HtmlUtil.href(link.getUrl(), msg(link.getLabel()),
-                                    HtmlUtil.cssClass(CSS_CLASS_MENUITEM_LINK)));
+            sb.append(
+                HtmlUtil.href(
+                    link.getUrl(), msg(link.getLabel()),
+                    HtmlUtil.cssClass(CSS_CLASS_MENUITEM_LINK)));
             sb.append("</div></td></tr>");
         }
 
@@ -4618,8 +4622,9 @@ public class EntryManager extends RepositoryManager {
 
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
-        String sep = HtmlUtil.div("",
-                                  HtmlUtil.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
+        String sep =
+            HtmlUtil.div("",
+                         HtmlUtil.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
 
 
         String menuClass = HtmlUtil.cssClass(CSS_CLASS_MENUBUTTON);
@@ -5104,8 +5109,8 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getRemoteEntryId(String server, String id) {
-        return ID_PREFIX_REMOTE + RepositoryUtil.encodeBase64(server.getBytes())
-               + ":" + id;
+        return ID_PREFIX_REMOTE
+               + RepositoryUtil.encodeBase64(server.getBytes()) + ":" + id;
     }
 
 
