@@ -2622,7 +2622,7 @@ public class UserManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         addActivity(request, request.getUser(), ACTIVITY_LOGOUT, "");
         getSessionManager().removeUserSession(request);
-        request.setSessionId(getSessionManager().getSessionId());
+        request.setSessionId(getSessionManager().createSessionId());
         sb.append(getRepository().showDialogNote(msg("You are logged out")));
         sb.append(makeLoginForm(request));
         Result result = new Result(msg("Logout"), sb);

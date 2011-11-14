@@ -490,7 +490,7 @@ public class SessionManager extends RepositoryManager {
 
 
         if (request.getSessionId() == null) {
-            //            request.setSessionId(getSessionId());
+            //            request.setSessionId(createSessionId());
         }
 
         //Make sure we have the current user state
@@ -612,7 +612,7 @@ public class SessionManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getSessionId() {
+    public String createSessionId() {
         return getRepository().getGUID() + "_" + Math.random();
     }
 
@@ -627,7 +627,7 @@ public class SessionManager extends RepositoryManager {
      */
     public void setUserSession(Request request, User user) throws Exception {
         if (request.getSessionId() == null) {
-            request.setSessionId(getSessionId());
+            request.setSessionId(createSessionId());
         }
         addSession(new Session(request.getSessionId(), user, new Date()));
         request.setUser(user);

@@ -2803,7 +2803,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     || (request.getSessionId() == null)) && (result
                        != null)) {
             if (request.getSessionId() == null) {
-                request.setSessionId(getSessionManager().getSessionId());
+                request.setSessionId(getSessionManager().createSessionId());
             }
             String sessionId = request.getSessionId();
             result.addCookie(SessionManager.COOKIE_NAME,
