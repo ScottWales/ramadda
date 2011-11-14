@@ -488,6 +488,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean readOnly = false;
 
+    /** _more_          */
+    private boolean doCache = true;
+
 
 
 
@@ -732,6 +735,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
+    public boolean doCache() {
+        if (readOnly) {
+            return false;
+        }
+        return doCache;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean getActive() {
         return active;
     }
@@ -923,6 +939,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+        //check for glassfish, e.g.:
+        //$GLASSFISH_HOME/glassfish/config/repository.properties
+        String glassfish =  getProperty("GLASSFISH_HOME");
+        if(glassfish!=null) {
+            File confFile = new File(glassfish
+                                             + "/glassfish/config/repository.properties");
+            if (confFile.exists()) {
+                System.err.println("RAMADDA: loading:" + confFile);
+                loadProperties(properties, confFile.toString());
+            }
+        }
+
 
         //Call the storage manager so it can figure out the home dir
         getStorageManager();
@@ -965,7 +993,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        System.err.println ("debug:" + debug);
 
         readOnly = getProperty(PROP_READ_ONLY, false);
-        //        System.err.println("readonly property:" +PROP_READ_ONLY +" = " + readOnly); 
+        doCache  = getProperty(PROP_DOCACHE, true);
+        if (readOnly) {
+            System.err.println("RAMADDA: running in readonly mode");
+        }
+        if ( !doCache) {
+            System.err.println("RAMADDA: running with no in-memory cache");
+        }
 
         setUrlBase((String) properties.get(PROP_HTML_URLBASE));
         if (getUrlBase() == null) {
@@ -2690,8 +2724,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 //              System.err.println ("auth:" + authMethod);
                 if (authMethod.equals(AuthorizationMethod.AUTH_HTML)) {
                     sb.append(showDialogError(inner.getMessage()));
-                    String redirect =
-                        RepositoryUtil.encodeBase64(request.getUrl().getBytes());
+                    String redirect = RepositoryUtil.encodeBase64(
+                                          request.getUrl().getBytes());
                     sb.append(getUserManager().makeLoginForm(request,
                             HtmlUtil.hidden(ARG_REDIRECT, redirect)));
                 } else {
@@ -2705,8 +2739,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         not authenticated then it throws an access exception which triggers a auth request back to the client
                         If authenticated then it redirects the client back to the original non ssl request
                         */
-                        String redirectUrl =
-                            RepositoryUtil.encodeBase64(request.getUrl().getBytes());
+                        String redirectUrl = RepositoryUtil.encodeBase64(
+                                                 request.getUrl().getBytes());
                         String url = HtmlUtil.url(URL_SSLREDIRECT.toString(),
                                          ARG_REDIRECT, redirectUrl);
                         result = new Result(url);
