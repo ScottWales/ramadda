@@ -3567,14 +3567,24 @@ public class EntryManager extends RepositoryManager {
         if (doAnonymousUpload) {
             initUploadedEntry(request, entry, parentEntry);
         }
-        entry.setNorth(Misc.decodeLatLon(XmlUtil.getAttribute(node,
-                ATTR_NORTH, entry.getNorth() + "")));
-        entry.setSouth(Misc.decodeLatLon(XmlUtil.getAttribute(node,
-                ATTR_SOUTH, entry.getSouth() + "")));
-        entry.setEast(Misc.decodeLatLon(XmlUtil.getAttribute(node, ATTR_EAST,
-                entry.getEast() + "")));
-        entry.setWest(Misc.decodeLatLon(XmlUtil.getAttribute(node, ATTR_WEST,
-                entry.getWest() + "")));
+        if (XmlUtil.hasAttribute(node, ATTR_LATITUDE) &&
+            XmlUtil.hasAttribute(node, ATTR_LONGITUDE)) {
+            entry.setNorth(Misc.decodeLatLon(XmlUtil.getAttribute(node,
+                                                                  ATTR_LATITUDE, "")));
+            entry.setSouth(entry.getNorth());
+            entry.setWest(Misc.decodeLatLon(XmlUtil.getAttribute(node, ATTR_LONGITUDE,
+                                                             "")));
+            entry.setEast(entry.getWest());
+        } else {
+            entry.setNorth(Misc.decodeLatLon(XmlUtil.getAttribute(node,
+                                                                  ATTR_NORTH, entry.getNorth() + "")));
+            entry.setSouth(Misc.decodeLatLon(XmlUtil.getAttribute(node,
+                                                                  ATTR_SOUTH, entry.getSouth() + "")));
+            entry.setEast(Misc.decodeLatLon(XmlUtil.getAttribute(node, ATTR_EAST,
+                                                                 entry.getEast() + "")));
+            entry.setWest(Misc.decodeLatLon(XmlUtil.getAttribute(node, ATTR_WEST,
+                                                                 entry.getWest() + "")));
+        }
 
         entry.setAltitudeTop(XmlUtil.getAttribute(node, ATTR_ALTITUDE_TOP,
                 entry.getAltitudeTop()));

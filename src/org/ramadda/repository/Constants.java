@@ -416,6 +416,9 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_NORTH = "north";
 
+    public static final String ATTR_LATITUDE = "latitude";
+    public static final String ATTR_LONGITUDE = "longitude";
+
     /** _more_ */
     public static final String ATTR_PARENT = "parent";
 

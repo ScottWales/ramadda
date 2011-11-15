@@ -451,6 +451,13 @@ public class MapManager extends RepositoryManager {
                                + "," + entry.getWest() + ")";
             }
 
+            String name = entry.getName();
+
+            name = name.replace("\r", " ");
+            name = name.replace("\n", " ");
+            name = name.replace("\"", "\\\"");
+            name = name.replace("'", "\\'");
+
             String desc = HtmlUtil.img(iconUrl)
                           + getEntryManager().getEntryLink(request, entry);
             desc = desc.replace("\r", " ");
@@ -477,12 +484,13 @@ public class MapManager extends RepositoryManager {
                 }
             }
 
+
             js.append(
                 HtmlUtil.call(
                     id + ".addPlacemark",
                     HtmlUtil.comma(
                         HtmlUtil.squote(entry.getId()),
-                        HtmlUtil.squote(entry.getName()),
+                        HtmlUtil.squote(name),
                         HtmlUtil.squote(desc), "" + lat, "" + lon) + "," +
                     HtmlUtil.squote(detailsUrl)  +"," +
                     HtmlUtil.squote(
