@@ -354,6 +354,7 @@ public class RepositoryClient extends RepositoryBase {
         bos.close();
 
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
+        postEntries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
         postEntries.add(
             HttpFormEntry.hidden(
                 ARG_AUTHTOKEN, RepositoryUtil.hashPassword(getSessionId())));
