@@ -233,8 +233,20 @@ public class AtomUtil {
      * @return _more_
      */
     public static String openFeed(String id) {
+        
+        String blobOfNamespaces = " xmlns:gco=\"http://www.isotc211.org/2005/gco\"             xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"             xmlns:gmi=\"http://www.isotc211.org/2005/gmi\" ";
+/*
+            xmlns:gmx="http://www.isotc211.org/2005/gmx" 
+            xmlns:gss="http://www.isotc211.org/2005/gss" 
+            xmlns:gts="http://www.isotc211.org/2005/gts" 
+            xmlns:gsr="http://www.isotc211.org/2005/gsr" 
+*/
+
+
+
         return XmlUtil.openTag(
             TAG_FEED,
+            blobOfNamespaces +
             XmlUtil.attrs(
                 ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEORSS,
                 XMLNS_GEORSS)) + XmlUtil.tag(TAG_ID, "", id)
