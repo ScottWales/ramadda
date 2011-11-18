@@ -193,15 +193,19 @@ public class AtomUtil {
      * @return _more_
      */
     public static String makeLink(Link link) {
+        String attrs = "";
+        if(link.mimeType!=null) {
+            attrs = XmlUtil.attrs(ATTR_TYPE, link.mimeType);
+        }
         if (link.title != null) {
             return XmlUtil.tag(TAG_LINK,
-                               XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
+                               attrs+XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
                                              link.url, ATTR_TITLE,
                                              link.title));
         }
         return XmlUtil.tag(TAG_LINK,
-                           XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
-                                         link.url));
+                           attrs+XmlUtil.attrs(ATTR_REL, link.rel, ATTR_HREF,
+                                               link.url));
     }
 
 
@@ -385,6 +389,8 @@ public class AtomUtil {
         /** _more_ */
         private String title;
 
+        private String  mimeType;
+
         /**
          * _more_
          *
@@ -412,9 +418,14 @@ public class AtomUtil {
          * @param title _more_
          */
         public Link(String rel, String url, String title) {
+            this(rel, url, title, null);
+        }
+
+        public Link(String rel, String url, String title, String mimeType) {
             this.rel   = rel;
             this.url   = url;
             this.title = title;
+            this.mimeType = mimeType;
         }
     }
 }

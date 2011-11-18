@@ -124,8 +124,8 @@ public class JpegMetadataHandler extends MetadataHandler {
             com.drew.metadata.Metadata metadata =
                 JpegMetadataReader.readMetadata(jpegFile);
             com.drew.metadata.Directory exifDir =
-                metadata.getDirectory(ExifDirectory.class);
-            com.drew.metadata.Directory dir =
+                metadata.getDirectory(ExifSubIFDDirectory.class);
+            com.drew.metadata.Directory gpsDir =
                 metadata.getDirectory(GpsDirectory.class);
             com.drew.metadata.Directory iptcDir =
                 metadata.getDirectory(IptcDirectory.class);
@@ -133,9 +133,9 @@ public class JpegMetadataHandler extends MetadataHandler {
             if (exifDir != null) {
                 //This tells ramadda that something was added
                 if (exifDir.containsTag(
-                        ExifDirectory.TAG_DATETIME_ORIGINAL)) {
+                        ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
                     Date dttm =
-                        exifDir.getDate(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                        exifDir.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
                     if (dttm != null) {
                         entry.setStartDate(dttm.getTime());
                         entry.setEndDate(dttm.getTime());
@@ -160,47 +160,49 @@ public class JpegMetadataHandler extends MetadataHandler {
 
             }
 
-            if (dir.containsTag(GpsDirectory.TAG_GPS_IMG_DIRECTION)) {
-                Metadata dirMetadata =
-                    new Metadata(getRepository().getGUID(), entry.getId(),
-                                 TYPE_CAMERA_DIRECTION, DFLT_INHERITED,
-                                 "" + getValue(dir,
-                                     GpsDirectory
-                                         .TAG_GPS_IMG_DIRECTION), Metadata
-                                             .DFLT_ATTR, Metadata.DFLT_ATTR,
-                                                 Metadata.DFLT_ATTR,
-                                                 Metadata.DFLT_EXTRA);
+            if(gpsDir!=null) {
+                if (gpsDir.containsTag(GpsDirectory.TAG_GPS_IMG_DIRECTION)) {
+                    Metadata dirMetadata =
+                        new Metadata(getRepository().getGUID(), entry.getId(),
+                                     TYPE_CAMERA_DIRECTION, DFLT_INHERITED,
+                                     "" + getValue(gpsDir,
+                                                   GpsDirectory
+                                                   .TAG_GPS_IMG_DIRECTION), Metadata
+                                     .DFLT_ATTR, Metadata.DFLT_ATTR,
+                                     Metadata.DFLT_ATTR,
+                                     Metadata.DFLT_EXTRA);
 
-                metadataList.add(dirMetadata);
-            }
-
-            if ( !dir.containsTag(GpsDirectory.TAG_GPS_LATITUDE)) {
-                return;
-            }
-            double latitude  = getValue(dir, GpsDirectory.TAG_GPS_LATITUDE);
-            double longitude = getValue(dir, GpsDirectory.TAG_GPS_LONGITUDE);
-            String lonRef = dir.getString(GpsDirectory.TAG_GPS_LONGITUDE_REF);
-            String latRef = dir.getString(GpsDirectory.TAG_GPS_LATITUDE_REF);
-            if ((lonRef != null) && lonRef.equalsIgnoreCase("W")) {
-                longitude = -longitude;
-            }
-            if ((latRef != null) && latRef.equalsIgnoreCase("S")) {
-                latitude = -latitude;
-            }
-            double altitude = (dir.containsTag(GpsDirectory.TAG_GPS_ALTITUDE)
-                               ? getValue(dir, GpsDirectory.TAG_GPS_ALTITUDE)
-                               : 0);
-            try {
-                int altRef = dir.getInt(GpsDirectory.TAG_GPS_ALTITUDE_REF);
-                if (altRef > 0) {
-                    altitude = -altitude;
+                    metadataList.add(dirMetadata);
                 }
-            } catch (MetadataException mde) {
-                // means that the tag didn't exist
-                // with version 2.5.0 of metadata extractor could move to 
-                // getInteger which will return null instead of throw exception
+
+                if (gpsDir.containsTag(GpsDirectory.TAG_GPS_LATITUDE)) {
+                    double latitude  = getValue(gpsDir, GpsDirectory.TAG_GPS_LATITUDE);
+                    double longitude = getValue(gpsDir, GpsDirectory.TAG_GPS_LONGITUDE);
+                    String lonRef = gpsDir.getString(GpsDirectory.TAG_GPS_LONGITUDE_REF);
+                    String latRef = gpsDir.getString(GpsDirectory.TAG_GPS_LATITUDE_REF);
+                    if ((lonRef != null) && lonRef.equalsIgnoreCase("W")) {
+                        longitude = -longitude;
+                    }
+                    if ((latRef != null) && latRef.equalsIgnoreCase("S")) {
+                        latitude = -latitude;
+                    }
+                    double altitude = (gpsDir.containsTag(GpsDirectory.TAG_GPS_ALTITUDE)
+                                       ? getValue(gpsDir, GpsDirectory.TAG_GPS_ALTITUDE)
+                                       : 0);
+                    try {
+                        int altRef = gpsDir.getInt(GpsDirectory.TAG_GPS_ALTITUDE_REF);
+                        if (altRef > 0) {
+                            altitude = -altitude;
+                        }
+                    } catch (MetadataException mde) {
+                        // means that the tag didn't exist
+                        // with version 2.5.0 of metadata extractor could move to 
+                        // getInteger which will return null instead of throw exception
+                    }
+                    entry.setLocation(latitude, longitude, altitude);
+                }
             }
-            entry.setLocation(latitude, longitude, altitude);
+
             //This tells ramadda that something was added
             extra.put("1", "");
         } catch (Exception exc) {

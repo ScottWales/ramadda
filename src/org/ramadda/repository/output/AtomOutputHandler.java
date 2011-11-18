@@ -203,7 +203,7 @@ public class AtomOutputHandler extends OutputHandler {
             String selfUrl =
                 repository.absoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, entry.getId()));
-            links.add(new AtomUtil.Link("text/html", selfUrl, "Web page"));
+            links.add(new AtomUtil.Link(AtomUtil.REL_SELF, selfUrl, "Web page", "text/html"));
             String resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
                 String imageUrl = repository.absoluteUrl(
@@ -220,9 +220,10 @@ public class AtomOutputHandler extends OutputHandler {
             List<Service> services = typeHandler.getServices(request, entry);
             for (Service service : services) {
                 String url  = service.getUrl();
-                String type = service.getType();
+                String relType = service.getType();
                 String name = service.getName();
-                links.add(new AtomUtil.Link(type, url, name));
+                String mimeType = service.getMimeType();
+                links.add(new AtomUtil.Link(relType, url, name, mimeType));
             }
 
             List<String> urls = new ArrayList<String>();

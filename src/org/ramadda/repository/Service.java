@@ -50,6 +50,7 @@ public class Service {
     /** _more_ */
     private String icon;
 
+    private String mimeType;
 
 
     /**
@@ -72,10 +73,15 @@ public class Service {
      * @param icon _more_
      */
     public Service(String type, String name, String url, String icon) {
+        this(type, name, url, icon, null);
+    }
+
+    public Service(String type, String name, String url, String icon, String mimeType) {
         this.type = type;
         this.name = name;
         this.url  = url;
         this.icon = icon;
+        this.mimeType = mimeType;
     }
 
 
@@ -163,6 +169,23 @@ public class Service {
         return this.icon;
     }
 
+    /**
+       Set the MimeType property.
+
+       @param value The new value for MimeType
+    **/
+    public void setMimeType (String value) {
+	mimeType = value;
+    }
+
+    /**
+       Get the MimeType property.
+
+       @return The MimeType
+    **/
+    public String getMimeType () {
+	return mimeType;
+    }
 
 
 }

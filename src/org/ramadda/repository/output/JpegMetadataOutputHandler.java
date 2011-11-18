@@ -131,15 +131,17 @@ public class JpegMetadataOutputHandler extends OutputHandler {
             JpegMetadataReader.readMetadata(jpegFile);
 
         sb.append("<ul>");
-        Iterator directories = metadata.getDirectoryIterator();
+        //        java.lang.Iterable<Directory> directories = metadata.getDirectories();
+        Iterator directories = metadata.getDirectories().iterator();
         while (directories.hasNext()) {
             Directory directory = (Directory) directories.next();
             sb.append("<li> ");
             sb.append(directory.getName());
             sb.append("<ul>");
-            Iterator tags = directory.getTagIterator();
-            while (tags.hasNext()) {
-                Tag tag = (Tag) tags.next();
+            //            Iterator tags = directory.getTagIterator();
+            //while (tags.hasNext()) {
+            //                Tag tag = (Tag) tags.next();
+            for(Tag tag: directory.getTags()) {
                 if (tag.getTagName().indexOf("Unknown") >= 0) {
                     continue;
                 }

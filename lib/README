@@ -22,6 +22,5 @@ ncIdv.jar:
 This should be the definitive source of the netcdf package. It gets included in both the repositorytds.jar
 and the repositorylib.jar. We do this because other packages have netcdf in it (e.g., visad.jar)
 
-tika-app-0.9.jar
-The tika-app-0.9.jar  has been modified. I (jeffmc) removed the ucar tree from this because we had too many conflicts
-with ncIdv.jar
+tika-app-1.0.jar
+The tika-app-1.0.jar  has been modified. I (jeffmc) removed the ucar, thredds and com/drew  tree from this because we had too many conflicts with other libs

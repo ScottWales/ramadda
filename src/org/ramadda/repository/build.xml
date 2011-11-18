@@ -19,6 +19,8 @@
         <property name="srcrelease_dir" value="${release_name}src${_version}" />
 	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
+
+        <property name="tika_jar" value="${lib_dir}/tika-app-1.0.jar" />
     </target>
 
     <target name="init" depends="initbasic,initcore,initfull">
@@ -30,16 +32,16 @@
     from the idv which contains an older version of tika.
 -->
     <target name="initcore" if="core">
-       <property name="classpath" value="${lib_dir}/tika-app-0.9.jar:${lib_dir}/repositorylib.jar:${lib_dir}/servlet-api.jar"/>
-       <property name="manifestjars" value="tika-app-0.9.jar repositorylib.jar   servlet-api.jar"/>
+       <property name="classpath" value="${tika_jar}:${lib_dir}/repositorylib.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="manifestjars" value="${tika_jar} repositorylib.jar   servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
        <property name="lib3" value="${lib_dir}/dummy.jar"/>
     </target>
 
     <target name="initfull">
-       <property name="classpath" value="${lib_dir}/idv.jar:${lib_dir}/tika-app-0.9.jar:${lib_dir}/repositorylib.jar:${lib_dir}/repositorytds.jar:${lib_dir}/servlet-api.jar"/>
-       <property name="manifestjars" value="idv.jar tika-app-0.9.jar  repositorylib.jar   repositorytds.jar servlet-api.jar"/>
+       <property name="classpath" value="${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/repositorylib.jar:${lib_dir}/repositorytds.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="manifestjars" value="idv.jar ${tika_jar}  repositorylib.jar   repositorytds.jar servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
     </target>
@@ -134,6 +136,7 @@
     <target name="compile" depends="init,clean,jc"/>
 
     <target name="jc" depends="init">
+<echo  message="CP = ${classpath}"/>
         <javac
             classpath="${classpath}"
             debug="true"
@@ -217,7 +220,7 @@
         <copy  file="${dist_dir}/${ramadda_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/idv.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/repositorylib.jar" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/tika-app-0.9.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${tika_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${ramadda_dir}/release/ramadda.sh" todir="${release_dir}" overwrite="true">
             <filterset>
                 <filter token="REPOSITORYJAR" value="${ramadda_jar}"/>
@@ -280,7 +283,7 @@
           <lib file="${lib_dir}/idv.jar"/>
           <lib file="${lib_dir}/repositorylib.jar"/>
           <lib file="${lib_dir}/repositorytds.jar"/>
-          <lib file="${lib_dir}/tika-app-0.9.jar"/>
+          <lib file="${tika_jar}"/>
       </war>
     </target>
 
