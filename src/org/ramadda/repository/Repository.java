@@ -3061,7 +3061,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     return new Result(httpsUrl(request.getUrl()));
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
                             && request.getSecure()) {
-                    return new Result(absoluteUrl(request.getUrl()));
+                    return new Result(request.getAbsoluteUrl(request.getUrl()));
                 }
             }
         }

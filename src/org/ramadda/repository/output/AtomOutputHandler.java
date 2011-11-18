@@ -193,20 +193,21 @@ public class AtomOutputHandler extends OutputHandler {
         sb.append(AtomUtil.makeTitle(parentEntry.getName()
                                      + " ATOM Site Feed"));
         sb.append("\n");
+        //        System.err.println("ATOM making SELF: " + request.getAbsoluteUrl(request.getUrl()));
         sb.append(
             AtomUtil.makeLink(
                 AtomUtil.REL_SELF,
-                getRepository().absoluteUrl(request.getUrl())));
+                request.getAbsoluteUrl(request.getUrl())));
         sb.append("\n");
         for (Entry entry : entries) {
             List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
             String selfUrl =
-                repository.absoluteUrl(request.url(repository.URL_ENTRY_SHOW,
+                request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, entry.getId()));
             links.add(new AtomUtil.Link(AtomUtil.REL_SELF, selfUrl, "Web page", "text/html"));
             String resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
-                String imageUrl = repository.absoluteUrl(
+                String imageUrl = request.getAbsoluteUrl(
                                       HtmlUtil.url(
                                           getRepository().URL_ENTRY_GET
                                           + entry.getId()
@@ -231,7 +232,7 @@ public class AtomOutputHandler extends OutputHandler {
 
             for (String url : urls) {
                 links.add(new AtomUtil.Link("thumbnail",
-                                            getRepository().absoluteUrl(url),
+                                            request.getAbsoluteUrl(url),
                                             "Thumbnail"));
             }
 

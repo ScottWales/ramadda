@@ -442,7 +442,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                latestDataset,
                                new String[] { CatalogUtil.ATTR_NAME,
                         "icon", CatalogUtil.ATTR_VALUE,
-                        getRepository().absoluteUrl(
+                        request.getAbsoluteUrl(
                             getRepository().iconUrl(ICON_OPENDAP)) });
 
 
@@ -688,7 +688,7 @@ public class CatalogOutputHandler extends OutputHandler {
             XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                            subDataset, new String[] { CatalogUtil.ATTR_NAME,
                     "icon", CatalogUtil.ATTR_VALUE,
-                    getRepository().absoluteUrl(
+                                                      request.getAbsoluteUrl(
                         getRepository().iconUrl(ICON_FILE)) });
 
         }
@@ -781,7 +781,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 entry.getName() });
 
         String iconUrl =
-            getRepository().absoluteUrl(getEntryManager().getIconUrl(request,
+            request.getAbsoluteUrl(getEntryManager().getIconUrl(request,
                 entry));
 
         XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,

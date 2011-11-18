@@ -234,7 +234,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
             String url =
                 HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET) + "/"
                              + fileTail, ARG_ENTRYID, entry.getId());
-            url = getRepository().absoluteUrl(url);
+            url = request.getAbsoluteUrl(url);
             args.append("<argument>-bundle</argument>");
             args.append("<argument>" + url + "</argument>");
         } else {

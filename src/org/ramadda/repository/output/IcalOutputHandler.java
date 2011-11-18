@@ -228,7 +228,7 @@ public class IcalOutputHandler extends OutputHandler {
                 sb.append("GEO:" + loc[0] + ";" + loc[1] + "\n");
             }
             String url =
-                repository.absoluteUrl(request.url(repository.URL_ENTRY_SHOW,
+                request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, entry.getId()));
             sb.append("ATTACH:" + url + "\n");
             sb.append("END:VEVENT\n");

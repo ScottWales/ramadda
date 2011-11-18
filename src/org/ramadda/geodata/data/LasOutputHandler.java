@@ -276,7 +276,7 @@ public class LasOutputHandler extends OutputHandler {
 
         XmlUtil.create(TAG_INSTITUTION, root, new String[] { ATTR_NAME,
                 getRepository().getRepositoryName(), ATTR_URL,
-                getRepository().absoluteUrl("") });
+                request.getAbsoluteUrl("") });
 
         Element datasetsNode = XmlUtil.create(TAG_DATASETS, root);
 
@@ -298,11 +298,11 @@ public class LasOutputHandler extends OutputHandler {
             Element entryNode = XmlUtil.create(tagName, datasetsNode,
                                     new String[] {
                 ATTR_NAME, entry.getName(), ATTR_URL,
-                getRepository().absoluteUrl(
+                request.getAbsoluteUrl(
                     getRepository().URL_ENTRY_SHOW
                     + dataOutputHandler.getOpendapUrl(entry)),
                 ATTR_DOC,
-                getRepository().absoluteUrl(
+                request.getAbsoluteUrl(
                     request.url(
                         getRepository().URL_ENTRY_SHOW, ARG_ENTRYID,
                         entry.getId()))

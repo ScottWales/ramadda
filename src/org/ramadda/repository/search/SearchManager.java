@@ -397,6 +397,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         //org.apache.lucene.document.Document doc
         InputStream stream = getStorageManager().getFileInputStream(f);
         try {
+            /******** TODO: fix the Tika versionitis
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
             org.apache.tika.parser.AutoDetectParser parser =
@@ -410,6 +411,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
                                   Field.Index.ANALYZED));
             }
+******/
 
             /*
             String[] names = metadata.names();
@@ -616,7 +618,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
 
 
-        String url = getRepository().absoluteUrl(URL_ENTRY_SEARCH.toString());
+        String url = request.getAbsoluteUrl(URL_ENTRY_SEARCH.toString());
         url = HtmlUtil.url(url, new String[] {
             ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(), ARG_TEXT,
             OpenSearchUtil.MACRO_TEXT, ARG_BBOX, OpenSearchUtil.MACRO_BBOX,

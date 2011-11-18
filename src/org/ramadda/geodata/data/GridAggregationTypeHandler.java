@@ -317,7 +317,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             macro(ARG_BBOX),
         }, false);
         services.add(new Service("pointcloud", "Point Cloud",
-                                 getRepository().absoluteUrl(url),
+                                 request.getAbsoluteUrl(url),
                                  getIconUrl(LidarOutputHandler.ICON_POINTS)));
         */
         return services;

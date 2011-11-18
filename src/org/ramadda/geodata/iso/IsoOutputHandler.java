@@ -165,7 +165,7 @@ public class IsoOutputHandler extends OutputHandler {
         Element  root = IsoUtil.makeRoot();
 
         String url =
-            repository.absoluteUrl(request.url(repository.URL_ENTRY_SHOW,
+            request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                 ARG_ENTRYID, entry.getId()));
 
         IsoUtil.addMetadataStandardTag(root);

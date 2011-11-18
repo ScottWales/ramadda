@@ -1131,7 +1131,7 @@ public class UserManager extends RepositoryManager {
                     ARG_USER_NAME, newUser);
 
             if ( !resetUrl.startsWith("http")) {
-                resetUrl = getRepository().absoluteUrl(resetUrl);
+                resetUrl = request.getAbsoluteUrl(resetUrl);
             }
             msg.append(HtmlUtil.href(resetUrl,
                                      "Send Password Reset Message"));
@@ -1150,7 +1150,7 @@ public class UserManager extends RepositoryManager {
                         ARG_ENTRYID, home.getId());
                 msg.append(
                     HtmlUtil.href(
-                        getRepository().absoluteUrl(homeUrl),
+                        request.getAbsoluteUrl(homeUrl),
                         home.getFullName()));
                 addFavorites(request, newUser,
                              (List<Entry>) Misc.newList(home));

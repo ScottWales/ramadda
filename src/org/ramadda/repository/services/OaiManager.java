@@ -407,7 +407,7 @@ public class OaiManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void addRequest(Request request, Element root) throws Exception {
-        String  url = getRepository().absoluteUrl(request.getRequestPath());
+        String  url = request.getAbsoluteUrl(request.getRequestPath());
         Element requestNode = XmlUtil.create(TAG_REQUEST, root, url);
 
         if ( !Misc.equals(request.getString(ARG_METADATAPREFIX, "oai_dc"),
@@ -516,7 +516,7 @@ public class OaiManager extends RepositoryManager {
         if ( !verbSet.contains(verb)) {
             //Add in an attributeless request node
             String url =
-                getRepository().absoluteUrl(request.getRequestPath());
+                request.getAbsoluteUrl(request.getRequestPath());
             XmlUtil.create(TAG_REQUEST, root, url);
             handleError(request, root, ERROR_BADVERB, "Bad verb:" + verb);
             return;
@@ -629,7 +629,7 @@ public class OaiManager extends RepositoryManager {
         XmlUtil.create(TAG_REPOSITORYNAME, id,
                        getRepository().getProperty(PROP_REPOSITORY_NAME,
                            "Repository"));
-        String url = getRepository().absoluteUrl(request.getUrl());
+        String url = request.getAbsoluteUrl(request.getUrl());
         XmlUtil.create(TAG_BASEURL, id, url);
         XmlUtil.create(TAG_PROTOCOLVERSION, id, "2.0");
         XmlUtil.create(TAG_ADMINEMAIL, id,
@@ -1057,7 +1057,7 @@ public class OaiManager extends RepositoryManager {
             "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
         });
 
-        String entryUrl = getRepository().absoluteUrl(
+        String entryUrl = request.getAbsoluteUrl(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry));
         XmlUtil.create(TAG_DC_IDENTIFIER, oaidc, entryUrl);

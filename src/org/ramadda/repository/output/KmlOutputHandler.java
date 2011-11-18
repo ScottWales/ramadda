@@ -189,7 +189,7 @@ public class KmlOutputHandler extends OutputHandler {
         int max  = request.get(ARG_MAX, DB_MAX_ROWS);
         int skip = Math.max(0, request.get(ARG_SKIP, 0));
         for (Entry childGroup : subGroups) {
-            String url = getRepository().absoluteUrl(
+            String url = request.getAbsoluteUrl(
                              request.url(
                                  repository.URL_ENTRY_SHOW, ARG_ENTRYID,
                                  childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
@@ -214,7 +214,7 @@ public class KmlOutputHandler extends OutputHandler {
                                          "" + (skip + max), ARG_MAX,
                                          "" + max);
 
-                url = getRepository().absoluteUrl(url);
+                url = request.getAbsoluteUrl(url);
                 Element link = KmlUtil.networkLink(folder, "More...", url);
 
                 if (skipArg != null) {
@@ -231,7 +231,7 @@ public class KmlOutputHandler extends OutputHandler {
                     HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET)
                                  + "/" + fileTail, ARG_ENTRYID,
                                      entry.getId());
-                url = getRepository().absoluteUrl(url);
+                url = request.getAbsoluteUrl(url);
                 myGroundOverlay(folder, entry.getName(),
                                       entry.getDescription(), url,
                                       getLocation(entry.getNorth(), 90),
@@ -270,7 +270,7 @@ public class KmlOutputHandler extends OutputHandler {
                     lonlat = entry.getLocation();
                 }
                 String link = HtmlUtil.href(
-                                  getRepository().absoluteUrl(
+                                  request.getAbsoluteUrl(
                                       request.entryUrl(
                                           getRepository().URL_ENTRY_SHOW,
                                           entry)), entry.getName());
@@ -278,7 +278,7 @@ public class KmlOutputHandler extends OutputHandler {
                 boolean isImage = entry.getResource().isImage();
                 if (isImage) {
                     String thumbUrl =
-                        getRepository().absoluteUrl(
+                        request.getAbsoluteUrl(
                             HtmlUtil.url(
                                 request.url(repository.URL_ENTRY_GET) + "/"
                                 + getStorageManager().getFileTail(
@@ -357,7 +357,7 @@ public class KmlOutputHandler extends OutputHandler {
 
     public static String getKmlUrl(Request request, Entry entry) {
         if(isLatLonImage(entry)) {
-            return  request.getRepository().absoluteUrl(
+            return  request.getAbsoluteUrl(
                                                 request.url(
                                                             request.getRepository().URL_ENTRY_SHOW, ARG_ENTRYID,
                                                             entry.getId(), ARG_OUTPUT, OUTPUT_KML, ARG_VISIBLE, "true"));
@@ -371,7 +371,7 @@ public class KmlOutputHandler extends OutputHandler {
             url = HtmlUtil.url(
                                request.url(request.getRepository().URL_ENTRY_GET) + "/"
                                + fileTail, ARG_ENTRYID, entry.getId());
-            return request.getRepository().absoluteUrl(url);
+            return request.getAbsoluteUrl(url);
         } else if (entry.getResource().isUrl()) {
             return entry.getResource().getPath();
         }

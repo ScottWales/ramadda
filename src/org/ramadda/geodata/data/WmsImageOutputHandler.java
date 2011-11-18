@@ -255,7 +255,7 @@ public class WmsImageOutputHandler extends OutputHandler {
             wmsTemplate = getRepository().getResource(
                 "/org/ramadda/repository/output/wmstemplate.xml");
         }
-        String url = getRepository().absoluteUrl(
+        String url = request.getAbsoluteUrl(
                          request.entryUrl(
                              getRepository().URL_ENTRY_SHOW, entry,
                              ARG_OUTPUT, OUTPUT_WMS_CAPABILITIES));

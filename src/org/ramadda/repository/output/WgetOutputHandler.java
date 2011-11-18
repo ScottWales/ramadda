@@ -197,7 +197,7 @@ public class WgetOutputHandler extends OutputHandler {
                 continue;
             }
             String tail = getStorageManager().getFileTail(entry);
-            String path = getRepository().absoluteUrl(
+            String path = request.getAbsoluteUrl(
                               getEntryManager().getEntryResourceUrl(
                                   request, entry));
             sb.append("wget -O \"" + tail + "\" \"" + path + "\"");

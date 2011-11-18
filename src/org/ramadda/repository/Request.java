@@ -274,7 +274,7 @@ public class Request implements Constants {
      */
     public String checkUrl(String url) {
         if (useFullUrl() && !url.startsWith("http")) {
-            return repository.absoluteUrl(url);
+            return getAbsoluteUrl(url);
         }
         return url;
     }
@@ -736,7 +736,7 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getFullUrl() {
-        return repository.absoluteUrl(getUrl());
+        return getAbsoluteUrl(getUrl());
     }
 
     /**
@@ -1996,8 +1996,9 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getServerName() {
+
         if (httpServletRequest != null) {
-            httpServletRequest.getServerName();
+            return httpServletRequest.getServerName();
         }
         return repository.getHostname();
     }

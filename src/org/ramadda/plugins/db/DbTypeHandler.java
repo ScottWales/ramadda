@@ -1178,7 +1178,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             throws Exception {
         if ((urlColumn != null) && (entry != null)) {
             String baseUrl =
-                getRepository().absoluteUrl(
+                request.getAbsoluteUrl(
                     HtmlUtil.url(
                         request.url(getRepository().URL_ENTRY_SHOW),
                         new String[] { ARG_ENTRYID,
@@ -1957,7 +1957,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
             String url = getViewUrl(request, entry, "" + values[IDX_DBID]);
-            url = repository.absoluteUrl(url);
+            url = request.getAbsoluteUrl(url);
             sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_LINK, "",
                                   XmlUtil.getCdata(url)));
 
@@ -2613,7 +2613,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 lon = ll[3];
             }
             String label = getLabel(entry, values);
-            String viewUrl = getRepository().absoluteUrl(getViewUrl(request,
+            String viewUrl = request.getAbsoluteUrl(getViewUrl(request,
                                  entry, dbid));
             String       href = HtmlUtil.href(viewUrl, label);
             StringBuffer desc = new StringBuffer(href + "<br>");
@@ -3480,7 +3480,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             String dateString1 = sdf.format(date1) + "Z";
             String dateString2 = sdf.format(date2) + "Z";
             String url         = getViewUrl(request, entry, dbid);
-            url = repository.absoluteUrl(url);
+            url = request.getAbsoluteUrl(url);
             String label = getLabel(entry, values).trim();
 
             if (label.length() == 0) {

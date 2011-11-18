@@ -272,7 +272,7 @@ public class RssOutputHandler extends OutputHandler {
             StringBuffer extra    = new StringBuffer();
             String       resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
-                String imageUrl = repository.absoluteUrl(
+                String imageUrl = request.getAbsoluteUrl(
                                       HtmlUtil.url(
                                           getRepository().URL_ENTRY_GET
                                           + entry.getId()
@@ -292,7 +292,7 @@ public class RssOutputHandler extends OutputHandler {
                     rssSdf.format(new Date(entry.getStartDate()))));
             sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
             String url =
-                repository.absoluteUrl(request.url(repository.URL_ENTRY_SHOW,
+                request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, entry.getId()));
             sb.append(XmlUtil.tag(RssUtil.TAG_LINK, "", url));
             sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "", url));

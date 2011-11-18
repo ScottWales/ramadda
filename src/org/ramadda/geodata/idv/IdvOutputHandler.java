@@ -2169,7 +2169,7 @@ public class IdvOutputHandler extends OutputHandler {
                     ImageGenerator.TAG_DATASOURCE,
                     XmlUtil.attrs(
                         "id", "datasource", "url",
-                        getRepository().absoluteUrl(
+                        request.getAbsoluteUrl(
                             getRepository().URL_ENTRY_SHOW
                             + dataOutputHandler.getOpendapUrl(entry)))));
         } else {
@@ -2904,7 +2904,7 @@ public class IdvOutputHandler extends OutputHandler {
                         ImageGenerator.TAG_DATASOURCE,
                         XmlUtil.attrs(
                             "id", "datasource", "url",
-                            getRepository().absoluteUrl(
+                            request.getAbsoluteUrl(
                                 getRepository().URL_ENTRY_SHOW
                                 + dataOutputHandler.getOpendapUrl(entry)))));
             } else {

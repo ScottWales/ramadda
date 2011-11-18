@@ -494,7 +494,7 @@ public class MapManager extends RepositoryManager {
                         HtmlUtil.squote(desc), "" + lat, "" + lon) + "," +
                     HtmlUtil.squote(detailsUrl)  +"," +
                     HtmlUtil.squote(
-                                request.getAbsoluteUrl(iconUrl)) + ","
+                                    request.getAbsoluteUrl(iconUrl)) + ","
                     + pointsString+"," + kmlUrl+"," + fromTime +"," + toTime));
             js.append("\n");
         }
@@ -558,7 +558,7 @@ public class MapManager extends RepositoryManager {
         info.append("</table>");
 
         if (entry.getResource().isImage()) {
-            String thumbUrl = getRepository().absoluteUrl(
+            String thumbUrl = request.getAbsoluteUrl(
                                   HtmlUtil.url(
                                       request.url(repository.URL_ENTRY_GET)
                                       + "/"
