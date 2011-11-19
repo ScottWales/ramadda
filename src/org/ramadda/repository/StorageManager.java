@@ -1666,13 +1666,14 @@ public class StorageManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * This creates a FileOutputStream. It does enforce that the file is under
+     * the main ramadda directory and it DOES check for READONLY mode
      *
-     * @param file _more_
+     * @param file The file to write to
      *
-     * @return _more_
+     * @return FileOutputStream
      *
-     * @throws Exception _more_
+     * @throws Exception If the file is not under the main ramadda dir
      */
     public FileInputStream getFileInputStream(File file) throws Exception {
         checkFile(file);
@@ -1690,6 +1691,25 @@ public class StorageManager extends RepositoryManager {
      */
     public FileOutputStream getFileOutputStream(File file) throws Exception {
         checkWriteFile(file);
+        return getUncheckedFileOutputStream(file);
+    }
+
+
+    /**
+     * This creates a FileOutputStream. It does enforce that the file is under
+     * the main ramadda directory. It DOES NOT check for READONLY mode
+     *
+     * @param file The file to write to
+     *
+     * @return FileOutputStream
+     *
+     * @throws Exception If the file is not under the main ramadda dir
+     */
+    public FileOutputStream getUncheckedFileOutputStream(File file)
+            throws Exception {
+        if (!IOUtil.isADescendent(getRepositoryDir(), file)) {
+            throw new IllegalArgumentException("Cannot write to:" + file);
+        }
         return new FileOutputStream(file);
     }
 
