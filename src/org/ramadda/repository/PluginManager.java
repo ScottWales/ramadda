@@ -266,6 +266,7 @@ public class PluginManager extends RepositoryManager {
                                    File tmpPluginsDir)
             throws Exception {
 
+        File tmpPluginFile = new File(pluginFile);
         if (pluginFile.toLowerCase().endsWith(".zip")) {
             ZipInputStream zin =
                 new ZipInputStream(new FileInputStream(pluginFile));
@@ -295,12 +296,13 @@ public class PluginManager extends RepositoryManager {
         } else if (pluginFile.toLowerCase().endsWith(".jar")) {
             pluginSB.append(
                 "<tr><td><b>Plugin file</b></td><td colspan=2><i>"
-                + pluginFile + "</i></td></tr>");
+                + pluginFile + "</i> " + new Date(tmpPluginFile.lastModified())+" Length:"  + tmpPluginFile.length() +"</td></tr>");
             classLoader.addJar(pluginFile);
         } else {
             pluginSB.append(
                 "<tr><td><b>Plugin file</b></td><td colspan=2><i>"
-                + pluginFile + "</i></td></tr>");
+                + pluginFile + "</i>   " +
+                new Date(tmpPluginFile.lastModified())+" Length:" + tmpPluginFile.length() +"</td></tr>");
             checkFile(pluginFile, true);
         }
     }
