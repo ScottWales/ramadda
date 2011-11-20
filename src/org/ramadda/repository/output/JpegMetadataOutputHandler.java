@@ -141,7 +141,7 @@ public class JpegMetadataOutputHandler extends OutputHandler {
             //            Iterator tags = directory.getTagIterator();
             //while (tags.hasNext()) {
             //                Tag tag = (Tag) tags.next();
-            for(Tag tag: directory.getTags()) {
+            for (Tag tag : directory.getTags()) {
                 if (tag.getTagName().indexOf("Unknown") >= 0) {
                     continue;
                 }

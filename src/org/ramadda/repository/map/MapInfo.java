@@ -78,7 +78,7 @@ public class MapInfo {
     /** the html */
     private StringBuffer html = new StringBuffer();
 
-    /** _more_          */
+    /** _more_ */
     private String selectionLabel;
 
     /**

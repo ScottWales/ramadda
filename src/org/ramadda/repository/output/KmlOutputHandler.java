@@ -175,11 +175,12 @@ public class KmlOutputHandler extends OutputHandler {
                                && (subGroups.size() == 0);
 
 
-        String  title  = (justOneEntry
-                          ? entries.get(0).getName()
-                          : group.getFullName());
-        Element root   = KmlUtil.kml(title);
-        Element folder = KmlUtil.folder(root, title, request.get(ARG_VISIBLE,false));
+        String  title = (justOneEntry
+                         ? entries.get(0).getName()
+                         : group.getFullName());
+        Element root  = KmlUtil.kml(title);
+        Element folder = KmlUtil.folder(root, title,
+                                        request.get(ARG_VISIBLE, false));
         KmlUtil.open(folder, false);
         if (group.getDescription().length() > 0) {
             KmlUtil.description(folder, group.getDescription());
@@ -189,17 +190,16 @@ public class KmlOutputHandler extends OutputHandler {
         int max  = request.get(ARG_MAX, DB_MAX_ROWS);
         int skip = Math.max(0, request.get(ARG_SKIP, 0));
         for (Entry childGroup : subGroups) {
-            String url = request.getAbsoluteUrl(
-                             request.url(
-                                 repository.URL_ENTRY_SHOW, ARG_ENTRYID,
-                                 childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
+            String url =
+                request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
+                    ARG_ENTRYID, childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
             Element link = KmlUtil.networkLink(folder, childGroup.getName(),
                                url);
             if (childGroup.getDescription().length() > 0) {
                 KmlUtil.description(link, childGroup.getDescription());
             }
 
-            KmlUtil.visible(link, request.get(ARG_VISIBLE,false));
+            KmlUtil.visible(link, request.get(ARG_VISIBLE, false));
             KmlUtil.open(link, false);
             link.setAttribute(KmlUtil.ATTR_ID, childGroup.getId());
         }
@@ -233,10 +233,10 @@ public class KmlOutputHandler extends OutputHandler {
                                      entry.getId());
                 url = request.getAbsoluteUrl(url);
                 myGroundOverlay(folder, entry.getName(),
-                                      entry.getDescription(), url,
-                                      getLocation(entry.getNorth(), 90),
-                                      getLocation(entry.getSouth(), -90),
-                                      getLocation(entry.getEast(), 180),
+                                entry.getDescription(), url,
+                                getLocation(entry.getNorth(), 90),
+                                getLocation(entry.getSouth(), -90),
+                                getLocation(entry.getEast(), 180),
                                 getLocation(entry.getWest(), -180),
                                 request.get(ARG_VISIBLE, false));
                 continue;
@@ -252,7 +252,7 @@ public class KmlOutputHandler extends OutputHandler {
             }
 
             String url = getKmlUrl(request, entry);
-            if(url!=null) {
+            if (url != null) {
                 Element link = KmlUtil.networkLink(folder, entry.getName(),
                                    url);
 
@@ -335,10 +335,26 @@ public class KmlOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param name _more_
+     * @param description _more_
+     * @param url _more_
+     * @param north _more_
+     * @param south _more_
+     * @param east _more_
+     * @param west _more_
+     * @param visible _more_
+     *
+     * @return _more_
+     */
     public static Element myGroundOverlay(Element parent, String name,
-                                        String description, String url,
-                                        double north, double south,
-                                          double east, double west, boolean visible) {
+                                          String description, String url,
+                                          double north, double south,
+                                          double east, double west,
+                                          boolean visible) {
         Element node = KmlUtil.makeElement(parent, KmlUtil.TAG_GROUNDOVERLAY);
         KmlUtil.name(node, name);
         KmlUtil.description(node, description);
@@ -355,22 +371,33 @@ public class KmlOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public static String getKmlUrl(Request request, Entry entry) {
-        if(isLatLonImage(entry)) {
-            return  request.getAbsoluteUrl(
-                                                request.url(
-                                                            request.getRepository().URL_ENTRY_SHOW, ARG_ENTRYID,
-                                                            entry.getId(), ARG_OUTPUT, OUTPUT_KML, ARG_VISIBLE, "true"));
+        if (isLatLonImage(entry)) {
+            return request.getAbsoluteUrl(
+                request.url(
+                    request.getRepository().URL_ENTRY_SHOW, ARG_ENTRYID,
+                    entry.getId(), ARG_OUTPUT, OUTPUT_KML, ARG_VISIBLE,
+                    "true"));
         }
-        if(!isKml(entry)) {
+        if ( !isKml(entry)) {
             return null;
         }
         String url;
         if (entry.getResource().isFile()) {
-            String fileTail = request.getRepository().getStorageManager().getFileTail(entry);
+            String fileTail =
+                request.getRepository().getStorageManager().getFileTail(
+                    entry);
             url = HtmlUtil.url(
-                               request.url(request.getRepository().URL_ENTRY_GET) + "/"
-                               + fileTail, ARG_ENTRYID, entry.getId());
+                request.url(request.getRepository().URL_ENTRY_GET) + "/"
+                + fileTail, ARG_ENTRYID, entry.getId());
             return request.getAbsoluteUrl(url);
         } else if (entry.getResource().isUrl()) {
             return entry.getResource().getPath();
@@ -379,11 +406,18 @@ public class KmlOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public static boolean isKml(Entry entry) {
         String resource = entry.getResource().getPath();
         if ((resource != null)
-            && (IOUtil.hasSuffix(resource, "kml")
-                || IOUtil.hasSuffix(resource, "kmz"))) {
+                && (IOUtil.hasSuffix(resource, "kml")
+                    || IOUtil.hasSuffix(resource, "kmz"))) {
             return true;
         }
         return false;

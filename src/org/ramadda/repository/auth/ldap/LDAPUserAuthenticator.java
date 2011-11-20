@@ -1,5 +1,24 @@
 /*
- * Copyright 2010 ramadda.org 
+* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
+/*
+ * Copyright 2010 ramadda.org
  */
 
 package org.ramadda.repository.auth.ldap;
@@ -30,27 +49,28 @@ import javax.naming.NamingException;
  */
 public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
 
-    /** property name          */
+    /** property name */
     private static final String PROP_GROUP_ADMIN = "ldap.group.admin";
 
-    /** property name          */
+    /** property name */
     private static final String PROP_ATTR_GIVENNAME = "ldap.attr.givenname";
 
-    /** property name          */
+    /** property name */
     private static final String PROP_ATTR_SURNAME = "ldap.attr.surname";
 
-    /** default value for admin role          */
+    /** default value for admin role */
     private static final String DFLT_GROUP_ADMIN = "reposAdmin";
 
-    /** default value for given name          */
+    /** default value for given name */
     private static final String DFLT_ATTR_GIVENNAME = "givenName";
 
-    /** default value for  surname         */
+    /** default value for  surname */
     private static final String DFLT_ATTR_SURNAME = "sn";
 
-    /** Manager for Ldap conection        */
+    /** Manager for Ldap conection */
     private LDAPManager manager = null;
 
+    /** _more_          */
     private int lastLDAPServerVersion = -1;
 
 
@@ -63,6 +83,11 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public LDAPUserAuthenticator(Repository repository) {
         super(repository);
         debug("created");
@@ -79,12 +104,12 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
             LDAPAdminHandler.getLDAPHandler(getRepository());
 
         //Check if the admin handler has changed its state
-        if (lastLDAPServerVersion!=adminHandler.getVersion() ||
-            manager == null) {
+        if ((lastLDAPServerVersion != adminHandler.getVersion())
+                || (manager == null)) {
             //Connection instance with ldap server. 
             //It's necessary the admin user and password.
             try {
-                lastLDAPServerVersion=adminHandler.getVersion();
+                lastLDAPServerVersion = adminHandler.getVersion();
                 manager = LDAPManager.getInstance(adminHandler.getServer(),
                         adminHandler.getPort(),
                         adminHandler.getUserDirectory(),
@@ -137,7 +162,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      * this gets called when we want to just get a User object from the ID.
      * return null if user is unknown
      *
-     * @param repository the repository. 
+     * @param repository the repository.
      * @param userId The user to find
      *
      * @return The  non-local user that matches the given id or null
@@ -184,9 +209,11 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
             String userSurname = (String) attrValues.get(0);
 
             // Create the user with admin priviligies if user is in group reposAdmin
-            String adminGroup = getProperty(PROP_GROUP_ADMIN, DFLT_GROUP_ADMIN);
-            boolean isAdmin = getManager().userInGroup(userId,adminGroup);
-            User user = new User(userId, userName + " " + userSurname, isAdmin);
+            String adminGroup = getProperty(PROP_GROUP_ADMIN,
+                                            DFLT_GROUP_ADMIN);
+            boolean isAdmin = getManager().userInGroup(userId, adminGroup);
+            User user = new User(userId, userName + " " + userSurname,
+                                 isAdmin);
 
             groupList = getManager().getGroups(userName);
             List     groups = new ArrayList(groupList);

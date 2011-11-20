@@ -37,6 +37,7 @@ import ucar.unidata.xml.XmlUtil;
 
 
 import java.io.UnsupportedEncodingException;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -411,7 +412,7 @@ public class UserManager extends RepositoryManager {
         if ( !canDoLogin(request)) {
             sb.append(
                 getRepository().showDialogWarning(
-                                                  msg("Login is not allowed")));
+                    msg("Login is not allowed")));
             return sb.toString();
         }
 
@@ -1148,10 +1149,8 @@ public class UserManager extends RepositoryManager {
                     HtmlUtil.url(
                         getRepositoryBase().URL_ENTRY_SHOW.toString(),
                         ARG_ENTRYID, home.getId());
-                msg.append(
-                    HtmlUtil.href(
-                        request.getAbsoluteUrl(homeUrl),
-                        home.getFullName()));
+                msg.append(HtmlUtil.href(request.getAbsoluteUrl(homeUrl),
+                                         home.getFullName()));
                 addFavorites(request, newUser,
                              (List<Entry>) Misc.newList(home));
             }
@@ -2263,7 +2262,7 @@ public class UserManager extends RepositoryManager {
                 msg("Password Reset"),
                 new StringBuffer(
                     getRepository().showDialogWarning(
-                                                      msg("Login is not allowed"))));
+                        msg("Login is not allowed"))));
         }
 
 
@@ -2478,7 +2477,7 @@ public class UserManager extends RepositoryManager {
                 msg("Login"),
                 new StringBuffer(
                     getRepository().showDialogWarning(
-                                                      msg("Login is not allowed"))));
+                        msg("Login is not allowed"))));
         }
 
         boolean responseAsXml = request.getString(ARG_RESPONSE,
@@ -2578,7 +2577,7 @@ public class UserManager extends RepositoryManager {
                         if ((password == null) || (password.length() == 0)) {
                             sb.append(
                                 getRepository().showDialogNote(
-                                                               "Sorry, we were doing some cleanup and have reset your password"));
+                                    "Sorry, we were doing some cleanup and have reset your password"));
 
                             addPasswordResetForm(request, sb, name);
                             getDatabaseManager().closeAndReleaseConnection(

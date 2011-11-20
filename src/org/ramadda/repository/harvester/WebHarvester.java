@@ -359,7 +359,7 @@ public class WebHarvester extends Harvester {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String templateHelp =
         "Use macros: ${filename}, ${fromdate}, ${todate}, etc.";
 

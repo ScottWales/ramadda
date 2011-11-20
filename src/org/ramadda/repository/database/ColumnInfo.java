@@ -45,7 +45,7 @@ public class ColumnInfo {
     public static final int TYPE_CLOB = 5;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_BIGINT = 6;
 
     /** _more_ */

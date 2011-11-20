@@ -94,7 +94,7 @@ public class OutputHandler extends RepositoryManager {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_INFORMATION);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_TREE =
         new OutputType("Information", "tree.html",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -929,8 +929,9 @@ public class OutputHandler extends RepositoryManager {
         sb.append(HtmlUtil.div("",
                                HtmlUtil.attrs(HtmlUtil.ATTR_STYLE,
                                    "display:none;visibility:hidden",
-                                   HtmlUtil.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
-                                   HtmlUtil.ATTR_ID, uid)));
+                                   HtmlUtil.ATTR_CLASS,
+                                   CSS_CLASS_FOLDER_BLOCK, HtmlUtil.ATTR_ID,
+                                   uid)));
         return sb.toString();
     }
 
@@ -1467,15 +1468,17 @@ public class OutputHandler extends RepositoryManager {
         }
 
         if (request.isMobile()) {
-            sb.append("<td align=right><div "+ HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)+">");
+            sb.append("<td align=right><div "
+                      + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
         } else {
-            sb.append("<td align=right width=200><div "+HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)+">");
+            sb.append("<td align=right width=200><div "
+                      + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
         }
         sb.append(getRepository().formatDateShort(request,
                 new Date(entry.getStartDate()),
                 getEntryManager().getTimezone(entry), extraAlt.toString()));
-        sb.append(
-            "</div></td><td width=\"1%\" align=right " + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)+">");
+        sb.append("</div></td><td width=\"1%\" align=right "
+                  + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
         sb.append(HtmlUtil.space(1));
 
         //      sb.append(HtmlUtil.jsLink(toggleJS,"X"));
@@ -1774,13 +1777,13 @@ public class OutputHandler extends RepositoryManager {
         }
     }
 
-    /** _more_          */
+    /** _more_ */
     public static final String CLASS_TAB_CONTENT = "tab_content";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CLASS_TAB_CONTENTS = "tab_contents";
 
-    /** _more_          */
+    /** _more_ */
     private static int tabCnt = 0;
 
 

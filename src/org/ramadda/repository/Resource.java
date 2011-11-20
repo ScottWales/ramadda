@@ -72,7 +72,7 @@ public class Resource {
     /** _more_ */
     private long fileSize = -1;
 
-    /** _more_          */
+    /** _more_ */
     private String md5;
 
     /**
@@ -173,6 +173,13 @@ public class Resource {
         return isImage(path);
     }
 
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     */
     public static boolean isImage(String path) {
         if (path == null) {
             return false;

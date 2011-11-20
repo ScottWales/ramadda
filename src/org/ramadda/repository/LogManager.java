@@ -62,7 +62,7 @@ public class LogManager extends RepositoryManager {
     /** _more_ */
     private Logger LOGGER;
 
-    /** _more_          */
+    /** _more_ */
     private boolean LOGGER_OK = true;
 
     /** _more_ */
@@ -604,28 +604,32 @@ public class LogManager extends RepositoryManager {
                                 "Stack trace",
                                 HtmlUtil.div(
                                     stackSB.toString(),
-                                    HtmlUtil.cssClass(CSS_CLASS_STACK)), false), 10));
+                                    HtmlUtil.cssClass(
+                                        CSS_CLASS_STACK)), false), 10));
                     sb.append("<br>");
                     stackSB = null;
                 } else if (stackSB != null) {
                     line = HtmlUtil.entityEncode(line);
-                    line = line.replaceAll("\t","&nbsp;");
+                    line = line.replaceAll("\t", "&nbsp;");
                     stackSB.append(line);
                     stackSB.append("<br>");
                 } else if (line.startsWith("<stack>")) {
                     stackSB = new StringBuffer();
                 } else {
                     line = HtmlUtil.entityEncode(line);
-                    line = line.replaceAll("\t","&nbsp;");
+                    line = line.replaceAll("\t", "&nbsp;");
                     sb.append(line);
                     sb.append("<br>");
                     sb.append("\n");
                 }
             }
             if (stackSB != null) {
-                sb.append(HtmlUtil.makeShowHideBlock("Stack trace",
-                        HtmlUtil.div(stackSB.toString(),
-                                     HtmlUtil.cssClass(CSS_CLASS_STACK)), false));
+                sb.append(
+                    HtmlUtil.makeShowHideBlock(
+                        "Stack trace",
+                        HtmlUtil.div(
+                            stackSB.toString(),
+                            HtmlUtil.cssClass(CSS_CLASS_STACK)), false));
             }
 
             //        sb.append("</pre>");

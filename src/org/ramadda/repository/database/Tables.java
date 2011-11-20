@@ -73,7 +73,7 @@ public class Tables {
         /** _more_ */
         public static final String COL_MD5 = NAME + ".md5";
 
-        /** _more_          */
+        /** _more_ */
         public static final String COL_FILESIZE = NAME + ".filesize";
 
         /** _more_ */
@@ -82,7 +82,7 @@ public class Tables {
         /** _more_ */
         public static final String COL_CREATEDATE = NAME + ".createdate";
 
-        /** _more_          */
+        /** _more_ */
         public static final String COL_CHANGEDATE = NAME + ".changedate";
 
         /** _more_ */
@@ -103,10 +103,10 @@ public class Tables {
         /** _more_ */
         public static final String COL_WEST = NAME + ".west";
 
-        /** _more_          */
+        /** _more_ */
         public static final String COL_ALTITUDETOP = NAME + ".altitudetop";
 
-        /** _more_          */
+        /** _more_ */
         public static final String COL_ALTITUDEBOTTOM = NAME
                                                         + ".altitudebottom";
 
@@ -374,7 +374,7 @@ public class Tables {
         /** _more_ */
         public static final String COL_ISGUEST = NAME + ".isguest";
 
-        /** _more_          */
+        /** _more_ */
         public static final String COL_PROPERTIES = NAME + ".properties";
 
         /** _more_ */

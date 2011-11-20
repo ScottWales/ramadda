@@ -93,7 +93,7 @@ public class RssOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String TAG_RSS_GEOLON = "georss:lon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_RSS_GEOBOX = "georss:box";
 
     /** _more_ */
@@ -118,7 +118,7 @@ public class RssOutputHandler extends OutputHandler {
     public static final String TAG_RSS_DESCRIPTION = "description";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_RSS = "ramadda.icon.rss";
 
     /** _more_ */

@@ -219,6 +219,11 @@ public class Request implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Repository getRepository() {
         return repository;
     }
@@ -1344,6 +1349,7 @@ public class Request implements Constants {
 
 
     //.../?sessionid=foobar
+
     /**
      * _more_
      */
@@ -1352,13 +1358,13 @@ public class Request implements Constants {
 
         String authToken = getString(ARG_AUTHTOKEN, (String) null);
         String sessionId = getSessionId();
-        if(sessionId==null) {
+        if (sessionId == null) {
             sessionId = getString(ARG_SESSIONID, (String) null);
         }
         //        System.err.println("session:" + sessionId);
         //        System.err.println("auth token:" + authToken);
         //        System.err.println("session hashed:" + repository.getAuthToken(sessionId));
-        if (authToken != null && sessionId!=null) {
+        if ((authToken != null) && (sessionId != null)) {
             if (authToken.equals(repository.getAuthToken(sessionId))) {
                 return;
             }

@@ -97,10 +97,10 @@ public class Permission {
     /** _more_ */
     public static final String ACTION_FILE = "file";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_TYPE1 = "type1";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_TYPE2 = "type2";
 
 

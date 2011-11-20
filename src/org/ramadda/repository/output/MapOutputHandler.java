@@ -86,7 +86,7 @@ public class MapOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_GEMAP =
         new OutputType("Google Earth", "map.gemap",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -161,8 +161,7 @@ public class MapOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
 
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1,
-                                           -1);
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1);
             return makeLinksResult(request, msg("Google Earth"), sb,
                                    new State(entry));
         }
@@ -201,8 +200,7 @@ public class MapOutputHandler extends OutputHandler {
         }
 
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1,
-                                           -1);
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1);
             return makeLinksResult(request, msg("Google Earth"), sb,
                                    new State(group));
         }

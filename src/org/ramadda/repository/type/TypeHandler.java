@@ -155,6 +155,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private TypeHandler parent;
 
+    /** _more_          */
     private static String tinyMceTemplate;
 
     /** _more_ */
@@ -2433,10 +2434,14 @@ public class TypeHandler extends RepositoryManager {
         if (okToShowInForm(entry, ARG_DESCRIPTION)) {
             String desc    = "";
             String buttons = "";
-            int    rows    = getProperty(entry, "form.description.rows", 
-                                         getRepository().getProperty("ramadda.edit.rows", 5));
-            boolean showHtmlEditor = getProperty(entry, "form.description.html", 
-                                                 getRepository().getProperty("ramadda.edit.html", false));
+            int rows =
+                getProperty(entry, "form.description.rows",
+                            getRepository().getProperty("ramadda.edit.rows",
+                                5));
+            boolean showHtmlEditor =
+                getProperty(entry, "form.description.html",
+                            getRepository().getProperty("ramadda.edit.html",
+                                false));
             if (entry != null) {
                 desc = entry.getDescription();
                 if (desc.length() > 100) {
@@ -2444,7 +2449,7 @@ public class TypeHandler extends RepositoryManager {
                 }
                 if (isWikiText(desc)) {
                     showHtmlEditor = false;
-                    rows = 20;
+                    rows           = 20;
                     buttons =
                         getRepository().getWikiManager().makeWikiEditBar(
                             request, entry, ARG_DESCRIPTION) + HtmlUtil.br();
@@ -2460,11 +2465,15 @@ public class TypeHandler extends RepositoryManager {
                                         entry, "form.description.columns", 60), HtmlUtil.id(
                                         ARG_DESCRIPTION))));
 
-            if(showHtmlEditor) {
-                sb.append(HtmlUtil.importJS(getRepository().fileUrl("/tiny_mce/tiny_mce.js"))); 
-                if(tinyMceTemplate == null) {
-                    tinyMceTemplate  = getRepository().getResource(getRepository().getProperty("ramadda.edit.tinymce",
-                                                                                               "/org/ramadda/repository/resources/tinymce.js.template"));
+            if (showHtmlEditor) {
+                sb.append(
+                    HtmlUtil.importJS(
+                        getRepository().fileUrl("/tiny_mce/tiny_mce.js")));
+                if (tinyMceTemplate == null) {
+                    tinyMceTemplate = getRepository().getResource(
+                        getRepository().getProperty(
+                            "ramadda.edit.tinymce",
+                            "/org/ramadda/repository/resources/tinymce.js.template"));
                 }
                 sb.append(HtmlUtil.script(tinyMceTemplate));
             }
@@ -2556,11 +2565,9 @@ public class TypeHandler extends RepositoryManager {
 
             if (entry == null) {
                 if (tabTitles.size() > 1) {
-                    sb.append(
-                        formEntryTop(
-                            request, msgLabel("Resource"),
-                            OutputHandler.makeTabs(
-                                tabTitles, tabContent, true) + extra));
+                    sb.append(formEntryTop(request, msgLabel("Resource"),
+                                           OutputHandler.makeTabs(tabTitles,
+                                               tabContent, true) + extra));
                 } else if (tabTitles.size() == 1) {
                     sb.append(formEntry(request, tabTitles.get(0) + ":",
                                         tabContent.get(0) + extra));

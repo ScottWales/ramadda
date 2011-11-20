@@ -135,7 +135,8 @@ public class JpegMetadataHandler extends MetadataHandler {
                 if (exifDir.containsTag(
                         ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
                     Date dttm =
-                        exifDir.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+                        exifDir.getDate(
+                            ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
                     if (dttm != null) {
                         entry.setStartDate(dttm.getTime());
                         entry.setEndDate(dttm.getTime());
@@ -160,37 +161,45 @@ public class JpegMetadataHandler extends MetadataHandler {
 
             }
 
-            if(gpsDir!=null) {
+            if (gpsDir != null) {
                 if (gpsDir.containsTag(GpsDirectory.TAG_GPS_IMG_DIRECTION)) {
                     Metadata dirMetadata =
-                        new Metadata(getRepository().getGUID(), entry.getId(),
-                                     TYPE_CAMERA_DIRECTION, DFLT_INHERITED,
+                        new Metadata(getRepository().getGUID(),
+                                     entry.getId(), TYPE_CAMERA_DIRECTION,
+                                     DFLT_INHERITED,
                                      "" + getValue(gpsDir,
-                                                   GpsDirectory
-                                                   .TAG_GPS_IMG_DIRECTION), Metadata
-                                     .DFLT_ATTR, Metadata.DFLT_ATTR,
-                                     Metadata.DFLT_ATTR,
-                                     Metadata.DFLT_EXTRA);
+                                         GpsDirectory
+                                             .TAG_GPS_IMG_DIRECTION), Metadata
+                                                 .DFLT_ATTR, Metadata
+                                                 .DFLT_ATTR, Metadata
+                                                 .DFLT_ATTR, Metadata
+                                                 .DFLT_EXTRA);
 
                     metadataList.add(dirMetadata);
                 }
 
                 if (gpsDir.containsTag(GpsDirectory.TAG_GPS_LATITUDE)) {
-                    double latitude  = getValue(gpsDir, GpsDirectory.TAG_GPS_LATITUDE);
-                    double longitude = getValue(gpsDir, GpsDirectory.TAG_GPS_LONGITUDE);
-                    String lonRef = gpsDir.getString(GpsDirectory.TAG_GPS_LONGITUDE_REF);
-                    String latRef = gpsDir.getString(GpsDirectory.TAG_GPS_LATITUDE_REF);
+                    double latitude = getValue(gpsDir,
+                                          GpsDirectory.TAG_GPS_LATITUDE);
+                    double longitude = getValue(gpsDir,
+                                           GpsDirectory.TAG_GPS_LONGITUDE);
+                    String lonRef =
+                        gpsDir.getString(GpsDirectory.TAG_GPS_LONGITUDE_REF);
+                    String latRef =
+                        gpsDir.getString(GpsDirectory.TAG_GPS_LATITUDE_REF);
                     if ((lonRef != null) && lonRef.equalsIgnoreCase("W")) {
                         longitude = -longitude;
                     }
                     if ((latRef != null) && latRef.equalsIgnoreCase("S")) {
                         latitude = -latitude;
                     }
-                    double altitude = (gpsDir.containsTag(GpsDirectory.TAG_GPS_ALTITUDE)
-                                       ? getValue(gpsDir, GpsDirectory.TAG_GPS_ALTITUDE)
-                                       : 0);
+                    double altitude =
+                        (gpsDir.containsTag(GpsDirectory.TAG_GPS_ALTITUDE)
+                         ? getValue(gpsDir, GpsDirectory.TAG_GPS_ALTITUDE)
+                         : 0);
                     try {
-                        int altRef = gpsDir.getInt(GpsDirectory.TAG_GPS_ALTITUDE_REF);
+                        int altRef =
+                            gpsDir.getInt(GpsDirectory.TAG_GPS_ALTITUDE_REF);
                         if (altRef > 0) {
                             altitude = -altitude;
                         }

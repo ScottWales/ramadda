@@ -22,6 +22,7 @@ package org.ramadda.repository.harvester;
 
 
 import org.apache.log4j.Logger;
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
@@ -78,9 +79,10 @@ import java.util.regex.*;
  */
 public abstract class Harvester extends RepositoryManager {
 
+    /** _more_          */
     private static final boolean PRINT_DEBUG = false;
 
-    /** _more_          */
+    /** _more_ */
     private static final Logger LOG =
         Logger.getLogger("org.ramadda.repository.harvester.Harvester");
 
@@ -243,6 +245,7 @@ public abstract class Harvester extends RepositoryManager {
     private int testCount = 100;
 
 
+    /** _more_          */
     protected String printTab = "";
 
     /**
@@ -855,10 +858,10 @@ public abstract class Harvester extends RepositoryManager {
      * @param message _more_
      */
     public void logHarvesterInfo(String message) {
-        if(PRINT_DEBUG) {
-            System.err.println (printTab+message);
+        if (PRINT_DEBUG) {
+            System.err.println(printTab + message);
         }
-        LOG.info(getName() + ": " + printTab +message);
+        LOG.info(getName() + ": " + printTab + message);
     }
 
 
@@ -907,8 +910,8 @@ public abstract class Harvester extends RepositoryManager {
      */
     protected void doPause() {
         double minutes = getSleepMinutes();
-        if(minutes<1) {
-            Misc.sleep((long)(1000*60*minutes));
+        if (minutes < 1) {
+            Misc.sleep((long) (1000 * 60 * minutes));
             return;
         }
         Misc.pauseEvery((int) minutes);

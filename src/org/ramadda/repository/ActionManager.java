@@ -361,7 +361,7 @@ public class ActionManager extends RepositoryManager {
      */
     public class ActionInfo {
 
-        /** _more_          */
+        /** _more_ */
         private String id;
 
         /** _more_ */
@@ -380,10 +380,10 @@ public class ActionManager extends RepositoryManager {
         private String error = null;
 
 
-        /** _more_          */
+        /** _more_ */
         private String extraHtml;
 
-        /** _more_          */
+        /** _more_ */
         private Entry entry;
 
         /**

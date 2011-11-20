@@ -196,15 +196,15 @@ public class AtomOutputHandler extends OutputHandler {
         //        System.err.println("ATOM making SELF: " + request.getAbsoluteUrl(request.getUrl()));
         sb.append(
             AtomUtil.makeLink(
-                AtomUtil.REL_SELF,
-                request.getAbsoluteUrl(request.getUrl())));
+                AtomUtil.REL_SELF, request.getAbsoluteUrl(request.getUrl())));
         sb.append("\n");
         for (Entry entry : entries) {
             List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
             String selfUrl =
                 request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, entry.getId()));
-            links.add(new AtomUtil.Link(AtomUtil.REL_SELF, selfUrl, "Web page", "text/html"));
+            links.add(new AtomUtil.Link(AtomUtil.REL_SELF, selfUrl,
+                                        "Web page", "text/html"));
             String resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
                 String imageUrl = request.getAbsoluteUrl(
@@ -220,9 +220,9 @@ public class AtomOutputHandler extends OutputHandler {
             TypeHandler   typeHandler = entry.getTypeHandler();
             List<Service> services = typeHandler.getServices(request, entry);
             for (Service service : services) {
-                String url  = service.getUrl();
-                String relType = service.getType();
-                String name = service.getName();
+                String url      = service.getUrl();
+                String relType  = service.getType();
+                String name     = service.getName();
                 String mimeType = service.getMimeType();
                 links.add(new AtomUtil.Link(relType, url, name, mimeType));
             }
@@ -242,7 +242,8 @@ public class AtomOutputHandler extends OutputHandler {
             Element      root  = doc.getDocumentElement();
             typeHandler.addMetadataToXml(entry, root, extra, "atom");
 
-            List<Metadata> inheritedMetadata = getMetadataManager().getInheritedMetadata(entry);
+            List<Metadata> inheritedMetadata =
+                getMetadataManager().getInheritedMetadata(entry);
 
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
@@ -284,11 +285,13 @@ public class AtomOutputHandler extends OutputHandler {
                     continue;
                 }
 
-                addMetadata(request, entry,  doc, root, metadata, metadataHandlers);
+                addMetadata(request, entry, doc, root, metadata,
+                            metadataHandlers);
             }
 
             for (Metadata metadata : inheritedMetadata) {
-                addMetadata(request, entry,  doc, root, metadata, metadataHandlers);
+                addMetadata(request, entry, doc, root, metadata,
+                            metadataHandlers);
             }
 
 
@@ -307,23 +310,36 @@ public class AtomOutputHandler extends OutputHandler {
             sb.append(AtomUtil.makeEntry(entry.getName(), selfUrl,
                                          new Date(entry.getCreateDate()),
                                          new Date(entry.getChangeDate()),
-                                         desc, null, "ramadda",
-                                         "",
-                                         links,
+                                         desc, null, "ramadda", "", links,
                                          extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
         return new Result("", sb, MIME_ATOM);
     }
 
-    private void addMetadata(Request request, Entry entry, Document doc, Element root, Metadata metadata, List<MetadataHandler> metadataHandlers) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param doc _more_
+     * @param root _more_
+     * @param metadata _more_
+     * @param metadataHandlers _more_
+     *
+     * @throws Exception _more_
+     */
+    private void addMetadata(Request request, Entry entry, Document doc,
+                             Element root, Metadata metadata,
+                             List<MetadataHandler> metadataHandlers)
+            throws Exception {
         for (MetadataHandler metadataHandler : metadataHandlers) {
             if (metadataHandler.canHandle(metadata)) {
-                if ( !metadataHandler.addMetadataToXml(request,
-                                                       "atom", entry, metadata, doc, root)) {
-                    metadataHandler.addMetadataToXml(request, "dif",
-                                                     entry, metadata, doc, root);
-                    
+                if ( !metadataHandler.addMetadataToXml(request, "atom",
+                        entry, metadata, doc, root)) {
+                    metadataHandler.addMetadataToXml(request, "dif", entry,
+                            metadata, doc, root);
+
                 }
                 break;
             }

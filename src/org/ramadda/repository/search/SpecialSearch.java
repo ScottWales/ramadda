@@ -51,16 +51,16 @@ import java.util.List;
  */
 public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAB_LIST = "list";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAB_MAP = "map";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAB_EARTH = "earth";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAB_TIMELINE = "timeline";
 
 
@@ -79,7 +79,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private String searchUrl;
 
-    private boolean searchOpen=true;;
+    /** _more_          */
+    private boolean searchOpen = true;;
 
     /** _more_ */
     private String label;
@@ -87,7 +88,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private List<String> metadataTypes = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List<String> tabs = new ArrayList<String>();
 
     /**

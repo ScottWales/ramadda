@@ -88,10 +88,10 @@ public class OutputType {
     /** The extra categorized menu */
     public static final int TYPE_OTHER = 1 << 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_CATEGORY = TYPE_OTHER;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_CONNECT = TYPE_FEEDS;
 
     /** for the  toolbar */
@@ -133,7 +133,7 @@ public class OutputType {
     /** _more_ */
     private String groupName = "";
 
-    /** _more_          */
+    /** _more_ */
     private String category = "";
 
 

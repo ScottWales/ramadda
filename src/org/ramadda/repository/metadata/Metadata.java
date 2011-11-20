@@ -76,7 +76,7 @@ public class Metadata implements Constants {
     /** _more_ */
     public static final int MAX_LENGTH = 10000;
 
-    /** _more_          */
+    /** _more_ */
     public static final int INDEX_BASE = 1;
 
     /** _more_ */
@@ -85,7 +85,7 @@ public class Metadata implements Constants {
     /** _more_ */
     public static String TAG_ATTRIBUTES = "attributes";
 
-    /** _more_          */
+    /** _more_ */
     public static String TAG_ATTR = "attr";
 
     /** _more_ */
@@ -247,13 +247,20 @@ public class Metadata implements Constants {
         }
     }
 
-    public Metadata(String id, String entryId, String type,
-                    String []attrs) {
-        this.id        = id;
-        this.entryId   = entryId;
-        this.type      = type;
-        for(int i=0;i<attrs.length;i++) {
-            this.setAttr(i+1, attrs[i]);
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param entryId _more_
+     * @param type _more_
+     * @param attrs _more_
+     */
+    public Metadata(String id, String entryId, String type, String[] attrs) {
+        this.id      = id;
+        this.entryId = entryId;
+        this.type    = type;
+        for (int i = 0; i < attrs.length; i++) {
+            this.setAttr(i + 1, attrs[i]);
         }
     }
 

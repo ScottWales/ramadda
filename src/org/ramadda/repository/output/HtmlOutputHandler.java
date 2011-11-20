@@ -105,7 +105,7 @@ public class HtmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_INLINE =
         new OutputType("inline", OutputType.TYPE_INTERNAL);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_MAPINFO =
         new OutputType("mapinfo", OutputType.TYPE_INTERNAL);
 
@@ -295,20 +295,21 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result getMapInfo(Request request, Entry entry) throws Exception {
-        String html=null;
-        Result typeResult = entry.getTypeHandler().getHtmlDisplay(request, entry);
+        String html = null;
+        Result typeResult = entry.getTypeHandler().getHtmlDisplay(request,
+                                entry);
         if (typeResult != null) {
-            byte[]content = typeResult.getContent();
-            if(content!=null) {
+            byte[] content = typeResult.getContent();
+            if (content != null) {
                 html = new String(content);
             }
         }
 
-        if(html==null) {
+        if (html == null) {
             String wikiTemplate = getWikiText(request, entry);
             if (wikiTemplate != null) {
                 String wiki = getWikiManager().wikifyEntry(request, entry,
-                                                           wikiTemplate);
+                                  wikiTemplate);
                 html = getRepository().translate(request, wiki);
             } else {
                 html = getMapManager().makeInfoBubble(request, entry);

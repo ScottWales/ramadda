@@ -369,7 +369,8 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
-        subId = RepositoryUtil.encodeBase64(subId.getBytes()).replace("\n", "");
+        subId = RepositoryUtil.encodeBase64(subId.getBytes()).replace("\n",
+                                            "");
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
     }
 

@@ -23,8 +23,8 @@ package org.ramadda.repository.map;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.MapOutputHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
+import org.ramadda.repository.output.MapOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 
 
@@ -63,10 +63,11 @@ import java.util.List;
 public class MapManager extends RepositoryManager {
 
 
-    public static int    DFLT_EARTH_HEIGHT = 500;
-
-
     /** _more_          */
+    public static int DFLT_EARTH_HEIGHT = 500;
+
+
+    /** _more_ */
     public static final int EARTH_ENTRIES_WIDTH = 150;
 
     /**
@@ -289,7 +290,9 @@ public class MapManager extends RepositoryManager {
             sb.append(HtmlUtil.importJS("http://www.google.com/jsapi"
                                         + mapsKey));
             sb.append(HtmlUtil.importJS(fileUrl("/google/googleearth.js")));
-            sb.append(HtmlUtil.importJS(fileUrl("/google/extensions-0.2.1.pack.js")));
+            sb.append(
+                HtmlUtil.importJS(
+                    fileUrl("/google/extensions-0.2.1.pack.js")));
             sb.append(HtmlUtil.script("google.load(\"earth\", \"1\""
                                       + otherOpts + ");"));
             request.putExtraProperty("initgooglearth", "");
@@ -298,16 +301,18 @@ public class MapManager extends RepositoryManager {
 
 
         String style = "";
-        if(width>0) {
-            style+="width:"+ width+"px; ";
+        if (width > 0) {
+            style += "width:" + width + "px; ";
         }
-        if(height<=0) {
-            height =DFLT_EARTH_HEIGHT;
+        if (height <= 0) {
+            height = DFLT_EARTH_HEIGHT;
         }
-        style+="height:"+ height+"px; ";
+        style += "height:" + height + "px; ";
 
-        String earthHtml =HtmlUtil.div("", HtmlUtil.id(id) + HtmlUtil.style(style) +
-                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_CONTAINER));
+        String earthHtml =
+            HtmlUtil.div("",
+                         HtmlUtil.id(id) + HtmlUtil.style(style)
+                         + HtmlUtil.cssClass(CSS_CLASS_EARTH_CONTAINER));
         sb.append("\n");
         sb.append(earthHtml);
         sb.append(HtmlUtil.italics(msgLabel("On click")));
@@ -360,10 +365,12 @@ public class MapManager extends RepositoryManager {
         List<String> categories = new ArrayList<String>();
         Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
-        int kmlCnt =0;
+        int kmlCnt = 0;
         for (Entry entry : entries) {
             String kmlUrl = KmlOutputHandler.getKmlUrl(request, entry);
-            if (kmlUrl == null &&  !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
+            if ((kmlUrl == null)
+                    && !(entry.hasLocationDefined()
+                         || entry.hasAreaDefined())) {
                 continue;
             }
 
@@ -380,14 +387,14 @@ public class MapManager extends RepositoryManager {
                                        + "" /*HtmlUtil.onMouseClick(call)*/));
             boolean visible = true;
             //If there are lots of kmls then don't load all of them
-            if(kmlUrl!=null) {
-                visible = (kmlCnt++<3);
+            if (kmlUrl != null) {
+                visible = (kmlCnt++ < 3);
             }
             catSB.append(HtmlUtil.checkbox("tmp", "true", visible,
-                                           HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;") +
-                                           HtmlUtil.id("googleearth.visibility." +entry.getId()) +
-                                           HtmlUtil.onMouseClick(id + ".togglePlacemarkVisible(" +
-                                                                 HtmlUtil.squote(entry.getId())+")")));
+                    HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;")
+                    + HtmlUtil.id("googleearth.visibility." + entry.getId())
+                    + HtmlUtil.onMouseClick(id + ".togglePlacemarkVisible("
+                        + HtmlUtil.squote(entry.getId()) + ")")));
 
             String iconUrl = getEntryManager().getIconUrl(request, entry);
             catSB.append(
@@ -441,7 +448,7 @@ public class MapManager extends RepositoryManager {
             }
 
 
-            if (kmlUrl==null &&  !hasPolygon && entry.hasAreaDefined()) {
+            if ((kmlUrl == null) && !hasPolygon && entry.hasAreaDefined()) {
                 pointsString = "new Array(" + entry.getNorth() + ","
                                + entry.getWest() + "," + entry.getNorth()
                                + "," + entry.getEast() + ","
@@ -464,23 +471,27 @@ public class MapManager extends RepositoryManager {
             desc = desc.replace("\n", " ");
             desc = desc.replace("\"", "\\\"");
             desc = desc.replace("'", "\\'");
-            
-            if(kmlUrl==null) {
+
+            if (kmlUrl == null) {
                 kmlUrl = "null";
             } else {
                 kmlUrl = HtmlUtil.squote(kmlUrl);
             }
 
-            String detailsUrl = 
+            String detailsUrl =
                 HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
-                             new String[]{ARG_ENTRYID, entry.getId(), ARG_OUTPUT, "mapinfo"});
-            
+                             new String[] { ARG_ENTRYID,
+                                            entry.getId(), ARG_OUTPUT,
+                                            "mapinfo" });
+
             String fromTime = "null";
-            String toTime = "null";
-            if(entry.getCreateDate()!=entry.getStartDate()) {
-                fromTime = HtmlUtil.squote(DateUtil.getTimeAsISO8601(entry.getStartDate()));
-                if(entry.getStartDate()!=entry.getEndDate()) {
-                    toTime = HtmlUtil.squote(DateUtil.getTimeAsISO8601(entry.getEndDate()));
+            String toTime   = "null";
+            if (entry.getCreateDate() != entry.getStartDate()) {
+                fromTime = HtmlUtil.squote(
+                    DateUtil.getTimeAsISO8601(entry.getStartDate()));
+                if (entry.getStartDate() != entry.getEndDate()) {
+                    toTime = HtmlUtil.squote(
+                        DateUtil.getTimeAsISO8601(entry.getEndDate()));
                 }
             }
 
@@ -490,16 +501,22 @@ public class MapManager extends RepositoryManager {
                     id + ".addPlacemark",
                     HtmlUtil.comma(
                         HtmlUtil.squote(entry.getId()),
-                        HtmlUtil.squote(name),
-                        HtmlUtil.squote(desc), "" + lat, "" + lon) + "," +
-                    HtmlUtil.squote(detailsUrl)  +"," +
-                    HtmlUtil.squote(
-                                    request.getAbsoluteUrl(iconUrl)) + ","
-                    + pointsString+"," + kmlUrl+"," + fromTime +"," + toTime));
+                            HtmlUtil.squote(name), HtmlUtil.squote(desc),
+                                "" + lat, "" + lon) + ","
+                                    + HtmlUtil.squote(detailsUrl) + ","
+                                        + HtmlUtil.squote(
+                                            request.getAbsoluteUrl(
+                                                iconUrl)) + ","
+                                                    + pointsString + ","
+                                                        + kmlUrl + ","
+                                                            + fromTime + ","
+                                                                + toTime));
             js.append("\n");
         }
 
-        if(height<=0) height = DFLT_EARTH_HEIGHT;
+        if (height <= 0) {
+            height = DFLT_EARTH_HEIGHT;
+        }
         sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                 HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES)
                                 + HtmlUtil.style("max-height:" + height

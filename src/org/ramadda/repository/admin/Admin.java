@@ -371,10 +371,10 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtil.submit(msg("Next")));
         } else if ( !haveDone(ARG_ADMIN_ADMINCREATED)) {
             title = "Administrator";
-            String  id        = "admin";
-            String  name      = "Administrator";
+            String       id          = "admin";
+            String       name        = "Administrator";
 
-            boolean triedOnce = false;
+            boolean      triedOnce   = false;
             StringBuffer errorBuffer = new StringBuffer();
             if (request.exists(UserManager.ARG_USER_ID)) {
                 triedOnce = true;
@@ -387,7 +387,7 @@ public class Admin extends RepositoryManager {
                 String password2 =
                     request.getString(UserManager.ARG_USER_PASSWORD2,
                                       "").trim();
-                boolean      okToAdd     = true;
+                boolean okToAdd = true;
                 if (id.length() == 0) {
                     okToAdd = false;
                     errorBuffer.append(HtmlUtil.space(2));
@@ -473,15 +473,18 @@ public class Admin extends RepositoryManager {
                         getRepository().installPlugin(plugin);
                     }
 
-                    if(errorBuffer.length()>0) {
-                        sb.append(getRepository().showDialogError(msg("Error")+"<br>" + errorBuffer));
+                    if (errorBuffer.length() > 0) {
+                        sb.append(
+                            getRepository().showDialogError(
+                                msg("Error") + "<br>" + errorBuffer));
                     }
                     return new Result("", sb);
                 }
             }
 
-            if(errorBuffer.length()>0) {
-                sb.append(getRepository().showDialogError(msg("Error")+"<br>" + errorBuffer));
+            if (errorBuffer.length() > 0) {
+                sb.append(getRepository().showDialogError(msg("Error")
+                        + "<br>" + errorBuffer));
             }
             sb.append("Please enter the following information.");
             sb.append(
@@ -637,8 +640,9 @@ public class Admin extends RepositoryManager {
 
                 ResultSet columns = dbmd.getColumns(null, null, tableName,
                                         null);
-                String encoded = new String(RepositoryUtil.encodeBase64(("text:?"
-                                     + tableName).getBytes()));
+                String encoded =
+                    new String(RepositoryUtil.encodeBase64(("text:?"
+                        + tableName).getBytes()));
 
                 int cnt = 0;
                 if (tableName.toLowerCase().indexOf("_index_") < 0) {
@@ -1199,7 +1203,8 @@ public class Admin extends RepositoryManager {
         String fileLabel =
             msg("Enter one server file system directory per line")
             + HtmlUtil.br()
-            + msg("Directories that RAMADDA is allowed to serve files from") +" " + "(e.g., from harvesters or the server file view entries)";
+            + msg("Directories that RAMADDA is allowed to serve files from")
+            + " " + "(e.g., from harvesters or the server file view entries)";
         asb.append(HtmlUtil.formEntryTop(msgLabel("File system access"),
                                          "<table><tr valign=top><td>"
                                          + fileWidget + "</td><td>"

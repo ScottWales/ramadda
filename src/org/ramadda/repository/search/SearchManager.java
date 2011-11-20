@@ -397,21 +397,23 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         //org.apache.lucene.document.Document doc
         InputStream stream = getStorageManager().getFileInputStream(f);
         try {
-            /******** TODO: fix the Tika versionitis
-            org.apache.tika.metadata.Metadata metadata =
-                new org.apache.tika.metadata.Metadata();
-            org.apache.tika.parser.AutoDetectParser parser =
-                new org.apache.tika.parser.AutoDetectParser();
-            org.apache.tika.sax.BodyContentHandler handler =
-                new org.apache.tika.sax.BodyContentHandler();
-            parser.parse(stream, handler, metadata);
-            String contents = handler.toString();
-            //            System.err.println("contents: " + contents);
-            if ((contents != null) && (contents.length() > 0)) {
-                doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
-                                  Field.Index.ANALYZED));
-            }
-******/
+
+            /**
+             * ****** TODO: fix the Tika versionitis
+             * org.apache.tika.metadata.Metadata metadata =
+             *   new org.apache.tika.metadata.Metadata();
+             * org.apache.tika.parser.AutoDetectParser parser =
+             *   new org.apache.tika.parser.AutoDetectParser();
+             * org.apache.tika.sax.BodyContentHandler handler =
+             *   new org.apache.tika.sax.BodyContentHandler();
+             * parser.parse(stream, handler, metadata);
+             * String contents = handler.toString();
+             * //            System.err.println("contents: " + contents);
+             * if ((contents != null) && (contents.length() > 0)) {
+             *   doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
+             *                     Field.Index.ANALYZED));
+             * }
+             */
 
             /*
             String[] names = metadata.names();
@@ -989,8 +991,10 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             sb.append(
                 getRepository().showDialogNote(msg("No servers selected")));
         } else {
-            sb.append(HtmlUtil.div(serverSB.toString(),
-                                   HtmlUtil.cssClass(CSS_CLASS_SERVER_BLOCK)));
+            sb.append(
+                HtmlUtil.div(
+                    serverSB.toString(),
+                    HtmlUtil.cssClass(CSS_CLASS_SERVER_BLOCK)));
             sb.append(HtmlUtil.p());
         }
         sb.append(HtmlUtil.p());

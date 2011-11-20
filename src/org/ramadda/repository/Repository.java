@@ -488,7 +488,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean readOnly = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean doCache = true;
 
 
@@ -941,10 +941,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         //check for glassfish, e.g.:
         //$GLASSFISH_HOME/glassfish/config/repository.properties
-        String glassfish =  getProperty("GLASSFISH_HOME");
-        if(glassfish!=null) {
-            File confFile = new File(glassfish
-                                             + "/glassfish/config/repository.properties");
+        String glassfish = getProperty("GLASSFISH_HOME");
+        if (glassfish != null) {
+            File confFile =
+                new File(glassfish
+                         + "/glassfish/config/repository.properties");
             if (confFile.exists()) {
                 System.err.println("RAMADDA: loading:" + confFile);
                 loadProperties(properties, confFile.toString());
@@ -3061,7 +3062,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     return new Result(httpsUrl(request.getUrl()));
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
                             && request.getSecure()) {
-                    return new Result(request.getAbsoluteUrl(request.getUrl()));
+                    return new Result(
+                        request.getAbsoluteUrl(request.getUrl()));
                 }
             }
         }

@@ -124,7 +124,7 @@ public class GraphOutputHandler extends OutputHandler {
 
 
 
-    /** _more_          */
+    /** _more_ */
     static long cnt = System.currentTimeMillis();
 
     /**

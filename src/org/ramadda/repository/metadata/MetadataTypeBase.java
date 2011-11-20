@@ -86,10 +86,10 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
     /** _more_ */
@@ -121,10 +121,10 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     private String name;
 
-    /** _more_          */
+    /** _more_ */
     private String label;
 
-    /** _more_          */
+    /** _more_ */
     private String suffixLabel;
 
     /** _more_ */
@@ -439,21 +439,32 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param templateType _more_
+     * @param template _more_
+     */
     public void processTemplate(String templateType, String template) {
         templates.put(templateType, template);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param childNode _more_
+     *
+     * @throws Exception _more_
+     */
     public void processTemplateTag(Element childNode) throws Exception {
-        String templateType = XmlUtil.getAttribute(childNode,
-                                                   ATTR_TYPE);
+        String templateType = XmlUtil.getAttribute(childNode, ATTR_TYPE);
         if (XmlUtil.hasAttribute(childNode, ATTR_FILE)) {
 
             processTemplate(templateType,
                             XmlUtil.getAttribute(childNode, ATTR_FILE));
         } else {
-            processTemplate(templateType,
-                          XmlUtil.getChildText(childNode));
+            processTemplate(templateType, XmlUtil.getChildText(childNode));
         }
     }
 

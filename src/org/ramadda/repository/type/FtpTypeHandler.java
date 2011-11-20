@@ -71,7 +71,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int COL_DATE_PATTERN = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final int COL_DATE_FORMAT = 7;
 
 

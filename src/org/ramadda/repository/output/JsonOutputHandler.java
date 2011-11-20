@@ -71,16 +71,16 @@ public class JsonOutputHandler extends OutputHandler {
 
     // Parameters for the output
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTRACOLUMNS = "extracolumns";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_METADATA = "metadata";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LINKS = "links";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ONLYENTRY = "onlyentry";
 
 
@@ -242,7 +242,7 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private static SimpleDateFormat sdf;
 
     /**
@@ -490,7 +490,7 @@ public class JsonOutputHandler extends OutputHandler {
      *
      *
      * @version        $version$, Mon, Sep 5, '11
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class EntryExclusionStrategy implements ExclusionStrategy {
 

@@ -76,7 +76,7 @@ public class Column implements Constants {
     private static SimpleDateFormat dateTimeFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    /** _more_          */
+    /** _more_ */
     private static SimpleDateFormat fullDateTimeFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
@@ -168,7 +168,7 @@ public class Column implements Constants {
     public static final String SEARCHTYPE_SELECT = "select";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_COLUMN = "column";
 
     /** _more_ */

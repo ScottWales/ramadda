@@ -158,8 +158,8 @@ public class AccessManager extends RepositoryManager {
 
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
-                   || action.equals(Permission.ACTION_VIEWCHILDREN)
-                   || action.equals(Permission.ACTION_FILE))) {
+                    || action.equals(Permission.ACTION_VIEWCHILDREN)
+                    || action.equals(Permission.ACTION_FILE))) {
                 return false;
             }
         }

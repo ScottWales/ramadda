@@ -1707,7 +1707,7 @@ public class StorageManager extends RepositoryManager {
      */
     public FileOutputStream getUncheckedFileOutputStream(File file)
             throws Exception {
-        if (!IOUtil.isADescendent(getRepositoryDir(), file)) {
+        if ( !IOUtil.isADescendent(getRepositoryDir(), file)) {
             throw new IllegalArgumentException("Cannot write to:" + file);
         }
         return new FileOutputStream(file);

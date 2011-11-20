@@ -135,6 +135,11 @@ public class RequestUrl {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getUrlPath() {
         checkInit();
         if (needsSsl) {

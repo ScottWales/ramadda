@@ -78,7 +78,7 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMAGE_APPLY_TO_GROUP =
         "image.applytogroup";
 
@@ -113,11 +113,11 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT =
         "image.edit.rotate.left";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_X =
         "image.edit.rotate.left.x";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_Y =
         "image.edit.rotate.left.y";
 

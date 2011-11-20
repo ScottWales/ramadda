@@ -63,7 +63,7 @@ public class RepositoryClient extends RepositoryBase {
 
     //Note: This is also defined in SessionManager
 
-    /** _more_          */
+    /** _more_ */
     public static final String COOKIE_NAME = "repositorysession";
 
     /** _more_ */
@@ -799,9 +799,7 @@ public class RepositoryClient extends RepositoryBase {
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
         String authToken = RepositoryUtil.hashPassword(getSessionId());
-        entries.add(
-            HttpFormEntry.hidden(
-                ARG_AUTHTOKEN, authToken));
+        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, authToken));
         entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
     }
 
@@ -1015,7 +1013,8 @@ public class RepositoryClient extends RepositoryBase {
         if (value == null) {
             password = null;
         } else {
-            password = new String(RepositoryUtil.decodeBase64(new String(value)));
+            password =
+                new String(RepositoryUtil.decodeBase64(new String(value)));
         }
     }
 

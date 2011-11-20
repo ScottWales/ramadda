@@ -67,7 +67,7 @@ public class MetadataElement extends MetadataTypeBase {
     /** _more_ */
     public static final String TYPE_STRING = "string";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_WIKI = "wiki";
 
     /** _more_ */
@@ -260,12 +260,12 @@ public class MetadataElement extends MetadataTypeBase {
 
         if (dataType.equals(MetadataElement.TYPE_ENUMERATION)
                 || dataType.equals(MetadataElement.TYPE_ENUMERATIONPLUS)) {
-            String delimiter = ":";
+            String       delimiter = ":";
             String       values    = XmlUtil.getAttribute(node, ATTR_VALUES);
             List<String> tmpValues = null;
             if (values.startsWith("file:")) {
                 //If it is a .properties file then the delimiter is =
-                if(values.endsWith(".properties")) {
+                if (values.endsWith(".properties")) {
                     delimiter = "=";
                 }
                 String tagValues = getStorageManager().readSystemResource(
@@ -280,7 +280,9 @@ public class MetadataElement extends MetadataTypeBase {
             List enumValues = new ArrayList();
             for (String tok : tmpValues) {
                 //Check for comment line
-                if(tok.startsWith("#")) continue;
+                if (tok.startsWith("#")) {
+                    continue;
+                }
                 int idx = tok.indexOf(delimiter);
                 if (idx < 0) {
                     valueMap.put(tok, tok);
@@ -538,17 +540,17 @@ public class MetadataElement extends MetadataTypeBase {
      *
      *
      * @version        $version$, Mon, Sep 5, '11
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class FormInfo {
 
-        /** _more_          */
+        /** _more_ */
         public String label;
 
-        /** _more_          */
+        /** _more_ */
         public String content;
 
-        /** _more_          */
+        /** _more_ */
         public boolean isGroup = false;
 
         /**

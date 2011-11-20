@@ -129,7 +129,7 @@ public class MetadataManager extends RepositoryManager {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, Hashtable<String, String>> metadataTypeToTemplate =
         new Hashtable<String, Hashtable<String, String>>();
 

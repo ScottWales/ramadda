@@ -63,7 +63,7 @@ public class Link {
     OutputType outputType;
 
 
-    /** _more_          */
+    /** _more_ */
     String category;
 
     /**

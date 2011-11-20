@@ -39,13 +39,13 @@ import java.sql.Statement;
  */
 public class TypeInsertInfo {
 
-    /** _more_          */
+    /** _more_ */
     private String sql;
 
-    /** _more_          */
+    /** _more_ */
     private PreparedStatement statement;
 
-    /** _more_          */
+    /** _more_ */
     private TypeHandler typeHandler;
 
     /**

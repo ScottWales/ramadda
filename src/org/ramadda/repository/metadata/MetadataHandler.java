@@ -87,7 +87,7 @@ public class MetadataHandler extends RepositoryManager {
     public static String ARG_ATTR4 = "attr4";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_SPATIAL_POLYGON = "spatial.polygon";
 
     /** _more_ */

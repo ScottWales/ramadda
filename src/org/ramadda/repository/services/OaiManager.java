@@ -407,7 +407,8 @@ public class OaiManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void addRequest(Request request, Element root) throws Exception {
-        String  url = request.getAbsoluteUrl(request.getRequestPath());
+        String  url         =
+            request.getAbsoluteUrl(request.getRequestPath());
         Element requestNode = XmlUtil.create(TAG_REQUEST, root, url);
 
         if ( !Misc.equals(request.getString(ARG_METADATAPREFIX, "oai_dc"),
@@ -515,8 +516,7 @@ public class OaiManager extends RepositoryManager {
         String verb = request.getString(ARG_VERB, VERB_IDENTIFY);
         if ( !verbSet.contains(verb)) {
             //Add in an attributeless request node
-            String url =
-                request.getAbsoluteUrl(request.getRequestPath());
+            String url = request.getAbsoluteUrl(request.getRequestPath());
             XmlUtil.create(TAG_REQUEST, root, url);
             handleError(request, root, ERROR_BADVERB, "Bad verb:" + verb);
             return;

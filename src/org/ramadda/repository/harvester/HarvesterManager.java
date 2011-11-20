@@ -83,7 +83,7 @@ public class HarvesterManager extends RepositoryManager {
                                                "/harvester/new");
 
 
-    /** _more_          */
+    /** _more_ */
     public RequestUrl URL_HARVESTERS_FORM = new RequestUrl(this,
                                                 "/harvester/form");
 
@@ -98,7 +98,7 @@ public class HarvesterManager extends RepositoryManager {
     /** _more_ */
     private Hashtable harvesterMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     List<TwoFacedObject> harvesterTypes = new ArrayList<TwoFacedObject>();
 
 
@@ -616,19 +616,22 @@ public class HarvesterManager extends RepositoryManager {
                                       msg("Edit")));
             }
             cnt++;
-            String rowAttributes = HtmlUtil.attr(HtmlUtil.ATTR_VALIGN, HtmlUtil.VALUE_TOP);
-            
-            if(harvester.getActive()) {
-                rowAttributes += HtmlUtil.cssClass(CSS_CLASS_HARVESTER_ACTIVE);
+            String rowAttributes = HtmlUtil.attr(HtmlUtil.ATTR_VALIGN,
+                                       HtmlUtil.VALUE_TOP);
+
+            if (harvester.getActive()) {
+                rowAttributes +=
+                    HtmlUtil.cssClass(CSS_CLASS_HARVESTER_ACTIVE);
             }
 
-            sb.append(HtmlUtil.tag(HtmlUtil.TAG_TR, rowAttributes, HtmlUtil.cols(edit,
-                    harvester.getName(), (harvester.getActive()
-                                          ? HtmlUtil.bold(msg("Active"))
-                                          : msg("Stopped")) + HtmlUtil.space(
-                                          2), harvester.getRunLink(
-                                          request, false), removeLink,
-                                              harvester.getExtraInfo())));
+            sb.append(HtmlUtil.tag(HtmlUtil.TAG_TR, rowAttributes,
+                                   HtmlUtil.cols(edit, harvester.getName(),
+                                       (harvester.getActive()
+                                        ? HtmlUtil.bold(msg("Active"))
+                                        : msg("Stopped")) + HtmlUtil.space(
+                                            2), harvester.getRunLink(
+                                            request, false), removeLink,
+                                                harvester.getExtraInfo())));
         }
         sb.append(HtmlUtil.formTableClose());
 
