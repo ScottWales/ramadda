@@ -32,7 +32,7 @@ puts "Unjarring unidatacommon.jar"
 exec jar -xvf ../../../unidatacommon.jar
 ##exec jar -xvf ../../../ncIdv.jar
 
-puts "Making repositorytds.jar"
+puts "Making ramaddatds.jar"
 puts "pwd: [pwd]"
 puts "exec: [exec pwd]"
 set files ""
@@ -46,7 +46,7 @@ foreach file [glob *] {
 
 
 puts [exec pwd]
-set execLine "jar -cvf ../../../repositorytds.jar $files"
+set execLine "jar -cvf ../../../ramaddatds.jar $files"
 eval exec $execLine
 
 

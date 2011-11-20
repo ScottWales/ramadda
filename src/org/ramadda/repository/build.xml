@@ -29,20 +29,20 @@
 
 
 <!--
-    NOTE: tika.jar needs to be before repositorylib.jar because repositorylib.jar contains the unjarred idv external.jar
+    NOTE: tika.jar needs to be before ramaddalib.jar because ramaddalib.jar contains the unjarred idv external.jar
     from the idv which contains an older version of tika.
 -->
     <target name="initcore" if="core">
-       <property name="classpath" value="${tika_jar}:${lib_dir}/repositorylib.jar:${lib_dir}/servlet-api.jar"/>
-       <property name="manifestjars" value="${tika_jar} repositorylib.jar   servlet-api.jar"/>
+       <property name="classpath" value="${tika_jar}:${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="manifestjars" value="${tika_jar} ramaddalib.jar   servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
        <property name="lib3" value="${lib_dir}/dummy.jar"/>
     </target>
 
     <target name="initfull">
-       <property name="classpath" value="${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/repositorylib.jar:${lib_dir}/repositorytds.jar:${lib_dir}/servlet-api.jar"/>
-       <property name="manifestjars" value="idv.jar ${tika_jar}  repositorylib.jar   repositorytds.jar servlet-api.jar"/>
+       <property name="classpath" value="${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/ramaddalib.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="manifestjars" value="idv.jar ${tika_jar}  ramaddalib.jar   ramaddatds.jar servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
     </target>
@@ -73,7 +73,7 @@
 
     <target name="release" depends="init,clean">
 <!--
-        <antcall target="repositorylib"/>
+        <antcall target="ramaddalib"/>
 -->
         <antcall target="ramadda.jar"/>
         <antcall target="ramadda.zip"/>
@@ -221,7 +221,7 @@
         <mkdir dir="${release_dir}/lib"/>
         <copy  file="${dist_dir}/${ramadda_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/idv.jar" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${lib_dir}/repositorylib.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/ramaddalib.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${tika_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${ramadda_dir}/release/ramadda.sh" todir="${release_dir}" overwrite="true">
             <filterset>
@@ -242,7 +242,7 @@
 
         </copy>
         <copy  file="${ramadda_dir}/release/README" todir="${release_dir}" overwrite="true" />
-        <copy  file="${lib_dir}/repositorytds.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/ramaddatds.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/servlet-api.jar" todir="${release_dir}/lib" overwrite="true" />
         <delete file="${lib_dir}/repository.tar"/>
         <delete file="${dist_dir}/${ramadda_zip}"/>
@@ -283,14 +283,14 @@
           <webinf file="${ramadda_dir}/release/repository.properties"/>
           <lib file="${dist_dir}/${ramadda_jar}"/>
           <lib file="${lib_dir}/idv.jar"/>
-          <lib file="${lib_dir}/repositorylib.jar"/>
-          <lib file="${lib_dir}/repositorytds.jar"/>
+          <lib file="${lib_dir}/ramaddalib.jar"/>
+          <lib file="${lib_dir}/ramaddatds.jar"/>
           <lib file="${tika_jar}"/>
       </war>
     </target>
 
 
-    <target name="repositorylib" depends="init">
+    <target name="ramaddalib" depends="init">
         <mkdir dir="${tmpjar_dir}"/>
         <delete includeemptydirs="true">
             <fileset dir="${tmpjar_dir}" includes="**/*"/>
@@ -348,7 +348,7 @@
             basedir="${tmpjar_dir}"
             update="false"
             compress="true"
-            jarfile="${lib_dir}/repositorylib.jar">
+            jarfile="${lib_dir}/ramaddalib.jar">
               <include name="**"/>
               <exclude name="ucar/multiarray/**"/>
         </jar>

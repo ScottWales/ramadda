@@ -33,7 +33,7 @@
         </delete>
     </target>
     <target name="publisherplugin" depends="init,clean">
-        <property name="pluginclasspath" value="${libdir}/tika-app-0.9.jar:${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <property name="pluginclasspath" value="${libdir}/tika-app-0.9.jar:${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/ramaddatds.jar:${libdir}/ramaddalib.jar:${libdir}/servlet-api.jar"/>
         <javac
             verbose="false"
             classpath="${pluginclasspath}"
@@ -231,7 +231,7 @@
         <mkdir dir="${releasedir}/lib"/>
         <copy  file="${distdir}/${repositoryjar}" todir="${releasedir}/lib" overwrite="true" />
         <copy  file="${libdir}/idv.jar" todir="${releasedir}/lib" overwrite="true" />
-        <copy  file="${libdir}/repositorylib.jar" todir="${releasedir}/lib" overwrite="true" />
+        <copy  file="${libdir}/ramaddalib.jar" todir="${releasedir}/lib" overwrite="true" />
         <copy  file="${repositorydir}/release/ramadda.sh" todir="${releasedir}" overwrite="true">
             <filterset>
                 <filter token="REPOSITORYJAR" value="${repositoryjar}"/>
@@ -251,7 +251,7 @@
 
         </copy>
         <copy  file="${repositorydir}/README" todir="${releasedir}" overwrite="true" />
-        <copy  file="${libdir}/repositorytds.jar" todir="${releasedir}/lib" overwrite="true" />
+        <copy  file="${libdir}/ramaddatds.jar" todir="${releasedir}/lib" overwrite="true" />
         <copy  file="${libdir}/servlet-api.jar" todir="${releasedir}/lib" overwrite="true" />
         <delete file="${libdir}/repository.tar"/>
         <delete file="${distdir}/${repositoryzip}"/>
@@ -292,15 +292,15 @@
           <webinf file="${repositorydir}/release/repository.properties"/>
           <lib file="${distdir}/${repositoryjar}"/>
           <lib file="${libdir}/idv.jar"/>
-          <lib file="${libdir}/repositorylib.jar"/>
-          <lib file="${libdir}/repositorytds.jar"/>
+          <lib file="${libdir}/ramaddalib.jar"/>
+          <lib file="${libdir}/ramaddatds.jar"/>
       </war>
 
 
     </target>
 
 
-    <target name="repositorylib" depends="init">
+    <target name="ramaddalib" depends="init">
         <mkdir dir="${tmpjardir}"/>
         <delete includeemptydirs="true">
             <fileset dir="${tmpjardir}" includes="**/*"/>
@@ -352,7 +352,7 @@
             basedir="${tmpjardir}"
             update="false"
             compress="true"
-            jarfile="${libdir}/repositorylib.jar">
+            jarfile="${libdir}/ramaddalib.jar">
               <include name="**"/>
               <exclude name="ucar/multiarray/**"/>
         </jar>
@@ -446,7 +446,7 @@
 <!-- TODO: Fix this -->
 
     <target name="workshopplugin" depends="init,clean">
-        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/repositorytds.jar:${libdir}/repositorylib.jar:${libdir}/servlet-api.jar"/>
+        <property name="pluginclasspath" value="${libdir}/idv.jar:${libdir}/external.jar:${libdir}/local-visad.jar:${libdir}/visad.jar:${libdir}/ncIdv.jar:${libdir}/jython.jar:{libdir}/doclint.jar:${libdir}/j2h.jar:${libdir}/ramaddatds.jar:${libdir}/ramaddalib.jar:${libdir}/servlet-api.jar"/>
         <javac
             verbose="false"
             classpath="${pluginclasspath}"

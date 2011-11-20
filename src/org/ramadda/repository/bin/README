@@ -18,8 +18,8 @@ ant release
 
 This creates the following files in trunk/lib. The *'ed files are those that get released
 
-repository.jar
-repositorylib.jar
+ramadda<version>.jar
+ramaddalib.jar
 
 
 

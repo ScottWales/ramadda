@@ -23,8 +23,8 @@
         <property name="releasedir" value="${distdir}/repository" />
 
 
-        <property name="geoclasspath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/repositorytds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
-        <property name="classpath" value="${libdir}/repositorylib.jar:${libdir}/repository.jar:${libdir}/repositorytds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+        <property name="geoclasspath" value="${libdir}/ramaddalib.jar:${libdir}/ramadda.jar:${libdir}/ramaddatds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
+        <property name="classpath" value="${libdir}/ramaddalib.jar:${libdir}/ramadda.jar:${libdir}/ramaddatds.jar:${libdir}/idv.jar:${libdir}/servlet-api.jar"/>
 
         <property  name="build.sysclasspath" value="ignore"/>
         <property name="compiledir" value="${srcdir}"/>
