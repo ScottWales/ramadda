@@ -10,10 +10,10 @@ To compile ramadda:
 cd  org/ramadda/repository
 ant
 
-This creates a repository.jar and places it into the lib dir. 
+This creates a ramadda.jar and places it into the lib dir. 
 To run ramadda do:
 cd lib
-java -Xmx1024m -jar repository.jar
+java -Xmx1024m -jar ramadda.jar
 
 (The -Xmx1024 gives the JRE 1 Gig of memory)
 

@@ -46,19 +46,19 @@ Just define:<pre>ramadda_home=/home/dir</pre>
 You can run RAMADDA stand-alone. This is really useful for development and just requires  Java 1.5 or greater.
 <p>
 To run RAMADDA run the ramadda.sh. This just does:<pre>
-   java -Xmx512m -jar repository.jar
+   java -Xmx512m -jar ramadda.jar
 </pre>
 
 
 By default the server is on port 8080.  To change the port do:<pre>
-    java -Xmx512m -jar repository.jar -port &lt;some port&gt;
+    java -Xmx512m -jar ramadda.jar -port &lt;some port&gt;
 </pre>
 
 RAMADDA creates a local storage directory in:<pre>
 &lt;home dir&gt;/.unidata/repository</pre>
 
 To change this do:<pre>
-    java -Xmx512m -jar repository.jar -Dramadda_home=/home/dir
+    java -Xmx512m -jar ramadda.jar -Dramadda_home=/home/dir
 </pre>
 
 
@@ -128,13 +128,13 @@ To compile stand-alone (e.g., using javac) put those 2 jar files in your class p
 To compile using ant:<br>
 The default ant target  (all) will compile the repository source and create:
 <pre>
-lib/repository.jar
+lib/ramadda.jar
 lib/repository.war
 </pre>
 
 
 You can run the repository stand-alone by doing:
-<pre>java -jar repository.jar</pre>
+<pre>java -jar ramadda.jar</pre>
 
 All of the services except OpenDAP are available stand-alone.
 <p>
