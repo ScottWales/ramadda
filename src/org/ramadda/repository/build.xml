@@ -19,8 +19,9 @@
         <property name="srcrelease_dir" value="${release_name}src${_version}" />
 	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
-
         <property name="tika_jar" value="${lib_dir}/tika-app-1.0.jar" />
+        <property name="clientbase" value="ramaddaclient" />
+        
     </target>
 
     <target name="init" depends="initbasic,initcore,initfull">
@@ -105,7 +106,7 @@
             basedir="${compile_dir}"
             update="false"
             compress="true"
-            jarfile="${dist_dir}/repositoryclient.jar">
+            jarfile="${dist_dir}/${clientbase}.jar">
            <manifest>
               <attribute name="Implementation-Title" value="Ramadda Client"/>
               <attribute name="Implementation-Version" value="1.0"/>
@@ -121,13 +122,14 @@
 
 	    </jar>
 
-        <zip destfile="${dist_dir}/repositoryclient.zip">
-         <zipfileset dir="${dist_dir}" includes="repositoryclient.jar" fullpath="repositoryclient/repositoryclient.jar"/>
-         <zipfileset dir="${lib_dir}" includes="unidatautil.jar" fullpath="repositoryclient/unidatautil.jar"/>
-         <zipfileset dir="${lib_dir}" includes="commons-httpclient-3.1.jar" fullpath="repositoryclient/commons-httpclient-3.1.jar"/>
-         <zipfileset dir="${lib_dir}" includes="commons-logging-1.1.jar" fullpath="repositoryclient/commons-logging-1.1.jar"/>
-         <zipfileset dir="${lib_dir}" includes="commons-codec-1.3.jar" fullpath="repositoryclient/commons-codec-1.3.jar"/>
-         <zipfileset dir="${ramadda_dir}/release" includes="README.CLIENT" fullpath="repositoryclient/README"/>
+        <zip destfile="${dist_dir}/${clientbase}.zip">
+         <zipfileset dir="${dist_dir}" includes="${clientbase}.jar" fullpath="${clientbase}/lib/${clientbase}.jar"/>
+         <zipfileset dir="${lib_dir}" includes="unidatautil.jar" fullpath="${clientbase}/lib/unidatautil.jar"/>
+         <zipfileset dir="${lib_dir}" includes="commons-httpclient-3.1.jar" fullpath="${clientbase}/lib/commons-httpclient-3.1.jar"/>
+         <zipfileset dir="${lib_dir}" includes="commons-logging-1.1.jar" fullpath="${clientbase}/lib/commons-logging-1.1.jar"/>
+         <zipfileset dir="${lib_dir}" includes="commons-codec-1.3.jar" fullpath="${clientbase}/lib/commons-codec-1.3.jar"/>
+         <zipfileset dir="${ramadda_dir}/release" includes="README.CLIENT" fullpath="${clientbase}/README"/>
+         <zipfileset dir="${ramadda_dir}/release" includes="ramaddaclient.sh" fullpath="${clientbase}/ramaddaclient.sh"/>
         </zip>
 
     </target>
