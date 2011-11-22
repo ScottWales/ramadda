@@ -165,6 +165,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             throws Exception {
         request.put(ARG_OUTPUT, "atom");
         request.put(ARG_TYPE, theType);
+        //        request.put("atom.id", theType);
         Result result =
             getRepository().getSearchManager().processEntrySearch(request);
         return result;

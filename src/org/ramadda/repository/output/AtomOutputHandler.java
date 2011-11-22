@@ -187,22 +187,22 @@ public class AtomOutputHandler extends OutputHandler {
                                  List<Entry> entries)
             throws Exception {
 
+        String feedId = request.getAbsoluteUrl(request.getRequestPath());
         StringBuffer sb = new StringBuffer();
-        sb.append(AtomUtil.openFeed(""));
+        sb.append(AtomUtil.openFeed(feedId));
         sb.append("\n");
         sb.append(AtomUtil.makeTitle(parentEntry.getName()
                                      + " ATOM Site Feed"));
         sb.append("\n");
-        //        System.err.println("ATOM making SELF: " + request.getAbsoluteUrl(request.getUrl()));
         sb.append(
             AtomUtil.makeLink(
-                AtomUtil.REL_SELF, request.getAbsoluteUrl(request.getUrl())));
+                AtomUtil.REL_ALTERNATE, request.getAbsoluteUrl(request.getUrl())));
         sb.append("\n");
         for (Entry entry : entries) {
             List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
             String selfUrl =
-                request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
-                    ARG_ENTRYID, entry.getId()));
+                request.getAbsoluteUrl(HtmlUtil.url(getRepository().getUrlPath(getRepository().URL_ENTRY_SHOW),
+                                                    ARG_ENTRYID, entry.getId()));
             links.add(new AtomUtil.Link(AtomUtil.REL_SELF, selfUrl,
                                         "Web page", "text/html"));
             String resource = entry.getResource().getPath();
@@ -237,8 +237,7 @@ public class AtomOutputHandler extends OutputHandler {
             }
 
             StringBuffer extra = new StringBuffer();
-
-            Document     doc   = XmlUtil.getDocument("<metadata></metadata>");
+            Document     doc   = XmlUtil.getDocument("<content type=\"text/xml\"></content>");
             Element      root  = doc.getDocumentElement();
             typeHandler.addMetadataToXml(entry, root, extra, "atom");
 
@@ -307,10 +306,14 @@ public class AtomOutputHandler extends OutputHandler {
             if (TypeHandler.isWikiText(desc)) {
                 desc = "";
             }
+                        
+            String authorUrl = request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW.toString());
             sb.append(AtomUtil.makeEntry(entry.getName(), selfUrl,
                                          new Date(entry.getCreateDate()),
                                          new Date(entry.getChangeDate()),
-                                         desc, null, "ramadda", "", links,
+                                         new Date(entry.getStartDate()),
+                                         new Date(entry.getEndDate()),
+                                         desc, null, entry.getUser().getName(), authorUrl, links,
                                          extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
