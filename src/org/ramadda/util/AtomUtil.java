@@ -347,7 +347,7 @@ public class AtomUtil {
 
 
         if ((summary != null) && (summary.length() > 0)) {
-            sb.append(XmlUtil.tag(TAG_SUMMARY, "",
+            sb.append(XmlUtil.tag(TAG_SUMMARY, XmlUtil.attrs(ATTR_TYPE,"html"),
                                   XmlUtil.getCdata(summary)));
         }
         if ((content != null) && (content.length() > 0)) {

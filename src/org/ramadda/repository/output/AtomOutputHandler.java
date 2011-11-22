@@ -196,14 +196,14 @@ public class AtomOutputHandler extends OutputHandler {
         sb.append("\n");
         sb.append(
             AtomUtil.makeLink(
-                AtomUtil.REL_ALTERNATE, request.getAbsoluteUrl(request.getUrl())));
+                AtomUtil.REL_SELF, request.getAbsoluteUrl(request.getUrl())));
         sb.append("\n");
         for (Entry entry : entries) {
             List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
             String selfUrl =
                 request.getAbsoluteUrl(HtmlUtil.url(getRepository().getUrlPath(getRepository().URL_ENTRY_SHOW),
                                                     ARG_ENTRYID, entry.getId()));
-            links.add(new AtomUtil.Link(AtomUtil.REL_SELF, selfUrl,
+            links.add(new AtomUtil.Link(AtomUtil.REL_ALTERNATE, selfUrl,
                                         "Web page", "text/html"));
             String resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
