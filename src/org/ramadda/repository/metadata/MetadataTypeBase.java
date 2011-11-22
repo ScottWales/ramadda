@@ -525,9 +525,11 @@ public class MetadataTypeBase extends RepositoryManager {
                 }
             }
             if (ImageUtils.isImage(f.toString())) {
+                tail = tail.replaceAll(" ","_");
                 String path =
                     handler.getRepository().getMetadataManager()
                         .URL_METADATA_VIEW + "/" + tail;
+
 
                 return HtmlUtil.url(path, ARG_ELEMENT,
                                     element.getIndex() + "", ARG_ENTRYID,
