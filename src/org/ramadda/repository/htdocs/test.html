@@ -1,10 +1,89 @@
+<script type="text/javascript" language="JavaScript1.2" src="jquery/js/jquery-1.4.2.min.js"></script>
 
-Test:
-<form  method="post" enctype="multipart/form-data" />
-<input type="file" name="fileinput" size="50"> 
-<p>
-<input name="textinput"> 
-<p>
-<input type="submit">
-</form>
 
+
+<style type="text/css">
+body {
+   font-family:  Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   color: black;
+   margin: 10px;
+}
+
+td {
+   font-family:  Arial, Helvetica, sans-serif;
+   font-size: 12px;
+}
+
+.timeline {
+   position: relative;
+   border : 1px #888 solid;
+   min-height:200px;
+   overflow-x: auto;
+}
+
+.timeline-row {
+   position: relative;
+   border-bottom : 1px red solid;
+}
+
+.timeline-labels {
+   position: relative;
+}
+
+.timeline-label {
+   min-height:10px;
+   position: absolute; 
+   text-align:right;
+   margin:0px;
+   padding:0px;
+}
+
+
+.timeline-entry {
+   min-height:10px;
+   border : 1px #000 solid;
+   position: absolute; 
+   background-color : #eee;
+}
+
+</style>
+
+Hello there<p>
+
+<div id="timeline"></div>
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="./jquery/css/smoothness/jquery-ui-1.8.5.custom.css" type="text/css" />
+<script type="text/javascript" language="JavaScript1.2" src="./jquery/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="./jquery/js/jquery-ui-1.8.5.custom.min.js"></script>
+
+
+
+<script language="javascript">
+
+var labels = "";
+var timeline = "";
+
+
+labels  <div class="timeline-label" style="top:20px;">Hello there</div>
+<div class="timeline-label" style="top:60px;">Hello there</div>
+
+
+var header = '<table width="100%" cellpadding="0" cellspacing="0"><tr valign="top"><td width="10%" align="right"><div class="timeline-labels">';
+timeline += 
+</div>
+</td>
+<td>
+<div class="timeline">
+<div class="timeline-entry" style="left:10px;top:20px;width:50px;"></div>
+<div class="timeline-entry" style="left:70px;top:20px;width:50px;"></div>
+<div class="timeline-entry" style="left:70px;top:60px;width:50px;"></div>
+</div>
+</td></tr></table>
+
+
+
+</script>
