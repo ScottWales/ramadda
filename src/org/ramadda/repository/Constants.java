@@ -148,6 +148,9 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_FILE = "ramadda.icon.file";
 
+    /** _more_          */
+    public static final String ICON_FILELISTING = "ramadda.icon.filelisting";
+
     /** _more_ */
     public static final String ICON_FOLDER = "ramadda.icon.folder";
 
@@ -416,10 +419,10 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_NORTH = "north";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LATITUDE = "latitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LONGITUDE = "longitude";
 
     /** _more_ */
@@ -1011,6 +1014,10 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_DOCACHE = "ramadda.docache";
+
+    /** _more_          */
+    public static final String PROP_ENABLE_FILE_LISTING =
+        "ramadda.enable_file_listing";
 
     /** _more_ */
     public static final String ARG_MONITOR_CHANGE = "monitorchange";

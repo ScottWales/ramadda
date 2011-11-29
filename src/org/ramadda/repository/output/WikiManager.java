@@ -181,6 +181,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_IMPORT = "import";
 
+    public static final String  WIKIPROP_CALENDAR = "calendar";
+
     /** wiki import */
     public static final String WIKIPROP_DATE = "date";
 
@@ -274,7 +276,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
         WIKIPROP_DATE_FROM, WIKIPROP_DATE_TO, WIKIPROP_LAYOUT,
         WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, WIKIPROP_MAPENTRY,
-        WIKIPROP_EARTH, WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS,
+        WIKIPROP_EARTH, WIKIPROP_CALENDAR,
+        WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS,
         WIKIPROP_TOOLBAR, WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT,
         WIKIPROP_GALLERY, WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE,
         WIKIPROP_LINKS, WIKIPROP_ENTRYID
@@ -720,6 +723,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             Result result = getHtmlOutputHandler().getHtmlResult(request,
                                 OutputHandler.OUTPUT_HTML, entry);
             return new String(result.getContent());
+
+        } else if (include.equals(WIKIPROP_CALENDAR)) {
+            StringBuffer calendarSB  = new StringBuffer();
+            List<Entry> children = getEntries(request, wikiUtil, entry,
+                                       props);
+            boolean doDay  = Misc.getProperty(props, "day", false);
+            getCalendarOutputHandler().outputCalendar(request, getCalendarOutputHandler().makeCalendarEntries(request, children), calendarSB,doDay);
+            
+            return calendarSB.toString();
         } else if (include.equals(WIKIPROP_MAP)
                    || include.equals(WIKIPROP_EARTH)) {
             StringBuffer mapSB  = new StringBuffer();

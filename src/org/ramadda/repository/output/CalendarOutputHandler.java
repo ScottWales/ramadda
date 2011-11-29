@@ -378,21 +378,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append(
                 getRepository().showDialogNote(msg("No entries found")));
         }
-        List<CalendarEntry> calEntries = new ArrayList<CalendarEntry>();
-        for (Entry entry : entries) {
-            Date   entryDate = new Date(entry.getStartDate());
-            String label     = entry.getLabel();
-            if (label.length() > 20) {
-                label = label.substring(0, 19) + "...";
-            }
-            String url = HtmlUtil.nobr(getEntryManager().getAjaxLink(request,
-                             entry, label, null, true, null,
-                             false).toString());
-
-
-            calEntries.add(new CalendarEntry(entryDate, url, entry));
-        }
-        outputCalendar(request, calEntries, sb);
+        outputCalendar(request, makeCalendarEntries(request, entries), sb, request.defined(ARG_DAY));
         if (true) {
             return new Result(msg("Calendar"), sb);
         }
@@ -718,6 +704,25 @@ public class CalendarOutputHandler extends OutputHandler {
     }
 
 
+    public List<CalendarEntry> makeCalendarEntries(Request request, List<Entry> entries) throws Exception {
+        List<CalendarEntry> calEntries =  new ArrayList<CalendarEntry>();
+        for (Entry entry : entries) {
+            Date   entryDate = new Date(entry.getStartDate());
+            String label     = entry.getLabel();
+            if (label.length() > 20) {
+                label = label.substring(0, 19) + "...";
+            }
+            String url = HtmlUtil.nobr(getEntryManager().getAjaxLink(request,
+                             entry, label, null, true, null,
+                             false).toString());
+
+
+            calEntries.add(new CalendarEntry(entryDate, url, entry));
+        }
+        return calEntries;
+    }
+
+
     /**
      * Class description
      *
@@ -764,8 +769,9 @@ public class CalendarOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void outputCalendar(Request request, List<CalendarEntry> entries,
-                               StringBuffer sb)
+                               StringBuffer sb, boolean doDay)
             throws Exception {
+
 
         boolean hadDateArgs = request.defined(ARG_YEAR)
                               || request.defined(ARG_MONTH)
@@ -779,7 +785,6 @@ public class CalendarOutputHandler extends OutputHandler {
                                      request.get(ARG_MONTH, today[IDX_MONTH]),
                                      request.get(ARG_YEAR, today[IDX_YEAR]) };
 
-        boolean doDay = request.defined(ARG_DAY);
 
         int[]   prev  = (doDay
                          ? getDayMonthYear(add(getCalendar(selected),

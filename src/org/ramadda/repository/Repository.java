@@ -260,6 +260,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_MOVE);
 
+    /** _more_ */
+    public static final OutputType OUTPUT_FILELISTING =
+        new OutputType("File Listing", "repository.filelisting",
+                       OutputType.TYPE_FILE, "", ICON_FILELISTING);
+
 
     /** _more_ */
     private UserManager userManager;
@@ -2603,10 +2608,82 @@ public class Repository extends RepositoryBase implements RequestHandler,
         copyHandler.addType(OUTPUT_COPY);
         addOutputHandler(copyHandler);
 
+
+        OutputHandler fileListingHandler = new OutputHandler(getRepository(),
+                                               "Entry Copier") {
+            public boolean canHandleOutput(OutputType output) {
+                return output.equals(OUTPUT_FILELISTING);
+            }
+            public void getEntryLinks(Request request, State state,
+                                      List<Link> links)
+                    throws Exception {
+                if (fileListingOK(request)) {
+                    for (Entry entry : state.getAllEntries()) {
+                        if (entry.getResource().isFile()) {
+                            links.add(makeLink(request, state.getEntry(),
+                                    OUTPUT_FILELISTING));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            private boolean fileListingOK(Request request) {
+                return request.getUser().getAdmin()
+                       || getProperty(PROP_ENABLE_FILE_LISTING, false);
+            }
+            public Result outputEntry(Request request, OutputType outputType,
+                                      Entry entry)
+                    throws Exception {
+                return outputFileListing(request, entry,
+                                         (List<Entry>) Misc.newList(entry));
+            }
+
+            public Result outputGroup(Request request, OutputType outputType,
+                                      Entry group, List<Entry> subGroups,
+                                      List<Entry> entries)
+                    throws Exception {
+                return outputFileListing(request, group, entries);
+
+            }
+            public Result outputFileListing(Request request, Entry entry,
+                                            List<Entry> entries)
+                    throws Exception {
+
+                if ( !fileListingOK(request)) {
+                    throw new AccessException("File listing not enabled",
+                            request);
+                }
+                StringBuffer sb     = new StringBuffer();
+                boolean      didOne = false;
+                for (Entry child : entries) {
+                    Resource resource = child.getResource();
+                    if (resource == null) {
+                        continue;
+                    }
+                    if ( !resource.isFile()) {
+                        continue;
+                    }
+                    sb.append(resource.getTheFile().toString());
+                    sb.append(HtmlUtil.br());
+                    didOne = true;
+                }
+                if ( !didOne) {
+                    sb.append(showDialogNote("No files available"));
+                }
+                return makeLinksResult(request, msg("File Listing"), sb,
+                                       new State(entry));
+            }
+
+            public String toString() {
+                return "File listing handler";
+            }
+
+        };
+        fileListingHandler.addType(OUTPUT_FILELISTING);
+        addOutputHandler(fileListingHandler);
+
         getUserManager().initOutputHandlers();
-
-
-
 
     }
 
@@ -3200,37 +3277,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
-    public HtmlTemplate getHtmlTemplate(Request request) {
-        return null;
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public HtmlTemplate getMobileTemplate() {
-        if (mobileTemplate == null) {
-            for (HtmlTemplate htmlTemplate : getTemplates()) {
-                if (htmlTemplate.getId().equals("mobile")) {
-                    //xxx
-                    if (true) {
-                        return htmlTemplate;
-                    }
-                    mobileTemplate = htmlTemplate;
-                    break;
-                }
-            }
-        }
-        return mobileTemplate;
-    }
 
 
     /**
@@ -3637,6 +3683,39 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+
+
+    /**
+     * _more_
+     *
+     * @param request The request
+     *
+     * @return _more_
+     */
+    public HtmlTemplate getHtmlTemplate(Request request) {
+        return null;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public HtmlTemplate getMobileTemplate() {
+        if (mobileTemplate == null) {
+            for (HtmlTemplate htmlTemplate : getTemplates()) {
+                if (htmlTemplate.getId().equals("mobile")) {
+                    //xxx
+                    if (true) {
+                        return htmlTemplate;
+                    }
+                    mobileTemplate = htmlTemplate;
+                    break;
+                }
+            }
+        }
+        return mobileTemplate;
+    }
 
 
     /**
