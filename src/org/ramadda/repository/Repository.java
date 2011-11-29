@@ -2630,8 +2630,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             private boolean fileListingOK(Request request) {
                 return request.getUser().getAdmin()
-                       || getProperty(PROP_ENABLE_FILE_LISTING, false);
+                    || (!request.getUser().getAnonymous() && getProperty(PROP_ENABLE_FILE_LISTING, false));
             }
+
             public Result outputEntry(Request request, OutputType outputType,
                                       Entry entry)
                     throws Exception {
