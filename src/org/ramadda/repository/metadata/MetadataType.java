@@ -328,11 +328,19 @@ public class MetadataType extends MetadataTypeBase {
             } else {
                 String tmpFile = (String) fileMap.get(fileArg);
                 if (tmpFile == null) {
-                    handler.getRepository().getLogManager().logError(
-                        "No attachment uploaded file:" + fileArg);
-                    handler.getRepository().getLogManager().logError(
-                        "available files: " + fileMap);
-                    return false;
+
+                    try {
+                        //See if its a URL
+                        URL testUrl = new URL(fileArg);
+                        continue;
+                    } catch (Exception ignore) {
+                        handler.getRepository().getLogManager().logError(
+                                                                         "No attachment uploaded file:" + fileArg);
+                        handler.getRepository().getLogManager().logError(
+                                                                         "available files: " + fileMap);
+
+                        return false;
+                    }
                 }
                 File file = new File(tmpFile);
                 fileName = getStorageManager().copyToEntryDir(entry,
