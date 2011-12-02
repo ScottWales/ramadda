@@ -156,10 +156,11 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, String action)
             throws Exception {
 
+
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
                     || action.equals(Permission.ACTION_VIEWCHILDREN)
-                    || action.equals(Permission.ACTION_FILE))) {
+                   || action.equals(Permission.ACTION_FILE))) {
                 return false;
             }
         }
@@ -278,7 +279,8 @@ public class AccessManager extends RepositoryManager {
 
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
-                    || action.equals(Permission.ACTION_VIEWCHILDREN))) {
+                   || action.equals(Permission.ACTION_VIEWCHILDREN)
+                   || action.equals(Permission.ACTION_FILE))) {
                 return false;
             }
         }
@@ -526,12 +528,10 @@ public class AccessManager extends RepositoryManager {
     public boolean canDownload(Request request, Entry entry)
             throws Exception {
         if ( !getRepository().getProperty(PROP_DOWNLOAD_OK, false)) {
-            getLogManager().logInfoAndPrint("AccessManager: PROP_DOWNLOAD_OK = false");
             return false;
         }
         entry = filterEntry(request, entry);
         if (entry == null) {
-            getLogManager().logInfoAndPrint("AccessManager: filterEntry is NULL");
             return false;
         }
 
@@ -542,7 +542,6 @@ public class AccessManager extends RepositoryManager {
         }
 
         if ( !canDoAction(request, entry, Permission.ACTION_FILE)) {
-            getLogManager().logInfoAndPrint("AccessManager: ACTION_FILE not allowed");
             return false;
         }
 
