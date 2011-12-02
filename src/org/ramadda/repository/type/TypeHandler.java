@@ -1541,7 +1541,6 @@ public class TypeHandler extends RepositoryManager {
             return parent.canDownload(request, entry);
         }
 
-
         if ( !entry.isFile()) {
             return false;
         }
@@ -1574,6 +1573,9 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    private HashSet  seenIt= new HashSet();
+    
+
     /**
      * _more_
      *
@@ -1588,6 +1590,15 @@ public class TypeHandler extends RepositoryManager {
     public Link getEntryDownloadLink(Request request, Entry entry)
             throws Exception {
         if ( !getAccessManager().canDownload(request, entry)) {
+            if(!entry.isGroup() && !seenIt.contains(entry.getId())) {
+                seenIt.add(entry.getId());
+                getLogManager().logInfoAndPrint("cannot download:" + entry);
+                Resource resource = entry.getResource();
+                getLogManager().logInfoAndPrint("\tresource:" + resource + 
+                                                " type:" + resource.getType() +
+                                                " exists:" +  resource.getTheFile().exists() +
+                                                " the file:" + resource.getTheFile());
+            }
             return null;
         }
         String size = " ("
@@ -1685,7 +1696,6 @@ public class TypeHandler extends RepositoryManager {
                 if (entry.getResource().isUrl()) {
                     resourceLink = getResourceUrl(request, entry);
                     resourceLink = HtmlUtil.href(resourceLink, resourceLink);
-
                 } else if (entry.getResource().isFile()) {
                     resourceLink =
                         getStorageManager().getFileTail(resourceLink);
