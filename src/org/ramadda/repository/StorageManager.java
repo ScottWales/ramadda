@@ -159,6 +159,13 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String PROP_DIRRANGE = "ramadda.storage.dirrange";
 
+    /** _more_          */
+    public static final String PROP_TMPDIR = "ramadda.storage.tmpdir";
+
+    /** _more_          */
+    public static final String PROP_LOGDIR = "ramadda.storage.logdir";
+
+
 
     /** _more_ */
     private int dirDepth = 2;
@@ -194,7 +201,7 @@ public class StorageManager extends RepositoryManager {
     private TempDir cacheDir;
 
     /** _more_ */
-    private String logDir;
+    private File logDir;
 
     /** _more_ */
     private long cacheDirSize = -1;
@@ -528,7 +535,10 @@ public class StorageManager extends RepositoryManager {
      */
     public File getTmpDir() {
         if (tmpDir == null) {
-            tmpDir = new File(IOUtil.joinDir(getRepositoryDir(), DIR_TMP));
+            String path = getProperty(PROP_TMPDIR,
+                                      IOUtil.joinDir(getRepositoryDir(),
+                                          DIR_TMP));
+            tmpDir = new File(localizePath(path));
             IOUtil.makeDirRecursive(tmpDir);
         }
         return tmpDir;
@@ -659,19 +669,19 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getLogDir() {
+    public File getLogDir() {
         if (logDir == null) {
-            logDir = IOUtil.joinDir(getRepositoryDir(), DIR_LOGS);
-
-            File f = new File(logDir);
-            IOUtil.makeDirRecursive(f);
-
+            String path = getProperty(PROP_LOGDIR,
+                                      IOUtil.joinDir(getRepositoryDir(),
+                                          DIR_LOGS));
+            logDir = new File(localizePath(path));
+            IOUtil.makeDirRecursive(logDir);
             if (getRepository().isReadOnly()) {
                 System.err.println("RAMADDA: skipping log4j");
                 return logDir;
             }
 
-            File log4JFile = new File(f + "/" + "log4j.properties");
+            File log4JFile = new File(logDir + "/" + "log4j.properties");
             //For now always write out the log from the jar
             //System.err.println("log4j file=" + log4JFile);
 
@@ -681,7 +691,7 @@ public class StorageManager extends RepositoryManager {
                         IOUtil.readContents(
                             "/org/ramadda/repository/resources/log4j.properties",
                             getClass());
-                    c = c.replace("${ramadda.logdir}", f.toString());
+                    c = c.replace("${ramadda.logdir}", logDir.toString());
                     IOUtil.writeFile(log4JFile, c);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);

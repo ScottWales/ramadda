@@ -479,7 +479,7 @@ public class LogManager extends RepositoryManager {
     public Result adminLog(Request request) throws Exception {
         StringBuffer sb       = new StringBuffer();
         List<String> header   = new ArrayList();
-        File         f        = new File(getStorageManager().getLogDir());
+        File         f        = getStorageManager().getLogDir();
         File[]       logFiles = f.listFiles();
         String       log      = request.getString(ARG_LOG, "access");
         File         theFile  = null;
