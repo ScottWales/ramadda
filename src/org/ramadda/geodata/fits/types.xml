@@ -1,0 +1,12 @@
+<types>
+
+  <type name="fits_data"  description="FITS Data File" handler="org.ramadda.geodata.fits.FitsTypeHandler" category="FITS">
+     <property name="icon" value="/fits/fits.gif"/>
+     <property name="form.show.resource" value="false"/>
+     <property name="form.show.area" value="false"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.altitude" value="false"/>
+     <property name="form.show.altitude.top" value="false"/>
+   </type>
+
+</types>
