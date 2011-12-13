@@ -16,6 +16,9 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 </properties>
 -->
 
+<link href="${root}/algeria/template.css" rel="stylesheet" type="text/css">
+<link href="${root}/algeria/blue.css" rel="stylesheet" type="text/css">
+
 ${imports}
 
 <title>${header.title} - ${title}</title>
@@ -27,9 +30,6 @@ ${imports}
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="meteo,algerie,Ageria,temps,weather">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-<link href="${root}/algeria/template.css" rel="stylesheet" type="text/css">
-<link href="${root}/algeria/blue.css" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" href="http://www.meteo.dz/images/favicon.ico">
 
 <style type="text/css">
@@ -46,15 +46,19 @@ ${imports}
 .navlink a:visited {
    color:white;
 }
-</script>
-
-
-<!--[if lte IE 6]>
-<style type="text/css">
-#content {width: 99%;}
-.user_bg {width: 99%;}
+//Override settings in template.css
+tr, td {
+padding-top: 3pt;
+padding-right: 3pt;
+padding-bottom: 3pt;
+padding-left: 3pt;
+margin-top: 2pt;
+margin-right: 2pt;
+margin-bottom: 2pt;
+margin-left: 2pt;
+}
 </style>
-<![endif]-->
+
 </head>
 
 <body>
