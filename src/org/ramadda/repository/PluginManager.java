@@ -217,7 +217,7 @@ public class PluginManager extends RepositoryManager {
         TempDir tempDir = getStorageManager().makeTempDir("tmpplugins",
                               false);
         File   tmpPluginsDir = tempDir.getDir();
-        File   dir           = new File(getStorageManager().getPluginsDir());
+        File   dir           = getStorageManager().getPluginsDir();
         File[] plugins       = dir.listFiles();
         Arrays.sort(plugins);
         for (int i = 0; i < plugins.length; i++) {

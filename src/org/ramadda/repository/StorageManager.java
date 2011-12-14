@@ -97,17 +97,7 @@ public class StorageManager extends RepositoryManager {
     public static final String DIR_REPOSITORY = "repository";
 
     /** _more_ */
-    public static final String DIR_ENTRIES = "entries";
-
-    /** _more_ */
     public static final String DIR_USERS = "users";
-
-    /** _more_ */
-    public static final String DIR_STORAGE = "storage";
-
-    /** _more_ */
-    public static final String DIR_PLUGINS = "plugins";
-
 
     /** _more_ */
     public static final String DIR_BACKUPS = "backups";
@@ -122,22 +112,13 @@ public class StorageManager extends RepositoryManager {
     public static final String DIR_ANONYMOUSUPLOAD = "anonymousupload";
 
     /** _more_ */
-    public static final String DIR_LOGS = "logs";
-
-    /** _more_ */
     public static final String DIR_INDEX = "index";
 
     /** _more_ */
     public static final String DIR_CACHE = "cache";
 
     /** _more_ */
-    public static final String DIR_TMP = "tmp";
-
-    /** _more_ */
     public static final String DIR_ICONS = "icons";
-
-    /** _more_ */
-    public static final String DIR_UPLOADS = "uploads";
 
     /** _more_ */
     public static final String DIR_SCRATCH = "scratch";
@@ -159,13 +140,23 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String PROP_DIRRANGE = "ramadda.storage.dirrange";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_TMPDIR = "ramadda.storage.tmpdir";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_LOGDIR = "ramadda.storage.logdir";
 
+    /** _more_ */
+    public static final String PROP_STORAGEDIR = "ramadda.storage.storagedir";
 
+    /** _more_ */
+    public static final String PROP_ENTRIESDIR = "ramadda.storage.entriesdir";
+
+    /** _more_          */
+    public static final String PROP_UPLOADDIR = "ramadda.storage.uploaddir";
+
+    /** _more_          */
+    public static final String PROP_PLUGINSDIR = "ramadda.storage.pluginsdir";
 
     /** _more_ */
     private int dirDepth = 2;
@@ -207,10 +198,13 @@ public class StorageManager extends RepositoryManager {
     private long cacheDirSize = -1;
 
     /** _more_ */
-    private String uploadDir;
+    private File uploadDir;
+
+    /** _more_          */
+    private File pluginsDir;
 
     /** _more_ */
-    private String entriesDir;
+    private File entriesDir;
 
     /** _more_ */
     private String usersDir;
@@ -293,8 +287,12 @@ public class StorageManager extends RepositoryManager {
      * _more_
      */
     protected void doFinalInitialization() {
+        System.err.println("storage dir:" + getStorageDir().toString());
+
+
         Misc.run(new Runnable() {
             public void run() {
+                getUploadDir();
                 getCacheDir();
                 getScratchDir();
                 getThumbDir();
@@ -325,7 +323,6 @@ public class StorageManager extends RepositoryManager {
             } else {}
         }
         repositoryDir = new File(repositoryDirProperty);
-
         System.err.println("RAMADDA: home directory: " + repositoryDir);
         if ( !repositoryDir.exists()) {
             IOUtil.makeDirRecursive(repositoryDir);
@@ -353,11 +350,6 @@ public class StorageManager extends RepositoryManager {
 
         dirDepth = getRepository().getProperty(PROP_DIRDEPTH, dirDepth);
         dirRange = getRepository().getProperty(PROP_DIRRANGE, dirRange);
-        getUploadDir();
-
-
-
-
     }
 
 
@@ -423,10 +415,9 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getUploadDir() {
+    public File getUploadDir() {
         if (uploadDir == null) {
-            uploadDir = IOUtil.joinDir(getStorageDir(), DIR_UPLOADS);
-            IOUtil.makeDirRecursive(new File(uploadDir));
+            uploadDir = getFileFromProperty(PROP_UPLOADDIR);
         }
         return uploadDir;
     }
@@ -535,11 +526,7 @@ public class StorageManager extends RepositoryManager {
      */
     public File getTmpDir() {
         if (tmpDir == null) {
-            String path = getProperty(PROP_TMPDIR,
-                                      IOUtil.joinDir(getRepositoryDir(),
-                                          DIR_TMP));
-            tmpDir = new File(localizePath(path));
-            IOUtil.makeDirRecursive(tmpDir);
+            tmpDir = getFileFromProperty(PROP_TMPDIR);
         }
         return tmpDir;
     }
@@ -671,11 +658,7 @@ public class StorageManager extends RepositoryManager {
      */
     public File getLogDir() {
         if (logDir == null) {
-            String path = getProperty(PROP_LOGDIR,
-                                      IOUtil.joinDir(getRepositoryDir(),
-                                          DIR_LOGS));
-            logDir = new File(localizePath(path));
-            IOUtil.makeDirRecursive(logDir);
+            logDir = getFileFromProperty(PROP_LOGDIR);
             if (getRepository().isReadOnly()) {
                 System.err.println("RAMADDA: skipping log4j");
                 return logDir;
@@ -816,6 +799,24 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param property _more_
+     *
+     * @return _more_
+     */
+    private File getFileFromProperty(String property) {
+        String path = getProperty(property, null);
+        if (path == null) {
+            throw new IllegalArgumentException("Directory property:"
+                    + property + " not defined");
+        }
+        File f = new File(localizePath(path));
+        IOUtil.makeDirRecursive(f);
+        return f;
+    }
+
 
     /**
      * _more_
@@ -824,9 +825,7 @@ public class StorageManager extends RepositoryManager {
      */
     public String getStorageDir() {
         if (storageDir == null) {
-            storageDir = new File(IOUtil.joinDir(getRepositoryDir(),
-                    DIR_STORAGE));
-            IOUtil.makeDirRecursive(storageDir);
+            storageDir = getFileFromProperty(PROP_STORAGEDIR);
             addDownloadDirectory(storageDir);
         }
         return storageDir.toString();
@@ -851,10 +850,11 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getPluginsDir() {
-        String dir = IOUtil.joinDir(getRepositoryDir(), DIR_PLUGINS);
-        IOUtil.makeDirRecursive(new File(dir));
-        return dir;
+    public File getPluginsDir() {
+        if (pluginsDir == null) {
+            pluginsDir = getFileFromProperty(PROP_PLUGINSDIR);
+        }
+        return pluginsDir;
     }
 
     /**
@@ -940,8 +940,7 @@ public class StorageManager extends RepositoryManager {
     public File getEntryDir(String id, boolean createIfNeeded) {
         id = cleanEntryId(id);
         if (entriesDir == null) {
-            entriesDir = IOUtil.joinDir(getRepositoryDir(), DIR_ENTRIES);
-            IOUtil.makeDirRecursive(new File(entriesDir));
+            entriesDir = getFileFromProperty(PROP_ENTRIESDIR);
         }
         File entryDir = new File(IOUtil.joinDir(entriesDir, id));
         //The old way

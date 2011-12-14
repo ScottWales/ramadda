@@ -994,7 +994,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //initialize the plugin manager with the properties
         getPluginManager().init(properties);
 
-
         debug = getProperty(PROP_DEBUG, false);
         //        System.err.println ("debug:" + debug);
 
