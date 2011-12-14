@@ -45,6 +45,8 @@ public class FileInfo {
     /** The file */
     private File file;
 
+    private File rootDir;
+
     /** _more_ */
     private long time;
 
@@ -66,7 +68,8 @@ public class FileInfo {
      * @param f the file
      */
     public FileInfo(File f) {
-        this(f, f.isDirectory());
+        this(f, f, f.isDirectory());
+
     }
 
     /**
@@ -75,8 +78,9 @@ public class FileInfo {
      * @param f the file
      * @param isDir is file a directory
      */
-    public FileInfo(File f, boolean isDir) {
+    public FileInfo(File f, File rootDir, boolean isDir) {
         this.isDir = isDir;
+        this.rootDir = rootDir;
         file       = f;
     }
 
@@ -233,7 +237,7 @@ public class FileInfo {
      *
      * @throws Exception _more_
      */
-    public static List<FileInfo> collectDirs(File rootDir) throws Exception {
+    public static List<FileInfo> collectDirs(final File rootDir) throws Exception {
         final List<FileInfo> dirs       = new ArrayList();
         IOUtil.FileViewer    fileViewer = new IOUtil.FileViewer() {
             public int viewFile(File f) throws Exception {
@@ -241,7 +245,7 @@ public class FileInfo {
                     if (f.getName().startsWith(".")) {
                         return DO_DONTRECURSE;
                     }
-                    dirs.add(new FileInfo(f, true));
+                    dirs.add(new FileInfo(f, rootDir, true));
                 }
                 return DO_CONTINUE;
             }
@@ -250,6 +254,9 @@ public class FileInfo {
         return dirs;
     }
 
+    public File getRootDir() {
+        return rootDir;
+    }
 
     /**
      * _more_
@@ -275,7 +282,7 @@ public class FileInfo {
                     System.err.print(".");
                 }
                 if (f.isDirectory()) {
-                    dirs.add(new FileInfo(f, true));
+                    dirs.add(new FileInfo(f, f, true));
                     //    if(dirs.size()%1000==0) System.err.print(".");
                 }
                 return DO_CONTINUE;

@@ -116,6 +116,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
+    public static final String ATTR_PATTERN = "pattern";
+
     /** _more_ */
     public static final String ATTR_VALUE = "value";
 
@@ -178,6 +180,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public Hashtable properties = new Hashtable();
 
+    public String harvestPattern;
+
     /** _more_ */
     private String defaultDataType;
 
@@ -214,6 +218,8 @@ public class TypeHandler extends RepositoryManager {
 
         this.category = XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
                                              category);
+        this.harvestPattern = XmlUtil.getAttribute(entryNode, ATTR_PATTERN,
+                                                   (String)null);
         List metadataNodes = XmlUtil.findChildren(entryNode, TAG_METADATA);
         for (int i = 0; i < metadataNodes.size(); i++) {
             Element metadataNode = (Element) metadataNodes.get(i);
@@ -1078,13 +1084,16 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Does this type match the file being harvester
      *
-     * @param f _more_
+     * @param f file to check
      *
-     * @return _more_
+     * @return is this one of my files
      */
     public boolean canHarvestFile(File f) {
+        if(harvestPattern!=null) {
+            if(f.getName().matches(harvestPattern)) return true;
+        }
         return false;
     }
 

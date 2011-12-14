@@ -115,6 +115,8 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_ROOTDIR = "rootdir";
 
+    public static final String ROOTDIR_DELIM = ";";
+
     /** _more_ */
     public static final String ATTR_USER = "user";
 
@@ -158,6 +160,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_BASEGROUP = "basegroup";
 
+    public static final String TYPE_FINDMATCH = "findmatch";
 
 
     /** _more_ */
@@ -184,7 +187,7 @@ public abstract class Harvester extends RepositoryManager {
     protected List<Harvester> children;
 
     /** _more_ */
-    protected File rootDir;
+    private List<File> rootDirs  = new ArrayList<File>();
 
     /** _more_ */
     private String name = "";
@@ -452,7 +455,10 @@ public abstract class Harvester extends RepositoryManager {
      * @throws Exception _more_
      */
     protected void init(Element element) throws Exception {
-        rootDir = new File(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""));
+        rootDirs = new ArrayList<File>();
+        for(String dir: StringUtil.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""),ROOTDIR_DELIM,true,true)) {
+            rootDirs.add(new File(dir));
+        }
 
         this.typeHandler =
             repository.getTypeHandler(XmlUtil.getAttribute(element,
@@ -538,10 +544,10 @@ public abstract class Harvester extends RepositoryManager {
      */
     public void applyEditForm(Request request) throws Exception {
         getEntryManager().clearSeenResources();
-        rootDir = new File(request.getUnsafeString(ATTR_ROOTDIR,
-                (rootDir != null)
-                ? rootDir.toString()
-                : ""));
+        rootDirs = new ArrayList<File>();
+        for(String dir: StringUtil.split(request.getUnsafeString(ATTR_ROOTDIR,""),"\n",true,true)) {
+            rootDirs.add(new File(dir));
+        }
 
         name = request.getString(ARG_NAME, name);
 
@@ -683,8 +689,8 @@ public abstract class Harvester extends RepositoryManager {
         element.setAttribute(ATTR_BASEGROUP, baseGroupId);
         element.setAttribute(ATTR_DESCTEMPLATE, descTemplate);
 
-        if (rootDir != null) {
-            element.setAttribute(ATTR_ROOTDIR, rootDir.toString());
+        if (rootDirs != null) {
+            element.setAttribute(ATTR_ROOTDIR,StringUtil.join(ROOTDIR_DELIM, rootDirs));
         }
     }
 
@@ -797,8 +803,8 @@ public abstract class Harvester extends RepositoryManager {
      *
      * @return _more_
      */
-    public File getRootDir() {
-        return rootDir;
+    public List<File> getRootDirs() {
+        return rootDirs;
     }
 
 

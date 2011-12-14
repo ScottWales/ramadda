@@ -139,7 +139,6 @@ public class WebHarvester extends Harvester {
      */
     protected void init(Element element) throws Exception {
         super.init(element);
-        rootDir = new File(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""));
         List children = XmlUtil.findChildren(element,
                                              HarvesterEntry.TAG_URLENTRY);
         urlEntries = new ArrayList<HarvesterEntry>();

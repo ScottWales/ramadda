@@ -5458,7 +5458,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                  String selected, boolean checkAddOk,
                                  HashSet<String> exclude)
             throws Exception {
-        List tmp = new ArrayList();
+        return makeTypeSelect(new ArrayList(), request, includeAny, selected, checkAddOk, exclude);
+    }
+
+    public String makeTypeSelect(List items,
+                                 Request request, boolean includeAny,
+                                 String selected, boolean checkAddOk,
+                                 HashSet<String> exclude)
+            throws Exception {
+
         for (TypeHandler typeHandler : getTypeHandlers()) {
             if (typeHandler.isAnyHandler() && !includeAny) {
                 continue;
@@ -5476,10 +5484,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 continue;
             }
             //            System.err.println("type: " + typeHandler.getType()+" label:" + typeHandler.getLabel());
-            tmp.add(new TwoFacedObject(typeHandler.getLabel(),
+            items.add(new TwoFacedObject(typeHandler.getLabel(),
                                        typeHandler.getType()));
         }
-        return HtmlUtil.select(ARG_TYPE, tmp, selected);
+        return HtmlUtil.select(ARG_TYPE, items, selected);
     }
 
 

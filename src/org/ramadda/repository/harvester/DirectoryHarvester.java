@@ -147,28 +147,33 @@ public class DirectoryHarvester extends Harvester {
                                                     + "(" + msg("minutes")
                                                         + ")"));
 
-        String root = (rootDir != null)
-                      ? rootDir.toString()
-                      : "";
-        root = root.replace("\\", "/");
+
+
+        List<File> rootDirs = getRootDirs();
+
         String extraLabel = "";
-        if ((rootDir != null) && !rootDir.exists()) {
-            extraLabel = HtmlUtil.space(2)
-                         + HtmlUtil.bold("Directory does not exist");
+        StringBuffer inputText = new StringBuffer();
+        for(File rootDir: rootDirs) {
+            String path = rootDir.toString();
+            path = path.replace("\\", "/");
+            inputText.append(path);
+            inputText.append("\n");
+            if (!rootDir.exists()) {
+                extraLabel = HtmlUtil.space(2)
+                    + HtmlUtil.bold("Directory does not exist");
+            }
         }
+
+
         sb.append(
             RepositoryManager.tableSubHeader("Walk the directory tree"));
         sb.append(HtmlUtil.formEntry(msgLabel("Under directory"),
-                                     HtmlUtil.input(ATTR_ROOTDIR, root,
+                                     HtmlUtil.input(ATTR_ROOTDIR, inputText,
                                          HtmlUtil.SIZE_60) + extraLabel));
-
         sb.append(
             RepositoryManager.tableSubHeader("Create new folders under"));
 
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
-
-
-
     }
 
 
@@ -187,7 +192,9 @@ public class DirectoryHarvester extends Harvester {
         if (baseGroup == null) {
             baseGroup = getEntryManager().getTopGroup();
         }
-        walkTree(rootDir, baseGroup);
+        for(File rootDir: getRootDirs()) {
+            walkTree(rootDir, baseGroup);
+        }
     }
 
 

@@ -315,22 +315,18 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             throws Exception {
 
         super.createEditForm(request, sb);
-        String root = (rootDir != null)
-                      ? rootDir.toString()
-                      : "";
-        root = root.replace("\\", "/");
-
-
         String extraLabel     = "";
         String fileFieldExtra = "";
 
-        if (rootDir != null) {
+        List<File> rootDirs = getRootDirs();
+        for(File rootDir: rootDirs) {
             if ( !rootDir.exists()) {
                 extraLabel = HtmlUtil.br()
                              + HtmlUtil.span(
                                  msg("Directory does not exist"),
                                  HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
                 fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
+                break;
             } else if ( !getStorageManager().isLocalFileOk(rootDir)) {
                 String adminLink =
                     HtmlUtil.href(
@@ -344,10 +340,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                             "You need to add this directory to the file system access list"), HtmlUtil
                                 .cssClass(CSS_CLASS_REQUIRED_LABEL)) + HtmlUtil.space(2) + adminLink;
                 fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
+                break;
             }
         }
 
-        if (root.length() == 0) {
+        if (rootDirs.size() == 0) {
             extraLabel =
                 HtmlUtil.br()
                 + HtmlUtil.span(msg("Required"),
@@ -357,10 +354,20 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         sb.append(HtmlUtil.colspan(msgHeader("Look for files"), 2));
-        sb.append(HtmlUtil.formEntry(msgLabel("Under directory"),
-                                     HtmlUtil.input(ATTR_ROOTDIR, root,
-                                         HtmlUtil.SIZE_60
-                                         + fileFieldExtra) + extraLabel));
+
+        StringBuffer inputText = new StringBuffer();
+        for(File rootDir: rootDirs) {
+            String path = rootDir.toString();
+            path = path.replace("\\", "/");
+            inputText.append(path);
+            inputText.append("\n");
+        }
+
+        sb.append(HtmlUtil.formEntry(msgLabel("Under directories"),
+                                     HtmlUtil.textArea(ATTR_ROOTDIR, inputText.toString(),
+                                                       5, 60, fileFieldExtra.toString()) + extraLabel));
+
+
         sb.append(HtmlUtil.formEntry(msgLabel("That match pattern"),
                                      HtmlUtil.input(ATTR_FILEPATTERN,
                                          filePatternString,
@@ -449,7 +456,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     public String makeEntryTypeSelector(Request request,
                                         TypeHandler typeHandler)
             throws Exception {
-        return repository.makeTypeSelect(request, false,
+        List items = new ArrayList();
+        items.add(new TwoFacedObject(msg("Find match"),
+                                     TYPE_FINDMATCH));
+        return repository.makeTypeSelect(items, request, false,
                                          getTypeHandler().getType(), false,
                                          null);
     }
@@ -562,7 +572,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                               : "s") + "<br>";
 
         }
-        return "Directory:" + rootDir + "<br>" + dirMsg + entryMsg + status;
+        List<File> rootDirs = getRootDirs();
+        return "Directory:" + StringUtil.join(" ", rootDirs) + "<br>" + dirMsg + entryMsg + status;
     }
 
     /**
@@ -582,8 +593,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
      *
      * @return _more_
      */
-    private FileInfo addDir(File dir) {
-        FileInfo fileInfo = new FileInfo(dir, true);
+    private FileInfo addDir(File dir, File rootDir) {
+        FileInfo fileInfo = new FileInfo(dir,rootDir, true);
         dirs.add(fileInfo);
         dirMap.add(dir);
         return fileInfo;
@@ -623,12 +634,15 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         long tt1 = System.currentTimeMillis();
         dirs = new ArrayList<FileInfo>();
 
-        logHarvesterInfo("Looking for initial directory listing:" + rootDir);
-        if ( !rootDir.exists()) {
-            logHarvesterInfo("Root directory does not exist:" + rootDir);
+        List<File> rootDirs = getRootDirs();
+        for(File rootDir: rootDirs) {
+            logHarvesterInfo("Looking for initial directory listing:" + rootDir);
+            if ( !rootDir.exists()) {
+                logHarvesterInfo("Root directory does not exist:" + rootDir);
+            }
+            dirs.add(new FileInfo(rootDir));
+            dirs.addAll(FileInfo.collectDirs(rootDir));
         }
-        dirs.add(new FileInfo(rootDir));
-        dirs.addAll(FileInfo.collectDirs(rootDir));
 
         logHarvesterInfo("Found " + dirs.size()
                          + " directories under top-level dir");
@@ -648,7 +662,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             long t1 = System.currentTimeMillis();
             logHarvesterInfo("Start scanning");
             printTab = "\t";
-            harvestEntries((cnt == 0), timestamp);
+            harvestEntries((cnt == 0),  timestamp);
             printTab = "";
             logHarvesterInfo("Done scanning");
             lastRunTime = System.currentTimeMillis();
@@ -736,7 +750,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     //in the list. If not then add it to the main list and the local list
                     if ( !hasDir(f)) {
                         logHarvesterInfo("New directory:" + f);
-                        tmpDirs.add(addDir(f));
+                        tmpDirs.add(addDir(f,dirInfo.getRootDir()));
                     }
                     continue;
                 }
@@ -996,8 +1010,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         TypeHandler typeHandler = getTypeHandler();
-
-        if (typeHandler.getType().equals(typeHandler.TYPE_FILE)) {
+        if (typeHandler.getType().equals(TYPE_FINDMATCH)) {
             for (TypeHandler otherTypeHandler :
                     getRepository().getTypeHandlers()) {
                 if (otherTypeHandler.canHarvestFile(f)) {
@@ -1007,9 +1020,13 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             }
         }
 
+        if (typeHandler.getType().equals(TYPE_FINDMATCH)) {
+            typeHandler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+        }
+
 
         String dirPath = f.getParent().toString();
-        dirPath = dirPath.substring(rootDir.toString().length());
+        dirPath = dirPath.substring(fileInfo.getRootDir().toString().length());
         dirPath = dirPath.replace("\\", "/");
         //New
         dirPath = dirPath.replaceAll("_", " ");
@@ -1018,7 +1035,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //        System.err.println ("file:" +fileName + " " + dirPath +" " + dirToks);
         Entry baseGroup = getBaseGroup();
         String dirGroup =
-            getDirNames(rootDir, baseGroup, dirToks,
+            getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
                         false && !getTestMode()
                         && (groupTemplate.indexOf("${dirgroup}") >= 0));
         dirGroup = SqlUtil.cleanUp(dirGroup);
