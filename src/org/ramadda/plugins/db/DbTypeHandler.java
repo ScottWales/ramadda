@@ -3296,7 +3296,8 @@ public class DbTypeHandler extends BlobTypeHandler {
             calEntries.add(new CalendarOutputHandler.CalendarEntry(date,
                     href, href));
         }
-        calendarOutputHandler.outputCalendar(request, calEntries, sb);
+
+        calendarOutputHandler.outputCalendar(request,  calEntries, sb, false);
 
         return new Result(getTitle(), sb);
     }
