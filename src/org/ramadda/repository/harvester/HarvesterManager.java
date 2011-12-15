@@ -269,7 +269,7 @@ public class HarvesterManager extends RepositoryManager {
 
         for (Harvester harvester : harvesters) {
             for(File rootDir: harvester.getRootDirs()) {
-                getStorageManager().addDownloadDirectory(rootDir);
+                getStorageManager().addOkToReadFromDirectory(rootDir);
             }
             if ( !okToStart) {
                 harvester.setActive(false);

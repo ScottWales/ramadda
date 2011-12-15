@@ -3258,7 +3258,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                              File file)
             throws Exception {
         Formatter buf = new Formatter();
-        getStorageManager().checkFile(file);
+        getStorageManager().checkReadFile(file);
         if (file.toString().toLowerCase().endsWith(".csv")) {
             TextPointDataSource dataSource =
                 new TextPointDataSource("dummy.csv");

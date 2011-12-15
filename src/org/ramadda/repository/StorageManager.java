@@ -219,7 +219,9 @@ public class StorageManager extends RepositoryManager {
     private TempDir thumbDir;
 
     /** _more_ */
-    private List<File> downloadDirs = new ArrayList<File>();
+    private List<File> okToReadFromDirs = new ArrayList<File>();
+
+    private List<File> okToWriteToDirs = new ArrayList<File>();
 
 
 
@@ -288,14 +290,12 @@ public class StorageManager extends RepositoryManager {
      */
     protected void doFinalInitialization() {
         System.err.println("storage dir:" + getStorageDir().toString());
-
-
+        getUploadDir();
+        getCacheDir();
+        getScratchDir();
+        getThumbDir();
         Misc.run(new Runnable() {
             public void run() {
-                getUploadDir();
-                getCacheDir();
-                getScratchDir();
-                getThumbDir();
                 scourTmpDirs();
             }
         });
@@ -375,10 +375,25 @@ public class StorageManager extends RepositoryManager {
      *
      * @param dir _more_
      */
-    public void addDownloadDirectory(File dir) {
-        if ( !downloadDirs.contains(dir)) {
-            downloadDirs.add(dir);
+    public void addOkToReadFromDirectory(File dir) {
+        if ( !okToReadFromDirs.contains(dir)) {
+            okToReadFromDirs.add(dir);
         }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     *
+     * @param dir _more_
+     */
+    public void addOkToWriteToDirectory(File dir) {
+        if ( !okToWriteToDirs.contains(dir)) {
+            okToWriteToDirs.add(dir);
+        }
+        addOkToReadFromDirectory(dir);
     }
 
 
@@ -418,6 +433,7 @@ public class StorageManager extends RepositoryManager {
     public File getUploadDir() {
         if (uploadDir == null) {
             uploadDir = getFileFromProperty(PROP_UPLOADDIR);
+            addOkToWriteToDirectory(uploadDir);
         }
         return uploadDir;
     }
@@ -486,7 +502,7 @@ public class StorageManager extends RepositoryManager {
     public File getTmpDirFile(TempDir tmpDir, String file) {
         File f = new File(IOUtil.joinDir(tmpDir.getDir(), file));
         dirTouched(tmpDir, f);
-        return checkFile(f);
+        return checkReadFile(f);
     }
 
 
@@ -527,6 +543,7 @@ public class StorageManager extends RepositoryManager {
     public File getTmpDir() {
         if (tmpDir == null) {
             tmpDir = getFileFromProperty(PROP_TMPDIR);
+            addOkToWriteToDirectory(tmpDir);
         }
         return tmpDir;
     }
@@ -826,7 +843,7 @@ public class StorageManager extends RepositoryManager {
     public String getStorageDir() {
         if (storageDir == null) {
             storageDir = getFileFromProperty(PROP_STORAGEDIR);
-            addDownloadDirectory(storageDir);
+            addOkToWriteToDirectory(storageDir);
         }
         return storageDir.toString();
     }
@@ -941,6 +958,7 @@ public class StorageManager extends RepositoryManager {
         id = cleanEntryId(id);
         if (entriesDir == null) {
             entriesDir = getFileFromProperty(PROP_ENTRIESDIR);
+            addOkToWriteToDirectory(entriesDir);
         }
         File entryDir = new File(IOUtil.joinDir(entriesDir, id));
         //The old way
@@ -1254,7 +1272,7 @@ public class StorageManager extends RepositoryManager {
      * @return _more_
      */
     public File getUploadFilePath(String fileName) {
-        return checkFile(new File(IOUtil.joinDir(getUploadDir(),
+        return checkReadFile(new File(IOUtil.joinDir(getUploadDir(),
                 getStorageFileName(fileName))));
     }
 
@@ -1405,21 +1423,14 @@ public class StorageManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public boolean isInDownloadArea(File file) throws Exception {
-        //Force the creation of the storage dir
-        getStorageDir();
-        for (File dir : downloadDirs) {
+    public boolean isInDownloadArea(File file) {
+        for (File dir : okToReadFromDirs) {
             if (IOUtil.isADescendent(dir, file)) {
                 return true;
             }
         }
         return false;
     }
-
-
-
-
-
 
     /**
      * _more_
@@ -1484,9 +1495,13 @@ public class StorageManager extends RepositoryManager {
         if (getRepository().isReadOnly()) {
             throw new IllegalArgumentException("Unable to write to file");
         }
-        getStorageDir();
         if (IOUtil.isADescendent(getRepositoryDir(), file)) {
             return file;
+        }
+        for (File dir : okToWriteToDirs) {
+            if (IOUtil.isADescendent(dir, file)) {
+                return file;
+            }
         }
         throwBadFile(file);
         return null;
@@ -1500,14 +1515,18 @@ public class StorageManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public File checkFile(File file) {
+    public File checkReadFile(File file) {
         //check if its in an allowable area for access
         if (isLocalFileOk(file)) {
             return file;
         }
-        getStorageDir();
+
         //Check if its in the storage dir
         if (IOUtil.isADescendent(getRepositoryDir(), file)) {
+            return file;
+        }
+
+        if(isInDownloadArea(file)) {
             return file;
         }
 
@@ -1526,13 +1545,13 @@ public class StorageManager extends RepositoryManager {
         //Path can be a file, a URL, a file URL or a system resource
         File f = new File(path);
         if (f.exists()) {
-            checkFile(f);
+            checkReadFile(f);
             return;
         }
 
         if (path.toLowerCase().trim().startsWith("file:")) {
             f = new File(path.substring("file:".length()));
-            checkFile(f);
+            checkReadFile(f);
             return;
         }
 
@@ -1564,7 +1583,7 @@ public class StorageManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void moveFile(File from, File to) throws Exception {
-        checkFile(from);
+        checkReadFile(from);
         checkWriteFile(to);
         try {
             IOUtil.moveFile(from, to);
@@ -1685,18 +1704,21 @@ public class StorageManager extends RepositoryManager {
      * @throws Exception If the file is not under the main ramadda dir
      */
     public FileInputStream getFileInputStream(File file) throws Exception {
-        checkFile(file);
+        checkReadFile(file);
         return new FileInputStream(file);
     }
 
     /**
-     * _more_
+     * This checks to ensure that the given file is under one of the allowable places to
+     * write to. This includes the storage dir, the entries dir, uploads dir and the tmp dir. 
+     * In general a server process should be configured to only be allowed to have write access
+     * to limited directories
      *
-     * @param file _more_
+     * @param file to check
      *
-     * @return _more_
+     * @return The fos
      *
-     * @throws Exception _more_
+     * @throws Exception if the file is not under an allowable dir
      */
     public FileOutputStream getFileOutputStream(File file) throws Exception {
         checkWriteFile(file);
@@ -1705,20 +1727,16 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * This creates a FileOutputStream. It does enforce that the file is under
-     * the main ramadda directory. It DOES NOT check for READONLY mode
+     * This creates a FileOutputStream. It makes no check whether we're
+     * allowed to write to the file, read-only mode, etc
      *
      * @param file The file to write to
      *
      * @return FileOutputStream
      *
-     * @throws Exception If the file is not under the main ramadda dir
      */
     public FileOutputStream getUncheckedFileOutputStream(File file)
             throws Exception {
-        if ( !IOUtil.isADescendent(getRepositoryDir(), file)) {
-            throw new IllegalArgumentException("Cannot write to:" + file);
-        }
         return new FileOutputStream(file);
     }
 

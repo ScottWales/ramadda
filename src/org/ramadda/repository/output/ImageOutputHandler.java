@@ -490,7 +490,7 @@ public class ImageOutputHandler extends OutputHandler {
             ImageUtils.waitOnImage(newImage);
             putImage(entry, newImage);
             File f = entry.getFile();
-            getStorageManager().checkFile(f);
+            getStorageManager().checkReadFile(f);
             if ((f != null) && f.canWrite()) {
                 File entryDir =
                     getStorageManager().getEntryDir(entry.getId(), true);
