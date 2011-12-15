@@ -1,0 +1,16 @@
+<types>
+
+  <type name="climbing_climb"  description="Climb" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Misc">
+     <property name="icon" value="/climbing/climbing.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <column name="type" type="enumerationplus"  label="Type of climb"  values="file:/org/ramadda/plugins/climbing/types.txt" showinhtml="true"/>
+     <column name="rating" type="double"  label="Rating"  showinhtml="true"/>
+   </type>
+
+
+</types>

@@ -1,0 +1,3 @@
+free:Free Climb
+aid:Aid Climb
+ice:Ice Climb
