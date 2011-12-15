@@ -53,6 +53,4 @@ public class FitsTypeHandler extends GenericTypeHandler {
     }
 
 
-
-
 }
