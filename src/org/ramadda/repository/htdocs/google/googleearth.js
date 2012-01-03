@@ -217,31 +217,31 @@ function  RamaddaEarth(id, url) {
             var lastLon = points[1];
             var lastLat = points[0];
             for(i=0;i<points.length;i+=2) {
-                var lat = points[i];
-                var lon = points[i+1];
+                var newlat = points[i];
+                var newlon = points[i+1];
                 //TODO: interpolate the latitude
-                if(false  && lastLon!=lon) {
+                if(false  && lastLon!=newlon) {
                     var crosses = false;
-                    if(lastLon<-90 && lon>90) {
-                        tmpArray.push(lat);
+                    if(lastLon<-90 && newlon>90) {
+                        tmpArray.push(newlat);
                         tmpArray.push(-180);
                         tmpArray = new Array();
-                        tmpArray.push(lat);
+                        tmpArray.push(newlat);
                         tmpArray.push(180);
                         polygons.push(tmpArray);
-                    } else  if(lastLon>90 && lon<-90) {
-                        tmpArray.push(lat);
+                    } else  if(lastLon>90 && newlon<-90) {
+                        tmpArray.push(newlat);
                         tmpArray.push(180);
                         tmpArray = new Array();
-                        tmpArray.push(lat);
+                        tmpArray.push(newlat);
                         tmpArray.push(-180);
                         polygons.push(tmpArray);
                     }
-                    lastLon  = lon;
-                    lastLat  = lat;
+                    lastLon  = newlon;
+                    lastLat  = newlat;
                 }
-                tmpArray.push(lat);
-                tmpArray.push(lon);
+                tmpArray.push(newlat);
+                tmpArray.push(newlon);
             }
         }
         pm = new RamaddaPlacemark(this, id, name, desc, lat,lon,detailsUrl, icon, polygons,kmlUrl)
