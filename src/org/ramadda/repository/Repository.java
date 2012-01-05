@@ -2886,7 +2886,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String sessionId = request.getSessionId();
             result.addCookie(SessionManager.COOKIE_NAME,
                              sessionId + "; path=" + getUrlBase()
-                             + "; expires=Fri, 31-Dec-2011 23:59:59 GMT;");
+                             + "; expires=Thu, 31-Dec-2015 23:59:59 GMT;");
         }
 
         if (request.get("gc", false) && (request.getUser() != null)

@@ -127,17 +127,27 @@ public class JpegMetadataOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         File jpegFile = new File(entry.getResource().getPath());
+        outputTags(sb, jpegFile,true);
+        return new Result("JPEG Metadata", sb);
+    }
+
+    private static void outputTags(StringBuffer sb, File jpegFile, boolean forHtml) throws Exception {
+
         com.drew.metadata.Metadata metadata =
             JpegMetadataReader.readMetadata(jpegFile);
 
-        sb.append("<ul>");
+        if(forHtml) 
+            sb.append("<ul>");
         //        java.lang.Iterable<Directory> directories = metadata.getDirectories();
         Iterator directories = metadata.getDirectories().iterator();
         while (directories.hasNext()) {
             Directory directory = (Directory) directories.next();
-            sb.append("<li> ");
+            if(forHtml) 
+                sb.append("<li> ");
             sb.append(directory.getName());
-            sb.append("<ul>");
+            sb.append("\n");
+            if(forHtml) 
+                sb.append("<ul>");
             //            Iterator tags = directory.getTagIterator();
             //while (tags.hasNext()) {
             //                Tag tag = (Tag) tags.next();
@@ -145,15 +155,27 @@ public class JpegMetadataOutputHandler extends OutputHandler {
                 if (tag.getTagName().indexOf("Unknown") >= 0) {
                     continue;
                 }
-                sb.append("<li> ");
+                if(forHtml) 
+                    sb.append("<li> ");
                 sb.append(tag.getTagName());
                 sb.append(":");
                 sb.append(tag.getDescription());
+                sb.append("\n");
             }
-            sb.append("</ul>");
+            if(forHtml) 
+                sb.append("</ul>");
         }
-        sb.append("</ul>");
-        return new Result("JPEG Metadata", sb);
+        if(forHtml) 
+            sb.append("</ul>");
+    }
+
+    public static void main(String[]args) throws Exception {
+        for(String file: args) {
+            StringBuffer sb = new StringBuffer();
+            outputTags(sb, new File(file),false);
+            System.out.println(sb);
+        }
     }
 
 }
+
