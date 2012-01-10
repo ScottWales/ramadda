@@ -478,6 +478,8 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_URL = "url";
 
+    public static final String ATTR_SIZE = "size";
+
     /** _more_ */
     public static final String ATTR_DOWNLOAD = "download";
 
