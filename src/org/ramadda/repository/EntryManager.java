@@ -3530,6 +3530,8 @@ public class EntryManager extends RepositoryManager {
                                     Resource.TYPE_STOREDFILE);
         } else if (url != null) {
             resource = new Resource(url, Resource.TYPE_URL);
+            int size = XmlUtil.getAttribute(node, ATTR_SIZE, 0);
+            resource.setFileSize(size);
         } else {
             resource = new Resource("", Resource.TYPE_UNKNOWN);
         }
@@ -3552,7 +3554,6 @@ public class EntryManager extends RepositoryManager {
             toDate = getRepository().parseDate(XmlUtil.getAttribute(node,
                     ATTR_TODATE));
         }
-
         if ( !canBeCreatedBy(request, typeHandler)) {
             throw new IllegalArgumentException(
                 "Cannot create an entry of type "
