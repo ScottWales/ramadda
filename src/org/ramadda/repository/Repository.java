@@ -275,6 +275,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private SessionManager sessionManager;
 
+    private String cookieExpirationDate;
+
     /** _more_ */
     private WikiManager wikiManager;
 
@@ -2884,9 +2886,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 request.setSessionId(getSessionManager().createSessionId());
             }
             String sessionId = request.getSessionId();
+            if(cookieExpirationDate==null) {
+                //expire the cookie in a year
+                //Assume this ramadda doesn't run continuously for more than 1 year
+                Date future = new Date(new Date().getTime()+DateUtil.daysToMillis(365));
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd-MMM-yyyy");
+                cookieExpirationDate = sdf.format(future);
+            }
             result.addCookie(SessionManager.COOKIE_NAME,
                              sessionId + "; path=" + getUrlBase()
-                             + "; expires=Thu, 31-Dec-2015 23:59:59 GMT;");
+                             + "; expires=" + cookieExpirationDate+" 23:59:59 GMT");
         }
 
         if (request.get("gc", false) && (request.getUser() != null)
