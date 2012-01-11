@@ -2887,9 +2887,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             String sessionId = request.getSessionId();
             if(cookieExpirationDate==null) {
-                //expire the cookie in a year
-                //Assume this ramadda doesn't run continuously for more than 1 year
-                Date future = new Date(new Date().getTime()+DateUtil.daysToMillis(365));
+                //expire the cookie in 4 years year
+                //Assume this ramadda doesn't run continuously for more than 4 years
+                Date future = new Date(new Date().getTime()+DateUtil.daysToMillis(365*4));
                 SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd-MMM-yyyy");
                 cookieExpirationDate = sdf.format(future);
             }
