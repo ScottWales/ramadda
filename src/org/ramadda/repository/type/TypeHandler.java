@@ -2508,7 +2508,9 @@ public class TypeHandler extends RepositoryManager {
         boolean showUrl          = (forUpload
                                     ? false
                                     : okToShowInForm(entry, ARG_URL));
+
         boolean showResourceForm = okToShowInForm(entry, ARG_RESOURCE);
+
 
         if (showResourceForm) {
             boolean showDownload = showFile
@@ -2621,6 +2623,15 @@ public class TypeHandler extends RepositoryManager {
                     } else if (tabTitles.size() == 1) {
                         sb.append(formEntry(request, "",
                                             msg("Upload new resource")));
+                        sb.append(formEntry(request, tabTitles.get(0) + ":",
+                                            tabContent.get(0) + extra));
+                    }
+                } else {
+                    if (tabTitles.size() > 1) {
+                        sb.append(formEntryTop(request, msgLabel("Resource"),
+                                               OutputHandler.makeTabs(tabTitles,
+                                                                      tabContent, true) + extra));
+                    } else if (tabTitles.size() == 1) {
                         sb.append(formEntry(request, tabTitles.get(0) + ":",
                                             tabContent.get(0) + extra));
                     }
