@@ -669,6 +669,9 @@ public class LogManager extends RepositoryManager {
                 path = HtmlUtil.href(logEntry.getUrl(), path);
             }
             String  userAgent = logEntry.getUserAgent();
+            if (userAgent == null) {
+                userAgent = "";
+            }
             boolean isBot     = true;
             if (userAgent.indexOf("Googlebot") >= 0) {
                 userAgent = "Googlebot";
