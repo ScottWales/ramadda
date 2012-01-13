@@ -182,6 +182,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKIPROP_IMPORT = "import";
 
     public static final String  WIKIPROP_CALENDAR = "calendar";
+    public static final String  WIKIPROP_TIMELINE = "timeline";
 
     /** wiki import */
     public static final String WIKIPROP_DATE = "date";
@@ -276,7 +277,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
         WIKIPROP_DATE_FROM, WIKIPROP_DATE_TO, WIKIPROP_LAYOUT,
         WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, WIKIPROP_MAPENTRY,
-        WIKIPROP_EARTH, WIKIPROP_CALENDAR,
+        WIKIPROP_EARTH, WIKIPROP_CALENDAR, WIKIPROP_TIMELINE,
         WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS,
         WIKIPROP_TOOLBAR, WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT,
         WIKIPROP_GALLERY, WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE,
@@ -732,6 +733,18 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             getCalendarOutputHandler().outputCalendar(request, getCalendarOutputHandler().makeCalendarEntries(request, children), calendarSB,doDay);
             
             return calendarSB.toString();
+        } else if (include.equals(WIKIPROP_TIMELINE)) {
+            StringBuffer calendarSB  = new StringBuffer();
+            List<Entry> children = getEntries(request, wikiUtil, entry,
+                                       props);
+
+            int    height  = Misc.getProperty(props, PROP_HEIGHT, 150);
+            String style = "height: " + height +"px;";
+            String head = getHtmlOutputHandler().makeTimeline(request, children, calendarSB,style);
+            StringBuffer html = new StringBuffer();
+            if(head!=null) request.putExtraProperty(PROP_HTML_HEAD,head);
+            html.append(calendarSB);
+            return html.toString();
         } else if (include.equals(WIKIPROP_MAP)
                    || include.equals(WIKIPROP_EARTH)) {
             StringBuffer mapSB  = new StringBuffer();

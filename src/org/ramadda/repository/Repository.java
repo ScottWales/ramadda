@@ -3439,6 +3439,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Skip the shadowbox for now
         head = (String) result.getProperty(PROP_HTML_HEAD);
         if (head == null) {
+            head = (String) request.getExtraProperty(PROP_HTML_HEAD);
+        }
+
+
+        if (head == null) {
             head = "";
         }
         String logoImage = getLogoImage(result);
