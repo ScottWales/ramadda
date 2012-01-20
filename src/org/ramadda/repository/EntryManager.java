@@ -227,8 +227,8 @@ public class EntryManager extends RepositoryManager {
      */
     public void cacheEntry(Entry entry) {
         synchronized (MUTEX_ENTRY) {
-            //If we are read only then don't cache
-            if (getRepository().doCache()) {
+            //Check if we are caching
+            if (!getRepository().doCache()) {
                 return;
             }
             if (entryCache.size() > ENTRY_CACHE_LIMIT) {
