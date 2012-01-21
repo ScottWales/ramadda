@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.util;
 
 
@@ -105,6 +106,15 @@ public class TTLCache<KEY, VALUE> {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public int size() {
+        return cache.size();
+    }
+
+    /**
+     * _more_
+     *
      * @param t _more_
      */
     public void setTimeThreshold(long t) {
@@ -122,6 +132,15 @@ public class TTLCache<KEY, VALUE> {
             cache = new Hashtable<KEY, CacheEntry<VALUE>>();
         }
         cache.put(key, new CacheEntry<VALUE>(value));
+    }
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     */
+    public void remove(Object key) {
+        cache.remove(key);
     }
 
 

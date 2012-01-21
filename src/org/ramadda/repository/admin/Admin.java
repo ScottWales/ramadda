@@ -2050,8 +2050,12 @@ public class Admin extends RepositoryManager {
             //            sb.append("<p>");
             //            sb.append(HtmlUtil.submit(msg("Start cleanup"), ACTION_START));
 
-            //            sb.append("<p>");
-            //            sb.append(HtmlUtil.submit(msg("Clear cache"), ACTION_CLEARCACHE));
+
+            sb.append("<p>");
+            sb.append(msg("Clear the entry cache"));
+            sb.append("<br>");
+            sb.append(HtmlUtil.submit(msg("Clear cache"), ACTION_CLEARCACHE));
+
 
             sb.append("<p>");
             /*            sb.append(

@@ -1,6 +1,17 @@
 <types>
 
-  <type name="map.map"  description="Editable Map" handler="org.ramadda.plugins.map.MapTypeHandler" category="Geo Data">
+  <type name="map"  description="Map"  category="Geo Data">
+     <property name="icon" value="/icons/map.png"/>
+     <column name="maptype" label="Map Type" type="enumerationplus" cansearch="true" values="file:/org/ramadda/plugins/map/maptypes.txt" showinhtml="true"/>
+
+     <column name="country" label="Country" type="enumerationplus" cansearch="true" showinhtml="true"/>
+     <column name="state" label="State" type="enumerationplus" cansearch="true" showinhtml="true"/>
+     <column name="scale" label="Scale"  type="enumerationplus" cansearch="true" showinhtml="true"/>
+   </type>
+
+
+<!--
+  <type name="map_map"  description="Editable Map" handler="org.ramadda.plugins.map.MapTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/map.png"/>
      <property name="form.show.resource" value="false"/>
      <property name="form.show.area" value="true"/>
@@ -11,23 +22,23 @@
    </type>
 
 
-  <type name="map.entry"  description="Map Item" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" category="Geo Data">
+  <type name="map_entry"  description="Map Item" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" category="Geo Data">
      <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
    </type>
 
 
-<!--
-  <type name="map.entry.image"  super="map.entry" description="Map Image" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
+  <type name="map_entry_image"  super="map.entry" description="Map Image" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
      <property name="icon" value="/icons/map.png"/>
    </type>
 
-  <type name="map.entry.polygon"  super="map.entry" description="Map Polygon" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
+  <type name="map_entry_polygon"  super="map.entry" description="Map Polygon" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
      <property name="icon" value="/icons/map.png"/>
    </type>
+
+
+  <type name="map_entry_marker"  super="map.entry" description="Map Marker" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
+     <property name="icon" value="/icons/map.png"/>
+   </type>
+
 -->
-
-  <type name="map.entry.marker"  super="map.entry" description="Map Marker" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
-     <property name="icon" value="/icons/map.png"/>
-   </type>
-
 </types>

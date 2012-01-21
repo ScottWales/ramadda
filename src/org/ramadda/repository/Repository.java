@@ -744,9 +744,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean doCache() {
-        if (readOnly) {
-            return false;
-        }
+        //Don't cache even when we're in readonly mode
+        //        if (readOnly) {
+        //            return false;
+        //        }
         return doCache;
     }
 
@@ -2133,6 +2134,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         pageCache     = new Hashtable();
         pageCacheList = new ArrayList();
         getEntryManager().clearCache();
+        getAccessManager().clearCache();
         dataTypeList = null;
     }
 

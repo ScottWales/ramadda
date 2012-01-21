@@ -115,6 +115,10 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    public void clearCache() {
+        recentPermissions = new Hashtable();
+    }
+
 
     /**
      * _more_

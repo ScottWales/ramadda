@@ -29,6 +29,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
+import org.ramadda.util.TTLCache;
 
 import org.ramadda.util.TempDir;
 
@@ -123,9 +124,11 @@ public class EntryManager extends RepositoryManager {
     public static final String ID_PREFIX_REMOTE = "remote:";
 
 
-    /** _more_ */
-    private Hashtable<String, Entry> entryCache = new Hashtable<String,
-                                                      Entry>();
+    /** Caches sites */
+    private TTLCache<String, Entry> entryCache =
+        new TTLCache<String, Entry>(TTLCache.MS_IN_AN_HOUR);
+
+
 
 
     /**
@@ -214,9 +217,21 @@ public class EntryManager extends RepositoryManager {
 
     /**
      * _more_
+     *
+     * @return _more_
+     */
+    private TTLCache<String, Entry> getEntryCache() {
+        if (entryCache.size() > ENTRY_CACHE_LIMIT) {
+            clearCache();
+        }
+        return entryCache;
+    }
+
+    /**
+     * _more_
      */
     protected void clearCache() {
-        entryCache = new Hashtable<String, Entry>();
+        entryCache = new TTLCache<String, Entry>(TTLCache.MS_IN_AN_HOUR);
     }
 
 
@@ -228,13 +243,11 @@ public class EntryManager extends RepositoryManager {
     public void cacheEntry(Entry entry) {
         synchronized (MUTEX_ENTRY) {
             //Check if we are caching
-            if (!getRepository().doCache()) {
+            if ( !getRepository().doCache()) {
                 return;
             }
-            if (entryCache.size() > ENTRY_CACHE_LIMIT) {
-                entryCache = new Hashtable();
-            }
-            entryCache.put(entry.getId(), entry);
+
+            getEntryCache().put(entry.getId(), entry);
         }
     }
 
@@ -260,7 +273,7 @@ public class EntryManager extends RepositoryManager {
      */
     protected Entry getEntryFromCache(String entryId, boolean isId) {
         synchronized (MUTEX_ENTRY) {
-            return entryCache.get(entryId);
+            return getEntryCache().get(entryId);
         }
     }
 
@@ -300,7 +313,7 @@ public class EntryManager extends RepositoryManager {
      */
     protected void removeFromCache(String id) {
         synchronized (MUTEX_ENTRY) {
-            entryCache.remove(id);
+            getEntryCache().remove(id);
         }
     }
 
@@ -7454,7 +7467,7 @@ public class EntryManager extends RepositoryManager {
      */
     public void addStatusInfo(StringBuffer sb) {
         sb.append(HtmlUtil.formEntry(msgLabel("Entry Cache"),
-                                     entryCache.size() / 2 + ""));
+                                     getEntryCache().size() / 2 + ""));
     }
 
     /**
