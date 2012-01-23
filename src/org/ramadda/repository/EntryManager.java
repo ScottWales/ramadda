@@ -246,7 +246,7 @@ public class EntryManager extends RepositoryManager {
             if ( !getRepository().doCache()) {
                 return;
             }
-            getEntryCache().put(entry.getId(), entry);
+            //            getEntryCache().put(entry.getId(), entry);
         }
     }
 
