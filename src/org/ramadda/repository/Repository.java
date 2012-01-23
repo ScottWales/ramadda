@@ -276,6 +276,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private SessionManager sessionManager;
 
+    /** _more_          */
     private String cookieExpirationDate;
 
     /** _more_ */
@@ -2634,7 +2635,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             private boolean fileListingOK(Request request) {
                 return request.getUser().getAdmin()
-                    || (!request.getUser().getAnonymous() && getProperty(PROP_ENABLE_FILE_LISTING, false));
+                       || ( !request.getUser().getAnonymous()
+                            && getProperty(PROP_ENABLE_FILE_LISTING, false));
             }
 
             public Result outputEntry(Request request, OutputType outputType,
@@ -2764,7 +2766,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        //        System.err.println("request:" + request);
+
+
+
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
                                   + request.toString());
@@ -2889,16 +2893,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 request.setSessionId(getSessionManager().createSessionId());
             }
             String sessionId = request.getSessionId();
-            if(cookieExpirationDate==null) {
+            if (cookieExpirationDate == null) {
                 //expire the cookie in 4 years year
                 //Assume this ramadda doesn't run continuously for more than 4 years
-                Date future = new Date(new Date().getTime()+DateUtil.daysToMillis(365*4));
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd-MMM-yyyy");
+                Date future = new Date(new Date().getTime()
+                                       + DateUtil.daysToMillis(365 * 4));
+                SimpleDateFormat sdf =
+                    new SimpleDateFormat("EEE, dd-MMM-yyyy");
                 cookieExpirationDate = sdf.format(future);
             }
             result.addCookie(SessionManager.COOKIE_NAME,
                              sessionId + "; path=" + getUrlBase()
-                             + "; expires=" + cookieExpirationDate+" 23:59:59 GMT");
+                             + "; expires=" + cookieExpirationDate
+                             + " 23:59:59 GMT");
         }
 
         if (request.get("gc", false) && (request.getUser() != null)
@@ -2975,6 +2982,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
+     * @param msg _more_
+     */
+    public void checkMemory(String msg) {
+        //        Misc.gc();
+        Runtime.getRuntime().gc();
+        double freeMemory    = (double) Runtime.getRuntime().freeMemory();
+        double highWaterMark = (double) Runtime.getRuntime().totalMemory();
+        double usedMemory    = (highWaterMark - freeMemory);
+        usedMemory = usedMemory / 1000000.0;
+
+        //        System.out.println("http://ramadda.org" +request);
+        System.err.println(msg + ((int) usedMemory));
+
+    }
+
+    /**
+     * _more_
+     *
      * @param request The request
      *
      * @return _more_
@@ -2988,6 +3013,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
             return getHtdocsFile(request);
         }
+        //        checkMemory("memory:");
+
         //        System.err.println("request:"  + request);
 
         //        System.err.println("sslEnabled:" +sslEnabled + "  " + apiMethod.getNeedsSsl());
@@ -3054,7 +3081,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         boolean cachingOk = canCache();
 
         //TODO: how to handle when the DB is shutdown
-        if ( !getDatabaseManager().hasConnection()) {
+        boolean hasConnection = true;
+        //        hasConnection = getDatabaseManager().hasConnection();
+        if ( !hasConnection) {
             //                && !incoming.startsWith(getUrlBase() + "/admin")) {
             cachingOk = false;
             result = new Result("No Database",
@@ -5474,13 +5503,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                  String selected, boolean checkAddOk,
                                  HashSet<String> exclude)
             throws Exception {
-        return makeTypeSelect(new ArrayList(), request, includeAny, selected, checkAddOk, exclude);
+        return makeTypeSelect(new ArrayList(), request, includeAny, selected,
+                              checkAddOk, exclude);
     }
 
-    public String makeTypeSelect(List items,
-                                 Request request, boolean includeAny,
-                                 String selected, boolean checkAddOk,
-                                 HashSet<String> exclude)
+    /**
+     * _more_
+     *
+     * @param items _more_
+     * @param request _more_
+     * @param includeAny _more_
+     * @param selected _more_
+     * @param checkAddOk _more_
+     * @param exclude _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String makeTypeSelect(List items, Request request,
+                                 boolean includeAny, String selected,
+                                 boolean checkAddOk, HashSet<String> exclude)
             throws Exception {
 
         for (TypeHandler typeHandler : getTypeHandlers()) {
@@ -5501,7 +5544,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             //            System.err.println("type: " + typeHandler.getType()+" label:" + typeHandler.getLabel());
             items.add(new TwoFacedObject(typeHandler.getLabel(),
-                                       typeHandler.getType()));
+                                         typeHandler.getType()));
         }
         return HtmlUtil.select(ARG_TYPE, items, selected);
     }
