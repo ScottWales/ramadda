@@ -171,6 +171,13 @@
       <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
     </type>
 
+    <type
+       name="KML Polygon Coordinates"
+       showinhtml="false"
+       id="spatial.kmlpolycoords">
+      <element name="polygon1" suffix="lon,lat "/>
+    </type>
+
     <type name="Biography" id="content.biography"       displaycategory="Biography">
       <element  name="Name"/>
       <element

@@ -102,8 +102,8 @@ import javax.swing.ImageIcon;
  */
 public class EntryManager extends RepositoryManager {
 
-    /** _more_ */
-    public static final int ENTRY_CACHE_LIMIT = 10000;
+    /** How many entries to we keep in the cache */
+    public static final int ENTRY_CACHE_LIMIT = 5000;
 
 
     /** _more_ */
@@ -246,7 +246,6 @@ public class EntryManager extends RepositoryManager {
             if ( !getRepository().doCache()) {
                 return;
             }
-
             getEntryCache().put(entry.getId(), entry);
         }
     }
@@ -578,6 +577,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry>  entries     = new ArrayList<Entry>();
         List<Entry>  subGroups   = new ArrayList<Entry>();
         try {
+
             typeHandler.getChildrenEntries(request, group, entries,
                                            subGroups, where);
         } catch (Exception exc) {
@@ -601,8 +601,8 @@ public class EntryManager extends RepositoryManager {
 
         Result result = outputHandler.outputGroup(request, outputType, group,
                             subGroups, entries);
-
         return result;
+        //        return new Result("", new StringBuffer("hello"));
     }
 
 
@@ -5278,28 +5278,16 @@ public class EntryManager extends RepositoryManager {
                     return null;
                 }
             } else {
-                Statement entryStmt =
-                    getDatabaseManager().select(Tables.ENTRIES.COLUMNS,
-                        Tables.ENTRIES.NAME,
-                        Clause.eq(Tables.ENTRIES.COL_ID, entryId));
-
-                try {
-                    ResultSet results = entryStmt.getResultSet();
-                    if ( !results.next()) {
-                        return null;
+                entry = createEntryFromDatabase(entryId, abbreviated);
+                /*
+                for(int i=0;i<1000000;i++) {
+                    entry = createEntryFromDatabase(entryId, abbreviated);
+                    if ((i%10000)==0) {
+                        Misc.gc();
+                        getRepository().checkMemory("GC:" + i +" memory:");
                     }
-
-                    String entryType = results.getString(2);
-                    TypeHandler typeHandler =
-                        getRepository().getTypeHandler(entryType);
-
-
-                    entry = typeHandler.createEntryFromDatabase(results,
-                            abbreviated);
-                    checkEntryFileTime(entry);
-                } finally {
-                    getDatabaseManager().closeAndReleaseConnection(entryStmt);
                 }
+                */
             }
         } catch (Exception exc) {
             logError("creating entry:" + entryId, exc);
@@ -5318,6 +5306,43 @@ public class EntryManager extends RepositoryManager {
         //    }
 
     }
+
+
+    /**
+     * _more_
+     *
+     * @param entryId _more_
+     * @param abbreviated _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Entry createEntryFromDatabase(String entryId, boolean abbreviated)
+            throws Exception {
+        Entry entry = null;
+        Statement entryStmt =
+            getDatabaseManager().select(Tables.ENTRIES.COLUMNS,
+                                        Tables.ENTRIES.NAME,
+                                        Clause.eq(Tables.ENTRIES.COL_ID,
+                                            entryId));
+        try {
+            ResultSet results = entryStmt.getResultSet();
+            if ( !results.next()) {
+                return null;
+            }
+            String entryType = results.getString(2);
+            TypeHandler typeHandler =
+                getRepository().getTypeHandler(entryType);
+            entry = typeHandler.createEntryFromDatabase(results, abbreviated);
+            checkEntryFileTime(entry);
+        } finally {
+            getDatabaseManager().closeAndReleaseConnection(entryStmt);
+        }
+
+        return entry;
+    }
+
 
     /**
      * _more_

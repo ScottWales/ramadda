@@ -112,7 +112,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
     /** _more_ */
-    private static final int TIMEOUT = 5000;
+    //NOTE: When we had a non-zero timeout we got a memory leak
+    private static final int TIMEOUT = 0;
 
     /** _more_ */
     private Counter numberOfSelects = new Counter();

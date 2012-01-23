@@ -3013,7 +3013,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
             return getHtdocsFile(request);
         }
-        //        checkMemory("memory:");
+        checkMemory("memory:");
 
         //        System.err.println("request:"  + request);
 
