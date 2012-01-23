@@ -3013,10 +3013,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
             return getHtdocsFile(request);
         }
-        checkMemory("memory:");
-
+        //        checkMemory("memory:");
         //        System.err.println("request:"  + request);
-
         //        System.err.println("sslEnabled:" +sslEnabled + "  " + apiMethod.getNeedsSsl());
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
