@@ -181,8 +181,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_IMPORT = "import";
 
-    public static final String  WIKIPROP_CALENDAR = "calendar";
-    public static final String  WIKIPROP_TIMELINE = "timeline";
+    /** _more_          */
+    public static final String WIKIPROP_CALENDAR = "calendar";
+
+    /** _more_          */
+    public static final String WIKIPROP_TIMELINE = "timeline";
 
     /** wiki import */
     public static final String WIKIPROP_DATE = "date";
@@ -272,16 +275,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKIPROP_URL = "url";
 
 
+    /** _more_          */
+    public static final String ATTR_COLUMNS = "columns";
+
+
     /** list of import items for the text editor menu */
     public static final String[] WIKIPROPS = {
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
         WIKIPROP_DATE_FROM, WIKIPROP_DATE_TO, WIKIPROP_LAYOUT,
         WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, WIKIPROP_MAPENTRY,
         WIKIPROP_EARTH, WIKIPROP_CALENDAR, WIKIPROP_TIMELINE,
-        WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS,
-        WIKIPROP_TOOLBAR, WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT,
-        WIKIPROP_GALLERY, WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE,
-        WIKIPROP_LINKS, WIKIPROP_ENTRYID
+        WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR,
+        WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT, WIKIPROP_GALLERY,
+        WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE, WIKIPROP_LINKS,
+        WIKIPROP_ENTRYID
     };
 
     /** _more_ */
@@ -726,23 +733,28 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return new String(result.getContent());
 
         } else if (include.equals(WIKIPROP_CALENDAR)) {
-            StringBuffer calendarSB  = new StringBuffer();
+            StringBuffer calendarSB = new StringBuffer();
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
-            boolean doDay  = Misc.getProperty(props, "day", false);
-            getCalendarOutputHandler().outputCalendar(request, getCalendarOutputHandler().makeCalendarEntries(request, children), calendarSB,doDay);
-            
+            boolean doDay = Misc.getProperty(props, "day", false);
+            getCalendarOutputHandler().outputCalendar(request,
+                    getCalendarOutputHandler().makeCalendarEntries(request,
+                        children), calendarSB, doDay);
+
             return calendarSB.toString();
         } else if (include.equals(WIKIPROP_TIMELINE)) {
-            StringBuffer calendarSB  = new StringBuffer();
+            StringBuffer calendarSB = new StringBuffer();
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
 
-            int    height  = Misc.getProperty(props, PROP_HEIGHT, 150);
-            String style = "height: " + height +"px;";
-            String head = getHtmlOutputHandler().makeTimeline(request, children, calendarSB,style);
+            int    height = Misc.getProperty(props, PROP_HEIGHT, 150);
+            String style  = "height: " + height + "px;";
+            String head = getHtmlOutputHandler().makeTimeline(request,
+                              children, calendarSB, style);
             StringBuffer html = new StringBuffer();
-            if(head!=null) request.putExtraProperty(PROP_HTML_HEAD,head);
+            if (head != null) {
+                request.putExtraProperty(PROP_HTML_HEAD, head);
+            }
             html.append(calendarSB);
             return html.toString();
         } else if (include.equals(WIKIPROP_MAP)
@@ -883,9 +895,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             return sb.toString();
 
+
+
         } else if (include.equals(WIKIPROP_GALLERY)) {
             int         count    = Misc.getProperty(props, PROP_COUNT, -1);
             int         width    = Misc.getProperty(props, PROP_WIDTH, -1);
+            int         columns  = Misc.getProperty(props, ATTR_COLUMNS, 1);
+
             boolean     random   = Misc.getProperty(props, PROP_RANDOM,
                                        false);
 
@@ -912,19 +928,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
 
-            int num = 0;
+            int num    = 0;
+            int colCnt = 0;
+            sb.append("<table cellspacing=4>");
+            sb.append("<tr valign=\"bottom\">");
             for (Entry child : onesToUse) {
                 num++;
                 if ((count > 0) && (num > count)) {
                     break;
                 }
-                if (num > 1) {
-                    sb.append(HtmlUtil.br());
+                if (colCnt >= columns) {
+                    sb.append("</tr>");
+                    sb.append("<tr valign=\"bottom\">");
+                    colCnt = 0;
                 }
+                colCnt++;
                 String url = HtmlUtil.url(
                                  request.url(repository.URL_ENTRY_GET) + "/"
                                  + getStorageManager().getFileTail(
                                      child), ARG_ENTRYID, child.getId());
+                sb.append("<td align=\"center\">");
                 if (width <= 0) {
                     sb.append(HtmlUtil.img(url));
                 } else {
@@ -942,9 +965,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
                 sb.append(getEntryManager().getAjaxLink(request, child,
                         child.getLabel()));
+                sb.append("</td>");
                 //              sb.append(HtmlUtil.br());
                 //              sb.append(HtmlUtil.makeToggleInline("...", child.getDescription(),false));
             }
+            sb.append("</table>");
             return sb.toString();
         } else if (include.equals(WIKIPROP_CHILDREN_GROUPS)) {
             if ( !hasOpenProperty) {
