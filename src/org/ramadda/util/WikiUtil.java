@@ -259,8 +259,8 @@ public class WikiUtil {
 
         if (getReplaceNewlineWithP()) {
             s = s.replaceAll("\r\n\r\n", "\n<p>\n");
+            s = s.replaceAll("\r\r","\n<p>\n");
         }
-        //        s = s.replaceAll("\r\r","<p>");
         //        System.err.println (s);
         s = s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
         s = s.replaceAll("'''([^']+)'''", "<b>$1</b>");
