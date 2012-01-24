@@ -2189,7 +2189,8 @@ public class Request implements Constants {
      *  @return The HtmlTemplateId
      */
     public String getHtmlTemplateId() {
-        return htmlTemplateId;
+        if(htmlTemplateId!=null) return htmlTemplateId;
+        return getString(ARG_TEMPLATE);
     }
 
     /**
