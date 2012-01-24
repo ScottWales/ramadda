@@ -317,8 +317,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-
-
     /**
      * _more_
      *
@@ -328,13 +326,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result processEntryShow(Request request) throws Exception {
-        if (request.getCheckingAuthMethod()) {
-            OutputHandler handler = getRepository().getOutputHandler(request);
-            return new Result(handler.getAuthorizationMethod(request));
-        }
-
-
+    public Entry getEntryFromRequest(Request request) throws Exception {
         Entry entry = null;
         if (request.defined(ARG_ENTRYID)) {
             try {
@@ -371,6 +363,27 @@ public class EntryManager extends RepositoryManager {
                 entry = getTopGroup();
             }
         }
+        return entry;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processEntryShow(Request request) throws Exception {
+        if (request.getCheckingAuthMethod()) {
+            OutputHandler handler = getRepository().getOutputHandler(request);
+            return new Result(handler.getAuthorizationMethod(request));
+        }
+
+        Entry entry = getEntryFromRequest(request);
+
         if (entry == null) {
             fatalError(request, "No entry specified");
         }
@@ -2385,21 +2398,17 @@ public class EntryManager extends RepositoryManager {
             return new Result(AuthorizationMethod.AUTH_HTTP);
         }
 
-        String entryId = (String) request.getId((String) null);
 
-        if (entryId == null) {
-            fatalError(request, "No " + ARG_ENTRYID + " given");
-        }
-        Entry entry = getEntry(request, entryId);
+        Entry entry = getEntryFromRequest(request);
+
         if (entry == null) {
             throw new RepositoryUtil.MissingEntryException(
-                "Could not find entry with id:" + entryId);
+                "Could not find entry");
         }
 
         if ( !entry.getResource().isUrl()) {
             if ( !getAccessManager().canDownload(request, entry)) {
-                fatalError(request,
-                           "Cannot download file with id:" + entryId);
+                fatalError(request, "Cannot download file");
             }
         }
 
@@ -6087,6 +6096,10 @@ public class EntryManager extends RepositoryManager {
                                       boolean full) {
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
+        //For now use the full entry path
+        if (fileTail.equals(entry.getName())) {
+            fileTail = entry.getFullName(true);
+        }
         if (full) {
             return HtmlUtil.url(getRepository().URL_ENTRY_GET.getFullUrl()
                                 + "/" + fileTail, ARG_ENTRYID, entry.getId());
