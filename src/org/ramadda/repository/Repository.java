@@ -3591,8 +3591,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String translate(Request request, String s) {
-        User       user     = request.getUser();
-        String     language = user.getLanguage();
+        String     language = request.getLanguage();
         Properties tmpMap;
         Properties map =
             (Properties) languageMap.get(getProperty(PROP_LANGUAGE_DEFAULT,

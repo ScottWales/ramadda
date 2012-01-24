@@ -2190,7 +2190,17 @@ public class Request implements Constants {
      */
     public String getHtmlTemplateId() {
         if(htmlTemplateId!=null) return htmlTemplateId;
-        return getString(ARG_TEMPLATE);
+        return getString(ARG_TEMPLATE,"");
+    }
+
+
+    public String getLanguage() {
+        if(exists(ARG_LANGUAGE)) {
+            return getString(ARG_LANGUAGE,"");
+        }
+        User       user     = getUser();
+        String     language = user.getLanguage();
+        return language;
     }
 
     /**
