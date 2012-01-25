@@ -569,7 +569,6 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("Query Results", sb, getMimeType(output));
         }
 
-
         if (output.equals(OUTPUT_GALLERY)) {
             sb.append("<table>");
         } else if (output.equals(OUTPUT_PLAYER)) {
@@ -719,6 +718,90 @@ public class ImageOutputHandler extends OutputHandler {
         finalSB.append(HtmlUtil.p());
         finalSB.append(sb);
         return new Result(group.getName(), finalSB, getMimeType(output));
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entries _more_
+     * @param finalSB _more_
+     * @param addHeader _more_
+     *
+     * @throws Exception _more_
+     */
+    public void makePlayer(Request request, List<Entry> entries,
+                           StringBuffer finalSB, boolean addHeader)
+            throws Exception {
+        StringBuffer sb = new StringBuffer();
+        if (entries.size() == 0) {
+            finalSB.append("<b>Nothing Found</b><p>");
+            return;
+        }
+
+        if ( !request.exists(ARG_ASCENDING)) {
+            entries = getEntryManager().sortEntriesOnDate(entries, true);
+        }
+
+        int    col        = 0;
+        String firstImage = "";
+
+        int    cnt        = 0;
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            Entry  entry = entries.get(i);
+            String url   = getImageUrl(request, entry);
+            if (url == null) {
+                continue;
+            }
+            if (cnt == 0) {
+                firstImage = url;
+            }
+            String entryUrl = getEntryLink(request, entry);
+            String title =
+                "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
+            title += "<tr><td><b>Image:</b> " + entryUrl
+                     + "</td><td align=right>"
+                     + new Date(entry.getStartDate());
+            title += "</table>";
+            title = title.replace("\"", "\\\"");
+            sb.append("addImage(" + HtmlUtil.quote(url) + ","
+                      + HtmlUtil.quote(title) + ");\n");
+            cnt++;
+        }
+
+        String playerTemplate = repository.getResource(PROP_HTML_IMAGEPLAYER);
+        String widthAttr      = "";
+        int    width          = request.get(ARG_WIDTH, 600);
+        if (width > 0) {
+            widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
+        }
+        String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
+                           + widthAttr + HtmlUtil.attr("SRC", firstImage)
+                           + " ALT=\"image\">";
+
+        String tmp = playerTemplate.replace("${imagelist}", sb.toString());
+        tmp = tmp.replace("${imagehtml}", imageHtml);
+        tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
+        if (addHeader) {
+            String fullUrl = "";
+            if (width > 0) {
+                request.put(ARG_WIDTH, "0");
+                fullUrl = HtmlUtil.href(request.getUrl(),
+                                        msg("Use image width"));
+            } else {
+                request.put(ARG_WIDTH, "600");
+                fullUrl = HtmlUtil.href(request.getUrl(),
+                                        msg("Use fixed width"));
+            }
+            sb = new StringBuffer(HtmlUtil.leftRight(getSortLinks(request),
+                    fullUrl));
+        } else {
+            sb = new StringBuffer();
+        }
+        sb.append(tmp);
+        finalSB.append(sb);
     }
 
 

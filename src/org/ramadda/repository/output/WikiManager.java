@@ -181,10 +181,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_IMPORT = "import";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKIPROP_CALENDAR = "calendar";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKIPROP_TIMELINE = "timeline";
 
     /** wiki import */
@@ -210,6 +210,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** wiki import */
     public static final String WIKIPROP_GALLERY = "gallery";
+
+    /** _more_          */
+    public static final String WIKIPROP_PLAYER = "player";
 
     /** wiki import */
     public static final String WIKIPROP_TABS = "tabs";
@@ -275,7 +278,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKIPROP_URL = "url";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COLUMNS = "columns";
 
 
@@ -686,7 +689,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKIPROP_BREADCRUMBS)) {
             return getEntryManager().getBreadCrumbs(request, entry);
         } else if (include.equals(WIKIPROP_DESCRIPTION)) {
-            String desc =  entry.getDescription();
+            String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
             return desc;
         } else if (include.equals(WIKIPROP_LAYOUT)) {
@@ -764,6 +767,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             StringBuffer mapSB  = new StringBuffer();
             int          width  = Misc.getProperty(props, PROP_WIDTH, 400);
             int          height = Misc.getProperty(props, PROP_HEIGHT, 300);
+            boolean justPoints  = Misc.getProperty(props, "justpoints",
+                                      false);
             boolean googleEarth =
                 include.equals(WIKIPROP_EARTH)
                 && getMapManager().isGoogleEarthEnabled(request);
@@ -774,7 +779,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (googleEarth) {
                 getMapManager().getGoogleEarth(request, children, mapSB,
                         Misc.getProperty(props, PROP_WIDTH, -1),
-                        Misc.getProperty(props, PROP_HEIGHT, -1));
+                        Misc.getProperty(props, PROP_HEIGHT, -1), justPoints);
             } else {
                 MapOutputHandler mapOutputHandler =
                     (MapOutputHandler) getRepository().getOutputHandler(
@@ -897,8 +902,25 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             return sb.toString();
 
-
-
+        } else if (include.equals(WIKIPROP_PLAYER)) {
+            List<Entry> children = getEntries(request, wikiUtil, entry,
+                                       props);
+            List<Entry> imageEntries = new ArrayList<Entry>();
+            for (Entry child : children) {
+                if ( !child.getResource().isImage()) {
+                    continue;
+                }
+                imageEntries.add(child);
+            }
+            if (imageEntries.size() == 0) {
+                return getMessage(props, "");
+            }
+            StringBuffer sb = new StringBuffer();
+            ImageOutputHandler imageOutputHandler =
+                (ImageOutputHandler) getRepository().getOutputHandler(
+                    ImageOutputHandler.OUTPUT_PLAYER);
+            imageOutputHandler.makePlayer(request, imageEntries, sb, false);
+            return sb.toString();
         } else if (include.equals(WIKIPROP_GALLERY)) {
             int         count    = Misc.getProperty(props, PROP_COUNT, -1);
             int         width    = Misc.getProperty(props, PROP_WIDTH, -1);

@@ -350,7 +350,7 @@ public class MapManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void getGoogleEarth(Request request, List<Entry> entries,
-                               StringBuffer sb, int width, int height)
+                               StringBuffer sb, int width, int height, boolean justPoints)
             throws Exception {
 
         sb.append(
@@ -448,7 +448,7 @@ public class MapManager extends RepositoryManager {
             }
 
 
-            if ((kmlUrl == null) && !hasPolygon && entry.hasAreaDefined()) {
+            if ((kmlUrl == null) && !hasPolygon && entry.hasAreaDefined() && !justPoints) {
                 pointsString = "new Array(" + entry.getNorth() + ","
                                + entry.getWest() + "," + entry.getNorth()
                                + "," + entry.getEast() + ","
