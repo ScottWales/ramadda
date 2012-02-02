@@ -282,8 +282,12 @@ public class UserManager extends RepositoryManager {
      *
      * @return hashed password
      */
-    public static String hashPassword(String password) {
-        return RepositoryUtil.hashPassword(password);
+    public  String hashPassword(String password) {
+        if (getProperty(PROP_PASSWORD_OLDMD5, false)) {
+            return RepositoryUtil.hashPasswordForOldMD5(password);
+        } else {
+            return RepositoryUtil.hashPassword(password);
+        }
     }
 
 

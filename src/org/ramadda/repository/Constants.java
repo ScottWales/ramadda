@@ -1512,6 +1512,8 @@ public interface Constants {
     public static final String PROP_ACCESS_REQUIRELOGIN =
         "ramadda.access.requirelogin";
 
+    public static final String PROP_PASSWORD_OLDMD5 = "ramadda.password.oldmd5";
+
     /** _more_ */
     public static final String PROP_ACCESS_ALLSSL = "ramadda.access.allssl";
 
@@ -1987,6 +1989,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_PROXY_PASSWORD = "ramadda.proxy.password";
+
 
     /** _more_ */
     public static final String PROP_PROXY_HOST = "ramadda.proxy.host";

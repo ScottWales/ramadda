@@ -807,4 +807,75 @@ public class ImageOutputHandler extends OutputHandler {
 
 
 
+    /*****
+
+    public void makeSlideshow(Request request, List<Entry> entries,
+                           StringBuffer finalSB, boolean addHeader)
+            throws Exception {
+        StringBuffer sb = new StringBuffer();
+        if (entries.size() == 0) {
+            finalSB.append("<b>Nothing Found</b><p>");
+            return;
+        }
+
+        if ( !request.exists(ARG_ASCENDING)) {
+            entries = getEntryManager().sortEntriesOnDate(entries, true);
+        }
+        finalSB.append(
+            HtmlUtil.importJS(getRepository().fileUrl("/slides/js/slides.min.jquery.js")));
+        String slidesTemplate = repository.getResource("ramadda.html.slides");
+        System.out.println(slidesTemplate);
+        finalSB.append(slidesTemplate);
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            Entry  entry = entries.get(i);
+            String url   = getImageUrl(request, entry);
+            if (url == null) {
+                continue;
+            }
+            String entryUrl = getEntryLink(request, entry);
+            String title = entry.getName();
+            //            title += "<tr><td><b>Image:</b> " + entryUrl
+            //                     + "</td><td align=right>"
+            //                     + new Date(entry.getStartDate());
+            sb.append("addImage(" + HtmlUtil.quote(url) + ","
+                      + HtmlUtil.quote(title) + ");\n");
+            cnt++;
+        }
+
+        String playerTemplate = repository.getResource(PROP_HTML_IMAGEPLAYER);
+        String widthAttr      = "";
+        int    width          = request.get(ARG_WIDTH, 600);
+        if (width > 0) {
+            widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
+        }
+        String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
+                           + widthAttr + HtmlUtil.attr("SRC", firstImage)
+                           + " ALT=\"image\">";
+
+        String tmp = playerTemplate.replace("${imagelist}", sb.toString());
+        tmp = tmp.replace("${imagehtml}", imageHtml);
+        tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
+        if (addHeader) {
+            String fullUrl = "";
+            if (width > 0) {
+                request.put(ARG_WIDTH, "0");
+                fullUrl = HtmlUtil.href(request.getUrl(),
+                                        msg("Use image width"));
+            } else {
+                request.put(ARG_WIDTH, "600");
+                fullUrl = HtmlUtil.href(request.getUrl(),
+                                        msg("Use fixed width"));
+            }
+            sb = new StringBuffer(HtmlUtil.leftRight(getSortLinks(request),
+                    fullUrl));
+        } else {
+            sb = new StringBuffer();
+        }
+        sb.append(tmp);
+        finalSB.append(sb);
+    }
+
+    ******/
+
+
 }

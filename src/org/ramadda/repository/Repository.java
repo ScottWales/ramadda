@@ -894,7 +894,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else if (args[i].equals("-admin")) {
                 User user = new User(args[i + 1], true);
                 user.setPasswords(args[i + 2],
-                                  UserManager.hashPassword(args[i + 2]));
+                                  RepositoryUtil.hashPassword(args[i + 2]));
                 cmdLineUsers.add(user);
                 i += 2;
             } else if (args[i].equals("-port")) {

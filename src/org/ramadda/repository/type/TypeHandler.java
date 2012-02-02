@@ -1696,10 +1696,13 @@ public class TypeHandler extends RepositoryManager {
                             "title=\"View user profile\"");
 
 
-            sb.append(formEntry(request, msgLabel("Created by"),
-                                userSearchLink + " @ "
-                                + formatDate(request, entry.getCreateDate(),
-                                             entry)));
+            //Only show the created by and type when the user is logged in
+            if(!request.isAnonymous()) {
+                sb.append(formEntry(request, msgLabel("Created by"),
+                                    userSearchLink + " @ "
+                                    + formatDate(request, entry.getCreateDate(),
+                                                 entry)));
+            }
 
             Resource resource      = entry.getResource();
             String   resourceLink  = resource.getPath();
@@ -1816,7 +1819,10 @@ public class TypeHandler extends RepositoryManager {
                 typeDesc = entry.getTypeHandler().getType();
             }
             if ( !showImage) {
-                sb.append(formEntry(request, msgLabel("Type"), typeDesc));
+                //Only show the created by and type when the user is logged in
+                if(!request.isAnonymous()) {
+                    sb.append(formEntry(request, msgLabel("Type"), typeDesc));
+                }
             }
 
             String datatype = entry.getDataType();
