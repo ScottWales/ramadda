@@ -217,10 +217,11 @@ public class JsonOutputHandler extends OutputHandler {
     private void qtattr(StringBuffer sb, String name, String value,
                         boolean addComma) {
         if (value == null) {
-            return;
+            attr(sb, name, qt("no value"), addComma);
+        } else {
+            value = value.replaceAll("\"", "\\\"");
+            attr(sb, name, qt(value), addComma);
         }
-        value = value.replaceAll("\"", "\\\"");
-        attr(sb, name, qt(value), addComma);
     }
 
     /**
@@ -289,11 +290,14 @@ public class JsonOutputHandler extends OutputHandler {
 
         qtattr(sb, "icon",
                getRepository().getEntryManager().getIconUrl(request, entry));
+
         qtattr(sb, "parent", entry.getParentEntryId());
         qtattr(sb, "user", entry.getUser().getId());
+        qtattr(sb, "resource", entry.getResource().getPath());
         qtattr(sb, "createDate", fmt(entry.getCreateDate()));
         qtattr(sb, "startDate", fmt(entry.getStartDate()));
         qtattr(sb, "endDate", fmt(entry.getEndDate()));
+
 
         if (entry.hasNorth()) {
             attr(sb, "north", "" + entry.getNorth());
@@ -338,7 +342,14 @@ public class JsonOutputHandler extends OutputHandler {
         //TODO: add services
         if (resource != null) {
             if (resource.isUrl()) {
-                qtattr(sb, "filename", replaceForJSON(resource.getPath()));
+
+                String temp = replaceForJSON(resource.getPath());
+                if (temp == null) {
+                    qtattr(sb, "filename", "");
+                } else {
+                    qtattr(sb, "filename", java.net.URLEncoder.encode(temp));
+                }
+
                 attr(sb, "filesize", "" + resource.getFileSize());
                 qtattr(sb, "md5", "");
                 //TODO MATIAS            } else if(resource.isFileNoCheck()) {
@@ -410,7 +421,15 @@ public class JsonOutputHandler extends OutputHandler {
                                    replaceForJSON(outputType.toString()));
                         }
 
-                        qtattr(msb, "url", link.getUrl());
+                        if (link.getUrl() != null) {
+                            qtattr(msb, "url",
+                                   java.net.URLEncoder.encode(
+                                       replaceForJSON(link.getUrl())));
+                        } else {
+                            qtattr(msb, "url", "");
+                        }
+
+
                         qtattr(msb, "icon", link.getIcon());
                         msb.append("}");
                         index++;
@@ -544,7 +563,7 @@ public class JsonOutputHandler extends OutputHandler {
      */
     public static String replaceForJSON(String aText) {
         if ((aText == null) || (aText == "")) {
-            return aText;
+            return "";
         }
         final StringBuilder     result    = new StringBuilder();
 
