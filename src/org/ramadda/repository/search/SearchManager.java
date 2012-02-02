@@ -240,7 +240,6 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      * @return _more_
      */
     public boolean isLuceneEnabled() {
-        if(true) return true;
         return isLuceneEnabled;
     }
 
