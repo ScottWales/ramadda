@@ -40,6 +40,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.WmsUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import nom.tam.fits.*;
 
 
 
@@ -55,6 +56,12 @@ public class FitsOutputHandler extends OutputHandler {
                                                                   OutputType.TYPE_VIEW,"","/fits/fits.gif");
 
 
+    /** _more_ */
+    public static final OutputType OUTPUT_HEADER = new OutputType("FITS Header",
+                                                                  "fits.header",
+                                                                  OutputType.TYPE_VIEW,"","/fits/fits.gif");
+
+
     /**
      * _more_
      *
@@ -66,6 +73,7 @@ public class FitsOutputHandler extends OutputHandler {
     public FitsOutputHandler(Repository repository, Element element)
         throws Exception {
         super(repository, element);
+        addType(OUTPUT_HEADER);
         addType(OUTPUT_VIEWER);
     }
 
@@ -83,6 +91,7 @@ public class FitsOutputHandler extends OutputHandler {
         throws Exception {
         if (state.entry != null) {
             if (state.entry.getType().equals("fits_data")) {
+                links.add(makeLink(request, state.entry, OUTPUT_HEADER));
                 links.add(makeLink(request, state.entry, OUTPUT_VIEWER));
             }
         }
@@ -91,12 +100,62 @@ public class FitsOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
         throws Exception {
+        if(outputType.equals(OUTPUT_VIEWER)) {
+            return outputEntryViewer(request, entry);
+        }
+        return outputEntryHeader(request, entry);
+    }
+
+
+
+    public Result outputEntryViewer(Request request, 
+                                    Entry entry)
+        throws Exception {
+
         StringBuffer sb = new StringBuffer();
         String fileUrl = getEntryManager().getEntryResourceUrl(request, entry, false);
         //TODO: set the path right
         sb.append("<applet archive=\"/repository/fits/fits1.3.jar\" code=\"eap.fitsbrowser.BrowserApplet\" width=700 height=700 ><param name=\"FILE\" value=\"" + fileUrl +"\">Your browser is ignoring the applet tag</applet>");
         return new Result("", sb);
     }
+
+    public Result outputEntryHeader(Request request, 
+                                    Entry entry)
+        throws Exception {
+        StringBuffer sb = new StringBuffer();
+        Fits fits = new Fits(entry.getFile());
+        sb.append("<ul>");
+        for(int headerIdx=0;headerIdx<fits.size();headerIdx++) {
+            BasicHDU hdu = fits.getHDU(headerIdx);
+            nom.tam.fits.Header header = hdu.getHeader();
+            String hduType = "N/A";
+            if(hdu instanceof AsciiTableHDU) {
+                hduType = "Ascii Table";
+            } else  if(hdu instanceof ImageHDU) {
+                hduType = "Image";
+            } else  if(hdu instanceof BinaryTableHDU) {
+                hduType = "Binary Table";
+            }
+            sb.append("<li> " + hduType);
+            sb.append("<ul>");
+            int numCards = header.getNumberOfCards();
+            for(int cardIdx=0;cardIdx<numCards;cardIdx++) {
+                String card = header.getCard(cardIdx);
+                card = card.trim();
+                if(card.length()>0) {
+                    sb.append("<li>" + card);
+                }
+            }
+            sb.append("</ul>");
+        }
+        sb.append("</ul>");
+        return new Result("", sb);
+    }
+
+
+
+
+
 
 
 

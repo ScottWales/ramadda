@@ -95,6 +95,7 @@
             compress="true"
             jarfile="${plugindestdir}/${jarfile}">
             <include name="${plugin_dir}/**/*.class"/>
+            <include name="${plugin_extra}"/>
             <include name="${plugin_dir}/htdocs/**/*"/>
             <include name="${plugin_dir}/resources/**/*"/>
             <include name="${plugin_dir}/*.xml"/>
@@ -139,7 +140,7 @@
 
    <target name="clean" depends="init" >
         <delete>
-            <fileset dir="${src_dir}/org" includes="**/*.class"/>
+            <fileset dir="${src_dir}" includes="**/*.class"/>
         </delete>
     </target>
 

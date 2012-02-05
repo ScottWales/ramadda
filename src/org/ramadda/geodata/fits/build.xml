@@ -6,6 +6,7 @@
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="${plugin}plugin.jar"/>
       <property name="plugin_dir" value="org/ramadda/geodata/fits"/>
+      <property name="plugin_extra" value="nom/**/*.class"/>
       <ant antfile="${basedir}/build.xml" target="plugin"/>
       <ant antfile="${basedir}/build.xml" target="plugin_install"/>
     </target>

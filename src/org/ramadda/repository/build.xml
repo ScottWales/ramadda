@@ -339,6 +339,7 @@
 
         <echo message="Unjarring ${lib1}"/>
         <unjar src="${lib1}" dest="${tmpjar_dir}"/>
+
 <!--
         <echo message="Unjarring ${lib2}"/>
         <unjar src="${lib2}" dest="${tmpjar_dir}"/>

@@ -7,6 +7,12 @@
      <property name="form.show.datatype" value="false"/>
      <property name="form.show.altitude" value="false"/>
      <property name="form.show.altitude.top" value="false"/>
+
+     <column name="origin" type="enumerationplus"  label="Origin" />
+     <column name="telescope" type="enumerationplus"  label="Telescope" />
+     <column name="instrument" type="enumerationplus"  label="Instrument" />
+     <column name="obstype"   type="enumerationplus"  label="Observation Type" />
+
    </type>
 
 </types>
