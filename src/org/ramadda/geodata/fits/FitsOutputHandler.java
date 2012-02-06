@@ -242,8 +242,9 @@ public class FitsOutputHandler extends OutputHandler {
             }
             if (tableData != null) {
                 StringBuffer tableSB = new StringBuffer();
+                tableSB.append("<div style=\"margin-left:25px;\">");
                 tableSB.append(
-                    "<table border=1 cellspacing=0 cellpadding=2>");
+                    "<table cellspacing=2 cellpadding=2>");
                 if (header.getStringValue("TTYPE1") != null) {
                     tableSB.append("<tr>");
                     for (int colIdx = 0; colIdx < tableData.getNCols();
@@ -270,11 +271,13 @@ public class FitsOutputHandler extends OutputHandler {
                     tableSB.append("</tr>");
                 }
                 tableSB.append("</table>");
+                tableSB.append("</div>");
                 subSB.append(HtmlUtil.makeShowHideBlock("Data",
                         tableSB.toString(), false));
             }
 
 
+            subSB.append("<div style=\"margin-left:25px;\">");
             subSB.append("<table>");
             int numCards = header.getNumberOfCards();
             for (int cardIdx = 0; cardIdx < numCards; cardIdx++) {
@@ -285,27 +288,40 @@ public class FitsOutputHandler extends OutputHandler {
                 }
                 List<String> toks = StringUtil.splitUpTo(card, "=", 2);
                 subSB.append("<tr>");
-                if (toks.size() == 1) {
+                //Look for an '=' in the comment
+                if (toks.size() == 1 || toks.get(0).trim().indexOf(" ")>=0) {
                     if (card.startsWith("/")) {
                         card = card.substring(1);
                     }
-                    subSB.append("<td colspan=3><i>" + card + "</i></td>");
+                    subSB.append("<td colspan=3><i>" + HtmlUtil.entityEncode(card) + "</i></td>");
                 } else {
+                    String key = toks.get(0).trim();
                     String comment = "";
-                    String value   = toks.get(1);
-                    int    idx     = value.indexOf("/");
-                    if (idx >= 0) {
-                        comment = value.substring(idx + 1);
-                        value   = value.substring(0, idx);
+                    String value   =  toks.get(1);
+                    int idx;
+                    if(value.startsWith("'")) {
+                        idx = value.indexOf("'", 1);
+                        comment = value.substring(idx+1).trim();
+                        value = value.substring(1,idx);
+                        if (comment.startsWith("/")) {
+                            comment = comment.substring(1);
+                        }
+                    }  else {
+                        idx     = value.indexOf("/");
+                        if (idx >= 0) {
+                            comment = value.substring(idx + 1).trim();
+                            value   = value.substring(0, idx).trim();
+                        }
                     }
-                    subSB.append("<td><b>" + toks.get(0) + "</b></td><td>"
-                                 + value + "</td><td><i>" + comment
+
+                    subSB.append("<td><b>" + HtmlUtil.entityEncode(key) + "</b></td><td>"
+                                 + HtmlUtil.entityEncode(value) + "</td><td><i>" + HtmlUtil.entityEncode(comment)
                                  + "</i></td></tr>");
                 }
                 subSB.append("</tr>");
             }
             subSB.append("</table>");
-
+            subSB.append("</div>");
             String label = HtmlUtil.checkbox(ARG_FITS_HDU, "" + hduIdx, true)
                            + " " + hduType;
             sb.append(HtmlUtil.makeShowHideBlock(label, subSB.toString(),

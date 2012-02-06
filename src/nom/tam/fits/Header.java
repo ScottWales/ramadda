@@ -44,6 +44,7 @@ import nom.tam.util.*;
  */
 public class Header implements FitsElement {
 
+
     /** The actual header data stored as a HashedList of
      * HeaderCard's.
      */
@@ -586,7 +587,7 @@ public class Header implements FitsElement {
 
                 String key = fcard.getKey();
                 if (key != null && cards.containsKey(key)) {
-                    System.err.println("Warning: multiple occurrences of key:" + key);
+                    //jeffmc: System.err.println("Warning: multiple occurrences of key:" + key);
                     addDuplicate((HeaderCard)cards.get(key));
                 }
 
