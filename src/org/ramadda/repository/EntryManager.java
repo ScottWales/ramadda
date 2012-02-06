@@ -6096,11 +6096,11 @@ public class EntryManager extends RepositoryManager {
                                       boolean full) {
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
-        //For now use the full entry path
-        if (fileTail.equals(entry.getName())) {
-            fileTail = entry.getFullName(true);
-        }
         if (full) {
+            //For now use the full entry path
+            if (fileTail.equals(entry.getName())) {
+                fileTail = entry.getFullName(true);
+            }
             return HtmlUtil.url(getRepository().URL_ENTRY_GET.getFullUrl()
                                 + "/" + fileTail, ARG_ENTRYID, entry.getId());
         } else {
