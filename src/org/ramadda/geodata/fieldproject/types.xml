@@ -1,0 +1,33 @@
+<types>
+
+  <type name="project_project"  description="Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
+     <property name="icon" value="/fieldproject/page_world.png"/>
+     <property name="form.show.resource" value="false"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.altitude" value="false"/>
+     <property name="form.show.altitude.top" value="false"/>
+     <column name="project_type"  type="enumerationplus"  label="Project Type"/>
+   </type>
+
+
+    <type name="project_fieldnote" description="Field Note" category="Field Project" >
+      <property name="form.name.label" value="Objective"/>
+      <column name="location" label="Where" datatype="enumerationplus" values=""/>
+      <column name="who" label="Who" rows="5"/>
+      <column name="instruments" label="Instruments" rows="5"/>
+      <column name="conditions" label="Conditions" rows="5"/>
+      <column name="notes" label="Notes" rows="5"/>
+    </type>
+
+
+    <type name="project_surveylocation" description="Survey Location" category="Field Project" >
+      <property name="form.name.label" value="Objective"/>
+      <property name="form.name.label" value="Objective"/>
+      <column name="survey_type" label="Type"  type="enumerationplus"  label="Project Type" values="file:/org/ramadda/geodata/fieldproject/surveylocation_type.txt"/>
+      <column name="equipment" label="Equipment"  type="enumerationplus"  label="Equipment" values="file:/org/ramadda/geodata/fieldproject/surveylocation_equipment.txt"/>
+    </type>
+
+
+
+
+</types>
