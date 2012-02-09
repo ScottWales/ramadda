@@ -8,11 +8,10 @@
      <property name="form.show.altitude" value="false"/>
      <property name="form.show.altitude.top" value="false"/>
 
-     <column name="origin" type="enumerationplus"  label="Origin" />
-     <column name="telescope" type="enumerationplus"  label="Telescope" />
-     <column name="instrument" type="enumerationplus"  label="Instrument" />
+     <column name="origin" type="enumerationplus"  label="Origin" cansearch="true" browsable="true" isindex="true"/>
+     <column name="telescope" type="enumerationplus"  label="Telescope" cansearch="true" browsable="true" isindex="true"/>
+     <column name="instrument" type="enumerationplus"  label="Instrument" cansearch="true" browsable="true" isindex="true"/>
      <column name="obstype"   type="enumerationplus"  label="Observation Type" />
-
    </type>
 
 </types>

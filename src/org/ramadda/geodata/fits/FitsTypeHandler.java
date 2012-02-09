@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.geodata.fits;
 
 
@@ -42,11 +43,11 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-import java.text.SimpleDateFormat;
-
 import java.awt.geom.Rectangle2D;
 
 import java.io.File;
+
+import java.text.SimpleDateFormat;
 
 
 import java.util.ArrayList;
@@ -64,53 +65,53 @@ import java.util.List;
  */
 public class FitsTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_INSTRUMENT = "INSTRUME";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_TELESCOPE = "TELESCOP";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_LOCATION = "LOCATION";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_ORIGIN = "ORIGIN";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_OBJECT = "OBJECT";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_OBSERVER = "OBSERVER";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_AUTHOR = "AUTHOR";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_REFERENCE = "REFERENC";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_TYPE_OBS = "TYPE-OBS";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_DATE_OBS = "DATE-OBS";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_TIME_OBS = "TIME-OBS";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String BAD_PROP_DATE_OBS = "DATE_OBS";
 
-    /** _more_          */
+    /** _more_ */
     public static final String BAD_PROP_TIME_OBS = "TIME_OBS";
 
 
-    /** _more_          */
-    public static final String[] FITS_PROPS = { FITS_PROP_ORIGIN, FITS_PROP_TELESCOPE,
-                                           FITS_PROP_INSTRUMENT, FITS_PROP_TYPE_OBS, };
+    /** _more_ */
+    public static final String[] FITS_PROPS = { FITS_PROP_ORIGIN,
+            FITS_PROP_TELESCOPE, FITS_PROP_INSTRUMENT, FITS_PROP_TYPE_OBS, };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String FITS_PROP_ = "";
 
 
@@ -146,14 +147,24 @@ public class FitsTypeHandler extends GenericTypeHandler {
         }
     }
 
+    /** _more_          */
     private static SimpleDateFormat[] SDFS;
+
+    /** _more_          */
     private static SimpleDateFormat STUPIDSDF;
 
+    /**
+     * _more_
+     *
+     * @param header _more_
+     *
+     * @return _more_
+     */
     private static Date[] getDateRange(nom.tam.fits.Header header) {
-        if(SDFS==null) {
+        if (SDFS == null) {
             STUPIDSDF = new SimpleDateFormat("dd/MM/yy hh:mm:ss");
             STUPIDSDF.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
-            SimpleDateFormat[] tmp = new SimpleDateFormat[]{
+            SimpleDateFormat[] tmp = new SimpleDateFormat[] {
                 new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"),
                 new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss"),
                 new SimpleDateFormat("yyyy-MM-dd hh:mm:ssZ"),
@@ -164,50 +175,53 @@ public class FitsTypeHandler extends GenericTypeHandler {
                 new SimpleDateFormat("dd/MM/yy hh:mm:ss"),
                 new SimpleDateFormat("yyyy/MM/dd"),
             };
-            for(SimpleDateFormat sdf: tmp) {
+            for (SimpleDateFormat sdf : tmp) {
                 sdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
             }
             SDFS = tmp;
         }
 
-        Date  fromDate   = null;
-        Date toDate = null;
-        String dateString= header.getStringValue(FITS_PROP_DATE_OBS);
-        if(dateString==null) dateString =  header.getStringValue(BAD_PROP_DATE_OBS);
-        String timeString= header.getStringValue(FITS_PROP_TIME_OBS);
-        if(timeString==null) timeString =  header.getStringValue(BAD_PROP_TIME_OBS);
+        Date   fromDate   = null;
+        Date   toDate     = null;
+        String dateString = header.getStringValue(FITS_PROP_DATE_OBS);
+        if (dateString == null) {
+            dateString = header.getStringValue(BAD_PROP_DATE_OBS);
+        }
+        String timeString = header.getStringValue(FITS_PROP_TIME_OBS);
+        if (timeString == null) {
+            timeString = header.getStringValue(BAD_PROP_TIME_OBS);
+        }
 
-        if(dateString==null) {
-            return new Date[]{fromDate,toDate};
+        if (dateString == null) {
+            return new Date[] { fromDate, toDate };
         }
         boolean stupidFormat = false;
 
-        if(dateString.indexOf("/")>=0 && (dateString.length() ==7 ||
-                                          dateString.length() ==8)) {
+        if ((dateString.indexOf("/") >= 0)
+                && ((dateString.length() == 7)
+                    || (dateString.length() == 8))) {
             stupidFormat = true;
         }
 
-        if(timeString!=null) {
-            dateString = dateString+" " + timeString;
+        if (timeString != null) {
+            dateString = dateString + " " + timeString;
         }
         //Check for the dd/MM/yy format
-        if(stupidFormat) {
+        if (stupidFormat) {
             try {
-                synchronized(STUPIDSDF) {
+                synchronized (STUPIDSDF) {
                     fromDate = toDate = STUPIDSDF.parse(dateString);
                 }
-            } catch(Exception exc) {
-            }
+            } catch (Exception exc) {}
         }
 
-        for(int i=0;fromDate== null && i<SDFS.length;i++) {
-            SimpleDateFormat sdf =  SDFS[i];
-            synchronized(sdf) {
+        for (int i = 0; (fromDate == null) && (i < SDFS.length); i++) {
+            SimpleDateFormat sdf = SDFS[i];
+            synchronized (sdf) {
                 try {
                     fromDate = toDate = sdf.parse(dateString);
                     break;
-                } catch(Exception exc) {
-                }
+                } catch (Exception exc) {}
             }
         }
 
@@ -217,7 +231,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
         if(fromDate!=null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssZ");
             sdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
-            System.err.println ("DATE:" + dateString + "\n     " + 
+            System.err.println ("DATE:" + dateString + "\n     " +
                                 sdf.format(fromDate));
             System.err.println ("");
         } else {
@@ -225,7 +239,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
         }
         */
 
-        return new Date[]{fromDate,toDate};
+        return new Date[] { fromDate, toDate };
     }
 
 
@@ -244,11 +258,11 @@ public class FitsTypeHandler extends GenericTypeHandler {
         }
         Fits fits = new Fits(entry.getFile());
         for (int headerIdx = 0; headerIdx < fits.size(); headerIdx++) {
-            BasicHDU hdu  = fits.getHDU(headerIdx);
-            nom.tam.fits.Header header = hdu.getHeader();
+            BasicHDU            hdu       = fits.getHDU(headerIdx);
+            nom.tam.fits.Header header    = hdu.getHeader();
 
-            Date[] dateRange = getDateRange(header);
-            if (dateRange != null&& dateRange[0]!=null) {
+            Date[]              dateRange = getDateRange(header);
+            if ((dateRange != null) && (dateRange[0] != null)) {
                 entry.setStartDate(dateRange[0].getTime());
                 entry.setEndDate(dateRange[1].getTime());
             }
@@ -276,12 +290,14 @@ public class FitsTypeHandler extends GenericTypeHandler {
         Fits fits = new Fits(file);
         //        System.err.println(file);
         for (int headerIdx = 0; headerIdx < fits.size(); headerIdx++) {
-            BasicHDU            hdu     = fits.getHDU(headerIdx);
-            nom.tam.fits.Header header  = hdu.getHeader();
-            Date[] dateRange = getDateRange(header);
-            if(true) return;
+            BasicHDU            hdu       = fits.getHDU(headerIdx);
+            nom.tam.fits.Header header    = hdu.getHeader();
+            Date[]              dateRange = getDateRange(header);
+            if (true) {
+                return;
+            }
 
-            String              hduType = "N/A";
+            String hduType = "N/A";
             if (hdu instanceof AsciiTableHDU) {
                 hduType = "Ascii Table";
             } else if (hdu instanceof ImageHDU) {

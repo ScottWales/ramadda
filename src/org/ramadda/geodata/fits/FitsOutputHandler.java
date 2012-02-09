@@ -60,10 +60,10 @@ import java.util.List;
  */
 public class FitsOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_FITS_HDU = "fits.hdu";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_FITS_SUBSET = "fits.hdu";
 
     /** _more_ */
@@ -216,6 +216,7 @@ public class FitsOutputHandler extends OutputHandler {
      */
     public Result outputEntryInfo(Request request, Entry entry)
             throws Exception {
+
         StringBuffer sb = new StringBuffer();
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
         sb.append(HtmlUtil.submit(msg("Subset"), ARG_FITS_SUBSET));
@@ -243,8 +244,7 @@ public class FitsOutputHandler extends OutputHandler {
             if (tableData != null) {
                 StringBuffer tableSB = new StringBuffer();
                 tableSB.append("<div style=\"margin-left:25px;\">");
-                tableSB.append(
-                    "<table cellspacing=2 cellpadding=2>");
+                tableSB.append("<table cellspacing=2 cellpadding=2>");
                 if (header.getStringValue("TTYPE1") != null) {
                     tableSB.append("<tr>");
                     for (int colIdx = 0; colIdx < tableData.getNCols();
@@ -289,33 +289,38 @@ public class FitsOutputHandler extends OutputHandler {
                 List<String> toks = StringUtil.splitUpTo(card, "=", 2);
                 subSB.append("<tr>");
                 //Look for an '=' in the comment
-                if (toks.size() == 1 || toks.get(0).trim().indexOf(" ")>=0) {
+                if ((toks.size() == 1)
+                        || (toks.get(0).trim().indexOf(" ") >= 0)) {
                     if (card.startsWith("/")) {
                         card = card.substring(1);
                     }
-                    subSB.append("<td colspan=3><i>" + HtmlUtil.entityEncode(card) + "</i></td>");
+                    subSB.append("<td colspan=3><i>"
+                                 + HtmlUtil.entityEncode(card) + "</i></td>");
                 } else {
-                    String key = toks.get(0).trim();
+                    String key     = toks.get(0).trim();
                     String comment = "";
-                    String value   =  toks.get(1);
-                    int idx;
-                    if(value.startsWith("'")) {
-                        idx = value.indexOf("'", 1);
-                        comment = value.substring(idx+1).trim();
-                        value = value.substring(1,idx);
+                    String value   = toks.get(1);
+                    int    idx;
+                    if (value.startsWith("'")) {
+                        idx     = value.indexOf("'", 1);
+                        comment = value.substring(idx + 1).trim();
+                        value   = value.substring(1, idx);
                         if (comment.startsWith("/")) {
                             comment = comment.substring(1);
                         }
-                    }  else {
-                        idx     = value.indexOf("/");
+                    } else {
+                        idx = value.indexOf("/");
                         if (idx >= 0) {
                             comment = value.substring(idx + 1).trim();
                             value   = value.substring(0, idx).trim();
                         }
                     }
 
-                    subSB.append("<td><b>" + HtmlUtil.entityEncode(key) + "</b></td><td>"
-                                 + HtmlUtil.entityEncode(value) + "</td><td><i>" + HtmlUtil.entityEncode(comment)
+                    subSB.append("<td><b>" + HtmlUtil.entityEncode(key)
+                                 + "</b></td><td>"
+                                 + HtmlUtil.entityEncode(value)
+                                 + "</td><td><i>"
+                                 + HtmlUtil.entityEncode(comment)
                                  + "</i></td></tr>");
                 }
                 subSB.append("</tr>");
@@ -329,6 +334,7 @@ public class FitsOutputHandler extends OutputHandler {
         }
         sb.append(HtmlUtil.formClose());
         return new Result("", sb);
+
 
     }
 
