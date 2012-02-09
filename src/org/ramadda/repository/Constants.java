@@ -170,6 +170,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_GRAPH = "ramadda.icon.graph";
+    public static final String ICON_TABLE = "ramadda.icon.table";
 
     /** _more_ */
     public static final String ICON_GRAYRECT = "ramadda.icon.grayrect";

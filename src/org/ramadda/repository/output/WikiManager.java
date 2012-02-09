@@ -202,6 +202,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_TREE = "tree";
 
+    public static final String WIKIPROP_TABLE = "table";
+
     /** wiki import */
     public static final String WIKIPROP_COMMENTS = "comments";
 
@@ -290,7 +292,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKIPROP_EARTH, WIKIPROP_CALENDAR, WIKIPROP_TIMELINE,
         WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR,
         WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT, WIKIPROP_GALLERY,
-        WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE, WIKIPROP_LINKS,
+        WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE, WIKIPROP_TABLE, WIKIPROP_LINKS,
         WIKIPROP_ENTRYID
     };
 
@@ -846,6 +848,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                        props);
             StringBuffer sb = new StringBuffer();
             getHtmlOutputHandler().makeGrid(request, children, sb);
+            return sb.toString();
+        } else if (include.equals(WIKIPROP_TABLE)) {
+            List<Entry> children = getEntries(request, wikiUtil, entry,
+                                       props);
+            StringBuffer sb = new StringBuffer();
+            getHtmlOutputHandler().makeTable(request, children, sb);
             return sb.toString();
         } else if (include.equals(WIKIPROP_RECENT)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,

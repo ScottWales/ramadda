@@ -348,7 +348,7 @@ public class Column implements Constants {
         addToForm   = XmlUtil.getAttribute(element, ATTR_ADDTOFORM,
                                            addToForm);
         canShow     = XmlUtil.getAttribute(element, ATTR_SHOWINHTML, canShow);
-        canList     = XmlUtil.getAttribute(element, ATTR_CANLIST, false);
+        canList     = XmlUtil.getAttribute(element, ATTR_CANLIST, true);
         size        = XmlUtil.getAttribute(element, ATTR_SIZE, size);
         rows        = XmlUtil.getAttribute(element, ATTR_ROWS, rows);
         columns     = XmlUtil.getAttribute(element, ATTR_COLUMNS, columns);

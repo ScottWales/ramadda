@@ -97,6 +97,12 @@ public class HtmlOutputHandler extends OutputHandler {
                        ICON_GRAPH);
 
     /** _more_ */
+    public static final OutputType OUTPUT_TABLE =
+        new OutputType("Tablular Layout", "html.table",
+    //                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+    OutputType.TYPE_FORSEARCH, "", ICON_TABLE);
+
+    /** _more_ */
     public static final OutputType OUTPUT_CLOUD = new OutputType("Cloud",
                                                       "default.cloud",
                                                       OutputType.TYPE_VIEW);
@@ -181,6 +187,7 @@ public class HtmlOutputHandler extends OutputHandler {
         addType(OUTPUT_HTML);
         addType(OUTPUT_TREE);
         addType(OUTPUT_TIMELINE);
+        addType(OUTPUT_TABLE);
         addType(OUTPUT_GRID);
         addType(OUTPUT_GRAPH);
         addType(OUTPUT_INLINE);
@@ -227,7 +234,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
-        OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_GRID,
+        OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE, OUTPUT_GRID,
                 OUTPUT_TIMELINE, CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
             new StringBuffer("<table cellspacing=0 cellpadding=0><tr>");
@@ -275,6 +282,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_TIMELINE));
+                links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
 
 
@@ -546,7 +554,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_TIMELINE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         }
-        if (output.equals(OUTPUT_GRID)) {
+        if (output.equals(OUTPUT_GRID)||output.equals(OUTPUT_TABLE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
@@ -1077,6 +1085,19 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    public Result outputTable(Request request, Entry group,
+                             List<Entry> subGroups, List<Entry> entries)
+            throws Exception {
+        StringBuffer sb         = new StringBuffer();
+        List<Entry>  allEntries = new ArrayList<Entry>();
+        allEntries.addAll(subGroups);
+        allEntries.addAll(entries);
+        makeTable(request, allEntries, sb);
+        return makeLinksResult(request, msg("Table"), sb,
+                               new State(group, subGroups, entries));
+    }
+
+
 
     /**
      * _more_
@@ -1156,6 +1177,125 @@ public class HtmlOutputHandler extends OutputHandler {
 
         sb.append("</table>");
 
+    }
+
+
+    public void makeTable(Request request, List<Entry> allEntries,
+                         StringBuffer sb)
+            throws Exception {
+        Hashtable<String,List<Entry>> map = new Hashtable<String,List<Entry>>();
+        List<String> types = new ArrayList<String>();
+        for (Entry entry : allEntries) {
+            TypeHandler typeHandler = entry.getTypeHandler();
+            String type = typeHandler.getType();
+            List<Column> columns = typeHandler.getColumns();
+            boolean hasFields = false;
+            if(columns!=null) {
+                for(Column column: columns) {
+                    if(column.getCanList() && column.getCanShow()) {
+                        hasFields=true;
+                    }
+                }
+            }
+            if(!hasFields) {
+                if(typeHandler.isGroup()) {
+                    type = "Folder";
+                } else {
+                    type = "File";
+                }
+            }
+            List<Entry> entries = map.get(type);
+            if(entries==null) {
+                entries = new ArrayList<Entry>();
+                map.put(type, entries);
+                types.add(type);
+            }
+            entries.add(entry);
+        }
+
+        for(String type: types) {
+            int numCols = 0;
+            List<Entry> entries = map.get(type);
+            TypeHandler typeHandler = entries.get(0).getTypeHandler();
+            String typeLabel = type.equals("File")?"File":typeHandler.getLabel();
+            List<Column> columns = typeHandler.getColumns();
+            StringBuffer tableSB = new StringBuffer();
+            tableSB.append("<table width=100% cellspacing=2 cellpadding=2>");
+            tableSB.append("<tr>");
+            numCols++;
+            //            tableSB.append(HtmlUtil.col("<b>" + msg("Name") +"</b>"));
+            tableSB.append(HtmlUtil.col("&nbsp;"));
+            numCols++;
+            tableSB.append(HtmlUtil.col("&nbsp;"));
+            //            tableSB.append(HtmlUtil.col("<b>" + msg("Date") +"</b>"));
+
+
+
+            boolean isFile = false;
+            for(Entry entry: entries) {
+                if(entry.isFile()) {
+                    isFile = true;
+                    break;
+                }
+            }
+            if(isFile) {
+                numCols++;
+                tableSB.append(HtmlUtil.col(""));
+                numCols++;
+                tableSB.append(HtmlUtil.col("<b>" + msg("Size") +"</b>"));
+            }
+            if(columns!=null) {
+                for(Column column: columns) {
+                    if(column.getCanList() && column.getCanShow()) {
+                        numCols++;
+                        tableSB.append(HtmlUtil.col("<b>" + column.getLabel() +"</b>"));
+                    }
+                }
+            }
+            tableSB.append("</tr>");
+
+            String blank  = HtmlUtil.img(getRepository().iconUrl(ICON_BLANK));
+            for(Entry entry: entries) {
+                tableSB.append("<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
+                tableSB.append(HtmlUtil.col(getEntryManager().getAjaxLink(request,entry,entry.getLabel()).toString()," nowrap "));
+                tableSB.append(HtmlUtil.col(getRepository().formatDateShort(request,
+                                                               new Date(entry.getStartDate()),
+                                                                            getEntryManager().getTimezone(entry), "")," width=10% align=right "));
+
+                if(isFile) {
+                    tableSB.append(HtmlUtil.col(HtmlUtil.href(entry.getTypeHandler().getEntryResourceUrl(request,
+                                                                                       entry), HtmlUtil.img(iconUrl(ICON_DOWNLOAD),
+                                                                                                            msg("Download"), ""))," width=2% "));
+                } else {
+                    tableSB.append(HtmlUtil.col(""));
+                }
+
+                if(isFile) {
+                    if(entry.isFile()) {
+                        tableSB.append(HtmlUtil.col(formatFileLength(entry.getResource().getFileSize()), " align=right nowrap "));
+                    } else {
+                        tableSB.append(HtmlUtil.col("NA"));
+                    }
+
+                }
+                Object[]values = entry.getValues();
+
+                if(columns!=null) {
+                    for(Column column: columns) {
+                        if(column.getCanList()) {
+                            String s = column.getString(values);
+                            if(s==null) s = "NA";
+                            tableSB.append(HtmlUtil.col(s));
+                        }
+                    }
+                }
+                tableSB.append("</tr>");
+                tableSB.append("<tr><td colspan=" + numCols +" style=\"border-bottom:1px #eee solid;\" >"  + blank +"</td></tr>");
+            }
+            tableSB.append("</table>");
+            sb.append("<p>");
+            sb.append(HtmlUtil.makeShowHideBlock(typeLabel, HtmlUtil.insetLeft(tableSB.toString(),10), true));
+        }
     }
 
     /**
@@ -1285,6 +1425,10 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (outputType.equals(OUTPUT_GRID)) {
             return outputGrid(request, group, subGroups, entries);
+        }
+
+        if (outputType.equals(OUTPUT_TABLE)) {
+            return outputTable(request, group, subGroups, entries);
         }
 
         if (request.get("timelinexml", false)) {

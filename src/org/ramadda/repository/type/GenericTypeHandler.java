@@ -237,6 +237,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @return _more_
      */
+@Override
     public List<Column> getColumns() {
         return columns;
     }

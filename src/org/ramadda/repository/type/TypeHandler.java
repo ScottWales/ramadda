@@ -2707,6 +2707,9 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public List<Column> getColumns() {
+        return null;
+    }
 
     /**
      * _more_
