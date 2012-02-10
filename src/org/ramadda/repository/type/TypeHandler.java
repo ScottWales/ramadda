@@ -1081,7 +1081,8 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-
+    public void doFinalInitialization(Request request, Entry entry) {
+    }
 
     /**
      * Does this type match the file being harvester
@@ -2380,6 +2381,12 @@ public class TypeHandler extends RepositoryManager {
 
         boolean showTime = okToShowInForm(entry, "time", true);
         if (okToShowInForm(entry, ARG_DATE)) {
+
+            String setTimeCbx =(entry.isGroup()? HtmlUtil.checkbox(
+                                                  ARG_SETTIMEFROMCHILDREN, "true",
+                                                  false) + " "
+                                + msg("Set time range from children"):"");
+
             if ( !okToShowInForm(entry, ARG_TODATE)) {
                 sb.append(
                     formEntry(
@@ -2387,7 +2394,7 @@ public class TypeHandler extends RepositoryManager {
                         msgLabel(getFormLabel(entry, ARG_DATE, "Date")),
                         getRepository().makeDateInput(
                             request, ARG_FROMDATE, "entryform", fromDate,
-                            timezone, showTime)));
+                            timezone, showTime) +" " + setTimeCbx));
 
             } else {
                 sb.append(
@@ -2405,7 +2412,8 @@ public class TypeHandler extends RepositoryManager {
                 //                        " <b>--</b> " +
                 getRepository().makeDateInput(request, ARG_TODATE,
                         "entryform", toDate, timezone,
-                        showTime) + HtmlUtil.space(2)));
+                                              showTime) + HtmlUtil.space(2)
+                        +" " + setTimeCbx));
             }
 
         }

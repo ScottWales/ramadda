@@ -1102,6 +1102,10 @@ public interface Constants {
         "setboundsfromchildren";
 
     /** _more_ */
+    public static final String ARG_SETTIMEFROMCHILDREN =
+        "settimefromchildren";
+
+    /** _more_ */
     public static final String ARG_NORTH = "north";
 
     /** _more_ */

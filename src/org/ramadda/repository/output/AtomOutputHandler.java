@@ -82,6 +82,7 @@ public class AtomOutputHandler extends OutputHandler {
     /** mime type */
     public static final String MIME_ATOM = "application/atom+xml";
 
+
     /** _more_ */
     SimpleDateFormat sdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");

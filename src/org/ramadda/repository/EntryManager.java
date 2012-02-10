@@ -1479,6 +1479,11 @@ public class EntryManager extends RepositoryManager {
 
 
         insertEntries(entries, newEntry);
+        if(newEntry) {
+            for(Entry theNewEntry: entries) {
+                theNewEntry.getTypeHandler().doFinalInitialization(request, theNewEntry);
+            }
+        }
 
         if (forUpload) {
             entry = (Entry) entries.get(0);
@@ -1692,10 +1697,30 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        List<Entry> children = null;
+
         if (request.get(ARG_SETBOUNDSFROMCHILDREN, false)) {
-            Rectangle2D.Double rect = getBounds(getChildren(request, entry));
+            if(children==null)
+                children = getChildren(request, entry);
+            Rectangle2D.Double rect = getBounds(children);
             if (rect != null) {
                 entry.setBounds(rect);
+            }
+        }
+
+
+        if (request.get(ARG_SETTIMEFROMCHILDREN, false)) {
+            if(children==null)
+                children = getChildren(request, entry);
+            long minTime = Long.MAX_VALUE;
+            long maxTime = Long.MIN_VALUE;
+            for(Entry child: children) {
+                minTime = Math.min(minTime, child.getStartDate());
+                maxTime = Math.max(maxTime, child.getEndDate());
+            }
+            if(minTime!=Long.MAX_VALUE) {
+                entry.setStartDate(minTime);
+                entry.setEndDate(maxTime);
             }
         }
 
