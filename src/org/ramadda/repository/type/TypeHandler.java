@@ -2382,7 +2382,7 @@ public class TypeHandler extends RepositoryManager {
         boolean showTime = okToShowInForm(entry, "time", true);
         if (okToShowInForm(entry, ARG_DATE)) {
 
-            String setTimeCbx =(entry.isGroup()? HtmlUtil.checkbox(
+            String setTimeCbx =(entry!=null && entry.isGroup()? HtmlUtil.checkbox(
                                                   ARG_SETTIMEFROMCHILDREN, "true",
                                                   false) + " "
                                 + msg("Set time range from children"):"");
