@@ -241,7 +241,7 @@ public class FitsOutputHandler extends OutputHandler {
                 tableData = (TableData) hdu.getData();
 
             }
-            if (tableData != null) {
+            if (tableData != null && tableData.getNRows()<5000) {
                 StringBuffer tableSB = new StringBuffer();
                 tableSB.append("<div style=\"margin-left:25px;\">");
                 tableSB.append("<table cellspacing=2 cellpadding=2>");
@@ -266,7 +266,7 @@ public class FitsOutputHandler extends OutputHandler {
                     for (Object item : row) {
                         tableSB.append("<td>");
                         tableSB.append(getRowItem(item));
-                        tableSB.append("</td>");
+                       tableSB.append("</td>");
                     }
                     tableSB.append("</tr>");
                 }
@@ -346,11 +346,15 @@ public class FitsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private String getRowItem(Object item) {
+        try {
         int length = Array.getLength(item);
         if (length > 0) {
             return Array.get(item, 0).toString();
         }
         return item.toString();
+        } catch(Exception exc) {
+            return item.toString();
+        }
     }
 
 
