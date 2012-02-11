@@ -147,10 +147,10 @@ public class FitsTypeHandler extends GenericTypeHandler {
         }
     }
 
-    /** _more_          */
+    /** _more_ */
     private static SimpleDateFormat[] SDFS;
 
-    /** _more_          */
+    /** _more_ */
     private static SimpleDateFormat STUPIDSDF;
 
     /**
