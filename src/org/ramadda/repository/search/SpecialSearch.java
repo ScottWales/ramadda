@@ -80,7 +80,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     private String searchUrl;
 
     /** _more_          */
-    private boolean searchOpen = true;;
+    private boolean searchOpen = true;
+
+    private boolean showArea = true;
 
     /** _more_ */
     private String label;
@@ -142,6 +144,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         searchOpen  = Misc.getProperty(props, "searchopen", true);
+        showArea    = Misc.getProperty(props, "form.area.show", true);
         searchUrl   = (String) props.get("searchurl");
         label       = (String) props.get("label");
         theType     = (String) props.get("type");
@@ -286,10 +289,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         String clearLink  = map.getSelectorClearLink(repository.msg("Clear"));
         String searchType = TypeHandler.getSpatialSearchTypeWidget(request);
+        if(showArea) {
         String widget     = map.getSelectorWidget(ARG_AREA, nwse);
         formSB.append(HtmlUtil.formEntry(msgLabel("Location"),
                                          HtmlUtil.table(new Object[] { widget,
                 clearLink })));
+        }
         //        formSB.append(HtmlUtil.formEntry("", searchType));
 
 
@@ -422,13 +427,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public void makeEntryList(Request request, StringBuffer sb,
                               List<Entry> entries)
             throws Exception {
-        Result tmpResult =
-            getRepository().getHtmlOutputHandler().outputGroup(request,
-                HtmlOutputHandler.OUTPUT_HTML,
-                getRepository().getEntryManager().getDummyGroup(), entries,
-                new ArrayList<Entry>());
-
-        sb.append(new String(tmpResult.getContent()));
+        getRepository().getHtmlOutputHandler().makeTable(request,
+                                                         entries, sb);
     }
 
 
