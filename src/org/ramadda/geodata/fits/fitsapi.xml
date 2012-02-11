@@ -10,5 +10,5 @@
       <property name="label" value="FITS Search"/>
       <property name="searchurl" value="/fits/search"/>
       <property name="type" value="fits_data"/>
-      <api request="/fits/search"    method="processSearchRequest" toplevel="true" name="Search Fits"/>
+      <api request="/fits/search"    method="processSearchRequest" toplevel="false" name="Search Fits"/>
 </api>
