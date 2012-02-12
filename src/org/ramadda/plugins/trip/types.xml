@@ -33,7 +33,7 @@
   </type>
 
 
-  <type name="trip_item"  handler="org.ramadda.plugins.trip.TripItemHandler" xforuser="false" category="Travel">
+  <type name="trip_item"  handler="org.ramadda.plugins.trip.TripItemHandler" foruser="false" category="Travel">
      <property name="form.setbounds.show" value="false"/>
      <property name="form.file.show" value="false"/>
      <property name="form.resource.extra.show" value="false"/>

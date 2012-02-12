@@ -4261,11 +4261,17 @@ public class TypeHandler extends RepositoryManager {
     public boolean getForUser() {
         if ( !forUser) {
             return false;
+        } else {
+            //Don't inherit the for user
+            return true;
         }
+        
+        /*
         if (getParent() != null) {
             return getParent().getForUser();
         }
         return true;
+        */
     }
 
 
