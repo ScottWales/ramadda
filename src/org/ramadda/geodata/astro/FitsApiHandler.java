@@ -18,7 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.fits;
+package org.ramadda.geodata.astro;
 
 
 import org.ramadda.repository.*;
