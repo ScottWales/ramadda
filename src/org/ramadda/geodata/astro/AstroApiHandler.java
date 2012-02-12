@@ -41,7 +41,7 @@ import java.util.Hashtable;
  * @version $Revision: 1.3 $
  */
 
-public class FitsApiHandler extends SpecialSearch {
+public class AstroApiHandler extends SpecialSearch {
 
     /**
      * _more_
@@ -52,7 +52,7 @@ public class FitsApiHandler extends SpecialSearch {
      *
      * @throws Exception On badness
      */
-    public FitsApiHandler(Repository repository, Element node,
+    public AstroApiHandler(Repository repository, Element node,
                           Hashtable props)
             throws Exception {
         super(repository, node, props);
