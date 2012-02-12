@@ -243,6 +243,10 @@ public class FitsTypeHandler extends GenericTypeHandler {
     }
 
 
+    public Object[] createValueArray() {
+        return new Object[4];
+    }
+
     /**
      * _more_
      *
@@ -254,7 +258,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Entry entry) throws Exception {
         Object[] values = entry.getValues();
         if (values == null) {
-            values = new Object[4];
+            values = createValueArray();
         }
         Fits fits = new Fits(entry.getFile());
         for (int headerIdx = 0; headerIdx < fits.size(); headerIdx++) {
@@ -266,16 +270,21 @@ public class FitsTypeHandler extends GenericTypeHandler {
                 entry.setStartDate(dateRange[0].getTime());
                 entry.setEndDate(dateRange[1].getTime());
             }
-            for (int i = 0; i < FITS_PROPS.length; i++) {
-                if (values[i] == null) {
-                    String value = header.getStringValue(FITS_PROPS[i]);
-                    if (value != null) {
-                        values[i] = value.trim();
-                    }
+            processHeader(entry, header, values);
+        }
+        entry.setValues(values);
+    }
+
+
+    public void processHeader(Entry entry, Header header, Object[] values) {
+        for (int i = 0; i < FITS_PROPS.length; i++) {
+            if (values[i] == null) {
+                String value = header.getStringValue(FITS_PROPS[i]);
+                if (value != null) {
+                    values[i] = value.trim();
                 }
             }
         }
-        entry.setValues(values);
     }
 
 
