@@ -157,7 +157,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      *
      * @return _more_
      */
-    public String formEntryTop(Request request, String label,
+    public static String formEntryTop(Request request, String label,
                                String contents) {
         if (request.isMobile()) {
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"

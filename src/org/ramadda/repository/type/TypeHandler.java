@@ -116,6 +116,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
+    /** _more_          */
     public static final String ATTR_PATTERN = "pattern";
 
     /** _more_ */
@@ -157,7 +158,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private TypeHandler parent;
 
-    /** _more_          */
+    /** _more_ */
     private static String tinyMceTemplate;
 
     /** _more_ */
@@ -180,6 +181,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public Hashtable properties = new Hashtable();
 
+    /** _more_          */
     public String harvestPattern;
 
     /** _more_ */
@@ -219,7 +221,7 @@ public class TypeHandler extends RepositoryManager {
         this.category = XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
                                              category);
         this.harvestPattern = XmlUtil.getAttribute(entryNode, ATTR_PATTERN,
-                                                   (String)null);
+                (String) null);
         List metadataNodes = XmlUtil.findChildren(entryNode, TAG_METADATA);
         for (int i = 0; i < metadataNodes.size(); i++) {
             Element metadataNode = (Element) metadataNodes.get(i);
@@ -1081,8 +1083,13 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public void doFinalInitialization(Request request, Entry entry) {
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     */
+    public void doFinalInitialization(Request request, Entry entry) {}
 
     /**
      * Does this type match the file being harvester
@@ -1092,8 +1099,10 @@ public class TypeHandler extends RepositoryManager {
      * @return is this one of my files
      */
     public boolean canHarvestFile(File f) {
-        if(harvestPattern!=null) {
-            if(f.getName().matches(harvestPattern)) return true;
+        if (harvestPattern != null) {
+            if (f.getName().matches(harvestPattern)) {
+                return true;
+            }
         }
         return false;
     }
@@ -1583,8 +1592,9 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    private HashSet  seenIt= new HashSet();
-    
+    /** _more_          */
+    private HashSet seenIt = new HashSet();
+
 
     /**
      * _more_
@@ -1605,11 +1615,11 @@ public class TypeHandler extends RepositoryManager {
                 seenIt.add(entry.getId());
                 getLogManager().logInfoAndPrint("cannot download:" + entry);
                 Resource resource = entry.getResource();
-                getLogManager().logInfoAndPrint("\tresource:" + resource + 
+                getLogManager().logInfoAndPrint("\tresource:" + resource +
                 " type:" + resource.getType() +
                 " exists:" +  resource.getTheFile().exists() +
                 " the file:" + resource.getTheFile());
-                
+
             }
             */
             return null;
@@ -1698,11 +1708,11 @@ public class TypeHandler extends RepositoryManager {
 
 
             //Only show the created by and type when the user is logged in
-            if(!request.isAnonymous()) {
+            if ( !request.isAnonymous()) {
                 sb.append(formEntry(request, msgLabel("Created by"),
                                     userSearchLink + " @ "
-                                    + formatDate(request, entry.getCreateDate(),
-                                                 entry)));
+                                    + formatDate(request,
+                                        entry.getCreateDate(), entry)));
             }
 
             Resource resource      = entry.getResource();
@@ -1821,7 +1831,7 @@ public class TypeHandler extends RepositoryManager {
             }
             if ( !showImage) {
                 //Only show the created by and type when the user is logged in
-                if(!request.isAnonymous()) {
+                if ( !request.isAnonymous()) {
                     sb.append(formEntry(request, msgLabel("Type"), typeDesc));
                 }
             }
@@ -2382,10 +2392,11 @@ public class TypeHandler extends RepositoryManager {
         boolean showTime = okToShowInForm(entry, "time", true);
         if (okToShowInForm(entry, ARG_DATE)) {
 
-            String setTimeCbx =(entry!=null && entry.isGroup()? HtmlUtil.checkbox(
-                                                  ARG_SETTIMEFROMCHILDREN, "true",
-                                                  false) + " "
-                                + msg("Set time range from children"):"");
+            String setTimeCbx = (((entry != null) && entry.isGroup())
+                                 ? HtmlUtil.checkbox(ARG_SETTIMEFROMCHILDREN,
+                                     "true", false) + " "
+                                         + msg("Set time range from children")
+                                 : "");
 
             if ( !okToShowInForm(entry, ARG_TODATE)) {
                 sb.append(
@@ -2394,7 +2405,7 @@ public class TypeHandler extends RepositoryManager {
                         msgLabel(getFormLabel(entry, ARG_DATE, "Date")),
                         getRepository().makeDateInput(
                             request, ARG_FROMDATE, "entryform", fromDate,
-                            timezone, showTime) +" " + setTimeCbx));
+                            timezone, showTime) + " " + setTimeCbx));
 
             } else {
                 sb.append(
@@ -2412,8 +2423,7 @@ public class TypeHandler extends RepositoryManager {
                 //                        " <b>--</b> " +
                 getRepository().makeDateInput(request, ARG_TODATE,
                         "entryform", toDate, timezone,
-                                              showTime) + HtmlUtil.space(2)
-                        +" " + setTimeCbx));
+                        showTime) + HtmlUtil.space(2) + " " + setTimeCbx));
             }
 
         }
@@ -2643,8 +2653,8 @@ public class TypeHandler extends RepositoryManager {
                 } else {
                     if (tabTitles.size() > 1) {
                         sb.append(formEntryTop(request, msgLabel("Resource"),
-                                               OutputHandler.makeTabs(tabTitles,
-                                                                      tabContent, true) + extra));
+                                OutputHandler.makeTabs(tabTitles, tabContent,
+                                    true) + extra));
                     } else if (tabTitles.size() == 1) {
                         sb.append(formEntry(request, tabTitles.get(0) + ":",
                                             tabContent.get(0) + extra));
@@ -2715,6 +2725,11 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<Column> getColumns() {
         return null;
     }
@@ -2953,91 +2968,9 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-        List dateTypes = new ArrayList();
-        dateTypes.add(new TwoFacedObject(msg("Contained by range"),
-                                         DATE_SEARCHMODE_CONTAINEDBY));
-        dateTypes.add(new TwoFacedObject(msg("Overlaps range"),
-                                         DATE_SEARCHMODE_OVERLAPS));
-        dateTypes.add(new TwoFacedObject(msg("Contains range"),
-                                         DATE_SEARCHMODE_CONTAINS));
 
-
-        List dateSelect = new ArrayList();
-        dateSelect.add(new TwoFacedObject("---", "none"));
-        dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
-        dateSelect.add(new TwoFacedObject(msg("Last 3 hours"), "-3 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last 6 hours"), "-6 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last 12 hours"), "-12 hours"));
-        dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
-        dateSelect.add(new TwoFacedObject(msg("Last 7 days"), "-7 days"));
-
-
-
-        String dateSelectValue;
         for (Constants.DateArg arg : Constants.DATEARGS) {
-            if (request.exists(arg.relative)) {
-                dateSelectValue = request.getString(arg.relative, "");
-            } else {
-                dateSelectValue = "none";
-            }
-
-            String dateSelectInput = HtmlUtil.select(arg.relative,
-                                         dateSelect, dateSelectValue);
-            String minDate = request.getDateSelect(arg.from, (String) null);
-            String maxDate = request.getDateSelect(arg.to, (String) null);
-            //        request.remove(arg.from);
-            //        request.remove(arg.to);
-            //        List<TypeHandler> typeHandlers =
-            //            getRepository().getTypeHandlers(request);
-
-
-            String dateTypeValue = request.getString(arg.mode,
-                                       DATE_SEARCHMODE_DEFAULT);
-            String dateTypeInput = HtmlUtil.select(arg.mode, dateTypes,
-                                       dateTypeValue);
-
-            String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
-            String noDateInput = HtmlUtil.checkbox(
-                                     ARG_DATE_NODATAMODE,
-                                     VALUE_NODATAMODE_INCLUDE,
-                                     noDataMode.equals(
-                                         VALUE_NODATAMODE_INCLUDE));
-            String dateExtra;
-            if (arg.hasRange) {
-                dateExtra = HtmlUtil.space(4)
-                            + HtmlUtil.makeToggleInline(msg("More..."),
-                                HtmlUtil.p()
-                                + HtmlUtil.formTable(new String[] {
-                    msgLabel("Search for data whose time is"), dateTypeInput,
-                    msgLabel("Or search relative"), dateSelectInput, "",
-                    noDateInput + HtmlUtil.space(1)
-                    + msg("Include entries with no data times")
-                }), false);
-            } else {
-                dateExtra = HtmlUtil.space(4)
-                            + HtmlUtil.makeToggleInline(msg("More..."),
-                                HtmlUtil.p()
-                                + HtmlUtil.formTable(new String[] {
-                                    msgLabel("Or search relative"),
-                                    dateSelectInput }), false);
-
-
-            }
-
-            basicSB.append(
-                formEntryTop(
-                    request, msgLabel(arg.label),
-                    getRepository().makeDateInput(
-                        request, arg.from, "searchform",
-                        null) + HtmlUtil.space(1)
-                              + HtmlUtil.img(
-                                  getRepository().iconUrl(
-                                      ICON_RANGE)) + HtmlUtil.space(1)
-                                          + getRepository().makeDateInput(
-                                              request, arg.to, "searchform",
-                                                  null) + dateExtra));
-
-
+            addDateSearch(getRepository(), request, basicSB, arg);
         }
 
 
@@ -3133,6 +3066,98 @@ public class TypeHandler extends RepositoryManager {
                 basicSB.toString(), true));
         //        formBuffer.append(HtmlUtil.makeShowHideBlock(msg("Advanced"),
         //                advancedSB.toString(), false));
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param request _more_
+     * @param basicSB _more_
+     * @param arg _more_
+     */
+    public static void addDateSearch(Repository repository, Request request,
+                                     StringBuffer basicSB,
+                                     Constants.DateArg arg) {
+        List dateTypes = new ArrayList();
+        dateTypes.add(new TwoFacedObject(msg("Contained by range"),
+                                         DATE_SEARCHMODE_CONTAINEDBY));
+        dateTypes.add(new TwoFacedObject(msg("Overlaps range"),
+                                         DATE_SEARCHMODE_OVERLAPS));
+        dateTypes.add(new TwoFacedObject(msg("Contains range"),
+                                         DATE_SEARCHMODE_CONTAINS));
+
+        String dateSelectValue;
+        List   dateSelect = new ArrayList();
+        dateSelect.add(new TwoFacedObject("---", "none"));
+        dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
+        dateSelect.add(new TwoFacedObject(msg("Last 3 hours"), "-3 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Last 6 hours"), "-6 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Last 12 hours"), "-12 hours"));
+        dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
+        dateSelect.add(new TwoFacedObject(msg("Last 7 days"), "-7 days"));
+
+
+
+        if (request.exists(arg.relative)) {
+            dateSelectValue = request.getString(arg.relative, "");
+        } else {
+            dateSelectValue = "none";
+        }
+
+        String dateSelectInput = HtmlUtil.select(arg.relative, dateSelect,
+                                     dateSelectValue);
+        String minDate = request.getDateSelect(arg.from, (String) null);
+        String maxDate = request.getDateSelect(arg.to, (String) null);
+        //        request.remove(arg.from);
+        //        request.remove(arg.to);
+        //        List<TypeHandler> typeHandlers =
+        //            repository.getTypeHandlers(request);
+
+
+        String dateTypeValue = request.getString(arg.mode,
+                                   DATE_SEARCHMODE_DEFAULT);
+        String dateTypeInput = HtmlUtil.select(arg.mode, dateTypes,
+                                   dateTypeValue);
+
+        String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
+        String noDateInput = HtmlUtil.checkbox(ARG_DATE_NODATAMODE,
+                                 VALUE_NODATAMODE_INCLUDE,
+                                 noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
+        String dateExtra;
+        if (arg.hasRange) {
+            dateExtra = HtmlUtil.space(4)
+                        + HtmlUtil.makeToggleInline(msg("More..."),
+                            HtmlUtil.p() + HtmlUtil.formTable(new String[] {
+                msgLabel("Search for data whose time is"), dateTypeInput,
+                msgLabel("Or search relative"), dateSelectInput, "",
+                noDateInput + HtmlUtil.space(1)
+                + msg("Include entries with no data times")
+            }), false);
+        } else {
+            dateExtra = HtmlUtil.space(4)
+                        + HtmlUtil.makeToggleInline(msg("More..."),
+                            HtmlUtil.p()
+                            + HtmlUtil.formTable(new String[] {
+                                msgLabel("Or search relative"),
+                                dateSelectInput }), false);
+
+
+        }
+
+        basicSB.append(
+            RepositoryManager.formEntryTop(
+                request, msgLabel(arg.label),
+                repository.makeDateInput(
+                    request, arg.from, "searchform", null) + HtmlUtil.space(
+                    1) + HtmlUtil.img(repository.iconUrl(ICON_RANGE))
+                       + HtmlUtil.space(1)
+                       + repository.makeDateInput(
+                           request, arg.to, "searchform", null) + dateExtra));
+
+
 
     }
 
@@ -4265,7 +4290,7 @@ public class TypeHandler extends RepositoryManager {
             //Don't inherit the for user
             return true;
         }
-        
+
         /*
         if (getParent() != null) {
             return getParent().getForUser();

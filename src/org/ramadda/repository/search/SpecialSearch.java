@@ -79,10 +79,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private String searchUrl;
 
-    /** _more_          */
+    /** _more_ */
     private boolean searchOpen = true;
 
+    /** _more_          */
+    private boolean showText = true;
+
+    /** _more_          */
     private boolean showArea = true;
+
+    /** _more_          */
+    private boolean showDate = true;
 
     /** _more_ */
     private String label;
@@ -144,7 +151,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         searchOpen  = Misc.getProperty(props, "searchopen", true);
+        showText    = Misc.getProperty(props, "form.text.show", true);
         showArea    = Misc.getProperty(props, "form.area.show", true);
+        showDate    = Misc.getProperty(props, "form.date.show", true);
         searchUrl   = (String) props.get("searchurl");
         label       = (String) props.get("label");
         theType     = (String) props.get("type");
@@ -280,20 +289,32 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                        "apisearchform")));
         formSB.append(HtmlUtil.br());
         formSB.append(HtmlUtil.formTable());
-        formSB.append(
-            HtmlUtil.formEntry(
-                msgLabel(typeHandler.getFormLabel(null, ARG_NAME, "Text")),
-                HtmlUtil.input(
-                    ARG_TEXT, request.getString(ARG_TEXT, ""),
-                    HtmlUtil.SIZE_15 + " autofocus ")));
+        if (showText) {
+            formSB.append(
+                HtmlUtil.formEntry(
+                    msgLabel(
+                        typeHandler.getFormLabel(
+                            null, ARG_NAME, "Text")), HtmlUtil.input(
+                                ARG_TEXT, request.getString(ARG_TEXT, ""),
+                                HtmlUtil.SIZE_15 + " autofocus ")));
+        }
 
-        String clearLink  = map.getSelectorClearLink(repository.msg("Clear"));
-        String searchType = TypeHandler.getSpatialSearchTypeWidget(request);
-        if(showArea) {
-        String widget     = map.getSelectorWidget(ARG_AREA, nwse);
-        formSB.append(HtmlUtil.formEntry(msgLabel("Location"),
-                                         HtmlUtil.table(new Object[] { widget,
-                clearLink })));
+        if (showDate) {
+            TypeHandler.addDateSearch(getRepository(), request, formSB,
+                                      Constants.dataDate);
+
+        }
+
+        if (showArea) {
+            String clearLink =
+                map.getSelectorClearLink(repository.msg("Clear"));
+            String searchType =
+                TypeHandler.getSpatialSearchTypeWidget(request);
+            String widget = map.getSelectorWidget(ARG_AREA, nwse);
+            formSB.append(HtmlUtil.formEntry(msgLabel("Location"),
+                                             HtmlUtil.table(new Object[] {
+                                                 widget,
+                    clearLink })));
         }
         //        formSB.append(HtmlUtil.formEntry("", searchType));
 
@@ -373,7 +394,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 StringBuffer earthSB = new StringBuffer();
                 getMapManager().getGoogleEarth(request, entries, earthSB,
                         contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
-                                               contentsHeight, false);
+                        contentsHeight, false);
                 tabContents.add(HtmlUtil.div(earthSB.toString(),
                                              HtmlUtil.style("min-width:"
                                                  + minWidth + "px")));
@@ -427,8 +448,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public void makeEntryList(Request request, StringBuffer sb,
                               List<Entry> entries)
             throws Exception {
-        getRepository().getHtmlOutputHandler().makeTable(request,
-                                                         entries, sb);
+        getRepository().getHtmlOutputHandler().makeTable(request, entries,
+                sb);
     }
 
 
