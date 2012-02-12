@@ -362,10 +362,17 @@ a.ramadda-menuitem-link {
    display:none;
 }
 
+.ramadda-entry-table {
+   max-height: 400px; 
+   overflow-y: auto;
+}
+
+
 .ramadda-entry-row {
   margin-top:2px;
   border:1px #fff solid;
 }
+
 
 .ramadda-entry-row-label {
     font-style:italic;

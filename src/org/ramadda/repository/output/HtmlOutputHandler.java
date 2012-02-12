@@ -1213,13 +1213,16 @@ public class HtmlOutputHandler extends OutputHandler {
             entries.add(entry);
         }
 
+        int typeCnt = 0;
         for(String type: types) {
+            typeCnt++;
             int numCols = 0;
             List<Entry> entries = map.get(type);
             TypeHandler typeHandler = entries.get(0).getTypeHandler();
             String typeLabel = type.equals("File")?"File":typeHandler.getLabel();
             List<Column> columns = typeHandler.getColumns();
             StringBuffer tableSB = new StringBuffer();
+            tableSB.append("<div class=\"ramadda-entry-table\">");
             tableSB.append("<table width=100% cellspacing=2 cellpadding=2>");
             tableSB.append("<tr>");
             numCols++;
@@ -1293,8 +1296,18 @@ public class HtmlOutputHandler extends OutputHandler {
                 tableSB.append("<tr><td colspan=" + numCols +" style=\"border-bottom:1px #eee solid;\" >"  + blank +"</td></tr>");
             }
             tableSB.append("</table>");
-            sb.append("<p>");
-            sb.append(HtmlUtil.makeShowHideBlock(typeLabel, HtmlUtil.insetLeft(tableSB.toString(),10), true));
+
+            if(typeCnt>1) {
+                sb.append("<p>");
+            } 
+
+            tableSB.append("</div>");
+            if(types.size()>1) {
+                sb.append(HtmlUtil.makeShowHideBlock(typeLabel, HtmlUtil.insetLeft(tableSB.toString(),10), true));
+            } else {
+                sb.append(tableSB.toString());
+            }
+
         }
     }
 
