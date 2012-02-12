@@ -120,7 +120,7 @@ public class FitsOutputHandler extends OutputHandler {
             if (state.entry.getType().equals("fits_data")) {
                 links.add(makeLink(request, state.entry, OUTPUT_INFO));
                 links.add(makeLink(request, state.entry, OUTPUT_VIEWER));
-                links.add(makeLink(request, state.entry, OUTPUT_IMAGE));
+                //                links.add(makeLink(request, state.entry, OUTPUT_IMAGE));
             }
         }
     }

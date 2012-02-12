@@ -1,5 +1,5 @@
 
-<api handler="org.ramadda.geodata.fits.AstroApiHandler" id="astro">
+<api handler="org.ramadda.geodata.astro.AstroApiHandler" id="astro">
       <property name="admin" value="false"/>
       <property name="searchopen" value="true"/>
       <property name="form.area.show" value="false"/>

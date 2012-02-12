@@ -11,7 +11,7 @@
   </type>
 
 
-  <type name="fits_data"  description="FITS Data File" handler="org.ramadda.geodata.fits.FitsTypeHandler" category="FITS" pattern=".*\.fits$">
+  <type name="fits_data"  description="FITS Data File" handler="org.ramadda.geodata.astro.FitsTypeHandler" category="FITS" pattern=".*\.fits$">
      <property name="icon" value="/fits/fits.gif"/>
      <property name="form.show.resource" value="false"/>
      <property name="form.show.area" value="false"/>
@@ -26,7 +26,7 @@
    </type>
 
 
-  <type name="fits_eclipse" super="fits_data"  description="FITS Eclipse Data File" handler="org.ramadda.geodata.fits.EclipseTypeHandler" category="FITS" >
+  <type name="fits_eclipse" super="fits_data"  description="FITS Eclipse Data File" handler="org.ramadda.geodata.astro.EclipseTypeHandler" category="FITS" >
      <property name="icon" value="/fits/eclipse.png"/>
      <column name="location"  label="Location"/>
      <column name="source"  label="Source"/>
