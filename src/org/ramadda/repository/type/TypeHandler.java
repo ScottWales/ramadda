@@ -4221,11 +4221,7 @@ public class TypeHandler extends RepositoryManager {
      */
     private HashSet getEnumValuesInner(Request request, Column column, Entry entry)
             throws Exception {
-        String  key = getEnumValueKey(column, entry);
-        HashSet set = columnEnumValues.get(key);
-        if (set != null) {
-            return set;
-        }
+
         Clause clause = getEnumValuesClause(column, entry);
         if(request!=null) {
             List<Clause> ands = new ArrayList<Clause>();
@@ -4252,6 +4248,15 @@ public class TypeHandler extends RepositoryManager {
                 System.err.println("col:" + column + " Clause:" + clause);
             }
         }
+
+
+        String  key = getEnumValueKey(column, entry)+"_" + clause;
+        HashSet set = columnEnumValues.get(key);
+        if (set != null) {
+            return set;
+        }
+
+
         Statement stmt = getRepository().getDatabaseManager().select(
                              SqlUtil.distinct(column.getName()),
                              column.getTableName(), clause);
@@ -4261,7 +4266,7 @@ public class TypeHandler extends RepositoryManager {
         set = new HashSet();
         set.addAll(Misc.toList(values));
 
-        //        columnEnumValues.put(key, set);
+        columnEnumValues.put(key, set);
         return set;
     }
 
