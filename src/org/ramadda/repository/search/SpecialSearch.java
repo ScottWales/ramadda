@@ -70,6 +70,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
+    public static final String ARG_SEARCH_REFINE = "search.refine";
+    public static final String ARG_SEARCH_CLEAR = "search.clear";
+
     /** _more_ */
     private String theType;
 
@@ -207,16 +210,18 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public Result processSearchRequest(Request request) throws Exception {
 
 
-
         int contentsWidth  = 750;
         int contentsHeight = 450;
         int minWidth       = contentsWidth + 200;
-
         request.put(ARG_TYPE, theType);
-        List[] groupAndEntries =
-            getRepository().getEntryManager().getEntries(request);
-        List<Entry> entries = (List<Entry>) groupAndEntries[0];
-        entries.addAll(groupAndEntries[1]);
+        List<Entry> entries = new ArrayList<Entry>();
+        boolean refinement =request.exists(ARG_SEARCH_REFINE);
+        if(!refinement) {
+            List[] groupAndEntries =
+                getRepository().getEntryManager().getEntries(request);
+            entries = (List<Entry>) groupAndEntries[0];
+            entries.addAll(groupAndEntries[1]);
+        }
 
         if (request.exists("timelinexml")) {
             Entry group = getRepository().getEntryManager().getDummyGroup();
@@ -238,6 +243,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                        request.getString(ARG_AREA_SOUTH, ""),
                                        request.getString(ARG_AREA_EAST,
                                            ""), };
+
 
 
         MapInfo map = getRepository().getMapManager().createMap(request,
@@ -332,7 +338,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         formSB.append(HtmlUtil.formEntry("",
                                          HtmlUtil.submit(msg("Search"),
-                                             ARG_SEARCH_SUBMIT)));
+                                                         ARG_SEARCH_SUBMIT) +"  " +
+                                         HtmlUtil.submit(msg("Refine"),
+                                                         ARG_SEARCH_REFINE)));
+
         formSB.append(HtmlUtil.formTableClose());
         formSB.append(HtmlUtil.formClose());
         formSB.append("</div>");
@@ -362,47 +371,54 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         listSB.append(
             "&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>");
 
-        if (entries.size() == 0) {
+        if(refinement) {
             tabTitles.add(msg("Results"));
             tabContents.add(
-                HtmlUtil.div(
-                    getRepository().showDialogNote("No entries found"),
-                    HtmlUtil.style("min-width:" + minWidth + "px")));
-        }
-
-        for (String tab : tabs) {
-            if (tab.equals(TAB_LIST)) {
-                tabContents.add(HtmlUtil.div(listSB.toString(),
-                                             HtmlUtil.style("min-width:"
-                                                 + minWidth + "px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_LIST)) + " "
-                              + msg("List"));
-            } else if (tab.equals(TAB_MAP)) {
-                tabContents.add(HtmlUtil.div(mapSB.toString(),
-                                             HtmlUtil.style("min-width:"
-                                                 + minWidth + "px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_MAP)) + " "
-                              + msg("Map"));
-            } else if (tab.equals(TAB_TIMELINE)) {
-                tabContents.add(HtmlUtil.div(timelineSB.toString(),
-                                             HtmlUtil.style("min-width:"
-                                                 + minWidth + "px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_TIMELINE)) + " "
-                              + msg("Timeline"));
-            } else if (tab.equals(TAB_EARTH)
-                       && getMapManager().isGoogleEarthEnabled(request)) {
-                StringBuffer earthSB = new StringBuffer();
-                getMapManager().getGoogleEarth(request, entries, earthSB,
-                        contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
-                        contentsHeight, false);
-                tabContents.add(HtmlUtil.div(earthSB.toString(),
-                                             HtmlUtil.style("min-width:"
-                                                 + minWidth + "px")));
-                tabTitles.add(HtmlUtil.img(iconUrl(ICON_GOOGLEEARTH)) + " "
-                              + msg("Earth"));
+                            HtmlUtil.div(
+                                         getRepository().showDialogNote("Search criteria refined"),
+                                         HtmlUtil.style("min-width:" + minWidth + "px")));
+        } else {
+            if (entries.size() == 0) {
+                tabTitles.add(msg("Results"));
+                tabContents.add(
+                                HtmlUtil.div(
+                                             getRepository().showDialogNote("No entries found"),
+                                             HtmlUtil.style("min-width:" + minWidth + "px")));
+            } else {
+                for (String tab : tabs) {
+                    if (tab.equals(TAB_LIST)) {
+                        tabContents.add(HtmlUtil.div(listSB.toString(),
+                                                     HtmlUtil.style("min-width:"
+                                                                    + minWidth + "px")));
+                        tabTitles.add(HtmlUtil.img(iconUrl(ICON_LIST)) + " "
+                                      + msg("List"));
+                    } else if (tab.equals(TAB_MAP)) {
+                        tabContents.add(HtmlUtil.div(mapSB.toString(),
+                                                     HtmlUtil.style("min-width:"
+                                                                    + minWidth + "px")));
+                        tabTitles.add(HtmlUtil.img(iconUrl(ICON_MAP)) + " "
+                                      + msg("Map"));
+                    } else if (tab.equals(TAB_TIMELINE)) {
+                        tabContents.add(HtmlUtil.div(timelineSB.toString(),
+                                                     HtmlUtil.style("min-width:"
+                                                                    + minWidth + "px")));
+                        tabTitles.add(HtmlUtil.img(iconUrl(ICON_TIMELINE)) + " "
+                                      + msg("Timeline"));
+                    } else if (tab.equals(TAB_EARTH)
+                               && getMapManager().isGoogleEarthEnabled(request)) {
+                        StringBuffer earthSB = new StringBuffer();
+                        getMapManager().getGoogleEarth(request, entries, earthSB,
+                                                       contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
+                                                       contentsHeight, false);
+                        tabContents.add(HtmlUtil.div(earthSB.toString(),
+                                                     HtmlUtil.style("min-width:"
+                                                                    + minWidth + "px")));
+                        tabTitles.add(HtmlUtil.img(iconUrl(ICON_GOOGLEEARTH)) + " "
+                                      + msg("Earth"));
+                    }
+                }
             }
         }
-
         String tabs = (tabContents.size() == 1)
                       ? tabContents.get(0)
                       : OutputHandler.makeTabs(tabTitles, tabContents, true);

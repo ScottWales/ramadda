@@ -360,7 +360,6 @@ public class Column implements Constants {
                            XmlUtil.getAttribute(propNode, "value"));
         }
 
-
         if (isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
                                      (String) null);
@@ -1164,6 +1163,11 @@ public class Column implements Constants {
             if (value.length() > 0) {
                 where.add(Clause.eq(getFullName(), value));
             }
+        } else if (isEnumeration()) {
+            String value = request.getString(id, null);
+            if (value != null && value.length()>0) {
+                where.add(Clause.eq(getFullName(), value));
+            }
         } else {
             String value = request.getString(id, null);
             if (value != null) {
@@ -1348,7 +1352,7 @@ public class Column implements Constants {
             if (values != null) {
                 value = (String) toString(values, offset);
             }
-            List enums = getEnumPlusValues(entry);
+            List enums = getEnumPlusValues(request, entry);
             widget = HtmlUtil.select(id, enums, value) + "  or:  "
                      + HtmlUtil.input(id + "_plus", "", HtmlUtil.SIZE_20);
         } else if (isType(TYPE_INT)) {
@@ -1473,8 +1477,8 @@ public class Column implements Constants {
      *
      * @throws Exception _more_
      */
-    private List getEnumPlusValues(Entry entry) throws Exception {
-        List enums = typeHandler.getEnumValues(this, entry);
+    private List getEnumPlusValues(Request request, Entry entry) throws Exception {
+        List enums = typeHandler.getEnumValues(request, this, entry);
         //TODO: Check for Strings vs TwoFacedObjects
         if (enumValues != null) {
             List tmp = new ArrayList();
@@ -1784,7 +1788,7 @@ public class Column implements Constants {
             //            widget = HtmlUtil.select(id, tmpValues, request.getString(id));
         } else if (isType(TYPE_ENUMERATIONPLUS) || isType(TYPE_ENUMERATION)) {
             List tmpValues   = Misc.newList(TypeHandler.ALL_OBJECT);
-            List values      = typeHandler.getEnumValues(this, entry);
+            List values      = typeHandler.getEnumValues(request, this, entry);
             List valuesToUse = new ArrayList();
             if (enumValues != null) {
                 for (Object value : values) {

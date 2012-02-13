@@ -4187,7 +4187,7 @@ public class TypeHandler extends RepositoryManager {
         if ((theValue == null) || (theValue.length() == 0)) {
             return;
         }
-        HashSet set = getEnumValuesInner(column, entry);
+        HashSet set = getEnumValuesInner(null,column, entry);
         set.add(theValue);
     }
 
@@ -4201,8 +4201,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List getEnumValues(Column column, Entry entry) throws Exception {
-        HashSet set = getEnumValuesInner(column, entry);
+    public List getEnumValues(Request request, Column column, Entry entry) throws Exception {
+        HashSet set = getEnumValuesInner(request,column, entry);
         List    tmp = new ArrayList();
         tmp.addAll(set);
         return Misc.sort(tmp);
@@ -4219,7 +4219,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private HashSet getEnumValuesInner(Column column, Entry entry)
+    private HashSet getEnumValuesInner(Request request, Column column, Entry entry)
             throws Exception {
         String  key = getEnumValueKey(column, entry);
         HashSet set = columnEnumValues.get(key);
@@ -4227,6 +4227,31 @@ public class TypeHandler extends RepositoryManager {
             return set;
         }
         Clause clause = getEnumValuesClause(column, entry);
+        if(request!=null) {
+            List<Clause> ands = new ArrayList<Clause>();
+            boolean seenThisOne  = false;
+            for(Column otherCol: getColumns()) {
+                if(!otherCol.getCanSearch()|| !otherCol.isEnumeration()) continue;
+                if(otherCol.equals(column)) {
+                    seenThisOne  =true;
+                    //                    if(true) break;
+                    continue;
+                }
+                //                if(!seenThisOne) continue;
+                String urlId = otherCol.getFullName();
+                if(request.defined(urlId)) {
+                    ands.add(Clause.eq(otherCol.getName(),request.getString(urlId,"")));
+                }
+            }
+            if(ands.size()>0) {
+                if(clause == null) {
+                    clause = Clause.and(ands);
+                } else {
+                    clause = Clause.and(clause,Clause.and(ands));
+                }
+                System.err.println("col:" + column + " Clause:" + clause);
+            }
+        }
         Statement stmt = getRepository().getDatabaseManager().select(
                              SqlUtil.distinct(column.getName()),
                              column.getTableName(), clause);
@@ -4235,7 +4260,8 @@ public class TypeHandler extends RepositoryManager {
                 getRepository().getDatabaseManager().getIterator(stmt), 1);
         set = new HashSet();
         set.addAll(Misc.toList(values));
-        columnEnumValues.put(key, set);
+
+        //        columnEnumValues.put(key, set);
         return set;
     }
 

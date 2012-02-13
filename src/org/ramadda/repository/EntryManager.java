@@ -5408,6 +5408,7 @@ public class EntryManager extends RepositoryManager {
                                  searchCriteriaSB);
         int skipCnt = request.get(ARG_SKIP, 0);
 
+        System.err.println(where);
         SqlUtil.debug = false;
         List<Entry> entries       = new ArrayList<Entry>();
         List<Entry> groups        = new ArrayList<Entry>();
