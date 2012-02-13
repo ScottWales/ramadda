@@ -4225,15 +4225,11 @@ public class TypeHandler extends RepositoryManager {
         Clause clause = getEnumValuesClause(column, entry);
         if(request!=null) {
             List<Clause> ands = new ArrayList<Clause>();
-            boolean seenThisOne  = false;
             for(Column otherCol: getColumns()) {
                 if(!otherCol.getCanSearch()|| !otherCol.isEnumeration()) continue;
                 if(otherCol.equals(column)) {
-                    seenThisOne  =true;
-                    //                    if(true) break;
                     continue;
                 }
-                //                if(!seenThisOne) continue;
                 String urlId = otherCol.getFullName();
                 if(request.defined(urlId)) {
                     ands.add(Clause.eq(otherCol.getName(),request.getString(urlId,"")));
@@ -4245,11 +4241,11 @@ public class TypeHandler extends RepositoryManager {
                 } else {
                     clause = Clause.and(clause,Clause.and(ands));
                 }
-                System.err.println("col:" + column + " Clause:" + clause);
+                //                System.err.println("col:" + column + " Clause:" + clause);
             }
         }
 
-
+        //Use the clause string as part of the key
         String  key = getEnumValueKey(column, entry)+"_" + clause;
         HashSet set = columnEnumValues.get(key);
         if (set != null) {

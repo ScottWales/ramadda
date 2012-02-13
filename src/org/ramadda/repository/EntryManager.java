@@ -2431,6 +2431,11 @@ public class EntryManager extends RepositoryManager {
                 "Could not find entry");
         }
 
+        if(!getAccessManager().canAccessFile(request,  entry)) {
+            throw new AccessException("No access to file", request);
+        }
+
+
         if ( !entry.getResource().isUrl()) {
             if ( !getAccessManager().canDownload(request, entry)) {
                 fatalError(request, "Cannot download file");

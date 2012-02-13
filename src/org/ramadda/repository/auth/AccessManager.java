@@ -160,7 +160,6 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, String action)
             throws Exception {
 
-
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
                     || action.equals(Permission.ACTION_VIEWCHILDREN)
