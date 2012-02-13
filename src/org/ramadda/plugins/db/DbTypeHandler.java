@@ -1284,7 +1284,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 iconMap = new Hashtable<String, String>();
             }
             StringBuffer sb = new StringBuffer("");
-            for (String value : getEnumValues(entry, col)) {
+            for (String value : getEnumValues(request, entry, col)) {
                 String currentColor = colorMap.get(value);
                 String currentIcon  = iconMap.get(value);
                 if (currentColor == null) {
@@ -1395,7 +1395,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             if (iconMap == null) {
                 iconMap = new Hashtable<String, String>();
             }
-            List<String> enumValues = getEnumValues(entry, col);
+            List<String> enumValues = getEnumValues(request, entry, col);
             for (String value : enumValues) {
                 String iconArg   = iconID + "." + value;
                 String iconValue = request.getString(iconArg, "");
@@ -2796,7 +2796,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
 
-        List<String> enumValues = getEnumValues(entry, gridColumn);
+        List<String> enumValues = getEnumValues(request, entry, gridColumn);
 
 
         sb.append(
@@ -2865,12 +2865,12 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private List<String> getEnumValues(Entry entry, Column column)
+    private List<String> getEnumValues(Request request, Entry entry, Column column)
             throws Exception {
         if (column.getType().equals(Column.TYPE_ENUMERATION)) {
             return (List<String>) column.getValues();
         } else {
-            return (List<String>) tableHandler.getEnumValues(column, entry);
+            return (List<String>) tableHandler.getEnumValues(request, column, entry);
         }
     }
 
