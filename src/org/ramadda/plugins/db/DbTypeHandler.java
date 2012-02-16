@@ -1804,7 +1804,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             List<String> toks   = StringUtil.split(line, ",", false, false);
             Object[]     values = tableHandler.makeEntryValueArray();
             initializeValueArray(request, null, values);
-            if (toks.size() > columnsToUse.size()) {
+            if (toks.size() != columnsToUse.size()) {
                 throw new IllegalArgumentException("Wrong number of values:"
                         + line);
             }
@@ -3890,7 +3890,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                     ARG_DB_CREATE));
             bulkButtons.append(HtmlUtil.submit(msg("Cancel"), ARG_DB_LIST));
             bulk.append(bulkButtons);
-            bulk.append(HtmlUtil.br());
+            bulk.append(HtmlUtil.p());
             List colIds = new ArrayList();
             for (Column column : columnsToUse) {
                 colIds.add(new TwoFacedObject(column.getLabel(),
@@ -3903,17 +3903,21 @@ public class DbTypeHandler extends BlobTypeHandler {
                 if (cnt > 0) {
                     bulk.append(", ");
                 }
-                bulk.append(column.getName());
+                bulk.append(column.getLabel());
                 cnt++;
             }
             bulk.append(HtmlUtil.br());
             bulk.append(HtmlUtil.textArea(ARG_DB_BULK_TEXT, "", 10, 80));
             bulk.append(HtmlUtil.p());
-            bulk.append(msgHeader("Or upload a file"));
+            bulk.append(msgLabel("Or upload a file"));
+            bulk.append(HtmlUtil.br());
             bulk.append(msgLabel("File"));
             bulk.append(HtmlUtil.fileInput(ARG_DB_BULK_FILE,
                                            HtmlUtil.SIZE_60));
 
+
+            bulk.append(HtmlUtil.p());
+            bulk.append(bulkButtons);
             bulk.append(HtmlUtil.formClose());
             List<String> tabTitles = (List<String>) Misc.newList(msg("Form"),
                                          msg("Bulk Create"));
