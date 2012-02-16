@@ -42,7 +42,7 @@
 -->
 
 
-<table id="fp_equipment" name="Field Project Equipment" icon="/fieldproject/equipment.png">
+<table id="fp_equipment" name="Field Project Equipment" icon="/fieldproject/equipment.png" handler="org.ramadda.geodata.fieldproject.EquipmentDbTypeHandler">
   Qty TypeDescriptionManufacturerOriginPart#Model#Serial#OwnerUnavcoIDNASAID
 
 
@@ -56,6 +56,7 @@
        <property name="iscategory" value="true"/>
    </column>
    <column name="part" type="string" label="Part #"  canlist="true"  />
+   <column name="model" type="string" label="Model #"  canlist="true"  />
    <column name="serial" type="string" label="Serial #"  canlist="true"  />
    <column name="owner" type="enumerationplus" label="Owner" values="UNAVCO" canlist="true"  />
    <column name="internalid" type="string" label="Internal ID" cansearch="false"   canlist="false"/>

@@ -1240,9 +1240,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         loadOutputHandlers();
         getMetadataManager().loadMetadataHandlers(getPluginManager());
         loadApi();
-        loadAdminHandlers();
         loadLanguagePacks();
         loadSql();
+        loadAdminHandlers();
     }
 
     /**
