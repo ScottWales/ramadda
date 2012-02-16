@@ -300,6 +300,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final int IDX_DBPROPS = 3;
 
+    public static final int IDX_MAX_INTERNAL = 3;
+
     /** _more_ */
     private DbAdminHandler dbAdmin;
 
@@ -1898,17 +1900,21 @@ public class DbTypeHandler extends BlobTypeHandler {
         StringBuffer sb = new StringBuffer();
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
+            int colCnt =  0;
             for (int i = 1; i < columns.size(); i++) {
+                if(i<=IDX_MAX_INTERNAL) continue;
+                
                 StringBuffer cb = new StringBuffer();
                 columns.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
                             values);
                 String colValue = cb.toString();
                 colValue = colValue.replaceAll(",", "_");
                 colValue = colValue.replaceAll("\n", " ");
-                if (i > 1) {
+                if (colCnt > 0) {
                     sb.append(",");
                 }
                 sb.append(colValue);
+                colCnt++;
             }
             sb.append("\n");
         }
