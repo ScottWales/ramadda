@@ -10,6 +10,11 @@
    </type>
 
 
+    <type name="project_day" description="Field Day" category="Field Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+    </type>
+
+
+
     <type name="project_fieldnote" description="Field Note" category="Field Project" >
       <property name="icon" value="/fieldproject/notebook.png"/> 
       <property name="form.name.label" value="Objective"/>
