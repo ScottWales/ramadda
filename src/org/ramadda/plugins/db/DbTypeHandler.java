@@ -50,6 +50,8 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
+import java.io.File;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -136,10 +138,11 @@ public class DbTypeHandler extends BlobTypeHandler {
     public static final String ARG_DB_VIEW = "db.view";
 
 
-    /** _more_          */
+
+    /** _more_ */
     public static final String ARG_ENUM_ICON = "db.icon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ENUM_COLOR = "db.color";
 
 
@@ -147,7 +150,10 @@ public class DbTypeHandler extends BlobTypeHandler {
     public static final String ARG_DB_BULKCOL = "db.bulkcol";
 
     /** _more_ */
-    public static final String ARG_DB_BULK = "db.bulk";
+    public static final String ARG_DB_BULK_TEXT = "db.bulk.text";
+
+    /** _more_          */
+    public static final String ARG_DB_BULK_FILE = "db.bulk.file";
 
     /** _more_ */
     public static final String ARG_DB_DO = "db.do";
@@ -163,6 +169,9 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     /** _more_ */
     public static final String ARG_DB_NEWFORM = "db.newform";
+
+    /** _more_          */
+    public static final String ARG_DB_CSVFILE = "db.csvfile";
 
     /** _more_ */
     public static final String ARG_DB_SEARCHFORM = "db.searchform";
@@ -271,7 +280,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String PROP_CAT_COLOR = "cat.color";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_CAT_ICON = "cat.icon";
 
 
@@ -300,6 +309,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final int IDX_DBPROPS = 3;
 
+    /** _more_ */
     public static final int IDX_MAX_INTERNAL = 3;
 
     /** _more_ */
@@ -318,7 +328,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     private boolean hasEmail = false;
 
-    /** _more_          */
+    /** _more_ */
     private List<String> icons;
 
     /** _more_ */
@@ -342,11 +352,14 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     private List<Column> categoryColumns = new ArrayList<Column>();
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> enumColumns = new ArrayList<Column>();
 
     /** _more_ */
     private List<Column> columns;
+
+    /** _more_          */
+    private List<Column> columnsToUse;
 
     /** _more_ */
     private Column dfltSortColumn;
@@ -467,7 +480,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
         List<Object[]> valueList = (List<Object[]>) xmlEncoder.toObject(
                                        new String(
-                                           RepositoryUtil.decodeBase64(values)));
+                                           RepositoryUtil.decodeBase64(
+                                               values)));
         if (valueList == null) {
             throw new IllegalArgumentException(
                 "Could not read database value list");
@@ -562,6 +576,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         columns = tableHandler.getColumns();
 
+
         tableHandler.init(columnNodes);
         List<String> columnNames =
             new ArrayList<String>(tableHandler.getColumnNames());
@@ -580,6 +595,13 @@ public class DbTypeHandler extends BlobTypeHandler {
         urlColumn       = null;
         dfltSortColumn  = null;
 
+
+        columnsToUse    = new ArrayList<Column>();
+        for (int colIdx = 0; colIdx < columns.size(); colIdx++) {
+            if (colIdx > IDX_MAX_INTERNAL) {
+                columnsToUse.add(columns.get(colIdx));
+            }
+        }
 
         for (Column column : columns) {
             doSums[cnt] = Misc.equals(column.getProperty("dosum"), "true");
@@ -698,7 +720,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtil.cssLink(getRepository().getUrlBase()
                                    + "/db/dbstyle.css"));
-        makeTable(request, entry, valueList, false, sb, false);
+        makeTable(request, entry, valueList, false, sb, false, true);
         return sb.toString();
     }
 
@@ -878,125 +900,13 @@ public class DbTypeHandler extends BlobTypeHandler {
                                boolean fromSearch, String extraLinks)
             throws Exception {
 
-
         List<String> headerToks = new ArrayList<String>();
         String baseUrl =
             HtmlUtil.url(request.url(getRepository().URL_ENTRY_SHOW),
                          new String[] { ARG_ENTRYID,
                                         entry.getId() });
-        boolean addNext = false;
-        if (view.equals(VIEW_TABLE)) {
-            addNext = true;
-            headerToks.add(HtmlUtil.b(msg("List")));
-        } else {
-            headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW + "="
-                                         + VIEW_TABLE, msg("List")));
-        }
-
-
-        if (view.equals(VIEW_NEW)) {
-            headerToks.add(HtmlUtil.b(msg("New")));
-        } else {
-            headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW + "="
-                                         + VIEW_NEW, msg("New")));
-        }
-
-        if (view.equals(VIEW_SEARCH)) {
-            headerToks.add(HtmlUtil.b(msg("Search")));
-        } else {
-            headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW + "="
-                                         + VIEW_SEARCH, msg("Search")));
-        }
-
-        /*
-        if(view.equals(VIEW_STICKYNOTES)) {
-            addNext = true;
-            headerToks.add(HtmlUtil.b(msg("Sticky Notes")));
-        } else {
-            headerToks.add(HtmlUtil.href(baseUrl+"&" +ARG_DB_VIEW +"=" + VIEW_STICKYNOTES,
-                                         msg("Sticky Notes")));
-        }
-        */
-
-        if (hasDate) {
-            if (view.equals(VIEW_CALENDAR)) {
-                headerToks.add(HtmlUtil.b(msg("Calendar")));
-            } else {
-                headerToks.add(
-                    HtmlUtil.href(
-                        baseUrl + "&" + ARG_DB_VIEW + "=" + VIEW_CALENDAR,
-                        msg("Calendar")));
-            }
-
-            /*
-            if(view.equals(VIEW_TIMELINE)) {
-                addNext = true;
-                headerToks.add(HtmlUtil.b(msg("Timeline")));
-            } else {
-                headerToks.add(HtmlUtil.href(baseUrl+"&" +ARG_DB_VIEW +"=" + VIEW_TIMELINE,
-                                             msg("Timeline")));
-            }
-            if(view.equals(VIEW_ICAL)) {
-                headerToks.add(HtmlUtil.b(msg("ICAL")));
-            } else {
-                String icalUrl = HtmlUtil.url(request.url(getRepository().URL_ENTRY_SHOW)+"/" + entry.getName()+".ics",
-                                       new String[]{
-                                           ARG_ENTRYID, entry.getId()});
-                headerToks.add(HtmlUtil.href(icalUrl+"&" +ARG_DB_VIEW +"=" + VIEW_ICAL,
-                                             msg("ICAL")));
-                                             }*/
-        }
-
-        if (hasLocation) {
-            if (view.equals(VIEW_MAP)) {
-                addNext = true;
-                headerToks.add(HtmlUtil.b(msg("Map")));
-            } else {
-                headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
-                                             + "=" + VIEW_MAP, msg("Map")));
-            }
-            if (view.equals(VIEW_KML)) {
-                //                addNext = true;
-                //                headerToks.add(HtmlUtil.b(msg("Map")));
-            } else {
-                String kmlUrl =
-                    HtmlUtil.url(request.url(getRepository().URL_ENTRY_SHOW)
-                                 + "/" + entry.getName()
-                                 + ".kml", new String[] { ARG_ENTRYID,
-                        entry.getId() });
-
-                headerToks.add(HtmlUtil.href(kmlUrl + "&" + ARG_DB_VIEW + "="
-                                             + VIEW_KML, msg("KML")));
-            }
-        }
-
-        if (hasNumber) {
-            addNext = true;
-            if (view.equals(VIEW_CHART)) {
-                headerToks.add(HtmlUtil.b(msg("Chart")));
-            } else {
-                headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
-                                             + "="
-                                             + VIEW_CHART, msg("Chart")));
-            }
-        }
-
-
-        if (categoryColumns.size() > 0) {
-            String theColumn = request.getString(ARG_DB_COLUMN,
-                                   categoryColumns.get(0).getName());
-            for (Column column : categoryColumns) {
-                String label = column.getLabel();
-                if (view.equals(VIEW_CATEGORY + column.getName())) {
-                    headerToks.add(HtmlUtil.b(label));
-                } else {
-                    headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
-                            + "=" + VIEW_CATEGORY + column.getName() + "&"
-                            + ARG_DB_COLUMN + "=" + column.getName(), label));
-                }
-            }
-        }
-
+        boolean[] addNext = { false };
+        addHeaderItems(request, entry, view, headerToks, baseUrl, addNext);
         sb.append(HtmlUtil.cssLink(getRepository().getUrlBase()
                                    + "/db/dbstyle.css"));
         if (headerToks.size() > 1) {
@@ -1028,7 +938,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-        if (addNext) {
+        if (addNext[0]) {
             if ((numValues > 0)
                     && ((numValues == request.get(ARG_MAX, DB_MAX_ROWS))
                         || request.defined(ARG_SKIP))) {
@@ -1042,6 +952,168 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtil.importJS(getRepository().fileUrl("/db/db.js")));
     }
 
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param view _more_
+     * @param headerToks _more_
+     * @param baseUrl _more_
+     * @param addNext _more_
+     */
+    public void addHeaderItems(Request request, Entry entry, String view,
+                               List<String> headerToks, String baseUrl,
+                               boolean[] addNext) {
+
+        if (showInHeader(VIEW_TABLE)) {
+            if (view.equals(VIEW_TABLE)) {
+                addNext[0] = true;
+                headerToks.add(HtmlUtil.b(msg("List")));
+            } else {
+                headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
+                                             + "="
+                                             + VIEW_TABLE, msg("List")));
+            }
+        }
+
+        if (showInHeader(VIEW_NEW)) {
+            if (view.equals(VIEW_NEW)) {
+                headerToks.add(HtmlUtil.b(msg("New")));
+            } else {
+                headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
+                                             + "=" + VIEW_NEW, msg("New")));
+            }
+        }
+
+
+        if (showInHeader(VIEW_SEARCH)) {
+            if (view.equals(VIEW_SEARCH)) {
+                headerToks.add(HtmlUtil.b(msg("Search")));
+            } else {
+                headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
+                                             + "="
+                                             + VIEW_SEARCH, msg("Search")));
+            }
+        }
+        /*
+          if(showInHeader(VIEW_STICKYNOTES)) {
+          if(view.equals(VIEW_STICKYNOTES)) {
+          addNext[0] = true;
+          headerToks.add(HtmlUtil.b(msg("Sticky Notes")));
+          } else {
+          headerToks.add(HtmlUtil.href(baseUrl+"&" +ARG_DB_VIEW +"=" + VIEW_STICKYNOTES,
+          msg("Sticky Notes")));
+          }
+          }
+        */
+
+        if (hasDate) {
+            if (showInHeader(VIEW_CALENDAR)) {
+                if (view.equals(VIEW_CALENDAR)) {
+                    headerToks.add(HtmlUtil.b(msg("Calendar")));
+                } else {
+                    headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
+                            + "=" + VIEW_CALENDAR, msg("Calendar")));
+                }
+            }
+            /*
+              if(showInHeader(VIEW_TIMELINE)) {
+              if(view.equals(VIEW_TIMELINE)) {
+              addNext[0] = true;
+              headerToks.add(HtmlUtil.b(msg("Timeline")));
+              } else {
+              headerToks.add(HtmlUtil.href(baseUrl+"&" +ARG_DB_VIEW +"=" + VIEW_TIMELINE,
+              msg("Timeline")));
+              }
+              if(showInHeader(VIEW_)) {
+              if(showInHeader(VIEW_ICAL)) {
+              if(view.equals(VIEW_ICAL)) {
+              headerToks.add(HtmlUtil.b(msg("ICAL")));
+              } else {
+              String icalUrl = HtmlUtil.url(request.url(getRepository().URL_ENTRY_SHOW)+"/" + entry.getName()+".ics",
+              new String[]{
+              ARG_ENTRYID, entry.getId()});
+              headerToks.add(HtmlUtil.href(icalUrl+"&" +ARG_DB_VIEW +"=" + VIEW_ICAL,
+              msg("ICAL")));
+              }
+              }*/
+        }
+
+        if (hasLocation) {
+            if (showInHeader(VIEW_MAP)) {
+                if (view.equals(VIEW_MAP)) {
+                    addNext[0] = true;
+                    headerToks.add(HtmlUtil.b(msg("Map")));
+                } else {
+                    headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
+                            + "=" + VIEW_MAP, msg("Map")));
+                }
+            }
+            if (showInHeader(VIEW_KML)) {
+                if (view.equals(VIEW_KML)) {
+                    //                addNext[0] = true;
+                    //                headerToks.add(HtmlUtil.b(msg("Map")));
+                } else {
+                    String kmlUrl =
+                        HtmlUtil.url(
+                            request.url(getRepository().URL_ENTRY_SHOW) + "/"
+                            + entry.getName()
+                            + ".kml", new String[] { ARG_ENTRYID,
+                            entry.getId() });
+
+                    headerToks.add(HtmlUtil.href(kmlUrl + "&" + ARG_DB_VIEW
+                            + "=" + VIEW_KML, msg("KML")));
+                }
+            }
+        }
+
+        if (hasNumber) {
+            if (showInHeader(VIEW_CHART)) {
+                addNext[0] = true;
+                if (view.equals(VIEW_CHART)) {
+                    headerToks.add(HtmlUtil.b(msg("Chart")));
+                } else {
+                    headerToks.add(HtmlUtil.href(baseUrl + "&" + ARG_DB_VIEW
+                            + "=" + VIEW_CHART, msg("Chart")));
+                }
+            }
+        }
+
+
+        if (categoryColumns.size() > 0) {
+            String theColumn = request.getString(ARG_DB_COLUMN,
+                                   categoryColumns.get(0).getName());
+            for (Column column : categoryColumns) {
+                String label = column.getLabel();
+                if (showInHeader(VIEW_CATEGORY + column.getName())) {
+                    if (view.equals(VIEW_CATEGORY + column.getName())) {
+                        headerToks.add(HtmlUtil.b(label));
+                    } else {
+                        headerToks.add(HtmlUtil.href(baseUrl + "&"
+                                + ARG_DB_VIEW + "=" + VIEW_CATEGORY
+                                + column.getName() + "&" + ARG_DB_COLUMN
+                                + "=" + column.getName(), label));
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param view _more_
+     *
+     * @return _more_
+     */
+    public boolean showInHeader(String view) {
+        return true;
+    }
 
     /**
      * _more_
@@ -1079,7 +1151,6 @@ public class DbTypeHandler extends BlobTypeHandler {
                              String action, boolean fromSearch)
             throws Exception {
         String         view = request.getString(ARG_DB_VIEW, VIEW_TABLE);
-
         List<Object[]> valueList;
 
         if ((dateColumns.size() > 0) && request.defined(ARG_YEAR)
@@ -1101,7 +1172,29 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         }
         valueList = readValues(request, entry, clause);
+        return makeListResults(request, entry, view, action, fromSearch,
+                               valueList);
+    }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param view _more_
+     * @param action _more_
+     * @param fromSearch _more_
+     * @param valueList _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result makeListResults(Request request, Entry entry, String view,
+                                  String action, boolean fromSearch,
+                                  List<Object[]> valueList)
+            throws Exception {
         if (action.equals(ACTION_CSV) || view.equals(VIEW_CSV)) {
             return handleListCsv(request, entry, valueList);
         }
@@ -1156,7 +1249,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             return handleListIcal(request, entry, valueList, fromSearch);
         }
 
-        return handleListTable(request, entry, valueList, fromSearch);
+        return handleListTable(request, entry, valueList, fromSearch, true);
     }
 
 
@@ -1695,6 +1788,48 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param bulk _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result handleBulkUpload(Request request, Entry entry, String bulk)
+            throws Exception {
+        List<Object[]> valueList = new ArrayList<Object[]>();
+        for (String line : StringUtil.split(bulk, "\n", true, true)) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+            List<String> toks   = StringUtil.split(line, ",", false, false);
+            Object[]     values = tableHandler.makeEntryValueArray();
+            initializeValueArray(request, null, values);
+            if (toks.size() > columnsToUse.size()) {
+                throw new IllegalArgumentException("Wrong number of values:"
+                        + line);
+            }
+            for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
+                Column column = columnsToUse.get(colIdx);
+                String value  = toks.get(colIdx).trim();
+                column.setValue(entry, values, value);
+            }
+            valueList.add(values);
+        }
+        for (Object[] tuple : valueList) {
+            doStore(entry, tuple, true);
+        }
+        //Remove these so any links that get made with the request don't point to the BULK upload
+        request.remove(ARG_DB_NEWFORM);
+        request.remove(ARG_DB_BULK_TEXT);
+        request.remove(ARG_DB_BULK_FILE);
+        return handleListTable(request, entry, valueList, false, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
      * @param dbid _more_
      *
      * @return _more_
@@ -1707,23 +1842,31 @@ public class DbTypeHandler extends BlobTypeHandler {
             dbid = null;
         }
 
+        if (request.exists(ARG_DB_BULK_TEXT)
+                || request.exists(ARG_DB_BULK_FILE)) {
+            String bulkContent;
+            if (request.exists(ARG_DB_BULK_FILE)) {
+                File f = new File(request.getUploadedFile(ARG_DB_BULK_FILE));
+                if ( !f.exists()) {
+                    throw new IllegalArgumentException(
+                        "Uploaded file does not exist");
+                }
+                bulkContent = IOUtil.readInputStream(
+                    getStorageManager().getFileInputStream(f));
+            } else {
+                bulkContent = request.getString(ARG_DB_BULK_TEXT, "");
+            }
+            return handleBulkUpload(request, entry, bulkContent);
+        }
+
+
         StringBuffer sb       = new StringBuffer();
         List<String> colNames = tableHandler.getColumnNames();
         Object[]     values   = ((dbid != null)
                                  ? tableHandler.getValues(makeClause(entry,
                                      dbid))
                                  : tableHandler.makeEntryValueArray());
-        //The first entry is the db_id
-        values[IDX_DBID] = ((dbid == null)
-                            ? getRepository().getGUID()
-                            : dbid);
-
-        if (dbid == null) {
-            values[IDX_DBUSER]       = request.getUser().getId();
-            values[IDX_DBCREATEDATE] = new Date();
-            values[IDX_DBPROPS]      = "";
-        }
-
+        initializeValueArray(request, dbid, values);
         for (Column column : columns) {
             column.setValue(request, entry, values);
         }
@@ -1738,6 +1881,26 @@ public class DbTypeHandler extends BlobTypeHandler {
         return new Result(url);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param dbid _more_
+     * @param values _more_
+     */
+    private void initializeValueArray(Request request, String dbid,
+                                      Object[] values) {
+        //The first entry is the db_id
+        values[IDX_DBID] = ((dbid == null)
+                            ? getRepository().getGUID()
+                            : dbid);
+
+        if (dbid == null) {
+            values[IDX_DBUSER]       = request.getUser().getId();
+            values[IDX_DBCREATEDATE] = new Date();
+            values[IDX_DBPROPS]      = "";
+        }
+    }
 
     /**
      * _more_
@@ -1900,21 +2063,17 @@ public class DbTypeHandler extends BlobTypeHandler {
         StringBuffer sb = new StringBuffer();
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
-            int colCnt =  0;
-            for (int i = 1; i < columns.size(); i++) {
-                if(i<=IDX_MAX_INTERNAL) continue;
-                
+            for (int i = 0; i < columnsToUse.size(); i++) {
                 StringBuffer cb = new StringBuffer();
-                columns.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
-                            values);
+                columnsToUse.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
+                                 values);
                 String colValue = cb.toString();
                 colValue = colValue.replaceAll(",", "_");
                 colValue = colValue.replaceAll("\n", " ");
-                if (colCnt > 0) {
+                if (i > 0) {
                     sb.append(",");
                 }
                 sb.append(colValue);
-                colCnt++;
             }
             sb.append("\n");
         }
@@ -2031,6 +2190,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @param entry _more_
      * @param valueList _more_
      * @param fromSearch _more_
+     * @param showHeaderLinks _more_
      *
      * @return _more_
      *
@@ -2038,22 +2198,29 @@ public class DbTypeHandler extends BlobTypeHandler {
      */
     public Result handleListTable(Request request, Entry entry,
                                   List<Object[]> valueList,
-                                  boolean fromSearch)
+                                  boolean fromSearch, boolean showHeaderLinks)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        String links = getHref(request, entry, VIEW_STICKYNOTES,
-                               msg("Sticky Notes")) + "&nbsp;|&nbsp;"
-                                   + getHref(request, entry, VIEW_RSS,
-                                             msg("RSS"),
-                                             "/" + entry.getName()
-                                             + ".rss") + "&nbsp;|&nbsp;"
-                                                 + getHref(request, entry,
-                                                     VIEW_CSV, msg("CSV"),
-                                                     "/" + entry.getName()
-                                                     + ".csv");
+        StringBuffer sb    = new StringBuffer();
+        List<String> links = new ArrayList<String>();
+
+        if (showHeaderLinks) {
+            if (showInHeader(VIEW_STICKYNOTES)) {
+                links.add(getHref(request, entry, VIEW_STICKYNOTES,
+                                  msg("Sticky Notes")));
+            }
+            if (showInHeader(VIEW_RSS)) {
+                links.add(getHref(request, entry, VIEW_RSS, msg("RSS"),
+                                  "/" + entry.getName() + ".rss"));
+            }
+            if (showInHeader(VIEW_CSV)) {
+                links.add(getHref(request, entry, VIEW_CSV, msg("CSV"),
+                                  "/" + entry.getName() + ".csv"));
+            }
+        }
         addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
-                      fromSearch, links);
-        makeTable(request, entry, valueList, fromSearch, sb, true);
+                      fromSearch, StringUtil.join("&nbsp;|&nbsp;", links));
+        makeTable(request, entry, valueList, fromSearch, sb, true,
+                  showHeaderLinks);
         return new Result(getTitle(), sb);
     }
 
@@ -2068,12 +2235,14 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @param fromSearch _more_
      * @param sb _more_
      * @param doForm _more_
+     * @param showHeaderLinks _more_
      *
      * @throws Exception _more_
      */
     public void makeTable(Request request, Entry entry,
                           List<Object[]> valueList, boolean fromSearch,
-                          StringBuffer sb, boolean doForm)
+                          StringBuffer sb, boolean doForm,
+                          boolean showHeaderLinks)
             throws Exception {
 
         Hashtable entryProps = getProperties(entry);
@@ -2113,7 +2282,6 @@ public class DbTypeHandler extends BlobTypeHandler {
                 }
             }
 
-
             sb.append(HtmlUtil.p());
             sb.append(
                 "<table class=\"dbtable\"  border=1 cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
@@ -2123,7 +2291,13 @@ public class DbTypeHandler extends BlobTypeHandler {
                 if ( !columns.get(i).getCanList()) {
                     continue;
                 }
-                String label      = columns.get(i).getLabel();
+                String label = columns.get(i).getLabel();
+                if ( !showHeaderLinks) {
+                    sb.append(
+                        HtmlUtil.col(
+                            label, HtmlUtil.cssClass("dbtableheader")));
+                    continue;
+                }
                 String sortColumn = columns.get(i).getName();
                 String extra;
                 if (sortColumn.equals(sortBy)) {
@@ -2297,7 +2471,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 sb.append(HtmlUtil.br());
                 sb.append(
                     getRepository().showDialogNote(
-                                                   msgLabel("No entries in") + getTitle()));
+                        msgLabel("No entries in") + getTitle()));
             } else {
                 sb.append(
                     getRepository().showDialogNote(msg("Nothing found")));
@@ -2864,6 +3038,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param column _more_
      *
@@ -2871,12 +3047,14 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private List<String> getEnumValues(Request request, Entry entry, Column column)
+    private List<String> getEnumValues(Request request, Entry entry,
+                                       Column column)
             throws Exception {
         if (column.getType().equals(Column.TYPE_ENUMERATION)) {
             return (List<String>) column.getValues();
         } else {
-            return (List<String>) tableHandler.getEnumValues(request, column, entry);
+            return (List<String>) tableHandler.getEnumValues(request, column,
+                    entry);
         }
     }
 
@@ -3303,7 +3481,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                     href, href));
         }
 
-        calendarOutputHandler.outputCalendar(request,  calEntries, sb, false);
+        calendarOutputHandler.outputCalendar(request, calEntries, sb, false);
 
         return new Result(getTitle(), sb);
     }
@@ -3635,7 +3813,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      */
     private void makeForm(Request request, Entry entry, StringBuffer sb) {
         String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
-        sb.append(HtmlUtil.formPost(formUrl));
+        sb.append(HtmlUtil.uploadForm(formUrl, ""));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
     }
 
@@ -3696,17 +3874,15 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
         formBuffer.append(buttons);
-
         formBuffer.append(HtmlUtil.formTable());
         tableHandler.addColumnsToEntryForm(request, formBuffer, entry,
                                            values);
-
 
         formBuffer.append(HtmlUtil.formTableClose());
         formBuffer.append(buttons);
         formBuffer.append(HtmlUtil.formClose());
 
-        if (false && forEdit && (dbid == null)) {
+        if (forEdit && (dbid == null)) {
             StringBuffer bulk = new StringBuffer();
             makeForm(request, entry, bulk);
             StringBuffer bulkButtons = new StringBuffer();
@@ -3716,30 +3892,36 @@ public class DbTypeHandler extends BlobTypeHandler {
             bulk.append(bulkButtons);
             bulk.append(HtmlUtil.br());
             List colIds = new ArrayList();
-
-            int  cnt    = 0;
-            for (Column column : columns) {
-                if (cnt > 0) {
-                    colIds.add(new TwoFacedObject(column.getLabel(),
-                            column.getName()));
-                }
-                cnt++;
+            for (Column column : columnsToUse) {
+                colIds.add(new TwoFacedObject(column.getLabel(),
+                        column.getName()));
             }
-            cnt = 0;
-            for (Column column : columns) {
+            int cnt = 0;
+            for (Column column : columnsToUse) {
+                //                bulk.append(HtmlUtil.select(ARG_DB_BULKCOL + cnt, colIds,
+                //                                            columns.get(cnt).getName()));
                 if (cnt > 0) {
-                    bulk.append(HtmlUtil.select(ARG_DB_BULKCOL + cnt, colIds,
-                            columns.get(cnt).getName()));
+                    bulk.append(", ");
                 }
+                bulk.append(column.getName());
                 cnt++;
             }
             bulk.append(HtmlUtil.br());
-            bulk.append(HtmlUtil.textArea(ARG_DB_BULK, "", 10, 80));
+            bulk.append(HtmlUtil.textArea(ARG_DB_BULK_TEXT, "", 10, 80));
+            bulk.append(HtmlUtil.p());
+            bulk.append(msgHeader("Or upload a file"));
+            bulk.append(msgLabel("File"));
+            bulk.append(HtmlUtil.fileInput(ARG_DB_BULK_FILE,
+                                           HtmlUtil.SIZE_60));
+
             bulk.append(HtmlUtil.formClose());
-            String contents =
-                HtmlUtil.makeTabs(Misc.newList(msg("Form"),
-                    msg("Bulk Create")), Misc.newList(formBuffer.toString(),
-                        bulk.toString()), true, "tab_content");
+            List<String> tabTitles = (List<String>) Misc.newList(msg("Form"),
+                                         msg("Bulk Create"));
+            List<String> tabContents =
+                (List<String>) Misc.newList(formBuffer.toString(),
+                                            bulk.toString());
+            String contents = OutputHandler.makeTabs(tabTitles, tabContents,
+                                  true);
             sb.append(contents);
         } else {
             sb.append(formBuffer);

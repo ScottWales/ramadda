@@ -33,9 +33,10 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.HtmlUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
 
-
+import java.lang.reflect.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,26 @@ import java.util.List;
  */
 
 public class DbAdminHandler extends AdminHandlerImpl {
+
+    public static final String TAG_TABLES = "tables";
+    public static final String TAG_TABLE = "table";
+    public static final String TAG_COLUMN = "column";
+    public static final String TAG_PROPERTY = "property";
+
+    public static final String ATTR_HANDLER = "handler";
+    public static final String ATTR_ICON = "icon";
+    public static final String ATTR_ID = "id";
+    public static final String ATTR_NAME = "name";
+    public static final String ATTR_CANLIST = "canlist";
+    public static final String ATTR_LABEL = "label";
+    public static final String ATTR_TYPE = "type";
+    public static final String ATTR_CANSEARCH = "cansearch";
+    public static final String ATTR_VALUES = "values";
+    public static final String ATTR_VALUE = "value";
+    public static final String ATTR_ROWS = "rows";
+    public static final String ATTR_SIZE = "size";
+
+
 
     /**
      * _more_
@@ -74,26 +95,30 @@ public class DbAdminHandler extends AdminHandlerImpl {
             }
 
             Element root     = XmlUtil.getRoot(pluginFile, getClass());
-            List    children = XmlUtil.findChildren(root, "table");
+            List    children = XmlUtil.findChildren(root, TAG_TABLE);
             for (int i = 0; i < children.size(); i++) {
                 Element tableNode = (Element) children.get(i);
-                String  tableId = XmlUtil.getAttribute(tableNode, "id");
-                DbTypeHandler typeHandler =
-                    new DbTypeHandler(this, getRepository(), tableId,
-                                      tableNode,
-                                      XmlUtil.getAttribute(tableNode,
-                                          "name"));
-
+                String  tableId = XmlUtil.getAttribute(tableNode, ATTR_ID);
+                Class handlerClass = Misc.findClass(XmlUtil.getAttribute(tableNode, ATTR_HANDLER,"org.ramadda.plugins.db.DbTypeHandler"));
+                Constructor ctor = Misc.findConstructor(handlerClass,
+                                                        new Class[] { this.getClass(),
+                                                                      Repository.class, String.class, tableNode.getClass(), String.class});
+                
+                DbTypeHandler typeHandler =(DbTypeHandler) ctor.newInstance(new Object[]{
+                        this, getRepository(), tableId,
+                        tableNode,
+                        XmlUtil.getAttribute(tableNode,
+                                             ATTR_NAME)});
 
                 List<Element> columnNodes =
-                    (List<Element>) XmlUtil.findChildren(tableNode, "column");
-                Element idNode = XmlUtil.create("column", tableNode,
+                    (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
+                Element idNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                      new String[] {
                     "name", DbTypeHandler.COL_DBID, Column.ATTR_ISINDEX,
                     "true", Column.ATTR_TYPE, "string", Column.ATTR_ADDTOFORM,
                     "false"
                 });
-                Element userNode = XmlUtil.create("column", tableNode,
+                Element userNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                        new String[] {
                     "name", DbTypeHandler.COL_DBUSER, Column.ATTR_ISINDEX,
                     "true", Column.ATTR_TYPE, "string", 
@@ -101,7 +126,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
                     Column.ATTR_CANLIST,               "false"
                 });
 
-                Element createDateNode = XmlUtil.create("column", tableNode,
+                Element createDateNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                              new String[] {
                     "name", DbTypeHandler.COL_DBCREATEDATE,
                     Column.ATTR_ISINDEX, "true", Column.ATTR_TYPE, "datetime",
@@ -109,7 +134,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
                     Column.ATTR_CANLIST,               "false"
                 });
 
-                Element propsNode = XmlUtil.create("column", tableNode,
+                Element propsNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                         new String[] {
                     "name", DbTypeHandler.COL_DBPROPS, Column.ATTR_ISINDEX,
                     "false", Column.ATTR_SIZE, "5000", Column.ATTR_TYPE,
