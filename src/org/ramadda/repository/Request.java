@@ -2002,11 +2002,14 @@ public class Request implements Constants {
      * @return _more_
      */
     public String getServerName() {
-
+        String serverName = null;
         if (httpServletRequest != null) {
-            return httpServletRequest.getServerName();
+            serverName = httpServletRequest.getServerName();
         }
-        return repository.getHostname();
+        if(serverName==null || serverName.trim().length()==0) {
+            serverName = repository.getHostname();
+        }
+        return serverName;
     }
 
     /**

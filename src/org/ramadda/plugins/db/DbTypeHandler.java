@@ -1669,7 +1669,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                     msg("No entries were selected")));
         } else {
             String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
-            sb.append(HtmlUtil.form(formUrl));
+            sb.append(HtmlUtil.formPost(formUrl));
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
 
             for (Object dbid : dbids) {
@@ -1805,8 +1805,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             Object[]     values = tableHandler.makeEntryValueArray();
             initializeValueArray(request, null, values);
             if (toks.size() != columnsToUse.size()) {
-                throw new IllegalArgumentException("Wrong number of values:"
-                        + line);
+                throw new IllegalArgumentException("Wrong number of values. Given line has: " + toks.size() +" Expected:" + columnsToUse.size()+"<br>" + line);
             }
             for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
                 Column column = columnsToUse.get(colIdx);
@@ -2407,33 +2406,36 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
                 if (column.isEnumeration()) {
-                    StringBuffer prefix = new StringBuffer();
-                    String iconID = PROP_CAT_ICON + "." + column.getName();
-                    Hashtable<String, String> iconMap =
-                        (Hashtable<String, String>) entryProps.get(iconID);
-                    if (iconMap != null) {
-                        String icon =
-                            iconMap.get((String) values[column.getOffset()]);
-                        if (icon != null) {
-                            prefix.append(HtmlUtil.img(getIconUrl(icon)));
-                            prefix.append(" ");
+                    String value = (String) values[column.getOffset()];
+                    if(value!=null) {
+                        StringBuffer prefix = new StringBuffer();
+                        String iconID = PROP_CAT_ICON + "." + column.getName();
+                        Hashtable<String, String> iconMap =
+                            (Hashtable<String, String>) entryProps.get(iconID);
+                        if (iconMap != null) {
+                            String icon =  iconMap.get(value);
+                            if (icon != null) {
+                                prefix.append(HtmlUtil.img(getIconUrl(icon)));
+                                prefix.append(" ");
+                                
+                            }
                         }
-                    }
-                    String style = "";
-                    String content = "&nbsp;&nbsp;&nbsp;&nbsp;";
-                    String colorID = PROP_CAT_COLOR + "." + column.getName();
-                    Hashtable<String, String> colorMap =
-                        (Hashtable<String, String>) entryProps.get(colorID);
-                    if (colorMap != null) {
-                        String bgColor =
-                            colorMap.get((String) values[column.getOffset()]);
-                        if (bgColor != null) {
-                            style = style + "background-color:" + bgColor;
-                            prefix.append(HtmlUtil.span(content,
-                                    HtmlUtil.style(style)));
+                        String style = "";
+                        String content = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                        String colorID = PROP_CAT_COLOR + "." + column.getName();
+                        Hashtable<String, String> colorMap =
+                            (Hashtable<String, String>) entryProps.get(colorID);
+                        if (colorMap != null) {
+                            String bgColor =
+                                colorMap.get((String) values[column.getOffset()]);
+                            if (bgColor != null) {
+                                style = style + "background-color:" + bgColor;
+                                prefix.append(HtmlUtil.span(content,
+                                                            HtmlUtil.style(style)));
+                            }
                         }
+                        sb.append(prefix.toString());
                     }
-                    sb.append(prefix.toString());
                 }
 
                 sb.append("&nbsp;");

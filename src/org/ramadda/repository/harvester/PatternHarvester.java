@@ -962,7 +962,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
      *
      * @throws Exception _more_
      */
-    private Entry processFile(FileInfo fileInfo, File f) throws Exception {
+    public Entry processFile(FileInfo fileInfo, File f) throws Exception {
 
         //check if its a hidden file
         if (f.getName().startsWith(".")) {
@@ -995,6 +995,14 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         debug("file:<i>" + fileName + "</i> matches pattern");
         //        logHarvesterInfo("Matches pattern:" + fileName);
+
+        return   harvestFile(fileInfo, f, matcher);
+    }
+
+
+    public Entry harvestFile(FileInfo fileInfo, File f, Matcher matcher) throws Exception {
+        String fileName = f.toString();
+        fileName = fileName.replace("\\", "/");
 
         if ( !getTestMode()) {
 
