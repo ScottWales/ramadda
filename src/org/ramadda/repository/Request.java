@@ -71,7 +71,7 @@ import javax.servlet.http.*;
  *
  * @author RAMADDA Development Team
  */
-public class Request implements Constants {
+public class Request implements Constants, Cloneable {
 
 
     /** _more_ */
@@ -218,6 +218,17 @@ public class Request implements Constants {
         this.httpServlet         = httpServlet;
     }
 
+
+    public Request cloneMe()  {
+        try {
+        Request that = (Request) super.clone();
+        that.parameters = new Hashtable(this.parameters);
+        that.originalParameters = new Hashtable(this.originalParameters);
+        return that;
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
 
     /**
      * _more_
