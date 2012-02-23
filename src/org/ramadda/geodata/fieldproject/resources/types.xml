@@ -21,6 +21,9 @@
 
       <column name="location" label="Where" datatype="enumerationplus" values=""/>
       <column name="who" label="Who" rows="5"/>
+
+Files 
+
 <!--
       <column name="instruments" label="Instruments" rows="5"/>
 -->
@@ -34,8 +37,6 @@
 
     <type name="project_surveylocation" description="Survey Location" category="Field Project" >
       <property name="icon" value="/fieldproject/compass.png"/> 
-Files 
-
 <--  
     <property name="form.resource.show" value="false"/>
 -->

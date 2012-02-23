@@ -326,17 +326,17 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry getEntryFromRequest(Request request) throws Exception {
+    public Entry getEntryFromRequest(Request request, String urlArg, RequestUrl requestUrl) throws Exception {
         Entry entry = null;
-        if (request.defined(ARG_ENTRYID)) {
+        if (request.defined(urlArg)) {
             try {
-                entry = getEntry(request);
+                entry = getEntryFromArg(request, urlArg);
             } catch (Exception exc) {
                 logError("", exc);
                 throw exc;
             }
             if (entry == null) {
-                String entryId = request.getString(ARG_ENTRYID, BLANK);
+                String entryId = request.getString(urlArg, BLANK);
                 Entry  tmp     = getEntry(request, entryId, false);
                 if (tmp != null) {
                     logInfo("Cannot access entry:" + entryId + "  IP:"
@@ -346,11 +346,9 @@ public class EntryManager extends RepositoryManager {
                         "You do not have access to this entry");
                 }
             }
-        } else if (request.defined(ARG_GROUP)) {
-            entry = findGroup(request);
         } else {
             String path   = request.getRequestPath();
-            String prefix = getRepository().URL_ENTRY_SHOW.toString();
+            String prefix = requestUrl.toString();
             if (path.length() > prefix.length()) {
                 String suffix = path.substring(prefix.length());
                 suffix = java.net.URLDecoder.decode(suffix, "UTF-8");
@@ -382,7 +380,7 @@ public class EntryManager extends RepositoryManager {
             return new Result(handler.getAuthorizationMethod(request));
         }
 
-        Entry entry = getEntryFromRequest(request);
+        Entry entry = getEntryFromRequest(request, ARG_ENTRYID, getRepository().URL_ENTRY_SHOW);
 
         if (entry == null) {
             fatalError(request, "No entry specified");
@@ -2423,8 +2421,7 @@ public class EntryManager extends RepositoryManager {
             return new Result(AuthorizationMethod.AUTH_HTTP);
         }
 
-
-        Entry entry = getEntryFromRequest(request);
+        Entry entry = getEntryFromRequest(request, ARG_ENTRYID, getRepository().URL_ENTRY_GET);
 
         if (entry == null) {
             throw new RepositoryUtil.MissingEntryException(
@@ -3198,7 +3195,16 @@ public class EntryManager extends RepositoryManager {
 
         Entry parent = null;
         if (request.exists(ARG_GROUP)) {
-            parent = findGroup(request, request.getString(ARG_GROUP));
+            parent = getEntryFromArg(request, ARG_GROUP);
+            if(parent == null) {
+                parent  = findEntryFromName(request.getString(ARG_GROUP,""), request.getUser(), false);
+            }
+
+            if(parent == null) {
+                throw new IllegalArgumentException("Could not find parent entry:"+ request.getString(ARG_GROUP));
+            } else if(!parent.isGroup()) {
+                throw new IllegalArgumentException("Entry is not a group:"+ parent);
+            }
         }
 
         String file    = request.getUploadedFile(ARG_FILE);
@@ -5139,11 +5145,19 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getEntry(Request request) throws Exception {
-        String entryId = request.getString(ARG_ENTRYID, BLANK);
+        return getEntryFromArg(request, ARG_ENTRYID);
+    }
+
+    public Entry getEntryFromArg(Request request, String urlArg) throws Exception {
+        String entryId = request.getString(urlArg, BLANK);
         Entry  entry   = getEntry(request, entryId);
         if (entry == null) {
+            entry  = findEntryFromName(entryId, request.getUser(), false);
+        }
+
+        if (entry == null) {
             Entry tmp = getEntry(request,
-                                 request.getString(ARG_ENTRYID, BLANK),
+                                 request.getString(urlArg, BLANK),
                                  false);
             if (tmp != null) {
                 logInfo("Cannot access entry:" + entryId + "  IP:"
@@ -5155,7 +5169,7 @@ public class EntryManager extends RepositoryManager {
             }
             throw new RepositoryUtil.MissingEntryException(
                 "Could not find entry:"
-                + request.getString(ARG_ENTRYID, BLANK));
+                + request.getString(urlArg, BLANK));
         }
         return entry;
     }
@@ -6127,11 +6141,11 @@ public class EntryManager extends RepositoryManager {
                                       boolean full) {
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
+        //For now use the full entry path
+        if (fileTail.equals(entry.getName())) {
+            fileTail = entry.getFullName(true);
+        }
         if (full) {
-            //For now use the full entry path
-            if (fileTail.equals(entry.getName())) {
-                fileTail = entry.getFullName(true);
-            }
             return HtmlUtil.url(getRepository().URL_ENTRY_GET.getFullUrl()
                                 + "/" + fileTail, ARG_ENTRYID, entry.getId());
         } else {

@@ -289,7 +289,6 @@ public class StorageManager extends RepositoryManager {
      * _more_
      */
     protected void doFinalInitialization() {
-        System.err.println("storage dir:" + getStorageDir().toString());
         getUploadDir();
         getCacheDir();
         getScratchDir();

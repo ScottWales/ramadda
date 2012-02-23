@@ -2209,12 +2209,14 @@ public class TypeHandler extends RepositoryManager {
             addSpatialToEntryForm(request, sb, entry);
         }
 
+        /****
         if (request.getUser().getAdmin()) {
             sb.append(formEntry(request, msgLabel("User"),
                                 HtmlUtil.input(ARG_USER_ID, ((entry != null)
                     ? entry.getUser().getId()
                     : ""), HtmlUtil.SIZE_20)));
         }
+        ****/
 
     }
 

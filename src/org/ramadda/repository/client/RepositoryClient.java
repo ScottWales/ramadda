@@ -61,6 +61,18 @@ import java.util.zip.*;
  */
 public class RepositoryClient extends RepositoryBase {
 
+    public static final String CMD_FETCH = "-fetch";
+    public static final String CMD_PRINT = "-print";
+    public static final String CMD_PRINTXML =  "-printxml";
+    public static final String CMD_IMPORT =  "-import";
+    public static final String CMD_DEBUG =  "-debug";
+    public static final String CMD_EXIT =  "-exit";
+    public static final String CMD_FOLDER = "-folder" ;
+    public static final String CMD_FILE = "-file";
+    //    public static final String CMD_ = ;
+
+
+
     //Note: This is also defined in SessionManager
 
     /** _more_ */
@@ -100,6 +112,9 @@ public class RepositoryClient extends RepositoryBase {
 
     /** _more_ */
     private String lastId = "";
+
+    private File importFile;
+    private String importParentId;
 
 
     /**
@@ -1149,6 +1164,9 @@ public class RepositoryClient extends RepositoryBase {
             usage("Incorrect number of arguments");
         }
         try {
+            if(args[0].startsWith("-") || args[1].startsWith("-") || args[2].startsWith("-")) {
+                usage("Incorrect argument");
+            }
             RepositoryClient client = new RepositoryClient(new URL(args[0]),
                                           args[1], args[2]);
             String[] msg = { "" };
@@ -1169,6 +1187,10 @@ public class RepositoryClient extends RepositoryBase {
 
 
 
+    private static String argLine(String arg, String desc) {
+        return  "\t" + arg +" " + desc +"\n";
+    }
+
     /**
      * _more_
      *
@@ -1179,14 +1201,19 @@ public class RepositoryClient extends RepositoryBase {
         System.err.println(
             "Usage: RepositoryClient <server url> <user id> <password> <arguments>");
         System.err.println(
+            "e.g,  RepositoryClient http://localhost:8080/repository <user id> <password> <arguments>");
+        System.err.println(
             "Where arguments are:\nFor fetching: \n"
-            + "\t-print <entry id> Create and print the given entry\n"
-            + "\t-printxml <entry id> Print out the xml for the given entry id\n"
-            + "\t-fetch <entry id> <destination file or directory>\n" + "\n"
+            + argLine(CMD_PRINT, "<entry id> Create and print the given entry")
+            + argLine(CMD_PRINTXML," <entry id> Print out the xml for the given entry id")
+            + argLine(CMD_FETCH,"<entry id> <destination file or directory>")
+            + "\n"
             + "For creating a new folder:\n"
-            + "\t-folder  <folder name> <parent folder id (see below)>\n"
+            + argLine(CMD_FOLDER,"<folder name> <parent folder id (see below)>")
             + "\n" + "For uploading files:\n"
-            + "\t-file <entry name> <file to upload> <parent folder id (see below)>\n"
+            + argLine(CMD_IMPORT,"entries.xml <parent entry id or path>")
+            + "\n"
+            + argLine(CMD_FILE,"<entry name> <file to upload> <parent folder id (see below)>")
             + "\n"
             + "The following arguments get applied to the previously created folder or file:\n"
             + "\t-description <entry description>\n"
@@ -1204,6 +1231,43 @@ public class RepositoryClient extends RepositoryBase {
             + " ...  -folder \"Some new folder\" \"some id from the repository\" -file \"\" somefile1.nc -file somefile2.nc \"previous\" -folder \"some other folder\" \"previous\" -file \"\" someotherfile.nc \"previous\"\n" + "This results in the heirarchy:\n" + "Some new folder\n" + "\tsomefile1.nc\n" + "\tsomefile2.nc\n" + "\tsome other folder\n" + "\t\tsomeotherfile.nc\n");
 
         System.exit(1);
+    }
+
+
+
+
+    private void   importFile(File file, String parent) throws Exception {
+        List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
+        addUrlArgs(postEntries);
+        postEntries.add(HttpFormEntry.hidden(ARG_GROUP, parent));
+        postEntries.add(new HttpFormEntry(ARG_FILE, IOUtil.getFileTail(file.toString()),
+                                          IOUtil.readBytes(new FileInputStream(file))));
+        String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
+        if (result[0] != null) {
+            System.err.println("Error:" + result[0]);
+            return;
+        }
+
+        System.err.println("result:" + result[1]);
+        Element response = XmlUtil.getRoot(result[1]);
+
+        String  body     = XmlUtil.getChildText(response).trim();
+        if (responseOk(response)) {
+            System.err.println("OK:" + body);
+        } else {
+            System.err.println("Error:" + body);
+        }
+
+        
+
+    }
+
+
+    private void assertArgs(String arg, int i, int length, int howMany) {
+        //        System.err.println(i + " " + length + " " + howMany);
+        if (i >= length - howMany) {
+            usage("Bad argument: "+ arg);
+        }
     }
 
 
@@ -1229,49 +1293,57 @@ public class RepositoryClient extends RepositoryBase {
         int entryCnt = 0;
         for (int i = 3; i < args.length; i++) {
             String arg = args[i];
-            if (arg.equals("-fetch")) {
+
+            if (arg.equals(CMD_FETCH)) {
                 if (i >= args.length - 1) {
-                    usage("Bad -fetch argument. Need to specify an entry id and destination file path ");
+                    usage("Bad argument: "+ arg);
                 }
                 if (i >= args.length - 2) {
-                    usage("Bad -fetch argument. Need to specify a destination file path ");
+                    usage("Bad argument: "+ arg);
                 }
                 File f = writeFile(args[i + 1], new File(args[i + 2]));
                 System.err.println("Wrote file to:" + f);
                 return;
             }
 
-            if (arg.equals("-print")) {
+            if (arg.equals(CMD_PRINT)) {
                 if (i >= args.length - 1) {
-                    usage("Bad -print argument");
+                    usage("Bad argument: "+ arg);
                 }
                 printEntry(args[i + 1]);
                 return;
             }
 
-            if (arg.equals("-printxml")) {
+            if (arg.equals(CMD_PRINTXML)) {
                 if (i >= args.length - 1) {
-                    usage("Bad -print argument");
+                    usage("Bad argument: "+ arg);
                 }
                 printEntryXml(args[i + 1]);
                 return;
             }
-            if (arg.equals("-debug")) {
-                System.out.println(XmlUtil.toString(root));
-            } else if (arg.equals("-exit")) {
+
+            if (arg.equals(CMD_IMPORT)) {
+                assertArgs(arg,  i, args.length,2);
+                importFile(new File(args[i+1]), args[i+2]);
                 return;
-            } else if (arg.equals("-folder")) {
+            }
+
+            if (arg.equals(CMD_DEBUG)) {
+                System.out.println(XmlUtil.toString(root));
+            } else if (arg.equals(CMD_EXIT)) {
+                return;
+            } else if (arg.equals(CMD_FOLDER)) {
                 if (i == args.length) {
-                    usage("Bad -folder argument");
+                    usage("Bad argument: "+ arg);
                 }
                 entryCnt++;
                 String name     = args[++i];
                 String parentId = args[++i];
 
                 entryNode = makeGroupNode(root, parentId, name);
-            } else if (arg.equals("-file")) {
+            } else if (arg.equals(CMD_FILE)) {
                 if (i >= args.length - 2) {
-                    usage("Bad -file argument");
+                    usage("Bad argument: "+ arg);
                 }
                 String name = args[++i];
                 File   f    = new File(args[++i]);
@@ -1289,7 +1361,7 @@ public class RepositoryClient extends RepositoryBase {
                 files.add(f);
             } else if (arg.equals("-localfile")) {
                 if (i == args.length) {
-                    usage("Bad -localfile argument");
+                    usage("Bad argument: "+ arg);
                 }
                 i++;
                 File f = new File(args[i]);
