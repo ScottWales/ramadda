@@ -321,12 +321,16 @@ public class EntryManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
+     * @param urlArg _more_
+     * @param requestUrl _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Entry getEntryFromRequest(Request request, String urlArg, RequestUrl requestUrl) throws Exception {
+    public Entry getEntryFromRequest(Request request, String urlArg,
+                                     RequestUrl requestUrl)
+            throws Exception {
         Entry entry = null;
         if (request.defined(urlArg)) {
             try {
@@ -380,7 +384,8 @@ public class EntryManager extends RepositoryManager {
             return new Result(handler.getAuthorizationMethod(request));
         }
 
-        Entry entry = getEntryFromRequest(request, ARG_ENTRYID, getRepository().URL_ENTRY_SHOW);
+        Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
+                                          getRepository().URL_ENTRY_SHOW);
 
         if (entry == null) {
             fatalError(request, "No entry specified");
@@ -1477,9 +1482,10 @@ public class EntryManager extends RepositoryManager {
 
 
         insertEntries(entries, newEntry);
-        if(newEntry) {
-            for(Entry theNewEntry: entries) {
-                theNewEntry.getTypeHandler().doFinalInitialization(request, theNewEntry);
+        if (newEntry) {
+            for (Entry theNewEntry : entries) {
+                theNewEntry.getTypeHandler().doFinalInitialization(request,
+                        theNewEntry);
             }
         }
 
@@ -1698,8 +1704,9 @@ public class EntryManager extends RepositoryManager {
         List<Entry> children = null;
 
         if (request.get(ARG_SETBOUNDSFROMCHILDREN, false)) {
-            if(children==null)
+            if (children == null) {
                 children = getChildren(request, entry);
+            }
             Rectangle2D.Double rect = getBounds(children);
             if (rect != null) {
                 entry.setBounds(rect);
@@ -1708,15 +1715,16 @@ public class EntryManager extends RepositoryManager {
 
 
         if (request.get(ARG_SETTIMEFROMCHILDREN, false)) {
-            if(children==null)
+            if (children == null) {
                 children = getChildren(request, entry);
+            }
             long minTime = Long.MAX_VALUE;
             long maxTime = Long.MIN_VALUE;
-            for(Entry child: children) {
+            for (Entry child : children) {
                 minTime = Math.min(minTime, child.getStartDate());
                 maxTime = Math.max(maxTime, child.getEndDate());
             }
-            if(minTime!=Long.MAX_VALUE) {
+            if (minTime != Long.MAX_VALUE) {
                 entry.setStartDate(minTime);
                 entry.setEndDate(maxTime);
             }
@@ -2416,19 +2424,69 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
+    public Result processEntryGetByFilename(Request request)
+            throws Exception {
+        if (request.getCheckingAuthMethod()) {
+            return new Result(AuthorizationMethod.AUTH_HTTP);
+        }
+
+        String file = request.getString(ARG_FILESUFFIX, null);
+        if (file == null) {
+            file = IOUtil.getFileTail(request.getRequestPath());
+            request.put(ARG_FILESUFFIX, file);
+        }
+
+
+        List[] groupAndEntries =
+            getRepository().getEntryManager().getEntries(request);
+        List<Entry> entries = (List<Entry>) groupAndEntries[1];
+        if (entries.size() == 0) {
+            throw new IllegalArgumentException(
+                "Could not find entry with file");
+        }
+        return processEntryGet(request, entries.get(0));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processEntryGet(Request request) throws Exception {
         if (request.getCheckingAuthMethod()) {
             return new Result(AuthorizationMethod.AUTH_HTTP);
         }
 
-        Entry entry = getEntryFromRequest(request, ARG_ENTRYID, getRepository().URL_ENTRY_GET);
+        Entry entry = getEntryFromRequest(request, ARG_ENTRYID,
+                                          getRepository().URL_ENTRY_GET);
+        return processEntryGet(request, entry);
+    }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processEntryGet(Request request, Entry entry)
+            throws Exception {
         if (entry == null) {
             throw new RepositoryUtil.MissingEntryException(
                 "Could not find entry");
         }
 
-        if(!getAccessManager().canAccessFile(request,  entry)) {
+
+        if ( !getAccessManager().canAccessFile(request, entry)) {
             throw new AccessException("No access to file", request);
         }
 
@@ -3196,14 +3254,18 @@ public class EntryManager extends RepositoryManager {
         Entry parent = null;
         if (request.exists(ARG_GROUP)) {
             parent = getEntryFromArg(request, ARG_GROUP);
-            if(parent == null) {
-                parent  = findEntryFromName(request.getString(ARG_GROUP,""), request.getUser(), false);
+            if (parent == null) {
+                parent = findEntryFromName(request.getString(ARG_GROUP, ""),
+                                           request.getUser(), false);
             }
 
-            if(parent == null) {
-                throw new IllegalArgumentException("Could not find parent entry:"+ request.getString(ARG_GROUP));
-            } else if(!parent.isGroup()) {
-                throw new IllegalArgumentException("Entry is not a group:"+ parent);
+            if (parent == null) {
+                throw new IllegalArgumentException(
+                    "Could not find parent entry:"
+                    + request.getString(ARG_GROUP));
+            } else if ( !parent.isGroup()) {
+                throw new IllegalArgumentException("Entry is not a group:"
+                        + parent);
             }
         }
 
@@ -5148,16 +5210,26 @@ public class EntryManager extends RepositoryManager {
         return getEntryFromArg(request, ARG_ENTRYID);
     }
 
-    public Entry getEntryFromArg(Request request, String urlArg) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param urlArg _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry getEntryFromArg(Request request, String urlArg)
+            throws Exception {
         String entryId = request.getString(urlArg, BLANK);
         Entry  entry   = getEntry(request, entryId);
         if (entry == null) {
-            entry  = findEntryFromName(entryId, request.getUser(), false);
+            entry = findEntryFromName(entryId, request.getUser(), false);
         }
 
         if (entry == null) {
-            Entry tmp = getEntry(request,
-                                 request.getString(urlArg, BLANK),
+            Entry tmp = getEntry(request, request.getString(urlArg, BLANK),
                                  false);
             if (tmp != null) {
                 logInfo("Cannot access entry:" + entryId + "  IP:"
@@ -5168,8 +5240,7 @@ public class EntryManager extends RepositoryManager {
                     "You do not have access to this entry", request);
             }
             throw new RepositoryUtil.MissingEntryException(
-                "Could not find entry:"
-                + request.getString(urlArg, BLANK));
+                "Could not find entry:" + request.getString(urlArg, BLANK));
         }
         return entry;
     }
@@ -5427,7 +5498,6 @@ public class EntryManager extends RepositoryManager {
                                  searchCriteriaSB);
         int skipCnt = request.get(ARG_SKIP, 0);
 
-        System.err.println(where);
         SqlUtil.debug = false;
         List<Entry> entries       = new ArrayList<Entry>();
         List<Entry> groups        = new ArrayList<Entry>();

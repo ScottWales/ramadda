@@ -18,6 +18,7 @@
       <api request="/entry/deletelist"       method="processEntryListDelete" actions="edit"/>
       <api request="/entry/new"              method="processEntryNew"        actions="new"/>
       <api request="/entry/upload"           method="processEntryUpload"     actions="upload"/>
+      <api request="/entry/getbyfilename/*"      method="processEntryGetByFilename"    authmethod="httpauth" cancache="false" />
       <api request="/entry/get/*"            method="processEntryGet"        authmethod="httpauth" cancache="false" />
 
       <api request="/entry/getentries"       method="processGetEntries" />
