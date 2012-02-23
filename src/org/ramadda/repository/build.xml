@@ -303,6 +303,7 @@
         <unjar src="${lib_dir}/gdata.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/external.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/twitter4j-1.1.4.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jetty.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jetty-util.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/lucene-core-3.0.3.jar" dest="${tmpjar_dir}"/>
