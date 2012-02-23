@@ -32,3 +32,10 @@ the org/ramadda/geodata/fits plugin
 
 tika-app-1.0.jar
 The tika-app-1.0.jar  has been modified. I (jeffmc) removed the ucar, thredds and com/drew  tree from this because we had too many conflicts with other libs
+
+
+
+jmapproj.jar:
+This comes from http://sourceforge.net/projects/jmapprojlib/ and is a Java implementation of the proj4 library.
+It is used in the lidar package for doing coordinate transforms.
+
