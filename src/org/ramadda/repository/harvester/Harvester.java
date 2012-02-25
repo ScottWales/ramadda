@@ -404,7 +404,7 @@ public abstract class Harvester extends RepositoryManager {
         if (g != null) {
             return g;
         }
-        return getEntryManager().findGroupFromName(baseGroupId, getUser(),
+        return getEntryManager().findGroupFromName(getRequest(), baseGroupId, getUser(),
                 false);
     }
 

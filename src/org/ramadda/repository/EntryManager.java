@@ -356,7 +356,7 @@ public class EntryManager extends RepositoryManager {
             if (path.length() > prefix.length()) {
                 String suffix = path.substring(prefix.length());
                 suffix = java.net.URLDecoder.decode(suffix, "UTF-8");
-                entry  = findEntryFromName(suffix, request.getUser(), false);
+                entry  = findEntryFromName(request, suffix, request.getUser(), false);
                 if (entry == null) {
                     fatalError(request, "Could not find entry:" + suffix);
                 }
@@ -2768,7 +2768,7 @@ public class EntryManager extends RepositoryManager {
         if (toId != null) {
             toEntry = getEntry(request, toId);
         } else {
-            toEntry = findGroupFromName(toName, request.getUser(), false);
+            toEntry = findGroupFromName(request,toName, request.getUser(), false);
         }
         if (toEntry == null) {
             throw new RepositoryUtil.MissingEntryException(
@@ -3255,7 +3255,7 @@ public class EntryManager extends RepositoryManager {
         if (request.exists(ARG_GROUP)) {
             parent = getEntryFromArg(request, ARG_GROUP);
             if (parent == null) {
-                parent = findEntryFromName(request.getString(ARG_GROUP, ""),
+                parent = findEntryFromName(request,request.getString(ARG_GROUP, ""),
                                            request.getUser(), false);
             }
 
@@ -3511,7 +3511,7 @@ public class EntryManager extends RepositoryManager {
         if (parentEntry == null) {
             parentEntry = (Entry) getEntry(request, parentId);
             if (parentEntry == null) {
-                parentEntry = (Entry) findEntryFromName(parentId,
+                parentEntry = (Entry) findEntryFromName(request,parentId,
                         request.getUser(), false);
             }
             if (parentEntry == null) {
@@ -5225,7 +5225,7 @@ public class EntryManager extends RepositoryManager {
         String entryId = request.getString(urlArg, BLANK);
         Entry  entry   = getEntry(request, entryId);
         if (entry == null) {
-            entry = findEntryFromName(entryId, request.getUser(), false);
+            entry = findEntryFromName(request,entryId, request.getUser(), false);
         }
 
         if (entry == null) {
@@ -7005,10 +7005,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry findGroupFromName(String name, User user,
+    public Entry findGroupFromName(Request request,String name, User user,
                                    boolean createIfNeeded)
             throws Exception {
-        return findGroupFromName(name, user, createIfNeeded,
+        return findGroupFromName(request,name, user, createIfNeeded,
                                  TypeHandler.TYPE_GROUP);
     }
 
@@ -7024,11 +7024,11 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry findGroupFromName(String name, User user,
+    public Entry findGroupFromName(Request request, String name, User user,
                                    boolean createIfNeeded,
                                    String lastGroupType)
             throws Exception {
-        Entry entry = findEntryFromName(name, user, createIfNeeded,
+        Entry entry = findEntryFromName(request,name, user, createIfNeeded,
                                         lastGroupType);
         if ((entry != null) && (entry.isGroup())) {
             return (Entry) entry;
@@ -7048,10 +7048,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry findEntryFromName(String name, User user,
+    public Entry findEntryFromName(Request request,String name, User user,
                                    boolean createIfNeeded)
             throws Exception {
-        return findEntryFromName(name, user, createIfNeeded, null);
+        return findEntryFromName(request,name, user, createIfNeeded, null);
     }
 
 
@@ -7126,7 +7126,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private Entry xxxfindEntryFromName(String name, User user,
+    private Entry xxxfindEntryFromName(Request request,String name, User user,
                                        boolean createIfNeeded,
                                        boolean isGroup, boolean isTop)
             throws Exception {
@@ -7149,7 +7149,7 @@ public class EntryManager extends RepositoryManager {
         } else {
             lastName = toks.get(toks.size() - 1);
             toks.remove(toks.size() - 1);
-            parent = findGroupFromName(StringUtil.join(Entry.PATHDELIMITER,
+            parent = findGroupFromName(request,StringUtil.join(Entry.PATHDELIMITER,
                     toks), user, createIfNeeded);
             if (parent == null) {
                 if ( !isTop) {
@@ -7198,11 +7198,11 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry findEntryFromName(String name, User user,
+    public Entry findEntryFromName(Request request,String name, User user,
                                    boolean createIfNeeded,
                                    String lastGroupType)
             throws Exception {
-        return findEntryFromName(name, user, createIfNeeded, lastGroupType,
+        return findEntryFromName(request,name, user, createIfNeeded, lastGroupType,
                                  null);
     }
 
@@ -7220,7 +7220,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry findEntryFromName(String name, User user,
+    public Entry findEntryFromName(Request request,String name, User user,
                                    boolean createIfNeeded,
                                    String lastGroupType,
                                    EntryInitializer initializer)
@@ -7283,7 +7283,9 @@ public class EntryManager extends RepositoryManager {
                 }
             }
         }
-        return currentEntry;
+        if(currentEntry == null)
+            return currentEntry;
+        return  getAccessManager().filterEntry(request, currentEntry);
     }
 
 

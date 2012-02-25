@@ -758,7 +758,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 //time diff threshold = 1 minute
                 long now = System.currentTimeMillis();
                 if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
-                    logHarvesterInfo("Skipping recently modified file:" + f);
+                    logHarvesterInfo("Skipping recently modified file:" + f +" milliseconds since modified:" + (now - fileTime));
+                    //                    System.err.println("file:" + f +" last modified:" + new Date(fileTime) + " " + fileTime + " now:" + new Date(now) + " " + now);
+
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
                     continue;
@@ -898,7 +900,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                                ? template.getName()
                                : filename);
             if (makeGroup && (parentGroup != null)) {
-                Entry group = getEntryManager().findGroupFromName(
+                Entry group = getEntryManager().findGroupFromName(getRequest(), 
                                   parentGroup.getFullName()
                                   + Entry.PATHDELIMITER + name, getUser(),
                                       false);
@@ -1124,7 +1126,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         boolean createIfNeeded = !getTestMode();
-        Entry group = getEntryManager().findEntryFromName(groupName,
+        Entry group = getEntryManager().findEntryFromName(getRequest(), groupName,
                           getUser(), createIfNeeded, getLastGroupType(),
                           this);
         Entry    entry = typeHandler.createEntry(getRepository().getGUID());

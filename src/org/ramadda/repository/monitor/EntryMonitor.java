@@ -388,7 +388,7 @@ public class EntryMonitor implements Constants {
             addFilter(new Filter(what, users, doNot));
         } else if (what.equals(ARG_ANCESTOR)) {
             String ancestorName = request.getString(ARG_ANCESTOR, "");
-            Entry entry = getRepository().getEntryManager().findGroupFromName(
+            Entry entry = getRepository().getEntryManager().findGroupFromName(request,
                               ancestorName, getUser(), false);
             if (entry == null) {
                 addFilter(new Filter(what, "", doNot));

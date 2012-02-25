@@ -145,7 +145,7 @@ public class TestGenerator extends Harvester {
         List        groups  = new ArrayList();
         for (int j = 0; j < 100; j++) {
             Entry group =
-                getEntryManager().findGroupFromName("Test/Generated/"
+                getEntryManager().findGroupFromName(getRequest(), "Test/Generated/"
                     + "Group" + j, user, true);
             groups.add(group);
         }

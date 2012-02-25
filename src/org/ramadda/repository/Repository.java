@@ -807,7 +807,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void init(Properties properties) throws Exception {
 
 
-        /*        final PrintStream oldErr = System.err;
+/*
+        final PrintStream oldErr = System.err;
         final PrintStream oldOut = System.out;
         System.setErr(new PrintStream(oldOut){
                 public void     println(String x) {
@@ -815,7 +816,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     oldErr.println(x);
                 }
             });
-        */
+*/
 
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");

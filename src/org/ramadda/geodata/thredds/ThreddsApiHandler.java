@@ -85,7 +85,7 @@ public class ThreddsApiHandler extends RepositoryManager implements RequestHandl
             String suffix = path.substring(prefix.length());
             suffix = java.net.URLDecoder.decode(suffix, "UTF-8");
             suffix = IOUtil.stripExtension(suffix);
-            entry = getEntryManager().findEntryFromName(suffix,
+            entry = getEntryManager().findEntryFromName(request, suffix,
                     request.getUser(), false);
             if (entry == null) {
                 getEntryManager().fatalError(request,
