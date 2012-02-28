@@ -409,7 +409,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         StringBuffer earthSB = new StringBuffer();
                         getMapManager().getGoogleEarth(request, entries, earthSB,
                                                        contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
-                                                       contentsHeight, false);
+                                                       contentsHeight, true, false);
                         tabContents.add(HtmlUtil.div(earthSB.toString(),
                                                      HtmlUtil.style("min-width:"
                                                                     + minWidth + "px")));

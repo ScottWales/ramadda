@@ -771,6 +771,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int          height = Misc.getProperty(props, PROP_HEIGHT, 300);
             boolean justPoints  = Misc.getProperty(props, "justpoints",
                                       false);
+            boolean listEntries  = Misc.getProperty(props, "listentries",
+                                                 true);
             boolean googleEarth =
                 include.equals(WIKIPROP_EARTH)
                 && getMapManager().isGoogleEarthEnabled(request);
@@ -781,7 +783,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (googleEarth) {
                 getMapManager().getGoogleEarth(request, children, mapSB,
                         Misc.getProperty(props, PROP_WIDTH, -1),
-                        Misc.getProperty(props, PROP_HEIGHT, -1), justPoints);
+                                               Misc.getProperty(props, PROP_HEIGHT, -1), listEntries, justPoints);
             } else {
                 MapOutputHandler mapOutputHandler =
                     (MapOutputHandler) getRepository().getOutputHandler(
