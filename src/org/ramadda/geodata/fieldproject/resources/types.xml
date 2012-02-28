@@ -37,7 +37,7 @@ Files
 
     <type name="project_surveylocation" description="Survey Location" category="Field Project" >
       <property name="icon" value="/fieldproject/compass.png"/> 
-<--  
+<!--  
     <property name="form.resource.show" value="false"/>
 -->
       <property name="form.name.label" value="Location"/>
@@ -45,13 +45,45 @@ Files
       <property name="form.location.show" value="true"/>
       <property name="form.area.show" value="false"/>
 
-features -- 
-
+<!-- 
+features 
+-->
 
       <column name="survey_type" label="Location Type"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/surveylocation_type.txt"/>
       <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/surveylocation_equipment.txt"/>
     </type>
 
+
+  <type name="project_tls_scan"  description="TLS Scan" category="Field Project" pattern=".*\.RiSCAN.zip">
+     <property name="icon" value="/fieldproject/tripod.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
+   </type>
+
+  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern=".*\.obs">
+     <property name="icon" value="/fieldproject/unavco.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+   </type>
+
+  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" >
+     <property name="icon" value="/fieldproject/gps.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column name="source" label="Source"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/gps_equipment.txt"/>
+   </type>
+
+
+  <type name="project_gps_opus"  description="OPUS Solution" category="Field Project" pattern=".*\.opus">
+     <property name="icon" value="/fieldproject/opus.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+   </type>
 
 
 

@@ -2914,6 +2914,8 @@ public class DataOutputHandler extends OutputHandler {
     public Result outputOpendap(final Request request, final Entry entry)
             throws Exception {
 
+        request.remove(ARG_ENTRYID);
+        request.remove(ARG_OUTPUT);
         //Get the file location for the entry
         String     location = getPath(request, entry);
 
