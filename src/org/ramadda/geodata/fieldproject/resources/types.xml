@@ -69,7 +69,7 @@ features
      <property name="form.altitude.show.top" value="false"/>
    </type>
 
-  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" >
+  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" pattern=".*/GPS/Raw/\d+.*">
      <property name="icon" value="/fieldproject/gps.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
