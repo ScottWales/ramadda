@@ -6743,13 +6743,19 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getTemplateEntry(File file) throws Exception {
-        File xmlFile = new File(IOUtil.joinDir(file.getParentFile(),
-                           "." + file.getName() + ".ramadda"));
+        File[] files  = new File[]{
+            new File(IOUtil.joinDir(file.getParentFile(),
+                                    "." + file.getName() + ".ramadda")),
+            new File(IOUtil.joinDir(file.getParentFile(),
+                                    ".ramadda.xml")),};
+
         Entry fileInfoEntry = null;
-        if (xmlFile.exists()) {
-            fileInfoEntry = parseEntryXml(xmlFile, true);
-            if (fileInfoEntry.getName().length() == 0) {
-                fileInfoEntry.setName(file.getName());
+        for(File f: files) {
+            if (f.exists()) {
+                fileInfoEntry = parseEntryXml(f, true);
+                if (fileInfoEntry.getName().length() == 0) {
+                    fileInfoEntry.setName(f.getName());
+                }
             }
         }
         return fileInfoEntry;
@@ -7273,7 +7279,6 @@ public class EntryManager extends RepositoryManager {
                 if ( !createIfNeeded) {
                     return null;
                 }
-
                 if (lastOne) {
                     currentEntry = makeNewGroup(currentEntry, childName,
                             user, null, lastGroupType, initializer);

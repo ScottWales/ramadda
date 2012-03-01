@@ -1020,18 +1020,28 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         TypeHandler typeHandler = getTypeHandler();
-        if (typeHandler.getType().equals(TYPE_FINDMATCH)) {
+        TypeHandler typeHandlerToUse = null;
+
+        Entry templateEntry = getEntryManager().getTemplateEntry(f);
+        if(templateEntry!=null) {
+            typeHandlerToUse = templateEntry.getTypeHandler();
+        }
+        
+
+
+
+        if (typeHandlerToUse == null && typeHandler.getType().equals(TYPE_FINDMATCH)) {
             for (TypeHandler otherTypeHandler :
                     getRepository().getTypeHandlers()) {
                 if (otherTypeHandler.canHarvestFile(f)) {
-                    typeHandler = otherTypeHandler;
+                    typeHandlerToUse = otherTypeHandler;
                     break;
                 }
             }
         }
 
-        if (typeHandler.getType().equals(TYPE_FINDMATCH)) {
-            typeHandler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+        if (typeHandlerToUse == null) {
+            typeHandlerToUse = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
         }
 
 
@@ -1069,7 +1079,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             } else if (dataName.equals("todate")) {
                 value = toDate = parseDate((String) value);
             } else {
-                value = typeHandler.convert(dataName, (String) value);
+                value = typeHandlerToUse.convert(dataName, (String) value);
                 groupName = groupName.replace("${" + dataName + "}",
                         value.toString());
                 name = name.replace("${" + dataName + "}", value.toString());
@@ -1081,7 +1091,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         //        System.err.println("values:");
         //        System.err.println("map:" + map);
-        Object[] values = typeHandler.makeValues(map);
+        Object[] values = typeHandlerToUse.makeValues(map);
         //        Date     createDate = new Date();
         Date createDate = new Date(f.lastModified());
         if (fromDate == null) {
@@ -1129,7 +1139,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         Entry group = getEntryManager().findEntryFromName(getRequest(), groupName,
                           getUser(), createIfNeeded, getLastGroupType(),
                           this);
-        Entry    entry = typeHandler.createEntry(getRepository().getGUID());
+        Entry    entry = typeHandlerToUse.createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
             File fromFile = new File(fileName);

@@ -1100,8 +1100,16 @@ public class TypeHandler extends RepositoryManager {
      */
     public boolean canHarvestFile(File f) {
         if (harvestPattern != null) {
-            if (f.getName().matches(harvestPattern)) {
-                return true;
+            //If the pattern has file delimiters then use the whole path
+            if(harvestPattern.indexOf("/")>=0)  {
+                if (f.toString().matches(harvestPattern)) {
+                    return true;
+                }
+            } else {
+                //Else, just use the name
+                if (f.getName().matches(harvestPattern)) {
+                    return true;
+                }
             }
         }
         return false;
