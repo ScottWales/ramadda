@@ -276,7 +276,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private SessionManager sessionManager;
 
-    /** _more_          */
+    /** _more_ */
     private String cookieExpirationDate;
 
     /** _more_ */
@@ -473,6 +473,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     ApiMethod homeApi;
 
+    /** _more_          */
+    private Hashtable<String, RequestHandler> apiHandlers =
+        new Hashtable<String, RequestHandler>();
 
     /** _more_ */
     Hashtable<String, ApiMethod> requestMap = new Hashtable();
@@ -807,16 +810,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void init(Properties properties) throws Exception {
 
 
-/*
-        final PrintStream oldErr = System.err;
-        final PrintStream oldOut = System.out;
-        System.setErr(new PrintStream(oldOut){
-                public void     println(String x) {
-                    Misc.printStack("got it");
-                    oldErr.println(x);
-                }
-            });
-*/
+        /*
+                final PrintStream oldErr = System.err;
+                final PrintStream oldOut = System.out;
+                System.setErr(new PrintStream(oldOut){
+                        public void     println(String x) {
+                            Misc.printStack("got it");
+                            oldErr.println(x);
+                        }
+                    });
+        */
 
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
@@ -1386,13 +1389,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
+
+
     /**
      * _more_
      *
      * @throws Exception _more_
      */
     private void loadApi() throws Exception {
-        Hashtable handlers = new Hashtable();
         for (String file : getPluginManager().getApiDefFiles()) {
             file = getStorageManager().localizePath(file);
             if (getPluginManager().haveSeen(file)) {
@@ -1400,7 +1405,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             Element   apiRoot = XmlUtil.getRoot(file, getClass());
             Hashtable props   = new Hashtable();
-            processApiNode(apiRoot, handlers, props, "repository");
+            processApiNode(apiRoot, apiHandlers, props, "repository");
         }
     }
 
@@ -2375,6 +2380,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 && !topLevelMethods.contains(apiMethod)) {
             topLevelMethods.add(apiMethod);
         }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param id _more_
+     *
+     * @return _more_
+     */
+    public RequestHandler getApiHandler(String id) {
+        return apiHandlers.get(id);
     }
 
 
