@@ -22,67 +22,93 @@ package org.ramadda.geodata.data;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.type.*;
-
 
 import org.w3c.dom.*;
 
-import ucar.unidata.sql.Clause;
-
-
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.HtmlUtil;
-import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.WikiUtil;
-import ucar.unidata.xml.XmlUtil;
-
-import java.sql.PreparedStatement;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
 
 
 /**
+ * Provides a top-level API /repository/opendap/<entry path>/entry.das
  *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public class OpendapApiHandler extends RepositoryManager implements RequestHandler {
 
-    /*
-     * _more_
+    /** My id. defined in resources/opendapapi.xml */
+    public static final String API_ID = "opendap";
+
+    /** Top-level path element */
+    public static final String PATH_OPENDAP = "opendap";
+
+    /** opendap suffix to use */
+    public static final String OPENDAP_SUFFIX = "entry.das";
+
+    /** the output handler to pass opendap calls to */
+    private DataOutputHandler dataOutputHandler;
+
+    /**
+     * ctor
      *
-     * @param repository _more_
-     * @param entryNode _more_
+     * @param repository the repository
+     * @param node xml from api.xml
+     * @param props propertiesn
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
-    public OpendapApiHandler(Repository repository, Element node, Hashtable props)
+    public OpendapApiHandler(Repository repository, Element node,
+                             Hashtable props)
             throws Exception {
         super(repository);
     }
 
+    /**
+     * makes the opendap url for the entry
+     *
+     * @param entry the entry
+     *
+     * @return opendap url
+     */
+    public String getOpendapUrl(Entry entry) {
+        String url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
+                     + entry.getFullName() + "/" + OPENDAP_SUFFIX;
+        url = url.replaceAll(" ", "+");
+        return url;
+    }
 
-    public Result processOpendapRequest(Request request)
-            throws Exception {
-        return null;
+
+    /**
+     * handle the request
+     *
+     * @param request request
+     *
+     * @return result
+     *
+     * @throws Exception on badness
+     */
+    public Result processOpendapRequest(Request request) throws Exception {
+        if (dataOutputHandler == null) {
+            dataOutputHandler =
+                (DataOutputHandler) getRepository().getOutputHandler(
+                    DataOutputHandler.OUTPUT_OPENDAP);
+        }
+        //Find the entry path
+        String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
+        String path   = request.getRequestPath();
+        path = path.substring(prefix.length());
+        path = IOUtil.getFileRoot(path);
+        path = path.replaceAll("\\+", " ");
+
+        //Find the entry
+        Entry entry = getEntryManager().findEntryFromName(request, path,
+                          request.getUser(), false);
+        if (entry == null) {
+            throw new IllegalArgumentException("Could not find entry:"
+                    + path);
+        }
+        return dataOutputHandler.outputOpendap(request, entry);
     }
 
 

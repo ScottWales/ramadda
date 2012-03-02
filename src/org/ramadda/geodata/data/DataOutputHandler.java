@@ -22,6 +22,7 @@ package org.ramadda.geodata.data;
 
 
 import opendap.dap.DAP2Exception;
+
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
@@ -216,12 +217,9 @@ public class DataOutputHandler extends OutputHandler {
     /** format */
     public static final String ARG_IMAGE_HEIGHT = "image_height";
 
-    private static final  String[] SPATIALARGS = new String[]{
-                ARG_AREA_NORTH,
-                ARG_AREA_WEST,
-                ARG_AREA_SOUTH,
-                ARG_AREA_EAST,
-            };
+    /** _more_ */
+    private static final String[] SPATIALARGS = new String[] { ARG_AREA_NORTH,
+            ARG_AREA_WEST, ARG_AREA_SOUTH, ARG_AREA_EAST, };
 
     /** chart format */
     private static final String FORMAT_TIMESERIES = "timeseries";
@@ -686,8 +684,8 @@ public class DataOutputHandler extends OutputHandler {
         poolStats.append("</pre>");
         sb.append(
             HtmlUtil.formEntryTop(
-                                  "Data Cache Size:",
-                                  "NC File Pool:" + ncFilePool.getSize()
+                "Data Cache Size:",
+                "NC File Pool:" + ncFilePool.getSize()
                 + " have ncfile cache:"
                 + (NetcdfDataset.getNetcdfFileCache() != null) + " "
                 + " Count:  Create:" + ncCreateCounter.getCount()
@@ -696,10 +694,9 @@ public class DataOutputHandler extends OutputHandler {
                 + "<br>" + " Ext Count:" + extCounter.getCount()
                 + " Dap Count:" + opendapCounter.getCount() + poolStats
                 + HtmlUtil.br() + "Grid Pool:" + gridPool.getSize()
-                + HtmlUtil.br() + "Point Pool:"
-                + pointPool.getSize() + HtmlUtil.br()
-                + "Trajectory Pool:" + trajectoryPool.getSize()
-                + HtmlUtil.br()));
+                + HtmlUtil.br() + "Point Pool:" + pointPool.getSize()
+                + HtmlUtil.br() + "Trajectory Pool:"
+                + trajectoryPool.getSize() + HtmlUtil.br()));
 
     }
 
@@ -808,6 +805,7 @@ public class DataOutputHandler extends OutputHandler {
                             + request.getPathEmbeddedArgs() + "/"
                             + getStorageManager().getFileTail(entry)
                             + "/dodsC/entry.das";
+        opendapUrl = getOpendapHandler().getOpendapUrl(entry);
         links.add(new Link(opendapUrl, getRepository().iconUrl(ICON_OPENDAP),
                            "OPeNDAP", OUTPUT_OPENDAP));
         request.put(ARG_OUTPUT, oldOutput);
@@ -834,6 +832,10 @@ public class DataOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getOpendapUrl(Entry entry) {
+        //        if (true) {
+        //            return getOpendapHandler().getOpendapUrl(entry);
+        //        }
+
         return "/" + ARG_OUTPUT + ":"
                + Request.encodeEmbedded(OUTPUT_OPENDAP) + "/" + ARG_ENTRYID
                + ":" + Request.encodeEmbedded(entry.getId()) + "/"
@@ -849,6 +851,11 @@ public class DataOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getFullTdsUrl(Entry entry) {
+        /*        if (true) {
+            return getRepository().absoluteUrl(
+                getOpendapHandler().getOpendapUrl(entry));
+        }
+        */
         return getRepository().URL_ENTRY_SHOW.getFullUrl() + "/" + ARG_OUTPUT
                + ":" + Request.encodeEmbedded(OUTPUT_OPENDAP) + "/"
                + ARG_ENTRYID + ":" + Request.encodeEmbedded(entry.getId())
@@ -1483,8 +1490,12 @@ public class DataOutputHandler extends OutputHandler {
                                          ? request.getDate(ARG_TODATE, null)
                                          : null };
         //have to have both dates
-        if(dates[0]!=null && dates[1]==null) dates[0] = null;
-        if(dates[1]!=null && dates[0]==null) dates[1] = null;
+        if ((dates[0] != null) && (dates[1] == null)) {
+            dates[0] = null;
+        }
+        if ((dates[1] != null) && (dates[0] == null)) {
+            dates[1] = null;
+        }
 
         if ((dates[0] != null) && (dates[1] != null)
                 && (dates[0].getTime() > dates[1].getTime())) {
@@ -1675,16 +1686,13 @@ public class DataOutputHandler extends OutputHandler {
                 formattedDates.add(getRepository().formatDate(request, date));
             }
             String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
-            String toDate = request.getUnsafeString(ARG_TODATE,"");
+            String toDate   = request.getUnsafeString(ARG_TODATE, "");
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Time Range"),
-                    HtmlUtil.select(
-                            ARG_FROMDATE, formattedDates,
-                            fromDate) + HtmlUtil.img(iconUrl(ICON_ARROW))
-                                      + HtmlUtil.select(
-                                          ARG_TODATE, formattedDates,
-                                          toDate)));
+                    HtmlUtil.select(ARG_FROMDATE, formattedDates, fromDate)
+                    + HtmlUtil.img(iconUrl(ICON_ARROW))
+                    + HtmlUtil.select(ARG_TODATE, formattedDates, toDate)));
         }
         List formats = Misc.toList(new Object[] {
                            new TwoFacedObject("NetCDF", QueryParams.NETCDF),
@@ -1898,20 +1906,21 @@ public class DataOutputHandler extends OutputHandler {
                 }
             }
             //            System.err.println(varNames);
-            LatLonRect llr = null;
-            boolean anySpatialDifferent = false;
-            boolean haveAllSpatialArgs = true;
+            LatLonRect llr                 = null;
+            boolean    anySpatialDifferent = false;
+            boolean    haveAllSpatialArgs  = true;
 
-            for(String spatialArg: SPATIALARGS) {
-                if(!Misc.equals(request.getString(spatialArg,""),
-                                request.getString(spatialArg+".original",""))) {
+            for (String spatialArg : SPATIALARGS) {
+                if ( !Misc.equals(request.getString(spatialArg, ""),
+                                  request.getString(spatialArg + ".original",
+                                      ""))) {
                     anySpatialDifferent = true;
                     break;
                 }
             }
-            for(String spatialArg: SPATIALARGS) {
-                if(!request.defined(spatialArg)) {
-                    haveAllSpatialArgs  =false;
+            for (String spatialArg : SPATIALARGS) {
+                if ( !request.defined(spatialArg)) {
+                    haveAllSpatialArgs = false;
                     break;
                 }
             }
@@ -1936,8 +1945,12 @@ public class DataOutputHandler extends OutputHandler {
                                          ? request.getDate(ARG_TODATE, null)
                                          : null };
             //have to have both dates
-            if(dates[0]!=null && dates[1]==null) dates[0] = null;
-            if(dates[1]!=null && dates[0]==null) dates[1] = null;
+            if ((dates[0] != null) && (dates[1] == null)) {
+                dates[0] = null;
+            }
+            if ((dates[1] != null) && (dates[0] == null)) {
+                dates[1] = null;
+            }
             if ((dates[0] != null) && (dates[1] != null)
                     && (dates[0].getTime() > dates[1].getTime())) {
                 sb.append(
@@ -2008,19 +2021,17 @@ public class DataOutputHandler extends OutputHandler {
                               true);
             map.addBox("", llr, new MapProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
-                                             "" + llr.getLonMin(), 
+                                             "" + llr.getLonMin(),
                                              "" + llr.getLatMin(),
                                              "" + llr.getLonMax(), };
 
-            for(int i=0;i<points.length;i++) {
-                sb.append(HtmlUtil.hidden(SPATIALARGS[i]+".original", points[i]));
+            for (int i = 0; i < points.length; i++) {
+                sb.append(HtmlUtil.hidden(SPATIALARGS[i] + ".original",
+                                          points[i]));
             }
-            String llb = map.makeSelector(ARG_AREA, true,
-                                          points);
-            sb.append(
-                HtmlUtil.formEntryTop(
-                    msgLabel("Subset Spatially"),
-                    llb));
+            String llb = map.makeSelector(ARG_AREA, true, points);
+            sb.append(HtmlUtil.formEntryTop(msgLabel("Subset Spatially"),
+                                            llb));
         }
 
         if ((dates != null) && (dates.size() > 0)) {
@@ -2039,16 +2050,13 @@ public class DataOutputHandler extends OutputHandler {
                                     dates.get(dates.size() - 1)));
             */
             String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
-            String toDate = request.getUnsafeString(ARG_TODATE, "");
+            String toDate   = request.getUnsafeString(ARG_TODATE, "");
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Time Range"),
-                    HtmlUtil.select(
-                            ARG_FROMDATE, formattedDates,
-                            fromDate) + HtmlUtil.img(iconUrl(ICON_ARROW))
-                                      + HtmlUtil.select(
-                                          ARG_TODATE, formattedDates,
-                                          toDate)));
+                    HtmlUtil.select(ARG_FROMDATE, formattedDates, fromDate)
+                    + HtmlUtil.img(iconUrl(ICON_ARROW))
+                    + HtmlUtil.select(ARG_TODATE, formattedDates, toDate)));
         }
 
         sb.append(HtmlUtil.formEntry(msgLabel("Add Lat/Lon Variables"),
@@ -2900,6 +2908,17 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    private OpendapApiHandler getOpendapHandler() {
+        return (OpendapApiHandler) getRepository().getApiHandler(
+            OpendapApiHandler.API_ID);
+    }
+
+
 
     /**
      * _more_
@@ -2917,10 +2936,10 @@ public class DataOutputHandler extends OutputHandler {
         request.remove(ARG_ENTRYID);
         request.remove(ARG_OUTPUT);
         //Get the file location for the entry
-        String     location = getPath(request, entry);
+        String location = getPath(request, entry);
 
         //Get the ncFile from the pool
-        NetcdfFile ncFile   = ncFilePool.get(location);
+        NetcdfFile ncFile = ncFilePool.get(location);
         opendapCounter.incr();
 
         //Bridge the ramadda servlet to the opendap servlet
