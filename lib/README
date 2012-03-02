@@ -39,3 +39,7 @@ jmapproj.jar:
 This comes from http://sourceforge.net/projects/jmapprojlib/ and is a Java implementation of the proj4 library.
 It is used in the lidar package for doing coordinate transforms.
 
+
+junit.jar:
+https://github.com/KentBeck/junit/downloads
+This is from junit-4.10.jar
