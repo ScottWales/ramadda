@@ -22,6 +22,8 @@ package org.ramadda.geodata.fieldproject;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.type.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.util.TempDir;
@@ -37,6 +39,7 @@ import ucar.unidata.util.IOUtil;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
 
@@ -76,13 +79,6 @@ public class GpsOutputHandler extends OutputHandler {
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/fieldproject/gps.png", "Field Project");
 
-
-    /** The output type */
-    public static final OutputType OUTPUT_GPS_TEQC_ALL =
-        new OutputType("Convert all to RINEX", "fieldproject.gps.teqc",
-                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/fieldproject/gps.png", "Field Project");
-
     /**
      * ctor
      *
@@ -94,7 +90,6 @@ public class GpsOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_GPS_TEQC);
-        addType(OUTPUT_GPS_TEQC_ALL);
         teqcPath = getProperty("fieldproject.teqc", null);
     }
 
@@ -165,7 +160,7 @@ public class GpsOutputHandler extends OutputHandler {
             for (Entry child : state.getAllEntries()) {
                 if (isRawGps(child)) {
                     links.add(makeLink(request, state.group,
-                                       OUTPUT_GPS_TEQC_ALL));
+                                       OUTPUT_GPS_TEQC));
                     break;
                 }
             }
@@ -300,6 +295,12 @@ public class GpsOutputHandler extends OutputHandler {
 
 
             sb.append(HtmlUtil.p());
+            sb.append(HtmlUtil.formTable());
+            addPublishWidget(
+                             request, mainEntry, sb,
+                             msg("Select a folder to publish the RINEX to"), false);
+            sb.append(HtmlUtil.formTableClose());
+
             sb.append(HtmlUtil.submit("Make RINEX"));
             sb.append(HtmlUtil.formClose());
             return new Result("", sb);
@@ -317,6 +318,7 @@ public class GpsOutputHandler extends OutputHandler {
         String uniqueId = getRepository().getGUID();
         File   workDir  = getWorkDir(uniqueId);
 
+        Hashtable<String,Entry> fileToEntryMap = new Hashtable<String,Entry>();
 
         for (String entryId : entryIds) {
             Entry entry = getEntryManager().getEntry(request, entryId);
@@ -341,6 +343,8 @@ public class GpsOutputHandler extends OutputHandler {
                                      IOUtil.stripExtension(
                                          getStorageManager().getFileTail(
                                              entry)) + RINEX_SUFFIX));
+            fileToEntryMap.put(rinexFile.toString(),entry);
+
             ProcessBuilder pb = new ProcessBuilder(teqcPath, "+out",
                                     rinexFile.toString(), f.toString());
             pb.directory(workDir);
@@ -369,7 +373,57 @@ public class GpsOutputHandler extends OutputHandler {
         }
 
         sb.append("</ul>");
-        if (anyOK) {
+        if (!anyOK) {
+            return new Result("", sb);
+        }
+
+        if(doingPublish(request)) {
+            Entry parent = getEntryManager().findGroup(request,
+                               request.getString(ARG_PUBLISH_ENTRY
+                                   + "_hidden", ""));
+            if (parent == null) {
+                throw new IllegalArgumentException("Could not find folder");
+            }
+            if ( !getAccessManager().canDoAction(request, parent,
+                    Permission.ACTION_NEW)) {
+                throw new AccessException("No access", request);
+            }
+            File[] files = workDir.listFiles();
+            int cnt = 0;
+            for (File f : files) {
+                String originalFileLocation = f.toString();
+                if ( !f.getName().endsWith(RINEX_SUFFIX) || (f.length() == 0)) {
+                    continue;
+                }
+                f = getStorageManager().copyToStorage(request, f,
+                        f.getName());
+
+                String      name = f.getName();
+                TypeHandler typeHandler = getRepository().getTypeHandler("project_gps_rinex");
+                Entry newEntry = getEntryManager().addFileEntry(request, f,
+                                     parent, name, request.getUser(),
+                                     typeHandler, null);
+
+                if (cnt== 0) {
+                    sb.append(msgHeader("Published Entries"));
+                }
+                cnt++;
+                sb.append(
+                              HtmlUtil.href(
+                        HtmlUtil.url(
+                            getRepository().URL_ENTRY_SHOW.toString(),
+                            new String[] { ARG_ENTRYID,
+                                           newEntry.getId() }), newEntry
+                                           .getName()));
+
+                sb.append("<br>");
+                getRepository().addAuthToken(request);
+                Entry fromEntry =fileToEntryMap.get(originalFileLocation);
+                getRepository().getAssociationManager().addAssociation(
+                    request, newEntry, fromEntry, "generated rinex",
+                    "rinex generated from");
+            }
+
             sb.append(HtmlUtil.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
             sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_GPS_TEQC.getId()));

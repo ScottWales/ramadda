@@ -1908,6 +1908,12 @@ public class OutputHandler extends RepositoryManager {
     public void addPublishWidget(Request request, Entry entry,
                                  StringBuffer sb, String header)
             throws Exception {
+        addPublishWidget(request, entry, sb, header, true);
+    }
+
+    public void addPublishWidget(Request request, Entry entry,
+                                 StringBuffer sb, String header, boolean addNameField)
+            throws Exception {
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
             sb.append(HtmlUtil.hidden(ARG_PUBLISH_ENTRY + "_hidden", "",
@@ -1931,9 +1937,11 @@ public class OutputHandler extends RepositoryManager {
                         + HtmlUtil.SIZE_60) + select + HtmlUtil.space(2)
                                             + addMetadata));
 
+            if(addNameField) {
             sb.append(HtmlUtil.formEntry(msgLabel("Name"),
                                          htmlInput(request, ARG_PUBLISH_NAME,
                                              "", 30)));
+            }
 
         }
     }
