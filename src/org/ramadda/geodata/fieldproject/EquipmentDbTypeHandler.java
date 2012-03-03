@@ -21,9 +21,11 @@
 package org.ramadda.geodata.fieldproject;
 
 
+import org.ramadda.plugins.db.*;
+
+
 
 import org.ramadda.repository.*;
-import org.ramadda.plugins.db.*;
 
 
 import org.w3c.dom.*;
@@ -48,14 +50,25 @@ public class EquipmentDbTypeHandler extends DbTypeHandler {
      *
      * @throws Exception _more_
      */
-    public EquipmentDbTypeHandler(DbAdminHandler dbAdmin, Repository repository,
-                         String tableName, Element tableNode, String desc)
+    public EquipmentDbTypeHandler(DbAdminHandler dbAdmin,
+                                  Repository repository, String tableName,
+                                  Element tableNode, String desc)
             throws Exception {
         super(dbAdmin, repository, tableName, tableNode, desc);
     }
 
+    /**
+     * _more_
+     *
+     * @param view _more_
+     *
+     * @return _more_
+     */
     public boolean showInHeader(String view) {
-        if(view.equals(VIEW_CHART)||view.equals(VIEW_STICKYNOTES)||view.equals(VIEW_RSS)) return false;
+        if (view.equals(VIEW_CHART) || view.equals(VIEW_STICKYNOTES)
+                || view.equals(VIEW_RSS)) {
+            return false;
+        }
         return super.showInHeader(view);
     }
 
