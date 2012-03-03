@@ -62,7 +62,7 @@ features
      <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
    </type>
 
-  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern=".*\.obs">
+  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern="(.*\.obs|.*\.rinex)">
      <property name="icon" value="/fieldproject/unavco.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
