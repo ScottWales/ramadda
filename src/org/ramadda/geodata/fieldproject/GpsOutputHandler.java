@@ -564,7 +564,6 @@ public class GpsOutputHandler extends OutputHandler {
             }
 
             List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
-
             postEntries.add(HttpFormEntry.hidden(ARG_OPUS_EMAIL,request.getString(ARG_OPUS_EMAIL,"").trim()));
             String antenna = request.getString(ARG_OPUS_ANTENNA,"");
             //            antenna = antenna.replaceAll(" ","+");
@@ -572,10 +571,9 @@ public class GpsOutputHandler extends OutputHandler {
             postEntries.add(HttpFormEntry.hidden(ARG_OPUS_HEIGHT,request.getString(ARG_OPUS_HEIGHT,"").trim()));
 
             //            for data > 15 min. < 2 hrs. for data > 2 hrs. < 48 hrs.
-
-
             if(request.get(ARG_OPUS_RAPID, false)) {
-                postEntries.add(HttpFormEntry.hidden("Static", "Rapid-Static"));
+                System.err.println("RAPID STATIC");
+                postEntries.add(HttpFormEntry.hidden("Rapid-Static", "Upload to Rapid-Static"));
             } else {
                 postEntries.add(HttpFormEntry.hidden("Static", "Static"));
             }
@@ -592,7 +590,7 @@ public class GpsOutputHandler extends OutputHandler {
             postEntries.add(HttpFormEntry.hidden("frameValue", "2011"));
             postEntries.add(
                             new HttpFormEntry(
-                                              "uploadfile", entry.getName(),
+                                              "uploadfile", entry.getId()+".rinex",
                                               IOUtil.readBytes(
                                                                getStorageManager().getFileInputStream(f))));
 
@@ -658,7 +656,7 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
         sb.append(HtmlUtil.hidden(ARG_OPUS_PROCESS, "true"));
 
-        sb.append(HtmlUtil.submit("Post to OPUS"));
+        sb.append(HtmlUtil.submit("Submit to OPUS"));
 
         sb.append(HtmlUtil.formTable());
         sb.append(HtmlUtil.formEntry(msg("Email"),
@@ -702,7 +700,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
         }
         sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.submit("Post to OPUS"));
+        sb.append(HtmlUtil.submit("Submit to OPUS"));
         sb.append(HtmlUtil.formClose());
         return new Result("", sb);
     }
