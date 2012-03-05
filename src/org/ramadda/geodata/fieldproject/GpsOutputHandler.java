@@ -30,7 +30,8 @@ import org.ramadda.util.TempDir;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.ui.HttpFormEntry;
+import org.ramadda.util.HttpFormField;
+
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.LogUtil;
 
@@ -563,33 +564,34 @@ public class GpsOutputHandler extends OutputHandler {
                 sb.append(" ... skipping - file does not exist");
             }
 
-            List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
-            postEntries.add(HttpFormEntry.hidden(ARG_OPUS_EMAIL,request.getString(ARG_OPUS_EMAIL,"").trim()));
+            List<HttpFormField> postEntries = new ArrayList<HttpFormField>();
+            postEntries.add(HttpFormField.hidden(ARG_OPUS_EMAIL,request.getString(ARG_OPUS_EMAIL,"").trim()));
             String antenna = request.getString(ARG_OPUS_ANTENNA,"");
             //            antenna = antenna.replaceAll(" ","+");
-            postEntries.add(HttpFormEntry.hidden(ARG_OPUS_ANTENNA,antenna));
-            postEntries.add(HttpFormEntry.hidden(ARG_OPUS_HEIGHT,request.getString(ARG_OPUS_HEIGHT,"").trim()));
+            postEntries.add(HttpFormField.hidden(ARG_OPUS_ANTENNA,antenna));
+            postEntries.add(HttpFormField.hidden(ARG_OPUS_HEIGHT,request.getString(ARG_OPUS_HEIGHT,"").trim()));
 
             //            for data > 15 min. < 2 hrs. for data > 2 hrs. < 48 hrs.
             if(request.get(ARG_OPUS_RAPID, false)) {
                 System.err.println("RAPID STATIC");
-                postEntries.add(HttpFormEntry.hidden("Rapid-Static", "Upload to Rapid-Static"));
+                postEntries.add(HttpFormField.hidden("Rapid-Static", "Upload to Rapid-Static"));
             } else {
-                postEntries.add(HttpFormEntry.hidden("Static", "Static"));
+                postEntries.add(HttpFormField.hidden("Static", "Static"));
             }
-            postEntries.add(HttpFormEntry.hidden("theHost1","www.ngs.noaa.gov"));
-            postEntries.add(HttpFormEntry.hidden("", ""));
-            postEntries.add(HttpFormEntry.hidden("selectList1", ""));
-            postEntries.add(HttpFormEntry.hidden("extend_code", "0"));
-            postEntries.add(HttpFormEntry.hidden("xml_code", "0"));
-            postEntries.add(HttpFormEntry.hidden("set_profile", "0"));
-            postEntries.add(HttpFormEntry.hidden("delete_profile", "0"));
-            postEntries.add(HttpFormEntry.hidden("share", "2"));
-            postEntries.add(HttpFormEntry.hidden("submit_database", "2"));
-            postEntries.add(HttpFormEntry.hidden("opusOption", "0"));
-            postEntries.add(HttpFormEntry.hidden("frameValue", "2011"));
+            postEntries.add(HttpFormField.hidden("theHost1","www.ngs.noaa.gov"));
+            postEntries.add(HttpFormField.hidden("", ""));
+            postEntries.add(HttpFormField.hidden("selectList1", ""));
+            postEntries.add(HttpFormField.hidden("extend_code", "0"));
+            postEntries.add(HttpFormField.hidden("xml_code", "0"));
+            postEntries.add(HttpFormField.hidden("set_profile", "0"));
+            postEntries.add(HttpFormField.hidden("delete_profile", "0"));
+            postEntries.add(HttpFormField.hidden("share", "2"));
+            postEntries.add(HttpFormField.hidden("submit_database", "2"));
+            postEntries.add(HttpFormField.hidden("opusOption", "0"));
+            postEntries.add(HttpFormField.hidden("frameValue", "2011"));
+            //Use the entry id so when we get the opus back we can look up the original entry
             postEntries.add(
-                            new HttpFormEntry(
+                            new HttpFormField(
                                               "uploadfile", entry.getId()+".rinex",
                                               IOUtil.readBytes(
                                                                getStorageManager().getFileInputStream(f))));
@@ -601,16 +603,18 @@ public class GpsOutputHandler extends OutputHandler {
             String[] result={"",""};
             String errorMsg = null;
             try {
-                result = HttpFormEntry.doPost(postEntries, url);
+                result = HttpFormField.doPost(postEntries, url, false);
                 errorMsg = result[0];
             } catch(Exception exc) {
                 errorMsg = LogUtil.getInnerException(exc).getMessage();
+            }
+
+            if(errorMsg!=null) {
                 int idx = errorMsg.indexOf("errorMessage=");
                 if(idx>=0) {
                     errorMsg = errorMsg.substring(idx+"errorMessage=".length());
                 }
             }
-
             String html = result[1];
             if (errorMsg != null) {
                 //This is a hack since the httpformentry gets a redirect and tries to post again to the redirect url
@@ -659,21 +663,21 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.submit("Submit to OPUS"));
 
         sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msg("Email"),
+        sb.append(HtmlUtil.formEntry(msgLabel("Email"),
                                      HtmlUtil.input(ARG_OPUS_EMAIL,
                                                     request.getString(ARG_OPUS_EMAIL, request.getUser().getEmail()))));
 
-        sb.append(HtmlUtil.formEntry(msg("Antenna Height"),
+        sb.append(HtmlUtil.formEntry(msgLabel("Antenna Height"),
                                      HtmlUtil.input(ARG_OPUS_HEIGHT,
                                                     request.getString(ARG_OPUS_HEIGHT, "0.1")) + " "
                                      + msg("Meters above mark")));
 
-        sb.append(HtmlUtil.formEntry(msg("Antenna"),
+        sb.append(HtmlUtil.formEntry(msgLabel("Antenna"),
                                      HtmlUtil.select(ARG_OPUS_ANTENNA,
                                                      Antenna.getAntennas(), request.getString(ARG_OPUS_ANTENNA,""),
                                                      200)));
 
-        sb.append(HtmlUtil.formEntry(msg("Rapid"),
+        sb.append(HtmlUtil.formEntry(msgLabel("Rapid"),
                                      HtmlUtil.checkbox(ARG_OPUS_RAPID,
                                                        "true", request.get(ARG_OPUS_RAPID,false)) +" " +"for data &gt; 15 min. &lt; 2 hrs."));
 

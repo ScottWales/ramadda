@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.geodata.fieldproject.FieldProjectApiHandler" id="fieldproject">
+      <api request="/fieldproject/addopus"    method="processAddOpus"  name="Add OPUS"/>
+</api>
