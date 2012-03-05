@@ -715,6 +715,25 @@ public class Entry implements Cloneable {
      *
      * @return _more_
      */
+    public double getLatitude() {
+        return south;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double getLongitude() {
+        return east;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public double[] getCenter() {
         return new double[] { south + (north - south) / 2,
                               east + (west - east) / 2 };
