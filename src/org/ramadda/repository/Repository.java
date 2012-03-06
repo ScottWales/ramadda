@@ -1273,7 +1273,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         entryNode, TypeHandler.TAG_HANDLER,
                         "org.ramadda.repository.type.GenericTypeHandler");
 
-                //                System.err.println ("RAMADDA: loading type handler:" + classPath);
+                //System.err.println ("RAMADDA: loading type handler:" + classPath);
                 try {
                     Class handlerClass = Misc.findClass(classPath);
 
@@ -2247,14 +2247,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                Misc.getProperty(props,
                                    ApiMethod.ATTR_CANCACHE, true));
 
-
         String handlerName = XmlUtil.getAttributeFromTree(node,
                                  ApiMethod.ATTR_HANDLER,
                                  Misc.getProperty(props,
                                      ApiMethod.ATTR_HANDLER, defaultHandler));
 
         String handlerId = XmlUtil.getAttributeFromTree(node,
-                               ApiMethod.ATTR_ID, handlerName);
+                                                        ApiMethod.ATTR_ID, handlerName);
         RequestHandler handler = (RequestHandler) handlers.get(handlerId);
 
         if (handler == null) {

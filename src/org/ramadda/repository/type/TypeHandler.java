@@ -116,7 +116,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
 
     /** _more_ */
@@ -181,7 +181,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public Hashtable properties = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     public String harvestPattern;
 
     /** _more_ */
@@ -301,6 +301,24 @@ public class TypeHandler extends RepositoryManager {
     public int getNumberOfMyValues() {
         return 0;
     }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public Object[] getValues(Entry entry) {
+        Object[] values = entry.getValues();
+        if (values == null) {
+            values = this.makeValues(new Hashtable());
+            entry.setValues(values);
+        }
+        return values;
+    }
+
+
 
     /**
      * _more_
@@ -1101,7 +1119,7 @@ public class TypeHandler extends RepositoryManager {
     public boolean canHarvestFile(File f) {
         if (harvestPattern != null) {
             //If the pattern has file delimiters then use the whole path
-            if(harvestPattern.indexOf("/")>=0)  {
+            if (harvestPattern.indexOf("/") >= 0) {
                 if (f.toString().matches(harvestPattern)) {
                     return true;
                 }
@@ -1600,7 +1618,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private HashSet seenIt = new HashSet();
 
 
@@ -1878,6 +1896,11 @@ public class TypeHandler extends RepositoryManager {
                     */
                 }
             }
+            if (entry.hasAltitude()) {
+                sb.append(formEntry(request, msgLabel("Elevation"),
+                                    "" + entry.getAltitude()));
+            }
+
 
             if (showResource && entry.getResource().isImage()) {
                 String width = "600";
@@ -2217,14 +2240,14 @@ public class TypeHandler extends RepositoryManager {
             addSpatialToEntryForm(request, sb, entry);
         }
 
-        /****
-        if (request.getUser().getAdmin()) {
-            sb.append(formEntry(request, msgLabel("User"),
-                                HtmlUtil.input(ARG_USER_ID, ((entry != null)
-                    ? entry.getUser().getId()
-                    : ""), HtmlUtil.SIZE_20)));
-        }
-        ****/
+        /**
+         * if (request.getUser().getAdmin()) {
+         *   sb.append(formEntry(request, msgLabel("User"),
+         *                       HtmlUtil.input(ARG_USER_ID, ((entry != null)
+         *           ? entry.getUser().getId()
+         *           : ""), HtmlUtil.SIZE_20)));
+         * }
+         */
 
     }
 
@@ -4197,13 +4220,15 @@ public class TypeHandler extends RepositoryManager {
         if ((theValue == null) || (theValue.length() == 0)) {
             return;
         }
-        HashSet set = getEnumValuesInner(null,column, entry);
+        HashSet set = getEnumValuesInner(null, column, entry);
         set.add(theValue);
     }
 
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param column _more_
      * @param entry _more_
      *
@@ -4211,8 +4236,9 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List getEnumValues(Request request, Column column, Entry entry) throws Exception {
-        HashSet set = getEnumValuesInner(request,column, entry);
+    public List getEnumValues(Request request, Column column, Entry entry)
+            throws Exception {
+        HashSet set = getEnumValuesInner(request, column, entry);
         List    tmp = new ArrayList();
         tmp.addAll(set);
         return Misc.sort(tmp);
@@ -4222,6 +4248,8 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param column _more_
      * @param entry _more_
      *
@@ -4229,38 +4257,45 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private HashSet getEnumValuesInner(Request request, Column column, Entry entry)
+    private HashSet getEnumValuesInner(Request request, Column column,
+                                       Entry entry)
             throws Exception {
 
         Clause clause = getEnumValuesClause(column, entry);
-        if(request!=null) {
+        if (request != null) {
             List<Clause> ands = new ArrayList<Clause>();
-            for(Column otherCol: getColumns()) {
-                if(!otherCol.getCanSearch()|| !otherCol.isEnumeration()) continue;
-                if(otherCol.equals(column)) {
+            for (Column otherCol : getColumns()) {
+                if ( !otherCol.getCanSearch() || !otherCol.isEnumeration()) {
+                    continue;
+                }
+                if (otherCol.equals(column)) {
                     continue;
                 }
                 String urlId = otherCol.getFullName();
-                if(request.defined(urlId)) {
-                    ands.add(Clause.eq(otherCol.getName(),request.getString(urlId,"")));
+                if (request.defined(urlId)) {
+                    ands.add(Clause.eq(otherCol.getName(),
+                                       request.getString(urlId, "")));
                 }
             }
-            if(ands.size()>0) {
-                if(clause == null) {
+            if (ands.size() > 0) {
+                if (clause == null) {
                     clause = Clause.and(ands);
                 } else {
-                    clause = Clause.and(clause,Clause.and(ands));
+                    clause = Clause.and(clause, Clause.and(ands));
                 }
                 //                System.err.println("col:" + column + " Clause:" + clause);
             }
         }
 
         //Use the clause string as part of the key
-        String  key = getEnumValueKey(column, entry)+"_" + clause;
+        String  key = getEnumValueKey(column, entry) + "_" + clause;
         HashSet set = columnEnumValues.get(key);
         if (set != null) {
             return set;
         }
+
+
+        System.err.print("clause: " + clause);
 
 
         Statement stmt = getRepository().getDatabaseManager().select(

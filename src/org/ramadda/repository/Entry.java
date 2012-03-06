@@ -680,6 +680,7 @@ public class Entry implements Cloneable {
         return values[index].toString();
     }
 
+
     /**
      * _more_
      *
@@ -881,6 +882,36 @@ public class Entry implements Cloneable {
         return ((north == north)
                 ? north
                 : NONGEO);
+    }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void setLatitude(double value) {
+        north = value;
+        south = value;
+    }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void setLongitude(double value) {
+        east = value;
+        west = value;
+    }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
+    public void setAltitude(double value) {
+        altitudeTop    = value;
+        altitudeBottom = value;
     }
 
     /**

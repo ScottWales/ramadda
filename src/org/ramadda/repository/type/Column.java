@@ -589,9 +589,6 @@ public class Column implements Constants {
      * @param sb _more_
      * @param output _more_
      * @param values _more_
-     * @param valueIdx _more_
-     *
-     * @return _more_
      *
      * @throws Exception _more_
      */
@@ -1165,7 +1162,7 @@ public class Column implements Constants {
             }
         } else if (isEnumeration()) {
             String value = request.getString(id, null);
-            if (value != null && value.length()>0) {
+            if ((value != null) && (value.length() > 0)) {
                 where.add(Clause.eq(getFullName(), value));
             }
         } else {
@@ -1471,14 +1468,18 @@ public class Column implements Constants {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private List getEnumPlusValues(Request request, Entry entry) throws Exception {
+    private List getEnumPlusValues(Request request, Entry entry)
+            throws Exception {
         List enums = typeHandler.getEnumValues(request, this, entry);
+        //        System.err.print("ENUMS: " + enums);
         //TODO: Check for Strings vs TwoFacedObjects
         if (enumValues != null) {
             List tmp = new ArrayList();
@@ -1489,6 +1490,7 @@ public class Column implements Constants {
             }
             tmp.addAll(enumValues);
             enums = tmp;
+            //            System.err.print("TMPS: " + enums);
         }
         return enums;
     }
@@ -1788,7 +1790,8 @@ public class Column implements Constants {
             //            widget = HtmlUtil.select(id, tmpValues, request.getString(id));
         } else if (isType(TYPE_ENUMERATIONPLUS) || isType(TYPE_ENUMERATION)) {
             List tmpValues   = Misc.newList(TypeHandler.ALL_OBJECT);
-            List values      = typeHandler.getEnumValues(request, this, entry);
+            List values      = typeHandler.getEnumValues(request, this,
+                                   entry);
             List valuesToUse = new ArrayList();
             if (enumValues != null) {
                 for (Object value : values) {

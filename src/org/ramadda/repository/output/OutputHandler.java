@@ -1911,15 +1911,27 @@ public class OutputHandler extends RepositoryManager {
         addPublishWidget(request, entry, sb, header, true);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param header _more_
+     * @param addNameField _more_
+     *
+     * @throws Exception _more_
+     */
     public void addPublishWidget(Request request, Entry entry,
-                                 StringBuffer sb, String header, boolean addNameField)
+                                 StringBuffer sb, String header,
+                                 boolean addNameField)
             throws Exception {
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
             sb.append(HtmlUtil.hidden(ARG_PUBLISH_ENTRY + "_hidden", "",
                                       HtmlUtil.id(ARG_PUBLISH_ENTRY
                                           + "_hidden")));
-            sb.append(HtmlUtil.row(HtmlUtil.cols("", header)));
+            sb.append(HtmlUtil.row(HtmlUtil.colspan(header, 2)));
 
             String select = OutputHandler.getSelect(request,
                                 ARG_PUBLISH_ENTRY, "Select folder", false,
@@ -1937,10 +1949,10 @@ public class OutputHandler extends RepositoryManager {
                         + HtmlUtil.SIZE_60) + select + HtmlUtil.space(2)
                                             + addMetadata));
 
-            if(addNameField) {
-            sb.append(HtmlUtil.formEntry(msgLabel("Name"),
-                                         htmlInput(request, ARG_PUBLISH_NAME,
-                                             "", 30)));
+            if (addNameField) {
+                sb.append(HtmlUtil.formEntry(msgLabel("Name"),
+                                             htmlInput(request,
+                                                 ARG_PUBLISH_NAME, "", 30)));
             }
 
         }

@@ -379,6 +379,7 @@ public class GenericTypeHandler extends TypeHandler {
                                         Entry parent, boolean newEntry)
             throws Exception {
         //Always call getEntryValues here so we get create the correct size array
+
         Object[] values = getEntryValues(entry);
         super.initializeEntryFromForm(request, entry, parent, newEntry);
         if ( !haveDatabaseTable()) {
