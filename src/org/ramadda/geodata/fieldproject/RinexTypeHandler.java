@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter
  */
-public class RinexTypeHandler extends GenericTypeHandler {
+public class RinexTypeHandler extends GpsTypeHandler {
 
     /**
      * _more_
@@ -49,45 +49,4 @@ public class RinexTypeHandler extends GenericTypeHandler {
             throws Exception {
         super(repository, node);
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception On badness
-     */
-    @Override
-    public void initializeEntryFromForm(Request request, Entry entry,
-                                        Entry parent, boolean newEntry)
-            throws Exception {
-        super.initializeEntryFromForm(request, entry, parent, newEntry);
-        initializeRinexEntry(entry);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception On badness
-     */
-    @Override
-    public void initializeNewEntry(Entry entry) throws Exception {
-        super.initializeNewEntry(entry);
-        initializeRinexEntry(entry);
-    }
-
-    private void initializeRinexEntry(Entry entry) throws Exception {
-        
-
-    }
-
-
 }

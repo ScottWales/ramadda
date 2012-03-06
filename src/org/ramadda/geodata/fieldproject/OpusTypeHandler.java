@@ -26,12 +26,14 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
+
 import java.io.File;
 
 import java.util.List;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Misc;
+
 
 /**
  *
@@ -39,6 +41,34 @@ import ucar.unidata.util.Misc;
  * @author Jeff McWhirter
  */
 public class OpusTypeHandler extends GenericTypeHandler {
+
+    /** _more_ */
+    public static final String TYPE_OPUS = "project_gps_opus";
+
+    /** _more_ */
+    private static int COLCNT = 0;
+
+    /** _more_ */
+    public static final int IDX_SITE_CODE = COLCNT++;
+
+    /** _more_ */
+    public static final int IDX_UTM_X = COLCNT++;
+
+    /** _more_ */
+    public static final int IDX_UTM_Y = COLCNT++;
+
+    /** _more_ */
+    public static final int IDX_ITRF_X = COLCNT++;
+
+    /** _more_ */
+    public static final int IDX_ITRF_Y = COLCNT++;
+
+    /** _more_ */
+    public static final int IDX_ITRF_Z = COLCNT++;
+
+
+
+
 
     /**
      * _more_
@@ -86,30 +116,67 @@ public class OpusTypeHandler extends GenericTypeHandler {
         initializeOpusEntry(entry);
     }
 
+
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
     private void initializeOpusEntry(Entry entry) throws Exception {
-        String opus = new String(IOUtil.readBytes(getStorageManager().getFileInputStream(entry.getFile())));
+        String opus = new String(
+                          IOUtil.readBytes(
+                              getStorageManager().getFileInputStream(
+                                  entry.getFile())));
         /*
       LAT:   40 6 46.56819      0.003(m)        40 6 46.58791      0.003(m)
     E LON:  253 35  8.56821      0.010(m)       253 35  8.52089      0.010(m)
     W LON:  106 24 51.43179      0.010(m)       106 24 51.47911      0.010(m)
    EL HGT:         2275.608(m)   0.009(m)              2274.768(m)   0.009(m)
+Northing (Y) [meters]     4441227.340           391737.791
+Easting (X)  [meters]      379359.228           836346.070
+
+  X:     -1380903.608(m)   0.015(m)          -1380904.391(m)   0.015(m)
+        Y:     -4687187.453(m)   0.012(m)          -4687186.144(m)   0.012(m)
+        Z:      4089011.143(m)   0.010(m)           4089011.067(m)   0.010(m)
          */
         //        List<String> 
-        String latLine  = StringUtil.findPattern(opus, "LAT: *([^\n]+)\n");
-        String lonLine  = StringUtil.findPattern(opus, "LON: *([^\n]+)\n");
-        String heightLine  = StringUtil.findPattern(opus, "HGT: *([^\\(]+)\\(");
-        double altitude =0.0;
-        if(heightLine!=null) {
+        Object[] values = entry.getTypeHandler().getValues(entry);
+        String[] patterns = { "Northing\\s*\\(Y\\)\\s*\\[meters\\]\\s*([-\\.\\d]+) ",
+                              "Easting\\s*\\(X\\)\\s*\\[meters\\]\\s*([-\\.\\d]+) ",
+                              "X:\\s*([-\\.\\d]+)\\(",
+                              "Y:\\s*([-\\.\\d]+)\\(",
+                              "Z:\\s*([-\\.\\d]+)\\(", };
+        for (int i = 0; i < patterns.length; i++) {
+            String value = StringUtil.findPattern(opus, patterns[i]);
+            if (value != null) {
+                values[i + IDX_UTM_X] = new Double(value);
+            }
+        }
+        String latLine    = StringUtil.findPattern(opus, "LAT: *([^\n]+)\n");
+        String lonLine    = StringUtil.findPattern(opus, "LON: *([^\n]+)\n");
+        String heightLine = StringUtil.findPattern(opus,
+                                "HGT: *([^\\(]+)\\(");
+        double altitude = 0.0;
+        if (heightLine != null) {
             //            System.err.println ("hgt: " + heightLine);
             altitude = Double.parseDouble(heightLine.trim());
         }
-        if(latLine!=null && lonLine!=null) {
-            List<String> latToks = StringUtil.split(latLine.trim()," ",true,true);
-            List<String> lonToks = StringUtil.split(lonLine.trim()," ",true,true);
-            double lat = Misc.decodeLatLon(latToks.get(0) +":" + latToks.get(1) +":" + latToks.get(2));
-            double lon = Misc.normalizeLongitude(Misc.decodeLatLon(lonToks.get(0) +":" + lonToks.get(1) +":" + lonToks.get(2)));
+        if ((latLine != null) && (lonLine != null)) {
+            List<String> latToks = StringUtil.split(latLine.trim(), " ",
+                                       true, true);
+            List<String> lonToks = StringUtil.split(lonLine.trim(), " ",
+                                       true, true);
+            double lat = Misc.decodeLatLon(latToks.get(0) + ":"
+                                           + latToks.get(1) + ":"
+                                           + latToks.get(2));
+            double lon =
+                Misc.normalizeLongitude(Misc.decodeLatLon(lonToks.get(0)
+                    + ":" + lonToks.get(1) + ":" + lonToks.get(2)));
             //            System.err.println ("lat: " + lat + " " + lon +" alt:" + altitude);
-            entry.setLocation(lat,lon,altitude);
+            entry.setLocation(lat, lon, altitude);
         }
     }
 

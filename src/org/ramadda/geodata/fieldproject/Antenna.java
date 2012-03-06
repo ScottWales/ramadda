@@ -35,7 +35,7 @@ import java.util.ArrayList;
  */
 public class Antenna {
 
-    /** _more_          */
+    /** _more_ */
     private static ArrayList<TwoFacedObject> antennas;
 
 

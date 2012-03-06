@@ -62,22 +62,24 @@ features
      <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
    </type>
 
-  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern="(.*\.obs|.*\.rinex)"
-        handler="org.ramadda.geodata.fieldproject.RinexTypeHandler">
-     <property name="icon" value="/fieldproject/unavco.png"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="form.altitude.show" value="false"/>
-     <property name="form.altitude.show.top" value="false"/>
-   </type>
-
-  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" pattern=".*/GPS/Raw/T?\d+.*">
+  <type name="project_gps"  description="GPS File" category="Field Project"  handler="org.ramadda.geodata.fieldproject.GpsTypeHandler">
      <property name="icon" value="/fieldproject/gps.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
-     <column name="source" label="Source"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/gps_equipment.txt"/>
+     <column name="format" label="Format"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/gps_equipment.txt"/>
+     <column name="site_code" label="Site Code"  type="enumerationplus" />
+     <column name="antenna_type" label="Antenna"  type="enumerationplus" />
+     <column name="antenna_height" label="Antenna Height"  type="double" suffix="meters"/>
    </type>
 
+  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern="(.*\.obs|.*\.rinex)"
+        super="project_gps">
+     <property name="icon" value="/fieldproject/unavco.png"/>
+   </type>
+
+  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" pattern=".*/GPS/Raw/T?\d+.*" super="project_gps">>
+  </type>
 
   <type name="project_gps_opus"  description="OPUS Solution" category="Field Project" pattern=".*\.opus"
         handler="org.ramadda.geodata.fieldproject.OpusTypeHandler">
@@ -85,8 +87,15 @@ features
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
+     <column name="site_code" label="Site Code"  type="enumerationplus" />
+     <column name="utm_x" label="UTM X"  type="double"/>
+     <column name="utm_y" label="UTM Y"  type="double"/>
+     <column name="itrf_x" label="ITRF X"  type="double"/>
+     <column name="itrf_y" label="ITRF Y"  type="double"/>
+     <column name="itrf_z" label="ITRF Z"  type="double"/>
    </type>
 
-
+  <type name="project_gps_tiepoints"  description="Tiepoint File" category="Field Project">
+  </type>
 
 </types>

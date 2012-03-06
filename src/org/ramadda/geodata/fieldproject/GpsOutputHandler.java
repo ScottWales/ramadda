@@ -21,35 +21,38 @@
 package org.ramadda.geodata.fieldproject;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.*;
-
-import org.ramadda.util.TempDir;
-
-import org.w3c.dom.*;
-
-import org.ramadda.util.HttpFormField;
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.LogUtil;
-
-import ucar.unidata.util.HtmlUtil;
-
-
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.*;
 
 
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.*;
+
+import org.ramadda.util.HttpFormField;
+
+import org.ramadda.util.TempDir;
+
+import org.w3c.dom.*;
+
+import ucar.unidata.util.HtmlUtil;
+
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.LogUtil;
+import ucar.unidata.util.Misc;
+
+import ucar.unidata.util.StringUtil;
 
 
 import java.io.*;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
@@ -66,31 +69,67 @@ import java.util.zip.*;
 public class GpsOutputHandler extends OutputHandler {
 
     /** _more_ */
+    public static final String OPUS_TITLE = "Add OPUS";
+
+    /** _more_ */
+    public static final String URL_ADDOPUS = "/fieldproject/addopus";
+
+    /** _more_ */
+    public static final String ARG_OPUS = "opus";
+
+    /** _more_ */
+    public static final String ARG_TIEPOINTS_COMMENT = "tiepoints.comment";
+
+
+
+    /** _more_ */
+    public static final int IDX_FORMAT = 0;
+
+    /** _more_ */
+    public static final int IDX_SITE_CODE = 1;
+
+    /** _more_ */
+    public static final int IDX_ANTENNA_TYPE = 2;
+
+    /** _more_ */
+    public static final int IDX_ANTENNA_HEIGHT = 3;
+
+
+    /** _more_ */
+    public static final String ASSOCIATION_TYPE_GENERATED_FROM =
+        "generated_from";
+
+
+    /** _more_ */
     private static final String RINEX_SUFFIX = ".rinex";
 
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_OPUS_EMAIL = "email_address";
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_OPUS_ANTENNA = "ant_type";
 
+    /** _more_ */
     private static final String ARG_OPUS_RAPID = "opus.rapid";
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_OPUS_HEIGHT = "height";
 
 
     /** _more_ */
     private static final String ARG_RINEX_PROCESS = "rinex.process";
 
-    /** _more_          */
+    /** _more_ */
+    private static final String ARG_PROCESS = "gps.process";
+
+    /** _more_ */
     private static final String ARG_OPUS_PROCESS = "opus.process";
 
     /** _more_ */
     private static final String ARG_RINEX_FILE = "rinex.file";
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_GPS_FILE = "gps.file";
 
 
@@ -98,7 +137,7 @@ public class GpsOutputHandler extends OutputHandler {
     /** _more_ */
     private static final String ARG_RINEX_DOWNLOAD = "rinex.download";
 
-    /** _more_ */
+    /** file path to the teqc executable */
     private String teqcPath;
 
     /** _more_ */
@@ -106,16 +145,28 @@ public class GpsOutputHandler extends OutputHandler {
 
 
     /** The output type */
-    public static final OutputType OUTPUT_GPS_TEQC =
-        new OutputType("Convert to RINEX", "fieldproject.gps.teqc",
+    public static final OutputType OUTPUT_GPS_TORINEX =
+        new OutputType("Convert to RINEX", "fieldproject.gps.torinex",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/fieldproject/gps.png", "Field Project");
 
-    /** _more_          */
+    /** _more_ */
+    public static final OutputType OUTPUT_GPS_METADATA =
+        new OutputType("Show GPS Metadata", "fieldproject.gps.metadata",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       "/fieldproject/gps.png", "Field Project");
+
+    /** _more_ */
     public static final OutputType OUTPUT_GPS_OPUS =
         new OutputType("Submit to OPUS", "fieldproject.gps.opus",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/fieldproject/gps.png", "Field Project");
+                       "/fieldproject/opus.png", "Field Project");
+
+    /** _more_ */
+    public static final OutputType OUTPUT_GPS_TIEPOINTS =
+        new OutputType("Make Tiepoints", "fieldproject.gps.tiepoints",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       "/icons/csv.png", "Field Project");
 
     /**
      * ctor
@@ -127,8 +178,10 @@ public class GpsOutputHandler extends OutputHandler {
     public GpsOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(OUTPUT_GPS_TEQC);
+        addType(OUTPUT_GPS_TORINEX);
+        addType(OUTPUT_GPS_METADATA);
         addType(OUTPUT_GPS_OPUS);
+        addType(OUTPUT_GPS_TIEPOINTS);
         teqcPath = getProperty("fieldproject.teqc", null);
     }
 
@@ -176,7 +229,18 @@ public class GpsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private boolean isRawGps(Entry entry) {
-        return entry.getType().equals("project_gps_raw");
+        return entry.getType().equals(GpsTypeHandler.TYPE_RAW);
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    private boolean isOpus(Entry entry) {
+        return entry.getType().equals(OpusTypeHandler.TYPE_OPUS);
     }
 
     /**
@@ -187,7 +251,17 @@ public class GpsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private boolean isRinex(Entry entry) {
-        return entry.getType().equals("project_gps_rinex");
+        return entry.getType().equals(GpsTypeHandler.TYPE_RINEX);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean haveTeqc() {
+        return teqcPath != null;
     }
 
 
@@ -210,7 +284,7 @@ public class GpsOutputHandler extends OutputHandler {
             for (Entry child : state.getAllEntries()) {
                 if (isRawGps(child)) {
                     links.add(makeLink(request, state.group,
-                                       OUTPUT_GPS_TEQC));
+                                       OUTPUT_GPS_TORINEX));
                     break;
                 }
             }
@@ -221,14 +295,27 @@ public class GpsOutputHandler extends OutputHandler {
                     break;
                 }
             }
+            for (Entry child : state.getAllEntries()) {
+                if (isOpus(child)) {
+                    links.add(makeLink(request, state.group,
+                                       OUTPUT_GPS_TIEPOINTS));
+                    break;
+                }
+            }
 
 
         } else if (state.entry != null) {
             if (isRawGps(state.entry)) {
-                links.add(makeLink(request, state.entry, OUTPUT_GPS_TEQC));
+                links.add(makeLink(request, state.entry,
+                                   OUTPUT_GPS_METADATA));
+                links.add(makeLink(request, state.entry, OUTPUT_GPS_TORINEX));
+
             }
             if (isRinex(state.entry)) {
+                links.add(makeLink(request, state.entry,
+                                   OUTPUT_GPS_METADATA));
                 links.add(makeLink(request, state.entry, OUTPUT_GPS_OPUS));
+
             }
         }
     }
@@ -251,8 +338,11 @@ public class GpsOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        if (outputType.equals(OUTPUT_GPS_TEQC)) {
+        if (outputType.equals(OUTPUT_GPS_TORINEX)) {
             return outputRinex(request, group, entries);
+        }
+        if (outputType.equals(OUTPUT_GPS_TIEPOINTS)) {
+            return outputTiepoint(request, group, entries);
         }
         return outputOpus(request, group, entries);
     }
@@ -274,9 +364,13 @@ public class GpsOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
-        if (outputType.equals(OUTPUT_GPS_TEQC)) {
+        if (outputType.equals(OUTPUT_GPS_TORINEX)) {
             return outputRinex(request, entry, entries);
         }
+        if (outputType.equals(OUTPUT_GPS_METADATA)) {
+            return outputMetadata(request, entry);
+        }
+
         return outputOpus(request, entry, entries);
     }
 
@@ -320,6 +414,41 @@ public class GpsOutputHandler extends OutputHandler {
      * _more_
      *
      * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result outputMetadata(Request request, Entry entry)
+            throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(HtmlUtil.formTable());
+        int cnt = 0;
+        for (String line :
+                StringUtil.split(extractGpsMetadata(entry.getFile()), "\n",
+                                 true, true)) {
+            cnt++;
+            //skip the filename
+            if (cnt == 1) {
+                continue;
+            }
+            List<String> toks = StringUtil.splitUpTo(line, ":", 2);
+            if (toks.size() < 2) {
+                continue;
+            }
+            sb.append(HtmlUtil.formEntry(msgLabel(toks.get(0)), toks.get(1)));
+            sb.append("</tr>");
+        }
+        sb.append(HtmlUtil.formTableClose());
+        return new Result("GPS Metadata", sb);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
      * @param mainEntry _more_
      * @param entries _more_
      *
@@ -340,7 +469,8 @@ public class GpsOutputHandler extends OutputHandler {
         if ( !request.get(ARG_RINEX_PROCESS, false)) {
             sb.append(HtmlUtil.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-            sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_GPS_TEQC.getId()));
+            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+                                      OUTPUT_GPS_TORINEX.getId()));
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
             sb.append(HtmlUtil.hidden(ARG_RINEX_PROCESS, "true"));
 
@@ -390,19 +520,19 @@ public class GpsOutputHandler extends OutputHandler {
                                                       Entry>();
 
         for (String entryId : entryIds) {
-            Entry entry = getEntryManager().getEntry(request, entryId);
-            if (entry == null) {
+            Entry rawEntry = getEntryManager().getEntry(request, entryId);
+            if (rawEntry == null) {
                 throw new IllegalArgumentException("No entry:" + entryId);
             }
 
-            if ( !isRawGps(entry)) {
+            if ( !isRawGps(rawEntry)) {
                 sb.append("<li>");
-                sb.append("Skipping:" + entry.getName());
+                sb.append("Skipping:" + rawEntry.getName());
                 sb.append(HtmlUtil.p());
                 continue;
             }
 
-            File f = entry.getFile();
+            File f = rawEntry.getFile();
             if ( !f.exists()) {
                 throw new IllegalStateException("File does not exist:" + f);
             }
@@ -412,8 +542,8 @@ public class GpsOutputHandler extends OutputHandler {
                                      workDir,
                                      IOUtil.stripExtension(
                                          getStorageManager().getFileTail(
-                                             entry)) + RINEX_SUFFIX));
-            fileToEntryMap.put(rinexFile.toString(), entry);
+                                             rawEntry)) + RINEX_SUFFIX));
+            fileToEntryMap.put(rinexFile.toString(), rawEntry);
 
             ProcessBuilder pb = new ProcessBuilder(teqcPath, "+out",
                                     rinexFile.toString(), f.toString());
@@ -421,9 +551,11 @@ public class GpsOutputHandler extends OutputHandler {
             Process process = pb.start();
             String errorMsg =
                 new String(IOUtil.readBytes(process.getErrorStream()));
+            String outMsg =
+                new String(IOUtil.readBytes(process.getInputStream()));
             int result = process.waitFor();
             sb.append("<li>");
-            sb.append(entry.getName());
+            sb.append(rawEntry.getName());
             if (rinexFile.length() > 0) {
                 if (errorMsg.length() > 0) {
                     sb.append(" ... RINEX file generated with warnings:");
@@ -434,10 +566,11 @@ public class GpsOutputHandler extends OutputHandler {
             } else {
                 sb.append(" ... Error:");
             }
-            if (errorMsg.length() > 0) {
+            if ((errorMsg.length() > 0) || (outMsg.length() > 0)) {
                 sb.append(
                     "<pre style=\"  border: solid 1px #000; max-height: 150px;overflow-y: auto; \">");
                 sb.append(errorMsg);
+                sb.append(outMsg);
                 sb.append("</pre>");
             }
         }
@@ -462,6 +595,7 @@ public class GpsOutputHandler extends OutputHandler {
             int    cnt   = 0;
             for (File f : files) {
                 String originalFileLocation = f.toString();
+                Entry  rawEntry = fileToEntryMap.get(originalFileLocation);
                 if ( !f.getName().endsWith(RINEX_SUFFIX)
                         || (f.length() == 0)) {
                     continue;
@@ -471,13 +605,25 @@ public class GpsOutputHandler extends OutputHandler {
 
                 //Copy the tmp file to storage. Use the storage name 
                 f = getStorageManager().copyToStorage(request, f,
-                                                      getStorageManager().getStorageFileName(f.getName()));
+                        getStorageManager().getStorageFileName(f.getName()));
 
                 TypeHandler typeHandler =
-                    getRepository().getTypeHandler("project_gps_rinex");
+                    getRepository().getTypeHandler(GpsTypeHandler.TYPE_RINEX);
+                Object[] tmpValues = null;
+                if (rawEntry.getValues() != null) {
+                    tmpValues = (Object[]) rawEntry.getValues().clone();
+                    tmpValues[IDX_FORMAT] = "RINEX";
+                }
+                final Object[]   values      = tmpValues;
+                EntryInitializer initializer = new EntryInitializer() {
+                    public void initEntry(Entry entry) {
+                        entry.setValues(values);
+                    }
+                };
+
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
                                      parent, name, request.getUser(),
-                                     typeHandler, null);
+                                     typeHandler, initializer);
 
                 if (cnt == 0) {
                     sb.append(msgHeader("Published Entries"));
@@ -493,15 +639,16 @@ public class GpsOutputHandler extends OutputHandler {
 
                 sb.append("<br>");
                 getRepository().addAuthToken(request);
-                Entry fromEntry = fileToEntryMap.get(originalFileLocation);
                 getRepository().getAssociationManager().addAssociation(
-                    request, newEntry, fromEntry, "generated rinex",
-                    "rinex generated from");
+                    request, newEntry, rawEntry, "generated rinex",
+                    ASSOCIATION_TYPE_GENERATED_FROM);
             }
+
 
             sb.append(HtmlUtil.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-            sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_GPS_TEQC.getId()));
+            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+                                      OUTPUT_GPS_TORINEX.getId()));
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
             sb.append(HtmlUtil.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
             sb.append(HtmlUtil.submit(msg("Download Results")));
@@ -509,7 +656,6 @@ public class GpsOutputHandler extends OutputHandler {
         }
         return new Result("", sb);
     }
-
 
 
 
@@ -525,9 +671,287 @@ public class GpsOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
+    private Result outputTiepoint(Request request, Entry mainEntry,
+                                  List<Entry> entries)
+            throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        if ( !request.get(ARG_PROCESS, false)) {
+            sb.append(HtmlUtil.p());
+            sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+                                      OUTPUT_GPS_TIEPOINTS.getId()));
+            sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
+            sb.append(HtmlUtil.hidden(ARG_PROCESS, "true"));
+            sb.append(HtmlUtil.formTable());
+
+            sb.append(
+                HtmlUtil.formEntry(
+                    msgLabel("Comment"),
+                    HtmlUtil.input(
+                        ARG_TIEPOINTS_COMMENT, "", HtmlUtil.SIZE_60)));
+
+
+            StringBuffer entryTable = new StringBuffer();
+            entryTable.append(
+                "<table><tr><td></td><td><b>X,Y,Z</b></td></tr>");
+            for (Entry entry : entries) {
+                if ( !isOpus(entry)) {
+                    continue;
+                }
+                entryTable.append("<tr><td>");
+                entryTable.append(HtmlUtil.checkbox(ARG_GPS_FILE,
+                        entry.getId(), true));
+                entryTable.append(" ");
+                entryTable.append(entry.getName());
+                entryTable.append("</td><td>");
+                entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_X,
+                        "NA"));
+                entryTable.append(", ");
+                entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_Y,
+                        "NA"));
+                entryTable.append(", ");
+                entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_Z,
+                        "NA"));
+                entryTable.append("</td></tr>");
+
+            }
+            entryTable.append("</table>");
+            sb.append(HtmlUtil.formEntryTop(msgLabel("Entries"),
+                                            entryTable.toString()));
+            addPublishWidget(
+                request, mainEntry, sb,
+                msg("Select a folder to publish the Tiepoint file to"), true);
+            sb.append(HtmlUtil.formTableClose());
+
+            sb.append(HtmlUtil.submit("Make Tiepoint File"));
+            sb.append(HtmlUtil.formClose());
+            return new Result("", sb);
+        }
+
+        List<String> entryIds = request.get(ARG_GPS_FILE,
+                                            new ArrayList<String>());
+
+        StringBuffer tiepoints = new StringBuffer();
+        if (request.defined(ARG_TIEPOINTS_COMMENT)) {
+            tiepoints.append("#");
+            tiepoints.append(request.getString(ARG_TIEPOINTS_COMMENT, ""));
+            tiepoints.append("\n");
+        }
+        boolean anyOK = false;
+        sb.append(msgHeader("Results"));
+        sb.append("<ul>");
+        List<Entry> opusEntries = new ArrayList<Entry>();
+        for (String entryId : entryIds) {
+            Entry opusEntry = getEntryManager().getEntry(request, entryId);
+            if (opusEntry == null) {
+                throw new IllegalArgumentException("No entry:" + entryId);
+            }
+
+            if ( !isOpus(opusEntry)) {
+                sb.append("<li>");
+                sb.append("Skipping:" + opusEntry.getName());
+                sb.append(HtmlUtil.p());
+                continue;
+            }
+
+            opusEntries.add(opusEntry);
+            anyOK = true;
+            tiepoints.append(
+                opusEntry.getValue(OpusTypeHandler.IDX_SITE_CODE, ""));
+            tiepoints.append(",");
+            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_X,
+                    "NA"));
+            tiepoints.append(",");
+            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Y,
+                    "NA"));
+            tiepoints.append(",");
+            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Z,
+                    "NA"));
+            tiepoints.append("\n");
+            //            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_X,"NA"));
+            //            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_Y,"NA"));
+            //            tiepoints.append(opusEntry.getAltitude());
+        }
+
+        sb.append("</ul>");
+        if ( !anyOK) {
+            return new Result("", sb);
+        }
+
+        if ( !doingPublish(request)) {
+            request.setReturnFilename("tiepoints.csv");
+            return new Result("", tiepoints, "text/csv");
+        }
+
+        if (doingPublish(request)) {
+            Entry parent = getEntryManager().findGroup(request,
+                               request.getString(ARG_PUBLISH_ENTRY
+                                   + "_hidden", ""));
+            if (parent == null) {
+                throw new IllegalArgumentException("Could not find folder");
+            }
+            if ( !getAccessManager().canDoAction(request, parent,
+                    Permission.ACTION_NEW)) {
+                throw new AccessException("No access", request);
+            }
+            String tiepointsFileName = request.getString(ARG_PUBLISH_NAME,
+                                           "tiepoints.csv");
+            //Write the text out
+            File f = getStorageManager().getTmpFile(request,
+                         tiepointsFileName);
+            FileOutputStream out = getStorageManager().getFileOutputStream(f);
+            out.write(tiepoints.toString().getBytes());
+            out.flush();
+            out.close();
+            f = getStorageManager().copyToStorage(request, f, f.getName());
+
+            TypeHandler typeHandler =
+                getRepository().getTypeHandler("project_gps_tiepoints");
+
+            Entry newEntry = getEntryManager().addFileEntry(request, f,
+                                 parent, tiepointsFileName,
+                                 request.getUser(), typeHandler, null);
+            sb.append("Tie points file created:");
+            sb.append(
+                HtmlUtil.href(
+                    HtmlUtil.url(
+                        getRepository().URL_ENTRY_SHOW.toString(),
+                        new String[] { ARG_ENTRYID,
+                                       newEntry.getId() }), newEntry
+                                           .getName()));
+
+            getRepository().addAuthToken(request);
+            for (Entry opusEntry : opusEntries) {
+                getRepository().getAssociationManager().addAssociation(
+                    request, newEntry, opusEntry, "",
+                    ASSOCIATION_TYPE_GENERATED_FROM);
+            }
+        }
+        return new Result("", sb);
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param rinexFile _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String extractGpsMetadata(File rinexFile) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(teqcPath, "+meta",
+                                rinexFile.toString());
+        Process process = pb.start();
+        String errorMsg =
+            new String(IOUtil.readBytes(process.getErrorStream()));
+        String outMsg =
+            new String(IOUtil.readBytes(process.getInputStream()));
+        int result = process.waitFor();
+        return outMsg;
+        //        System.err.println ("****\n" + outMsg);
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param gpsTypeHandler _more_
+     *
+     * @throws Exception _more_
+     */
+    public void initializeGpsEntry(Entry entry, GpsTypeHandler gpsTypeHandler)
+            throws Exception {
+        //Check if we have teqc installed
+        if ( !haveTeqc()) {
+            return;
+        }
+        File rinexFile = entry.getFile();
+        if ( !rinexFile.exists()) {
+            return;
+        }
+        String   gpsMetadata = extractGpsMetadata(rinexFile);
+        Object[] values      = gpsTypeHandler.getValues(entry);
+        //   2011-05-04 18:23:00.000
+        //format,site_code,antenna_type,antenna_height
+        for (String line : StringUtil.split(gpsMetadata, "\n", true, true)) {
+            List<String> toks = StringUtil.splitUpTo(line, ":", 2);
+            if (toks.size() < 2) {
+                continue;
+            }
+            String key   = toks.get(0);
+            String value = toks.get(1);
+
+            //            System.err.println("KEY:" + key+":");
+            if (key.equals("file format")) {
+                values[IDX_FORMAT] = value;
+            } else if (key.startsWith("start date")) {
+                Date dttm = parseDate(value);
+                if (dttm != null) {
+                    entry.setStartDate(dttm.getTime());
+                }
+            } else if (key.startsWith("final date")) {
+                Date dttm = parseDate(value);
+                if (dttm != null) {
+                    entry.setEndDate(dttm.getTime());
+                }
+            } else if (key.startsWith("4-char")) {
+                values[IDX_SITE_CODE] = value;
+            } else if (key.equals("antenna type")) {
+                values[IDX_ANTENNA_TYPE] = value;
+            } else if (key.startsWith("antenna height")) {
+                values[IDX_ANTENNA_HEIGHT] = new Double(value);
+            } else if (key.startsWith("antenna latitude")) {
+                entry.setLatitude(Double.parseDouble(value));
+            } else if (key.startsWith("antenna longitude")) {
+                entry.setLongitude(Double.parseDouble(value));
+            } else if (key.startsWith("antenna elevation")) {
+                entry.setAltitude(Double.parseDouble(value));
+            } else if (key.equals("")) {}
+            else {
+                System.err.println("key?:" + key + "=" + value);
+            }
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param date _more_
+     *
+     * @return _more_
+     */
+    private Date parseDate(String date) {
+        //        2011-05-04 18:23:00.000
+        try {
+            SimpleDateFormat sdf =
+                new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            sdf.setTimeZone(getRepository().TIMEZONE_UTC);
+            Date dttm = sdf.parse(date);
+            return dttm;
+        } catch (Exception exc) {
+            System.err.println("Error:" + exc);
+            return null;
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private Result outputOpus(Request request, Entry mainEntry,
                               List<Entry> entries)
-        throws Exception {
+            throws Exception {
 
 
         StringBuffer sb = new StringBuffer();
@@ -535,8 +959,9 @@ public class GpsOutputHandler extends OutputHandler {
             return outputOpusForm(request, mainEntry, entries, sb);
         }
 
-        if(!request.defined(ARG_OPUS_EMAIL)) {
-            sb.append(getRepository().showDialogWarning("No email specified"));
+        if ( !request.defined(ARG_OPUS_EMAIL)) {
+            sb.append(
+                getRepository().showDialogWarning("No email specified"));
             return outputOpusForm(request, mainEntry, entries, sb);
         }
 
@@ -565,20 +990,24 @@ public class GpsOutputHandler extends OutputHandler {
             }
 
             List<HttpFormField> postEntries = new ArrayList<HttpFormField>();
-            postEntries.add(HttpFormField.hidden(ARG_OPUS_EMAIL,request.getString(ARG_OPUS_EMAIL,"").trim()));
-            String antenna = request.getString(ARG_OPUS_ANTENNA,"");
+            postEntries.add(HttpFormField.hidden(ARG_OPUS_EMAIL,
+                    request.getString(ARG_OPUS_EMAIL, "").trim()));
+            String antenna = request.getString(ARG_OPUS_ANTENNA, "");
             //            antenna = antenna.replaceAll(" ","+");
-            postEntries.add(HttpFormField.hidden(ARG_OPUS_ANTENNA,antenna));
-            postEntries.add(HttpFormField.hidden(ARG_OPUS_HEIGHT,request.getString(ARG_OPUS_HEIGHT,"").trim()));
+            postEntries.add(HttpFormField.hidden(ARG_OPUS_ANTENNA, antenna));
+            String height = entry.getValue(IDX_ANTENNA_HEIGHT, "0.0");
+            postEntries.add(HttpFormField.hidden(ARG_OPUS_HEIGHT, height));
 
             //            for data > 15 min. < 2 hrs. for data > 2 hrs. < 48 hrs.
-            if(request.get(ARG_OPUS_RAPID, false)) {
+            if (request.get(ARG_OPUS_RAPID, false)) {
                 System.err.println("RAPID STATIC");
-                postEntries.add(HttpFormField.hidden("Rapid-Static", "Upload to Rapid-Static"));
+                postEntries.add(HttpFormField.hidden("Rapid-Static",
+                        "Upload to Rapid-Static"));
             } else {
                 postEntries.add(HttpFormField.hidden("Static", "Static"));
             }
-            postEntries.add(HttpFormField.hidden("theHost1","www.ngs.noaa.gov"));
+            postEntries.add(HttpFormField.hidden("theHost1",
+                    "www.ngs.noaa.gov"));
             postEntries.add(HttpFormField.hidden("", ""));
             postEntries.add(HttpFormField.hidden("selectList1", ""));
             postEntries.add(HttpFormField.hidden("extend_code", "0"));
@@ -591,44 +1020,45 @@ public class GpsOutputHandler extends OutputHandler {
             postEntries.add(HttpFormField.hidden("frameValue", "2011"));
             //Use the entry id so when we get the opus back we can look up the original entry
             postEntries.add(
-                            new HttpFormField(
-                                              "uploadfile", entry.getId()+".rinex",
-                                              IOUtil.readBytes(
-                                                               getStorageManager().getFileInputStream(f))));
+                new HttpFormField(
+                    "uploadfile", entry.getId() + ".rinex",
+                    IOUtil.readBytes(
+                        getStorageManager().getFileInputStream(f))));
 
 
             String url =
                 "http://www.ngs.noaa.gov/OPUS-cgi/OPUS/prod/upload.prl";
 
-            String[] result={"",""};
-            String errorMsg = null;
+            String[] result   = { "", "" };
+            String   errorMsg = null;
             try {
-                result = HttpFormField.doPost(postEntries, url, false);
+                result   = HttpFormField.doPost(postEntries, url, false);
                 errorMsg = result[0];
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 errorMsg = LogUtil.getInnerException(exc).getMessage();
             }
 
-            if(errorMsg!=null) {
+            if (errorMsg != null) {
                 int idx = errorMsg.indexOf("errorMessage=");
-                if(idx>=0) {
-                    errorMsg = errorMsg.substring(idx+"errorMessage=".length());
+                if (idx >= 0) {
+                    errorMsg = errorMsg.substring(idx
+                            + "errorMessage=".length());
                 }
             }
             String html = result[1];
             if (errorMsg != null) {
                 //This is a hack since the httpformentry gets a redirect and tries to post again to the redirect url
-                if(errorMsg.indexOf("uploadResults.jsp")>=0) {
-                    System.err.println ("ERROR:" + errorMsg);
+                if (errorMsg.indexOf("uploadResults.jsp") >= 0) {
+                    System.err.println("ERROR:" + errorMsg);
                     errorMsg = null;
-                    html = "Upload successful";
+                    html     = "Upload successful";
                 }
             }
 
             if (errorMsg != null) {
                 sb.append(" ... Error:");
                 sb.append(
-                          "<pre style=\"  border: solid 1px #000; max-height: 150px;overflow-y: auto; \">");
+                    "<pre style=\"  border: solid 1px #000; max-height: 150px;overflow-y: auto; \">");
                 errorMsg = StringUtil.stripTags(errorMsg);
                 sb.append(errorMsg);
                 sb.append("</pre>");
@@ -650,9 +1080,21 @@ public class GpsOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param entries _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private Result outputOpusForm(Request request, Entry mainEntry,
-                                  List<Entry> entries,         StringBuffer sb)
-        throws Exception {
+                                  List<Entry> entries, StringBuffer sb)
+            throws Exception {
 
         sb.append(HtmlUtil.p());
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
@@ -665,50 +1107,259 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.formTable());
         sb.append(HtmlUtil.formEntry(msgLabel("Email"),
                                      HtmlUtil.input(ARG_OPUS_EMAIL,
-                                                    request.getString(ARG_OPUS_EMAIL, request.getUser().getEmail()))));
+                                         request.getString(ARG_OPUS_EMAIL,
+                                             request.getUser().getEmail()))));
 
+        /*
         sb.append(HtmlUtil.formEntry(msgLabel("Antenna Height"),
                                      HtmlUtil.input(ARG_OPUS_HEIGHT,
-                                                    request.getString(ARG_OPUS_HEIGHT, "0.1")) + " "
-                                     + msg("Meters above mark")));
-
+                                                    request.getString(ARG_OPUS_HEIGHT,"")) + " "
+                                     + msg("Meters above mark. Non-zero values below are used")));
+        */
+        //request.getString(ARG_OPUS_ANTENNA, entry.getValue(IDX_ANTENNA_TYPE,"")
         sb.append(HtmlUtil.formEntry(msgLabel("Antenna"),
                                      HtmlUtil.select(ARG_OPUS_ANTENNA,
-                                                     Antenna.getAntennas(), request.getString(ARG_OPUS_ANTENNA,""),
-                                                     200)));
+                                         Antenna.getAntennas(), "")));
+        /*        sb.append(HtmlUtil.formEntry(msgLabel("Rapid"),
+                  HtmlUtil.checkbox(ARG_OPUS_RAPID,
+                  "true", request.get(ARG_OPUS_RAPID,false)) +" " +"for data &gt; 15 min. &lt; 2 hrs."));
+        */
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Rapid"),
-                                     HtmlUtil.checkbox(ARG_OPUS_RAPID,
-                                                       "true", request.get(ARG_OPUS_RAPID,false)) +" " +"for data &gt; 15 min. &lt; 2 hrs."));
-
+        StringBuffer entriesSB =
+            new StringBuffer("<table cellpadding=3 cellspacing=3>");
+        entriesSB.append(
+            "<tr><td><b>Entry</b></td><td><b>Duration</b></td><td><b>Antenna Height</b></td></tr>");
+        List<String> selectedIds = request.get(ARG_RINEX_FILE,
+                                       new ArrayList<String>());
+        for (Entry entry : entries) {
+            if ( !isRinex(entry)) {
+                continue;
+            }
+            int minutes = (int) ((entry.getEndDate() - entry.getStartDate())
+                                 / 1000l / 60l);
+            boolean selected = true;
+            if ((selectedIds.size() > 0)
+                    && !selectedIds.contains(entry.getId())) {
+                selected = false;
+            }
+            if ((minutes > 0) && (minutes < 120)) {
+                selected = false;
+            }
+            entriesSB.append("<tr><td>");
+            entriesSB.append(HtmlUtil.checkbox(ARG_RINEX_FILE, entry.getId(),
+                    selected));
+            entriesSB.append(" ");
+            entriesSB.append(entry.getName());
+            entriesSB.append(" ");
+            entriesSB.append("</td><td align=right>");
+            if (minutes != 0) {
+                int hours = minutes / 60;
+                minutes = minutes % 60;
+                if (hours > 0) {
+                    entriesSB.append(hours + ":");
+                }
+                entriesSB.append(minutes);
+            } else {
+                entriesSB.append("NA");
+            }
+            entriesSB.append("</td>");
+            entriesSB.append("<td align=right>");
+            entriesSB.append(entry.getValue(IDX_ANTENNA_HEIGHT, ""));
+            entriesSB.append("</td>");
+            entriesSB.append("</tr>");
+        }
+        entriesSB.append("</table>");
+        sb.append(HtmlUtil.formEntryTop(msgLabel("Select Entries"),
+                                        entriesSB.toString()));
 
         sb.append(HtmlUtil.formTableClose());
-
-        if (entries.size() == 1) {
-            sb.append(HtmlUtil.hidden(ARG_RINEX_FILE,
-                                      entries.get(0).getId()));
-        } else {
-            sb.append(msgHeader("Select entries"));
-            List<String> selectedIds = request.get(ARG_RINEX_FILE, new ArrayList<String>());
-            for (Entry entry : entries) {
-                if ( !isRinex(entry)) {
-                    continue;
-                }
-                boolean selected = true;
-                if(selectedIds.size()>0 && !selectedIds.contains(entry.getId())) selected = false;
-                sb.append(HtmlUtil.checkbox(ARG_RINEX_FILE,
-                                            entry.getId(), selected));
-                sb.append(" ");
-                sb.append(entry.getName());
-                sb.append(HtmlUtil.br());
-            }
-        }
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.submit("Submit to OPUS"));
         sb.append(HtmlUtil.formClose());
         return new Result("", sb);
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processAddOpus(Request request) throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        if (request.isAnonymous()) {
+            sb.append(
+                getRepository().showDialogError(
+                    "You need to be logged in to add OPUS"));
+            return new Result(OPUS_TITLE, sb);
+        }
+        if (request.exists(ARG_OPUS)) {
+            //Look for:
+            //            FILE: 7655b430-7c46-4324-924f-57ec6c2075b5.rinex OP1330950241570
+            String opus = request.getString(ARG_OPUS, "");
+            String rinexEntryId = StringUtil.findPattern(opus,
+                                      "FILE: *([^\\.]+).rinex");
+            if (rinexEntryId == null) {
+                sb.append(
+                    getRepository().showDialogError(
+                        "Could not find FILE name in the given OPUS"));
+                return processOpusForm(request, sb);
+            }
+            Entry rinexEntry = getEntryManager().getEntry(request,
+                                   rinexEntryId);
+            if (rinexEntry == null) {
+                sb.append(
+                    getRepository().showDialogError(
+                        "Could not find original RINEX entry"));
+                return processOpusForm(request, sb);
+            }
+            Entry parentEntry = rinexEntry.getParentEntry();
+
+            //Look for the OPUS sibling folder
+            for (Entry child :
+                    getEntryManager().getChildrenGroups(request,
+                        parentEntry.getParentEntry())) {
+                if (child.getName().toLowerCase().trim().equals("opus")) {
+                    parentEntry = child;
+                    break;
+                }
+            }
+
+            if ( !getAccessManager().canDoAction(request, parentEntry,
+                    Permission.ACTION_NEW)) {
+                sb.append(
+                    getRepository().showDialogError(
+                        "You do not have permission to add to:"
+                        + parentEntry.getName()));
+                return new Result(OPUS_TITLE, sb);
+            }
+
+            String opusFileName = IOUtil.stripExtension(rinexEntry.getName())
+                                  + ".opus";
+            //Write the text out
+            File f = getStorageManager().getTmpFile(request, opusFileName);
+            FileOutputStream out = getStorageManager().getFileOutputStream(f);
+            out.write(opus.getBytes());
+            out.flush();
+            out.close();
+            f = getStorageManager().copyToStorage(request, f, f.getName());
+
+            TypeHandler typeHandler =
+                getRepository().getTypeHandler("project_gps_opus");
+
+            final Object     siteCode = rinexEntry.getValue(IDX_SITE_CODE,
+                                            "");
+            EntryInitializer initializer = new EntryInitializer() {
+                public void initEntry(Entry entry) {
+                    entry.getTypeHandler().getValues(
+                        entry)[OpusTypeHandler.IDX_SITE_CODE] = siteCode;
+                }
+            };
+            Entry newEntry = getEntryManager().addFileEntry(request, f,
+                                 parentEntry, opusFileName,
+                                 request.getUser(), typeHandler, initializer);
+
+            //If we figured out location from the opus file then set the rinex entry location
+            if (newEntry.hasLocationDefined()
+                    && !rinexEntry.hasLocationDefined()) {
+                if (getAccessManager().canDoAction(request, rinexEntry,
+                        Permission.ACTION_EDIT)) {
+                    rinexEntry.setLocation(newEntry.getLatitude(),
+                                           newEntry.getLongitude(),
+                                           newEntry.getAltitude());
+                    getEntryManager().storeEntry(rinexEntry);
+                }
+                //Look for the derived RAW gps
+                for (Association association :
+                        getRepository().getAssociationManager()
+                            .getAssociations(request, rinexEntry)) {
+                    String otherId = null;
+
+                    if ( !Misc.equals(association.getType(),
+                                      GpsOutputHandler
+                                          .ASSOCIATION_TYPE_GENERATED_FROM)) {
+                        continue;
+                    }
+                    if ( !Misc.equals(rinexEntry.getId(),
+                                      association.getToId())) {
+                        otherId = association.getToId();
+                    } else if ( !Misc.equals(rinexEntry.getId(),
+                                             association.getFromId())) {
+                        otherId = association.getFromId();
+                    }
+                    if (otherId == null) {
+                        continue;
+                    }
+                    if (otherId.equals(newEntry.getId())) {
+                        continue;
+                    }
+                    Entry otherEntry = getEntryManager().getEntry(request,
+                                           otherId);
+                    if (otherEntry == null) {
+                        continue;
+                    }
+                    if (getAccessManager().canDoAction(request, otherEntry,
+                            Permission.ACTION_EDIT)) {
+                        otherEntry.setLocation(newEntry.getLatitude(),
+                                newEntry.getLongitude(),
+                                newEntry.getAltitude());
+                        getEntryManager().storeEntry(otherEntry);
+                    }
+                }
+            }
+
+            sb.append(HtmlUtil.p());
+            sb.append("OPUS entry created: ");
+            sb.append(
+                HtmlUtil.href(
+                    HtmlUtil.url(
+                        getRepository().URL_ENTRY_SHOW.toString(),
+                        new String[] { ARG_ENTRYID,
+                                       newEntry.getId() }), newEntry
+                                           .getName()));
+
+            getRepository().addAuthToken(request);
+            getRepository().getAssociationManager().addAssociation(request,
+                    newEntry, rinexEntry, "generated rinex",
+                    GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
+            return new Result(OPUS_TITLE, sb);
+        }
+
+        return processOpusForm(request, sb);
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processOpusForm(Request request, StringBuffer sb)
+            throws Exception {
+        String base    = getRepository().getUrlBase();
+        String formUrl = base + URL_ADDOPUS;
+        sb.append(HtmlUtil.p());
+        sb.append("Enter the OPUS solution text below");
+        sb.append(HtmlUtil.formPost(formUrl));
+        sb.append(HtmlUtil.submit("Add OPUS Solution"));
+        sb.append(HtmlUtil.br());
+        sb.append(HtmlUtil.textArea(ARG_OPUS, "", 20, 70));
+        sb.append(HtmlUtil.br());
+        sb.append(HtmlUtil.submit("Add OPUS Solution"));
+        sb.append(HtmlUtil.formClose());
+        return new Result(OPUS_TITLE, sb);
+    }
 
 
 
