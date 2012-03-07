@@ -1165,6 +1165,9 @@ public class GpsOutputHandler extends OutputHandler {
         }
 
         sb.append("</ul>");
+        sb.append("When you get the results in your email click ");
+        sb.append(HtmlUtil.href(getRepository().getUrlBase()+"/fieldproject/addopus","here"));
+        sb.append(" to upload the OPUS solutions");
         return new Result("", sb);
     }
 
