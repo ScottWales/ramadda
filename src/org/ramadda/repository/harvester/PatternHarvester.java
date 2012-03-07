@@ -967,7 +967,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     public Entry processFile(FileInfo fileInfo, File f) throws Exception {
 
         //check if its a hidden file
-        if (f.getName().startsWith(".")) {
+        boolean isPlaceholder = f.getName().equals(".placeholder");
+
+        if (f.getName().startsWith(".") && !isPlaceholder) {
             logHarvesterInfo("File is hidden file:" + f);
             return null;
         }
@@ -1003,6 +1005,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
 
     public Entry harvestFile(FileInfo fileInfo, File f, Matcher matcher) throws Exception {
+        boolean isPlaceholder = f.getName().equals(".placeholder");
         String fileName = f.toString();
         fileName = fileName.replace("\\", "/");
 
@@ -1026,9 +1029,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         if(templateEntry!=null) {
             typeHandlerToUse = templateEntry.getTypeHandler();
         }
-        
-
-
+       
 
         if (typeHandlerToUse == null && typeHandler.getType().equals(TYPE_FINDMATCH)) {
             for (TypeHandler otherTypeHandler :
@@ -1139,6 +1140,16 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         Entry group = getEntryManager().findEntryFromName(getRequest(), groupName,
                           getUser(), createIfNeeded, getLastGroupType(),
                           this);
+        //If its just a placeholder then all we need to do is create the group and return
+        if(isPlaceholder) return null;
+        String tmpName = f.getName().toLowerCase();
+        if(tmpName.equals("readme") || tmpName.equals("readme.txt")) {
+            if(group.getDescription().length()>0) return null;
+            group.setDescription(IOUtil.readContents(f.toString(),""));
+            getEntryManager().storeEntry(group);
+            return null;
+        }
+
         Entry    entry = typeHandlerToUse.createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
