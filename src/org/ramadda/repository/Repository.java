@@ -42,6 +42,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
+
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.MultiJarClassLoader;
 
@@ -119,6 +120,7 @@ import java.util.zip.*;
 public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {
 
+    private static final org.ramadda.util.HttpFormField dummyFieldToForceCompile = null;
 
     /** html template macro */
     public static final String MACRO_LINKS = "links";
