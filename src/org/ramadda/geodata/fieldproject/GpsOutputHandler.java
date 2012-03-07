@@ -68,6 +68,13 @@ import java.util.zip.*;
  */
 public class GpsOutputHandler extends OutputHandler {
 
+    /** _more_          */
+    private static final String TEQC_FLAG_QC = "+qcq";
+
+    /** _more_          */
+    private static final String TEQC_FLAG_META = "+meta";
+
+
     /** _more_ */
     public static final String OPUS_TITLE = "Add OPUS";
 
@@ -79,8 +86,6 @@ public class GpsOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final String ARG_TIEPOINTS_COMMENT = "tiepoints.comment";
-
-
 
     /** _more_ */
     public static final int IDX_FORMAT = 0;
@@ -157,6 +162,12 @@ public class GpsOutputHandler extends OutputHandler {
                        "/fieldproject/gps.png", "Field Project");
 
     /** _more_ */
+    public static final OutputType OUTPUT_GPS_QC =
+        new OutputType("Show GPS QC", "fieldproject.gps.qc",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       "/fieldproject/gps.png", "Field Project");
+
+    /** _more_ */
     public static final OutputType OUTPUT_GPS_OPUS =
         new OutputType("Submit to OPUS", "fieldproject.gps.opus",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
@@ -179,7 +190,9 @@ public class GpsOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_GPS_TORINEX);
+
         addType(OUTPUT_GPS_METADATA);
+        addType(OUTPUT_GPS_QC);
         addType(OUTPUT_GPS_OPUS);
         addType(OUTPUT_GPS_TIEPOINTS);
         teqcPath = getProperty("fieldproject.teqc", null);
@@ -314,6 +327,7 @@ public class GpsOutputHandler extends OutputHandler {
             if (isRinex(state.entry)) {
                 links.add(makeLink(request, state.entry,
                                    OUTPUT_GPS_METADATA));
+                links.add(makeLink(request, state.entry, OUTPUT_GPS_QC));
                 links.add(makeLink(request, state.entry, OUTPUT_GPS_OPUS));
 
             }
@@ -369,6 +383,9 @@ public class GpsOutputHandler extends OutputHandler {
         }
         if (outputType.equals(OUTPUT_GPS_METADATA)) {
             return outputMetadata(request, entry);
+        }
+        if (outputType.equals(OUTPUT_GPS_QC)) {
+            return outputQC(request, entry);
         }
 
         return outputOpus(request, entry, entries);
@@ -426,8 +443,8 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.formTable());
         int cnt = 0;
         for (String line :
-                StringUtil.split(extractGpsMetadata(entry.getFile()), "\n",
-                                 true, true)) {
+                StringUtil.split(extractGpsMetadata(entry.getFile(),
+                    TEQC_FLAG_META), "\n", true, true)) {
             cnt++;
             //skip the filename
             if (cnt == 1) {
@@ -439,6 +456,72 @@ public class GpsOutputHandler extends OutputHandler {
             }
             sb.append(HtmlUtil.formEntry(msgLabel(toks.get(0)), toks.get(1)));
             sb.append("</tr>");
+        }
+        sb.append(HtmlUtil.formTableClose());
+        return new Result("GPS Metadata", sb);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result outputQC(Request request, Entry entry) throws Exception {
+        StringBuffer sb            = new StringBuffer();
+        int          cnt           = 0;
+        int          STATE_START   = 0;
+        int          STATE_PLOT    = 1;
+        int          STATE_PRELIST = 2;
+        int          STATE_LIST    = 3;
+        int          state         = STATE_START;
+
+        for (String line :
+                StringUtil.split(extractGpsMetadata(entry.getFile(),
+                    TEQC_FLAG_QC), "\n", false, false)) {
+            String trimmed = line.trim();
+            if (trimmed.length() == 0) {
+                continue;
+            }
+            if (state == STATE_START) {
+                if (trimmed.startsWith("version:")) {
+                    state = STATE_PLOT;
+                    sb.append("<pre>");
+                }
+                continue;
+            }
+            if (state == STATE_PLOT) {
+                if (trimmed.startsWith("*******")) {
+                    state = STATE_PRELIST;
+                    sb.append("</pre>");
+                    sb.append(HtmlUtil.formTable());
+                } else {
+                    sb.append(line);
+                    sb.append("\n");
+                }
+            }
+            if (state == STATE_PRELIST) {
+                if (trimmed.startsWith("*******")) {
+                    state = STATE_LIST;
+                }
+                continue;
+            }
+            if (state == STATE_LIST) {
+                List<String> toks = StringUtil.splitUpTo(line, ":", 2);
+                if (toks.size() < 2) {
+                    continue;
+                }
+                sb.append(
+                    HtmlUtil.formEntry(
+                        msgLabel(
+                            toks.get(0).replaceAll("<", "&lt").replaceAll(
+                                ">", "&gt;")), toks.get(1)));
+            }
         }
         sb.append(HtmlUtil.formTableClose());
         return new Result("GPS Metadata", sb);
@@ -796,10 +879,13 @@ public class GpsOutputHandler extends OutputHandler {
                 throw new AccessException("No access", request);
             }
             String tiepointsFileName = request.getString(ARG_PUBLISH_NAME,
-                                           "tiepoints.csv");
+                                                         "").trim();
+            if(tiepointsFileName.length()==0) {
+                tiepointsFileName = "tiepoints.csv";
+            }
             //Write the text out
             File f = getStorageManager().getTmpFile(request,
-                         tiepointsFileName);
+                                                    tiepointsFileName);
             FileOutputStream out = getStorageManager().getFileOutputStream(f);
             out.write(tiepoints.toString().getBytes());
             out.flush();
@@ -807,7 +893,7 @@ public class GpsOutputHandler extends OutputHandler {
             f = getStorageManager().copyToStorage(request, f, f.getName());
 
             TypeHandler typeHandler =
-                getRepository().getTypeHandler("project_gps_tiepoints");
+                getRepository().getTypeHandler(GpsTypeHandler.TYPE_TIEPOINTS);
 
             Entry newEntry = getEntryManager().addFileEntry(request, f,
                                  parent, tiepointsFileName,
@@ -829,21 +915,25 @@ public class GpsOutputHandler extends OutputHandler {
             }
         }
         return new Result("", sb);
-
     }
+
+
+
 
 
     /**
      * _more_
      *
      * @param rinexFile _more_
+     * @param flag _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private String extractGpsMetadata(File rinexFile) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(teqcPath, "+meta",
+    private String extractGpsMetadata(File rinexFile, String flag)
+            throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(teqcPath, flag,
                                 rinexFile.toString());
         Process process = pb.start();
         String errorMsg =
@@ -852,7 +942,6 @@ public class GpsOutputHandler extends OutputHandler {
             new String(IOUtil.readBytes(process.getInputStream()));
         int result = process.waitFor();
         return outMsg;
-        //        System.err.println ("****\n" + outMsg);
     }
 
     /**
@@ -873,7 +962,7 @@ public class GpsOutputHandler extends OutputHandler {
         if ( !rinexFile.exists()) {
             return;
         }
-        String   gpsMetadata = extractGpsMetadata(rinexFile);
+        String   gpsMetadata = extractGpsMetadata(rinexFile, TEQC_FLAG_META);
         Object[] values      = gpsTypeHandler.getValues(entry);
         //   2011-05-04 18:23:00.000
         //format,site_code,antenna_type,antenna_height

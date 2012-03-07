@@ -46,6 +46,7 @@ public class GpsTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final String TYPE_RAW = "project_gps_raw";
 
+    public static final String TYPE_TIEPOINTS= "project_gps_tiepoints";
 
     /**
      * _more_
