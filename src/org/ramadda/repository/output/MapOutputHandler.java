@@ -277,6 +277,7 @@ public class MapOutputHandler extends OutputHandler {
                          List<Entry> entriesToUse,
                          boolean[] haveBearingLines, boolean screenBigRects)
             throws Exception {
+        screenBigRects = false;
         int cnt = 0;
         for (Entry entry : entriesToUse) {
             if (entry.hasAreaDefined()) {
@@ -285,7 +286,7 @@ public class MapOutputHandler extends OutputHandler {
         }
 
 
-        boolean       makeRectangles = cnt <= 20;
+        boolean       makeRectangles = cnt <= 30;
         MapProperties mapProperties  = new MapProperties("blue", true);
 
         for (Entry entry : entriesToUse) {
@@ -308,7 +309,6 @@ public class MapOutputHandler extends OutputHandler {
 
 
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-
 
                 double[] location;
                 if (makeRectangles || !entry.hasAreaDefined()) {
@@ -341,7 +341,7 @@ public class MapOutputHandler extends OutputHandler {
                 infoHtml = getRepository().translate(request, infoHtml);
                 String icon = getEntryManager().getIconUrl(request, entry);
                 map.addMarker(entry.getId(),
-                              new LatLonPointImpl(location[0], location[1]),
+                              new LatLonPointImpl(Math.max(-80,Math.min(80,location[0])), location[1]),
                               icon, infoHtml);
             }
         }

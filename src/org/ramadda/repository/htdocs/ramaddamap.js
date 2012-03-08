@@ -37,6 +37,21 @@ var positionMarkerID = "location";
 
 var latlonReadoutID = "ramadda-map-latlonreadout";
 
+var ramaddaMaps = new Array();
+
+function ramaddaAddMap(map) {
+    ramaddaMaps.push(map);
+}
+
+function ramaddaUpdateMaps() {
+    for(i=0;i<ramaddaMaps.length;i++) {
+        var ramaddaMap = ramaddaMaps[i];
+        if(!ramaddaMap.map) continue;
+    }
+}  
+
+
+
 function RepositoryMap(mapId, params) {
     var map;
     var layer;
@@ -47,6 +62,7 @@ function RepositoryMap(mapId, params) {
     var selectorMarker;
 
     this.mapDivId = mapId;
+    ramaddaAddMap(this);
     if (!this.mapDivId) {
         this.mapDivId = "map";
     }
@@ -224,8 +240,9 @@ function RepositoryMap(mapId, params) {
             this.map.zoomToExtent(this.transformLLBounds(this.initialBounds));
             // this.map.restrictedExtent = this.initialBounds;
             this.initialBounds = null;
-        } /* else { this.map.zoomToMaxExtent(); }
-             */
+        }  else { 
+            //            this.map.zoomToMaxExtent(); 
+        }
 
         if (this.markers) {
             this.map.addLayer(this.markers);
@@ -550,18 +567,26 @@ function RepositoryMap(mapId, params) {
         // bounds = this.boxes.getDataExtent();
         if (!bounds) {
             if (!this.markers) {
+
                 return;
             }
             // markers are in projection coordinates
             var dataBounds = this.markers.getDataExtent();
             bounds = this.transformProjBounds(dataBounds);
         }
-        // alert(bounds);
+        //        alert(bounds);
         if (!this.map) {
             this.initialBounds = bounds;
             return;
         }
-        // alert("map centerOn:" + bounds);
+
+
+        //        alert(bounds.getHeight());
+        if(bounds.getHeight()>160) {
+            bounds.top = 80;
+            bounds.bottom=-80;
+            //            alert("map centerOn:" + bounds);
+        }
         projBounds = this.transformLLBounds(bounds);
         this.map.setCenter(projBounds.getCenterLonLat());
         this.map.zoomToExtent(projBounds);
