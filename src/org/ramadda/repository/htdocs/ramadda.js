@@ -1727,3 +1727,17 @@ function testReturn(request) {
 
 
 
+function ramaddaUpdateMaps() {
+    if(ramaddaMaps) {
+        for(i=0;i<ramaddaMaps.length;i++) {
+            var ramaddaMap = ramaddaMaps[i];
+            if(!ramaddaMap.map) continue;
+            alert("updating size");
+            ramaddaMap.map.updateSize();
+        }
+    }
+}  
+
+
+
+

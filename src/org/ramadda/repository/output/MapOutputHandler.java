@@ -286,7 +286,7 @@ public class MapOutputHandler extends OutputHandler {
         }
 
 
-        boolean       makeRectangles = cnt <= 30;
+        boolean       makeRectangles = cnt <= 100;
         MapProperties mapProperties  = new MapProperties("blue", true);
 
         for (Entry entry : entriesToUse) {

@@ -43,12 +43,6 @@ function ramaddaAddMap(map) {
     ramaddaMaps.push(map);
 }
 
-function ramaddaUpdateMaps() {
-    for(i=0;i<ramaddaMaps.length;i++) {
-        var ramaddaMap = ramaddaMaps[i];
-        if(!ramaddaMap.map) continue;
-    }
-}  
 
 
 
@@ -60,6 +54,15 @@ function RepositoryMap(mapId, params) {
     var lines;
     var selectorBox;
     var selectorMarker;
+
+    var theMap = this;
+    jQuery(document).ready(function($) {
+            if(theMap.map) {
+                theMap.map.updateSize();
+            }
+     });
+
+
 
     this.mapDivId = mapId;
     ramaddaAddMap(this);
