@@ -1029,7 +1029,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         if(templateEntry!=null) {
             typeHandlerToUse = templateEntry.getTypeHandler();
         }
-       
+
 
         if (typeHandlerToUse == null && typeHandler.getType().equals(TYPE_FINDMATCH)) {
             for (TypeHandler otherTypeHandler :
@@ -1042,7 +1042,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         if (typeHandlerToUse == null) {
-            typeHandlerToUse = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+            //typeHandlerToUse = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+            typeHandlerToUse= typeHandler;
         }
 
 
