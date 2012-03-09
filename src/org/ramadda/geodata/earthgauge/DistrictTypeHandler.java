@@ -45,7 +45,7 @@ public class DistrictTypeHandler extends ExtensibleGroupTypeHandler {
      * @param node _more_
      * @throws Exception On badness
      */
-    public DistrictProjectTypeHandler(Repository repository, Element node)
+    public DistrictTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
