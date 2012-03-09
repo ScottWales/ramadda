@@ -142,6 +142,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
+        super.initializeEntryFromForm(request, entry,parent, newEntry);
         if (newEntry) {
             initializeNewEntry(entry);
         }
