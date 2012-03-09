@@ -219,13 +219,18 @@ public class Request implements Constants, Cloneable {
     }
 
 
-    public Request cloneMe()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public Request cloneMe() {
         try {
-        Request that = (Request) super.clone();
-        that.parameters = new Hashtable(this.parameters);
-        that.originalParameters = new Hashtable(this.originalParameters);
-        return that;
-        } catch(Exception exc) {
+            Request that = (Request) super.clone();
+            that.parameters         = new Hashtable(this.parameters);
+            that.originalParameters = new Hashtable(this.originalParameters);
+            return that;
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
@@ -238,6 +243,71 @@ public class Request implements Constants, Cloneable {
     public Repository getRepository() {
         return repository;
     }
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getSession(String key, String dflt) throws Exception {
+        return (String) getRepository().getSessionManager()
+            .getSessionProperty(this, key, dflt);
+    }
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param sessionPrefix _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getStringOrSession(String key, String sessionPrefix,
+                                     String dflt)
+            throws Exception {
+        if (defined(key)) {
+            return getString(key);
+        }
+        return getSession(sessionPrefix + key, dflt);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param value _more_
+     *
+     * @throws Exception _more_
+     */
+    public void putSession(String key, String value) throws Exception {
+        getRepository().getSessionManager().putSessionProperty(this, key,
+                value);
+    }
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param prefix _more_
+     */
+    public void putSessionIfDefined(String key, String prefix) {
+        try {
+            getRepository().getSessionManager().putSessionProperty(this,
+                    prefix + key, getString(key, ""));
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
 
     /**
      * _more_
@@ -2017,7 +2087,7 @@ public class Request implements Constants, Cloneable {
         if (httpServletRequest != null) {
             serverName = httpServletRequest.getServerName();
         }
-        if(serverName==null || serverName.trim().length()==0) {
+        if ((serverName == null) || (serverName.trim().length() == 0)) {
             serverName = repository.getHostname();
         }
         return serverName;
@@ -2203,17 +2273,24 @@ public class Request implements Constants, Cloneable {
      *  @return The HtmlTemplateId
      */
     public String getHtmlTemplateId() {
-        if(htmlTemplateId!=null) return htmlTemplateId;
-        return getString(ARG_TEMPLATE,"");
+        if (htmlTemplateId != null) {
+            return htmlTemplateId;
+        }
+        return getString(ARG_TEMPLATE, "");
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getLanguage() {
-        if(exists(ARG_LANGUAGE)) {
-            return getString(ARG_LANGUAGE,"");
+        if (exists(ARG_LANGUAGE)) {
+            return getString(ARG_LANGUAGE, "");
         }
-        User       user     = getUser();
-        String     language = user.getLanguage();
+        User   user     = getUser();
+        String language = user.getLanguage();
         return language;
     }
 

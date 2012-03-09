@@ -250,13 +250,29 @@ public class SessionManager extends RepositoryManager {
      */
     public Object getSessionProperty(Request request, Object key)
             throws Exception {
+        return getSessionProperty(request, key, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Object getSessionProperty(Request request, Object key, Object dflt)
+            throws Exception {
         String id = request.getSessionId();
         if (id == null) {
-            return null;
+            return dflt;
         }
         Session session = getSession(id);
         if (session == null) {
-            return null;
+            return dflt;
         }
         return session.getProperty(key);
     }
