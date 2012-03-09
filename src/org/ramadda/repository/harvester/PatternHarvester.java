@@ -980,15 +980,19 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //Call init so we get the filePattern
         init();
 
-        Matcher matcher = filePattern.matcher(fileName);
-        if ( !matcher.find()) {
-            debug("file:<i>" + fileName + "</i> does not match pattern");
-            logHarvesterInfo("file:" + fileName + " does not match pattern");
-            return null;
+        
+        Matcher matcher = null;
+        if(filePattern!=null) {
+            matcher = filePattern.matcher(fileName);
+            if ( !matcher.find()) {
+                debug("file:<i>" + fileName + "</i> does not match pattern");
+                logHarvesterInfo("file:" + fileName + " does not match pattern");
+                return null;
+            }
         }
         if (notfilePattern != null) {
-            matcher = notfilePattern.matcher(fileName);
-            if (matcher.find()) {
+            Matcher matcher2 = notfilePattern.matcher(fileName);
+            if (matcher2.find()) {
                 logHarvesterInfo(
                     "excluding file because it matches the NOT pattern:"
                     + fileName);
