@@ -7,6 +7,16 @@
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
+     <wiki><![CDATA[{{description}}
+<table width=100%><tr valign=top>
+<td width=50%>{{tree}}</td>
+<td width=50%>{{mapentry}}</td></tr>
+</table>
+'''Properties'''
+<block open="false" title="Click to view metadata">
+{{properties}}
+</block>
+]]></wiki>
    </type>
 
 
