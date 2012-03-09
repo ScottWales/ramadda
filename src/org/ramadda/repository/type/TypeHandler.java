@@ -119,6 +119,9 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
 
+    /** _more_          */
+    public static final String ATTR_WIKI = "wiki";
+
     /** _more_ */
     public static final String ATTR_VALUE = "value";
 
@@ -184,6 +187,10 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public String harvestPattern;
 
+    /** _more_          */
+    public String wikiTemplate;
+
+
     /** _more_ */
     private String defaultDataType;
 
@@ -222,6 +229,16 @@ public class TypeHandler extends RepositoryManager {
                                              category);
         this.harvestPattern = XmlUtil.getAttribute(entryNode, ATTR_PATTERN,
                 (String) null);
+
+
+        wikiTemplate = XmlUtil.getAttribute(entryNode, ATTR_WIKI,
+                                            (String) null);
+        if (wikiTemplate == null) {
+            wikiTemplate = XmlUtil.getGrandChildText(entryNode, ATTR_WIKI,
+                    null);
+        }
+
+
         List metadataNodes = XmlUtil.findChildren(entryNode, TAG_METADATA);
         for (int i = 0; i < metadataNodes.size(); i++) {
             Element metadataNode = (Element) metadataNodes.get(i);
@@ -276,7 +293,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getWikiTemplate(Request request, Entry entry) {
-        return null;
+        return wikiTemplate;
     }
 
 
