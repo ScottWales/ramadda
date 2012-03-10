@@ -1006,8 +1006,6 @@ function checkboxClicked(event, cbxPrefix, id) {
 
 
 
-
-
 function toggleBlockVisibility(id, imgid, showimg, hideimg) {
     var img = util.getDomObject(imgid);
     if(toggleVisibility(id,'block')) {
@@ -1015,6 +1013,7 @@ function toggleBlockVisibility(id, imgid, showimg, hideimg) {
     } else {
         if(img) img.obj.src = hideimg;
     }
+    ramaddaUpdateMaps();
 }
 
 
@@ -1025,6 +1024,7 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
     } else {
         if(img) img.obj.src = hideimg;
     }
+    ramaddaUpdateMaps();
 }
 
 
@@ -1721,18 +1721,15 @@ function testReturn(request) {
     //    alert(names);
 }
 
-//var url = "http://localhost:8080/repository/entry/show/Grids.json?entryid=42d0e1ad-687a-415b-9ace-f5432c5d9aa0&output=json"
-//util.loadXML( url, testReturn);
 
 
-
-
+//This gets called from toggleBlockVisibility
+//It updates any map on the page to fix some sort of offset problem
 function ramaddaUpdateMaps() {
     if(ramaddaMaps) {
         for(i=0;i<ramaddaMaps.length;i++) {
             var ramaddaMap = ramaddaMaps[i];
             if(!ramaddaMap.map) continue;
-            alert("updating size");
             ramaddaMap.map.updateSize();
         }
     }
