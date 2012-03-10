@@ -1920,6 +1920,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String RESPONSE_XML = "xml";
+    public static final String RESPONSE_TEXT = "text";
 
     /** _more_ */
     public static final String CODE_OK = "ok";

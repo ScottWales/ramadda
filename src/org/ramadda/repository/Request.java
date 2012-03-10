@@ -2258,6 +2258,10 @@ public class Request implements Constants, Cloneable {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
     }
 
+    public boolean responseInText() {
+        return getString(ARG_RESPONSE, "").equals(RESPONSE_TEXT);
+    }
+
     /**
      *  Set the HtmlTemplateId property.
      *
