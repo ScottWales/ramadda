@@ -237,9 +237,17 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @return _more_
      */
-@Override
+    @Override
     public List<Column> getColumns() {
-        return columns;
+        List<Column> allColumns = new ArrayList<Column>();
+        if (getParent() != null) {
+            List<Column> parentColumns = getParent().getColumns();
+            allColumns.addAll(parentColumns);
+        }
+        if(columns!=null) {
+            allColumns.addAll(columns);
+        }
+        return allColumns;
     }
 
     /**
@@ -381,10 +389,12 @@ public class GenericTypeHandler extends TypeHandler {
         //Always call getEntryValues here so we get create the correct size array
 
         Object[] values = getEntryValues(entry);
+
         super.initializeEntryFromForm(request, entry, parent, newEntry);
         if ( !haveDatabaseTable()) {
             return;
         }
+
         for (Column column : columns) {
             column.setValue(request, entry, values);
         }

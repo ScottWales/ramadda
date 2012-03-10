@@ -4312,7 +4312,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        System.err.print("clause: " + clause);
+        //        System.err.print("clause: " + clause);
 
 
         Statement stmt = getRepository().getDatabaseManager().select(
