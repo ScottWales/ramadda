@@ -1748,7 +1748,6 @@ public class EntryManager extends RepositoryManager {
         entry.setAltitudeTop(altitudeTop);
         entry.setAltitudeBottom(altitudeBottom);
 
-        System.err.println("EntryManager.setEntryState");
         entry.getTypeHandler().initializeEntryFromForm(request, entry,
                 parent, newEntry);
     }
