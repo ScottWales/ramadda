@@ -389,6 +389,7 @@ public class MapManager extends RepositoryManager {
             if (kmlUrl != null) {
                 visible = (kmlCnt++ < 3);
             }
+            catSB.append("<table width=100%><tr><td>");
             catSB.append(HtmlUtil.checkbox("tmp", "true", visible,
                                            HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;")
                                            + HtmlUtil.id("googleearth.visibility." + entry.getId())
@@ -400,7 +401,9 @@ public class MapManager extends RepositoryManager {
                          HtmlUtil.href(
                                        getEntryManager().getEntryURL(request, entry),
                                        HtmlUtil.img(
-                                                    iconUrl, msg("Click to view entry details"))));
+
+                                                    iconUrl, msg("Click to view entry details")) +" " + entry.getName()));
+            catSB.append("</td><td align=right>");
             catSB.append(HtmlUtil.space(2));
             double lat = entry.getSouth();
             double lon = entry.getEast();
@@ -408,11 +411,19 @@ public class MapManager extends RepositoryManager {
             //                         + entry.getName() + "</a><br>");
             //HtmlUtil.onMouseClick(call);
 
+            /*
             catSB.append(
                          HtmlUtil.href(
                                        "javascript:" + call, entry.getName(),
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
+            */
+            catSB.append(
+                         HtmlUtil.href(
+                                       "javascript:" + call, HtmlUtil.img(getRepository().iconUrl("/icons/bullet_go.png")),
+                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
+            catSB.append("</td></tr></table>");
             catSB.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+
             String  pointsString = "null";
             boolean hasPolygon   = false;
             List<Metadata> metadataList =
