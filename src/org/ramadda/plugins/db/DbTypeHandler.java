@@ -610,7 +610,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 labelColumn = column;
             }
             if ((descColumn == null)
-                    && column.getType().equals(Column.TYPE_STRING)
+                    && column.getType().equals(Column.DATATYPE_STRING)
                     && (column.getRows() > 1)) {
                 descColumn = column;
             }
@@ -625,19 +625,19 @@ public class DbTypeHandler extends BlobTypeHandler {
                 doSum = true;
             }
             cnt++;
-            if (column.getType().equals(Column.TYPE_EMAIL)) {
+            if (column.getType().equals(Column.DATATYPE_EMAIL)) {
                 hasEmail = true;
             }
-            if (column.getType().equals(Column.TYPE_URL)) {
+            if (column.getType().equals(Column.DATATYPE_URL)) {
                 urlColumn = column;
             }
 
-            if (column.getType().equals(Column.TYPE_LATLONBBOX)
-                    || column.getType().equals(Column.TYPE_LATLON)) {
+            if (column.getType().equals(Column.DATATYPE_LATLONBBOX)
+                    || column.getType().equals(Column.DATATYPE_LATLON)) {
                 hasLocation  = true;
                 latLonColumn = column;
             }
-            if (column.getType().equals(Column.TYPE_DATE)) {
+            if (column.getType().equals(Column.DATATYPE_DATE)) {
                 hasDate = true;
                 dateColumns.add(column);
             }
@@ -1993,7 +1993,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         Column theColumn = null;
         for (Column column : columns) {
-            if (column.getType().equals(Column.TYPE_EMAIL)) {
+            if (column.getType().equals(Column.DATATYPE_EMAIL)) {
                 theColumn = column;
             }
         }
@@ -2625,11 +2625,11 @@ public class DbTypeHandler extends BlobTypeHandler {
         Column  theColumn = null;
         boolean bbox      = true;
         for (Column column : tableHandler.getColumns()) {
-            if (column.getType().equals(Column.TYPE_LATLONBBOX)) {
+            if (column.getType().equals(Column.DATATYPE_LATLONBBOX)) {
                 theColumn = column;
                 break;
             }
-            if (column.getType().equals(Column.TYPE_LATLON)) {
+            if (column.getType().equals(Column.DATATYPE_LATLON)) {
                 theColumn = column;
                 bbox      = false;
                 break;
@@ -2756,11 +2756,11 @@ public class DbTypeHandler extends BlobTypeHandler {
         Column  theColumn = null;
         boolean bbox      = true;
         for (Column column : tableHandler.getColumns()) {
-            if (column.getType().equals(Column.TYPE_LATLONBBOX)) {
+            if (column.getType().equals(Column.DATATYPE_LATLONBBOX)) {
                 theColumn = column;
                 break;
             }
-            if (column.getType().equals(Column.TYPE_LATLON)) {
+            if (column.getType().equals(Column.DATATYPE_LATLON)) {
                 theColumn = column;
                 bbox      = false;
                 break;
@@ -2847,8 +2847,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 List data   = new ArrayList();
                 List labels = new ArrayList();
                 boolean isPercentage =
-                    column.getType().equals(Column.TYPE_PERCENTAGE);
-                boolean isInt    = column.getType().equals(Column.TYPE_INT);
+                    column.getType().equals(Column.DATATYPE_PERCENTAGE);
+                boolean isInt    = column.getType().equals(Column.DATATYPE_INT);
                 double  maxValue = Double.NaN;
                 for (Object[] values : valueList) {
                     if (isPercentage) {
@@ -2922,7 +2922,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 sb.append(HtmlUtil.br());
 
                 String chxt = "y";
-                if(column.getType().equals(Column.TYPE_PERCENTAGE)) {
+                if(column.getType().equals(Column.DATATYPE_PERCENTAGE)) {
                     chxt = chxt+",x";
                 }
                 sb.append(HtmlUtil.img("http://chart.apis.google.com/chart?chs=400x" + height +"&&cht=bhs&chxt=" + chxt+"&chd=t:" + StringUtil.join(",",data) +
@@ -3052,7 +3052,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     private List<String> getEnumValues(Request request, Entry entry,
                                        Column column)
             throws Exception {
-        if (column.getType().equals(Column.TYPE_ENUMERATION)) {
+        if (column.getType().equals(Column.DATATYPE_ENUMERATION)) {
             return (List<String>) column.getValues();
         } else {
             return (List<String>) tableHandler.getEnumValues(request, column,
@@ -3259,7 +3259,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             if ( !isDataColumn(column)) {
                 continue;
             }
-            if (column.getType().equals(Column.TYPE_DATE)) {
+            if (column.getType().equals(Column.DATATYPE_DATE)) {
                 if (dateColumn == null) {
                     dateColumn = column;
                 }
@@ -3270,7 +3270,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 init.append("data.addColumn('number', '" + varName + "');\n");
             } else if (column.isString()) {
                 init.append("data.addColumn('string', '" + varName + "');\n");
-            } else if (column.getType().equals(Column.TYPE_DATE)) {
+            } else if (column.getType().equals(Column.DATATYPE_DATE)) {
                 init.append("data.addColumn('date', '" + varName + "');\n");
             }
         }
@@ -3314,7 +3314,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                               + HtmlUtil.squote(""
                                   + values[column.getOffset()]) + ");\n");
                     columnCnt++;
-                } else if (column.getType().equals(Column.TYPE_DATE)) {
+                } else if (column.getType().equals(Column.DATATYPE_DATE)) {
                     columnCnt++;
                 }
             }
@@ -3354,7 +3354,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             throws Exception {
         Column theColumn = null;
         for (Column column : columns) {
-            if (column.getType().equals(Column.TYPE_DATE)) {
+            if (column.getType().equals(Column.DATATYPE_DATE)) {
                 theColumn = column;
                 break;
             }
@@ -3442,7 +3442,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         Column theColumn = null;
         for (Column column : columns) {
-            if (column.getType().equals(Column.TYPE_DATE)) {
+            if (column.getType().equals(Column.DATATYPE_DATE)) {
                 theColumn = column;
                 break;
             }
@@ -4039,11 +4039,11 @@ public class DbTypeHandler extends BlobTypeHandler {
                 continue;
             }
             String type = column.getType();
-            if (type.equals(Column.TYPE_STRING)
-                    || type.equals(Column.TYPE_ENUMERATION)
-                    || type.equals(Column.TYPE_URL)
-                    || type.equals(Column.TYPE_EMAIL)
-                    || type.equals(Column.TYPE_ENUMERATIONPLUS)) {
+            if (type.equals(Column.DATATYPE_STRING)
+                    || type.equals(Column.DATATYPE_ENUMERATION)
+                    || type.equals(Column.DATATYPE_URL)
+                    || type.equals(Column.DATATYPE_EMAIL)
+                    || type.equals(Column.DATATYPE_ENUMERATIONPLUS)) {
                 column.formatValue(entry, sb, Column.OUTPUT_HTML, values);
                 String label = sb.toString();
                 if (label.length() > 0) {
