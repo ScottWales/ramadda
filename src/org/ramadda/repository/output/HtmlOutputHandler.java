@@ -1247,6 +1247,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 numCols++;
                 tableSB.append(HtmlUtil.col("<b>" + msg("Size") +"</b>"));
             }
+            tableSB.append(HtmlUtil.col("&nbsp;"));
             if(columns!=null) {
                 for(Column column: columns) {
                     if(column.getCanList() && column.getCanShow()) {
