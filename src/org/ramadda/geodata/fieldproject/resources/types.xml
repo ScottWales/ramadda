@@ -93,7 +93,7 @@ features
 
   <type name="project_gps_opus"  description="OPUS Solution" category="Field Project" pattern=".*\.opus"
         handler="org.ramadda.geodata.fieldproject.OpusTypeHandler">
-     <property name="icon" value="/fieldproject/opus.png"/>
+     <property name="icon" value="/fieldproject/tux.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
