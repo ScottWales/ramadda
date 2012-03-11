@@ -1,6 +1,6 @@
 REM To run RAMADDA stand-alone just do
 
-java -Xmx512m -XX:MaxPermSize=256m -jar lib/@REPOSITORYJAR@ -port 8080 %*
+java -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=utf-8  -jar lib/@REPOSITORYJAR@ -port 8080 %*
 
 
 REM This will create a directory under ~/unidata/repository to store content and the database

@@ -5,7 +5,7 @@ JAVA=java
 
 echo 'RAMADDA: running at http://localhost:8080/repository'
 
-${JAVA} -Xmx512m -XX:MaxPermSize=256m -jar ${RAMADDADIR}/lib/ramadda.jar -port 8080 $*
+${JAVA} -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=utf-8 -jar ${RAMADDADIR}/lib/ramadda.jar -port 8080 $*
 
 
 ##RAMADDA will create a home directory under ~/.ramadda to store content 
