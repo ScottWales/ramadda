@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="Earth Gauge" >
+
+    <type id="earthgauge_test" name="Test">
+      <element id="name" name="Name"/>
+      <element id="date" name="Date"/>
+      <element id="number1" name="Number 1"/>
+      <element id="type" name="Type" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/personnel.properties"/>
+      <element id="institution" name="Institution"/>
+      <element id="email" name="Email"/>
+    </type>
+
+
+  </handler>
+
+
+
+</metadata>

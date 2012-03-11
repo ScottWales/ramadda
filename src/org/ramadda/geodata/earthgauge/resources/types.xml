@@ -1,5 +1,17 @@
 <types>
 
+  <type name="earthgauge_country"  description="Country" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Earth Gauge">
+     <property name="icon" value="/earthgauge/country.png"/>
+     <column name="iso_country"  type="enumerationplus"  label="Country ID" values="file:/org/ramadda/geodata/earthgauge/resources/countries.txt"/>
+     <wiki><![CDATA[{{description}}
+<table width=100%><tr valign=top>
+<td width=50%>{{tree}}</td>
+<td width=50%>{{map}}</td></tr>
+</table>
+]]></wiki>
+  </type>
+
+
   <type name="earthgauge_district"  description="District" handler="org.ramadda.geodata.earthgauge.DistrictTypeHandler" category="Earth Gauge">
      <property name="icon" value="/earthgauge/district.png"/>
      <property name="form.resource.show" value="false"/>
@@ -9,8 +21,7 @@
      <column name="level_id"  type="string"  label="Level ID"/>
      <column name="iso_country"  type="enumerationplus"  label="Country ID" values="file:/org/ramadda/geodata/earthgauge/resources/countries.txt"/>
      <column name="region"  type="enumerationplus"  label="Region"/>
-     <column name="orig_fid"  type="string"  label="Origin FID"/>
-     <wiki><![CDATA[{{description}}
+     <xxxwiki><![CDATA[{{description}}
 <table width=100%><tr valign=top>
 <td width=50%>{{tree}}</td>
 <td width=50%>{{mapentry}}</td></tr>
@@ -19,7 +30,7 @@
 <block open="false" title="Click to view metadata">
 {{properties}}
 </block>
-]]></wiki>
+]]></xxxwiki>
    </type>
 
 </types>
