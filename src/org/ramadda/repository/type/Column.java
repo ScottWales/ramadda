@@ -63,7 +63,7 @@ import java.util.List;
 /**
  */
 
-public class Column implements Constants {
+public class Column implements DataTypes, Constants {
 
 
     /** _more_ */
@@ -108,58 +108,6 @@ public class Column implements Constants {
     public static final String EXPR_PATTERN = EXPR_EQUALS + "|" + EXPR_LE
                                               + "|" + EXPR_GE + "|"
                                               + EXPR_BETWEEN;
-
-    /** _more_ */
-    public static final String TYPE_STRING = "string";
-
-    /** _more_ */
-    public static final String TYPE_ENTRY = "entry";
-
-    /** _more_ */
-    public static final String TYPE_FILE = "file";
-
-    /** _more_ */
-    public static final String TYPE_PASSWORD = "password";
-
-    /** _more_ */
-    public static final String TYPE_CLOB = "clob";
-
-    /** _more_ */
-    public static final String TYPE_EMAIL = "email";
-
-    /** _more_ */
-    public static final String TYPE_URL = "url";
-
-    /** _more_ */
-    public static final String TYPE_INT = "int";
-
-    /** _more_ */
-    public static final String TYPE_DOUBLE = "double";
-
-    /** _more_ */
-    public static final String TYPE_PERCENTAGE = "percentage";
-
-    /** _more_ */
-    public static final String TYPE_BOOLEAN = "boolean";
-
-    /** _more_ */
-    public static final String TYPE_ENUMERATION = "enumeration";
-
-    /** _more_ */
-    public static final String TYPE_ENUMERATIONPLUS = "enumerationplus";
-
-    /** _more_ */
-    public static final String TYPE_DATE = "date";
-
-    /** _more_ */
-    public static final String TYPE_DATETIME = "datetime";
-
-    /** _more_ */
-    public static final String TYPE_LATLONBBOX = "latlonbbox";
-
-
-    /** _more_ */
-    public static final String TYPE_LATLON = "latlon";
 
     /** _more_ */
     public static final String SEARCHTYPE_TEXT = "text";
@@ -340,7 +288,7 @@ public class Column implements Constants {
                 (String) null);
 
         description = XmlUtil.getAttribute(element, ATTR_DESCRIPTION, label);
-        type        = XmlUtil.getAttribute(element, ATTR_TYPE, TYPE_STRING);
+        type = XmlUtil.getAttribute(element, ATTR_TYPE, DATATYPE_STRING);
         changeType  = XmlUtil.getAttribute(element, ATTR_CHANGETYPE, false);
         dflt        = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
         isIndex     = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
@@ -451,7 +399,7 @@ public class Column implements Constants {
      * @return _more_
      */
     public boolean isNumeric() {
-        return isType(TYPE_INT) || isDouble();
+        return isType(DATATYPE_INT) || isDouble();
     }
 
     /**
@@ -460,7 +408,8 @@ public class Column implements Constants {
      * @return _more_
      */
     public boolean isEnumeration() {
-        return isType(TYPE_ENUMERATION) || isType(TYPE_ENUMERATIONPLUS);
+        return isType(DATATYPE_ENUMERATION)
+               || isType(DATATYPE_ENUMERATIONPLUS);
     }
 
     /**
@@ -469,7 +418,7 @@ public class Column implements Constants {
      * @return _more_
      */
     public boolean isDate() {
-        return isType(TYPE_DATETIME) || isType(TYPE_DATE);
+        return isType(DATATYPE_DATETIME) || isType(DATATYPE_DATE);
     }
 
     /**
@@ -478,7 +427,7 @@ public class Column implements Constants {
      * @return _more_
      */
     public boolean isDouble() {
-        return isType(TYPE_DOUBLE) || isType(TYPE_PERCENTAGE);
+        return isType(DATATYPE_DOUBLE) || isType(DATATYPE_PERCENTAGE);
     }
 
 
@@ -488,9 +437,9 @@ public class Column implements Constants {
      * @return _more_
      */
     public boolean isString() {
-        return isType(TYPE_STRING) || isType(TYPE_ENUMERATION)
-               || isType(TYPE_ENUMERATIONPLUS) || isType(TYPE_ENTRY)
-               || isType(TYPE_EMAIL) || isType(TYPE_URL);
+        return isType(DATATYPE_STRING) || isType(DATATYPE_ENUMERATION)
+               || isType(DATATYPE_ENUMERATIONPLUS) || isType(DATATYPE_ENTRY)
+               || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL);
     }
 
 
@@ -599,11 +548,11 @@ public class Column implements Constants {
         String delimiter = (Misc.equals(OUTPUT_CSV, output)
                             ? "|"
                             : ",");
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             sb.append(toLatLonString(values, offset));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 1));
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             sb.append(toLatLonString(values, offset));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 1));
@@ -611,7 +560,7 @@ public class Column implements Constants {
             sb.append(toLatLonString(values, offset + 2));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 3));
-        } else if (isType(TYPE_PERCENTAGE)) {
+        } else if (isType(DATATYPE_PERCENTAGE)) {
             if (Misc.equals(output, OUTPUT_CSV)) {
                 sb.append(toString(values, offset));
             } else {
@@ -620,11 +569,11 @@ public class Column implements Constants {
                 double percent = (Double) values[offset];
                 sb.append((int) (percent * 100) + "");
             }
-        } else if (isType(TYPE_DATETIME)) {
+        } else if (isType(DATATYPE_DATETIME)) {
             sb.append(dateTimeFormat.format((Date) values[offset]));
-        } else if (isType(TYPE_DATE)) {
+        } else if (isType(DATATYPE_DATE)) {
             sb.append(dateFormat.format((Date) values[offset]));
-        } else if (isType(TYPE_ENTRY)) {
+        } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = toString(values, offset);
             Entry  theEntry = null;
             if ((entryId != null) && (entryId.length() > 0)) {
@@ -655,14 +604,14 @@ public class Column implements Constants {
                 }
 
             }
-        } else if (isType(TYPE_EMAIL)) {
+        } else if (isType(DATATYPE_EMAIL)) {
             String s = toString(values, offset);
             if (Misc.equals(output, OUTPUT_CSV)) {
                 sb.append(s);
             } else {
                 sb.append("<a href=\"mailto:" + s + "\">" + s + "</a>");
             }
-        } else if (isType(TYPE_URL)) {
+        } else if (isType(DATATYPE_URL)) {
             String s = toString(values, offset);
             if (Misc.equals(output, OUTPUT_CSV)) {
                 sb.append(s);
@@ -675,8 +624,8 @@ public class Column implements Constants {
                 s = getRepository().getWikiManager().wikifyEntry(
                     getRepository().getTmpRequest(), entry, s, false, null,
                     null);
-            } else if (isType(TYPE_ENUMERATION)
-                       || isType(TYPE_ENUMERATIONPLUS)) {
+            } else if (isType(DATATYPE_ENUMERATION)
+                       || isType(DATATYPE_ENUMERATIONPLUS)) {
                 String label = enumMap.get(s);
                 if (label != null) {
                     s = label;
@@ -712,7 +661,7 @@ public class Column implements Constants {
         if (offset >= values.length) {
             return 0;
         }
-        if (isType(TYPE_INT)) {
+        if (isType(DATATYPE_INT)) {
             if (values[offset] != null) {
                 statement.setInt(statementIdx,
                                  ((Integer) values[offset]).intValue());
@@ -728,7 +677,7 @@ public class Column implements Constants {
                 statement.setDouble(statementIdx, 0.0);
             }
             statementIdx++;
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             if (values[offset] != null) {
                 boolean v = ((Boolean) values[offset]).booleanValue();
                 statement.setInt(statementIdx, (v
@@ -743,7 +692,7 @@ public class Column implements Constants {
             getRepository().getDatabaseManager().setDate(statement,
                     statementIdx, dttm);
             statementIdx++;
-        } else if (isType(TYPE_LATLON)) {
+        } else if (isType(DATATYPE_LATLON)) {
             if (values[offset] != null) {
                 double lat = ((Double) values[offset]).doubleValue();
                 statement.setDouble(statementIdx, lat);
@@ -754,7 +703,7 @@ public class Column implements Constants {
                 statement.setDouble(statementIdx + 1, Entry.NONGEO);
             }
             statementIdx += 2;
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             for (int i = 0; i < 4; i++) {
                 if (values[offset + i] != null) {
                     statement.setDouble(
@@ -764,7 +713,7 @@ public class Column implements Constants {
                     statement.setDouble(statementIdx++, Entry.NONGEO);
                 }
             }
-        } else if (isType(TYPE_PASSWORD)) {
+        } else if (isType(DATATYPE_PASSWORD)) {
             if (values[offset] != null) {
                 String value =
                     new String(RepositoryUtil.encodeBase64(toString(values,
@@ -803,9 +752,9 @@ public class Column implements Constants {
             return;
         }
         String stringValue = null;
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             stringValue = values[offset] + ";" + values[offset + 1];
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             stringValue = values[offset] + ";" + values[offset + 1] + ";"
                           + values[offset + 2] + ";" + values[offset + 3];
         } else if (isDate()) {
@@ -835,16 +784,16 @@ public class Column implements Constants {
      */
     public int readValues(ResultSet results, Object[] values, int valueIdx)
             throws Exception {
-        if (isType(TYPE_INT)) {
+        if (isType(DATATYPE_INT)) {
             values[offset] = new Integer(results.getInt(valueIdx));
             valueIdx++;
-        } else if (isType(TYPE_PERCENTAGE)) {
+        } else if (isType(DATATYPE_PERCENTAGE)) {
             values[offset] = new Double(results.getDouble(valueIdx));
             valueIdx++;
         } else if (isDouble()) {
             values[offset] = new Double(results.getDouble(valueIdx));
             valueIdx++;
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             values[offset] = new Boolean(results.getInt(valueIdx) == 1);
             valueIdx++;
         } else if (isDate()) {
@@ -852,17 +801,17 @@ public class Column implements Constants {
                 typeHandler.getDatabaseManager().getTimestamp(results,
                     valueIdx);
             valueIdx++;
-        } else if (isType(TYPE_LATLON)) {
+        } else if (isType(DATATYPE_LATLON)) {
             values[offset] = new Double(results.getDouble(valueIdx));
             valueIdx++;
             values[offset + 1] = new Double(results.getDouble(valueIdx));
             valueIdx++;
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             values[offset]     = new Double(results.getDouble(valueIdx++));
             values[offset + 1] = new Double(results.getDouble(valueIdx++));
             values[offset + 2] = new Double(results.getDouble(valueIdx++));
             values[offset + 3] = new Double(results.getDouble(valueIdx++));
-        } else if (isType(TYPE_PASSWORD)) {
+        } else if (isType(DATATYPE_PASSWORD)) {
             String value = results.getString(valueIdx);
             if (value != null) {
                 byte[] bytes = RepositoryUtil.decodeBase64(value);
@@ -919,24 +868,25 @@ public class Column implements Constants {
      * @throws Exception _more_
      */
     public void createTable(Statement statement) throws Exception {
-        if (isType(TYPE_STRING) || isType(TYPE_PASSWORD)
-                || isType(TYPE_EMAIL) || isType(TYPE_URL)
-                || isType(TYPE_FILE) || isType(TYPE_ENTRY)) {
+        if (isType(DATATYPE_STRING) || isType(DATATYPE_PASSWORD)
+                || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
+                || isType(DATATYPE_FILE) || isType(DATATYPE_ENTRY)) {
             defineColumn(statement, name, "varchar(" + size + ") ");
-        } else if (isType(TYPE_CLOB)) {
+        } else if (isType(DATATYPE_CLOB)) {
             String clobType =
                 getRepository().getDatabaseManager().convertType("clob",
                     size);
             defineColumn(statement, name, clobType);
-        } else if (isType(TYPE_ENUMERATION) || isType(TYPE_ENUMERATIONPLUS)) {
+        } else if (isType(DATATYPE_ENUMERATION)
+                   || isType(DATATYPE_ENUMERATIONPLUS)) {
             defineColumn(statement, name, "varchar(" + size + ") ");
-        } else if (isType(TYPE_INT)) {
+        } else if (isType(DATATYPE_INT)) {
             defineColumn(statement, name, "int");
         } else if (isDouble()) {
             defineColumn(
                 statement, name,
                 getRepository().getDatabaseManager().convertType("double"));
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             //use int as boolean for database compatibility
             defineColumn(statement, name, "int");
 
@@ -945,14 +895,14 @@ public class Column implements Constants {
                 statement, name,
                 typeHandler.getDatabaseManager().convertSql(
                     "ramadda.datetime"));
-        } else if (isType(TYPE_LATLON)) {
+        } else if (isType(DATATYPE_LATLON)) {
             defineColumn(
                 statement, name + "_lat",
                 getRepository().getDatabaseManager().convertType("double"));
             defineColumn(
                 statement, name + "_lon",
                 getRepository().getDatabaseManager().convertType("double"));
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             defineColumn(
                 statement, name + "_north",
                 getRepository().getDatabaseManager().convertType("double"));
@@ -998,19 +948,19 @@ public class Column implements Constants {
      * @return _more_
      */
     public Object convert(String value) {
-        if (isType(TYPE_INT)) {
+        if (isType(DATATYPE_INT)) {
             return new Integer(value);
         } else if (isDouble()) {
             return new Double(value);
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             return new Boolean(value);
-        } else if (isType(TYPE_DATETIME)) {
+        } else if (isType(DATATYPE_DATETIME)) {
             //TODO
-        } else if (isType(TYPE_DATE)) {
+        } else if (isType(DATATYPE_DATE)) {
             //TODO
-        } else if (isType(TYPE_LATLON)) {
+        } else if (isType(DATATYPE_LATLON)) {
             //TODO
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             //TODO
         }
         return value;
@@ -1068,7 +1018,7 @@ public class Column implements Constants {
             throws Exception {
 
         String id = getFullName();
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             double north = request.get(id + "_north", Double.NaN);
             double south = request.get(id + "_south", Double.NaN);
             double east  = request.get(id + "_east", Double.NaN);
@@ -1085,7 +1035,7 @@ public class Column implements Constants {
             if (latLonOk(east)) {
                 where.add(Clause.le(id + "_lon", east));
             }
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             double north = request.get(id + "_north", Double.NaN);
             double south = request.get(id + "_south", Double.NaN);
             double east  = request.get(id + "_east", Double.NaN);
@@ -1110,7 +1060,7 @@ public class Column implements Constants {
             double to    = request.get(id + "_to", Double.NaN);
             double value = request.get(id, Double.NaN);
 
-            if (isType(TYPE_PERCENTAGE)) {
+            if (isType(DATATYPE_PERCENTAGE)) {
                 from  = from / 100.0;
                 to    = to / 100.0;
                 value = value / 100.0;
@@ -1138,7 +1088,7 @@ public class Column implements Constants {
                             + expr);
                 }
             }
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             if (request.defined(id)) {
                 where.add(Clause.eq(getFullName(), (request.get(id, true)
                         ? 1
@@ -1155,7 +1105,7 @@ public class Column implements Constants {
             if (dateRange[1] != null) {
                 where.add(Clause.le(getFullName(), dateRange[1]));
             }
-        } else if (isType(TYPE_ENTRY)) {
+        } else if (isType(DATATYPE_ENTRY)) {
             String value = request.getString(id + "_hidden", "");
             if (value.length() > 0) {
                 where.add(Clause.eq(getFullName(), value));
@@ -1185,17 +1135,16 @@ public class Column implements Constants {
      *
      * @param arg _more_
      * @param value _more_
-     * @param entry _more_
      * @param values _more_
      *
      * @return _more_
      */
     public int matchValue(String arg, Object value, Object[] values) {
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             //TODO:
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             //TODO:
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             if (arg.equals(getFullName())) {
                 if (values[offset].toString().equals(value)) {
                     return TypeHandler.MATCH_TRUE;
@@ -1272,7 +1221,7 @@ public class Column implements Constants {
 
         String widget = "";
         String id     = getFullName();
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             double lat = 0;
             double lon = 0;
             if (values != null) {
@@ -1286,7 +1235,7 @@ public class Column implements Constants {
                     : "", latLonOk(lon)
                           ? lon + ""
                           : "" });
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwse = null;
             if (values != null) {
                 nwse = new String[] { latLonOk(values[offset + 0])
@@ -1302,7 +1251,7 @@ public class Column implements Constants {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
             widget = map.makeSelector(id, true, nwse, "", "");
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             boolean value = true;
             if (values != null) {
                 if (toBoolean(values, offset)) {
@@ -1316,7 +1265,7 @@ public class Column implements Constants {
             widget = HtmlUtil.checkbox(id, "true", value);
             //            widget = HtmlUtil.select(id, Misc.newList("True", "False"),
             //                                     value);
-        } else if (isType(TYPE_DATETIME)) {
+        } else if (isType(DATATYPE_DATETIME)) {
             Date date;
             if (values != null) {
                 date = (Date) values[offset];
@@ -1325,7 +1274,7 @@ public class Column implements Constants {
             }
             widget = getRepository().makeDateInput(request, id, "", date,
                     null);
-        } else if (isType(TYPE_DATE)) {
+        } else if (isType(DATATYPE_DATE)) {
             Date date;
             if (values != null) {
                 date = (Date) values[offset];
@@ -1334,7 +1283,7 @@ public class Column implements Constants {
             }
             widget = getRepository().makeDateInput(request, id, "", date,
                     null, false);
-        } else if (isType(TYPE_ENUMERATION)) {
+        } else if (isType(DATATYPE_ENUMERATION)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
@@ -1342,7 +1291,7 @@ public class Column implements Constants {
                 value = (String) toString(values, offset);
             }
             widget = HtmlUtil.select(id, enumValues, value);
-        } else if (isType(TYPE_ENUMERATIONPLUS)) {
+        } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
@@ -1352,7 +1301,7 @@ public class Column implements Constants {
             List enums = getEnumPlusValues(request, entry);
             widget = HtmlUtil.select(id, enums, value) + "  or:  "
                      + HtmlUtil.input(id + "_plus", "", HtmlUtil.SIZE_20);
-        } else if (isType(TYPE_INT)) {
+        } else if (isType(DATATYPE_INT)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
@@ -1360,7 +1309,7 @@ public class Column implements Constants {
                 value = "" + toString(values, offset);
             }
             widget = HtmlUtil.input(id, value, HtmlUtil.SIZE_10);
-        } else if (isType(TYPE_DOUBLE)) {
+        } else if (isType(DATATYPE_DOUBLE)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
@@ -1368,7 +1317,7 @@ public class Column implements Constants {
                 value = "" + toString(values, offset);
             }
             widget = HtmlUtil.input(id, value, HtmlUtil.SIZE_10);
-        } else if (isType(TYPE_PERCENTAGE)) {
+        } else if (isType(DATATYPE_PERCENTAGE)) {
             String value = ((dflt != null)
                             ? dflt
                             : "0");
@@ -1383,7 +1332,7 @@ public class Column implements Constants {
             int    percentage = (int) (d * 100);
             widget = HtmlUtil.input(id, percentage + "", HtmlUtil.SIZE_5)
                      + "%";
-        } else if (isType(TYPE_PASSWORD)) {
+        } else if (isType(DATATYPE_PASSWORD)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
@@ -1391,7 +1340,7 @@ public class Column implements Constants {
                 value = "" + toString(values, offset);
             }
             widget = HtmlUtil.password(id, value, HtmlUtil.SIZE_10);
-        } else if (isType(TYPE_FILE)) {
+        } else if (isType(DATATYPE_FILE)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
@@ -1399,7 +1348,7 @@ public class Column implements Constants {
                 value = "" + toString(values, offset);
             }
             widget = HtmlUtil.fileInput(id, "");
-        } else if (isType(TYPE_ENTRY)) {
+        } else if (isType(DATATYPE_ENTRY)) {
             String value = "";
             if (values != null) {
                 value = toString(values, offset);
@@ -1541,7 +1490,7 @@ public class Column implements Constants {
 
         String id = getFullName();
 
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             if (request.exists(id + "_latitude")) {
                 values[offset] = new Double(request.getString(id
                         + "_latitude", "0").trim());
@@ -1554,7 +1503,7 @@ public class Column implements Constants {
                         + ".longitude", "0").trim());
             }
 
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             if (request.exists(id + "_north")) {
                 values[offset] = new Double(request.get(id + "_north",
                         Entry.NONGEO));
@@ -1577,12 +1526,12 @@ public class Column implements Constants {
             }
         } else if (isDate()) {
             values[offset] = request.getDate(id, new Date());
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             String value = request.getString(id, (StringUtil.notEmpty(dflt)
                     ? dflt
                     : "true")).toLowerCase();
             values[offset] = new Boolean(value);
-        } else if (isType(TYPE_ENUMERATION)) {
+        } else if (isType(DATATYPE_ENUMERATION)) {
             if (request.exists(id)) {
                 values[offset] = request.getAnonymousEncodedString(id,
                         ((dflt != null)
@@ -1591,7 +1540,7 @@ public class Column implements Constants {
             } else {
                 values[offset] = dflt;
             }
-        } else if (isType(TYPE_ENUMERATIONPLUS)) {
+        } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String theValue = "";
             if (request.defined(id + "_plus")) {
                 theValue = request.getAnonymousEncodedString(id + "_plus",
@@ -1609,7 +1558,7 @@ public class Column implements Constants {
             }
             values[offset] = theValue;
             typeHandler.addEnumValue(this, entry, theValue);
-        } else if (isType(TYPE_INT)) {
+        } else if (isType(DATATYPE_INT)) {
             int dfltValue = (StringUtil.notEmpty(dflt)
                              ? new Integer(dflt).intValue()
                              : 0);
@@ -1618,7 +1567,7 @@ public class Column implements Constants {
             } else {
                 values[offset] = dfltValue;
             }
-        } else if (isType(TYPE_PERCENTAGE)) {
+        } else if (isType(DATATYPE_PERCENTAGE)) {
             double dfltValue = (StringUtil.notEmpty(dflt)
                                 ? new Double(dflt.trim()).doubleValue()
                                 : 0);
@@ -1638,7 +1587,7 @@ public class Column implements Constants {
                 values[offset] = dfltValue;
 
             }
-        } else if (isType(TYPE_ENTRY)) {
+        } else if (isType(DATATYPE_ENTRY)) {
             values[offset] = request.getString(id + "_hidden", "");
         } else {
             if (request.exists(id)) {
@@ -1667,11 +1616,11 @@ public class Column implements Constants {
     public void setValue(Entry entry, Object[] values, String value)
             throws Exception {
 
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             List<String> toks = StringUtil.split(value, ";", true, true);
             values[offset]     = new Double(toks.get(0));
             values[offset + 1] = new Double(toks.get(1));
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             List<String> toks = StringUtil.split(value, ";", true, true);
             values[offset]     = new Double(toks.get(0));
             values[offset + 1] = new Double(toks.get(1));
@@ -1680,15 +1629,16 @@ public class Column implements Constants {
         } else if (isDate()) {
             fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
             values[offset] = fullDateTimeFormat.parse(value);
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             values[offset] = new Boolean(value);
-        } else if (isType(TYPE_ENUMERATION) || isType(TYPE_ENUMERATIONPLUS)) {
+        } else if (isType(DATATYPE_ENUMERATION)
+                   || isType(DATATYPE_ENUMERATIONPLUS)) {
             values[offset] = value;
-        } else if (isType(TYPE_INT)) {
+        } else if (isType(DATATYPE_INT)) {
             values[offset] = new Integer(value);
-        } else if (isType(TYPE_PERCENTAGE) || isDouble()) {
+        } else if (isType(DATATYPE_PERCENTAGE) || isDouble()) {
             values[offset] = new Double(value);
-        } else if (isType(TYPE_ENTRY)) {
+        } else if (isType(DATATYPE_ENTRY)) {
             values[offset] = value;
         } else {
             values[offset] = value;
@@ -1736,12 +1686,12 @@ public class Column implements Constants {
 
         List<Clause> tmp    = new ArrayList<Clause>(where);
         String       widget = "";
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             //TODO: Use point selector
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
             widget = map.makeSelector(id, true, null, "", "");
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
             widget = map.makeSelector(id, true, null, "", "");
@@ -1768,27 +1718,28 @@ public class Column implements Constants {
             String dateSelectInput = HtmlUtil.select(id + "_relative",
                                          dateSelect, dateSelectValue);
 
-            widget = getRepository().makeDateInput(
-                request, id + "_fromdate", "searchform", null, null,
-                isType(TYPE_DATETIME)) + HtmlUtil.space(1)
-                    + HtmlUtil.img(getRepository().iconUrl(ICON_RANGE))
-                    + HtmlUtil.space(1)
-                    + getRepository().makeDateInput(
-                        request, id + "_todate", "searchform", null, null,
-                            isType(TYPE_DATETIME)) + HtmlUtil.space(4)
+            widget = getRepository().makeDateInput(request, id + "_fromdate",
+                    "searchform", null, null,
+                    isType(DATATYPE_DATETIME)) + HtmlUtil.space(1)
+                        + HtmlUtil.img(getRepository().iconUrl(ICON_RANGE))
+                        + HtmlUtil.space(1)
+                        + getRepository().makeDateInput(request,
+                            id + "_todate", "searchform", null, null,
+                            isType(DATATYPE_DATETIME)) + HtmlUtil.space(4)
                                 + msgLabel("Or") + dateSelectInput;
 
 
-        } else if (isType(TYPE_BOOLEAN)) {
+        } else if (isType(DATATYPE_BOOLEAN)) {
             widget = HtmlUtil.select(id,
                                      Misc.newList(TypeHandler.ALL_OBJECT,
                                          "True",
                                          "False"), request.getString(id, ""));
-            //        } else if (isType(TYPE_ENUMERATION)) {
+            //        } else if (isType(DATATYPE_ENUMERATION)) {
             //            List tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             //            tmpValues.addAll(enumValues);
             //            widget = HtmlUtil.select(id, tmpValues, request.getString(id));
-        } else if (isType(TYPE_ENUMERATIONPLUS) || isType(TYPE_ENUMERATION)) {
+        } else if (isType(DATATYPE_ENUMERATIONPLUS)
+                   || isType(DATATYPE_ENUMERATION)) {
             List tmpValues   = Misc.newList(TypeHandler.ALL_OBJECT);
             List values      = typeHandler.getEnumValues(request, this,
                                    entry);
@@ -1819,7 +1770,7 @@ public class Column implements Constants {
                                       "size=\"10\"") + HtmlUtil.input(id
                                       + "_to", request.getString(id + "_to",
                                           ""), "size=\"10\"");
-        } else if (isType(TYPE_ENTRY)) {
+        } else if (isType(DATATYPE_ENTRY)) {
 
 
             String entryId  = request.getString(id + "_hidden", "");
@@ -1941,10 +1892,10 @@ public class Column implements Constants {
      */
     public List<String> getColumnNames() {
         List<String> names = new ArrayList<String>();
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             names.add(name + "_lat");
             names.add(name + "_lon");
-        } else if (isType(TYPE_LATLONBBOX)) {
+        } else if (isType(DATATYPE_LATLONBBOX)) {
             names.add(name + "_north");
             names.add(name + "_west");
             names.add(name + "_south");
@@ -1961,10 +1912,10 @@ public class Column implements Constants {
      * @return _more_
      */
     public String getSortByColumn() {
-        if (isType(TYPE_LATLON)) {
+        if (isType(DATATYPE_LATLON)) {
             return name + "_lat";
         }
-        if (isType(TYPE_LATLONBBOX)) {
+        if (isType(DATATYPE_LATLONBBOX)) {
             return name + "_north";
         }
         return name;

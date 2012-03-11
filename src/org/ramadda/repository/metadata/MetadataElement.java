@@ -22,6 +22,7 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.type.DataTypes;
 
 
 import org.w3c.dom.*;
@@ -59,53 +60,8 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class MetadataElement extends MetadataTypeBase {
+public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
-    /** _more_ */
-    public static final String TYPE_SKIP = "skip";
-
-    /** _more_ */
-    public static final String TYPE_STRING = "string";
-
-    /** _more_ */
-    public static final String TYPE_WIKI = "wiki";
-
-    /** _more_ */
-    public static final String TYPE_URL = "url";
-
-    /** _more_ */
-    public static final String TYPE_EMAIL = "email";
-
-    /** _more_ */
-    public static final String TYPE_FILE = "file";
-
-    /** _more_ */
-    public static final String TYPE_BOOLEAN = "boolean";
-
-    /** _more_ */
-    public static final String TYPE_INT = "int";
-
-    /** _more_ */
-    public static final String TYPE_ENUMERATION = "enumeration";
-
-    /** _more_ */
-    public static final String TYPE_ENUMERATIONPLUS = "enumerationplus";
-
-    /** _more_ */
-    public static final String TYPE_GROUP = "group";
-
-    /** _more_ */
-    public static final String TYPE_DATE = "date";
-
-    /** _more_ */
-    public static final String TYPE_DATETIME = "datetime";
-
-    /** _more_ */
-    public static final String TYPE_LATLON = "latlon";
-
-    /** _more_ */
-    public static final String TYPE_DEPENDENTENUMERATION =
-        "dependentenumeration";
 
 
     /** _more_ */
@@ -157,7 +113,7 @@ public class MetadataElement extends MetadataTypeBase {
 
 
     /** _more_ */
-    private String dataType = TYPE_STRING;
+    private String dataType = DATATYPE_STRING;
 
 
     /** _more_ */
@@ -249,7 +205,7 @@ public class MetadataElement extends MetadataTypeBase {
         setRows(XmlUtil.getAttribute(node, ATTR_ROWS, 1));
         setColumns(XmlUtil.getAttribute(node, ATTR_COLUMNS, 60));
         setDataType(XmlUtil.getAttribute(node, ATTR_DATATYPE,
-                                         MetadataElement.TYPE_STRING));
+                                         MetadataElement.DATATYPE_STRING));
         attachment = XmlUtil.getAttribute(node, ATTR_ATTACHMENT, true);
         setDefault(XmlUtil.getAttribute(node, ATTR_DEFAULT, ""));
 
@@ -258,8 +214,8 @@ public class MetadataElement extends MetadataTypeBase {
         required = XmlUtil.getAttribute(node, ATTR_REQUIRED, false);
         setThumbnail(XmlUtil.getAttribute(node, ATTR_THUMBNAIL, false));
 
-        if (dataType.equals(MetadataElement.TYPE_ENUMERATION)
-                || dataType.equals(MetadataElement.TYPE_ENUMERATIONPLUS)) {
+        if (dataType.equals(MetadataElement.DATATYPE_ENUMERATION)
+                || dataType.equals(MetadataElement.DATATYPE_ENUMERATIONPLUS)) {
             String       delimiter = ":";
             String       values    = XmlUtil.getAttribute(node, ATTR_VALUES);
             List<String> tmpValues = null;
@@ -313,8 +269,8 @@ public class MetadataElement extends MetadataTypeBase {
      * @return _more_
      */
     private boolean isString(String type) {
-        return dataType.equals(TYPE_STRING) || dataType.equals(TYPE_WIKI)
-               || dataType.equals(TYPE_EMAIL) || dataType.equals(TYPE_URL);
+        return dataType.equals(DATATYPE_STRING) || dataType.equals(DATATYPE_WIKI)
+               || dataType.equals(DATATYPE_EMAIL) || dataType.equals(DATATYPE_URL);
     }
 
 
@@ -363,11 +319,11 @@ public class MetadataElement extends MetadataTypeBase {
      */
     public FormInfo getHtml(String value, int depth) throws Exception {
 
-        if ((value == null) || dataType.equals(TYPE_SKIP)) {
+        if ((value == null) || dataType.equals(DATATYPE_SKIP)) {
             return null;
         }
         //For now skip showing files
-        if (dataType.equals(TYPE_FILE)) {
+        if (dataType.equals(DATATYPE_FILE)) {
             return null;
         }
         String tab = "";
@@ -375,7 +331,7 @@ public class MetadataElement extends MetadataTypeBase {
             tab = tab + "    ";
         }
         String html = null;
-        if (getDataType().equals(TYPE_GROUP)) {
+        if (getDataType().equals(DATATYPE_GROUP)) {
             List<Metadata> childMetadata = getGroupData(value);
             if (childMetadata.size() == 0) {
                 return null;
@@ -393,7 +349,7 @@ public class MetadataElement extends MetadataTypeBase {
                         continue;
                     }
                     formInfo.isGroup =
-                        element.getDataType().equals(TYPE_GROUP);
+                        element.getDataType().equals(DATATYPE_GROUP);
                     if (formInfo.isGroup) {
                         anyChildrenGroups = true;
                     }
@@ -463,13 +419,13 @@ public class MetadataElement extends MetadataTypeBase {
             } else {
                 html = "none";
             }
-        } else if (dataType.equals(TYPE_ENUMERATION)
-                   || dataType.equals(TYPE_ENUMERATIONPLUS)) {
+        } else if (dataType.equals(DATATYPE_ENUMERATION)
+                   || dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
             String label = getLabel(value);
             html = label;
-        } else if (dataType.equals(TYPE_EMAIL)) {
+        } else if (dataType.equals(DATATYPE_EMAIL)) {
             html = HtmlUtil.href("mailto:" + value, value);
-        } else if (dataType.equals(TYPE_URL)) {
+        } else if (dataType.equals(DATATYPE_URL)) {
             html = HtmlUtil.href(value, value);
         } else {
             html = value;
@@ -501,15 +457,15 @@ public class MetadataElement extends MetadataTypeBase {
      */
     public void getTextCorpus(String value, StringBuffer sb)
             throws Exception {
-        if ((value == null) || dataType.equals(TYPE_SKIP)) {
+        if ((value == null) || dataType.equals(DATATYPE_SKIP)) {
             return;
         }
         //For now skip showing files
-        if (dataType.equals(TYPE_FILE)) {
+        if (dataType.equals(DATATYPE_FILE)) {
             return;
         }
         String name = getName();
-        if (getDataType().equals(TYPE_GROUP)) {
+        if (getDataType().equals(DATATYPE_GROUP)) {
             List<Metadata> childMetadata = getGroupData(value);
             if (childMetadata.size() == 0) {
                 return;
@@ -521,12 +477,12 @@ public class MetadataElement extends MetadataTypeBase {
                 }
             }
             return;
-        } else if (dataType.equals(TYPE_ENUMERATION)
-                   || dataType.equals(TYPE_ENUMERATIONPLUS)) {
+        } else if (dataType.equals(DATATYPE_ENUMERATION)
+                   || dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
             sb.append(getLabel(value));
-        } else if (dataType.equals(TYPE_EMAIL)) {
+        } else if (dataType.equals(DATATYPE_EMAIL)) {
             sb.append("email:" + value);
-        } else if (dataType.equals(TYPE_URL)) {
+        } else if (dataType.equals(DATATYPE_URL)) {
             sb.append("url:" + value);
         } else {
             sb.append(value);
@@ -600,7 +556,7 @@ public class MetadataElement extends MetadataTypeBase {
      * @return _more_
      */
     public boolean isGroup() {
-        return getDataType().equals(TYPE_GROUP);
+        return getDataType().equals(DATATYPE_GROUP);
     }
 
     /**
@@ -623,13 +579,13 @@ public class MetadataElement extends MetadataTypeBase {
 
         String arg = ARG_METADATA_ATTR + getIndex() + suffix;
 
-        if (getDataType().equals(TYPE_BOOLEAN)) {
+        if (getDataType().equals(DATATYPE_BOOLEAN)) {
             boolean value = request.get(arg, false);
             return "" + value;
         }
 
 
-        if (getDataType().equals(TYPE_GROUP)) {
+        if (getDataType().equals(DATATYPE_GROUP)) {
             List<Hashtable<Integer, String>> entries =
                 new ArrayList<Hashtable<Integer, String>>();
             int groupCnt = 0;
@@ -673,7 +629,7 @@ public class MetadataElement extends MetadataTypeBase {
 
         //        newMetadata.setAttr(getIndex(), attr);
 
-        if ( !getDataType().equals(TYPE_FILE)) {
+        if ( !getDataType().equals(DATATYPE_FILE)) {
             return attr;
         }
 
@@ -739,7 +695,7 @@ public class MetadataElement extends MetadataTypeBase {
                                  Element parent)
             throws Exception {
 
-        if ( !dataType.equals(TYPE_GROUP)) {
+        if ( !dataType.equals(DATATYPE_GROUP)) {
             //            System.err.println("\traw;" + value);
             return value;
         }
@@ -778,7 +734,7 @@ public class MetadataElement extends MetadataTypeBase {
                           String suffix, String value, boolean forEdit)
             throws Exception {
 
-        if (dataType.equals(TYPE_SKIP)) {
+        if (dataType.equals(DATATYPE_SKIP)) {
             return "";
         }
         String arg = ARG_METADATA_ATTR + getIndex() + suffix;
@@ -787,7 +743,7 @@ public class MetadataElement extends MetadataTypeBase {
                  ? dflt
                  : value);
         if (isString(dataType)) {
-            if (dataType.equals(TYPE_WIKI)) {
+            if (dataType.equals(DATATYPE_WIKI)) {
                 String buttons =
                     getRepository().getWikiManager().makeWikiEditBar(request,
                         entry, arg) + HtmlUtil.br();
@@ -802,11 +758,11 @@ public class MetadataElement extends MetadataTypeBase {
                                       HtmlUtil.attr(HtmlUtil.ATTR_SIZE,
                                           "" + columns));
             }
-        } else if (dataType.equals(TYPE_BOOLEAN)) {
+        } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtil.checkbox(arg, "true", Misc.equals(value, "true"));
-        } else if (dataType.equals(TYPE_INT)) {
+        } else if (dataType.equals(DATATYPE_INT)) {
             return HtmlUtil.input(arg, value, HtmlUtil.SIZE_10);
-        } else if (dataType.equals(TYPE_DATETIME)) {
+        } else if (dataType.equals(DATATYPE_DATETIME)) {
             Date date;
             if (value != null) {
                 date = parseDate(value);
@@ -814,7 +770,7 @@ public class MetadataElement extends MetadataTypeBase {
                 date = new Date();
             }
             return getRepository().makeDateInput(request, arg, "", date);
-        } else if (dataType.equals(TYPE_DATE)) {
+        } else if (dataType.equals(DATATYPE_DATE)) {
             Date date;
             if (values != null) {
                 date = parseDate(value);
@@ -823,15 +779,15 @@ public class MetadataElement extends MetadataTypeBase {
             }
             return getRepository().makeDateInput(request, arg, "", date,
                     null, false);
-        } else if (dataType.equals(TYPE_ENUMERATION)) {
+        } else if (dataType.equals(DATATYPE_ENUMERATION)) {
             return HtmlUtil.select(arg, values, value);
-        } else if (dataType.equals(TYPE_ENUMERATIONPLUS)) {
+        } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
             boolean contains = TwoFacedObject.contains(values, value);
             return HtmlUtil.select(arg, values, value) + HtmlUtil.space(2)
                    + msgLabel("Or") + HtmlUtil.input(arg + ".input", (contains
                     ? ""
                     : value), HtmlUtil.SIZE_30);
-        } else if (dataType.equals(TYPE_FILE)) {
+        } else if (dataType.equals(DATATYPE_FILE)) {
             String image = (forEdit
                             ? getFileHtml(request, entry, metadata, this,
                                           false)
@@ -844,7 +800,7 @@ public class MetadataElement extends MetadataTypeBase {
             return HtmlUtil.fileInput(arg, HtmlUtil.SIZE_70) + image + "<br>"
                    + "Or download URL:"
                    + HtmlUtil.input(arg + ".url", "", HtmlUtil.SIZE_70);
-        } else if (dataType.equals(TYPE_GROUP)) {
+        } else if (dataType.equals(DATATYPE_GROUP)) {
             StringBuffer   sb            = new StringBuffer();
             String         lastGroup     = null;
             int            groupCnt      = 0;

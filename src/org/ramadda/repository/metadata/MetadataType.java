@@ -284,7 +284,7 @@ public class MetadataType extends MetadataTypeBase {
      */
     public void newEntry(Metadata metadata, Entry entry) throws Exception {
         for (MetadataElement element : getChildren()) {
-            if (element.getDataType().equals(element.TYPE_FILE)) {
+            if (element.getDataType().equals(element.DATATYPE_FILE)) {
                 String fileArg = metadata.getAttr(element.getIndex());
                 if ((fileArg == null) || (fileArg.length() == 0)) {
                     continue;
@@ -317,7 +317,7 @@ public class MetadataType extends MetadataTypeBase {
                                       boolean internal)
             throws Exception {
         for (MetadataElement element : getChildren()) {
-            if ( !element.getDataType().equals(element.TYPE_FILE)) {
+            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
             String fileArg = XmlUtil.getAttribute(node,
@@ -470,7 +470,7 @@ public class MetadataType extends MetadataTypeBase {
                               boolean isThumbnail)
             throws Exception {
         for (MetadataElement element : getChildren()) {
-            if ( !element.getDataType().equals(element.TYPE_FILE)) {
+            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
             if ( !element.showAsAttachment()) {
@@ -519,7 +519,7 @@ public class MetadataType extends MetadataTypeBase {
                                          Metadata newMetadata)
             throws Exception {
         for (MetadataElement element : getChildren()) {
-            if ( !element.getDataType().equals(element.TYPE_FILE)) {
+            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
             String oldFileName = newMetadata.getAttr(element.getIndex());
@@ -545,7 +545,7 @@ public class MetadataType extends MetadataTypeBase {
                                  List<String> urls, Metadata metadata)
             throws Exception {
         for (MetadataElement element : getChildren()) {
-            if ( !element.getDataType().equals(element.TYPE_FILE)) {
+            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
             if ( !element.showAsAttachment()) {
@@ -580,7 +580,7 @@ public class MetadataType extends MetadataTypeBase {
             return new Result("", "Cannot process view");
         }
         MetadataElement element = getChildren().get(elementIndex);
-        if ( !element.getDataType().equals(element.TYPE_FILE)) {
+        if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
             return new Result("", "Cannot process view");
         }
         File f = getFile(entry, metadata, element);

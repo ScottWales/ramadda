@@ -473,6 +473,7 @@ public class MetadataManager extends RepositoryManager {
             return metadataList;
         }
 
+        metadataList = new ArrayList();
         Statement stmt =
             getDatabaseManager().select(
                 Tables.METADATA.COLUMNS, Tables.METADATA.NAME,
@@ -480,7 +481,6 @@ public class MetadataManager extends RepositoryManager {
                 " order by " + Tables.METADATA.COL_TYPE);
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
         ResultSet        results;
-        metadataList = new ArrayList();
         while ((results = iter.getNext()) != null) {
             int             col     = 1;
             String          type    = results.getString(3);
