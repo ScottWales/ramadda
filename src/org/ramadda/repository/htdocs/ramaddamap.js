@@ -37,6 +37,7 @@ var positionMarkerID = "location";
 
 var latlonReadoutID = "ramadda-map-latlonreadout";
 
+//Global list of all maps on this page
 var ramaddaMaps = new Array();
 
 function ramaddaAddMap(map) {
