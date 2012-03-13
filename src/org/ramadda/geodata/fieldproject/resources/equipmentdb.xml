@@ -42,7 +42,7 @@
 -->
 
 
-<table id="fp_equipment" name="Field Project Equipment" icon="/fieldproject/equipment.png" handler="org.ramadda.geodata.fieldproject.EquipmentDbTypeHandler">
+<table id="fp_equipment" name="Field Project Equipment" category="Field Project" icon="/fieldproject/equipment.png" handler="org.ramadda.geodata.fieldproject.EquipmentDbTypeHandler">
   Qty TypeDescriptionManufacturerOriginPart#Model#Serial#OwnerUnavcoIDNASAID
 
 

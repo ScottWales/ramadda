@@ -46,7 +46,9 @@ public class GpsTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final String TYPE_RAW = "project_gps_raw";
 
-    public static final String TYPE_TIEPOINTS= "project_gps_tiepoints";
+    /** _more_          */
+    public static final String TYPE_CONTROLPOINTS =
+        "project_gps_controlpoints";
 
     /**
      * _more_
@@ -78,7 +80,6 @@ public class GpsTypeHandler extends GenericTypeHandler {
             throws Exception {
         super.initializeEntryFromForm(request, entry, parent, newEntry);
         if (newEntry) {
-            //            Misc.printStack("GpsTypeHandler.initializeEntryFromForm",10,null);
             initializeGpsEntry(entry);
         }
     }

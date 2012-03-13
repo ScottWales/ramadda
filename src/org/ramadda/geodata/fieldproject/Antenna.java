@@ -35,13 +35,16 @@ import java.util.ArrayList;
  */
 public class Antenna {
 
+    /** _more_          */
+    public static final String NONE = "NONE                ";
+
     /** _more_ */
     private static ArrayList<TwoFacedObject> antennas;
 
 
     /** _more_ */
     private static final String[][] ANTENNAS = {
-        { "NONE                ",
+        { NONE,
           "NONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;no&nbsp;antenna&nbsp;selected" },
         { "ACC2G1215A_XT_1 NONE",
           "ACC2G1215A_XT_1&nbsp;NONE&nbsp;ACTIVE&nbsp;L1/L2&nbsp;GPS,&nbsp;2.6,&nbsp;label&nbsp;top->N" },

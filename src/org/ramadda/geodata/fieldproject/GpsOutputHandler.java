@@ -68,10 +68,13 @@ import java.util.zip.*;
  */
 public class GpsOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     private static final String TEQC_FLAG_QC = "+qcq";
 
     /** _more_          */
+    private static final String TEQC_UNKNOWN = "-Unknown-";
+
+    /** _more_ */
     private static final String TEQC_FLAG_META = "+meta";
 
 
@@ -85,7 +88,8 @@ public class GpsOutputHandler extends OutputHandler {
     public static final String ARG_OPUS = "opus";
 
     /** _more_ */
-    public static final String ARG_TIEPOINTS_COMMENT = "tiepoints.comment";
+    public static final String ARG_CONTROLPOINTS_COMMENT =
+        "controlpoints.comment";
 
     /** _more_ */
     public static final int IDX_FORMAT = 0;
@@ -174,8 +178,9 @@ public class GpsOutputHandler extends OutputHandler {
                        "/fieldproject/opus.png", "Field Project");
 
     /** _more_ */
-    public static final OutputType OUTPUT_GPS_TIEPOINTS =
-        new OutputType("Make Tiepoints", "fieldproject.gps.tiepoints",
+    public static final OutputType OUTPUT_GPS_CONTROLPOINTS =
+        new OutputType("Make Control Points",
+                       "fieldproject.gps.controlpoints",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/icons/csv.png", "Field Project");
 
@@ -194,7 +199,7 @@ public class GpsOutputHandler extends OutputHandler {
         addType(OUTPUT_GPS_METADATA);
         addType(OUTPUT_GPS_QC);
         addType(OUTPUT_GPS_OPUS);
-        addType(OUTPUT_GPS_TIEPOINTS);
+        addType(OUTPUT_GPS_CONTROLPOINTS);
         teqcPath = getProperty("fieldproject.teqc", null);
     }
 
@@ -242,7 +247,7 @@ public class GpsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private boolean isRawGps(Entry entry) {
-        return entry.getType().equals(GpsTypeHandler.TYPE_RAW);
+        return entry.getTypeHandler().isType(GpsTypeHandler.TYPE_RAW);
     }
 
     /**
@@ -311,7 +316,7 @@ public class GpsOutputHandler extends OutputHandler {
             for (Entry child : state.getAllEntries()) {
                 if (isOpus(child)) {
                     links.add(makeLink(request, state.group,
-                                       OUTPUT_GPS_TIEPOINTS));
+                                       OUTPUT_GPS_CONTROLPOINTS));
                     break;
                 }
             }
@@ -355,8 +360,8 @@ public class GpsOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_GPS_TORINEX)) {
             return outputRinex(request, group, entries);
         }
-        if (outputType.equals(OUTPUT_GPS_TIEPOINTS)) {
-            return outputTiepoint(request, group, entries);
+        if (outputType.equals(OUTPUT_GPS_CONTROLPOINTS)) {
+            return outputControlpoint(request, group, entries);
         }
         return outputOpus(request, group, entries);
     }
@@ -454,7 +459,10 @@ public class GpsOutputHandler extends OutputHandler {
             if (toks.size() < 2) {
                 continue;
             }
-            sb.append(HtmlUtil.formEntry(msgLabel(toks.get(0)), toks.get(1)));
+            sb.append(
+                HtmlUtil.formEntry(
+                    msgLabel(StringUtil.camelCase(toks.get(0))),
+                    toks.get(1)));
             sb.append("</tr>");
         }
         sb.append(HtmlUtil.formTableClose());
@@ -577,9 +585,10 @@ public class GpsOutputHandler extends OutputHandler {
 
             sb.append(HtmlUtil.p());
             sb.append(HtmlUtil.formTable());
-            addPublishWidget(request, mainEntry, sb,
-                             msg("Select a folder to publish the RINEX to"),
-                             false);
+            addPublishWidget(
+                request, mainEntry, sb,
+                msg("Optionally select a folder to publish the RINEX to"),
+                false);
             sb.append(HtmlUtil.formTableClose());
 
             sb.append(HtmlUtil.submit("Make RINEX"));
@@ -722,9 +731,9 @@ public class GpsOutputHandler extends OutputHandler {
 
                 sb.append("<br>");
                 getRepository().addAuthToken(request);
-                getRepository().getAssociationManager().addAssociation(
-                    request, newEntry, rawEntry, "generated rinex",
-                    ASSOCIATION_TYPE_GENERATED_FROM);
+                getAssociationManager().addAssociation(request, newEntry,
+                        rawEntry, "generated rinex",
+                        ASSOCIATION_TYPE_GENERATED_FROM);
             }
 
 
@@ -754,8 +763,8 @@ public class GpsOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Result outputTiepoint(Request request, Entry mainEntry,
-                                  List<Entry> entries)
+    private Result outputControlpoint(Request request, Entry mainEntry,
+                                      List<Entry> entries)
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
@@ -763,7 +772,7 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
             sb.append(HtmlUtil.hidden(ARG_OUTPUT,
-                                      OUTPUT_GPS_TIEPOINTS.getId()));
+                                      OUTPUT_GPS_CONTROLPOINTS.getId()));
             sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
             sb.append(HtmlUtil.hidden(ARG_PROCESS, "true"));
             sb.append(HtmlUtil.formTable());
@@ -772,12 +781,12 @@ public class GpsOutputHandler extends OutputHandler {
                 HtmlUtil.formEntry(
                     msgLabel("Comment"),
                     HtmlUtil.input(
-                        ARG_TIEPOINTS_COMMENT, "", HtmlUtil.SIZE_60)));
+                        ARG_CONTROLPOINTS_COMMENT, "", HtmlUtil.SIZE_60)));
 
 
             StringBuffer entryTable = new StringBuffer();
             entryTable.append(
-                "<table><tr><td></td><td><b>X,Y,Z</b></td></tr>");
+                "<table><tr><td align=center></td><td align=center><b>X</b></td><td align=center><b>Y</b></td><td align=center><b>Z</b></td></tr>");
             for (Entry entry : entries) {
                 if ( !isOpus(entry)) {
                     continue;
@@ -787,13 +796,13 @@ public class GpsOutputHandler extends OutputHandler {
                         entry.getId(), true));
                 entryTable.append(" ");
                 entryTable.append(entry.getName());
-                entryTable.append("</td><td>");
+                entryTable.append("</td><td align=right>");
                 entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_X,
                         "NA"));
-                entryTable.append(", ");
+                entryTable.append("</td><td align=right>");
                 entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_Y,
                         "NA"));
-                entryTable.append(", ");
+                entryTable.append("</td><td align=right>");
                 entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_Z,
                         "NA"));
                 entryTable.append("</td></tr>");
@@ -804,10 +813,11 @@ public class GpsOutputHandler extends OutputHandler {
                                             entryTable.toString()));
             addPublishWidget(
                 request, mainEntry, sb,
-                msg("Select a folder to publish the Tiepoint file to"), true);
+                msg(
+                "Optionally select a folder to publish the control point file to"), true);
             sb.append(HtmlUtil.formTableClose());
 
-            sb.append(HtmlUtil.submit("Make Tiepoint File"));
+            sb.append(HtmlUtil.submit("Make Control Point File"));
             sb.append(HtmlUtil.formClose());
             return new Result("", sb);
         }
@@ -815,11 +825,11 @@ public class GpsOutputHandler extends OutputHandler {
         List<String> entryIds = request.get(ARG_GPS_FILE,
                                             new ArrayList<String>());
 
-        StringBuffer tiepoints = new StringBuffer();
-        if (request.defined(ARG_TIEPOINTS_COMMENT)) {
-            tiepoints.append("#");
-            tiepoints.append(request.getString(ARG_TIEPOINTS_COMMENT, ""));
-            tiepoints.append("\n");
+        StringBuffer buff = new StringBuffer();
+        if (request.defined(ARG_CONTROLPOINTS_COMMENT)) {
+            buff.append("#");
+            buff.append(request.getString(ARG_CONTROLPOINTS_COMMENT, ""));
+            buff.append("\n");
         }
         boolean anyOK = false;
         sb.append(msgHeader("Results"));
@@ -840,21 +850,22 @@ public class GpsOutputHandler extends OutputHandler {
 
             opusEntries.add(opusEntry);
             anyOK = true;
-            tiepoints.append(
-                opusEntry.getValue(OpusTypeHandler.IDX_SITE_CODE, ""));
-            tiepoints.append(",");
-            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_X,
-                    "NA"));
-            tiepoints.append(",");
-            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Y,
-                    "NA"));
-            tiepoints.append(",");
-            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Z,
-                    "NA"));
-            tiepoints.append("\n");
-            //            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_X,"NA"));
-            //            tiepoints.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_Y,"NA"));
-            //            tiepoints.append(opusEntry.getAltitude());
+            String siteCode =
+                opusEntry.getValue(OpusTypeHandler.IDX_SITE_CODE, "");
+            if (siteCode.length() == 0) {
+                siteCode = opusEntry.getName();
+            }
+            buff.append(siteCode);
+            buff.append(",");
+            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_X, "NA"));
+            buff.append(",");
+            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Y, "NA"));
+            buff.append(",");
+            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Z, "NA"));
+            buff.append("\n");
+            //            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_X,"NA"));
+            //            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_Y,"NA"));
+            //            buff.append(opusEntry.getAltitude());
         }
 
         sb.append("</ul>");
@@ -863,8 +874,8 @@ public class GpsOutputHandler extends OutputHandler {
         }
 
         if ( !doingPublish(request)) {
-            request.setReturnFilename("tiepoints.csv");
-            return new Result("", tiepoints, "text/csv");
+            request.setReturnFilename("controlpoints.csv");
+            return new Result("", buff, "text/csv");
         }
 
         if (doingPublish(request)) {
@@ -878,27 +889,25 @@ public class GpsOutputHandler extends OutputHandler {
                     Permission.ACTION_NEW)) {
                 throw new AccessException("No access", request);
             }
-            String tiepointsFileName = request.getString(ARG_PUBLISH_NAME,
-                                                         "").trim();
-            if(tiepointsFileName.length()==0) {
-                tiepointsFileName = "tiepoints.csv";
+            String fileName = request.getString(ARG_PUBLISH_NAME, "").trim();
+            if (fileName.length() == 0) {
+                fileName = "controlpoints.csv";
             }
             //Write the text out
-            File f = getStorageManager().getTmpFile(request,
-                                                    tiepointsFileName);
+            File f = getStorageManager().getTmpFile(request, fileName);
             FileOutputStream out = getStorageManager().getFileOutputStream(f);
-            out.write(tiepoints.toString().getBytes());
+            out.write(buff.toString().getBytes());
             out.flush();
             out.close();
             f = getStorageManager().copyToStorage(request, f, f.getName());
 
-            TypeHandler typeHandler =
-                getRepository().getTypeHandler(GpsTypeHandler.TYPE_TIEPOINTS);
+            TypeHandler typeHandler = getRepository().getTypeHandler(
+                                          GpsTypeHandler.TYPE_CONTROLPOINTS);
 
             Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                 parent, tiepointsFileName,
-                                 request.getUser(), typeHandler, null);
-            sb.append("Tie points file created:");
+                                 parent, fileName, request.getUser(),
+                                 typeHandler, null);
+            sb.append("Control points file created:");
             sb.append(
                 HtmlUtil.href(
                     HtmlUtil.url(
@@ -909,9 +918,8 @@ public class GpsOutputHandler extends OutputHandler {
 
             getRepository().addAuthToken(request);
             for (Entry opusEntry : opusEntries) {
-                getRepository().getAssociationManager().addAssociation(
-                    request, newEntry, opusEntry, "",
-                    ASSOCIATION_TYPE_GENERATED_FROM);
+                getAssociationManager().addAssociation(request, newEntry,
+                        opusEntry, "", ASSOCIATION_TYPE_GENERATED_FROM);
             }
         }
         return new Result("", sb);
@@ -958,14 +966,21 @@ public class GpsOutputHandler extends OutputHandler {
         if ( !haveTeqc()) {
             return;
         }
-        File rinexFile = entry.getFile();
-        if ( !rinexFile.exists()) {
+        File gpsFile = entry.getFile();
+        if ( !gpsFile.exists()) {
             return;
         }
-        String   gpsMetadata = extractGpsMetadata(rinexFile, TEQC_FLAG_META);
+        String   gpsMetadata = extractGpsMetadata(gpsFile, TEQC_FLAG_META);
         Object[] values      = gpsTypeHandler.getValues(entry);
         //   2011-05-04 18:23:00.000
         //format,site_code,antenna_type,antenna_height
+
+        //Initialize the values
+        values[IDX_FORMAT]         = "";
+        values[IDX_SITE_CODE]      = "";
+        values[IDX_ANTENNA_TYPE]   = "";
+        values[IDX_ANTENNA_HEIGHT] = new Double(0);
+
         for (String line : StringUtil.split(gpsMetadata, "\n", true, true)) {
             List<String> toks = StringUtil.splitUpTo(line, ":", 2);
             if (toks.size() < 2) {
@@ -973,7 +988,9 @@ public class GpsOutputHandler extends OutputHandler {
             }
             String key   = toks.get(0);
             String value = toks.get(1);
-
+            if (value.trim().equals(TEQC_UNKNOWN)) {
+                value = "";
+            }
             //            System.err.println("KEY:" + key+":");
             if (key.equals("file format")) {
                 values[IDX_FORMAT] = value;
@@ -1001,7 +1018,7 @@ public class GpsOutputHandler extends OutputHandler {
                 entry.setAltitude(Double.parseDouble(value));
             } else if (key.equals("")) {}
             else {
-                System.err.println("key?:" + key + "=" + value);
+                //                System.err.println("key?:" + key + "=" + value);
             }
         }
     }
@@ -1054,20 +1071,27 @@ public class GpsOutputHandler extends OutputHandler {
             return outputOpusForm(request, mainEntry, entries, sb);
         }
 
-        List<String> entryIds = request.get(ARG_RINEX_FILE,
-                                            new ArrayList<String>());
-
-
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
-        for (String entryId : entryIds) {
+        StringBuffer extra = new StringBuffer();
+        int          cnt   = 0;
+        while (true) {
+            String argSuffix = "_" + cnt;
+            cnt++;
+            if ( !request.exists(ARG_OPUS_ANTENNA + argSuffix)) {
+                break;
+            }
+            String entryId = request.getString(ARG_RINEX_FILE + argSuffix,
+                                 "");
+            if (entryId.equals("")) {
+                continue;
+            }
             Entry entry = getEntryManager().getEntry(request, entryId);
             if (entry == null) {
                 throw new IllegalArgumentException("No entry:" + entryId);
             }
             sb.append("<li>");
             sb.append(entry.getName());
-
             if ( !isRinex(entry)) {
                 sb.append(" ... skipping - not rinex");
                 continue;
@@ -1082,9 +1106,19 @@ public class GpsOutputHandler extends OutputHandler {
             postEntries.add(HttpFormField.hidden(ARG_OPUS_EMAIL,
                     request.getString(ARG_OPUS_EMAIL, "").trim()));
             String antenna = request.getString(ARG_OPUS_ANTENNA, "");
-            //            antenna = antenna.replaceAll(" ","+");
+            if (antenna.equals(Antenna.NONE) || antenna.equals("")) {
+                antenna = request.getString(ARG_OPUS_ANTENNA + argSuffix,
+                                            Antenna.NONE);
+            }
             postEntries.add(HttpFormField.hidden(ARG_OPUS_ANTENNA, antenna));
-            String height = entry.getValue(IDX_ANTENNA_HEIGHT, "0.0");
+            String height = null;
+            if (request.defined(ARG_OPUS_HEIGHT)) {
+                height = request.getString(ARG_OPUS_HEIGHT, "");
+            }
+            if (height == null) {
+                height = request.getString(ARG_OPUS_HEIGHT + argSuffix,
+                                           "0.0");
+            }
             postEntries.add(HttpFormField.hidden(ARG_OPUS_HEIGHT, height));
 
             //            for data > 15 min. < 2 hrs. for data > 2 hrs. < 48 hrs.
@@ -1138,7 +1172,7 @@ public class GpsOutputHandler extends OutputHandler {
             if (errorMsg != null) {
                 //This is a hack since the httpformentry gets a redirect and tries to post again to the redirect url
                 if (errorMsg.indexOf("uploadResults.jsp") >= 0) {
-                    System.err.println("ERROR:" + errorMsg);
+                    //                    System.err.println("ERROR:" + errorMsg);
                     errorMsg = null;
                     html     = "Upload successful";
                 }
@@ -1153,20 +1187,28 @@ public class GpsOutputHandler extends OutputHandler {
                 sb.append("</pre>");
                 sb.append("<p>");
                 sb.append(msgHeader("Upload Form"));
+                sb.append("</ul>");
                 return outputOpusForm(request, mainEntry, entries, sb);
             } else {
                 if (html.indexOf("Upload successful") >= 0) {
-                    sb.append(" ... Uploaded to OPUS");
+                    sb.append(" ... Uploaded to OPUS. Height:" + height);
+                    if (antenna.equals(Antenna.NONE)) {
+                        sb.append(" No antenna selected");
+                    } else {
+                        sb.append(" Antenna:" + antenna);
+                    }
                 } else {
                     sb.append(" ... Error:");
-                    System.out.println(result[1]);
+                    sb.append(result[1]);
+                    //                    System.out.println(result[1]);
                 }
             }
         }
 
         sb.append("</ul>");
         sb.append("When you get the results in your email click ");
-        sb.append(HtmlUtil.href(getRepository().getUrlBase()+"/fieldproject/addopus","here"));
+        sb.append(HtmlUtil.href(getRepository().getUrlBase()
+                                + "/fieldproject/addopus", "here"));
         sb.append(" to upload the OPUS solutions");
         return new Result("", sb);
     }
@@ -1202,16 +1244,17 @@ public class GpsOutputHandler extends OutputHandler {
                                          request.getString(ARG_OPUS_EMAIL,
                                              request.getUser().getEmail()))));
 
-        /*
-        sb.append(HtmlUtil.formEntry(msgLabel("Antenna Height"),
-                                     HtmlUtil.input(ARG_OPUS_HEIGHT,
-                                                    request.getString(ARG_OPUS_HEIGHT,"")) + " "
-                                     + msg("Meters above mark. Non-zero values below are used")));
-        */
+        sb.append(HtmlUtil.formTableClose());
         //request.getString(ARG_OPUS_ANTENNA, entry.getValue(IDX_ANTENNA_TYPE,"")
-        sb.append(HtmlUtil.formEntry(msgLabel("Antenna"),
-                                     HtmlUtil.select(ARG_OPUS_ANTENNA,
-                                         Antenna.getAntennas(), "")));
+        String selectedAntenna = "";
+        for (Entry entry : entries) {
+            if ( !isRinex(entry)) {
+                continue;
+            }
+            selectedAntenna = (String) entry.getValue(IDX_ANTENNA_TYPE, "");
+            break;
+        }
+
         /*        sb.append(HtmlUtil.formEntry(msgLabel("Rapid"),
                   HtmlUtil.checkbox(ARG_OPUS_RAPID,
                   "true", request.get(ARG_OPUS_RAPID,false)) +" " +"for data &gt; 15 min. &lt; 2 hrs."));
@@ -1223,6 +1266,7 @@ public class GpsOutputHandler extends OutputHandler {
             "<tr><td><b>Entry</b></td><td><b>Duration</b></td><td><b>Antenna Height</b></td></tr>");
         List<String> selectedIds = request.get(ARG_RINEX_FILE,
                                        new ArrayList<String>());
+        int cnt = 0;
         for (Entry entry : entries) {
             if ( !isRinex(entry)) {
                 continue;
@@ -1234,15 +1278,31 @@ public class GpsOutputHandler extends OutputHandler {
                     && !selectedIds.contains(entry.getId())) {
                 selected = false;
             }
+            StringBuffer comment = new StringBuffer("");
             if ((minutes > 0) && (minutes < 120)) {
                 selected = false;
+                comment.append(HtmlUtil.italics("&lt; 2 hours. "));
             }
+            if (getEntryManager()
+                    .getEntriesWithType(getAssociationManager()
+                        .getTailEntriesWithAssociationType(request, entry,
+                            GpsOutputHandler
+                                .ASSOCIATION_TYPE_GENERATED_FROM), OpusTypeHandler
+                                    .TYPE_OPUS).size() > 0) {
+                selected = false;
+                comment.append(HtmlUtil.italics("Already has an OPUS entry"));
+            }
+
+            String argSuffix = "_" + cnt;
+            cnt++;
+
             entriesSB.append("<tr><td>");
-            entriesSB.append(HtmlUtil.checkbox(ARG_RINEX_FILE, entry.getId(),
-                    selected));
+            entriesSB.append(HtmlUtil.checkbox(ARG_RINEX_FILE + argSuffix,
+                    entry.getId(), selected));
             entriesSB.append(" ");
             entriesSB.append(entry.getName());
             entriesSB.append(" ");
+            entriesSB.append(comment);
             entriesSB.append("</td><td align=right>");
             if (minutes != 0) {
                 int hours = minutes / 60;
@@ -1250,19 +1310,50 @@ public class GpsOutputHandler extends OutputHandler {
                 if (hours > 0) {
                     entriesSB.append(hours + ":");
                 }
-                entriesSB.append(minutes);
+                if (minutes < 10) {
+                    entriesSB.append("0" + minutes);
+                } else {
+                    entriesSB.append(minutes);
+                }
             } else {
                 entriesSB.append("NA");
             }
             entriesSB.append("</td>");
             entriesSB.append("<td align=right>");
-            entriesSB.append(entry.getValue(IDX_ANTENNA_HEIGHT, ""));
+            selectedAntenna = (String) entry.getValue(IDX_ANTENNA_TYPE, "");
+            entriesSB.append(HtmlUtil.select(ARG_OPUS_ANTENNA + argSuffix,
+                                             Antenna.getAntennas(),
+                                             selectedAntenna));
             entriesSB.append("</td>");
+            entriesSB.append("<td align=right>");
+            entriesSB.append(
+                HtmlUtil.input(
+                    ARG_OPUS_HEIGHT + argSuffix,
+                    request.getString(
+                        ARG_OPUS_HEIGHT + argSuffix,
+                        entry.getValue(
+                            IDX_ANTENNA_HEIGHT, "")), HtmlUtil.SIZE_5));
+            entriesSB.append("</td>");
+
             entriesSB.append("</tr>");
         }
         entriesSB.append("</table>");
-        sb.append(HtmlUtil.formEntryTop(msgLabel("Select Entries"),
-                                        entriesSB.toString()));
+        sb.append(msgHeader("Select RINEX Files"));
+        sb.append(entriesSB.toString());
+
+
+        sb.append(msgHeader("Overrides"));
+        sb.append(HtmlUtil.formTable());
+        sb.append(
+            HtmlUtil.formEntry(
+                "", "If defined use these values for antenna or height"));
+        sb.append(HtmlUtil.formEntry(msgLabel("Antenna"),
+                                     HtmlUtil.select(ARG_OPUS_ANTENNA,
+                                         Antenna.getAntennas(), "")));
+        sb.append(HtmlUtil.formEntry(msgLabel("Antenna Height"),
+                                     HtmlUtil.input(ARG_OPUS_HEIGHT,
+                                         request.getString(ARG_OPUS_HEIGHT,
+                                             ""), HtmlUtil.SIZE_5)));
 
         sb.append(HtmlUtil.formTableClose());
         sb.append(HtmlUtil.p());
@@ -1357,8 +1448,7 @@ public class GpsOutputHandler extends OutputHandler {
                                  request.getUser(), typeHandler, initializer);
 
             //If we figured out location from the opus file then set the rinex entry location
-            if (newEntry.hasLocationDefined()
-                    && !rinexEntry.hasLocationDefined()) {
+            if (newEntry.hasLocationDefined()) {
                 if (getAccessManager().canDoAction(request, rinexEntry,
                         Permission.ACTION_EDIT)) {
                     rinexEntry.setLocation(newEntry.getLatitude(),
@@ -1366,41 +1456,21 @@ public class GpsOutputHandler extends OutputHandler {
                                            newEntry.getAltitude());
                     getEntryManager().storeEntry(rinexEntry);
                 }
-                //Look for the derived RAW gps
-                for (Association association :
-                        getRepository().getAssociationManager()
-                            .getAssociations(request, rinexEntry)) {
-                    String otherId = null;
 
-                    if ( !Misc.equals(association.getType(),
-                                      GpsOutputHandler
-                                          .ASSOCIATION_TYPE_GENERATED_FROM)) {
-                        continue;
-                    }
-                    if ( !Misc.equals(rinexEntry.getId(),
-                                      association.getToId())) {
-                        otherId = association.getToId();
-                    } else if ( !Misc.equals(rinexEntry.getId(),
-                                             association.getFromId())) {
-                        otherId = association.getFromId();
-                    }
-                    if (otherId == null) {
-                        continue;
-                    }
-                    if (otherId.equals(newEntry.getId())) {
-                        continue;
-                    }
-                    Entry otherEntry = getEntryManager().getEntry(request,
-                                           otherId);
-                    if (otherEntry == null) {
-                        continue;
-                    }
-                    if (getAccessManager().canDoAction(request, otherEntry,
+                for (Entry rawEntry :
+                        getEntryManager()
+                            .getEntriesWithType(getAssociationManager()
+                                .getTailEntriesWithAssociationType(request,
+                                    rinexEntry,
+                                    GpsOutputHandler
+                                        .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
+                                            .TYPE_RAW)) {
+                    if (getAccessManager().canDoAction(request, rawEntry,
                             Permission.ACTION_EDIT)) {
-                        otherEntry.setLocation(newEntry.getLatitude(),
-                                newEntry.getLongitude(),
-                                newEntry.getAltitude());
-                        getEntryManager().storeEntry(otherEntry);
+                        rawEntry.setLocation(newEntry.getLatitude(),
+                                             newEntry.getLongitude(),
+                                             newEntry.getAltitude());
+                        getEntryManager().storeEntry(rawEntry);
                     }
                 }
             }
@@ -1416,8 +1486,8 @@ public class GpsOutputHandler extends OutputHandler {
                                            .getName()));
 
             getRepository().addAuthToken(request);
-            getRepository().getAssociationManager().addAssociation(request,
-                    newEntry, rinexEntry, "generated rinex",
+            getAssociationManager().addAssociation(request, newEntry,
+                    rinexEntry, "generated rinex",
                     GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
             return new Result(OPUS_TITLE, sb);
         }

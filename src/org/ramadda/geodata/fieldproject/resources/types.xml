@@ -20,11 +20,7 @@
    </type>
 
 
-    <type name="project_day" description="Field Day" category="Field Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
-    </type>
-
-
-    <type name="project_day" description="Project Day" category="Field Project" >
+    <type name="project_day" description="Project Day" category="Field Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
       <property name="icon" value="/fieldproject/notebook.png"/> 
       <property name="form.name.label" value="Day"/>
       <property name="form.description.label" value="Notes"/>
@@ -72,7 +68,7 @@ features
      <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
    </type>
 
-  <type name="project_gps"  description="GPS File" category="Field Project"  handler="org.ramadda.geodata.fieldproject.GpsTypeHandler">
+  <type name="project_gps"  description="GPS File" foruser="false" category="Field Project"  handler="org.ramadda.geodata.fieldproject.GpsTypeHandler">
      <property name="icon" value="/fieldproject/gps.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
@@ -105,7 +101,8 @@ features
      <column name="itrf_z" label="ITRF Z"  type="double"/>
    </type>
 
-  <type name="project_gps_tiepoints"  description="Tiepoint File" category="Field Project">
+  <type name="project_gps_controlpoints"  description="Control Points File" category="Field Project">
+     <property name="icon" value="/icons/csv.png"/>
   </type>
 
 </types>
