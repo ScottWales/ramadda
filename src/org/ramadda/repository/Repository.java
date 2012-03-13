@@ -4696,6 +4696,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return getTypeHandler(TypeHandler.TYPE_ANY);
             }
             typeHandler = new TypeHandler(this, type);
+            typeHandler.setForUser(false);
             addTypeHandler(type, typeHandler);
         }
         return typeHandler;
