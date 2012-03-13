@@ -119,7 +119,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_WIKI = "wiki";
 
     /** _more_ */
@@ -187,7 +187,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public String harvestPattern;
 
-    /** _more_          */
+    /** _more_ */
     public String wikiTemplate;
 
 
@@ -254,6 +254,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public TypeHandler(Repository repository, String type) {
         this(repository, type, "");
+
     }
 
 
@@ -4364,6 +4365,16 @@ public class TypeHandler extends RepositoryManager {
             return parent.getCategory();
         }
         return this.category;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param v _more_
+     */
+    public void setForUser(boolean v) {
+        this.forUser = v;
     }
 
 
