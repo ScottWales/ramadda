@@ -154,7 +154,8 @@ public class MetadataManager extends RepositoryManager {
     private List<MetadataType> metadataTypes = new ArrayList<MetadataType>();
 
 
-
+    /** _more_ */
+    private List<String> tableNames = new ArrayList<String>();
 
 
     /**
@@ -192,6 +193,9 @@ public class MetadataManager extends RepositoryManager {
     public void addMetadataType(MetadataType type) {
         metadataTypes.add(type);
         typeMap.put(type.getId(), type);
+        if (type.getHasDatabaseTable()) {
+            tableNames.add(type.getTableName());
+        }
     }
 
 

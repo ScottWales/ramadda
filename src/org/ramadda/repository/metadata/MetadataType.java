@@ -22,6 +22,7 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.type.*;
 
 
 import org.w3c.dom.*;
@@ -46,11 +47,12 @@ import java.io.InputStream;
 
 import java.net.URL;
 
+import java.sql.Statement;
+
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 
 
 /**
@@ -64,7 +66,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     public static final String TAG_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TEMPLATE = "template";
 
 
@@ -72,12 +74,14 @@ public class MetadataType extends MetadataTypeBase {
     public static final String TAG_HANDLER = "handler";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_METADATATYPE = "metadatatype";
 
     /** _more_ */
     public static final String ATTR_CLASS = "class";
 
+    /** _more_ */
+    public static final String ATTR_MAKEDATABASE = "makedatabase";
 
 
     /** _more_ */
@@ -122,6 +126,12 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     private String id;
 
+
+    /** _more_ */
+    private boolean makeDatabaseTable = false;
+
+    /** _more_ */
+    private List<Column> databaseColumns;
 
     /** _more_ */
     private String displayCategory = "Properties";
@@ -269,10 +279,87 @@ public class MetadataType extends MetadataTypeBase {
 
         setCategory(XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
                 handler.getHandlerGroupName()));
+
+        makeDatabaseTable = XmlUtil.getAttributeFromTree(node,
+                ATTR_MAKEDATABASE, false);
+        if (makeDatabaseTable) {
+            initDatabase();
+        }
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getTableName() {
+        return "md_" + id;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    private void initDatabase() throws Exception {
+        Statement statement = getDatabaseManager().createStatement();
+        databaseColumns = new ArrayList<Column>();
+        int          cnt       = 0;
+        final String tableName = "md_" + id;
+        System.err.println("Making db:" + tableName);
+        TypeHandler typeHandler = new TypeHandler(getRepository()) {
+            public String getTableName() {
+                return tableName;
+            }
+        };
+        StringBuffer tableDef = new StringBuffer("CREATE TABLE " + tableName
+                                    + " (\n");
+
+        tableDef.append(
+            "id varchar(200), entry_id varchar(200), type varchar(200), inherited int)");
+        try {
+            getDatabaseManager().executeAndClose(tableDef.toString());
+        } catch (Throwable exc) {
+            System.err.println("EXC:" + exc);
+            if (exc.toString().indexOf("already exists") < 0) {
+                //TODO:
+                //                throw new WrapperException(exc);
+            }
+        }
+
+        StringBuffer indexDef = new StringBuffer();
+        indexDef.append("CREATE INDEX " + getTableName() + "_INDEX_" + "id"
+                        + "  ON " + getTableName() + " (" + "id" + ");\n");
+        indexDef.append("CREATE INDEX " + getTableName() + "_INDEX_"
+                        + "entry_id" + "  ON " + getTableName() + " ("
+                        + "entry_id" + ");\n");
+        indexDef.append("CREATE INDEX " + getTableName() + "_INDEX_" + "type"
+                        + "  ON " + getTableName() + " (" + "type" + ");\n");
+
+        try {
+            getDatabaseManager().loadSql(indexDef.toString(), true, false);
+        } catch (Throwable exc) {
+            //TODO:
+            //            throw new WrapperException(exc);
+        }
+
+
+
+
+        for (MetadataElement element : getChildren()) {
+            Column column = new Column(typeHandler, element.getId(),
+                                       element.getDataType(), cnt);
+            column.setSize(XmlUtil.getAttribute(element.getXmlNode(),
+                    column.ATTR_SIZE, 200));
+            column.createTable(statement);
+            databaseColumns.add(column);
+            cnt++;
+        }
+        getDatabaseManager().closeAndReleaseConnection(statement);
+    }
 
     /**
      * _more_
@@ -335,9 +422,9 @@ public class MetadataType extends MetadataTypeBase {
                         continue;
                     } catch (Exception ignore) {
                         handler.getRepository().getLogManager().logError(
-                                                                         "No attachment uploaded file:" + fileArg);
+                            "No attachment uploaded file:" + fileArg);
                         handler.getRepository().getLogManager().logError(
-                                                                         "available files: " + fileMap);
+                            "available files: " + fileMap);
 
                         return false;
                     }
@@ -1007,6 +1094,13 @@ public class MetadataType extends MetadataTypeBase {
         return this.forUser;
     }
 
-
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean getHasDatabaseTable() {
+        return makeDatabaseTable;
+    }
 
 }

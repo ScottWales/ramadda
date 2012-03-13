@@ -165,6 +165,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     /** _more_ */
     private String group;
 
+    /** _more_          */
+    private Element xmlNode;
+
     /**
      * _more_
      *
@@ -179,8 +182,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                            int index, Element node)
             throws Exception {
         super(handler);
-        this.parent = parent;
-        this.index  = index;
+        this.parent  = parent;
+        this.index   = index;
+        this.xmlNode = node;
         init(node);
     }
 
@@ -215,7 +219,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         setThumbnail(XmlUtil.getAttribute(node, ATTR_THUMBNAIL, false));
 
         if (dataType.equals(MetadataElement.DATATYPE_ENUMERATION)
-                || dataType.equals(MetadataElement.DATATYPE_ENUMERATIONPLUS)) {
+                || dataType.equals(
+                    MetadataElement.DATATYPE_ENUMERATIONPLUS)) {
             String       delimiter = ":";
             String       values    = XmlUtil.getAttribute(node, ATTR_VALUES);
             List<String> tmpValues = null;
@@ -260,6 +265,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public Element getXmlNode() {
+        return xmlNode;
+    }
 
     /**
      * _more_
@@ -269,8 +282,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      * @return _more_
      */
     private boolean isString(String type) {
-        return dataType.equals(DATATYPE_STRING) || dataType.equals(DATATYPE_WIKI)
-               || dataType.equals(DATATYPE_EMAIL) || dataType.equals(DATATYPE_URL);
+        return dataType.equals(DATATYPE_STRING)
+               || dataType.equals(DATATYPE_WIKI)
+               || dataType.equals(DATATYPE_EMAIL)
+               || dataType.equals(DATATYPE_URL);
     }
 
 
