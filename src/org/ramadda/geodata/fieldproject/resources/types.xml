@@ -84,7 +84,7 @@ features
      <property name="icon" value="/fieldproject/unavco.png"/>
    </type>
 
-  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" pattern=".*/GPS/Raw/T?\d+.*" super="project_gps">>
+  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" pattern="(.*/GPS/Raw/T?\d+.*|\\.tps)" super="project_gps">>
   </type>
 
   <type name="project_gps_opus"  description="OPUS Solution" category="Field Project" pattern=".*\.opus"

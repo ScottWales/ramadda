@@ -56,7 +56,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
-
+import java.util.GregorianCalendar;
 
 
 
@@ -629,12 +629,19 @@ public class GpsOutputHandler extends OutputHandler {
                 throw new IllegalStateException("File does not exist:" + f);
             }
 
+            GregorianCalendar cal =
+                new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+            cal.setTime(new Date(rawEntry.getStartDate()));
+
+            String tail = IOUtil.stripExtension(
+                                         getStorageManager().getFileTail(
+                                                                         rawEntry));
+            tail = tail +"_" + cal.get(cal.YEAR)+"_" +StringUtil.padLeft(""+cal.get(cal.MONTH),2,"0") +"_" +StringUtil.padLeft(""+cal.get(cal.DAY_OF_MONTH),2,"0");
+            tail = tail + RINEX_SUFFIX;
+
             File rinexFile = new File(
                                  IOUtil.joinDir(
-                                     workDir,
-                                     IOUtil.stripExtension(
-                                         getStorageManager().getFileTail(
-                                             rawEntry)) + RINEX_SUFFIX));
+                                     workDir, tail));
             fileToEntryMap.put(rinexFile.toString(), rawEntry);
 
             ProcessBuilder pb = new ProcessBuilder(teqcPath, "+out",
