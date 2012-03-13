@@ -209,7 +209,7 @@ public class GenericTypeHandler extends TypeHandler {
             Class c = Misc.findClass(className);
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { getClass(),
-                    Element.class, Integer.TYPE });
+                                                 Element.class, Integer.TYPE });
             Column column = (Column) ctor.newInstance(new Object[] { this,
                     columnNode,
                     new Integer(valuesOffset + colNames.size() - 1) });
@@ -387,18 +387,13 @@ public class GenericTypeHandler extends TypeHandler {
                                         Entry parent, boolean newEntry)
             throws Exception {
         //Always call getEntryValues here so we get create the correct size array
-
         Object[] values = getEntryValues(entry);
-
+        if (haveDatabaseTable()) {
+            for (Column column : columns) {
+                column.setValue(request, entry, values);
+            }
+        }
         super.initializeEntryFromForm(request, entry, parent, newEntry);
-        if ( !haveDatabaseTable()) {
-            return;
-        }
-
-        for (Column column : columns) {
-            column.setValue(request, entry, values);
-        }
-
     }
 
 
