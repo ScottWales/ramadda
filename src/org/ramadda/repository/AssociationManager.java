@@ -428,6 +428,108 @@ public class AssociationManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param type _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Association> getAssociationsWithType(Request request,
+            Entry entry, String type)
+            throws Exception {
+        return getAssociationsWithType(getAssociations(request,
+                entry.getId()), type);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param associations _more_
+     * @param type _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Association> getAssociationsWithType(
+            List<Association> associations, String type)
+            throws Exception {
+        List<Association> results = new ArrayList<Association>();
+        for (Association association : associations) {
+            if ( !Misc.equals(association.getType(), type)) {
+                continue;
+            }
+            results.add(association);
+        }
+        return results;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param type _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getHeadEntriesWithAssociationType(Request request,
+            Entry entry, String type)
+            throws Exception {
+
+        List<Entry> results = new ArrayList<Entry>();
+        for (Association association :
+                getAssociationsWithType(request, entry, type)) {
+            if ( !association.getFromId().equals(entry.getId())) {
+                continue;
+            }
+            Entry otherEntry = getEntryManager().getEntry(request,
+                                   association.getToId());
+            if (otherEntry != null) {
+                results.add(otherEntry);
+            }
+        }
+        return results;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param type _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getTailEntriesWithAssociationType(Request request,
+            Entry entry, String type)
+            throws Exception {
+        List<Entry> results = new ArrayList<Entry>();
+        for (Association association :
+                getAssociationsWithType(request, entry, type)) {
+            if ( !association.getToId().equals(entry.getId())) {
+                continue;
+            }
+            Entry otherEntry = getEntryManager().getEntry(request,
+                                   association.getFromId());
+            if (otherEntry != null) {
+                results.add(otherEntry);
+            }
+        }
+        return results;
+    }
+
+
 
     /**
      * _more_
@@ -635,7 +737,9 @@ public class AssociationManager extends RepositoryManager {
 
         Hashtable<String, StringBuffer> rowMap = new Hashtable<String,
                                                      StringBuffer>();
-        List<String> rows = new ArrayList<String>();
+        List<String> rows         = new ArrayList<String>();
+        boolean      lastFromIsMe = false;
+        boolean      lastToIsMe   = false;
         for (Association association : associations) {
             Entry fromEntry = null;
             Entry toEntry   = null;
@@ -668,25 +772,41 @@ public class AssociationManager extends RepositoryManager {
                                 ARG_ASSOCIATION,
                                 association.getId()), HtmlUtil.img(
                                     getRepository().iconUrl(ICON_DELETE),
-                                    msg("Delete association")))));
+                                    msg("Delete association")))) + "&nbsp;");
             } else {
                 cols.add("");
             }
-            List args = Misc.newList(ARG_SHOW_ASSOCIATIONS, "true");
-            cols.add(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                    fromEntry)) + HtmlUtil.pad((Misc.equals(fromEntry, entry)
-                    ? fromEntry.getLabel()
-                    : getEntryManager().getEntryLink(request, fromEntry,
-                    args))));
+            List    args     = Misc.newList(ARG_SHOW_ASSOCIATIONS, "true");
+            boolean fromIsMe = Misc.equals(fromEntry, entry);
+            boolean toIsMe   = Misc.equals(toEntry, entry);
+            String  fromLabel;
+            String  toLabel;
+            if (fromIsMe) {
+                fromLabel = lastFromIsMe
+                            ? "&nbsp;...&nbsp;"
+                            : HtmlUtil.b(fromEntry.getLabel());
+            } else {
+                fromLabel = getEntryManager().getEntryLink(request,
+                        fromEntry, args);
+            }
+            if (toIsMe) {
+                toLabel = lastToIsMe
+                          ? "&nbsp;...&nbsp;"
+                          : HtmlUtil.b(toEntry.getLabel());
+            } else {
+                toLabel = getEntryManager().getEntryLink(request, toEntry,
+                        args);
+            }
 
+            lastFromIsMe = fromIsMe;
+            lastToIsMe   = toIsMe;
+            cols.add(HtmlUtil.img(getEntryManager().getIconUrl(request,
+                    fromEntry)) + HtmlUtil.pad(fromLabel));
             cols.add(association.getType());
             //            cols.add(association.getLabel());
             cols.add(HtmlUtil.img(getRepository().iconUrl(ICON_ARROW)));
             cols.add(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                    toEntry)) + HtmlUtil.pad((Misc.equals(toEntry, entry)
-                    ? toEntry.getLabel()
-                    : getEntryManager().getEntryLink(request, toEntry,
-                    args))));
+                    toEntry)) + HtmlUtil.pad(toLabel));
         }
 
         List cols = Misc.toList(new Object[] { "&nbsp;",
