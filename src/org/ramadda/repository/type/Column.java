@@ -267,6 +267,26 @@ public class Column implements DataTypes, Constants {
      * _more_
      *
      * @param typeHandler _more_
+     * @param name _more_
+     * @param type _more_
+     * @param offset _more_
+     *
+     * @throws Exception _more_
+     */
+    public Column(TypeHandler typeHandler, String name, String type,
+                  int offset)
+            throws Exception {
+        this.typeHandler = typeHandler;
+        this.name        = name;
+        this.type        = type;
+        this.offset      = offset;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param typeHandler _more_
      * @param element _more_
      * @param offset _more_
      *
@@ -922,13 +942,15 @@ public class Column implements DataTypes, Constants {
         }
 
 
-        for (int i = 0; i < oldNames.size(); i++) {
-            String sql = "update " + getTableName() + " set " + name + " = "
-                         + oldNames.get(i);
-            SqlUtil.loadSql(sql, statement, true);
-            sql = "alter table " + getTableName() + " drop "
-                  + oldNames.get(i);
-            SqlUtil.loadSql(sql, statement, true);
+        if (oldNames != null) {
+            for (int i = 0; i < oldNames.size(); i++) {
+                String sql = "update " + getTableName() + " set " + name
+                             + " = " + oldNames.get(i);
+                SqlUtil.loadSql(sql, statement, true);
+                sql = "alter table " + getTableName() + " drop "
+                      + oldNames.get(i);
+                SqlUtil.loadSql(sql, statement, true);
+            }
         }
 
         if (isIndex) {
@@ -2125,6 +2147,26 @@ public class Column implements DataTypes, Constants {
     public int getRows() {
         return rows;
     }
+
+    /**
+     *  Set the Size property.
+     *
+     *  @param value The new value for Size
+     */
+    public void setSize(int value) {
+        size = value;
+    }
+
+    /**
+     *  Get the Size property.
+     *
+     *  @return The Size
+     */
+    public int getSize() {
+        return size;
+    }
+
+
 
 
 }
