@@ -1747,7 +1747,6 @@ public class EntryManager extends RepositoryManager {
         }
         entry.setAltitudeTop(altitudeTop);
         entry.setAltitudeBottom(altitudeBottom);
-
         entry.getTypeHandler().initializeEntryFromForm(request, entry,
                 parent, newEntry);
     }
@@ -7977,6 +7976,24 @@ public class EntryManager extends RepositoryManager {
         return text;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param type _more_
+     *
+     * @return _more_
+     */
+    public List<Entry> getEntriesWithType(List<Entry> entries, String type) {
+        List<Entry> results = new ArrayList<Entry>();
+        for (Entry entry : entries) {
+            if (entry.getTypeHandler().isType(type)) {
+                results.add(entry);
+            }
+        }
+        return results;
+    }
 
 
 
