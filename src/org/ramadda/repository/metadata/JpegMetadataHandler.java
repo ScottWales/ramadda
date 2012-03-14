@@ -140,7 +140,7 @@ public class JpegMetadataHandler extends MetadataHandler {
                         exifDir.getDate(
                             ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
                     if (dttm != null) {
-                        //                        System.err.println ("JpegMetadataHandler: setting date:" + dttm);
+                        System.err.println ("JpegMetadataHandler: setting date:" + dttm);
                         entry.setStartDate(dttm.getTime());
                         entry.setEndDate(dttm.getTime());
                         extra.put("1", "");
