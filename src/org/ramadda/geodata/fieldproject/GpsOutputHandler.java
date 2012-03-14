@@ -53,10 +53,10 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
-import java.util.GregorianCalendar;
 
 
 
@@ -71,7 +71,7 @@ public class GpsOutputHandler extends OutputHandler {
     /** _more_ */
     private static final String TEQC_FLAG_QC = "+qcq";
 
-    /** _more_          */
+    /** _more_ */
     private static final String TEQC_UNKNOWN = "-Unknown-";
 
     /** _more_ */
@@ -634,14 +634,15 @@ public class GpsOutputHandler extends OutputHandler {
             cal.setTime(new Date(rawEntry.getStartDate()));
 
             String tail = IOUtil.stripExtension(
-                                         getStorageManager().getFileTail(
-                                                                         rawEntry));
-            tail = tail +"_" + cal.get(cal.YEAR)+"_" +StringUtil.padLeft(""+cal.get(cal.MONTH),2,"0") +"_" +StringUtil.padLeft(""+cal.get(cal.DAY_OF_MONTH),2,"0");
+                              getStorageManager().getFileTail(rawEntry));
+            tail = tail + "_" + cal.get(cal.YEAR) + "_"
+                   + StringUtil.padLeft("" + cal.get(cal.MONTH), 2, "0")
+                   + "_"
+                   + StringUtil.padLeft("" + cal.get(cal.DAY_OF_MONTH), 2,
+                                        "0");
             tail = tail + RINEX_SUFFIX;
 
-            File rinexFile = new File(
-                                 IOUtil.joinDir(
-                                     workDir, tail));
+            File rinexFile = new File(IOUtil.joinDir(workDir, tail));
             fileToEntryMap.put(rinexFile.toString(), rawEntry);
 
             ProcessBuilder pb = new ProcessBuilder(teqcPath, "+out",
@@ -662,6 +663,8 @@ public class GpsOutputHandler extends OutputHandler {
                     sb.append(" ... RINEX file generated");
                 }
                 anyOK = true;
+            } else if (rinexFile.exists()) {
+                sb.append(" ... Error: Zero length RINEX file create. ");
             } else {
                 sb.append(" ... Error:");
             }
@@ -1018,11 +1021,21 @@ public class GpsOutputHandler extends OutputHandler {
             } else if (key.startsWith("antenna height")) {
                 values[IDX_ANTENNA_HEIGHT] = new Double(value);
             } else if (key.startsWith("antenna latitude")) {
-                entry.setLatitude(Double.parseDouble(value));
+                double v = Double.parseDouble(value);
+                if (v != 90) {
+                    entry.setLatitude(v);
+                }
             } else if (key.startsWith("antenna longitude")) {
-                entry.setLongitude(Double.parseDouble(value));
+                double v = Double.parseDouble(value);
+                if (v != 0) {
+                    entry.setLongitude(v);
+                }
             } else if (key.startsWith("antenna elevation")) {
-                entry.setAltitude(Double.parseDouble(value));
+                double v = Double.parseDouble(value);
+                //Check for bad values
+                if (v > -100000) {
+                    entry.setAltitude(v);
+                }
             } else if (key.equals("")) {}
             else {
                 //                System.err.println("key?:" + key + "=" + value);
