@@ -856,16 +856,17 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
         List<Entry> entriesToAdd = new ArrayList<Entry>();
         for (Entry newEntry : entries) {
-            try {
+            //            try {
                 if ( !canContinueRunning(timestamp)) {
                     return;
                 }
                 newEntry.getTypeHandler().initializeNewEntry(newEntry);
                 entriesToAdd.add(newEntry);
+                /*
             } catch (Exception exc) {
                 logHarvesterError("Error initializing entry:" + newEntry,
                                   exc);
-            }
+                                  }*/
         }
         if (getAddMetadata() || getAddShortMetadata()) {
             getEntryManager().addInitialMetadata(null, entriesToAdd, true,
