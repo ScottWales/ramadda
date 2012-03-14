@@ -91,17 +91,12 @@ public class JpegMetadataHandler extends MetadataHandler {
         String path = entry.getResource().getPath();
         try {
             Image image = ImageUtils.readImage(path, false);
-            System.err.println("JPEG: wait");
+            System.err.print("JpegMetadataHandler: wait...");
             ImageUtils.waitOnImage(image);
-            System.err.println("JPEG: done wait");
             Image newImage = ImageUtils.resize(image, 100, -1);
-            int cnt =0;
-            //Wait for the image
-            while(newImage.getWidth(null)<0 || newImage.getHeight(null)<0) {
-                Misc.sleep(10);
-                if(cnt++>50) break;
-            }
             ImageUtils.waitOnImage(newImage);
+            System.err.println("done");
+
             File f = getStorageManager().getTmpFile(request,
                          IOUtil.stripExtension(entry.getName())
                          + "_thumb.jpg");
@@ -145,12 +140,14 @@ public class JpegMetadataHandler extends MetadataHandler {
                         exifDir.getDate(
                             ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
                     if (dttm != null) {
+                        //                        System.err.println ("JpegMetadataHandler: setting date:" + dttm);
                         entry.setStartDate(dttm.getTime());
                         entry.setEndDate(dttm.getTime());
                         extra.put("1", "");
                     }
                 }
-
+            } else {
+                System.err.println ("no exif");
             }
 
             if (iptcDir != null) {
