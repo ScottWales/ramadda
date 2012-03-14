@@ -587,14 +587,15 @@ public class MapManager extends RepositoryManager {
 
         List<String> urls = new ArrayList<String>();
         getMetadataManager().getThumbnailUrls(request, entry, urls);
-        if (urls.size() > 0) {
+        boolean isImage = entry.getResource().isImage();
+        if(!isImage && urls.size() > 0) {
             info.append("<tr><td colspan=2>"
                         + HtmlUtil.img(urls.get(0), "", " width=300 ")
                         + "</td></tr>");
         }
         info.append("</table>");
 
-        if (entry.getResource().isImage()) {
+        if (isImage) {
             String thumbUrl = request.getAbsoluteUrl(
                                   HtmlUtil.url(
                                       request.url(repository.URL_ENTRY_GET)

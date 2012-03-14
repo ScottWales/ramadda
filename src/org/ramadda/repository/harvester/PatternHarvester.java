@@ -759,7 +759,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 long now = System.currentTimeMillis();
                 if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
                     logHarvesterInfo("Skipping recently modified file:" + f +" milliseconds since modified:" + (now - fileTime));
-                    //                    System.err.println("file:" + f +" last modified:" + new Date(fileTime) + " " + fileTime + " now:" + new Date(now) + " " + now);
+                    System.err.println("file:" + f +" last modified:" + new Date(fileTime) + " " + fileTime + " now:" + new Date(now) + " " + now);
 
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
