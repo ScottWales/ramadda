@@ -34,6 +34,7 @@ import org.ramadda.repository.*;
 import ucar.unidata.ui.ImageUtils;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 
 import java.awt.Image;
 import java.awt.image.*;
@@ -81,20 +82,25 @@ public class JpegMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
 
-        String path = entry.getResource().getPath();
+        if(shortForm) return;
 
         if ( !entry.getResource().isImage()) {
             return;
         }
 
+        String path = entry.getResource().getPath();
         try {
-            Image image = ImageUtils.readImage(entry.getResource().getPath(),
-                              false);
-
+            Image image = ImageUtils.readImage(path, false);
             ImageUtils.waitOnImage(image);
             Image newImage = ImageUtils.resize(image, 100, -1);
-
-            ImageUtils.waitOnImage(newImage);
+            //The waitOnImage was blocking so just check the width and sleep for a few milliseconds
+            if(newImage.getWidth(null) ==0) {
+                Misc.sleep(10);
+                if(newImage.getWidth(null) ==0) {
+                    Misc.sleep(10);
+                }
+                //            ImageUtils.waitOnImage(newImage);
+            }
             File f = getStorageManager().getTmpFile(request,
                          IOUtil.stripExtension(entry.getName())
                          + "_thumb.jpg");
