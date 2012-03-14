@@ -5317,6 +5317,13 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void checkEntryFileTime(Entry entry) throws Exception {
+
+        if(true) return;
+
+
+        /*****
+              Don't do this because many harvested files get a date range set for them
+
         if ((entry == null) || !entry.isFile()) {
             return;
         }
@@ -5340,6 +5347,7 @@ public class EntryManager extends RepositoryManager {
         entry.setEndDate(fileTime);
         storeEntry(entry);
         //        updateEntry(entry);
+        **/
     }
 
 
@@ -5958,6 +5966,7 @@ public class EntryManager extends RepositoryManager {
         int       batchCnt       = 0;
         connection.setAutoCommit(false);
         for (Entry entry : entries) {
+            //            System.err.println("EntryManager.insertEntries:" + new Date(entry.getStartDate()));
             // if (entry.isCollectionGroup()) {
             //                getTopGroup()s = null;
             //                }
@@ -6703,6 +6712,7 @@ public class EntryManager extends RepositoryManager {
                     ((Date) extra.get(ARG_FROMDATE)).getTime());
                 theEntry.setEndDate(((Date) extra.get(ARG_TODATE)).getTime());
                 changed = true;
+                System.err.println("EntryManager: setting date: " +extra.get(ARG_FROMDATE));
             }
             if (changed) {
                 changedEntries.add(theEntry);
