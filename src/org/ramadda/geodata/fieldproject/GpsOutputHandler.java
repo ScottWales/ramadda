@@ -664,7 +664,7 @@ public class GpsOutputHandler extends OutputHandler {
                 }
                 anyOK = true;
             } else if (rinexFile.exists()) {
-                sb.append(" ... Error: Zero length RINEX file create. ");
+                sb.append(" ... Error: Zero length RINEX file created. ");
             } else {
                 sb.append(" ... Error:");
             }
