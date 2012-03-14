@@ -855,24 +855,20 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             return;
         }
         List<Entry> entriesToAdd = new ArrayList<Entry>();
+        status.append("Initializing " + entries.size() +" new " + (entries.size()>1?"entries":"entry") +"<br>");
         for (Entry newEntry : entries) {
-            //            try {
-                if ( !canContinueRunning(timestamp)) {
-                    return;
-                }
-                newEntry.getTypeHandler().initializeNewEntry(newEntry);
-                entriesToAdd.add(newEntry);
-                /*
-            } catch (Exception exc) {
-                logHarvesterError("Error initializing entry:" + newEntry,
-                                  exc);
-                                  }*/
+            if ( !canContinueRunning(timestamp)) {
+                return;
+            }
+            newEntry.getTypeHandler().initializeNewEntry(newEntry);
+            entriesToAdd.add(newEntry);
         }
         if (getAddMetadata() || getAddShortMetadata()) {
             getEntryManager().addInitialMetadata(null, entriesToAdd, true,
-                    getAddShortMetadata());
+                                                 getAddShortMetadata());
         }
         logHarvesterInfo("Adding " + entriesToAdd.size() + " new entries");
+        status.append("Inserting entries<br>");
         getEntryManager().insertEntries(entriesToAdd, true, true);
     }
 
@@ -1003,8 +999,6 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
 
         debug("file:<i>" + fileName + "</i> matches pattern");
-        //        logHarvesterInfo("Matches pattern:" + fileName);
-
         return   harvestFile(fileInfo, f, matcher);
     }
 
