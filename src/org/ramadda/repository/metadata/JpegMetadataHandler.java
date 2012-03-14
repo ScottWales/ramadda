@@ -91,16 +91,17 @@ public class JpegMetadataHandler extends MetadataHandler {
         String path = entry.getResource().getPath();
         try {
             Image image = ImageUtils.readImage(path, false);
+            System.err.println("JPEG: wait");
             ImageUtils.waitOnImage(image);
+            System.err.println("JPEG: done wait");
             Image newImage = ImageUtils.resize(image, 100, -1);
-            //The waitOnImage was blocking so just check the width and sleep for a few milliseconds
-            if(newImage.getWidth(null) ==0) {
+            int cnt =0;
+            //Wait for the image
+            while(newImage.getWidth(null)<0 || newImage.getHeight(null)<0) {
                 Misc.sleep(10);
-                if(newImage.getWidth(null) ==0) {
-                    Misc.sleep(10);
-                }
-                //            ImageUtils.waitOnImage(newImage);
+                if(cnt++>50) break;
             }
+            ImageUtils.waitOnImage(newImage);
             File f = getStorageManager().getTmpFile(request,
                          IOUtil.stripExtension(entry.getName())
                          + "_thumb.jpg");
@@ -252,6 +253,22 @@ public class JpegMetadataHandler extends MetadataHandler {
             //Ignore this
         }
         return dir.getDouble(tag);
+    }
+
+    public static void main(String[]args) throws Exception { 
+        int cnt = 0;
+        for(String path: args) {
+            Image image = ImageUtils.readImage(path, false);
+            ImageUtils.waitOnImage(image);
+            System.err.println ("before:" + image.getWidth(null) +" " + image.getHeight(null));
+            Image newImage = ImageUtils.resize(image, 100, -1);
+            //The waitOnImage was blocking so just check the width and sleep for a few milliseconds
+            ImageUtils.waitOnImage(newImage);
+            System.err.println ("width:" + newImage.getWidth(null));
+            ImageUtils.writeImageToFile(newImage, new File("thumb_" + cnt+".jpg"));
+            cnt++;
+        }
+
     }
 
 
