@@ -1041,8 +1041,12 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         if (typeHandlerToUse == null) {
-            //typeHandlerToUse = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
-            typeHandlerToUse= typeHandler;
+            if(!typeHandler.getType().equals(TYPE_FINDMATCH)) {
+                typeHandlerToUse= typeHandler;
+            } else {
+                //Default to the generic file type
+                typeHandlerToUse = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+            }
         }
 
 
