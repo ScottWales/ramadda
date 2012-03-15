@@ -848,7 +848,7 @@ public class GpsOutputHandler extends OutputHandler {
         double maxLat = -90;
         double minLat = 90;
         double maxLon = -180;
-        double minLon = -180;
+        double minLon = 180;
         for (String entryId : entryIds) {
             Entry opusEntry = getEntryManager().getEntry(request, entryId);
             if (opusEntry == null) {
@@ -866,6 +866,7 @@ public class GpsOutputHandler extends OutputHandler {
             minLat = Math.min(minLat, opusEntry.getLatitude());
             maxLon = Math.max(maxLon, opusEntry.getLongitude());
             minLon = Math.min(minLon, opusEntry.getLongitude());
+
             opusEntries.add(opusEntry);
             anyOK = true;
             String siteCode =
