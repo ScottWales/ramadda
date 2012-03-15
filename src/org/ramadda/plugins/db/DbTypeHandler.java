@@ -574,10 +574,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         putProperty("form.datatype.show", "false");
 
 
-        columns = tableHandler.getColumns();
-
-
         tableHandler.init(columnNodes);
+        columns = tableHandler.getColumns();
         List<String> columnNames =
             new ArrayList<String>(tableHandler.getColumnNames());
         namesArray = StringUtil.listToStringArray(columnNames);
@@ -594,6 +592,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         descColumn      = null;
         urlColumn       = null;
         dfltSortColumn  = null;
+
 
 
         columnsToUse    = new ArrayList<Column>();
