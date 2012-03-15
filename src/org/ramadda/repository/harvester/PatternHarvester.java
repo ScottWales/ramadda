@@ -32,6 +32,7 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.SqlUtil;
+import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
 
@@ -95,7 +96,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
 
 
-    /** _more_          */
+    /** _more_ */
     private static final int FILE_CHANGED_TIME_THRESHOLD_MS = 60 * 1000;
 
     /** _more_ */
@@ -315,11 +316,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             throws Exception {
 
         super.createEditForm(request, sb);
-        String extraLabel     = "";
-        String fileFieldExtra = "";
+        String     extraLabel     = "";
+        String     fileFieldExtra = "";
 
-        List<File> rootDirs = getRootDirs();
-        for(File rootDir: rootDirs) {
+        List<File> rootDirs       = getRootDirs();
+        for (File rootDir : rootDirs) {
             if ( !rootDir.exists()) {
                 extraLabel = HtmlUtil.br()
                              + HtmlUtil.span(
@@ -356,16 +357,19 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         sb.append(HtmlUtil.colspan(msgHeader("Look for files"), 2));
 
         StringBuffer inputText = new StringBuffer();
-        for(File rootDir: rootDirs) {
+        for (File rootDir : rootDirs) {
             String path = rootDir.toString();
             path = path.replace("\\", "/");
             inputText.append(path);
             inputText.append("\n");
         }
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Under directories"),
-                                     HtmlUtil.textArea(ATTR_ROOTDIR, inputText.toString(),
-                                                       5, 60, fileFieldExtra.toString()) + extraLabel));
+        sb.append(
+            HtmlUtil.formEntry(
+                msgLabel("Under directories"),
+                HtmlUtil.textArea(
+                    ATTR_ROOTDIR, inputText.toString(), 5, 60,
+                    fileFieldExtra.toString()) + extraLabel));
 
 
         sb.append(HtmlUtil.formEntry(msgLabel("That match pattern"),
@@ -457,8 +461,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                                         TypeHandler typeHandler)
             throws Exception {
         List items = new ArrayList();
-        items.add(new TwoFacedObject(msg("Find match"),
-                                     TYPE_FINDMATCH));
+        items.add(new TwoFacedObject(msg("Find match"), TYPE_FINDMATCH));
         return repository.makeTypeSelect(items, request, false,
                                          getTypeHandler().getType(), false,
                                          null);
@@ -573,7 +576,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         }
         List<File> rootDirs = getRootDirs();
-        return "Directory:" + StringUtil.join(" ", rootDirs) + "<br>" + dirMsg + entryMsg + status;
+        return "Directory:" + StringUtil.join(" ", rootDirs) + "<br>"
+               + dirMsg + entryMsg + status;
     }
 
     /**
@@ -590,11 +594,12 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
      * _more_
      *
      * @param dir _more_
+     * @param rootDir _more_
      *
      * @return _more_
      */
     private FileInfo addDir(File dir, File rootDir) {
-        FileInfo fileInfo = new FileInfo(dir,rootDir, true);
+        FileInfo fileInfo = new FileInfo(dir, rootDir, true);
         dirs.add(fileInfo);
         dirMap.add(dir);
         return fileInfo;
@@ -635,8 +640,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         dirs = new ArrayList<FileInfo>();
 
         List<File> rootDirs = getRootDirs();
-        for(File rootDir: rootDirs) {
-            logHarvesterInfo("Looking for initial directory listing:" + rootDir);
+        for (File rootDir : rootDirs) {
+            logHarvesterInfo("Looking for initial directory listing:"
+                             + rootDir);
             if ( !rootDir.exists()) {
                 logHarvesterInfo("Root directory does not exist:" + rootDir);
             }
@@ -662,7 +668,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             long t1 = System.currentTimeMillis();
             logHarvesterInfo("Start scanning");
             printTab = "\t";
-            harvestEntries((cnt == 0),  timestamp);
+            harvestEntries((cnt == 0), timestamp);
             printTab = "";
             logHarvesterInfo("Done scanning");
             lastRunTime = System.currentTimeMillis();
@@ -750,7 +756,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     //in the list. If not then add it to the main list and the local list
                     if ( !hasDir(f)) {
                         logHarvesterInfo("New directory:" + f);
-                        tmpDirs.add(addDir(f,dirInfo.getRootDir()));
+                        tmpDirs.add(addDir(f, dirInfo.getRootDir()));
                     }
                     continue;
                 }
@@ -758,8 +764,12 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 //time diff threshold = 1 minute
                 long now = System.currentTimeMillis();
                 if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
-                    logHarvesterInfo("Skipping recently modified file:" + f +" milliseconds since modified:" + (now - fileTime));
-                    System.err.println("file:" + f +" last modified:" + new Date(fileTime) + " " + fileTime + " now:" + new Date(now) + " " + now);
+                    logHarvesterInfo("Skipping recently modified file:" + f
+                                     + " milliseconds since modified:"
+                                     + (now - fileTime));
+                    System.err.println("file:" + f + " last modified:"
+                                       + new Date(fileTime) + " " + fileTime
+                                       + " now:" + new Date(now) + " " + now);
 
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
@@ -855,7 +865,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             return;
         }
         List<Entry> entriesToAdd = new ArrayList<Entry>();
-        status.append("Initializing " + entries.size() +" new " + (entries.size()>1?"entries":"entry") +"<br>");
+        status.append("Initializing " + entries.size() + " new "
+                      + ((entries.size() > 1)
+                         ? "entries"
+                         : "entry") + "<br>");
         for (Entry newEntry : entries) {
             if ( !canContinueRunning(timestamp)) {
                 return;
@@ -865,7 +878,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
         if (getAddMetadata() || getAddShortMetadata()) {
             getEntryManager().addInitialMetadata(null, entriesToAdd, true,
-                                                 getAddShortMetadata());
+                    getAddShortMetadata());
         }
         logHarvesterInfo("Adding " + entriesToAdd.size() + " new entries");
         status.append("Inserting entries<br>");
@@ -897,10 +910,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                                ? template.getName()
                                : filename);
             if (makeGroup && (parentGroup != null)) {
-                Entry group = getEntryManager().findGroupFromName(getRequest(), 
-                                  parentGroup.getFullName()
-                                  + Entry.PATHDELIMITER + name, getUser(),
-                                      false);
+                Entry group =
+                    getEntryManager().findGroupFromName(getRequest(),
+                        parentGroup.getFullName() + Entry.PATHDELIMITER
+                        + name, getUser(), false);
                 if (group == null) {
                     group = getEntryManager().makeNewGroup(parentGroup, name,
                             getUser(), template);
@@ -977,13 +990,14 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //Call init so we get the filePattern
         init();
 
-        
+
         Matcher matcher = null;
-        if(filePattern!=null) {
+        if (filePattern != null) {
             matcher = filePattern.matcher(fileName);
             if ( !matcher.find()) {
                 debug("file:<i>" + fileName + "</i> does not match pattern");
-                logHarvesterInfo("file:" + fileName + " does not match pattern");
+                logHarvesterInfo("file:" + fileName
+                                 + " does not match pattern");
                 return null;
             }
         }
@@ -999,13 +1013,26 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
 
         debug("file:<i>" + fileName + "</i> matches pattern");
-        return   harvestFile(fileInfo, f, matcher);
+        return harvestFile(fileInfo, f, matcher);
     }
 
 
-    public Entry harvestFile(FileInfo fileInfo, File f, Matcher matcher) throws Exception {
+    /**
+     * _more_
+     *
+     * @param fileInfo _more_
+     * @param f _more_
+     * @param matcher _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry harvestFile(FileInfo fileInfo, File f, Matcher matcher)
+            throws Exception {
+
         boolean isPlaceholder = f.getName().equals(".placeholder");
-        String fileName = f.toString();
+        String  fileName      = f.toString();
         fileName = fileName.replace("\\", "/");
 
         if ( !getTestMode()) {
@@ -1021,16 +1048,17 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
              */
         }
 
-        TypeHandler typeHandler = getTypeHandler();
+        TypeHandler typeHandler      = getTypeHandler();
         TypeHandler typeHandlerToUse = null;
 
-        Entry templateEntry = getEntryManager().getTemplateEntry(f);
-        if(templateEntry!=null) {
+        Entry       templateEntry    = getEntryManager().getTemplateEntry(f);
+        if (templateEntry != null) {
             typeHandlerToUse = templateEntry.getTypeHandler();
         }
 
 
-        if (typeHandlerToUse == null && typeHandler.getType().equals(TYPE_FINDMATCH)) {
+        if ((typeHandlerToUse == null)
+                && typeHandler.getType().equals(TYPE_FINDMATCH)) {
             for (TypeHandler otherTypeHandler :
                     getRepository().getTypeHandlers()) {
                 if (otherTypeHandler.canHarvestFile(f)) {
@@ -1041,17 +1069,19 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         if (typeHandlerToUse == null) {
-            if(!typeHandler.getType().equals(TYPE_FINDMATCH)) {
-                typeHandlerToUse= typeHandler;
+            if ( !typeHandler.getType().equals(TYPE_FINDMATCH)) {
+                typeHandlerToUse = typeHandler;
             } else {
                 //Default to the generic file type
-                typeHandlerToUse = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+                typeHandlerToUse =
+                    getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
             }
         }
 
 
         String dirPath = f.getParent().toString();
-        dirPath = dirPath.substring(fileInfo.getRootDir().toString().length());
+        dirPath =
+            dirPath.substring(fileInfo.getRootDir().toString().length());
         dirPath = dirPath.replace("\\", "/");
         //New
         dirPath = dirPath.replaceAll("_", " ");
@@ -1141,20 +1171,32 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         boolean createIfNeeded = !getTestMode();
-        Entry group = getEntryManager().findEntryFromName(getRequest(), groupName,
-                          getUser(), createIfNeeded, getLastGroupType(),
-                          this);
+        Entry group = getEntryManager().findEntryFromName(getRequest(),
+                          groupName, getUser(), createIfNeeded,
+                          getLastGroupType(), this);
         //If its just a placeholder then all we need to do is create the group and return
-        if(isPlaceholder) return null;
+        if (isPlaceholder) {
+            return null;
+        }
         String tmpName = f.getName().toLowerCase();
-        if(tmpName.equals("readme") || tmpName.equals("readme.txt")) {
-            if(group.getDescription().length()>0) return null;
-            group.setDescription(IOUtil.readContents(f.toString(),""));
+        if (tmpName.equals("readme") || tmpName.equals("readme.txt")) {
+            if (group.getDescription().length() > 0) {
+                return null;
+            }
+            group.setDescription(IOUtil.readContents(f.toString(), ""));
             getEntryManager().storeEntry(group);
             return null;
         }
 
-        Entry    entry = typeHandlerToUse.createEntry(getRepository().getGUID());
+        if (tmpName.equals("thumbs.sb")) {
+            return null;
+        }
+        if (tmpName.endsWith(".thm")) {
+            return null;
+        }
+
+
+        Entry entry = typeHandlerToUse.createEntry(getRepository().getGUID());
         Resource resource;
         if (moveToStorage) {
             File fromFile = new File(fileName);
@@ -1167,9 +1209,42 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         } else {
             resource = new Resource(fileName, Resource.TYPE_FILE);
         }
+
+
         entry.initEntry(name, desc, group, getUser(), resource, "",
                         createDate.getTime(), createDate.getTime(),
                         fromDate.getTime(), toDate.getTime(), values);
+
+        //If it is an image then we create a thumbnail for it in the JpegMetadataHandler
+        //else we check if there is a .thm file
+        if ( !ImageUtils.isImage(resource.getPath())) {
+            File thumbnail = null;
+            File tmp;
+            tmp = new File(IOUtil.stripExtension(resource.getPath())
+                           + ".thm");
+            if (tmp.exists()) {
+                thumbnail = tmp;
+            }
+            if (thumbnail == null) {
+                tmp = new File(IOUtil.stripExtension(resource.getPath())
+                               + ".THM");
+                if (tmp.exists()) {
+                    thumbnail = tmp;
+                }
+            }
+
+            if (thumbnail != null) {
+                String jpegFile = IOUtil.stripExtension(thumbnail.getName())
+                                  + ".jpg";
+                String newThumbFile =
+                    getStorageManager().copyToEntryDir(entry, thumbnail,
+                        jpegFile).getName();
+                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                        entry.getId(), ContentMetadataHandler.TYPE_THUMBNAIL,
+                        false, newThumbFile, null, null, null, null));
+
+            }
+        }
         /*
         if (tag.length() > 0) {
             List tags = StringUtil.split(tag, ",", true, true);
@@ -1182,6 +1257,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //        logHarvesterInfo("Created entry:" + f);
         return initializeNewEntry(fileInfo, f, entry);
         //        return entry;
+
     }
 
     /**

@@ -79,7 +79,7 @@ import java.util.regex.*;
  */
 public abstract class Harvester extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     private static final boolean PRINT_DEBUG = false;
 
     /** _more_ */
@@ -115,6 +115,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_ROOTDIR = "rootdir";
 
+    /** _more_          */
     public static final String ROOTDIR_DELIM = ";";
 
     /** _more_ */
@@ -160,6 +161,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_BASEGROUP = "basegroup";
 
+    /** _more_          */
     public static final String TYPE_FINDMATCH = "findmatch";
 
 
@@ -187,7 +189,7 @@ public abstract class Harvester extends RepositoryManager {
     protected List<Harvester> children;
 
     /** _more_ */
-    private List<File> rootDirs  = new ArrayList<File>();
+    private List<File> rootDirs = new ArrayList<File>();
 
     /** _more_ */
     private String name = "";
@@ -248,7 +250,7 @@ public abstract class Harvester extends RepositoryManager {
     private int testCount = 100;
 
 
-    /** _more_          */
+    /** _more_ */
     protected String printTab = "";
 
     /**
@@ -404,8 +406,8 @@ public abstract class Harvester extends RepositoryManager {
         if (g != null) {
             return g;
         }
-        return getEntryManager().findGroupFromName(getRequest(), baseGroupId, getUser(),
-                false);
+        return getEntryManager().findGroupFromName(getRequest(), baseGroupId,
+                getUser(), false);
     }
 
 
@@ -456,7 +458,9 @@ public abstract class Harvester extends RepositoryManager {
      */
     protected void init(Element element) throws Exception {
         rootDirs = new ArrayList<File>();
-        for(String dir: StringUtil.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR, ""),ROOTDIR_DELIM,true,true)) {
+        for (String dir :
+                StringUtil.split(XmlUtil.getAttribute(element, ATTR_ROOTDIR,
+                    ""), ROOTDIR_DELIM, true, true)) {
             rootDirs.add(new File(dir));
         }
 
@@ -545,7 +549,9 @@ public abstract class Harvester extends RepositoryManager {
     public void applyEditForm(Request request) throws Exception {
         getEntryManager().clearSeenResources();
         rootDirs = new ArrayList<File>();
-        for(String dir: StringUtil.split(request.getUnsafeString(ATTR_ROOTDIR,""),"\n",true,true)) {
+        for (String dir :
+                StringUtil.split(request.getUnsafeString(ATTR_ROOTDIR, ""),
+                                 "\n", true, true)) {
             rootDirs.add(new File(dir));
         }
 
@@ -690,7 +696,8 @@ public abstract class Harvester extends RepositoryManager {
         element.setAttribute(ATTR_DESCTEMPLATE, descTemplate);
 
         if (rootDirs != null) {
-            element.setAttribute(ATTR_ROOTDIR,StringUtil.join(ROOTDIR_DELIM, rootDirs));
+            element.setAttribute(ATTR_ROOTDIR,
+                                 StringUtil.join(ROOTDIR_DELIM, rootDirs));
         }
     }
 
@@ -838,7 +845,7 @@ public abstract class Harvester extends RepositoryManager {
             error = null;
             setActive(true);
             runInner(++timestamp);
-        } catch (Exception exc) {
+        } catch (Throwable exc) {
             logHarvesterError("Error in harvester.run", exc);
             error = "Error: " + exc + "<br>" + LogUtil.getStackTrace(exc);
         }
@@ -852,7 +859,7 @@ public abstract class Harvester extends RepositoryManager {
      * @param message _more_
      * @param exc _more_
      */
-    public void logHarvesterError(String message, Exception exc) {
+    public void logHarvesterError(String message, Throwable exc) {
         getRepository().getLogManager().logError(LOG,
                 getName() + " " + message, exc);
     }
