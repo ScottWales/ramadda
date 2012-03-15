@@ -46,7 +46,7 @@ public class GpsTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final String TYPE_RAW = "project_gps_raw";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_CONTROLPOINTS =
         "project_gps_controlpoints";
 

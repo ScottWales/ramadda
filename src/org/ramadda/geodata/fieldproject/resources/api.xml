@@ -1,4 +1,29 @@
 
 <api handler="org.ramadda.geodata.fieldproject.FieldProjectApiHandler" id="fieldproject">
+
+
+      <property name="label" value="Field Projects"/>
+      <property name="searchopen" value="true"/>
+
+<!--What tabs to display results in -->
+      <property name="tabs" value="earth,map,list,timeline"/>
+
+<!--Add these metadata search elements to the search form -->
+      <property name="metadatatypes" value="project_person"/>
+
+<!--The entry point. This corresponds to the below API entry -->
+      <property name="searchurl" value="/fieldproject/search"/>
+
+<!--The entry type to search for -->
+      <property name="type" value="project_project"/>
+
+<!-- None of the API entry points defined below require admin privileges -->
+      <property name="admin" value="false"/>
+
+<!--The Browse LiDAR search form -->
       <api request="/fieldproject/addopus"    method="processAddOpus"  name="Add OPUS"/>
+
+      <api request="/fieldproject/search"    method="processSearchRequest" toplevel="true" name="Browse Projects"/>
+
+
 </api>

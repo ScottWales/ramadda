@@ -23,6 +23,7 @@ package org.ramadda.geodata.fieldproject;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
@@ -45,7 +46,7 @@ import java.util.regex.*;
  * Provides a top-level API
  *
  */
-public class FieldProjectApiHandler extends RepositoryManager implements RequestHandler {
+public class FieldProjectApiHandler extends SpecialSearch implements RequestHandler {
 
 
 
@@ -61,7 +62,7 @@ public class FieldProjectApiHandler extends RepositoryManager implements Request
     public FieldProjectApiHandler(Repository repository, Element node,
                                   Hashtable props)
             throws Exception {
-        super(repository);
+        super(repository, node, props);
     }
 
 

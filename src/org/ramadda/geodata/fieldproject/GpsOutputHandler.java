@@ -845,10 +845,10 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
         List<Entry> opusEntries = new ArrayList<Entry>();
-        double maxLat = -90;
-        double minLat = 90;
-        double maxLon = -180;
-        double minLon = 180;
+        double      maxLat      = -90;
+        double      minLat      = 90;
+        double      maxLon      = -180;
+        double      minLon      = 180;
         for (String entryId : entryIds) {
             Entry opusEntry = getEntryManager().getEntry(request, entryId);
             if (opusEntry == null) {
@@ -924,18 +924,18 @@ public class GpsOutputHandler extends OutputHandler {
             TypeHandler typeHandler = getRepository().getTypeHandler(
                                           GpsTypeHandler.TYPE_CONTROLPOINTS);
 
-            final double[] pts = {maxLat,minLon, minLat,maxLon};
+            final double[] pts = { maxLat, minLon, minLat, maxLon };
 
             Entry newEntry = getEntryManager().addFileEntry(request, f,
                                  parent, fileName, request.getUser(),
-                                                            typeHandler, new EntryInitializer() {
-                                                                    public void initEntry(Entry entry) {
-                                                                        entry.setNorth(pts[0]);
-                                                                        entry.setWest(pts[1]);
-                                                                        entry.setSouth(pts[2]);
-                                                                        entry.setEast(pts[3]);
-                                                                    }
-                                                                });
+                                 typeHandler, new EntryInitializer() {
+                public void initEntry(Entry entry) {
+                    entry.setNorth(pts[0]);
+                    entry.setWest(pts[1]);
+                    entry.setSouth(pts[2]);
+                    entry.setEast(pts[3]);
+                }
+            });
             sb.append("Control points file created:");
             sb.append(
                 HtmlUtil.href(
@@ -1433,7 +1433,7 @@ public class GpsOutputHandler extends OutputHandler {
                 return processOpusForm(request, sb);
             }
             final Entry rinexEntry = getEntryManager().getEntry(request,
-                                                          rinexEntryId);
+                                         rinexEntryId);
             if (rinexEntry == null) {
                 sb.append(
                     getRepository().showDialogError(
@@ -1489,12 +1489,12 @@ public class GpsOutputHandler extends OutputHandler {
                                  request.getUser(), typeHandler, initializer);
 
 
-            boolean canEditRinex = getAccessManager().canDoAction(request, rinexEntry,
-                                                                  Permission.ACTION_EDIT);
+            boolean canEditRinex = getAccessManager().canDoAction(request,
+                                       rinexEntry, Permission.ACTION_EDIT);
 
             //If we figured out location from the opus file then set the rinex entry location
 
-            
+
             if (newEntry.hasLocationDefined()) {
                 if (canEditRinex) {
                     rinexEntry.setLocation(newEntry.getLatitude(),
