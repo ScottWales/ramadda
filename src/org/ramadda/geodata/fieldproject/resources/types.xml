@@ -9,7 +9,11 @@
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
      <wiki><![CDATA[{{description}}
 <table width=100%><tr valign=top>
-<td width=50%>{{tree}}</td>
+<td width=50%>
+{{image src="::*" message=""}}
+<br>
+{{tree}}
+</td>
 <td width=50%>{{mapentry}}</td></tr>
 </table>
 '''Properties'''
