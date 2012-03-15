@@ -141,6 +141,12 @@ public class ImageOutputHandler extends OutputHandler {
                        ICON_IMAGES);
 
     /** _more_ */
+    public static final OutputType OUTPUT_VIDEO =
+        new OutputType("Play Video", "image.video",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       ICON_IMAGES);
+
+    /** _more_ */
     public static final OutputType OUTPUT_PLAYER =
         new OutputType("Image Player", "image.player",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -176,6 +182,7 @@ public class ImageOutputHandler extends OutputHandler {
         addType(OUTPUT_PLAYER);
         //        addType(OUTPUT_SLIDESHOW);
         addType(OUTPUT_EDIT);
+        addType(OUTPUT_VIDEO);
     }
 
 
@@ -193,9 +200,18 @@ public class ImageOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
-        //If its a single entry then punt
 
         if (state.entry != null) {
+            if (state.entry.isFile()) {
+                String extension =
+                    IOUtil.getFileExtension(
+                        state.entry.getResource().getPath()).toLowerCase();
+                if (extension.equals(".mp3") || extension.equals(".mp4")
+                        || extension.equals(".mpg")) {
+                    links.add(makeLink(request, state.getEntry(),
+                                       OUTPUT_VIDEO));
+                }
+            }
             if (getAccessManager().canDoAction(request, state.entry,
                     Permission.ACTION_EDIT)) {
                 if (state.entry.getResource().isEditableImage()) {
@@ -293,17 +309,35 @@ public class ImageOutputHandler extends OutputHandler {
                               Entry entry)
             throws Exception {
 
+        StringBuffer sb = new StringBuffer();
+
+        if (outputType.equals(OUTPUT_VIDEO)) {
+            Link link = entry.getTypeHandler().getEntryDownloadLink(request,
+                            entry);
+            if (link == null) {
+                sb.append("Not available");
+            } else {
+                sb.append(HtmlUtil.p());
+                String html =
+                    "<OBJECT CLASSID=\"clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B\" CODEBASE=\"http://www.apple.com/qtactivex/qtplugin.cab\"  > <PARAM NAME=\"src\" VALUE=\""
+                    + link.getUrl()
+                    + "\" > <PARAM NAME=\"autoplay\" VALUE=\"true\" > <EMBED SRC=\""
+                    + link.getUrl()
+                    + "\" TYPE=\"image/x-macpaint\" PLUGINSPAGE=\"http://www.apple.com/quicktime/download\"  AUTOPLAY=\"true\"></EMBED> </OBJECT>";
+
+                System.err.println(html);
+                sb.append(html);
+            }
 
 
-        StringBuffer sb             = new StringBuffer();
+            return new Result("Video", sb);
+        }
 
-        String       url            = getImageUrl(request, entry, true);
+        String  url            = getImageUrl(request, entry, true);
+        Image   image          = null;
+        boolean shouldRedirect = false;
 
-        Image        image          = null;
-        boolean      shouldRedirect = false;
-
-
-        boolean applyToGroup = request.get(ARG_IMAGE_APPLY_TO_GROUP, false);
+        boolean applyToGroup   = request.get(ARG_IMAGE_APPLY_TO_GROUP, false);
 
         if ( !applyToGroup) {
             image          = getImage(entry);
@@ -807,75 +841,75 @@ public class ImageOutputHandler extends OutputHandler {
 
 
 
-    /*****
-
-    public void makeSlideshow(Request request, List<Entry> entries,
-                           StringBuffer finalSB, boolean addHeader)
-            throws Exception {
-        StringBuffer sb = new StringBuffer();
-        if (entries.size() == 0) {
-            finalSB.append("<b>Nothing Found</b><p>");
-            return;
-        }
-
-        if ( !request.exists(ARG_ASCENDING)) {
-            entries = getEntryManager().sortEntriesOnDate(entries, true);
-        }
-        finalSB.append(
-            HtmlUtil.importJS(getRepository().fileUrl("/slides/js/slides.min.jquery.js")));
-        String slidesTemplate = repository.getResource("ramadda.html.slides");
-        System.out.println(slidesTemplate);
-        finalSB.append(slidesTemplate);
-        for (int i = entries.size() - 1; i >= 0; i--) {
-            Entry  entry = entries.get(i);
-            String url   = getImageUrl(request, entry);
-            if (url == null) {
-                continue;
-            }
-            String entryUrl = getEntryLink(request, entry);
-            String title = entry.getName();
-            //            title += "<tr><td><b>Image:</b> " + entryUrl
-            //                     + "</td><td align=right>"
-            //                     + new Date(entry.getStartDate());
-            sb.append("addImage(" + HtmlUtil.quote(url) + ","
-                      + HtmlUtil.quote(title) + ");\n");
-            cnt++;
-        }
-
-        String playerTemplate = repository.getResource(PROP_HTML_IMAGEPLAYER);
-        String widthAttr      = "";
-        int    width          = request.get(ARG_WIDTH, 600);
-        if (width > 0) {
-            widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
-        }
-        String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
-                           + widthAttr + HtmlUtil.attr("SRC", firstImage)
-                           + " ALT=\"image\">";
-
-        String tmp = playerTemplate.replace("${imagelist}", sb.toString());
-        tmp = tmp.replace("${imagehtml}", imageHtml);
-        tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
-        if (addHeader) {
-            String fullUrl = "";
-            if (width > 0) {
-                request.put(ARG_WIDTH, "0");
-                fullUrl = HtmlUtil.href(request.getUrl(),
-                                        msg("Use image width"));
-            } else {
-                request.put(ARG_WIDTH, "600");
-                fullUrl = HtmlUtil.href(request.getUrl(),
-                                        msg("Use fixed width"));
-            }
-            sb = new StringBuffer(HtmlUtil.leftRight(getSortLinks(request),
-                    fullUrl));
-        } else {
-            sb = new StringBuffer();
-        }
-        sb.append(tmp);
-        finalSB.append(sb);
-    }
-
-    ******/
+    /**
+     *
+     * public void makeSlideshow(Request request, List<Entry> entries,
+     *                      StringBuffer finalSB, boolean addHeader)
+     *       throws Exception {
+     *   StringBuffer sb = new StringBuffer();
+     *   if (entries.size() == 0) {
+     *       finalSB.append("<b>Nothing Found</b><p>");
+     *       return;
+     *   }
+     *
+     *   if ( !request.exists(ARG_ASCENDING)) {
+     *       entries = getEntryManager().sortEntriesOnDate(entries, true);
+     *   }
+     *   finalSB.append(
+     *       HtmlUtil.importJS(getRepository().fileUrl("/slides/js/slides.min.jquery.js")));
+     *   String slidesTemplate = repository.getResource("ramadda.html.slides");
+     *   System.out.println(slidesTemplate);
+     *   finalSB.append(slidesTemplate);
+     *   for (int i = entries.size() - 1; i >= 0; i--) {
+     *       Entry  entry = entries.get(i);
+     *       String url   = getImageUrl(request, entry);
+     *       if (url == null) {
+     *           continue;
+     *       }
+     *       String entryUrl = getEntryLink(request, entry);
+     *       String title = entry.getName();
+     *       //            title += "<tr><td><b>Image:</b> " + entryUrl
+     *       //                     + "</td><td align=right>"
+     *       //                     + new Date(entry.getStartDate());
+     *       sb.append("addImage(" + HtmlUtil.quote(url) + ","
+     *                 + HtmlUtil.quote(title) + ");\n");
+     *       cnt++;
+     *   }
+     *
+     *   String playerTemplate = repository.getResource(PROP_HTML_IMAGEPLAYER);
+     *   String widthAttr      = "";
+     *   int    width          = request.get(ARG_WIDTH, 600);
+     *   if (width > 0) {
+     *       widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
+     *   }
+     *   String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
+     *                      + widthAttr + HtmlUtil.attr("SRC", firstImage)
+     *                      + " ALT=\"image\">";
+     *
+     *   String tmp = playerTemplate.replace("${imagelist}", sb.toString());
+     *   tmp = tmp.replace("${imagehtml}", imageHtml);
+     *   tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
+     *   if (addHeader) {
+     *       String fullUrl = "";
+     *       if (width > 0) {
+     *           request.put(ARG_WIDTH, "0");
+     *           fullUrl = HtmlUtil.href(request.getUrl(),
+     *                                   msg("Use image width"));
+     *       } else {
+     *           request.put(ARG_WIDTH, "600");
+     *           fullUrl = HtmlUtil.href(request.getUrl(),
+     *                                   msg("Use fixed width"));
+     *       }
+     *       sb = new StringBuffer(HtmlUtil.leftRight(getSortLinks(request),
+     *               fullUrl));
+     *   } else {
+     *       sb = new StringBuffer();
+     *   }
+     *   sb.append(tmp);
+     *   finalSB.append(sb);
+     * }
+     *
+     */
 
 
 }
