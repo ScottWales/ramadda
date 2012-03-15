@@ -1413,8 +1413,8 @@ public class GpsOutputHandler extends OutputHandler {
                         "Could not find FILE name in the given OPUS"));
                 return processOpusForm(request, sb);
             }
-            Entry rinexEntry = getEntryManager().getEntry(request,
-                                   rinexEntryId);
+            final Entry rinexEntry = getEntryManager().getEntry(request,
+                                                          rinexEntryId);
             if (rinexEntry == null) {
                 sb.append(
                     getRepository().showDialogError(
@@ -1461,16 +1461,23 @@ public class GpsOutputHandler extends OutputHandler {
                 public void initEntry(Entry entry) {
                     entry.getTypeHandler().getValues(
                         entry)[OpusTypeHandler.IDX_SITE_CODE] = siteCode;
+                    entry.setStartDate(rinexEntry.getStartDate());
+                    entry.setEndDate(rinexEntry.getEndDate());
                 }
             };
             Entry newEntry = getEntryManager().addFileEntry(request, f,
                                  parentEntry, opusFileName,
                                  request.getUser(), typeHandler, initializer);
 
+
+            boolean canEditRinex = getAccessManager().canDoAction(request, rinexEntry,
+                                                                  Permission.ACTION_EDIT);
+
             //If we figured out location from the opus file then set the rinex entry location
+
+            
             if (newEntry.hasLocationDefined()) {
-                if (getAccessManager().canDoAction(request, rinexEntry,
-                        Permission.ACTION_EDIT)) {
+                if (canEditRinex) {
                     rinexEntry.setLocation(newEntry.getLatitude(),
                                            newEntry.getLongitude(),
                                            newEntry.getAltitude());
@@ -1494,6 +1501,9 @@ public class GpsOutputHandler extends OutputHandler {
                     }
                 }
             }
+
+
+
 
             sb.append(HtmlUtil.p());
             sb.append("OPUS entry created: ");
