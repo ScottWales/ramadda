@@ -82,7 +82,9 @@ public class JpegMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
 
-        if(shortForm) return;
+        if (shortForm) {
+            return;
+        }
 
         if ( !entry.getResource().isImage()) {
             return;
@@ -140,14 +142,15 @@ public class JpegMetadataHandler extends MetadataHandler {
                         exifDir.getDate(
                             ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
                     if (dttm != null) {
-                        System.err.println ("JpegMetadataHandler: setting date:" + dttm);
+                        System.err.println(
+                            "JpegMetadataHandler: setting date:" + dttm);
                         entry.setStartDate(dttm.getTime());
                         entry.setEndDate(dttm.getTime());
                         extra.put("1", "");
                     }
                 }
             } else {
-                System.err.println ("no exif");
+                System.err.println("no exif");
             }
 
             if (iptcDir != null) {
@@ -218,9 +221,9 @@ public class JpegMetadataHandler extends MetadataHandler {
 
             //This tells ramadda that something was added
             extra.put("1", "");
-        } catch (Exception exc) {
+        } catch (Throwable thr) {
             getRepository().getLogManager().logError("Processing jpg:"
-                    + path, exc);
+                    + path, thr);
         }
 
     }
@@ -252,17 +255,26 @@ public class JpegMetadataHandler extends MetadataHandler {
         return dir.getDouble(tag);
     }
 
-    public static void main(String[]args) throws Exception { 
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
         int cnt = 0;
-        for(String path: args) {
+        for (String path : args) {
             Image image = ImageUtils.readImage(path, false);
             ImageUtils.waitOnImage(image);
-            System.err.println ("before:" + image.getWidth(null) +" " + image.getHeight(null));
+            System.err.println("before:" + image.getWidth(null) + " "
+                               + image.getHeight(null));
             Image newImage = ImageUtils.resize(image, 100, -1);
             //The waitOnImage was blocking so just check the width and sleep for a few milliseconds
             ImageUtils.waitOnImage(newImage);
-            System.err.println ("width:" + newImage.getWidth(null));
-            ImageUtils.writeImageToFile(newImage, new File("thumb_" + cnt+".jpg"));
+            System.err.println("width:" + newImage.getWidth(null));
+            ImageUtils.writeImageToFile(newImage,
+                                        new File("thumb_" + cnt + ".jpg"));
             cnt++;
         }
 
