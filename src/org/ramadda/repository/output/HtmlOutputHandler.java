@@ -1608,6 +1608,12 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     private String getWikiText(Request request, Entry entry)
             throws Exception {
+        String description = entry.getDescription();
+        //If it begins with <wiki> then it overrides anything else
+        if (TypeHandler.isWikiText(description)) {
+            return description;
+        }
+
         String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
                                   entry);
         if (wikiTemplate != null) {
@@ -1615,9 +1621,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         PageStyle pageStyle = request.getPageStyle(entry);
-        if (TypeHandler.isWikiText(entry.getDescription())) {
-            return entry.getDescription();
-        }
+        //        if (TypeHandler.isWikiText(entry.getDescription())) {
+        //            return entry.getDescription();
+        //        }
         wikiTemplate = pageStyle.getWikiTemplate(entry);
         if (wikiTemplate != null) {
             return wikiTemplate;
