@@ -845,6 +845,10 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
         List<Entry> opusEntries = new ArrayList<Entry>();
+        double maxLat = -90;
+        double minLat = 90;
+        double maxLon = -180;
+        double minLon = -180;
         for (String entryId : entryIds) {
             Entry opusEntry = getEntryManager().getEntry(request, entryId);
             if (opusEntry == null) {
@@ -858,6 +862,10 @@ public class GpsOutputHandler extends OutputHandler {
                 continue;
             }
 
+            maxLat = Math.max(maxLat, opusEntry.getLatitude());
+            minLat = Math.min(minLat, opusEntry.getLatitude());
+            maxLon = Math.max(maxLon, opusEntry.getLongitude());
+            minLon = Math.min(minLon, opusEntry.getLongitude());
             opusEntries.add(opusEntry);
             anyOK = true;
             String siteCode =
@@ -882,6 +890,7 @@ public class GpsOutputHandler extends OutputHandler {
         if ( !anyOK) {
             return new Result("", sb);
         }
+
 
         if ( !doingPublish(request)) {
             request.setReturnFilename("controlpoints.csv");
@@ -914,9 +923,18 @@ public class GpsOutputHandler extends OutputHandler {
             TypeHandler typeHandler = getRepository().getTypeHandler(
                                           GpsTypeHandler.TYPE_CONTROLPOINTS);
 
+            final double[] pts = {maxLat,minLon, minLat,maxLon};
+
             Entry newEntry = getEntryManager().addFileEntry(request, f,
                                  parent, fileName, request.getUser(),
-                                 typeHandler, null);
+                                                            typeHandler, new EntryInitializer() {
+                                                                    public void initEntry(Entry entry) {
+                                                                        entry.setNorth(pts[0]);
+                                                                        entry.setWest(pts[1]);
+                                                                        entry.setSouth(pts[2]);
+                                                                        entry.setEast(pts[3]);
+                                                                    }
+                                                                });
             sb.append("Control points file created:");
             sb.append(
                 HtmlUtil.href(
