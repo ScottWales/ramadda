@@ -152,10 +152,10 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     public static final String PROP_ENTRIESDIR = "ramadda.storage.entriesdir";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_UPLOADDIR = "ramadda.storage.uploaddir";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PLUGINSDIR = "ramadda.storage.pluginsdir";
 
     /** _more_ */
@@ -200,7 +200,7 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     private File uploadDir;
 
-    /** _more_          */
+    /** _more_ */
     private File pluginsDir;
 
     /** _more_ */
@@ -221,6 +221,7 @@ public class StorageManager extends RepositoryManager {
     /** _more_ */
     private List<File> okToReadFromDirs = new ArrayList<File>();
 
+    /** _more_ */
     private List<File> okToWriteToDirs = new ArrayList<File>();
 
 
@@ -1058,8 +1059,24 @@ public class StorageManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public File copyToEntryDir(Entry entry, File original) throws Exception {
+        return copyToEntryDir(entry, original, original.getName());
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param original _more_
+     * @param newName _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File copyToEntryDir(Entry entry, File original, String newName)
+            throws Exception {
         File newFile = new File(IOUtil.joinDir(getEntryDir(entry.getId(),
-                           true), original.getName()));
+                           true), newName));
         copyFile(original, newFile);
         return newFile;
     }
@@ -1525,7 +1542,7 @@ public class StorageManager extends RepositoryManager {
             return file;
         }
 
-        if(isInDownloadArea(file)) {
+        if (isInDownloadArea(file)) {
             return file;
         }
 
@@ -1709,7 +1726,7 @@ public class StorageManager extends RepositoryManager {
 
     /**
      * This checks to ensure that the given file is under one of the allowable places to
-     * write to. This includes the storage dir, the entries dir, uploads dir and the tmp dir. 
+     * write to. This includes the storage dir, the entries dir, uploads dir and the tmp dir.
      * In general a server process should be configured to only be allowed to have write access
      * to limited directories
      *
@@ -1733,6 +1750,8 @@ public class StorageManager extends RepositoryManager {
      *
      * @return FileOutputStream
      *
+     *
+     * @throws Exception _more_
      */
     public FileOutputStream getUncheckedFileOutputStream(File file)
             throws Exception {
