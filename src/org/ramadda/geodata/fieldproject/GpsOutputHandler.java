@@ -574,10 +574,20 @@ public class GpsOutputHandler extends OutputHandler {
                     if ( !isRawGps(entry)) {
                         continue;
                     }
+                    boolean hasRinex = getEntryManager()
+                        .getEntriesWithType(getAssociationManager()
+                                            .getTailEntriesWithAssociationType(request, entry,
+                                                                               GpsOutputHandler
+                                                                               .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
+                                            .TYPE_RINEX).size() >0;
+
                     sb.append(HtmlUtil.checkbox(ARG_GPS_FILE, entry.getId(),
-                            true));
+                                                !hasRinex));
                     sb.append(" ");
                     sb.append(entry.getName());
+                    if(hasRinex) {
+                        sb.append(HtmlUtil.italics("Already has a RINEX file"));
+                    }
                     sb.append(HtmlUtil.br());
                 }
             }
