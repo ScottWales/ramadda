@@ -696,7 +696,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
             if(Misc.getProperty(props, PROP_WIKIFY, false)) {
-                desc = new WikiUtil().wikify(desc,null);
+                desc = new WikiUtil().wikify("{{noheading}}\n" + desc,null);
             }
             return desc;
         } else if (include.equals(WIKIPROP_LAYOUT)) {
