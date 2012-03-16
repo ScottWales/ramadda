@@ -2017,6 +2017,17 @@ public class Column implements DataTypes, Constants {
     }
 
     /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public boolean isField(String name) {
+        return Misc.equals(this.name, name) || Misc.equals(this.label, name);
+    }
+
+    /**
      * Set the IsIndex property.
      *
      * @param value The new value for IsIndex

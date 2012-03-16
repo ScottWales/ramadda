@@ -1752,12 +1752,12 @@ public class TypeHandler extends RepositoryManager {
 
 
             //Only show the created by and type when the user is logged in
-            if ( !request.isAnonymous()) {
-                sb.append(formEntry(request, msgLabel("Created by"),
-                                    userSearchLink + " @ "
-                                    + formatDate(request,
-                                        entry.getCreateDate(), entry)));
-            }
+            //            if ( !request.isAnonymous()) {
+            sb.append(formEntry(request, msgLabel("Created by"),
+                                userSearchLink + " @ "
+                                + formatDate(request, entry.getCreateDate(),
+                                             entry)));
+            //            }
 
             Resource resource      = entry.getResource();
             String   resourceLink  = resource.getPath();
@@ -1875,9 +1875,9 @@ public class TypeHandler extends RepositoryManager {
             }
             if ( !showImage) {
                 //Only show the created by and type when the user is logged in
-                if ( !request.isAnonymous()) {
-                    sb.append(formEntry(request, msgLabel("Type"), typeDesc));
-                }
+                //                if ( !request.isAnonymous()) {
+                sb.append(formEntry(request, msgLabel("Type"), typeDesc));
+                //                }
             }
 
             String datatype = entry.getDataType();
@@ -4260,6 +4260,23 @@ public class TypeHandler extends RepositoryManager {
         List    tmp = new ArrayList();
         tmp.addAll(set);
         return Misc.sort(tmp);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param name _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getFieldHtml(Request request, Entry entry, String name)
+            throws Exception {
+        //TODO: support name, desc, etc.
+        return null;
     }
 
 

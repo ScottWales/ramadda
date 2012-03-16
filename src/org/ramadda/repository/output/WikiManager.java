@@ -172,6 +172,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String PROP_WIDTH = "width";
 
+    /** _more_          */
     public static final String PROP_WIKIFY = "wikify";
 
     /** attribute in import tag */
@@ -182,6 +183,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** wiki import */
     public static final String WIKIPROP_IMPORT = "import";
+
+    /** _more_          */
+    public static final String WIKIPROP_FIELD = "field";
 
     /** _more_ */
     public static final String WIKIPROP_CALENDAR = "calendar";
@@ -204,6 +208,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_TREE = "tree";
 
+    /** _more_          */
     public static final String WIKIPROP_TABLE = "table";
 
     /** wiki import */
@@ -215,7 +220,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_GALLERY = "gallery";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKIPROP_PLAYER = "player";
 
     /** wiki import */
@@ -285,17 +290,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String ATTR_COLUMNS = "columns";
 
+    /** _more_          */
+    public static final String ATTR_FIELDNAME = "name";
+
 
     /** list of import items for the text editor menu */
     public static final String[] WIKIPROPS = {
         WIKIPROP_INFORMATION, WIKIPROP_NAME, WIKIPROP_DESCRIPTION,
-        WIKIPROP_DATE_FROM, WIKIPROP_DATE_TO, WIKIPROP_LAYOUT,
+        WIKIPROP_DATE_FROM, WIKIPROP_DATE_TO, WIKIPROP_FIELD, WIKIPROP_LAYOUT,
         WIKIPROP_PROPERTIES, WIKIPROP_HTML, WIKIPROP_MAP, WIKIPROP_MAPENTRY,
         WIKIPROP_EARTH, WIKIPROP_CALENDAR, WIKIPROP_TIMELINE,
         WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR,
         WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT, WIKIPROP_GALLERY,
-        WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE, WIKIPROP_TABLE, WIKIPROP_LINKS,
-        WIKIPROP_ENTRYID
+        WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE, WIKIPROP_TABLE,
+        WIKIPROP_LINKS, WIKIPROP_ENTRYID
     };
 
     /** _more_ */
@@ -695,8 +703,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKIPROP_DESCRIPTION)) {
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
-            if(Misc.getProperty(props, PROP_WIKIFY, false)) {
-                desc = new WikiUtil().wikify("{{noheading}}\n" + desc,null);
+            if (Misc.getProperty(props, PROP_WIKIFY, false)) {
+                desc = new WikiUtil().wikify("{{noheading}}\n" + desc, null);
             }
             return desc;
         } else if (include.equals(WIKIPROP_LAYOUT)) {
@@ -704,6 +712,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     Misc.getProperty(props, PROP_TITLE, "Layout"));
         } else if (include.equals(WIKIPROP_NAME)) {
             return entry.getName();
+        } else if (include.equals(WIKIPROP_FIELD)) {
+            String name = Misc.getProperty(props, ATTR_FIELDNAME,
+                                           (String) null);
+            if (name != null) {
+                String fieldValue =
+                    entry.getTypeHandler().getFieldHtml(request, entry, name);
+                if (fieldValue != null) {
+                    return fieldValue;
+                }
+                return "Could not find field: " + name;
+            } else {
+                return "No name=... specified in wiki tag";
+            }
         } else if (include.equals(WIKIPROP_DATE_FROM)
                    || include.equals(WIKIPROP_DATE_TO)) {
             String format =
@@ -776,8 +797,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int          height = Misc.getProperty(props, PROP_HEIGHT, 300);
             boolean justPoints  = Misc.getProperty(props, "justpoints",
                                       false);
-            boolean listEntries  = Misc.getProperty(props, "listentries",
-                                                 true);
+            boolean listEntries = Misc.getProperty(props, "listentries",
+                                      true);
             boolean googleEarth =
                 include.equals(WIKIPROP_EARTH)
                 && getMapManager().isGoogleEarthEnabled(request);
@@ -788,7 +809,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (googleEarth) {
                 getMapManager().getGoogleEarth(request, children, mapSB,
                         Misc.getProperty(props, PROP_WIDTH, -1),
-                                               Misc.getProperty(props, PROP_HEIGHT, -1), listEntries, justPoints);
+                        Misc.getProperty(props, PROP_HEIGHT, -1),
+                        listEntries, justPoints);
             } else {
                 MapOutputHandler mapOutputHandler =
                     (MapOutputHandler) getRepository().getOutputHandler(

@@ -209,7 +209,7 @@ public class GenericTypeHandler extends TypeHandler {
             Class c = Misc.findClass(className);
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { getClass(),
-                                                 Element.class, Integer.TYPE });
+                    Element.class, Integer.TYPE });
             Column column = (Column) ctor.newInstance(new Object[] { this,
                     columnNode,
                     new Integer(valuesOffset + colNames.size() - 1) });
@@ -244,7 +244,7 @@ public class GenericTypeHandler extends TypeHandler {
             List<Column> parentColumns = getParent().getColumns();
             allColumns.addAll(parentColumns);
         }
-        if(columns!=null) {
+        if (columns != null) {
             allColumns.addAll(columns);
         }
         return allColumns;
@@ -685,7 +685,6 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @param isNew _more_
      * @param typeInserts _more_
-     * @return _more_
      */
     public void getInsertSql(boolean isNew,
                              List<TypeInsertInfo> typeInserts) {
@@ -762,9 +761,6 @@ public class GenericTypeHandler extends TypeHandler {
 
     /**
      * _more_
-     *
-     * @param results _more_
-     * @param abbreviated _more_
      *
      * @param entry _more_
      *
@@ -891,6 +887,34 @@ public class GenericTypeHandler extends TypeHandler {
 
 
     /**
+     *
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param name _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getFieldHtml(Request request, Entry entry, String name)
+            throws Exception {
+        Object[] values = entry.getValues();
+        if (values != null) {
+            for (Column column : getColumns()) {
+                if (column.isField(name)) {
+                    StringBuffer tmpSB = new StringBuffer();
+                    formatColumnHtmlValue(request, entry, column, tmpSB,
+                                          values);
+                    return tmpSB.toString();
+                }
+            }
+        }
+        return super.getFieldHtml(request, entry, name);
+    }
+
+    /**
      * _more_
      *
      * @param entry _more_
@@ -912,16 +936,17 @@ public class GenericTypeHandler extends TypeHandler {
             throws Exception {
         StringBuffer sb = super.getInnerEntryContent(entry, request, output,
                               showDescription, showResource, linkToDownload);
-        if (shouldShowInHtml(request, entry, output)) {
+        if (true) {
+            //        if (shouldShowInHtml(request, entry, output)) {
             Object[] values = entry.getValues();
             if (values != null) {
-                for (Column column : columns) {
-                    StringBuffer tmpSb = new StringBuffer();
-                    formatColumnHtmlValue(request, entry, column, tmpSb,
-                                          values);
+                for (Column column : getColumns()) {
                     if ( !column.getCanShow()) {
                         continue;
                     }
+                    StringBuffer tmpSb = new StringBuffer();
+                    formatColumnHtmlValue(request, entry, column, tmpSb,
+                                          values);
                     sb.append(HtmlUtil.formEntry(column.getLabel() + ":",
                             tmpSb.toString()));
                 }
