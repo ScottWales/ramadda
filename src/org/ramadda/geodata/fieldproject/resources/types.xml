@@ -10,7 +10,7 @@
      <column name="location"  type="string"  label="Location"/>
      <wiki><![CDATA[
 {{noheading}}
-<table width=100%>
+<table width="100%">
 <tr valign=top>
 <td>
 {{description wikify="true"}}
