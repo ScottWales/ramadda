@@ -237,6 +237,8 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     protected StringBuffer status = new StringBuffer();
 
+    protected String currentStatus = "";
+
     /** _more_ */
     private String userName;
 

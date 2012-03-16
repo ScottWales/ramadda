@@ -577,7 +577,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
         List<File> rootDirs = getRootDirs();
         return "Directory:" + StringUtil.join(" ", rootDirs) + "<br>"
-               + dirMsg + entryMsg + status;
+               + dirMsg + entryMsg + status+"<br>" + currentStatus;
     }
 
     /**
@@ -869,18 +869,24 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                       + ((entries.size() > 1)
                          ? "entries"
                          : "entry") + "<br>");
+        int cnt = 0;
         for (Entry newEntry : entries) {
             if ( !canContinueRunning(timestamp)) {
                 return;
             }
             newEntry.getTypeHandler().initializeNewEntry(newEntry);
             entriesToAdd.add(newEntry);
+            cnt++;
+            currentStatus = "Initialized " + cnt +" of " + entries.size() +" entries";
         }
+        currentStatus = "Done initializng entries";
         if (getAddMetadata() || getAddShortMetadata()) {
+            currentStatus = "Adding metadata";
             getEntryManager().addInitialMetadata(null, entriesToAdd, true,
                     getAddShortMetadata());
         }
-        logHarvesterInfo("Adding " + entriesToAdd.size() + " new entries");
+        currentStatus = "";
+        logHarvesterInfo("Inserting " + entriesToAdd.size() + " new entries");
         status.append("Inserting entries<br>");
         getEntryManager().insertEntries(entriesToAdd, true, true);
     }
