@@ -9,11 +9,7 @@
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
      <column name="location"  type="string"  label="Location"/>
      <wiki><![CDATA[
-{{description}}
-<wiki>
-
 {{noheading}}
-
 <table width=100%>
 <tr valign=top>
 <td>
@@ -22,17 +18,12 @@
 ==Data==
 {{tree title="Data" showtoggle="false"}}
 
-
-
-
 </td>
 <td>
 {{image src="::*" message="" width="350"}}
 <br>
-
 {{mapentry width="350"}}</td></tr>
 </table>
-
 
 ==Properties==
 <block open="false" title="Click to view Properties">
@@ -40,8 +31,7 @@
 </block>
 
 <p>
-
-
+]]>
 </wiki>
 
 
