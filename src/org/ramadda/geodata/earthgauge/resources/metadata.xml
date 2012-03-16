@@ -3,13 +3,12 @@
 
   <handler category="Earth Gauge" >
 
-    <type id="earthgauge_test" name="Test">
+    <type id="earthgauge_test" name="Test" makedatabase="true">
       <element id="name" name="Name"/>
-      <element id="date" name="Date"/>
-      <element id="number1" name="Number 1"/>
-      <element id="type" name="Type" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/personnel.properties"/>
-      <element id="institution" name="Institution"/>
-      <element id="email" name="Email"/>
+      <element id="date" name="Date" datatype="datetime"/>
+      <element id="number1" name="Number 1" datatype="double"/>
+      <element id="number2" name="Number 1" datatype="int"/>
+      <element id="fruit" name="Fruit" datatype="enumeration" values="apple;banana;orange"/>
     </type>
 
 
