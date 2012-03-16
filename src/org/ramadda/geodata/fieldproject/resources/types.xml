@@ -15,6 +15,12 @@
 <td width="50%">
 {{description wikify="true"}}
 
+==Information==
+<table>
+<tr><td align="right"><b>Type:</b></td><td>{{field name="project_type"}}</td></tr>
+<tr><td align="right"><b>Location:</b></td><td> {{field name="location"}}</td></tr>
+</table>
+
 ==Data==
 {{tree title="Data" showtoggle="false"}}
 
