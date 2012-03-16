@@ -172,6 +172,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String PROP_WIDTH = "width";
 
+    public static final String PROP_WIKIFY = "wikify";
+
     /** attribute in import tag */
     public static final String PROP_HEIGHT = "height";
 
@@ -693,6 +695,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKIPROP_DESCRIPTION)) {
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
+            if(Misc.getProperty(props, PROP_WIKIFY, false)) {
+                desc = new WikiUtil().wikify(desc,null);
+            }
             return desc;
         } else if (include.equals(WIKIPROP_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
