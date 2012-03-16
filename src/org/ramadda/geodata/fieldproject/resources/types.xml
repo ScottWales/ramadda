@@ -7,19 +7,19 @@
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
-     <column name="location"  type="string"  label="Location"/>
+     <column name="location"  type="string"  label="Area" rows="2" columns="60"/>
      <wiki><![CDATA[
 {{noheading}}
 <table width="100%">
 <tr valign=top>
-<td>
+<td width="50%">
 {{description wikify="true"}}
 
 ==Data==
 {{tree title="Data" showtoggle="false"}}
 
 </td>
-<td>
+<td width="50%">
 {{image src="::*" message="" width="350"}}
 <p>
 {{mapentry width="350"}}</td></tr>

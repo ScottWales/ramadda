@@ -50,22 +50,6 @@ public class FieldProjectTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, node);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tabTitles _more_
-     * @param tabContents _more_
-     */
-    @Override
-    public void addToInformationTabs(Request request, Entry entry,
-                                     List<String> tabTitles,
-                                     List<String> tabContents) {
-        super.addToInformationTabs(request, entry, tabTitles, tabContents);
-    }
-
-
 
     /**
      * _more_
