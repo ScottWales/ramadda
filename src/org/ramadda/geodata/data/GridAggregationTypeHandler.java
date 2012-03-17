@@ -230,6 +230,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 //Check for access
                 getStorageManager().checkLocalFile(dataFile);
                 Entry dummyEntry = new Entry();
+                dummyEntry.setTypeHandler(getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
+                
                 dummyEntry.setResource(new Resource(dataFile,
                         Resource.TYPE_LOCAL_FILE));
                 childrenEntries.add(dummyEntry);
