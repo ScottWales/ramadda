@@ -288,6 +288,7 @@ public class MapOutputHandler extends OutputHandler {
 
         boolean       makeRectangles = cnt <= 100;
         MapProperties mapProperties  = new MapProperties("blue", true);
+        makeRectangles = true;
 
         for (Entry entry : entriesToUse) {
             String idBase = entry.getId();
