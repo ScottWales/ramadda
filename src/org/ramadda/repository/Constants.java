@@ -229,6 +229,10 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_MAP = "ramadda.icon.map";
+    public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
+
+
+
 
     /** _more_ */
     public static final String ICON_METADATA = "ramadda.icon.metadata";

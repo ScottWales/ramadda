@@ -205,25 +205,42 @@ public class MapOutputHandler extends OutputHandler {
                                    new State(group));
         }
 
-        sb.append(
-            "<table border=\"0\" width=\"100%\"><tr valign=\"top\"><td width=700>");
         boolean[] haveBearingLines = { false };
-        MapInfo map = getMap(request, entriesToUse, sb, 700, 500,
+        StringBuffer mapBuff = new StringBuffer();
+        MapInfo map = getMap(request, entriesToUse, mapBuff, 700, 500,
                              haveBearingLines);
-        sb.append("</td><td>");
 
-
+        StringBuffer entryBuff=  new StringBuffer();
         for (Entry entry : entriesToUse) {
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                sb.append(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                        entry)));
-                sb.append(HtmlUtil.space(1));
-                sb.append("<a href=\"javascript:" + map.getVariableName()
-                          + ".hiliteMarker(" + sqt(entry.getId()) + ");\">"
-                          + entry.getName() + "</a><br>");
+                entryBuff.append("<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
+                entryBuff.append("<td>");
+                String iconUrl = getEntryManager().getIconUrl(request, entry);
+                entryBuff.append(
+                          HtmlUtil.href(
+                                        getEntryManager().getEntryURL(request, entry),
+                                       HtmlUtil.img(
+                                                    iconUrl, msg("Click to view entry details")) +" " + entry.getName()));
+                entryBuff.append("</td><td align=right>");
+                entryBuff.append(HtmlUtil.href("javascript:" + map.getVariableName()
+                                        + ".hiliteMarker(" + sqt(entry.getId()) + ");", 
+                                        HtmlUtil.img(getRepository().iconUrl(ICON_MAP_NAV),
+                                                     "View entry")));
+                entryBuff.append("</td></tr></table>");
             }
         }
-        sb.append("</td></tr></table>");
+
+
+
+        sb.append(
+            "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
+        sb.append("<td width=\"250\" style=\"max-width:250px;\">");
+        sb.append(entryBuff);
+        sb.append("</td>");
+        sb.append("<td>");
+        sb.append(mapBuff);
+        sb.append("</td>");
+        sb.append("</tr></table>");
         return makeLinksResult(request, msg("Map"), sb,
                                new State(group, subGroups, entries));
     }

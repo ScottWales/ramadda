@@ -419,7 +419,7 @@ public class MapManager extends RepositoryManager {
             */
             catSB.append(
                          HtmlUtil.href(
-                                       "javascript:" + call, HtmlUtil.img(getRepository().iconUrl("/icons/bullet_go.png"),
+                                       "javascript:" + call, HtmlUtil.img(getRepository().iconUrl(ICON_MAP_NAV),
                                                                           "View entry"),
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
             catSB.append("</td></tr></table>");
