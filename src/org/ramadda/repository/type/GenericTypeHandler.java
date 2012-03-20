@@ -232,6 +232,11 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
+    public List<Column> getMyColumns() {
+        return columns;
+    }
+
+
     /**
      * _more_
      *
@@ -935,12 +940,12 @@ public class GenericTypeHandler extends TypeHandler {
                                              boolean linkToDownload)
             throws Exception {
         StringBuffer sb = super.getInnerEntryContent(entry, request, output,
-                              showDescription, showResource, linkToDownload);
+                                                     showDescription, showResource, linkToDownload);
         if (true) {
             //        if (shouldShowInHtml(request, entry, output)) {
             Object[] values = entry.getValues();
             if (values != null) {
-                for (Column column : getColumns()) {
+                for (Column column : getMyColumns()) {
                     if ( !column.getCanShow()) {
                         continue;
                     }
