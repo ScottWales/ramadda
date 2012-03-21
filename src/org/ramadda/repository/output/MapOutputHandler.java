@@ -199,11 +199,13 @@ public class MapOutputHandler extends OutputHandler {
                                    new State(group, subGroups, entries));
         }
 
+        showNext(request, subGroups, entries, sb);
         if (outputType.equals(OUTPUT_GEMAP)) {
             getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1,true, false);
             return makeLinksResult(request, msg("Google Earth"), sb,
                                    new State(group));
         }
+
 
         boolean[] haveBearingLines = { false };
         StringBuffer mapBuff = new StringBuffer();
@@ -234,8 +236,10 @@ public class MapOutputHandler extends OutputHandler {
 
         sb.append(
             "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
-        sb.append("<td width=\"250\" style=\"max-width:250px;\">");
+        sb.append("<td width=\"250\">");
+        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.style("max-width:250px; overflow-x: auto;  overflow-y: auto; max-height:" + map.getHeight())));
         sb.append(entryBuff);
+        sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
         sb.append("</td>");
         sb.append("<td>");
         sb.append(mapBuff);
