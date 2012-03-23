@@ -225,6 +225,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             } catch (Exception exc) {
                 logError("Closing data source", exc);
             }
+            System.err.println("DatabaseManager:reInitialize");
             dataSource = doMakeDataSource();
         }
     }
@@ -672,12 +673,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @throws Exception _more_
      */
     public void shutdown() throws Exception {
+        System.err.println("RAMADDA: Shutting down database");
         if (dataSource != null) {
             dataSource.close();
             dataSource = null;
         }
         if (isDatabaseDerby()) {
-            System.err.println("RAMADDA: Shutting down derby");
             try {
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");
             } catch (Exception ignoreThis) {}
@@ -725,6 +726,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     private Connection getConnection(String msg) throws Exception {
         Connection connection;
         synchronized (CONNECTION_MUTEX) {
+            if(dataSource==null) {
+                throw new IllegalStateException("DatabaseManager: dataSource is null");
+            }
             connection = dataSource.getConnection();
         }
         synchronized (connectionInfos) {
