@@ -136,6 +136,8 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
+    public void shutdown() {}
+
     /**
      * _more_
      *

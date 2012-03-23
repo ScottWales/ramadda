@@ -44,8 +44,6 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
 
 import org.ramadda.util.HtmlTemplate;
-import org.ramadda.util.MultiJarClassLoader;
-
 import org.ramadda.util.PropertyProvider;
 
 import org.ramadda.util.TempDir;
@@ -782,7 +780,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void shutdown() {
         try {
+            System.err.println ("RAMADDA: shutting down");
             active = false;
+            for(OutputHandler handler: outputHandlers) {
+                handler.shutdown();
+            }
             getDatabaseManager().shutdown();
             getFtpManager().shutdown();
         } catch (Exception exc) {
