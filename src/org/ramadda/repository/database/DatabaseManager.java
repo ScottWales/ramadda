@@ -59,8 +59,6 @@ import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
 
-
-
 import java.io.*;
 
 import java.io.File;
@@ -104,8 +102,9 @@ import javax.sql.DataSource;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class DatabaseManager extends RepositoryManager implements SqlUtil
-    .ConnectionManager {
+public class DatabaseManager extends RepositoryManager implements SqlUtil.ConnectionManager {
+
+    private long myTime = System.currentTimeMillis();
 
     /** _more_ */
     private final Logger LOG = Logger.getLogger(DatabaseManager.class);
@@ -726,10 +725,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     private Connection getConnection(String msg) throws Exception {
         Connection connection;
         synchronized (CONNECTION_MUTEX) {
-            if(dataSource==null) {
+            BasicDataSource tmpDataSource = dataSource;
+            if(tmpDataSource==null) {
                 throw new IllegalStateException("DatabaseManager: dataSource is null");
             }
-            connection = dataSource.getConnection();
+            connection = tmpDataSource.getConnection();
         }
         synchronized (connectionInfos) {
             //            connectionInfos.add(new ConnectionInfo(connection, msg));
