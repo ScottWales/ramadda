@@ -7,7 +7,6 @@
 
 <body>
 <%nochildlist%>
-
 First you need to download RAMADDA.
 The RAMADDA downloads area can be accessed at the SourceForge site:<br>
 <a href="https://sourceforge.net/projects/ramadda/files">https://sourceforge.net/projects/ramadda/files</a>.
@@ -63,7 +62,7 @@ at the
 
 <li> Or, just skip reading the documentation (like everyone else does)
 and jump right in and start RAMADDA. 
-In the release directory there are both ramadda.sh and ramadda.bar scripts. Just run them, e.g.:
+In the release directory there are both ramadda.sh and ramadda.bat scripts. Just run them, e.g.:
 <pre>
    sh ramadda.sh
 </pre>
@@ -319,6 +318,33 @@ Alternatively you can specify these as command line arguments:
 </pre>
 
 
+<subhead intoc="false" id="fromsvn">Building RAMADDA from source</subhead>
+It is easy to build and run RAMADDA from the SourceForge SVN tree. 
+This assumes you have SVN, ANT and a Java compiler installed on your machine.
+<p>
+To build RAMADDA SourceForge SVN:
+<ul>
+<li> Check out RAMADDA from SourceForge:
+
+<pre>
+svn co https://ramadda.svn.sourceforge.net/svnroot/ramadda
+</pre>
+
+<li> Build RAMADDA.  This creates a stand-alone version in dist/ramadda1.4a
+<pre>
+cd ramadda
+ant
+</pre>
+
+<li> Run ramadda. This creates a ramadda home directory in: ~/.ramadda
+<pre>
+cd dist/ramadda1.4a
+sh ramadda.sh
+</pre>
+
+<li>  Go to <a href="http://localhost:8080/repository">http://localhost:8080/repository</a> to finish the RAMADDA install
+<li>  Once configured shutdown the ramadda server (just kill the ramadda.sh run)
+</ul>
 
 
 </body>

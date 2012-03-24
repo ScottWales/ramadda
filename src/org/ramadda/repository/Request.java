@@ -318,8 +318,9 @@ public class Request implements Constants, Cloneable {
         try {
             OutputStream os = getHttpServletResponse().getOutputStream();
             InputStream  is = getHttpServletRequest().getInputStream();
-            System.err.println(is.available());
+            //            System.err.println(is.available());
             is.read();
+            os.flush();
             //System.err.println(is.available());
         } catch (Exception exc) {
             System.err.println("bad");
