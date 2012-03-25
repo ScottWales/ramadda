@@ -275,7 +275,6 @@ public class ZipOutputHandler extends OutputHandler {
             throws Exception {
         OutputStream os;
         boolean      doingFile = false;
-
         File         tmpFile   = null;
         if (request.getHttpServletResponse() != null) {
             os = request.getHttpServletResponse().getOutputStream();
@@ -287,6 +286,7 @@ public class ZipOutputHandler extends OutputHandler {
             os        = getStorageManager().getFileOutputStream(tmpFile);
             doingFile = true;
         }
+
 
         Result result = new Result();
         result.setNeedToWrite(false);
@@ -302,7 +302,7 @@ public class ZipOutputHandler extends OutputHandler {
             ok = false;
         }
 
-        if ( !ok) {
+        if (!ok) {
             javax.servlet.http.HttpServletResponse response =
                 request.getHttpServletResponse();
             response.setStatus(Result.RESPONSE_UNAUTHORIZED);
@@ -337,10 +337,8 @@ public class ZipOutputHandler extends OutputHandler {
                 zos.write(bytes, 0, bytes.length);
                 zos.closeEntry();
             }
-
-
-        } catch (IllegalArgumentException iae) {
-            ok = false;
+            //        } catch (IllegalArgumentException iae) {
+            //            ok = false;
         } finally {
             IOUtil.close(zos);
         }

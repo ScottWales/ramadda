@@ -938,12 +938,12 @@ public class UserManager extends RepositoryManager {
                                            HtmlUtil.SIZE_40)));
 
         List<TwoFacedObject> templates =
-            getRepository().getTemplateSelectList();
+            getPageHandler().getTemplateSelectList();
         sb.append(formEntry(request, msgLabel("Page Style"),
                             HtmlUtil.select(ARG_TEMPLATE, templates,
                                             user.getTemplate())));
 
-        List languages = new ArrayList(getRepository().getLanguages());
+        List languages = new ArrayList(getPageHandler().getLanguages());
         languages.add(0, new TwoFacedObject("-default-", ""));
         sb.append(formEntry(request, msgLabel("Language"),
                             HtmlUtil.select(ARG_USER_LANGUAGE, languages,

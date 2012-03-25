@@ -80,6 +80,8 @@
       <element name="wikitemplate" label="Wiki Template" datatype="wiki" rows="20"/>
       <element name="entrytype" label="Entry Type" datatype="enumerationplus" values="folder:Folder,file:File"
                suffix="Entry type that this page style is applicable to"/>
+      <element name="apply_to_this" label="Apply to this entry" datatype="boolean" default="true"
+               suffix="Apply the page style to this entry"/>
     </type>
 
     <type

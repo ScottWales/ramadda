@@ -1699,6 +1699,11 @@ public class EntryManager extends RepositoryManager {
                                            Entry.NONGEO));
                 entry.setWest(request.get(ARG_AREA + "_west", Entry.NONGEO));
                 entry.setEast(request.get(ARG_AREA + "_east", Entry.NONGEO));
+                getSessionManager().putSessionProperty(request, ARG_AREA,
+                                                       entry.getNorth()+";" +
+                                                       entry.getWest()+";" +
+                                                       entry.getSouth()+";" +
+                                                       entry.getEast()+";");
             }
         }
 
@@ -3199,8 +3204,6 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryExport(Request request) throws Exception {
-        System.err.println("request:" + request.getString(ARG_ENTRYID, "XXX")
-                           + " " + request);
         Entry entry = getEntry(request);
         if (entry == null) {
             throw new IllegalArgumentException("Unable to find entry:"
@@ -4976,7 +4979,7 @@ public class EntryManager extends RepositoryManager {
 
         //        System.err.println("BC:" + breadcrumbs);
 
-        String separator = getRepository().getTemplateProperty(request,
+        String separator = getPageHandler().getTemplateProperty(request,
                                "ramadda.template.breadcrumbs.separator",
                                BREADCRUMB_SEPARATOR);
 
@@ -5073,7 +5076,7 @@ public class EntryManager extends RepositoryManager {
         }
         titleList.add(entry.getLabel());
         String nav;
-        String separator = getRepository().getTemplateProperty(request,
+        String separator =getPageHandler().getTemplateProperty(request,
                                "ramadda.template.breadcrumbs.separator",
                                BREADCRUMB_SEPARATOR);
 

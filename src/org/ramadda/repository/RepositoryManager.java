@@ -105,6 +105,11 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public RepositoryManager(Repository repository) {
         this.repository = repository;
+        this.repository.addRepositoryManager(this);
+    }
+
+
+    public void shutdown() throws Exception  {
     }
 
 
@@ -579,6 +584,10 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public EntryManager getEntryManager() {
         return repository.getEntryManager();
+    }
+
+    public PageHandler getPageHandler() {
+        return repository.getPageHandler();
     }
 
     /**

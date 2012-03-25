@@ -90,7 +90,6 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     public static final String ATTR_ID = "id";
 
-
     /** _more_ */
     public static final String ATTR_ADMINONLY = "adminonly";
 
@@ -113,7 +112,6 @@ public class MetadataType extends MetadataTypeBase {
 
     /** _more_ */
     public static final String ATTR_ = "";
-
 
 
     /** _more_ */
@@ -403,19 +401,32 @@ public class MetadataType extends MetadataTypeBase {
                                       Metadata metadata, Hashtable fileMap,
                                       boolean internal)
             throws Exception {
+        NodeList elements = XmlUtil.getElements(node);
+
         for (MetadataElement element : getChildren()) {
-            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
+            if (!element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
-            String fileArg = XmlUtil.getAttribute(node,
-                                 ATTR_ATTR + element.getIndex(), "");
+            Element attrNode = XmlUtil.findElement(elements,
+                                                   Metadata.ATTR_INDEX, ""+ element.getIndex());
+            if(attrNode==null) {
+                System.err.println("Could not find attr node:" + XmlUtil.toString(node));
+                continue;
+            }
+
+            String fileArg = XmlUtil.getAttribute(attrNode,
+                                                  "fileid", (String)null);
+            if(fileArg==null) {
+                System.err.println("Could not find fileid:" + XmlUtil.toString(attrNode));
+                continue;
+            }
+            
             String fileName = null;
             if (internal) {
                 fileName = fileArg;
             } else {
                 String tmpFile = (String) fileMap.get(fileArg);
                 if (tmpFile == null) {
-
                     try {
                         //See if its a URL
                         URL testUrl = new URL(fileArg);
@@ -431,9 +442,8 @@ public class MetadataType extends MetadataTypeBase {
                 }
                 File file = new File(tmpFile);
                 fileName = getStorageManager().copyToEntryDir(entry,
-                        file).getName();
+                                                              file, metadata.getAttr(element.getIndex())).getName();
             }
-
             metadata.setAttr(element.getIndex(), fileName);
         }
         return true;

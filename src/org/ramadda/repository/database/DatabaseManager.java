@@ -671,8 +671,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
      *
      * @throws Exception _more_
      */
-    public void shutdown() throws Exception {
-        System.err.println("RAMADDA: Shutting down database");
+    @Override
+    public void shutdown()  throws Exception {
         if (dataSource != null) {
             dataSource.close();
             dataSource = null;
@@ -682,6 +682,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");
             } catch (Exception ignoreThis) {}
         }
+        super.shutdown();
     }
 
     /**

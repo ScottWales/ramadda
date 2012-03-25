@@ -341,7 +341,6 @@ public class MetadataHandler extends RepositoryManager {
 
 
 
-
     /**
      * _more_
      *
@@ -494,41 +493,47 @@ public class MetadataHandler extends RepositoryManager {
                             ZipOutputStream zos, Metadata metadata,
                             Element node)
             throws Exception {
+        MetadataType type = getType(metadata.getType());
+        if(type == null) {
+            throw new IllegalStateException("Unknown metadata type:" + metadata.getType());
+        }
+
         Document doc = node.getOwnerDocument();
         Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
                                    new String[] { ATTR_TYPE,
-                metadata.getType() });
-        for (int i = Metadata.INDEX_BASE; true; i++) {
-            String value = metadata.getAttr(i);
+                                                  metadata.getType() });
+        for (MetadataElement element : type.getChildren()) {
+            int index = element.getIndex();
+            String value = metadata.getAttr(index);
             if (value == null) {
-                break;
+                continue;
             }
             Element attrNode = XmlUtil.create(doc, Metadata.TAG_ATTR,
                                    metadataNode,
                                    new String[] { Metadata.ATTR_INDEX,
-                    "" + i });
-            //true means to base encode the text
+                                                  "" + index });
+            //true means to base 64 encode the text
             attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, true));
-        }
-
-
-
-
-        String fileName = null;
-        //TODO: add the file
-        if ((zos != null) && (fileName != null)) {
-            zos.putNextEntry(new ZipEntry(fileName));
-            InputStream fis =
-                getStorageManager().getFileInputStream(fileName);
-            try {
-                IOUtil.writeTo(fis, zos);
-                zos.closeEntry();
-            } finally {
-                IOUtil.close(fis);
-                zos.closeEntry();
+            if (zos!=null && element.getDataType().equals(element.DATATYPE_FILE)) {
+                File f = type.getFile(entry, metadata, element);
+                if(f == null || !f.exists()) continue;
+                String fileName = repository.getGUID();
+                //metadata.getId() +"_" + index;
+                attrNode.setAttribute("fileid", fileName);
+                zos.putNextEntry(new ZipEntry(fileName));
+                InputStream fis =
+                    getStorageManager().getFileInputStream(f.toString());
+                try {
+                    IOUtil.writeTo(fis, zos);
+                } finally {
+                    IOUtil.close(fis);
+                    zos.closeEntry();
+                }
             }
-        }
 
+
+
+        }
     }
 
 

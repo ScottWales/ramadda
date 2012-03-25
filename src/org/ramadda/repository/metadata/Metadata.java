@@ -137,6 +137,9 @@ public class Metadata implements Constants {
     /** _more_ */
     private boolean inherited = false;
 
+    private Object[] values;
+
+
     /**
      * _more_
      */
@@ -193,6 +196,16 @@ public class Metadata implements Constants {
     public Metadata(MetadataType type) {
         this(DFLT_ID, DFLT_ENTRYID, type, false, DFLT_ATTR, DFLT_ATTR,
              DFLT_ATTR, DFLT_ATTR, DFLT_EXTRA);
+    }
+
+
+    public Metadata(String id, String entryId, MetadataType type,
+                    boolean inherited, Object[]values) {
+        this.id  = id;
+        this.entryId = id;
+        this.type = type.getId();
+        this.inherited  = inherited;
+        this.values = values;
     }
 
 
@@ -282,6 +295,7 @@ public class Metadata implements Constants {
         this.attr3     = that.attr3;
         this.attr4     = that.attr4;
         this.extra     = that.extra;
+        this.values = that.values;
         if (this.extra == null) {
             this.extra = "";
         }
@@ -375,6 +389,7 @@ public class Metadata implements Constants {
 
 
 
+
     /**
      * _more_
      *
@@ -413,13 +428,16 @@ public class Metadata implements Constants {
         attr1 = value;
     }
 
+
+
+
     /**
      * Get the Attr1 property.
      *
      * @return The Attr1
      */
     public String getAttr1() {
-        return attr1;
+        return getValue(1, attr1);
     }
 
     /**
@@ -438,7 +456,7 @@ public class Metadata implements Constants {
      * @return The Attr2
      */
     public String getAttr2() {
-        return attr2;
+        return getValue(2, attr2);
     }
 
     /**
@@ -457,7 +475,7 @@ public class Metadata implements Constants {
      * @return The Attr3
      */
     public String getAttr3() {
-        return attr3;
+        return getValue(3, attr3);
     }
 
     /**
@@ -476,7 +494,7 @@ public class Metadata implements Constants {
      * @return The Attr4
      */
     public String getAttr4() {
-        return attr4;
+        return getValue(4, attr4);
     }
 
 
@@ -512,6 +530,30 @@ public class Metadata implements Constants {
     }
 
 
+
+
+    private String getValue(int index, String dflt) {
+        if(values==null) {
+            return dflt;
+        }
+        index--;
+        if(index>0 && index<values.length && values[index]!=null)
+            return values[index].toString();
+        return null;
+    }
+
+
+    private Object getValue(int index) {
+        if(values!=null) {
+            index--;
+            if(index>0 && index<values.length)
+                return values[index];
+            return null;
+        }
+        return getAttr(index);
+    }
+
+
     /**
      * _more_
      *
@@ -520,6 +562,9 @@ public class Metadata implements Constants {
      * @return _more_
      */
     public String getAttr(int idx) {
+        if(values!=null) {
+            return (String)getValue(idx);
+        }
         if (idx == 1) {
             return attr1;
         }

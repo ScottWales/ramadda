@@ -209,7 +209,7 @@ public class FtpAction extends MonitorAction {
             }
 
             String passwordToUse =
-                monitor.getRepository().processTemplate(password, false);
+                monitor.getRepository().getPageHandler().processTemplate(password, false);
             ftpClient.connect(server);
             if (user.length() > 0) {
                 ftpClient.login(user, password);

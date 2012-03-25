@@ -531,7 +531,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
         String user     = (String) values[COL_USER];
         String password = (String) values[COL_PASSWORD];
         if (password != null) {
-            password = getRepository().processTemplate(password, false);
+            password = getRepository().getPageHandler().processTemplate(password, false);
         } else {
             password = "";
         }

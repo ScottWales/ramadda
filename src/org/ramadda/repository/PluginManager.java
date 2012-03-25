@@ -157,6 +157,15 @@ public class PluginManager extends RepositoryManager {
         super(repository);
     }
 
+    public void shutdown()  throws Exception {
+        for(MultiJarClassLoader classLoader: classLoaders) {
+            classLoader.shutdown();
+        }
+
+        super.shutdown();
+    }
+
+
     /**
      * _more_
      *
