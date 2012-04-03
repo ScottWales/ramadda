@@ -99,6 +99,10 @@ public class MultiJarClassLoader extends ClassLoader {
     }
 
 
+    public void shutdown()  throws Exception {
+        loadedClasses = null;
+    }
+
     /**
      * ctor
      *
