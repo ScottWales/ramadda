@@ -1,4 +1,4 @@
 
 <api handler="org.ramadda.geodata.data.OpendapApiHandler" id="opendap">
-      <api request="/opendap/*"    method="processOpendapRequest"  name="OpenDAP"/>
+      <api request="/opendap/*" admin="false" method="processOpendapRequest"  name="OpenDAP"/>
 </api>
