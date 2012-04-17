@@ -2007,6 +2007,9 @@ public class Request implements Constants, Cloneable {
      * @return The Ip
      */
     public String getIp() {
+        if (ip == null && repository != null) {
+            return repository.getIpAddress();
+        }
         return ip;
     }
 
