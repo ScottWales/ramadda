@@ -109,19 +109,23 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public File getNcmlFile(Request request, Entry entry) throws Exception {
+    public File getNcmlFile(Request request, Entry entry, long[]timestamp) throws Exception {
         if (request == null) {
             request = getRepository().getTmpRequest();
         }
-        String ncml = getNcmlString(request, entry);
-        //MATIAS: 
-        //        if (ncml != "") {
+        String ncml = getNcmlString(request, entry, timestamp);
         if (ncml.length() != 0) {
-            System.err.println(ncml);
-            File tmpFile =
-                getRepository().getStorageManager().getTmpFile(request,
-                    "grid.ncml");
-            IOUtil.writeFile(tmpFile, ncml);
+            String ncmlFileName = entry.getId() +"_" + timestamp[0] + ".ncml";
+            //Use the timestamp from the files to make the ncml file name based on the input files
+            File tmpFile = getStorageManager().getScratchFile(ncmlFileName);
+            //File tmpFile =
+            //  getRepository().getStorageManager().getTmpFile(request, "grid.ncml");
+            if(!tmpFile.exists()) {
+                System.err.println("writing new ncml file:" + tmpFile);
+                IOUtil.writeFile(tmpFile, ncml);
+            } else {
+                System.err.println("using existing ncml file:" + tmpFile);
+            }
             return tmpFile;
         } else {
             return null;
@@ -139,9 +143,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getNcmlString(Request request, Entry entry)
+    private String getNcmlString(Request request, Entry entry, long[]timestamp)
             throws Exception {
-
         if (request == null) {
             request = getRepository().getTmpRequest();
         }
@@ -241,7 +244,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         for (Entry child : childrenEntries) {
             if (child.getType().equals(TYPE_GRIDAGGREGATION)) {
-                String ncml = getNcmlString(request, child);
+                String ncml = getNcmlString(request, child, timestamp);
                 //MATIAS:
                 if (ncml != null) {
                     //                if (ncml!=""){
@@ -256,9 +259,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         if (ncmlUtil.isJoinExisting()) {
             Collections.sort(sortedChillens);
         }
-        System.err.println("making ncml:");
+        //        System.err.println("making ncml:");
+        timestamp[0] = 0;
         for (String s : sortedChillens) {
-            System.err.println("   file:" + s);
+            //            System.err.println("   file:" + s);
+            File f = new File(s);
+            timestamp[0] = timestamp[0] ^ f.lastModified();
             sb.append(
                 XmlUtil.tag(
                     NcmlUtil.TAG_NETCDF,
@@ -271,7 +277,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(XmlUtil.closeTag(NcmlUtil.TAG_AGGREGATION));
         sb.append(XmlUtil.closeTag(NcmlUtil.TAG_NETCDF));
 
-        System.err.println(sb);
+        //        System.err.println(sb);
 
         return sb.toString();
 

@@ -433,12 +433,18 @@ public class DataOutputHandler extends OutputHandler {
             }
         }
 
-
         protected NetcdfFile createValue(String path) {
             try {
                 getStorageManager().dirTouched(nj22Dir, null);
                 //                NetcdfDataset dataset = NetcdfDataset.openDataset(path);
+        long t1 = System.currentTimeMillis();
                 NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
+        long t2 = System.currentTimeMillis();
+        System.err.println("NetcdfDataset.openFile: time:" + (t2-t1));
+
+
+
+
                 ncCreateCounter.incr();
                 return ncFile;
             } catch (Exception exc) {
@@ -477,8 +483,10 @@ public class DataOutputHandler extends OutputHandler {
             try {
                 getStorageManager().dirTouched(nj22Dir, null);
                 gridOpenCounter.incr();
-
+                long t1 = System.currentTimeMillis();
                 GridDataset gds = GridDataset.open(path);
+                long t2 = System.currentTimeMillis();
+                System.err.println("GridDataset.open  time:" + (t2-t1));
                 if (gds.getGrids().iterator().hasNext()) {
                     return gds;
                 } else {
@@ -490,7 +498,6 @@ public class DataOutputHandler extends OutputHandler {
                 throw new RuntimeException(exc);
             }
         }
-
     };
 
 
@@ -747,6 +754,11 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
+    private boolean isAggregation(Entry entry) {
+        return entry.getType().equals(
+                                      GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
+    }
+
     /**
      * Get the Entry links
      *
@@ -762,8 +774,7 @@ public class DataOutputHandler extends OutputHandler {
         Entry entry = state.entry;
 
         if ((state.group != null)
-                && state.group.getType().equals(
-                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+            && isAggregation(state.group)) {
             entry = state.group;
         }
 
@@ -916,8 +927,7 @@ public class DataOutputHandler extends OutputHandler {
             return true;
         }
 
-        if (entry.getType().equals(
-                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if (isAggregation(entry)) {
             return true;
         }
         if ( !entry.getType().equals(
@@ -1207,8 +1217,7 @@ public class DataOutputHandler extends OutputHandler {
      * @return _more_
      */
     public boolean canLoadAsGrid(Entry entry) {
-        if (entry.getType().equals(
-                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if (isAggregation(entry)) {
             return true;
         }
         if (excludedByPattern(entry, TYPE_GRID)) {
@@ -1217,7 +1226,7 @@ public class DataOutputHandler extends OutputHandler {
         if (includedByPattern(entry, TYPE_GRID)) {
             return true;
         }
-        if ( !canLoadAsCdm(entry)) {
+        if (!canLoadAsCdm(entry)) {
             return false;
         }
 
@@ -1377,10 +1386,10 @@ public class DataOutputHandler extends OutputHandler {
             return null;
         }
         //Don't cache the aggregations
-        if (entry.getType().equals(
-                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-            return GridDataset.open(path);
-        }
+        //Not now...
+        //        if (isAggregation(entry)) {
+        //            return GridDataset.open(path);
+        //        }
         if (doGridPool) {
             return gridPool.get(path);
         } else {
@@ -1890,8 +1899,6 @@ public class DataOutputHandler extends OutputHandler {
                 entry.getParentEntry(), Permission.ACTION_NEW);
 
 
-
-
         String       path   = getPath(request, entry);
         StringBuffer sb     = new StringBuffer();
 
@@ -2009,7 +2016,6 @@ public class DataOutputHandler extends OutputHandler {
                                      HtmlUtil.input(ARG_HSTRIDE,
                                          request.getString(ARG_HSTRIDE, "1"),
                                          HtmlUtil.SIZE_3)));
-
 
         GridDataset  dataset   = getGridDataset(entry, path);
         Date[]       dateRange = null;
@@ -2748,8 +2754,7 @@ public class DataOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        if (group.getType().equals(
-                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        if (isAggregation(group)) {
             return outputEntry(request, outputType, group);
         }
         //        System.err.println("group:" + group + " " + group.getType());
@@ -2861,11 +2866,11 @@ public class DataOutputHandler extends OutputHandler {
                     || ext.equals(".dds")) {
                 location = IOUtil.stripExtension(location);
             }
-        } else if (entry.getType().equals(
-                GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
+        } else if (isAggregation(entry)) {
             GridAggregationTypeHandler gridAggregation =
                 (GridAggregationTypeHandler) entry.getTypeHandler();
-            location = gridAggregation.getNcmlFile(request, entry).toString();
+            long[]timestamp = {0};
+            location = gridAggregation.getNcmlFile(request, entry, timestamp).toString();
             // Something must be fixed to check if its empty
         } else {
             location = getStorageManager().getFastResourcePath(entry);
@@ -2935,10 +2940,12 @@ public class DataOutputHandler extends OutputHandler {
 
         request.remove(ARG_ENTRYID);
         request.remove(ARG_OUTPUT);
+
         //Get the file location for the entry
         String location = getPath(request, entry);
 
         //Get the ncFile from the pool
+
         NetcdfFile ncFile = ncFilePool.get(location);
         opendapCounter.incr();
 
