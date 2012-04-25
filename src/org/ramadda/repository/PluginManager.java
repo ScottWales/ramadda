@@ -601,7 +601,7 @@ public class PluginManager extends RepositoryManager {
                         if (matcher.find()) {
                             title = matcher.group(1);
                         }
-                        String url = getRepository().getUrlBase() + htpath;
+                        String url = htpath;
                         if (htpath.startsWith("/userguide")) {
                             docUrls.add(0, new String[] { url, title });
                         } else {

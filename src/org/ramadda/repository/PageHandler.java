@@ -400,8 +400,6 @@ public class PageHandler extends RepositoryManager {
             head = "";
         }
         String logoImage = repository.getLogoImage(result);
-
-
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
         if ((logoUrl == null) || (logoUrl.trim().length() == 0)) {
             logoUrl = getProperty(PROP_LOGO_URL, "");
