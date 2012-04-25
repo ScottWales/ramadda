@@ -125,8 +125,7 @@ public class EntryManager extends RepositoryManager {
 
 
     /** Caches sites */
-    private TTLCache<String, Entry> entryCache =
-        new TTLCache<String, Entry>(TTLCache.MS_IN_AN_HOUR);
+    private TTLCache<String, Entry> entryCache;
 
 
 
@@ -221,17 +220,23 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     private TTLCache<String, Entry> getEntryCache() {
-        if (entryCache.size() > ENTRY_CACHE_LIMIT) {
+        //Get a local copy because another thread could clear the cache while we're in the middle of this
+        TTLCache<String, Entry> theCache = entryCache;
+        if(theCache == null) {
+            int cacheTimeMinutes = getRepository().getProperty(PROP_CACHE_TTL, 60);
+            //Convert to milliseconds
+            entryCache = theCache = new TTLCache<String, Entry>(cacheTimeMinutes*60*1000);
+        } else if (theCache.size() > ENTRY_CACHE_LIMIT) {
             clearCache();
         }
-        return entryCache;
+        return theCache;
     }
 
     /**
      * _more_
      */
     protected void clearCache() {
-        entryCache = new TTLCache<String, Entry>(TTLCache.MS_IN_AN_HOUR);
+        entryCache = null;
     }
 
 

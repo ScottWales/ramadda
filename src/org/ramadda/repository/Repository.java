@@ -3411,7 +3411,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public int getProperty(String name, int dflt) {
         String prop = getProperty(name);
         if (prop != null) {
-            return new Integer(prop).intValue();
+            return new Integer(prop.trim()).intValue();
         }
         return dflt;
     }

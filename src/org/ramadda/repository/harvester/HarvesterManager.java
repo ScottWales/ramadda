@@ -183,6 +183,8 @@ public class HarvesterManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void initHarvesters() throws Exception {
+        //If we are in read only mode then don't start the harvesters
+        if(getRepository().isReadOnly()) return;
         Misc.run(this, "initHarvestersInThread");
     }
 

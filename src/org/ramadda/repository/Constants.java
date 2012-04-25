@@ -1786,6 +1786,10 @@ public interface Constants {
     public static final String PROP_UPLOAD_MAXSIZEGB =
         "ramadda.upload.maxsizegb";
 
+    public static final String PROP_CACHE_TTL =
+        "ramadda.cache.ttl";
+
+
     /** _more_ */
     public static final String PROP_CACHE_MAXSIZEGB =
         "ramadda.cache.maxsizegb";
