@@ -1,0 +1,18 @@
+<types>
+
+  <type name="biblio"  description="Biblioghraphic Entry" xxxhandler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+     <property name="icon" value="/biblio/book.png"/>
+     <property name="form.name.label" value="Title"/>
+     <property name="form.description.label" value="Abstract"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+     <property name="form.todate.show" value="false"/>
+     <column name="primary_author" type="string"  label="Primary Author"  />
+     <column name="other_authors" type="string"  label="Other Authors"  rows="5"/>
+     <column name="publication" type="enumerationplus"  label="Publication"  />
+   </type>
+
+
+</types>
