@@ -299,7 +299,7 @@ public class HarvesterManager extends RepositoryManager {
         }
 
         request.ensureAuthToken();
-        Harvester harvester = null;
+        List<Harvester> harvestersBeingCreated = new ArrayList<Harvester>();
         if (request.exists(ARG_HARVESTER_XMLFILE)) {
             String file = request.getUploadedFile(ARG_HARVESTER_XMLFILE);
             if ((file == null) || !new File(file).exists()) {
@@ -308,16 +308,18 @@ public class HarvesterManager extends RepositoryManager {
                     new StringBuffer("You must specify a file"));
             }
             String xml = getStorageManager().readSystemResource(file);
-            List<Harvester> harvesters =
+            harvestersBeingCreated =
                 Harvester.createHarvesters(getRepository(),
                                            XmlUtil.getRoot(xml));
-            if (harvesters.size() == 0) {
+            if (harvestersBeingCreated.size() == 0) {
                 return getAdmin().makeResult(
                     request, msg("New Harvester"),
                     new StringBuffer("No harvesters defined"));
             }
-            harvester = harvesters.get(0);
-            harvester.setId(getRepository().getGUID());
+
+            for(Harvester harvester: harvestersBeingCreated) {
+                harvester.setId(getRepository().getGUID());
+            }
 
         } else if (request.exists(ARG_NAME)) {
             String id = getRepository().getGUID();
@@ -325,25 +327,29 @@ public class HarvesterManager extends RepositoryManager {
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { Repository.class,
                     String.class });
-            harvester = (Harvester) ctor.newInstance(new Object[] {
+            Harvester harvester = (Harvester) ctor.newInstance(new Object[] {
                 getRepository(),
                 id });
             harvester.setName(request.getString(ARG_NAME, ""));
             harvester.setUser(request.getUser());
+            harvestersBeingCreated.add(harvester);
         }
 
-        if (harvester != null) {
-            harvester.setIsEditable(true);
-            harvesters.add(harvester);
-            harvesterMap.put(harvester.getId(), harvester);
 
-            getDatabaseManager().executeInsert(Tables.HARVESTERS.INSERT,
-                    new Object[] { harvester.getId(),
-                                   harvester.getClass().getName(),
-                                   harvester.getContent() });
+        if (harvestersBeingCreated.size()>0) {
+            for(Harvester harvester: harvestersBeingCreated) {
+                harvester.setIsEditable(true);
+                harvesters.add(harvester);
+                harvesterMap.put(harvester.getId(), harvester);
+
+                getDatabaseManager().executeInsert(Tables.HARVESTERS.INSERT,
+                                                   new Object[] { harvester.getId(),
+                                                                  harvester.getClass().getName(),
+                                                                  harvester.getContent() });
+            }
             return new Result(request.url(URL_HARVESTERS_FORM,
                                           ARG_HARVESTER_ID,
-                                          harvester.getId()));
+                                          harvestersBeingCreated.get(0).getId()));
         }
 
 
