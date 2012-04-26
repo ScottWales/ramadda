@@ -2095,7 +2095,7 @@ public class IdvOutputHandler extends OutputHandler {
         if (request.get(ARG_BACKGROUND_TRANSPARENT, false)) {
             bgTrans = XmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
             bgSuffix = XmlUtil.attr(ImageSequenceGrabber.ATTR_IMAGESUFFIX,
-                                    "png");
+                                    ".png");
         }
 
         String       dataSourceExtra = "";
