@@ -44,16 +44,16 @@ import java.util.zip.*;
  */
 public class SelectionRectangle {
 
-    /** _more_          */
+    /** _more_ */
     private double north = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double west = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double south = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double east = Double.NaN;
 
     /**
@@ -84,6 +84,33 @@ public class SelectionRectangle {
      *
      * @return _more_
      */
+    public SelectionRectangle[] splitOnDateLine() {
+        if ( !allDefined() || !crossesDateLine()) {
+            return new SelectionRectangle[] {
+                new SelectionRectangle(getNorth(), getWest(), getSouth(),
+                                       getEast()), };
+        }
+        return new SelectionRectangle[] {
+            new SelectionRectangle(getNorth(), getWest(), getSouth(), 180),
+            new SelectionRectangle(getNorth(), -180, getSouth(), getEast()) };
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String toString() {
+        return "north:" + north + " west:" + west + " south:" + south
+               + " east:" + east;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean crossesDateLine() {
         boolean haveLongitudeRange = !Double.isNaN(getWest())
                                      && !Double.isNaN(getEast());
@@ -99,8 +126,16 @@ public class SelectionRectangle {
      * @return _more_
      */
     public boolean allDefined() {
-        return !Double.isNaN(north) && !Double.isNaN(west)
-               && !Double.isNaN(south) && !Double.isNaN(east);
+        return hasNorth() && hasWest() && hasSouth() && hasEast();
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean anyDefined() {
+        return hasNorth() || hasWest() || hasSouth() || hasEast();
     }
 
     /**
@@ -174,23 +209,97 @@ public class SelectionRectangle {
         north = value;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasNorth() {
         return !Double.isNaN(north);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasSouth() {
         return !Double.isNaN(south);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasWest() {
         return !Double.isNaN(west);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasEast() {
         return !Double.isNaN(east);
     }
 
+
+
+
+    /**
+     * _more_
+     *
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public double getNorth(double dflt) {
+        return hasNorth()
+               ? north
+               : dflt;
+    }
+
+    /**
+     * _more_
+     *
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public double getWest(double dflt) {
+        return hasWest()
+               ? west
+               : dflt;
+    }
+
+    /**
+     * _more_
+     *
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public double getSouth(double dflt) {
+        return hasSouth()
+               ? south
+               : dflt;
+    }
+
+    /**
+     * _more_
+     *
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public double getEast(double dflt) {
+        return hasEast()
+               ? east
+               : dflt;
+    }
 
 
 
