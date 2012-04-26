@@ -3562,9 +3562,13 @@ public class TypeHandler extends RepositoryManager {
        180/-180     0      180/-180
         */
 
-        if(bbox.allDefined()) {
-            addCriteria(request, searchCriteria,
-                        (contains?"Area contained by ":"Area overlaps"),  bbox.getNorth() +" "+ bbox.getWest() +" " + bbox.getSouth() +" " + bbox.getEast());
+        if (bbox.allDefined()) {
+            addCriteria(request, searchCriteria, (contains
+                    ? "Area contained by "
+                    : "Area overlaps"), bbox.getNorth() + " "
+                                        + bbox.getWest() + " "
+                                        + bbox.getSouth() + " "
+                                        + bbox.getEast());
         }
 
         //Check for a search crossing the dateline
@@ -3618,15 +3622,17 @@ public class TypeHandler extends RepositoryManager {
             } else {
                 double[] values = rectangle.getValues();
                 for (int i = 0; i < 4; i++) {
-                    if ( Double.isNaN(values[i])) continue;
+                    if (Double.isNaN(values[i])) {
+                        continue;
+                    }
                     double areaValue = values[i];
                     areaClause = areaLE[i]
-                        ? Clause.le(areaCols[i], areaValue)
-                        : Clause.ge(areaCols[i], areaValue);
+                                 ? Clause.le(areaCols[i], areaValue)
+                                 : Clause.ge(areaCols[i], areaValue);
                     areaExpressions.add(
-                                        Clause.and(
-                                                   getSpatialDefinedClause(areaCols[i]),
-                                                   areaClause));
+                        Clause.and(
+                            getSpatialDefinedClause(areaCols[i]),
+                            areaClause));
                 }
             }
             if (areaExpressions.size() > 0) {
@@ -3776,8 +3782,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    private SelectionRectangle getSelectionBounds(Request request) {
-
+    public static SelectionRectangle getSelectionBounds(Request request) {
         String[] argPrefixes  = { ARG_AREA, ARG_BBOX };
         String[] areaNames    = { "North", "West", "South", "East" };
         String[] areaSuffixes = { "north", "west", "south", "east" };
@@ -3789,6 +3794,7 @@ public class TypeHandler extends RepositoryManager {
                 List<String> toks =
                     StringUtil.split(request.getString(argPrefix, ""), ",",
                                      true, true);
+                //n,w,s,e
                 if (toks.size() == 4) {
                     for (int i = 0; i < 4; i++) {
                         bbox[i] = Double.parseDouble(toks.get(i));
