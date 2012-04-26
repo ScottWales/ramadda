@@ -123,6 +123,13 @@
       <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
     </type>
 
+    <type
+       name="Exclude in XML Output"
+       showinhtml="false"
+       id="display.exclude">
+      <element name="output"  datatype="string" default="*" />
+    </type>
+
   </handler>
 
   <handler adminonly="true" class="org.ramadda.repository.metadata.AdminMetadataHandler" category="Admin">

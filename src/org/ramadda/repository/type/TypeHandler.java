@@ -29,6 +29,7 @@ import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.SelectionRectangle;
 
 
 import org.w3c.dom.Element;
@@ -3079,19 +3080,15 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (advancedForm) {
-            String nonGeo =
-                HtmlUtil.checkbox(ARG_INCLUDENONGEO, "true",
-                                  request.get(ARG_INCLUDENONGEO,
-                                      true)) + " Include non-geographic";
-
 
             String radio = getSpatialSearchTypeWidget(request);
 
 
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
-            String mapSelector = map.makeSelector(ARG_AREA, true, null, "",
-                                     radio);
+            SelectionRectangle bbox = getSelectionBounds(request);
+            String mapSelector = map.makeSelector(ARG_AREA, true,
+                                     bbox.getStringArray(), "", radio);
             basicSB.append(formEntry(request, msgLabel("Area"), mapSelector));
             basicSB.append("\n");
 
@@ -3300,6 +3297,8 @@ public class TypeHandler extends RepositoryManager {
     public List<Clause> assembleWhereClause(Request request,
                                             StringBuffer searchCriteria)
             throws Exception {
+
+        //        Misc.printStack("Assemble where clause", 10);
 
         if (parent != null) {
             return parent.assembleWhereClause(request, searchCriteria);
@@ -3537,124 +3536,114 @@ public class TypeHandler extends RepositoryManager {
             where.add(dateClauses.get(0));
         }
 
-        boolean includeNonGeo = request.get(ARG_INCLUDENONGEO, false);
+
         boolean contains = !(request.getString(
                                ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
                                VALUE_AREA_OVERLAPS));
 
 
-        List<Clause> areaExpressions = new ArrayList<Clause>();
-        String[]     areaNames       = { "West", "South", "East", "North" };
-        String[]     areaSuffixes    = { "west", "south", "east", "north" };
-        String[] areaCols = { Tables.ENTRIES.COL_WEST,
+        String[] areaCols = { Tables.ENTRIES.COL_NORTH,
+                              Tables.ENTRIES.COL_WEST,
                               Tables.ENTRIES.COL_SOUTH,
-                              Tables.ENTRIES.COL_EAST,
-                              Tables.ENTRIES.COL_NORTH, };
-        double[] areaValues = { Double.NaN, Double.NaN, Double.NaN,
-                                Double.NaN };
-        boolean[] areaLE = { false, false, true, true };
-        Clause    areaClause;
-        String[]  argPrefixes = { ARG_AREA, ARG_BBOX };
-        String[]  delimiters  = { "_", "." };
+                              Tables.ENTRIES.COL_EAST };
+        boolean[]          areaLE    = { true, false, false, true };
+        String[]           areaNames = { "North", "West", "South", "East" };
+        Clause             areaClause;
+        SelectionRectangle bbox = getSelectionBounds(request);
+        bbox.normalizeLongitude();
+        List<Clause> areaClauses = new ArrayList<Clause>();
+        List<SelectionRectangle> rectangles =
+            new ArrayList<SelectionRectangle>();
 
-        int       argCnt      = 0;
-        for (String argPrefix : argPrefixes) {
-            if (request.defined(argPrefix)) {
-                List<String> toks =
-                    StringUtil.split(request.getString(argPrefix, ""), ",",
-                                     true, true);
-                if (toks.size() == 4) {
-                    for (int i = 0; i < 4; i++) {
-                        areaValues[i] = Double.parseDouble(toks.get(i));
-                    }
-                }
-            }
-            for (String delimiter : delimiters) {
-                for (int i = 0; i < 4; i++) {
-                    if ( !Double.isNaN(areaValues[i])) {
-                        continue;
-                    }
-                    String areaArg = argPrefix + delimiter + areaSuffixes[i];
-                    if (request.defined(areaArg)) {
-                        areaValues[i] = request.get(areaArg, 0.0);
-                        argCnt++;
-                    }
-                }
-            }
+        /*
+   160                 20
+    +------------------+
+ ---------+---------+---------+------------
+       180/-180     0      180/-180
+        */
+
+        if(bbox.allDefined()) {
+            addCriteria(request, searchCriteria,
+                        (contains?"Area contained by ":"Area overlaps"),  bbox.getNorth() +" "+ bbox.getWest() +" " + bbox.getSouth() +" " + bbox.getEast());
         }
 
-
-        boolean gotThemAll = (argCnt == 4);
-        double  west       = areaValues[0];
-        double  south      = areaValues[1];
-        double  east       = areaValues[2];
-        double  north      = areaValues[3];
-
-        if ( !contains) {
-            //           if (gotThemAll) {
-            if ( !Double.isNaN(north)) {
-                areaClause = Clause.le(Tables.ENTRIES.COL_SOUTH, north);
-                areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_SOUTH,
-                            new Double(Entry.NONGEO)), areaClause));
-            }
-            if ( !Double.isNaN(south)) {
-                areaClause = Clause.ge(Tables.ENTRIES.COL_NORTH, south);
-                areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_SOUTH,
-                            new Double(Entry.NONGEO)), areaClause));
-            }
-
-            if ( !Double.isNaN(west)) {
-                areaClause = Clause.ge(Tables.ENTRIES.COL_EAST, west);
-                areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_EAST,
-                            new Double(Entry.NONGEO)), areaClause));
-            }
-            if ( !Double.isNaN(east)) {
-                areaClause = Clause.le(Tables.ENTRIES.COL_WEST, east);
-                areaExpressions.add(
-                    Clause.and(
-                        Clause.neq(
-                            Tables.ENTRIES.COL_WEST,
-                            new Double(Entry.NONGEO)), areaClause));
-            }
-            //        }
+        //Check for a search crossing the dateline
+        if (bbox.crossesDateLine()) {
+            rectangles.add(new SelectionRectangle(bbox.getNorth(),
+                    bbox.getWest(), bbox.getSouth(), 180));
+            rectangles.add(new SelectionRectangle(bbox.getNorth(), -180,
+                    bbox.getSouth(), bbox.getEast()));
         } else {
-            for (int i = 0; i < 4; i++) {
-                if ( !Double.isNaN(areaValues[i])) {
-                    double areaValue = areaValues[i];
-                    addCriteria(request, searchCriteria,
-                                areaNames[i] + (areaLE[i]
-                            ? "&lt;="
-                            : "&gt;="), "" + areaValue);
+            rectangles.add(bbox);
+        }
+
+
+        for (SelectionRectangle rectangle : rectangles) {
+            List<Clause> areaExpressions = new ArrayList<Clause>();
+
+            if ( !contains) {
+                if (rectangle.hasNorth()) {
+                    areaClause = Clause.le(Tables.ENTRIES.COL_SOUTH,
+                                           rectangle.getNorth());
+                    areaExpressions.add(
+                        Clause.and(
+                            getSpatialDefinedClause(
+                                Tables.ENTRIES.COL_NORTH), areaClause));
+                }
+                if (rectangle.hasSouth()) {
+                    areaClause = Clause.ge(Tables.ENTRIES.COL_NORTH,
+                                           rectangle.getSouth());
+                    areaExpressions.add(
+                        Clause.and(
+                            getSpatialDefinedClause(
+                                Tables.ENTRIES.COL_SOUTH), areaClause));
+                }
+
+                if (rectangle.hasWest()) {
+                    areaClause = Clause.ge(Tables.ENTRIES.COL_EAST,
+                                           rectangle.getWest());
+                    areaExpressions.add(
+                        Clause.and(
+                            getSpatialDefinedClause(Tables.ENTRIES.COL_EAST),
+                            areaClause));
+                }
+                if (rectangle.hasEast()) {
+                    areaClause = Clause.le(Tables.ENTRIES.COL_WEST,
+                                           rectangle.getEast());
+                    areaExpressions.add(
+                        Clause.and(
+                            getSpatialDefinedClause(Tables.ENTRIES.COL_WEST),
+                            areaClause));
+                }
+            } else {
+                double[] values = rectangle.getValues();
+                for (int i = 0; i < 4; i++) {
+                    if ( Double.isNaN(values[i])) continue;
+                    double areaValue = values[i];
                     areaClause = areaLE[i]
-                                 ? Clause.le(areaCols[i], areaValue)
-                                 : Clause.ge(areaCols[i], areaValue);
-                    areaExpressions.add(Clause.and(Clause.neq(areaCols[i],
-                            new Double(Entry.NONGEO)), areaClause));
+                        ? Clause.le(areaCols[i], areaValue)
+                        : Clause.ge(areaCols[i], areaValue);
+                    areaExpressions.add(
+                                        Clause.and(
+                                                   getSpatialDefinedClause(areaCols[i]),
+                                                   areaClause));
                 }
             }
-        }
-
-        //        System.err.println (areaExpressions);
-
-        if (areaExpressions.size() > 0) {
-            Clause areaExpr = Clause.and(areaExpressions);
-            if (includeNonGeo) {
-                areaExpr = Clause.or(areaExpr,
-                                     Clause.eq(Tables.ENTRIES.COL_SOUTH,
-                                         new Double(Entry.NONGEO)));
+            if (areaExpressions.size() > 0) {
+                areaClauses.add(Clause.and(areaExpressions));
             }
-            where.add(areaExpr);
-            //            System.err.println (areaExpr);
         }
+
+
+
+        if (areaClauses.size() == 1) {
+            //            System.err.println("Single:" + areaClauses.get(0));
+            where.add(areaClauses.get(0));
+        } else if (areaClauses.size() > 1) {
+            //            System.err.println("Multiple:" + areaClauses);
+            where.add(Clause.or(areaClauses));
+        }
+
 
 
         Hashtable args        = request.getArgs();
@@ -3775,6 +3764,63 @@ public class TypeHandler extends RepositoryManager {
                     searchCriteria, where);
         }
         return where;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param searchCriteria _more_
+     *
+     * @return _more_
+     */
+    private SelectionRectangle getSelectionBounds(Request request) {
+
+        String[] argPrefixes  = { ARG_AREA, ARG_BBOX };
+        String[] areaNames    = { "North", "West", "South", "East" };
+        String[] areaSuffixes = { "north", "west", "south", "east" };
+        double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
+        String[] delimiters   = { "_", "." };
+        int      argCnt       = 0;
+        for (String argPrefix : argPrefixes) {
+            if (request.defined(argPrefix)) {
+                List<String> toks =
+                    StringUtil.split(request.getString(argPrefix, ""), ",",
+                                     true, true);
+                if (toks.size() == 4) {
+                    for (int i = 0; i < 4; i++) {
+                        bbox[i] = Double.parseDouble(toks.get(i));
+                    }
+                }
+            }
+            for (String delimiter : delimiters) {
+                for (int i = 0; i < 4; i++) {
+                    if ( !Double.isNaN(bbox[i])) {
+                        continue;
+                    }
+                    String areaArg = argPrefix + delimiter + areaSuffixes[i];
+                    if (request.defined(areaArg)) {
+                        bbox[i] = request.get(areaArg, 0.0);
+                        argCnt++;
+                    }
+                }
+            }
+        }
+        return new SelectionRectangle(bbox[0], bbox[1], bbox[2], bbox[3]);
+
+    }
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     *
+     * @return _more_
+     */
+    private Clause getSpatialDefinedClause(String column) {
+        return Clause.neq(column, new Double(Entry.NONGEO));
     }
 
 
