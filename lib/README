@@ -1,45 +1,47 @@
+Custom JAR files in the lib directory:
+
+ramaddalib.jar:
+  This holds all of the 3rd party libs  used by ramadda. It is made
+  with the ant target: ramaddalib in src/org/ramadda/repository
 
 
+ramaddatds.jar:
+  This gets built from the THREDDS TDS war file.
+  To build this:
+  Get the latest thredds.war from the Unidata FTP site, e.g:
+    ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/current/thredds.war
 
-repositorylib.jar:
-This holds all of the 3rd party libs  used by ramadda. It is made with the ant target: repositorylib in 
-src/org/ramadda/repository
+  Now run the tcl script:
+    tclsh ../src/org/ramadda/repository/bin/makethredds.tcl
 
-repositorytds.jar:
-This gets built from the THREDDS TDS war file.
-To build this:
-Get the latest thredds.war from the Unidata FTP site, e.g:
-ftp://ftp.unidata.ucar/pub/thredds/4.2/current/thredds.war
-
-Now run the tcl script:
-tclsh ../src/org/ramadda/repository/release/makethredds.tcl
-
-This unjars the war and unjars certain jars and makes repositorytds.jar
-
+  This unjars the war and unjars certain jars and makes repositorytds.jar
 
 
 ncIdv.jar:
-This should be the definitive source of the netcdf package. It gets included in both the repositorytds.jar
-and the repositorylib.jar. We do this because other packages have netcdf in it (e.g., visad.jar)
+  This should be the definitive source of the netcdf package. It gets
+  included in both the repositorytds.jar and the repositorylib.jar.
+  We do this because other packages have netcdf in it (e.g., visad.jar)
+
 
 visad.jar:
-Note: I unjarred this, removed the top-level nom package, and rebuilt the jar
-visad had an old version of the nom package (for fits data) and was screwing up
-the org/ramadda/geodata/fits plugin
-
-
+  Note: I unjarred this, removed the top-level nom package, and rebuilt
+  the jar visad had an old version of the nom package (for fits data)
+  and was screwing up the org/ramadda/geodata/fits plugin
 
 
 tika-app-1.0.jar
-The tika-app-1.0.jar  has been modified. I (jeffmc) removed the ucar, thredds and com/drew  tree from this because we had too many conflicts with other libs
-
+  The tika-app-1.0.jar  has been modified. I (jeffmc) removed the
+  ucar, thredds and com/drew  tree from this because we had too many
+  conflicts with other libs
 
 
 jmapproj.jar:
-This comes from http://sourceforge.net/projects/jmapprojlib/ and is a Java implementation of the proj4 library.
-It is used in the lidar package for doing coordinate transforms.
+
+  This comes from http://sourceforge.net/projects/jmapprojlib/ and
+  is a Java implementation of the proj4 library.  It is used in the
+  lidar package for doing coordinate transforms.
 
 
 junit.jar:
-https://github.com/KentBeck/junit/downloads
-This is from junit-4.10.jar
+
+  https://github.com/KentBeck/junit/downloads This is from junit-4.10.jar
