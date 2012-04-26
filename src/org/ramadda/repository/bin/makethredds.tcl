@@ -45,8 +45,16 @@ foreach file [glob *] {
 }
 
 
+file delete -force META-INF/MANIFEST.MF
+
+cd ../../META-INF
+file delete -force MANIFEST.MF
+
+cd ../WEB-INF/classes
 puts [exec pwd]
-set execLine "jar -cvf ../../../ramaddatds.jar $files"
+
+
+set execLine "jar -Mcvf ../../../ramaddatds.jar $files"
 eval exec $execLine
 
 
