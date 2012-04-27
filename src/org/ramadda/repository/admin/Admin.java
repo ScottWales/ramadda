@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -320,8 +320,8 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private StringBuffer getLicenseForm() throws Exception {
-        StringBuffer sb = new StringBuffer();
-        String license = getStorageManager().readSystemResource(
+        StringBuffer sb      = new StringBuffer();
+        String       license = getStorageManager().readSystemResource(
                              "/org/ramadda/repository/resources/license.txt");
         sb.append(HtmlUtil.textArea("", license, 20, 75));
         sb.append("<p>");
@@ -379,7 +379,7 @@ public class Admin extends RepositoryManager {
             if (request.exists(UserManager.ARG_USER_ID)) {
                 triedOnce = true;
                 id = request.getString(UserManager.ARG_USER_ID, "").trim();
-                name = request.getString(UserManager.ARG_USER_NAME,
+                name      = request.getString(UserManager.ARG_USER_NAME,
                                          "").trim();
                 String password1 =
                     request.getString(UserManager.ARG_USER_PASSWORD1,
@@ -456,7 +456,7 @@ public class Admin extends RepositoryManager {
                     String initEntriesXml =
                         getRepository().getResource(
                             "/org/ramadda/repository/resources/examples/initentries.xml");
-                    Element root = XmlUtil.getRoot(initEntriesXml);
+                    Element     root       = XmlUtil.getRoot(initEntriesXml);
                     List<Entry> newEntries =
                         getEntryManager().processEntryXml(
                             getRepository().getRequest(user), root,
@@ -609,7 +609,7 @@ public class Admin extends RepositoryManager {
             StringBuffer     sb       = new StringBuffer();
             DatabaseMetaData dbmd     = connection.getMetaData();
             ResultSet        catalogs = dbmd.getCatalogs();
-            ResultSet tables = dbmd.getTables(null, null, null,
+            ResultSet        tables   = dbmd.getTables(null, null, null,
                                    new String[] { "TABLE" });
 
             while (tables.next()) {
@@ -1295,7 +1295,7 @@ public class Admin extends RepositoryManager {
                                  false) + HtmlUtil.space(1) + msg("Use all");
         osb.append(HtmlUtil.formEntryTop("", doAllOutput + outputDiv));
         osb.append("\n");
-        StringBuffer handlerSB = new StringBuffer();
+        StringBuffer        handlerSB      = new StringBuffer();
         List<OutputHandler> outputHandlers =
             getRepository().getOutputHandlers();
         for (OutputHandler outputHandler : outputHandlers) {
@@ -1660,8 +1660,7 @@ public class Admin extends RepositoryManager {
         StringBuffer statusSB    = new StringBuffer();
         double       totalMemory = (double) Runtime.getRuntime().maxMemory();
         double       freeMemory  = (double) Runtime.getRuntime().freeMemory();
-        double highWaterMark     =
-            (double) Runtime.getRuntime().totalMemory();
+        double highWaterMark     = (double) Runtime.getRuntime().totalMemory();
         double       usedMemory  = (highWaterMark - freeMemory);
         statusSB.append(HtmlUtil.formTable());
         totalMemory = totalMemory / 1000000.0;
@@ -1928,9 +1927,9 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminScanForBadParents(Request request) throws Exception {
-        boolean      delete = request.get("delete", false);
-        StringBuffer sb     = new StringBuffer();
-        Statement statement = getDatabaseManager().execute("select "
+        boolean      delete    = request.get("delete", false);
+        StringBuffer sb        = new StringBuffer();
+        Statement    statement = getDatabaseManager().execute("select "
                                   + Tables.ENTRIES.COL_ID + ","
                                   + Tables.ENTRIES.COL_PARENT_GROUP_ID
                                   + " from " + Tables.ENTRIES.NAME, 10000000,
@@ -1976,8 +1975,7 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtil.formTable());
         DecimalFormat fmt         = new DecimalFormat("#0");
         double        totalMemory = (double) Runtime.getRuntime().maxMemory();
-        double        freeMemory  =
-            (double) Runtime.getRuntime().freeMemory();
+        double        freeMemory  = (double) Runtime.getRuntime().freeMemory();
         double highWaterMark = (double) Runtime.getRuntime().totalMemory();
         double        usedMemory  = (highWaterMark - freeMemory);
         totalMemory = totalMemory / 1000000.0;
@@ -1996,9 +1994,10 @@ public class Admin extends RepositoryManager {
 
 
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
-        sb.append(HtmlUtil.formEntry("Up Time:",
-                                     fmt.format((double) (uptime / 1000
-                                         / 60)) + " " + msg("minutes")));
+        //sb.append(HtmlUtil.formEntry("Up Time:",
+        //                             fmt.format((double) (uptime / 1000
+        //                                 / 60)) + " " + msg("minutes")));
+        sb.append(HtmlUtil.formEntry("Up Time:", formatUptime(uptime)));
 
         sb.append(HtmlUtil.formTableClose());
         sb.append(HtmlUtil.makeShowHideBlock(msg("Stack"),
@@ -2006,6 +2005,43 @@ public class Admin extends RepositoryManager {
                                              + LogUtil.getStackDump(true)
                                              + "</pre>", false));
         return makeResult(request, msg("Stack Trace"), sb);
+    }
+
+    /**
+     * Format the uptime
+     * 
+     * @param milliseconds  time in milliseconds
+     *
+     * @return formatted time
+     */
+    private String formatUptime(long milliseconds) {
+        StringBuffer buf     = new StringBuffer();
+        int          seconds = (int) (milliseconds / 1000) % 60;
+        int          minutes = (int) ((milliseconds / (1000 * 60)) % 60);
+        int          hours   = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+        int          days    = (int) ((milliseconds / (1000 * 60 * 60 * 24)));
+        if (days > 0) {
+            buf.append(days);
+            buf.append(" day");
+            if (days > 1) {
+                buf.append("s");
+            }
+            buf.append(", ");
+        }
+        if (hours > 0) {
+            buf.append(hours);
+            buf.append(" hour");
+            if (hours > 1) {
+                buf.append("s");
+            }
+            buf.append(", ");
+        }
+        buf.append(minutes);
+        buf.append(" minute");
+        if (minutes != 1) {
+            buf.append("s");
+        }
+        return buf.toString();
     }
 
 
@@ -2118,8 +2154,8 @@ public class Admin extends RepositoryManager {
                     runningCleanup = false;
                     break;
                 }
-                int    col = 1;
-                String id  = results.getString(col++);
+                int    col      = 1;
+                String id       = results.getString(col++);
                 String resource = getStorageManager().resourceFromDB(
                                       results.getString(col++));
                 Entry entry = getRepository().getTypeHandler(
@@ -2135,8 +2171,8 @@ public class Admin extends RepositoryManager {
                 }
                 if (entries.size() > 1000) {
                     getEntryManager().deleteEntries(request, entries, null);
-                    entries   = new ArrayList<Entry>();
-                    deleteCnt += 1000;
+                    entries       = new ArrayList<Entry>();
+                    deleteCnt     += 1000;
                     cleanupStatus = new StringBuffer("Removed " + deleteCnt
                             + " entries from database");
                 }
@@ -2147,7 +2183,7 @@ public class Admin extends RepositoryManager {
             }
             if (runningCleanup) {
                 getEntryManager().deleteEntries(request, entries, null);
-                deleteCnt += entries.size();
+                deleteCnt     += entries.size();
                 cleanupStatus = new StringBuffer(msg("Done running cleanup")
                         + "<br>" + msg("Removed") + HtmlUtil.space(1)
                         + deleteCnt + " entries from database");
