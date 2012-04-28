@@ -113,6 +113,11 @@ public class UserManager extends RepositoryManager {
 
 
 
+    public static final String PROP_SHOW_HELP = "ramadda.html.show.help";
+    public static final String PROP_SHOW_CART = "ramadda.html.show.cart";
+
+
+
     /** urls to use when the user is logged in */
     protected List<RequestUrl> userUrls =
         RepositoryUtil.toList(new RequestUrl[] {
@@ -1848,6 +1853,11 @@ public class UserManager extends RepositoryManager {
     }
 
 
+    public boolean isCartEnabled() {
+        return getProperty(PROP_SHOW_CART, true);
+    }
+
+
     /**
      * _more_
      *
@@ -1885,20 +1895,20 @@ public class UserManager extends RepositoryManager {
                 tips.add(msg("Login"));
             }
 
-
-            extras.add("");
-            urls.add(request.url(getRepositoryBase().URL_USER_CART));
-            //        labels.add(HtmlUtil.img(getRepository().iconUrl(ICON_CART),
-            //                                msg("Data Cart")));
-            labels.add(msg("Data Cart"));
-            tips.add(msg("View data cart"));
-
-
+            if(isCartEnabled()) {
+                extras.add("");
+                urls.add(request.url(getRepositoryBase().URL_USER_CART));
+                //        labels.add(HtmlUtil.img(getRepository().iconUrl(ICON_CART),
+                //                                msg("Data Cart")));
+                labels.add(msg("Data Cart"));
+                tips.add(msg("View data cart"));
+            }
         } else {
             extras.add("");
             urls.add(request.url(getRepositoryBase().URL_USER_LOGOUT));
             labels.add(msg("Logout"));
             tips.add(msg("Logout"));
+
             extras.add("");
             urls.add(request.url(getRepositoryBase().URL_USER_HOME));
             String label = user.getLabel().replace(" ", "&nbsp;");
@@ -1906,13 +1916,7 @@ public class UserManager extends RepositoryManager {
             tips.add(msg("Go to user settings"));
         }
 
-
-
-
-
-
-
-        if (getRepository().getPluginManager().getDocUrls().size() > 0) {
+        if (getProperty(PROP_SHOW_HELP, true) && getRepository().getPluginManager().getDocUrls().size() > 0) {
             urls.add(request.url(getRepositoryBase().URL_HELP));
             extras.add("");
             labels.add(msg("Help"));
@@ -2646,18 +2650,22 @@ public class UserManager extends RepositoryManager {
                                       List<Link> links)
                     throws Exception {
                 if (state.getEntry() != null) {
-                    List<Entry> cart = getCart(request);
-                    Link link = makeLink(request, state.getEntry(),
-                                         OUTPUT_CART_ADD);
-                    link.setLinkType(OutputType.TYPE_FILE
-                                     | OutputType.TYPE_TOOLBAR);
-                    links.add(link);
+                    Link link;
+                    if(isCartEnabled()) {
+                        List<Entry> cart = getCart(request);
+                        link = makeLink(request, state.getEntry(),
+                                             OUTPUT_CART_ADD);
+                        link.setLinkType(OutputType.TYPE_FILE
+                                         | OutputType.TYPE_TOOLBAR);
+                        links.add(link);
 
-                    link = makeLink(request, state.getEntry(),
-                                    OUTPUT_CART_REMOVE);
-                    link.setLinkType(OutputType.TYPE_FILE
-                                     | OutputType.TYPE_ACTION);
-                    links.add(link);
+                        link = makeLink(request, state.getEntry(),
+                                        OUTPUT_CART_REMOVE);
+                        link.setLinkType(OutputType.TYPE_FILE
+                                         | OutputType.TYPE_ACTION);
+                        links.add(link);
+                    }
+
 
                     if ( !request.getUser().getAnonymous()) {
                         link = makeLink(request, state.getEntry(),
@@ -2669,9 +2677,12 @@ public class UserManager extends RepositoryManager {
             }
 
             public boolean canHandleOutput(OutputType output) {
-                return output.equals(OUTPUT_CART_ADD)
-                       || output.equals(OUTPUT_CART_REMOVE)
-                       || output.equals(OUTPUT_FAVORITE);
+                if(output.equals(OUTPUT_CART_ADD)
+                   || output.equals(OUTPUT_CART_REMOVE)) {
+                    return isCartEnabled();
+                }
+
+                return  output.equals(OUTPUT_FAVORITE);
             }
 
             public Result outputGroup(Request request, OutputType outputType,
