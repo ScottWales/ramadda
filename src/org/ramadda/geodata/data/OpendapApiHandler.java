@@ -72,8 +72,16 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
      * @return opendap url
      */
     public String getOpendapUrl(Entry entry) {
-        String url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
-                     + entry.getFullName() + "/" + OPENDAP_SUFFIX;
+        String url;
+        if(getEntryManager().isSynthEntry(entry.getId())) {
+            url = getRepository().URL_ENTRY_SHOW + "/" + ARG_OUTPUT + ":"
+               + Request.encodeEmbedded(DataOutputHandler.OUTPUT_OPENDAP) + "/" + ARG_ENTRYID
+               + ":" + Request.encodeEmbedded(entry.getId()) + "/"
+               + getStorageManager().getFileTail(entry) + "/dodsC/entry.das";
+        } else {
+            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
+                + entry.getFullName() + "/" + OPENDAP_SUFFIX;
+        }
         url = url.replaceAll(" ", "+");
         return url;
     }

@@ -255,17 +255,21 @@ public class CatalogOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
-            throws Exception {
+        throws Exception {
         if (state.getEntry() != null) {
-            String url = getRepository().getUrlBase() + "/thredds/"
-                         + state.getEntry().getFullName(true) + ".xml";
-            OutputType outputType = OUTPUT_CATALOG;
-            Link       link = new Link(url, (outputType.getIcon() == null)
-                                            ? null
-                                            : iconUrl(outputType
-                                                .getIcon()), outputType
-                                                    .getLabel(), outputType);
-            //link = makeLink(request, state.getEntry(), OUTPUT_CATALOG));
+            Link       link;
+            if(getEntryManager().isSynthEntry(state.getEntry().getId())) {
+                link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
+            } else {
+                String url = getRepository().getUrlBase() + "/thredds/"
+                    + state.getEntry().getFullName(true) + ".xml";
+                OutputType outputType = OUTPUT_CATALOG;
+                link = new Link(url, (outputType.getIcon() == null)
+                                ? null
+                                : iconUrl(outputType
+                                          .getIcon()), outputType
+                                .getLabel(), outputType);
+            }
             links.add(link);
         }
     }
