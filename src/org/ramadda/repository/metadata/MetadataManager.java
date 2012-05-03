@@ -729,6 +729,20 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    public List<Metadata> getMetadataFromClipboard(Request request) throws Exception {
+        List<Metadata> metadata = (List<Metadata> ) getSessionManager().getSessionProperty(request, PROP_METADATA);
+        return metadata;
+    }
+
+    public void copyMetadataToClipboard(Request request, List<Metadata> metadataList) throws Exception {
+        List<Metadata> copies = new ArrayList<Metadata>();
+        for(Metadata metadata: metadataList) {
+            copies.add(new Metadata(metadata));
+        }
+        getSessionManager().putSessionProperty(request, PROP_METADATA, copies);
+    }
+
+
     /**
      * _more_
      *
@@ -831,6 +845,19 @@ public class MetadataManager extends RepositoryManager {
                     handler.handleFormSubmit(request, entry, map,
                                              newMetadataList);
                 }
+
+                if(!request.isAnonymous()
+                   && request.exists(ARG_METADATA_CLIPBOARD_COPY)) {
+                    List<Metadata> toCopy = new ArrayList<Metadata>();
+                    for (Metadata metadata : newMetadataList) {
+                        if (request.defined(ARG_METADATA_ID + SUFFIX_SELECT
+                                            + metadata.getId())) {
+                            toCopy.add(metadata);
+                        }
+                    }
+                    copyMetadataToClipboard(request, toCopy);
+                }
+
 
                 if (canEditParent
                         && request.exists(ARG_METADATA_ADDTOPARENT)) {
@@ -1029,10 +1056,13 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processMetadataForm(Request request) throws Exception {
+        Entry entry = getEntryManager().getEntry(request);
         StringBuffer sb = new StringBuffer();
         request.appendMessage(sb);
+        return processMetadataForm(request, entry, sb);
+    }
 
-        Entry entry = getEntryManager().getEntry(request);
+    public Result processMetadataForm(Request request, Entry entry, StringBuffer sb) throws Exception {
         boolean canEditParent = getAccessManager().canDoAction(request,
                                     getEntryManager().getParent(request,
                                         entry), Permission.ACTION_EDIT);
@@ -1054,13 +1084,11 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtil.space(2));
             sb.append(HtmlUtil.submit(msg("Delete selected"),
                                       ARG_METADATA_DELETE));
-            if (canEditParent) {
-                sb.append(HtmlUtil.space(2));
-                sb.append(
-                    HtmlUtil.submit(
-                        msg("Add selected to parent folder"),
-                        ARG_METADATA_ADDTOPARENT));
-            }
+            sb.append(HtmlUtil.space(2));
+            sb.append(
+                      HtmlUtil.submit(
+                                      msg("Copy selected to clipboard"),
+                                      ARG_METADATA_CLIPBOARD_COPY));
             //            sb.append(HtmlUtil.formTable());
             sb.append(HtmlUtil.br());
             for (Metadata metadata : metadataList) {
@@ -1109,6 +1137,10 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtil.space(2));
             sb.append(HtmlUtil.submit(msg("Delete Selected"),
                                       ARG_METADATA_DELETE));
+            sb.append(
+                      HtmlUtil.submit(
+                                      msg("Copy selected to clipboard"),
+                                      ARG_METADATA_CLIPBOARD_COPY));
             sb.append(HtmlUtil.formClose());
         }
 
@@ -1132,6 +1164,24 @@ public class MetadataManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntryManager().getEntry(request);
         sb.append(HtmlUtil.p());
+
+        if(request.get(ARG_METADATA_CLIPBOARD_PASTE, false)) {
+            List<Metadata>clipboard = getMetadataFromClipboard(request);
+            if(clipboard==null || clipboard.size()==0) {
+                sb.append(getRepository().showDialogError("Clipboard empty"));
+            } else {
+                //TODO: file attachments
+                for(Metadata copiedMetadata: clipboard) {
+                    Metadata newMetadata =
+                        new Metadata(getRepository().getGUID(),
+                                     entry.getId(), copiedMetadata);
+                    insertMetadata(newMetadata);
+                }
+                entry.setMetadata(null);
+                sb.append(getRepository().showDialogNote("Metadata pasted from clipboard"));
+            }
+            return processMetadataForm(request, entry, sb);
+        }
 
         if ( !request.exists(ARG_TYPE)) {
             makeAddList(request, entry, sb);
@@ -1165,7 +1215,30 @@ public class MetadataManager extends RepositoryManager {
         List<String> groups   = new ArrayList<String>();
         Hashtable    groupMap = new Hashtable();
 
-
+        List<Metadata>clipboard = getMetadataFromClipboard(request);
+        if(clipboard!=null && clipboard.size()>0) {
+            StringBuffer clipboardSB = new StringBuffer();
+            Entry dummyEntry = new Entry();
+            int cnt = 0;
+            for(Metadata copied: clipboard) {
+                MetadataHandler handler = findMetadataHandler(copied.getType());
+                MetadataType type = handler.getType(copied.getType());
+                String label = type.getTypeLabel(copied);
+                String row = label;
+                clipboardSB.append(row);
+                clipboardSB.append("<br>");
+                cnt++;
+            }
+            
+            request.uploadFormWithAuthToken(sb, URL_METADATA_ADDFORM);
+            sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HtmlUtil.hidden(ARG_METADATA_CLIPBOARD_PASTE, "true"));
+            sb.append(HtmlUtil.submit(msg("Copy from Clipboard")));
+            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtil.makeShowHideBlock("Clipboard", clipboardSB.toString(),
+                    false));
+            sb.append(HtmlUtil.p());
+        }
 
         for (MetadataType type : metadataTypes) {
             if (type.getAdminOnly() && !request.getUser().getAdmin()) {

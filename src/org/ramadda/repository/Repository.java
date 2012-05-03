@@ -118,7 +118,7 @@ import java.util.zip.*;
 public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {
 
-    /** _more_          */
+    /** _more_ */
     private static final org.ramadda.util.HttpFormField dummyFieldToForceCompile =
         null;
 
@@ -206,7 +206,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private EntryManager entryManager;
 
-    /** _more_          */
+    /** _more_ */
     private PageHandler pageHandler;
 
     /** _more_ */
@@ -248,7 +248,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Admin admin;
 
-    /** _more_          */
+    /** _more_ */
     private List<RepositoryManager> repositoryManagers =
         new ArrayList<RepositoryManager>();
 
@@ -483,8 +483,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (hostname.equals("ipaddress")) {
                 return getIpAddress();
             }
+
             return hostname;
         }
+
         return super.getHostname();
     }
 
@@ -503,6 +505,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return Integer.decode(port).intValue();
             }
         }
+
         return super.getPort();
     }
 
@@ -524,6 +527,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (getProperty(PROP_SSL_IGNORE, false)) {
             return false;
         }
+
         return getHttpsPort() >= 0;
     }
 
@@ -642,6 +646,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             result = sdf.format(d);
         }
+
         return HtmlUtil.span(result,
                              HtmlUtil.cssClass(CSS_CLASS_DATETIME)
                              + HtmlUtil.attr(HtmlUtil.ATTR_TITLE,
@@ -789,6 +794,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
         if (inputStream == null) {
             System.err.println("RAMADDA:  null properties: " + path);
+
             return;
         }
         properties.load(inputStream);
@@ -1156,23 +1162,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public boolean installPlugin(String pluginPath) throws Exception {
         try {
             //Remove any ..._file_ prefix
-            String tail = RepositoryUtil.getFileTail(pluginPath);
+            String tail          = RepositoryUtil.getFileTail(pluginPath);
             String newPluginFile =
                 IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
             InputStream      inputStream = IOUtil.getInputStream(pluginPath);
-            FileOutputStream fos         =
-                new FileOutputStream(newPluginFile);
+            FileOutputStream fos         = new FileOutputStream(newPluginFile);
             IOUtil.writeTo(inputStream, fos);
             IOUtil.close(inputStream);
             IOUtil.close(fos);
             boolean haveLoadedBefore =
                 getPluginManager().reloadFile(newPluginFile);
             loadPlugins();
+
             return haveLoadedBefore;
         } catch (Exception exc) {
             getLogManager().logError("Error installing plugin:" + pluginPath,
                                      exc);
         }
+
         return false;
     }
 
@@ -1213,14 +1220,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                 TypeHandler.TAG_TYPE);
             for (int i = 0; i < children.size(); i++) {
                 Element entryNode = (Element) children.get(i);
-                String classPath =
+                String  classPath =
                     XmlUtil.getAttribute(
                         entryNode, TypeHandler.TAG_HANDLER,
                         "org.ramadda.repository.type.GenericTypeHandler");
 
                 //System.err.println ("RAMADDA: loading type handler:" + classPath);
                 try {
-                    Class handlerClass = Misc.findClass(classPath);
+                    Class       handlerClass = Misc.findClass(classPath);
 
 
                     Constructor ctor = Misc.findConstructor(handlerClass,
@@ -1234,6 +1241,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     System.err.println("RAMADDA: Error loading type handler:"
                                        + classPath);
                     exc.printStackTrace();
+
                     throw exc;
                 }
             }
@@ -1259,7 +1267,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             List children = XmlUtil.findChildren(root, TAG_OUTPUTHANDLER);
             for (int i = 0; i < children.size(); i++) {
-                Element node = (Element) children.get(i);
+                Element node     = (Element) children.get(i);
                 boolean required = XmlUtil.getAttribute(node, ARG_REQUIRED,
                                        true);
                 try {
@@ -1283,6 +1291,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     } else {
                         getLogManager().logError(
                             "Error loading output handler file:" + file, exc);
+
                         throw exc;
                     }
                 }
@@ -1511,6 +1520,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (userManager == null) {
             userManager = doMakeUserManager();
         }
+
         return userManager;
     }
 
@@ -1536,6 +1546,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (monitorManager == null) {
             monitorManager = doMakeMonitorManager();
         }
+
         return monitorManager;
     }
 
@@ -1550,6 +1561,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             sessionManager = doMakeSessionManager();
             sessionManager.init();
         }
+
         return sessionManager;
     }
 
@@ -1563,6 +1575,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (pageHandler == null) {
             pageHandler = doMakePageHandler();
         }
+
         return pageHandler;
     }
 
@@ -1575,6 +1588,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (wikiManager == null) {
             wikiManager = doMakeWikiManager();
         }
+
         return wikiManager;
     }
 
@@ -1589,6 +1603,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             logManager = doMakeLogManager();
             logManager.init();
         }
+
         return logManager;
     }
 
@@ -1610,6 +1625,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (entryManager == null) {
             entryManager = doMakeEntryManager();
         }
+
         return entryManager;
     }
 
@@ -1623,6 +1639,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (associationManager == null) {
             associationManager = doMakeAssociationManager();
         }
+
         return associationManager;
     }
 
@@ -1635,6 +1652,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (harvesterManager == null) {
             harvesterManager = doMakeHarvesterManager();
         }
+
         return harvesterManager;
     }
 
@@ -1648,6 +1666,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (actionManager == null) {
             actionManager = doMakeActionManager();
         }
+
         return actionManager;
     }
 
@@ -1673,6 +1692,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (accessManager == null) {
             accessManager = doMakeAccessManager();
         }
+
         return accessManager;
     }
 
@@ -1700,6 +1720,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (searchManager == null) {
             searchManager = doMakeSearchManager();
         }
+
         return searchManager;
     }
 
@@ -1726,6 +1747,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (mapManager == null) {
             mapManager = doMakeMapManager();
         }
+
         return mapManager;
     }
 
@@ -1753,6 +1775,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (metadataManager == null) {
             metadataManager = doMakeMetadataManager();
         }
+
         return metadataManager;
     }
 
@@ -1779,6 +1802,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (registryManager == null) {
             registryManager = doMakeRegistryManager();
         }
+
         return registryManager;
     }
 
@@ -1794,6 +1818,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             storageManager = doMakeStorageManager();
             storageManager.init();
         }
+
         return storageManager;
     }
 
@@ -1806,6 +1831,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (pluginManager == null) {
             pluginManager = doMakePluginManager();
         }
+
         return pluginManager;
     }
 
@@ -1819,6 +1845,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (databaseManager == null) {
             databaseManager = doMakeDatabaseManager();
         }
+
         return databaseManager;
     }
 
@@ -1832,6 +1859,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (ftpManager == null) {
             ftpManager = doMakeFtpManager();
         }
+
         return ftpManager;
     }
 
@@ -1845,6 +1873,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (admin == null) {
             admin = doMakeAdmin();
         }
+
         return admin;
     }
 
@@ -1961,6 +1990,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = getStorageManager().localizePath(path);
             paths.add(path);
         }
+
         return paths;
     }
 
@@ -2035,6 +2065,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (apiMethod == null) {
                 getLogManager().logError("Could not find api for: "
                                          + requestUrl.getPath());
+
                 return;
             }
             if (isSSLEnabled(null) && apiMethod.getNeedsSsl()) {
@@ -2068,6 +2099,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (requestUrl.getNeedsSsl()) {
             return httpsUrl(getUrlBase() + requestUrl.getPath());
         }
+
         return getUrlBase() + requestUrl.getPath();
     }
 
@@ -2085,11 +2117,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               Hashtable handlers, String defaultHandler)
             throws Exception {
 
-        String request    = XmlUtil.getAttribute(node,
-                                ApiMethod.ATTR_REQUEST);
+        String  request = XmlUtil.getAttribute(node, ApiMethod.ATTR_REQUEST);
 
-        String methodName = XmlUtil.getAttribute(node, ApiMethod.ATTR_METHOD);
-        boolean needsSsl = XmlUtil.getAttributeFromTree(node,
+        String  methodName = XmlUtil.getAttribute(node, ApiMethod.ATTR_METHOD);
+        boolean needsSsl   = XmlUtil.getAttributeFromTree(node,
                                ApiMethod.ATTR_NEEDS_SSL, false);
         boolean checkAuthMethod = XmlUtil.getAttributeFromTree(node,
                                       ApiMethod.ATTR_CHECKAUTHMETHOD, false);
@@ -2185,6 +2216,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (handler == null) {
                 getLogManager().logInfo("Could not find handler for:"
                                         + handlerName + ":");
+
                 return;
             }
             handlers.put(handlerId, handler);
@@ -2199,7 +2231,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         Class[] paramTypes = new Class[] { Request.class };
-        Method method = Misc.findMethod(handler.getClass(), methodName,
+        Method  method     = Misc.findMethod(handler.getClass(), methodName,
                                         paramTypes);
         if (method == null) {
             throw new IllegalArgumentException("Unknown request method:"
@@ -2292,6 +2324,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((id == null) || (id.length() == 0)) {
             return OutputHandler.OUTPUT_HTML;
         }
+
         return outputTypeMap.get(id);
     }
 
@@ -2369,6 +2402,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         if (getEntryManager().isAnonymousUpload(entry)) {
                             links.add(makeLink(request, state.getEntry(),
                                     OUTPUT_PUBLISH));
+
                             break;
                         }
                     }
@@ -2378,6 +2412,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if ( !getAccessManager().canDoAction(request, entry,
                             Permission.ACTION_EDIT)) {
                         metadataOk = false;
+
                         break;
                     }
                 }
@@ -2394,6 +2429,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if ( !getAccessManager().canDoAction(request, entry,
                             Permission.ACTION_DELETE)) {
                         deleteOk = false;
+
                         break;
                     }
                 }
@@ -2430,6 +2466,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
                 entries.addAll(subGroups);
                 request.remove(ARG_DELETE_CONFIRM);
+
                 return getEntryManager().processEntryListDelete(request,
                         entries);
             }
@@ -2463,6 +2500,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (request.getUser().getAnonymous()) {
                     return new Result("", "");
                 }
+
                 return new Result(request.url(URL_ENTRY_COPY, ARG_FROM,
                         entry.getId()));
             }
@@ -2488,6 +2526,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     idBuffer.append(entry.getId());
                 }
                 request.put(ARG_FROM, idBuffer);
+
                 return getEntryManager().processEntryCopy(request);
 
                 //                return new Result(request.url(URL_ENTRY_COPY, ARG_FROM,
@@ -2511,6 +2550,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         if (entry.getResource().isFile()) {
                             links.add(makeLink(request, state.getEntry(),
                                     OUTPUT_FILELISTING));
+
                             break;
                         }
                     }
@@ -2562,6 +2602,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if ( !didOne) {
                     sb.append(showDialogNote("No files available"));
                 }
+
                 return makeLinksResult(request, msg("File Listing"), sb,
                                        new State(entry));
             }
@@ -2721,6 +2762,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                              "Basic realm=\"ramadda\"");
                         result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
                     }
+
                     return result;
                 }
             }
@@ -2839,6 +2881,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 path = path.substring(0, path.length() - 2);
                 if (incoming.startsWith(path)) {
                     apiMethod = tmp;
+
                     break;
                 }
             }
@@ -2846,6 +2889,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((apiMethod == null) && incoming.equals(urlBase)) {
             apiMethod = homeApi;
         }
+
         return apiMethod;
     }
 
@@ -2929,6 +2973,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                + " require login="
                                + getProperty(PROP_ACCESS_REQUIRELOGIN,
                                              false));
+
             throw new AccessException(
                 msg("You do not have permission to access this page"),
                 request);
@@ -2945,6 +2990,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                + getProperty(PROP_ACCESS_REQUIRELOGIN,
                                              false));
             apiMethod.printDebug(request);
+
             throw new AccessException(msg("Incorrect access"), request);
         }
 
@@ -2956,6 +3002,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 pageCacheList.remove(request);
                 pageCacheList.add(request);
                 result.setShouldDecorate(false);
+
                 return result;
             }
         }
@@ -2968,7 +3015,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ( !hasConnection) {
             //                && !incoming.startsWith(getUrlBase() + "/admin")) {
             cachingOk = false;
-            result = new Result("No Database",
+            result    = new Result("No Database",
                                 new StringBuffer("Database is shutdown"));
         } else {
             result = (Result) apiMethod.invoke(request);
@@ -3067,6 +3114,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
         }
+
         return null;
     }
 
@@ -3113,6 +3161,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                         msgLabel("Unknown request") + "\""
                                         + path + "\"")));
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
+
             return result;
         }
 
@@ -3137,10 +3186,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     inputStream = new ByteArrayInputStream(js.getBytes());
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
+
                     return getEntryManager().addHeaderToAncillaryPage(
                         request, new Result(BLANK, new StringBuffer(html)));
                 }
                 Result result = new Result(BLANK, inputStream, type);
+
                 //                result.setCacheOk(false);
                 return result;
             } catch (IOException fnfe) {
@@ -3158,11 +3209,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 inputStream = new ByteArrayInputStream(js.getBytes());
             } else if (path.endsWith(".html")) {
                 String html = IOUtil.readInputStream(inputStream);
+
                 return getEntryManager().addHeaderToAncillaryPage(request,
                         new Result(BLANK, new StringBuffer(html)));
             }
             String mimeType =
                 getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
+
             return new Result(BLANK, inputStream, mimeType);
         }
 
@@ -3195,6 +3248,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                 showDialogError(
                                     msgLabel("Unknown request") + path)));
         result.setResponseCode(Result.RESPONSE_NOTFOUND);
+
         return result;
 
 
@@ -3213,6 +3267,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (true) {
             return false;
         }
+
         return getProperty(PROP_DB_CANCACHE, true);
     }
 
@@ -3237,6 +3292,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             cacheResources = new Boolean(test.equals("true"));
         }
+
         return cacheResources.booleanValue();
     }
 
@@ -3377,6 +3433,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (prop != null) {
             return prop;
         }
+
         return dflt;
     }
 
@@ -3396,6 +3453,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (prop != null) {
             return new Boolean(prop).booleanValue();
         }
+
         return dflt;
     }
 
@@ -3413,6 +3471,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (prop != null) {
             return new Integer(prop.trim()).intValue();
         }
+
         return dflt;
     }
 
@@ -3430,6 +3489,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (prop != null) {
             return new Long(prop).longValue();
         }
+
         return dflt;
     }
 
@@ -3446,6 +3506,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (prop != null) {
             return new Double(prop).doubleValue();
         }
+
         return dflt;
     }
 
@@ -3612,6 +3673,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 //                System.err.println ("NOT OK: " + outputType);
             }
         }
+
         return okLinks;
     }
 
@@ -3638,6 +3700,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 okLinks.add(link);
             }
         }
+
         return okLinks;
     }
 
@@ -3654,6 +3717,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (OutputHandler outputHandler : outputHandlers) {
             allTypes.addAll(outputHandler.getTypes());
         }
+
         return allTypes;
     }
 
@@ -3673,6 +3737,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((prop == null) || prop.equals("true")) {
             return true;
         }
+
         return false;
     }
 
@@ -3768,6 +3833,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ( !isOutputTypeOK(outputType)) {
             return null;
         }
+
         return getOutputHandler(outputType.getId());
     }
 
@@ -3786,6 +3852,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (handler != null) {
             return handler;
         }
+
         throw new IllegalArgumentException(
             msgLabel("Could not find output handler for")
             + request.getOutput());
@@ -3812,6 +3879,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return outputHandler;
             }
         }
+
         return null;
     }
 
@@ -3886,6 +3954,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (request != null) {
             String type = request.getString(ARG_TYPE,
                                             TypeHandler.TYPE_ANY).trim();
+
             return getTypeHandler(type, false, true);
         } else {
             return getTypeHandler(TypeHandler.TYPE_FILE, false, true);
@@ -3947,6 +4016,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             typeHandler.setForUser(false);
             addTypeHandler(type, typeHandler);
         }
+
         return typeHandler;
     }
 
@@ -3963,14 +4033,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processPing(Request request) throws Exception {
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
-            Document resultDoc = XmlUtil.makeDocument();
-            Element resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
+            Document resultDoc  = XmlUtil.makeDocument();
+            Element  resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
                                      null, new String[] { ATTR_CODE,
                     "ok" });
             String xml = XmlUtil.toString(resultRoot);
+
             return new Result(xml, MIME_XML);
         }
         StringBuffer sb = new StringBuffer("OK");
+
         return new Result("", sb);
     }
 
@@ -4042,6 +4114,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (logoImage.length() == 0) {
             logoImage = "${root}/images/logo.png";
         }
+
         return logoImage;
     }
 
@@ -4053,6 +4126,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public ServerInfo getServerInfo() {
         int sslPort = getHttpsPort();
+
         return new ServerInfo(getHostname(), getPort(), sslPort,
                               getUrlBase(), getRepositoryName(),
                               getRepositoryDescription(),
@@ -4078,6 +4152,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Element  info = getServerInfo().toXml(this, doc);
             info.setAttribute(ATTR_CODE, CODE_OK);
             String xml = XmlUtil.toString(info);
+
             //            System.err.println("returning xml:" + xml);
             return new Result(xml, MIME_XML);
         }
@@ -4111,6 +4186,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             sb.append("<br>&nbsp;");
         }
         sb.append("</ul>");
+
         return new Result("Documentation", sb);
     }
 
@@ -4129,6 +4205,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result processMessage(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         request.appendMessage(sb);
+
         return new Result(BLANK, sb);
     }
 
@@ -4165,6 +4242,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         String url = request.getString(ARG_REDIRECT, "");
         url = new String(RepositoryUtil.decodeBase64(url));
+
         return new Result(url);
     }
 
@@ -4264,6 +4342,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         String header =
             StringUtil.join("<span class=\"subheader-sep\">|</span>", links);
+
         return HtmlUtil.tag(HtmlUtil.TAG_CENTER,
                             HtmlUtil.cssClass("subheader-container"),
                             HtmlUtil.tag(HtmlUtil.TAG_SPAN,
@@ -4315,6 +4394,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                 getEntryManager().getTopGroup().getName());
             links.add(html);
         }
+
         return links;
     }
 
@@ -4334,6 +4414,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return request.get(ARG_SKIP, 0)
                    + request.get(ARG_MAX, DB_MAX_ROWS);
         }
+
         return request.get(ARG_MAX, DB_MAX_ROWS);
     }
 
@@ -4348,6 +4429,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Request getTmpRequest() throws Exception {
         Request request = new Request(getRepository(), "", new Hashtable());
         request.setUser(getUserManager().getAnonymousUser());
+
         return request;
     }
 
@@ -4363,6 +4445,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Request getTmpRequest(Entry entry) throws Exception {
         Request request = getTmpRequest();
         request.setPageStyle(doMakePageStyle(request, entry));
+
         return request;
     }
 
@@ -4394,19 +4477,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String types = metadata.getAttr(6);
                 if ((types == null) || (types.trim().length() == 0)) {
                     theMetadata = metadata;
+
                     break;
                 }
                 for (String type : StringUtil.split(types, ",", true, true)) {
                     if (type.equals("file") && !entry.isGroup()) {
                         theMetadata = metadata;
+
                         break;
                     }
                     if (type.equals("folder") && entry.isGroup()) {
                         theMetadata = metadata;
+
                         break;
                     }
                     if (entry.getTypeHandler().isType(type)) {
                         theMetadata = metadata;
+
                         break;
                     }
                 }
@@ -4442,6 +4529,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     && (theMetadata.getAttr(5).trim().length() > 0)) {
                 pageStyle.setWikiTemplate(theMetadata.getAttr(5));
             }
+
             return pageStyle;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -4461,6 +4549,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Request getRequest(User user) throws Exception {
         Request request = new Request(getRepository(), "", new Hashtable());
         request.setUser(user);
+
         return request;
     }
 
@@ -4575,7 +4664,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
-        String prevUrl =
+        String   prevUrl  =
             HtmlUtil.space(1)
             + HtmlUtil.href(url + "&"
                             + CalendarOutputHandler.getUrlArgs(prev), "&lt;");
@@ -4740,6 +4829,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (cacheResources() && (resource != null)) {
             //            resources.put(id, resource);
         }
+
         return resource;
     }
 
@@ -4822,6 +4912,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             items.add(new TwoFacedObject(typeHandler.getLabel(),
                                          typeHandler.getType()));
         }
+
         return HtmlUtil.select(ARG_TYPE, items, selected);
     }
 
@@ -4842,8 +4933,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List<TypeHandler> tmp         = new ArrayList<TypeHandler>();
         if ( !typeHandler.isAnyHandler()) {
             tmp.add(typeHandler);
+
             return tmp;
         }
+
         //For now don't do the db query to find the type handlers
         return getTypeHandlers();
         /*
@@ -4903,6 +4996,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         tmp.add(0, "");
+
         return dataTypeList = tmp;
     }
 
@@ -4926,6 +5020,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (type == null) {
             type = "unknown";
         }
+
         return type;
     }
 
@@ -5050,6 +5145,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 orderBy = " ORDER BY " + Tables.ENTRIES.COL_NAME + order;
             }
         }
+
         return orderBy + limitString;
     }
 
@@ -5094,9 +5190,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 namesHolder.put(namesFile, names);
             } catch (Exception exc) {
                 getLogManager().logError("err:" + exc, exc);
+
                 throw exc;
             }
         }
+
         return names;
     }
 
@@ -5122,6 +5220,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (s == null) {
             return dflt;
         }
+
         return s;
     }
 
@@ -5172,13 +5271,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String getCalendarSelector(String formName, String fieldName) {
         String anchorName = "anchor." + fieldName;
         String divName    = "div." + fieldName;
-        String call = HtmlUtil.call("selectDate",
+        String call       = HtmlUtil.call("selectDate",
                                     HtmlUtil.comma(HtmlUtil.squote(divName),
         //                              "document.forms['"  + formName + "']." + fieldName, 
         "findFormElement('" + formName + "','" + fieldName
                             + "')", HtmlUtil.squote(anchorName),
                                     HtmlUtil.squote(
                                         "yyyy-MM-dd"))) + "return false;";
+
         return HtmlUtil
             .href("#", HtmlUtil
                 .img(iconUrl(ICON_CALENDAR), " Choose date", HtmlUtil
@@ -5257,7 +5357,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String           inputId    = "dateinput" + (HtmlUtil.blockCnt++);
 
 
-        String js =
+        String           js         =
             "<script>jQuery(function() {$( " + HtmlUtil.squote("#" + inputId)
             + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false });});</script>";
 
@@ -5313,13 +5413,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String compId   = "menu_" + HtmlUtil.blockCnt++;
         String linkId   = "menulink_" + HtmlUtil.blockCnt++;
         String contents = makePopupDiv(menuContents, compId, makeClose);
-        String onClick = HtmlUtil.onMouseClick(HtmlUtil.call("showPopup",
+        String onClick  = HtmlUtil.onMouseClick(HtmlUtil.call("showPopup",
                              HtmlUtil.comma(new String[] { "event",
                 HtmlUtil.squote(linkId), HtmlUtil.squote(compId), (alignLeft
                 ? "1"
                 : "0") })));
         String href = HtmlUtil.href("javascript:noop();", link,
                                     onClick + HtmlUtil.id(linkId));
+
         return href + contents;
     }
 
@@ -5340,7 +5441,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String  compId    = "menu_" + HtmlUtil.blockCnt++;
         String  linkId    = "menulink_" + HtmlUtil.blockCnt++;
         String  contents  = makeStickyPopupDiv(innerContents, compId);
-        String onClick =
+        String  onClick   =
             HtmlUtil.onMouseClick(HtmlUtil.call("showStickyPopup",
                 HtmlUtil.comma(new String[] { "event",
                 HtmlUtil.squote(linkId), HtmlUtil.squote(compId), (alignLeft
@@ -5348,6 +5449,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 : "0") })) + initCall);
         String href = HtmlUtil.href("javascript:noop();", link,
                                     onClick + HtmlUtil.id(linkId));
+
         return href + contents;
     }
 
@@ -5362,8 +5464,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String makeStickyPopupDiv(String contents, String compId) {
-        StringBuffer menu = new StringBuffer();
-        String cLink = HtmlUtil.jsLink(
+        StringBuffer menu  = new StringBuffer();
+        String       cLink = HtmlUtil.jsLink(
                            HtmlUtil.onMouseClick(
                                HtmlUtil.call(
                                    "hideElementById",
@@ -5374,6 +5476,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         menu.append(HtmlUtil.div(contents,
                                  HtmlUtil.id(compId)
                                  + HtmlUtil.cssClass(CSS_CLASS_POPUP)));
+
         return menu.toString();
     }
 
@@ -5402,6 +5505,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         menu.append(HtmlUtil.div(contents,
                                  HtmlUtil.id(compId)
                                  + HtmlUtil.cssClass(CSS_CLASS_POPUP)));
+
         return menu.toString();
     }
 
@@ -5427,6 +5531,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String buttons      = RepositoryUtil.buttons(okButton, cancelButton);
         fb.append(buttons);
         fb.append(HtmlUtil.formClose());
+
         return fb.toString();
     }
 
@@ -5442,6 +5547,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         xmlEncoder.addClassPatternReplacement(
             "ucar.unidata.repository.data.Catalog",
             "org.ramadda.geodata.thredds.Catalog");
+
         return xmlEncoder;
     }
 

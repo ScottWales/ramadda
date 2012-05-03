@@ -797,6 +797,21 @@ public class MetadataType extends MetadataTypeBase {
 
 
 
+    public String getTypeLabel(Metadata metadata)
+            throws Exception {
+        String nameString = getName();
+        for (MetadataElement element : getChildren()) {
+            String value = metadata.getAttr(element.getIndex());
+            if (value == null) {
+                value = "";
+            }
+            nameString = nameString.replace("${attr" + element.getIndex()
+                                            + "}", value);
+        }
+        return nameString;
+    }
+
+
     /**
      * _more_
      *
@@ -818,18 +833,7 @@ public class MetadataType extends MetadataTypeBase {
             content.append(handler.getSearchLink(request, metadata));
         }
 
-        String nameString = getName();
-
-        for (MetadataElement element : getChildren()) {
-            String value = metadata.getAttr(element.getIndex());
-            if (value == null) {
-                value = "";
-            }
-            nameString = nameString.replace("${attr" + element.getIndex()
-                                            + "}", value);
-        }
-
-
+        String nameString =  getTypeLabel(metadata);
         String lbl          = msgLabel(nameString);
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
         if (htmlTemplate != null) {

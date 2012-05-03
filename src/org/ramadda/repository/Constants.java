@@ -148,7 +148,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_FILE = "ramadda.icon.file";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FILELISTING = "ramadda.icon.filelisting";
 
     /** _more_ */
@@ -170,6 +170,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_GRAPH = "ramadda.icon.graph";
+
+    /** _more_          */
     public static final String ICON_TABLE = "ramadda.icon.table";
 
     /** _more_ */
@@ -229,6 +231,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_MAP = "ramadda.icon.map";
+
+    /** _more_          */
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
 
 
@@ -483,6 +487,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_URL = "url";
 
+    /** _more_          */
     public static final String ATTR_SIZE = "size";
 
     /** _more_ */
@@ -849,6 +854,7 @@ public interface Constants {
                 return false;
             }
             DateArg that = (DateArg) o;
+
             return this.suffix.equals(that.suffix);
         }
 
@@ -934,6 +940,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_LABEL = "label";
 
+    /** _more_          */
     public static final String ARG_LANGUAGE = "language";
 
     /** _more_ */
@@ -980,6 +987,14 @@ public interface Constants {
         "metadata.addtoparent";
 
     /** _more_ */
+    public static final String ARG_METADATA_CLIPBOARD_COPY =
+        "metadata.clipboard.copy";
+
+    /** _more_          */
+    public static final String ARG_METADATA_CLIPBOARD_PASTE =
+        "metadata.clipboard.paste";
+
+    /** _more_ */
     public static final String ARG_METADATA_ATTR = "metadata.attr";
 
 
@@ -1024,7 +1039,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_DOCACHE = "ramadda.docache";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ENABLE_FILE_LISTING =
         "ramadda.enable_file_listing";
 
@@ -1521,7 +1536,9 @@ public interface Constants {
     public static final String PROP_ACCESS_REQUIRELOGIN =
         "ramadda.access.requirelogin";
 
-    public static final String PROP_PASSWORD_OLDMD5 = "ramadda.password.oldmd5";
+    /** _more_          */
+    public static final String PROP_PASSWORD_OLDMD5 =
+        "ramadda.password.oldmd5";
 
     /** _more_ */
     public static final String PROP_ACCESS_ALLSSL = "ramadda.access.allssl";
@@ -1786,8 +1803,8 @@ public interface Constants {
     public static final String PROP_UPLOAD_MAXSIZEGB =
         "ramadda.upload.maxsizegb";
 
-    public static final String PROP_CACHE_TTL =
-        "ramadda.cache.ttl";
+    /** _more_          */
+    public static final String PROP_CACHE_TTL = "ramadda.cache.ttl";
 
 
     /** _more_ */
@@ -1928,6 +1945,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String RESPONSE_XML = "xml";
+
+    /** _more_          */
     public static final String RESPONSE_TEXT = "text";
 
     /** _more_ */

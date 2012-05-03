@@ -145,6 +145,12 @@ public class Metadata implements Constants {
      */
     public Metadata() {}
 
+
+    public Metadata(Metadata that) {
+        this("","",that);
+   }
+
+
     /**
      * _more_
      *
@@ -294,11 +300,11 @@ public class Metadata implements Constants {
         this.attr2     = that.attr2;
         this.attr3     = that.attr3;
         this.attr4     = that.attr4;
-        this.extra     = that.extra;
-        this.values = that.values;
+        this.extra     = that.getExtra();
         if (this.extra == null) {
             this.extra = "";
         }
+        this.values = that.values;
     }
 
     /**
@@ -528,8 +534,6 @@ public class Metadata implements Constants {
         return "entry:" + entryId + " type:" + type + " attr1:" + attr1
                + " attr2:" + attr2 + " attr3:" + attr3 + " attr4:" + attr4;
     }
-
-
 
 
     private String getValue(int index, String dflt) {
@@ -949,7 +953,7 @@ public class Metadata implements Constants {
         }
         Hashtable<Integer, String> tmp = extraToMap(extra);
         extraMap = tmp;
-        extra    = null;
+        //        extra    = null;
         return tmp;
     }
 

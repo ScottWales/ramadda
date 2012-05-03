@@ -634,6 +634,10 @@ public class Entry implements Cloneable {
         return typeHandler.getType();
     }
 
+    public boolean isType(String type) {
+        return getType().equals(type);
+    }
+
 
     /**
      * Get the Type property.
