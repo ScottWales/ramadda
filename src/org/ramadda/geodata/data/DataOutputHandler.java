@@ -754,7 +754,7 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
-    private boolean isAggregation(Entry entry) {
+    public boolean isAggregation(Entry entry) {
         return entry.getType().equals(
                                       GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
     }
@@ -2893,7 +2893,7 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private OpendapApiHandler getOpendapHandler() {
+    public OpendapApiHandler getOpendapHandler() {
         return (OpendapApiHandler) getRepository().getApiHandler(
             OpendapApiHandler.API_ID);
     }
