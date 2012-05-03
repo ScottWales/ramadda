@@ -746,7 +746,7 @@ public class DataOutputHandler extends OutputHandler {
                 entry)) {
             return;
         }
-        String  url         = getFullTdsUrl(entry);
+        String  url         = getAbsoluteOpendapUrl(entry);
         Element serviceNode = XmlUtil.create(TAG_SERVICE, node);
         XmlUtil.setAttributes(serviceNode, new String[] { ATTR_TYPE,
                 SERVICE_OPENDAP, ATTR_URL, url });
@@ -850,17 +850,8 @@ public class DataOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    public String getFullTdsUrl(Entry entry) {
-        /*        if (true) {
-            return getRepository().absoluteUrl(
-                getOpendapHandler().getOpendapUrl(entry));
-        }
-        */
-        return getRepository().URL_ENTRY_SHOW.getFullUrl() + "/" + ARG_OUTPUT
-               + ":" + Request.encodeEmbedded(OUTPUT_OPENDAP) + "/"
-               + ARG_ENTRYID + ":" + Request.encodeEmbedded(entry.getId())
-               + "/" + getStorageManager().getFileTail(entry)
-               + "/dodsC/entry.das";
+    public String getAbsoluteOpendapUrl(Entry entry) {
+        return getOpendapHandler().getAbsoluteOpendapUrl(entry);
     }
 
 
@@ -912,22 +903,18 @@ public class DataOutputHandler extends OutputHandler {
      * @return Can the given entry be served by the tds
      */
     public boolean canLoadAsCdm(Entry entry) {
-        if (entry.getType().equals(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
+        if (entry.isType(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             return true;
         }
 
         if (isAggregation(entry)) {
             return true;
         }
-        if ( !entry.getType().equals(
-                OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
-            if ( !entry.isFile()) {
-                return false;
-            }
-
-            if (excludedByPattern(entry, TYPE_CDM)) {
-                return false;
-            }
+        if ( !entry.isFile()) {
+            return false;
+        }
+        if (excludedByPattern(entry, TYPE_CDM)) {
+            return false;
         }
 
         String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
@@ -936,7 +923,6 @@ public class DataOutputHandler extends OutputHandler {
                 return true;
             }
         }
-
 
         if (entry.getResource().isRemoteFile()) {
             String path = entry.getResource().getPath();
@@ -1260,8 +1246,8 @@ public class DataOutputHandler extends OutputHandler {
              *  This gets hung up calling back into the repository
              *  so for now don't do it and just use the file
              */
-            String opendapUrl = getFullTdsUrl(entry);
-            path = opendapUrl;
+            path = getAbsoluteOpendapUrl(entry);
+
             NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
             NcMLWriter writer = new NcMLWriter();
             String     xml    = writer.writeXML(ncFile);
