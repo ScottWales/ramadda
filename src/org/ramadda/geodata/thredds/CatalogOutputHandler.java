@@ -613,17 +613,11 @@ public class CatalogOutputHandler extends OutputHandler {
         if (canDataLoad(request, entry)
                 && !entry.getType().equals(
                     OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
-            String urlPath = getDataOutputHandler().getOpendapUrl(entry);
-            boolean aggregation =
-                entry.getType().equals(
-                    GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
-
-            addService(catalogInfo, SERVICE_OPENDAP,
-                       getRepository().URL_ENTRY_SHOW.getFullUrl());
-
+            String urlPath = getDataOutputHandler().getOpendapHandler().getOpendapSuffix(entry);
+            addService(catalogInfo, SERVICE_OPENDAP,getDataOutputHandler().getOpendapHandler().getOpendapPrefix(entry));
             Element opendapDataDataset = dataset;
             cnt++;
-            if (aggregation) {
+            if (getDataOutputHandler().isAggregation(entry)) {
                 opendapDataDataset = XmlUtil.create(catalogInfo.doc,
                         CatalogUtil.TAG_DATASET, opendapDataDataset,
                         new String[] { CatalogUtil.ATTR_NAME,
