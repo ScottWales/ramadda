@@ -86,8 +86,8 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_WEBSTART =
-        new OutputType("View in IDV", "idv.webstart", OutputType.TYPE_OTHER,
-                       "", "/icons/idv.gif", IdvOutputHandler.GROUP_DATA);
+        new OutputType("Open data in IDV", "idv.webstart", OutputType.TYPE_OTHER,
+                       "", "/idv/idv.gif", IdvOutputHandler.GROUP_DATA);
 
 
 
@@ -243,12 +243,12 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                 getMetadataManager().findMetadata(entry,
                     ContentMetadataHandler.TYPE_ATTACHMENT, true);
 
-            DataOutputHandler data =
+            DataOutputHandler dataOutputHandler =
                 (DataOutputHandler) getRepository().getOutputHandler(
                     DataOutputHandler.OUTPUT_OPENDAP);
-            if ((data != null) && data.canLoadAsCdm(entry)) {
+            if ((dataOutputHandler != null) && dataOutputHandler.canLoadAsCdm(entry)) {
                 String embeddedBundle = null;
-                String opendapUrl     = data.getFullTdsUrl(entry);
+                String opendapUrl     = dataOutputHandler.getAbsoluteOpendapUrl(entry);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         if (metadata.getAttr1().endsWith(".xidv")) {
