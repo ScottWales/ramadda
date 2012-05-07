@@ -43,7 +43,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
     /** Top-level path element */
     public static final String PATH_OPENDAP = "opendap";
 
-    
+
     /** opendap suffix to use. The dodsC is from the TDS paths. The IDV uses it to recognize opendap grids */
     public static final String OPENDAP_SUFFIX = "dodsC/entry.das";
 
@@ -66,8 +66,16 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
     }
 
 
-    public String getAbsoluteOpendapUrl(Entry entry) {
-        return getRepository().absoluteUrl(getOpendapUrl(entry));
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public String getAbsoluteOpendapUrl(Request request, Entry entry) {
+        return request.getAbsoluteUrl(getOpendapUrl(entry));
     }
 
     /**
@@ -78,28 +86,44 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
      * @return opendap url
      */
     public String getOpendapUrl(Entry entry) {
-        return  getOpendapPrefix(entry) + getOpendapSuffix(entry);
+        return getOpendapPrefix(entry) + getOpendapSuffix(entry);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getOpendapPrefix(Entry entry) {
-        return  getRepository().URL_ENTRY_SHOW.toString();
+        return getRepository().URL_ENTRY_SHOW.toString();
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getOpendapSuffix(Entry entry) {
         String url;
         //Always use the full /entry/show/... url
         //        if(getEntryManager().isSynthEntry(entry.getId())) {
-        url =   "/" + ARG_OUTPUT + ":"
-               + Request.encodeEmbedded(DataOutputHandler.OUTPUT_OPENDAP) + "/" + ARG_ENTRYID
-               + ":" + Request.encodeEmbedded(entry.getId()) + "/"
-            + getStorageManager().getFileTail(entry) + "/" + OPENDAP_SUFFIX;
-            /*        } else {
-            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
-                + entry.getFullName() + "/" + OPENDAP_SUFFIX;
-                }*/
+        url = "/" + ARG_OUTPUT + ":"
+              + Request.encodeEmbedded(DataOutputHandler.OUTPUT_OPENDAP)
+              + "/" + ARG_ENTRYID + ":"
+              + Request.encodeEmbedded(entry.getId()) + "/"
+              + getStorageManager().getFileTail(entry) + "/" + OPENDAP_SUFFIX;
+        /*        } else {
+        url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
+            + entry.getFullName() + "/" + OPENDAP_SUFFIX;
+            }*/
         url = url.replaceAll(" ", "+");
+
         return url;
     }
 
@@ -125,24 +149,25 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
         path = path.substring(prefix.length());
         path = IOUtil.getFileRoot(path);
         //Check for the dodsC in the path.
-        if(path.endsWith("dodsC")) {
+        if (path.endsWith("dodsC")) {
             path = IOUtil.getFileRoot(path);
         }
         path = path.replaceAll("\\+", " ");
 
         Entry entry;
 
-        if(request.exists(ARG_ENTRYID)) {
+        if (request.exists(ARG_ENTRYID)) {
             entry = getEntryManager().getEntry(request);
         } else {
             entry = getEntryManager().findEntryFromName(request, path,
-                          request.getUser(), false);
+                    request.getUser(), false);
         }
 
         if (entry == null) {
             throw new IllegalArgumentException("Could not find entry:"
                     + path);
         }
+
         return dataOutputHandler.outputOpendap(request, entry);
     }
 

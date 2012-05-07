@@ -379,6 +379,7 @@ public class DataOutputHandler extends OutputHandler {
             ncGetCounter.incr();
             try {
                 dataset.sync();
+
                 return dataset;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -392,6 +393,7 @@ public class DataOutputHandler extends OutputHandler {
                 NetcdfDataset dataset = NetcdfDataset.openDataset(path);
                 //                NetcdfDataset dataset = NetcdfDataset.openFile(path);
                 ncCreateCounter.incr();
+
                 return dataset;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -427,6 +429,7 @@ public class DataOutputHandler extends OutputHandler {
             ncGetCounter.incr();
             try {
                 ncFile.sync();
+
                 return ncFile;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -437,15 +440,17 @@ public class DataOutputHandler extends OutputHandler {
             try {
                 getStorageManager().dirTouched(nj22Dir, null);
                 //                NetcdfDataset dataset = NetcdfDataset.openDataset(path);
-        long t1 = System.currentTimeMillis();
+                long       t1     = System.currentTimeMillis();
                 NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
-        long t2 = System.currentTimeMillis();
-        System.err.println("NetcdfDataset.openFile: time:" + (t2-t1));
+                long       t2     = System.currentTimeMillis();
+                System.err.println("NetcdfDataset.openFile: time:"
+                                   + (t2 - t1));
 
 
 
 
                 ncCreateCounter.incr();
+
                 return ncFile;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -471,6 +476,7 @@ public class DataOutputHandler extends OutputHandler {
             GridDataset dataset = super.getFromPool(list);
             try {
                 dataset.sync();
+
                 return dataset;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -483,15 +489,16 @@ public class DataOutputHandler extends OutputHandler {
             try {
                 getStorageManager().dirTouched(nj22Dir, null);
                 gridOpenCounter.incr();
-                long t1 = System.currentTimeMillis();
+                long        t1  = System.currentTimeMillis();
                 GridDataset gds = GridDataset.open(path);
-                long t2 = System.currentTimeMillis();
-                System.err.println("GridDataset.open  time:" + (t2-t1));
+                long        t2  = System.currentTimeMillis();
+                System.err.println("GridDataset.open  time:" + (t2 - t1));
                 if (gds.getGrids().iterator().hasNext()) {
                     return gds;
                 } else {
                     gridCloseCounter.incr();
                     gds.close();
+
                     return null;
                 }
             } catch (Exception exc) {
@@ -519,6 +526,7 @@ public class DataOutputHandler extends OutputHandler {
             } else {
                 //                gridCloseCounter.incr();
                 gds.close();
+
                 return null;
             }
         } catch (Exception exc) {
@@ -559,6 +567,7 @@ public class DataOutputHandler extends OutputHandler {
                         .open(ucar.nc2.constants.FeatureType.ANY_POINT, path,
                               null, buf);
                 }
+
                 return pods;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -746,7 +755,7 @@ public class DataOutputHandler extends OutputHandler {
                 entry)) {
             return;
         }
-        String  url         = getAbsoluteOpendapUrl(entry);
+        String  url         = getAbsoluteOpendapUrl(request, entry);
         Element serviceNode = XmlUtil.create(TAG_SERVICE, node);
         XmlUtil.setAttributes(serviceNode, new String[] { ATTR_TYPE,
                 SERVICE_OPENDAP, ATTR_URL, url });
@@ -754,9 +763,16 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public boolean isAggregation(Entry entry) {
         return entry.getType().equals(
-                                      GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
+            GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
     }
 
     /**
@@ -773,8 +789,7 @@ public class DataOutputHandler extends OutputHandler {
 
         Entry entry = state.entry;
 
-        if ((state.group != null)
-            && isAggregation(state.group)) {
+        if ((state.group != null) && isAggregation(state.group)) {
             entry = state.group;
         }
 
@@ -797,6 +812,7 @@ public class DataOutputHandler extends OutputHandler {
                 //                System.err.println("DataOutputHandler (cdm) getEntryLinks  "
                 //                                   + entry.getName() + " time:" + (t2 - t1));
             }
+
             return;
         }
 
@@ -846,12 +862,14 @@ public class DataOutputHandler extends OutputHandler {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      *
      * @return _more_
      */
-    public String getAbsoluteOpendapUrl(Entry entry) {
-        return getOpendapHandler().getAbsoluteOpendapUrl(entry);
+    public String getAbsoluteOpendapUrl(Request request, Entry entry) {
+        return getOpendapHandler().getAbsoluteOpendapUrl(request, entry);
     }
 
 
@@ -890,6 +908,7 @@ public class DataOutputHandler extends OutputHandler {
         if (url.indexOf("dods") >= 0) {
             return true;
         }
+
         return true;
     }
 
@@ -949,6 +968,7 @@ public class DataOutputHandler extends OutputHandler {
             b = new Boolean(ok);
             cdmEntries.put(entry.getId(), b);
         }
+
         return b.booleanValue();
     }
 
@@ -983,6 +1003,7 @@ public class DataOutputHandler extends OutputHandler {
             }
             pointEntries.put(entry.getId(), b = new Boolean(ok));
         }
+
         return b.booleanValue();
     }
 
@@ -1016,6 +1037,7 @@ public class DataOutputHandler extends OutputHandler {
             }
             trajectoryEntries.put(entry.getId(), b = new Boolean(ok));
         }
+
         return b.booleanValue();
     }
 
@@ -1081,6 +1103,7 @@ public class DataOutputHandler extends OutputHandler {
         if (url == null) {
             return false;
         }
+
         return hasSuffixForType(url, type, forNot);
     }
 
@@ -1201,7 +1224,7 @@ public class DataOutputHandler extends OutputHandler {
         if (includedByPattern(entry, TYPE_GRID)) {
             return true;
         }
-        if (!canLoadAsCdm(entry)) {
+        if ( !canLoadAsCdm(entry)) {
             return false;
         }
 
@@ -1223,6 +1246,7 @@ public class DataOutputHandler extends OutputHandler {
             b = new Boolean(ok);
             gridEntries.put(entry.getId(), b);
         }
+
         return b.booleanValue();
     }
 
@@ -1246,13 +1270,14 @@ public class DataOutputHandler extends OutputHandler {
              *  This gets hung up calling back into the repository
              *  so for now don't do it and just use the file
              */
-            path = getAbsoluteOpendapUrl(entry);
+            path = getAbsoluteOpendapUrl(request, entry);
 
             NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
             NcMLWriter writer = new NcMLWriter();
             String     xml    = writer.writeXML(ncFile);
             Result result = new Result("", new StringBuffer(xml), "text/xml");
             ncFile.close();
+
             return result;
         }
 
@@ -1274,6 +1299,7 @@ public class DataOutputHandler extends OutputHandler {
             } else {
                 sb.append("You cannot add properties");
             }
+
             return makeLinksResult(request, "CDL", sb, new State(entry));
         }
 
@@ -1314,6 +1340,7 @@ public class DataOutputHandler extends OutputHandler {
             sb.append("<pre>" + bos.toString() + "</pre>");
             ncDatasetPool.put(path, dataset);
         }
+
         return makeLinksResult(request, "CDL", sb, new State(entry));
     }
 
@@ -1330,6 +1357,7 @@ public class DataOutputHandler extends OutputHandler {
             return null;
         }
         extCounter.incr();
+
         return ncDatasetPool.get(path);
     }
 
@@ -1398,6 +1426,7 @@ public class DataOutputHandler extends OutputHandler {
         if ( !canLoadAsPoint(entry)) {
             return null;
         }
+
         return pointPool.get(path);
     }
 
@@ -1493,8 +1522,7 @@ public class DataOutputHandler extends OutputHandler {
             //                System.err.println ("varNames:" + varNames);
 
             QueryParams qp = new QueryParams();
-            String format  = request.getString(ARG_FORMAT,
-                                 QueryParams.NETCDF);
+            String format  = request.getString(ARG_FORMAT, QueryParams.NETCDF);
             qp.acceptType = (format.equals(FORMAT_TIMESERIES_CHART)
                              || format.equals(FORMAT_TIMESERIES_IMAGE))
                             ? QueryParams.CSV
@@ -1532,8 +1560,8 @@ public class DataOutputHandler extends OutputHandler {
 
             String baseName = IOUtil.stripExtension(entry.getName());
             if (format.equals(FORMAT_TIMESERIES_CHART)) {
-                StringBuffer buf = new StringBuffer();
-                String chartTemplate =
+                StringBuffer buf           = new StringBuffer();
+                String       chartTemplate =
                     getRepository().getResource(
                         "/org/ramadda/repository/resources/chart/dycharts.html");
                 chartTemplate = chartTemplate.replaceAll("\\$\\{urlroot\\}",
@@ -1564,6 +1592,7 @@ public class DataOutputHandler extends OutputHandler {
                 html = html.replace("${dataurl}", dataUrl);
 
                 buf.append(html);
+
                 return new Result("Point As Grid Time Series", buf);
             }
 
@@ -1601,6 +1630,7 @@ public class DataOutputHandler extends OutputHandler {
                 //with the correct name and suffix
                 result.setReturnFilename(baseName + suffix);
             }
+
             return result;
         }
 
@@ -1721,10 +1751,10 @@ public class DataOutputHandler extends OutputHandler {
      * @return  the dates or null
      */
     private List<Date> getGridDates(GridDataset dataset) {
-        List<Date>         gridDates = null;
-        List<GridDatatype> grids     = dataset.getGrids();
-        HashSet<Date>      dateHash  = new HashSet<Date>();
-        List<CoordinateAxis1DTime> timeAxes =
+        List<Date>                 gridDates = null;
+        List<GridDatatype>         grids     = dataset.getGrids();
+        HashSet<Date>              dateHash  = new HashSet<Date>();
+        List<CoordinateAxis1DTime> timeAxes  =
             new ArrayList<CoordinateAxis1DTime>();
 
         for (GridDatatype grid : grids) {
@@ -1744,6 +1774,7 @@ public class DataOutputHandler extends OutputHandler {
                 Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
             Collections.sort(gridDates);
         }
+
         return gridDates;
     }
 
@@ -1764,7 +1795,7 @@ public class DataOutputHandler extends OutputHandler {
 
         for (GridDatatype grid : sortGrids(dataset)) {
             String cbxId = "varcbx_" + (varCnt++);
-            String call = HtmlUtil.attr(
+            String call  = HtmlUtil.attr(
                               HtmlUtil.ATTR_ONCLICK,
                               HtmlUtil.call(
                                   "checkboxClicked",
@@ -1810,6 +1841,7 @@ public class DataOutputHandler extends OutputHandler {
             }
             varSB.append(varSB3D);
         }
+
         return varSB;
     }
 
@@ -1831,6 +1863,7 @@ public class DataOutputHandler extends OutputHandler {
             request.put(ARG_FORMAT, FORMAT_TIMESERIES_IMAGE);
             String redirectUrl = request.getRequestPath() + "/" + baseName
                                  + ".png" + "?" + request.getUrlArgs();
+
             return new Result("Point As Grid Time Series Image",
                               new StringBuffer(HtmlUtil.img(redirectUrl,
                                   "Image is being processed...")));
@@ -1848,6 +1881,7 @@ public class DataOutputHandler extends OutputHandler {
                     return result;
                 }
             }
+
             return outputGridAsPointForm(request, entry, gds, sb);
         } finally {
             returnGridDataset(path, gds);
@@ -1897,12 +1931,14 @@ public class DataOutputHandler extends OutputHandler {
                                   request.getString(spatialArg + ".original",
                                       ""))) {
                     anySpatialDifferent = true;
+
                     break;
                 }
             }
             for (String spatialArg : SPATIALARGS) {
                 if ( !request.defined(spatialArg)) {
                     haveAllSpatialArgs = false;
+
                     break;
                 }
             }
@@ -1944,7 +1980,7 @@ public class DataOutputHandler extends OutputHandler {
                         "No variables selected"));
             } else {
                 NetcdfCFWriter writer = new NetcdfCFWriter();
-                File f =
+                File           f      =
                     getRepository().getStorageManager().getTmpFile(request,
                         "subset.nc");
                 GridDataset gds = getGridDataset(entry, path);
@@ -1962,6 +1998,7 @@ public class DataOutputHandler extends OutputHandler {
                         getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
                     Entry newEntry =
                         typeHandler.createEntry(getRepository().getGUID());
+
                     return getEntryManager().processEntryPublish(request, f,
                             newEntry, entry, "subset of");
                 }
@@ -1972,7 +2009,7 @@ public class DataOutputHandler extends OutputHandler {
             }
         }
 
-        String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
+        String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
                           + "_subset.nc";
 
@@ -2059,6 +2096,7 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.submit(msg("Subset Grid")));
         sb.append(HtmlUtil.formClose());
         returnGridDataset(path, dataset);
+
         //        gridPool.put(path, dataset);
         return makeLinksResult(request, msg("Grid Subset"), sb,
                                new State(entry));
@@ -2084,6 +2122,7 @@ public class DataOutputHandler extends OutputHandler {
         for (Object[] tuple : (List<Object[]>) tuples) {
             result.add((GridDatatype) tuple[1]);
         }
+
         return result;
     }
 
@@ -2122,6 +2161,7 @@ public class DataOutputHandler extends OutputHandler {
             throw new IllegalArgumentException(
                 "Can't handle collection of type " + fc.getClass().getName());
         }
+
         return collection.getPointFeatureIterator(16384);
     }
 
@@ -2328,6 +2368,7 @@ public class DataOutputHandler extends OutputHandler {
                 throw new IllegalArgumentException("Unknown array type:"
                         + fromClass.getName());
             }
+
             return values;
         }
 
@@ -2355,8 +2396,8 @@ public class DataOutputHandler extends OutputHandler {
         List trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
         for (int i = 0; i < trajectories.size(); i++) {
-            List allVariables = tod.getDataVariables();
-            TrajectoryObsDatatype todt =
+            List                  allVariables = tod.getDataVariables();
+            TrajectoryObsDatatype todt         =
                 (TrajectoryObsDatatype) trajectories.get(i);
             float[] lats = toFloatArray(todt.getLatitude(null));
             float[] lons = toFloatArray(todt.getLongitude(null));
@@ -2384,6 +2425,7 @@ public class DataOutputHandler extends OutputHandler {
                     continue;
                 }
                 theVar = var;
+
                 break;
             }
             if (theVar == null) {
@@ -2394,6 +2436,7 @@ public class DataOutputHandler extends OutputHandler {
         map.center();
         sb.append(map.getHtml());
         trajectoryPool.put(path, tod);
+
         return new Result(msg("Trajectory Map"), sb);
 
 
@@ -2511,6 +2554,7 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.formTableClose());
         sb.append(HtmlUtil.submit("Subset Point Data", ARG_SUBMIT));
         sb.append(HtmlUtil.formClose());
+
         return new Result("", sb);
     }
 
@@ -2558,6 +2602,7 @@ public class DataOutputHandler extends OutputHandler {
         pw.close();
         Result result = new Result();
         result.setNeedToWrite(false);
+
         return result;
     }
 
@@ -2653,8 +2698,7 @@ public class DataOutputHandler extends OutputHandler {
         PointFeatureIterator dataIterator = getPointIterator(pod);
 
         Element              root         = KmlUtil.kml(entry.getName());
-        Element              docNode = KmlUtil.document(root,
-                                           entry.getName());
+        Element              docNode = KmlUtil.document(root, entry.getName());
 
         while (dataIterator.hasNext()) {
             PointFeature po = (PointFeature) dataIterator.next();
@@ -2706,6 +2750,7 @@ public class DataOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_WCS) || output.equals(OUTPUT_OPENDAP)) {
             return AuthorizationMethod.AUTH_HTTP;
         }
+
         return super.getAuthorizationMethod(request);
     }
 
@@ -2732,6 +2777,7 @@ public class DataOutputHandler extends OutputHandler {
         if (isAggregation(group)) {
             return outputEntry(request, outputType, group);
         }
+
         //        System.err.println("group:" + group + " " + group.getType());
         return super.outputGroup(request, outputType, group, subGroups,
                                  entries);
@@ -2796,9 +2842,11 @@ public class DataOutputHandler extends OutputHandler {
                 Result result = new Result("", new StringBuffer());
                 result.addHttpHeader(HtmlUtil.HTTP_CONTENT_DESCRIPTION,
                                      "dods-dds");
+
                 return result;
             }
             Result result = outputOpendap(request, entry);
+
             return result;
         }
 
@@ -2844,8 +2892,9 @@ public class DataOutputHandler extends OutputHandler {
         } else if (isAggregation(entry)) {
             GridAggregationTypeHandler gridAggregation =
                 (GridAggregationTypeHandler) entry.getTypeHandler();
-            long[]timestamp = {0};
-            location = gridAggregation.getNcmlFile(request, entry, timestamp).toString();
+            long[] timestamp = { 0 };
+            location = gridAggregation.getNcmlFile(request, entry,
+                    timestamp).toString();
             // Something must be fixed to check if its empty
         } else {
             location = getStorageManager().getFastResourcePath(entry);
@@ -2875,15 +2924,17 @@ public class DataOutputHandler extends OutputHandler {
                 ncml = ncml.replace("${location}", location);
                 //                System.err.println("ncml:" + ncml);
                 //Use the last modified time of the ncml file so we pick up any updated file
-                String dttm = templateNcmlFile.lastModified() + "";
+                String dttm     = templateNcmlFile.lastModified() + "";
                 String fileName = dttm + "_" + entry.getId() + "_"
                                   + metadata.getId() + SUFFIX_NCML;
                 File ncmlFile = getStorageManager().getScratchFile(fileName);
                 IOUtil.writeBytes(ncmlFile, ncml.getBytes());
                 location = ncmlFile.toString();
+
                 break;
             }
         }
+
         return location;
     }
 
@@ -2954,6 +3005,7 @@ public class DataOutputHandler extends OutputHandler {
         result.setNeedToWrite(false);
         opendapCounter.decr();
         ncFilePool.put(location, ncFile);
+
         return result;
     }
 
@@ -3009,6 +3061,7 @@ public class DataOutputHandler extends OutputHandler {
             try {
                 GuardedDatasetImpl guardedDataset =
                     new GuardedDatasetImpl(reqPath, ncFile, true);
+
                 return guardedDataset;
             } catch (Exception exc) {
                 throw new WrapperException(exc);
@@ -3074,17 +3127,17 @@ public class DataOutputHandler extends OutputHandler {
         //sb.append(getHeader(request, entry));
         sb.append(header(msg("Chart")));
 
-        TimeSeriesCollection dummy  = new TimeSeriesCollection();
+        TimeSeriesCollection            dummy     = new TimeSeriesCollection();
         JFreeChart chart = createChart(request, entry, dummy);
-        XYPlot               xyPlot = (XYPlot) chart.getPlot();
+        XYPlot                          xyPlot    = (XYPlot) chart.getPlot();
 
         Hashtable<String, MyTimeSeries> seriesMap = new Hashtable<String,
                                                         MyTimeSeries>();
         List<MyTimeSeries> allSeries = new ArrayList<MyTimeSeries>();
-        int     paramCount = 0;
-        int     colorCount = 0;
-        boolean axisLeft   = true;
-        Hashtable<String, List<ValueAxis>> axisMap = new Hashtable<String,
+        int                                paramCount = 0;
+        int                                colorCount = 0;
+        boolean                            axisLeft   = true;
+        Hashtable<String, List<ValueAxis>> axisMap    = new Hashtable<String,
                                                          List<ValueAxis>>();
         Hashtable<String, double[]> rangeMap = new Hashtable<String,
                                                    double[]>();
@@ -3093,10 +3146,9 @@ public class DataOutputHandler extends OutputHandler {
         List<String> paramNames = new ArrayList<String>();
 
         long         t1         = System.currentTimeMillis();
-        String contents =
+        String       contents   =
             IOUtil.readContents(getStorageManager().getFileInputStream(f));
-        List<String> lines      = StringUtil.split(contents, "\n", true,
-                                      true);
+        List<String> lines      = StringUtil.split(contents, "\n", true, true);
         String       header     = lines.get(0);
         String[]     headerToks = header.split(",");
         for (int i = 0; i < headerToks.length; i++) {
@@ -3109,6 +3161,7 @@ public class DataOutputHandler extends OutputHandler {
         for (String line : lines) {
             if ( !readHeader) {
                 readHeader = true;
+
                 continue;
             }
             String[] lineTokes = line.split(",");
@@ -3198,7 +3251,7 @@ public class DataOutputHandler extends OutputHandler {
         }
 
 
-        long t2 = System.currentTimeMillis();
+        long          t2       = System.currentTimeMillis();
 
         BufferedImage newImage =
             chart.createBufferedImage(request.get(ARG_IMAGE_WIDTH, 1000),
@@ -3211,6 +3264,7 @@ public class DataOutputHandler extends OutputHandler {
         ImageUtils.writeImageToFile(newImage, file);
         InputStream is     = getStorageManager().getFileInputStream(file);
         Result      result = new Result("", is, "image/png");
+
         return result;
 
     }
@@ -3228,6 +3282,7 @@ public class DataOutputHandler extends OutputHandler {
         if (index >= 0) {
             name = rawname.substring(0, index);
         }
+
         return name;
     }
 
@@ -3245,6 +3300,7 @@ public class DataOutputHandler extends OutputHandler {
             unit = rawname.substring(index + 6, rawname.indexOf("]"));
             unit = unit.replaceAll("\"", "");
         }
+
         return unit;
     }
 
