@@ -248,7 +248,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                     DataOutputHandler.OUTPUT_OPENDAP);
             if ((dataOutputHandler != null) && dataOutputHandler.canLoadAsCdm(entry)) {
                 String embeddedBundle = null;
-                String opendapUrl     = dataOutputHandler.getAbsoluteOpendapUrl(entry);
+                String opendapUrl     = dataOutputHandler.getAbsoluteOpendapUrl(request, entry);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         if (metadata.getAttr1().endsWith(".xidv")) {
