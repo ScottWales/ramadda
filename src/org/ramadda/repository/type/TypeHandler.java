@@ -149,6 +149,9 @@ public class TypeHandler extends RepositoryManager {
     public static final int MATCH_FALSE = 2;
 
 
+    public static final String PROP_CREATED_DISPLAY_MODE ="ramadda.created.display";
+
+
     /** _more_ */
     public static final TwoFacedObject ALL_OBJECT = new TwoFacedObject("All",
                                                         "");
@@ -1782,13 +1785,26 @@ public class TypeHandler extends RepositoryManager {
                             "title=\"View user profile\"");
 
 
-            //Only show the created by and type when the user is logged in
-            //            if ( !request.isAnonymous()) {
-            sb.append(formEntry(request, msgLabel("Created by"),
-                                userSearchLink + " @ "
-                                + formatDate(request, entry.getCreateDate(),
-                                             entry)));
-            //            }
+            String createdDisplayMode = getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,"all").trim();
+            boolean showCreated = true;
+            if(createdDisplayMode.equals("none")) {
+                showCreated = false;
+            } else if(createdDisplayMode.equals("admin")) {
+                showCreated = request.getUser().getAdmin();
+            } else if(createdDisplayMode.equals("user")) {
+                showCreated = !request.isAnonymous();
+            } else if(createdDisplayMode.equals("all")) {
+                showCreated = true;
+            } else {
+                showCreated = false;
+            }
+
+            if(showCreated) {
+                sb.append(formEntry(request, msgLabel("Created by"),
+                                    userSearchLink + " @ "
+                                    + formatDate(request, entry.getCreateDate(),
+                                                 entry)));
+            }
 
             Resource resource      = entry.getResource();
             String   resourceLink  = resource.getPath();
