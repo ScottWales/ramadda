@@ -1607,7 +1607,7 @@ public class DataOutputHandler extends OutputHandler {
             OutputStream outStream =
                 (qp.acceptType.equals(QueryParams.NETCDF))
                 ? System.out
-                : getStorageManager().getFileOutputStream(tmpFile);
+                : getStorageManager().getUncheckedFileOutputStream(tmpFile);
 
             PrintWriter pw = new PrintWriter(outStream);
             File        f  = writer.write(qp, pw);
