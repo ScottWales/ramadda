@@ -1868,10 +1868,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean supportsRegexp() {
-        if (true) {
-            return true;
-        }
-
         return db.equals(DB_MYSQL) || db.equals(DB_POSTGRES);
     }
 

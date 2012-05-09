@@ -756,11 +756,17 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
         if (justText) {
             String value = (String) request.getString(ARG_TEXT, "");
+            String extra = "";
+            if (getDatabaseManager().supportsRegexp()) {
+                extra = HtmlUtil.checkbox(
+                                          ARG_ISREGEXP, "true", request.get(ARG_ISREGEXP, false)) + " "
+                    + msg("Use regular expression");
+            }
             sb.append(HtmlUtil.span(msgLabel("Text"),
                                     HtmlUtil.cssClass("formlabel")) + " "
                                         + HtmlUtil.input(ARG_TEXT, value,
                                             HtmlUtil.SIZE_50
-                                            + " autofocus ") + " " + buttons);
+                                            + " autofocus ") + " " + extra + " " + buttons);
             /*            sb.append(
                 "<table width=\"100%\" border=\"0\"><tr><td width=\"60\">");
             typeHandler.addTextSearch(request, sb);

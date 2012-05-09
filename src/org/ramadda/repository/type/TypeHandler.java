@@ -2901,7 +2901,7 @@ public class TypeHandler extends RepositoryManager {
         if (getDatabaseManager().supportsRegexp()) {
             extra = HtmlUtil.checkbox(
                 ARG_ISREGEXP, "true", request.get(ARG_ISREGEXP, false)) + " "
-                    + msg("Search using regular expression");
+                    + msg("Use regular expression");
 
             extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
         } else {
