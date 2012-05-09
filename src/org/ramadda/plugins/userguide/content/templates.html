@@ -68,4 +68,23 @@ You can set this in a plugin .properties file or you can specify this property
 (and other properties as well)
 in the Admin-&gt;Settings-&gt;Site and Contact Information-&gt;Extra Properties field.
 
+
+<subhead  id="misc"  intoc="false">Miscellaneous</subhead>
+
+You can specify whether the "Created:" label is shown for entries with the property:
+<pre>
+#default:
+ramadda.created.display=all  
+
+#never show it
+ramadda.created.display=none  
+
+#only show it for admins
+ramadda.created.display=admin
+
+#only show it for logged in users
+ramadda.created.display=user
+</pre>
+
+
 [ht::foot]
