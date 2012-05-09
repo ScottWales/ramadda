@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -102,8 +102,10 @@ import javax.sql.DataSource;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class DatabaseManager extends RepositoryManager implements SqlUtil.ConnectionManager {
+public class DatabaseManager extends RepositoryManager implements SqlUtil
+    .ConnectionManager {
 
+    /** _more_          */
     private long myTime = System.currentTimeMillis();
 
     /** _more_ */
@@ -302,11 +304,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
             ds.setPassword(password);
             ds.setUrl(connectionURL);
             ds.setLogWriter(new Log4jPrintWriter(LOG));
+
             return ds;
         } catch (Exception exc) {
             System.err.println(
                 "RAMADDA: error initializing database connection:" + exc);
             exc.printStackTrace();
+
             throw exc;
         }
     }
@@ -672,7 +676,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
      * @throws Exception _more_
      */
     @Override
-    public void shutdown()  throws Exception {
+    public void shutdown() throws Exception {
         if (dataSource != null) {
             dataSource.close();
             dataSource = null;
@@ -696,6 +700,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         Connection connection = getConnection();
         boolean    connected  = connection != null;
         closeConnection(connection);
+
         return connected;
     }
 
@@ -727,8 +732,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         Connection connection;
         synchronized (CONNECTION_MUTEX) {
             BasicDataSource tmpDataSource = dataSource;
-            if(tmpDataSource==null) {
-                throw new IllegalStateException("DatabaseManager: dataSource is null");
+            if (tmpDataSource == null) {
+                throw new IllegalStateException(
+                    "DatabaseManager: dataSource is null");
             }
             connection = tmpDataSource.getConnection();
         }
@@ -737,6 +743,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
             //            connectionMap.put(connection,
             //                              new ConnectionInfo(connection, msg));
         }
+
         return connection;
     }
 
@@ -758,6 +765,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                             || info.connection.equals(connection)) {
                         connectionInfos.remove(info);
                         gotOne = true;
+
                         break;
                     }
                 }
@@ -856,6 +864,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
             result = results.getInt(1);
         }
         closeAndReleaseConnection(statement);
+
         return result;
     }
 
@@ -891,7 +900,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         try {
             DatabaseMetaData dbmd     = connection.getMetaData();
             ResultSet        catalogs = dbmd.getCatalogs();
-            ResultSet tables = dbmd.getTables(null, null, null,
+            ResultSet        tables   = dbmd.getTables(null, null, null,
                                    new String[] { "TABLE" });
 
             ResultSetMetaData rsmd = tables.getMetaData();
@@ -1040,6 +1049,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         }
         byte[] bytes = new byte[length];
         dos.read(bytes);
+
         return new String(bytes);
     }
 
@@ -1120,8 +1130,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
     public void loadRdbFile(String file) throws Exception {
 
         DataInputStream dis = new DataInputStream(new FileInputStream(file));
-        XmlEncoder      encoder  = new XmlEncoder();
-        String          tableXml = readString(dis);
+        XmlEncoder      encoder    = new XmlEncoder();
+        String          tableXml   = readString(dis);
         List<TableInfo> tableInfos =
             (List<TableInfo>) encoder.toObject(tableXml);
         System.err.println("# table infos:" + tableInfos.size());
@@ -1193,6 +1203,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                     }
                     System.err.println("importing table:"
                                        + tableInfo.getName());
+
                     continue;
                 }
                 if (what == DUMPTAG_END) {
@@ -1285,7 +1296,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         try {
             DatabaseMetaData dbmd     = connection.getMetaData();
             ResultSet        catalogs = dbmd.getCatalogs();
-            ResultSet tables = dbmd.getTables(null, null, null,
+            ResultSet        tables   = dbmd.getTables(null, null, null,
                                    new String[] { "TABLE" });
 
 
@@ -1302,6 +1313,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                         getRepository().getTypeHandlers()) {
                     if ( !typeHandler.shouldExportTable(tn)) {
                         ok = false;
+
                         break;
                     }
                 }
@@ -1390,7 +1402,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                 System.err.println("Exporting table: " + tableInfo.getName());
                 List<ColumnInfo> columns   = tableInfo.getColumns();
                 List             valueList = new ArrayList();
-                Statement statement = execute("select * from "
+                Statement        statement = execute("select * from "
                                           + tableInfo.getName(), 10000000, 0);
                 SqlUtil.Iterator iter = getIterator(statement);
                 ResultSet        results;
@@ -1428,6 +1440,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                             writeLong(dos, results.getLong(i));
                         } else {
                             Object object = results.getObject(i);
+
                             throw new IllegalArgumentException(
                                 "Unknown type:" + type + "  c:"
                                 + object.getClass().getName());
@@ -1552,6 +1565,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         if (t2 - t1 > 2000) {
             //            Misc.printStack("query:" + sql);
         }
+
         return statement;
     }
 
@@ -1634,6 +1648,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         if (makeDflt) {
             return new Date();
         }
+
         return null;
     }
 
@@ -1696,6 +1711,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         if (date == null) {
             return dflt;
         }
+
         return date;
     }
 
@@ -1738,6 +1754,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         if (makeDflt) {
             return new Date();
         }
+
         return null;
     }
 
@@ -1796,6 +1813,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                     statement.setDouble(i + startIdx, d);
                 } catch (Exception exc) {
                     System.err.println("d:" + d);
+
                     throw exc;
                 }
             } else {
@@ -1849,8 +1867,84 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
      *
      * @return _more_
      */
+    public boolean supportsRegexp() {
+        if (true) {
+            return true;
+        }
+
+        return db.equals(DB_MYSQL) || db.equals(DB_POSTGRES);
+    }
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     * @param pattern _more_
+     * @param doNot _more_
+     *
+     * @return _more_
+     */
+    public Clause makeRegexpClause(String column, String pattern,
+                                   final boolean doNot) {
+        if (isDatabaseMysql()) {
+            return new Clause(column, "regexp", pattern) {
+                public StringBuffer addClause(StringBuffer sb) {
+                    if (doNot) {
+                        sb.append(SqlUtil.group(getColumn()
+                                + "  NOT REGEXP  ?"));
+                    } else {
+                        sb.append(SqlUtil.group(getColumn()
+                                + "   REGEXP  ?"));
+                    }
+
+                    return sb;
+                }
+            };
+        } else if (isDatabasePostgres()) {
+            return new Clause(column, "regexp", pattern) {
+                public StringBuffer addClause(StringBuffer sb) {
+                    if (doNot) {
+                        sb.append(SqlUtil.group(getColumn()
+                                + "  NOT SIMILAR TO  ?"));
+                    } else {
+                        sb.append(SqlUtil.group(getColumn()
+                                + "   SIMILAR TO  ?"));
+                    }
+
+                    return sb;
+                }
+            };
+        } else {
+            throw new IllegalStateException("regexp not supported in " + db);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isDatabaseDerby() {
         return (db.equals(DB_DERBY));
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isDatabaseMysql() {
+        return (db.equals(DB_MYSQL));
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isDatabasePostgres() {
+        return (db.equals(DB_POSTGRES));
     }
 
     /**
@@ -1888,6 +1982,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
             sql = sql.replace("ramadda.bigclob", "clob");
             sql = sql.replace("ramadda.bigint", "bigint");
         }
+
         return sql;
     }
 
@@ -1969,6 +2064,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         } else {
             value = value.replace("'", "''");
         }
+
         return value;
     }
 
@@ -2015,6 +2111,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
             }
 
         }
+
         return type;
     }
 
@@ -2041,6 +2138,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         } else if (db.equals(DB_POSTGRES)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
         }
+
         return "";
     }
 
@@ -2057,6 +2155,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         } else if (db.equals(DB_POSTGRES)) {
             return true;
         }
+
         return false;
     }
 
@@ -2152,7 +2251,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         SelectInfo selectInfo = new SelectInfo(what, tables, clause, extra,
                                     max);
         final boolean[] done = { false };
-        String msg = "Select what:" + what + "\ntables:" + tables
+        String          msg  = "Select what:" + what + "\ntables:" + tables
                      + "\nclause:" + clause + "\nextra:" + extra + "\nmax:"
                      + max;
         /*
@@ -2179,12 +2278,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
                                       clause, extra, max, TIMEOUT);
 
             done[0] = true;
+
             return statement;
         } catch (Exception exc) {
             logError("Error doing select \nwhat:" + what + "\ntables:"
                      + tables + "\nclause:" + clause + "\nextra:" + extra
                      + "max:" + max, exc);
             closeConnection(connection);
+
             throw exc;
         } finally {
             numberOfSelects.decr();
@@ -2283,6 +2384,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil.Connec
         ResultSet results = statement.getResultSet();
         boolean   result  = results.next();
         closeAndReleaseConnection(statement);
+
         return result;
     }
 

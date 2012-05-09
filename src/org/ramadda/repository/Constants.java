@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -171,7 +171,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_GRAPH = "ramadda.icon.graph";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TABLE = "ramadda.icon.table";
 
     /** _more_ */
@@ -232,7 +232,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_MAP = "ramadda.icon.map";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
 
 
@@ -487,7 +487,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SIZE = "size";
 
     /** _more_ */
@@ -739,6 +739,9 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_EXACT = "exact";
 
+    /** _more_          */
+    public static final String ARG_ISREGEXP = "isregexp";
+
     /** _more_ */
     public static final String ARG_FAVORITE_ADD = "user.favorite.add";
 
@@ -940,7 +943,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_LABEL = "label";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LANGUAGE = "language";
 
     /** _more_ */
@@ -990,7 +993,7 @@ public interface Constants {
     public static final String ARG_METADATA_CLIPBOARD_COPY =
         "metadata.clipboard.copy";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_METADATA_CLIPBOARD_PASTE =
         "metadata.clipboard.paste";
 
@@ -1536,7 +1539,7 @@ public interface Constants {
     public static final String PROP_ACCESS_REQUIRELOGIN =
         "ramadda.access.requirelogin";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PASSWORD_OLDMD5 =
         "ramadda.password.oldmd5";
 
@@ -1803,7 +1806,7 @@ public interface Constants {
     public static final String PROP_UPLOAD_MAXSIZEGB =
         "ramadda.upload.maxsizegb";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_CACHE_TTL = "ramadda.cache.ttl";
 
 
@@ -1946,7 +1949,7 @@ public interface Constants {
     /** _more_ */
     public static final String RESPONSE_XML = "xml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String RESPONSE_TEXT = "text";
 
     /** _more_ */

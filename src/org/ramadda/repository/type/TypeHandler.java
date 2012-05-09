@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -309,6 +309,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             cnt += parent.getTotalNumberOfValues();
         }
+
         return cnt;
     }
 
@@ -334,6 +335,7 @@ public class TypeHandler extends RepositoryManager {
             values = this.makeValues(new Hashtable());
             entry.setValues(values);
         }
+
         return values;
     }
 
@@ -348,6 +350,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getTotalNumberOfValues();
         }
+
         return 0;
     }
 
@@ -511,6 +514,7 @@ public class TypeHandler extends RepositoryManager {
                                    + newFileName).toString();
             newResource.setPath(newFile);
         }
+
         return newResource;
     }
 
@@ -559,6 +563,7 @@ public class TypeHandler extends RepositoryManager {
         if (type.equals(Permission.ACTION_TYPE1)) {
             return "Type specific 1";
         }
+
         return "Type specific 2";
     }
 
@@ -626,6 +631,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getHtmlDisplay(request, entry);
         }
+
         return null;
     }
 
@@ -675,6 +681,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getHtmlDisplay(request, group, subGroups, entries);
         }
+
         return null;
     }
 
@@ -694,6 +701,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getInlineHtml(request, entry);
         }
+
         return null;
     }
 
@@ -709,6 +717,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.canBeCreatedBy(request);
         }
+
         return true;
     }
 
@@ -722,6 +731,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.adminOnly();
         }
+
         return false;
     }
 
@@ -734,6 +744,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.isSynthType();
         }
+
         return false;
     }
 
@@ -755,6 +766,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getSynthIds(request, mainEntry, ancestor, synthId);
         }
+
         throw new IllegalArgumentException(
             "getSynthIds  not implemented in class:" + getClass().getName());
     }
@@ -775,6 +787,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.makeSynthEntry(request, parentEntry, id);
         }
+
         throw new IllegalArgumentException("makeSynthEntry  not implemented");
     }
 
@@ -810,6 +823,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getProperty(entry, name);
         }
+
         return null;
     }
 
@@ -832,6 +846,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getProperty(entry, name, dflt);
         }
+
         return dflt;
     }
 
@@ -926,6 +941,7 @@ public class TypeHandler extends RepositoryManager {
     public boolean okToShowInForm(Entry entry, String arg, boolean dflt) {
         String key   = "form." + arg + ".show";
         String value = getProperty(entry, key, "" + dflt);
+
         return value.equals("true");
     }
 
@@ -941,6 +957,7 @@ public class TypeHandler extends RepositoryManager {
     public boolean showBefore(Entry entry, String arg, boolean dflt) {
         String value = getProperty(entry, "form." + arg + ".show.before",
                                    "" + dflt);
+
         return value.equals("true");
     }
 
@@ -960,6 +977,7 @@ public class TypeHandler extends RepositoryManager {
         if (prop == null) {
             return dflt;
         }
+
         return prop;
     }
 
@@ -984,6 +1002,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.returnToEditForm();
         }
+
         return false;
     }
 
@@ -1032,6 +1051,7 @@ public class TypeHandler extends RepositoryManager {
         if ( !(obj.getClass().equals(getClass()))) {
             return false;
         }
+
         return Misc.equals(type, ((TypeHandler) obj).getType());
     }
 
@@ -1044,6 +1064,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getNodeType();
         }
+
         return NODETYPE_ENTRY;
     }
 
@@ -1082,6 +1103,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.isType(type);
         }
+
         return false;
     }
 
@@ -1149,6 +1171,7 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
         }
+
         return false;
     }
 
@@ -1199,6 +1222,7 @@ public class TypeHandler extends RepositoryManager {
         if ( !abbreviated) {
             initializeEntryFromDatabase(entry);
         }
+
         return entry;
     }
 
@@ -1247,6 +1271,7 @@ public class TypeHandler extends RepositoryManager {
                     handler.handleForm(request, entry,
                                        getRepository().getGUID(), "",
                                        existingMetadata, metadataList, true);
+
                     break;
                 }
             }
@@ -1319,6 +1344,7 @@ public class TypeHandler extends RepositoryManager {
             if (displayTemplatePath != null) {
                 String html =
                     getRepository().getResource(displayTemplatePath);
+
                 return new StringBuffer(processDisplayTemplate(request,
                         entry, html));
             }
@@ -1355,6 +1381,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
+
         return sb;
 
     }
@@ -1419,10 +1446,11 @@ public class TypeHandler extends RepositoryManager {
 
         if (parent != null) {
             parent.getEntryLinks(request, entry, links);
+
             return;
         }
 
-        boolean isGroup = entry.isGroup();
+        boolean isGroup  = entry.isGroup();
         boolean canDoNew = isGroup
                            && getAccessManager().canDoAction(request, entry,
                                Permission.ACTION_NEW);
@@ -1608,6 +1636,7 @@ public class TypeHandler extends RepositoryManager {
         if ( !entry.isFile()) {
             return false;
         }
+
         return true;
     }
 
@@ -1675,6 +1704,7 @@ public class TypeHandler extends RepositoryManager {
 
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
+
         return new Link(getEntryManager().getEntryResourceUrl(request,
                 entry), getRepository().iconUrl(ICON_FETCH),
                         msg("Download File") + size, OutputType.TYPE_FILE);
@@ -1774,7 +1804,7 @@ public class TypeHandler extends RepositoryManager {
                         HtmlUtil.urlEncodeExceptSpace(resourceLink);
                     if (getAccessManager().canDownload(request, entry)) {
                         resourceLabel = msgLabel("File");
-                        resourceLink =
+                        resourceLink  =
                             resourceLink + HtmlUtil.space(2)
                             + HtmlUtil.href(getEntryResourceUrl(request,
                                 entry), HtmlUtil.img(iconUrl(ICON_DOWNLOAD),
@@ -1841,7 +1871,7 @@ public class TypeHandler extends RepositoryManager {
                 } else {
                     String startDate = formatDate(request,
                                            entry.getStartDate(), entry);
-                    String endDate = startDate;
+                    String endDate   = startDate;
 
                     String searchUrl =
                         HtmlUtil
@@ -1947,6 +1977,7 @@ public class TypeHandler extends RepositoryManager {
             }
 
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
+
         return sb;
 
     }
@@ -1962,6 +1993,7 @@ public class TypeHandler extends RepositoryManager {
         if (desc == null) {
             return false;
         }
+
         return (desc.trim().startsWith("<wiki>"));
     }
 
@@ -1979,6 +2011,7 @@ public class TypeHandler extends RepositoryManager {
     public String getResourceUrl(Request request, Entry entry)
             throws Exception {
         Resource resource = entry.getResource();
+
         return resource.getPath();
     }
 
@@ -2087,6 +2120,7 @@ public class TypeHandler extends RepositoryManager {
     private String cleanQueryString(String s) {
         s = s.replace("\r\n", " ");
         s = StringUtil.stripAndReplace(s, "'", "'", "'dummy'");
+
         return s;
     }
 
@@ -2110,6 +2144,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         List<Clause> clauses = new ArrayList<Clause>();
         clauses.add(clause);
+
         return select(request, what, clauses, extra);
     }
 
@@ -2285,6 +2320,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         if (parent != null) {
             parent.addSpecialToEntryForm(request, sb, entry);
+
             return;
         }
     }
@@ -2498,7 +2534,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
 
-        String size = HtmlUtil.SIZE_70;
+        String  size      = HtmlUtil.SIZE_70;
 
         boolean forUpload = (entry == null)
                             && getType().equals(TYPE_CONTRIBUTION);
@@ -2532,7 +2568,7 @@ public class TypeHandler extends RepositoryManager {
         if (okToShowInForm(entry, ARG_DESCRIPTION)) {
             String desc    = "";
             String buttons = "";
-            int rows =
+            int    rows    =
                 getProperty(entry, "form.description.rows",
                             getRepository().getProperty("ramadda.edit.rows",
                                 5));
@@ -2548,7 +2584,7 @@ public class TypeHandler extends RepositoryManager {
                 if (isWikiText(desc)) {
                     showHtmlEditor = false;
                     rows           = 20;
-                    buttons =
+                    buttons        =
                         getRepository().getWikiManager().makeWikiEditBar(
                             request, entry, ARG_DESCRIPTION) + HtmlUtil.br();
                 }
@@ -2766,6 +2802,7 @@ public class TypeHandler extends RepositoryManager {
                     if (handler.canHandle(metadataId)) {
                         handler.makeAddForm(request, null,
                                             handler.findType(metadataId), sb);
+
                         break;
                     }
                 }
@@ -2806,10 +2843,12 @@ public class TypeHandler extends RepositoryManager {
                     return iconUrl(ICON_FOLDER_CLOSED_LOCKED);
                 }
             }
+
             return iconUrl(ICON_FOLDER_CLOSED);
         }
         Resource resource = entry.getResource();
         String   path     = resource.getPath();
+
         return getIconUrlFromPath(path);
     }
 
@@ -2832,6 +2871,7 @@ public class TypeHandler extends RepositoryManager {
                 img = prop;
             }
         }
+
         return iconUrl(img);
     }
 
@@ -2858,8 +2898,18 @@ public class TypeHandler extends RepositoryManager {
                                  request.get(ARG_EXACT, false)) + " "
                                      + msg("Match exactly");
         String extra = HtmlUtil.p() + searchExact + searchMetaData;
-        extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
-        extra = "";
+        if (getDatabaseManager().supportsRegexp()) {
+            extra = HtmlUtil.checkbox(
+                ARG_ISREGEXP, "true", request.get(ARG_ISREGEXP, false)) + " "
+                    + msg("Search using regular expression");
+
+            extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
+        } else {
+            extra = "";
+        }
+
+
+
         sb.append(formEntry(request, msgLabel("Text"),
                             HtmlUtil.input(ARG_TEXT, name,
                                            HtmlUtil.SIZE_50
@@ -2900,6 +2950,7 @@ public class TypeHandler extends RepositoryManager {
 
         if (parent != null) {
             parent.addToSearchForm(request, formBuffer, where, advancedForm);
+
             return;
         }
 
@@ -3027,7 +3078,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (advancedForm || request.defined(ARG_GROUP)) {
-            String groupArg = (String) request.getString(ARG_GROUP, "");
+            String groupArg       = (String) request.getString(ARG_GROUP, "");
             String searchChildren = " "
                                     + HtmlUtil.checkbox(ARG_GROUP_CHILDREN,
                                         "true",
@@ -3081,13 +3132,13 @@ public class TypeHandler extends RepositoryManager {
 
         if (advancedForm) {
 
-            String radio = getSpatialSearchTypeWidget(request);
+            String  radio = getSpatialSearchTypeWidget(request);
 
 
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map   = getRepository().getMapManager().createMap(request,
                               true);
-            SelectionRectangle bbox = getSelectionBounds(request);
-            String mapSelector = map.makeSelector(ARG_AREA, true,
+            SelectionRectangle bbox        = getSelectionBounds(request);
+            String             mapSelector = map.makeSelector(ARG_AREA, true,
                                      bbox.getStringArray(), "", radio);
             basicSB.append(formEntry(request, msgLabel("Area"), mapSelector));
             basicSB.append("\n");
@@ -3170,7 +3221,7 @@ public class TypeHandler extends RepositoryManager {
         String dateTypeInput = HtmlUtil.select(arg.mode, dateTypes,
                                    dateTypeValue);
 
-        String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
+        String noDataMode  = request.getString(ARG_DATE_NODATAMODE, "");
         String noDateInput = HtmlUtil.checkbox(ARG_DATE_NODATAMODE,
                                  VALUE_NODATAMODE_INCLUDE,
                                  noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
@@ -3374,8 +3425,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
         if (request.defined(ARG_GROUP)) {
-            String  groupId = (String) request.getString(ARG_GROUP,
-                                  "").trim();
+            String  groupId = (String) request.getString(ARG_GROUP, "").trim();
             boolean doNot   = groupId.startsWith("!");
             if (doNot) {
                 groupId = groupId.substring(1);
@@ -3464,6 +3514,7 @@ public class TypeHandler extends RepositoryManager {
                                     msg(arg.label) + "<=", date2);
                         dateClauses.add(Clause.le(column, date2));
                     }
+
                     continue;
                 }
 
@@ -3551,8 +3602,8 @@ public class TypeHandler extends RepositoryManager {
         Clause             areaClause;
         SelectionRectangle bbox = getSelectionBounds(request);
         bbox.normalizeLongitude();
-        List<Clause> areaClauses = new ArrayList<Clause>();
-        List<SelectionRectangle> rectangles =
+        List<Clause>             areaClauses = new ArrayList<Clause>();
+        List<SelectionRectangle> rectangles  =
             new ArrayList<SelectionRectangle>();
 
         /*
@@ -3652,8 +3703,8 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-        Hashtable args        = request.getArgs();
-        String metadataPrefix = ARG_METADATA_ATTR1 + ".";
+        Hashtable                         args    = request.getArgs();
+        String metadataPrefix                     = ARG_METADATA_ATTR1 + ".";
         Hashtable<String, List<Metadata>> typeMap = new Hashtable<String,
                                                         List<Metadata>>();
         List<String> types = new ArrayList<String>();
@@ -3665,7 +3716,7 @@ public class TypeHandler extends RepositoryManager {
             if ( !request.defined(arg)) {
                 continue;
             }
-            String type = arg.substring(ARG_METADATA_ATTR1.length() + 1);
+            String type    = arg.substring(ARG_METADATA_ATTR1.length() + 1);
             List[] urlArgs = new List[] {
                                  request.get(ARG_METADATA_ATTR1 + "." + type,
                                              new ArrayList<String>()),
@@ -3683,7 +3734,7 @@ public class TypeHandler extends RepositoryManager {
                 for (int valueIdx = 0; valueIdx < urlArgs.length;
                         valueIdx++) {
                     if (index < urlArgs[valueIdx].size()) {
-                        ok = true;
+                        ok                   = true;
                         valueArray[valueIdx] =
                             (String) urlArgs[valueIdx].get(index);
                     }
@@ -3769,6 +3820,7 @@ public class TypeHandler extends RepositoryManager {
             getDatabaseManager().addTextSearch(request, this, textToSearch,
                     searchCriteria, where);
         }
+
         return where;
     }
 
@@ -3814,6 +3866,7 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
         }
+
         return new SelectionRectangle(bbox[0], bbox[1], bbox[2], bbox[3]);
 
     }
@@ -3877,13 +3930,19 @@ public class TypeHandler extends RepositoryManager {
     public void addTextSearch(Request request, String textToSearch,
                               StringBuffer searchCriteria, List<Clause> where)
             throws Exception {
+
         List<Clause> textOrs = new ArrayList<Clause>();
         for (String textTok :
                 (List<String>) StringUtil.split(textToSearch, ",", true,
                     true)) {
             List<String> nameToks = StringUtil.splitWithQuotes(textTok);
             boolean      doLike   = false;
-            if ( !request.get(ARG_EXACT, false)) {
+            boolean      doRegexp = false;
+            if (request.get(ARG_ISREGEXP, false)) {
+                doRegexp = true;
+                addCriteria(request, searchCriteria, "Text regexp:",
+                            textToSearch);
+            } else if ( !request.get(ARG_EXACT, false)) {
                 addCriteria(request, searchCriteria, "Text like", textTok);
                 List tmp = StringUtil.split(textTok, ",", true, true);
                 textTok = "%" + StringUtil.join("%,%", tmp) + "%";
@@ -3906,7 +3965,6 @@ public class TypeHandler extends RepositoryManager {
                     nameTok = nameTok.substring(1);
                 }
 
-
                 if (doLike) {
                     nameTok = "%" + nameTok + "%";
                 }
@@ -3914,7 +3972,11 @@ public class TypeHandler extends RepositoryManager {
                 if (searchMetadata) {
                     List<Clause> metadataOrs = new ArrayList<Clause>();
                     for (String attrCol : attrCols) {
-                        if (doLike) {
+                        if (doRegexp) {
+                            metadataOrs.add(
+                                getDatabaseManager().makeRegexpClause(
+                                    attrCol, nameTok, doNot));
+                        } else if (doLike) {
                             metadataOrs.add(Clause.like(attrCol, nameTok,
                                     doNot));
                         } else {
@@ -3929,7 +3991,18 @@ public class TypeHandler extends RepositoryManager {
                                 Tables.METADATA.COL_ENTRY_ID,
                                 Tables.ENTRIES.COL_ID)));
                 }
-                if (doLike) {
+                if (doRegexp) {
+
+                    ors.add(
+                        getDatabaseManager().makeRegexpClause(
+                            Tables.ENTRIES.COL_NAME, nameTok, doNot));
+                    ors.add(
+                        getDatabaseManager().makeRegexpClause(
+                            Tables.ENTRIES.COL_DESCRIPTION, nameTok, doNot));
+                    ors.add(
+                        getDatabaseManager().makeRegexpClause(
+                            Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
+                } else if (doLike) {
                     ors.add(Clause.like(Tables.ENTRIES.COL_NAME, nameTok,
                                         doNot));
                     ors.add(Clause.like(Tables.ENTRIES.COL_DESCRIPTION,
@@ -3960,6 +4033,7 @@ public class TypeHandler extends RepositoryManager {
         } else if (textOrs.size() == 1) {
             where.add(textOrs.get(0));
         }
+
     }
 
 
@@ -4064,6 +4138,7 @@ public class TypeHandler extends RepositoryManager {
         if ( !initTables.contains(Tables.ENTRIES.NAME)) {
             initTables.add(Tables.ENTRIES.NAME);
         }
+
         return initTables;
     }
 
@@ -4081,6 +4156,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.convert(columnName, value);
         }
+
         return value;
     }
 
@@ -4095,6 +4171,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.makeValues(map);
         }
+
         return null;
     }
 
@@ -4107,6 +4184,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             return parent.getValueNames();
         }
+
         return null;
     }
 
@@ -4126,8 +4204,10 @@ public class TypeHandler extends RepositoryManager {
                 && !value.toLowerCase().equals("all")) {
             list.add("(" + SqlUtil.makeOrSplit(column, value, quoteThem)
                      + ")");
+
             return true;
         }
+
         return false;
     }
 
@@ -4146,8 +4226,10 @@ public class TypeHandler extends RepositoryManager {
         if ((value != null) && (value.trim().length() > 0)
                 && !value.toLowerCase().equals("all")) {
             clauses.add(Clause.makeOrSplit(column, value));
+
             return true;
         }
+
         return false;
     }
 
@@ -4181,6 +4263,7 @@ public class TypeHandler extends RepositoryManager {
         if ((description == null) || (description.trim().length() == 0)) {
             return getType();
         }
+
         return description;
     }
 
@@ -4311,6 +4394,7 @@ public class TypeHandler extends RepositoryManager {
         HashSet set = getEnumValuesInner(request, column, entry);
         List    tmp = new ArrayList();
         tmp.addAll(set);
+
         return Misc.sort(tmp);
     }
 
@@ -4395,6 +4479,7 @@ public class TypeHandler extends RepositoryManager {
         set.addAll(Misc.toList(values));
 
         columnEnumValues.put(key, set);
+
         return set;
     }
 
@@ -4433,6 +4518,7 @@ public class TypeHandler extends RepositoryManager {
                 && (parent != null)) {
             return parent.getCategory();
         }
+
         return this.category;
     }
 
