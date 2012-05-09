@@ -2681,11 +2681,19 @@ public class TypeHandler extends RepositoryManager {
                 + HtmlUtil.space(1) + msg("Make folders from archive");
 
 
+            /*
             String datePatternWidget = msgLabel("Date pattern")
                                        + HtmlUtil.space(1)
                                        + HtmlUtil.select(ARG_DATE_PATTERN,
                                            datePatterns) + " ("
                                                + msg("Use file name") + ")";
+
+            */
+
+            String datePatternWidget = msgLabel("Date pattern")
+                                       + HtmlUtil.space(1)
+                + HtmlUtil.input(ARG_DATE_PATTERN, request.getString(ARG_DATE_PATTERN,"")) 
+                + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
 
 
 

@@ -1329,24 +1329,24 @@ public class EntryManager extends RepositoryManager {
                 if (request.defined(ARG_DATE_PATTERN)) {
                     String format = request.getUnsafeString(ARG_DATE_PATTERN,
                                         BLANK);
-                    String pattern = null;
-                    for (int i = 0; i < DateUtil.DATE_PATTERNS.length; i++) {
-                        if (format.equals(DateUtil.DATE_FORMATS[i])) {
-                            pattern = DateUtil.DATE_PATTERNS[i];
-                            break;
-                        }
+                    String pattern = format;
+                    //swap out any of the date tokens with a decimal regexp
+                    for(String s: new String[]{"y","m","M","d","H","m"}) {
+                        pattern = pattern.replaceAll(s,"_DIGIT_");
                     }
-
-                    if (pattern != null) {
-                        Pattern datePattern = Pattern.compile(pattern);
-                        Matcher matcher     = datePattern.matcher(origName);
-                        if (matcher.find()) {
-                            String dateString = matcher.group(0);
-                            Date dttm = RepositoryUtil.makeDateFormat(
-                                            format).parse(dateString);
-                            theDateRange[0] = dttm;
-                            theDateRange[1] = dttm;
-                        } else {}
+                    pattern = pattern.replaceAll("_DIGIT_","\\\\d");
+                    pattern = ".*(" + pattern +").*";
+                    //                    System.err.println("Pattern:" + pattern + " " + origName);
+                    Matcher matcher     = Pattern.compile(pattern).matcher(origName);
+                    if (matcher.find()) {
+                        String dateString = matcher.group(1);
+                        //                        System.err.println("date:" + dateString);
+                        Date dttm = RepositoryUtil.makeDateFormat(
+                                                                  format).parse(dateString);
+                        theDateRange[0] = dttm;
+                        theDateRange[1] = dttm;
+                    } else {
+                        System.err.println("no match");
                     }
                 }
 
