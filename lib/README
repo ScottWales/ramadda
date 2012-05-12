@@ -23,6 +23,7 @@ ncIdv.jar:
   We do this because other packages have netcdf in it (e.g., visad.jar)
 
 
+
 visad.jar:
   Note: I unjarred this, removed the top-level nom package, and rebuilt
   the jar visad had an old version of the nom package (for fits data)
@@ -33,9 +34,9 @@ jetty.jar:
 This is the jetty-all-server.jar
 
 
-tika-app-1.0.jar
-  The tika-app-1.0.jar  has been modified. I (jeffmc) removed the
-  ucar, thredds and com/drew  tree from this because we had too many
+tika-app-1.1.jar
+  The tika-app-1.1.jar  has been modified. I (jeffmc) removed the
+  ucar, thredds, org/slf4j and  com/drew  tree from this because we had too many
   conflicts with other libs
 
 
