@@ -29,6 +29,10 @@ visad.jar:
   and was screwing up the org/ramadda/geodata/fits plugin
 
 
+jetty.jar:
+This is the jetty-all-server.jar
+
+
 tika-app-1.0.jar
   The tika-app-1.0.jar  has been modified. I (jeffmc) removed the
   ucar, thredds and com/drew  tree from this because we had too many
