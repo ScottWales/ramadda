@@ -238,7 +238,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      */
     public void destroy() {
         super.destroy();
-        System.err.println("RepositoryServlet.destroy");
+        System.err.println("RAMADDA: RepositoryServlet.destroy");
         if (repository != null) {
             try {
                 repository.close();
@@ -320,7 +320,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     for (int i = 0; i < args.size(); i += 2) {
                         String name  = args.get(i);
                         String value = args.get(i + 1);
-                        System.err.println("Header:" + name +"=" + value);
                         response.setHeader(name, value);
                     }
                 }
