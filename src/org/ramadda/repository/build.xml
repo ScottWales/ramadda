@@ -19,7 +19,7 @@
         <property name="srcrelease_dir" value="${release_name}src${_version}" />
 	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
         <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
-        <property name="tika_jar" value="${lib_dir}/tika-app-1.0.jar" />
+        <property name="tika_jar" value="${lib_dir}/tika-app-1.1.jar" />
         <property name="clientbase" value="ramaddaclient" />
         
     </target>
@@ -28,12 +28,9 @@
     </target>
 
 
-<!--
-    NOTE: tika.jar needs to be before ramaddalib.jar because ramaddalib.jar contains the unjarred idv external.jar
-    from the idv which contains an older version of tika.
--->
+
     <target name="initcore" if="core">
-       <property name="classpath" value="${tika_jar}:${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar"/>
        <property name="manifestjars" value="${tika_jar} ramaddalib.jar   servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
@@ -41,7 +38,7 @@
     </target>
 
     <target name="initfull">
-       <property name="classpath" value="${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/ramaddalib.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
        <property name="manifestjars" value="idv.jar ${tika_jar}  ramaddalib.jar   ramaddatds.jar servlet-api.jar"/>
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
@@ -58,9 +55,6 @@
       <java classname="org.ramadda.repository.server.JettyServer" maxmemory="512mb" fork="true">
           <arg value="-port"/>
           <arg value="8080"/>
-<!--
-          <arg value="-Dramadda.db=mysql"/>
--->
           <arg value="-Dramadda.cacheresources=false"/>
           <classpath>
              <pathelement path="${dist_dir}/${ramadda_jar}"/>
@@ -282,9 +276,9 @@
       <war webxml="${ramadda_dir}/release/web.xml" destfile="${dist_dir}/${ramadda_war}">
           <webinf file="${ramadda_dir}/release/repository.properties"/>
           <lib file="${dist_dir}/${ramadda_jar}"/>
-          <lib file="${lib_dir}/idv.jar"/>
           <lib file="${lib_dir}/ramaddalib.jar"/>
           <lib file="${lib_dir}/ramaddatds.jar"/>
+          <lib file="${lib_dir}/idv.jar"/>
           <lib file="${tika_jar}"/>
       </war>
     </target>
@@ -305,7 +299,9 @@
         <unjar src="${lib_dir}/twitter4j-1.1.4.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jetty.jar" dest="${tmpjar_dir}"/>
+<!--
         <unjar src="${lib_dir}/jetty-util.jar" dest="${tmpjar_dir}"/>
+-->
         <unjar src="${lib_dir}/lucene-core-3.0.3.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/mailapi.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
@@ -328,11 +324,9 @@
         <unjar src="${lib_dir}/mina-core-2.0.0-M6.jar" dest="${tmpjar_dir}"/>
 
         <unjar src="${lib_dir}/log4j-1.2.15.jar" dest="${tmpjar_dir}"/>
-<!--
-        <unjar src="${lib_dir}/slf4j-api-1.5.2.jar" dest="${tmpjar_dir}"/>
--->
-        <unjar src="${lib_dir}/slf4j-api-1.5.10.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/slf4j-simple-1.5.10.jar" dest="${tmpjar_dir}"/>
+
+        <unjar src="${lib_dir}/slf4j-api-1.6.4.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/slf4j-simple-1.6.4.jar" dest="${tmpjar_dir}"/>
 
 <!--
         <unjar src="${lib_dir}/servlet-api.jar" dest="${tmpjar_dir}"/>
