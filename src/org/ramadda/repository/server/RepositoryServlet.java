@@ -281,18 +281,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         RequestHandler handler          = new RequestHandler(request);
         Result         repositoryResult = null;
 
+        boolean isHeadRequest = request.getMethod().equals("HEAD");
         try {
-
             try {
-                // need to support HTTP HEAD request since we are overriding HttpServlet doGet   
-                if (request.getMethod().equals("HEAD")) {
-                    //                System.err.println("head:" +  request.getRequestURI());
-                    //                return;
-                }
-
                 // create a org.ramadda.repository.Request object from the relevant info from the HttpServletRequest object
-
-
                 Request repositoryRequest = new Request(repository,
                                                 request.getRequestURI(),
                                                 handler.formArgs, request,
@@ -304,19 +296,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 repositoryRequest.setOutputStream(response.getOutputStream());
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
-
-                /*
-                if(request.getMethod().equals("POST")) {
-                    if (!repositoryRequest.defined(ARG_AUTHTOKEN)) {
-                        System.err.println("post with no auth token");
-                        java.awt.Toolkit.getDefaultToolkit().beep();
-                        Misc.sleep(300);
-                        java.awt.Toolkit.getDefaultToolkit().beep();
-                        Misc.sleep(300);
-                        java.awt.Toolkit.getDefaultToolkit().beep();
-                    }
-                }
-                */
 
 
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
@@ -341,6 +320,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     for (int i = 0; i < args.size(); i += 2) {
                         String name  = args.get(i);
                         String value = args.get(i + 1);
+                        System.err.println("Header:" + name +"=" + value);
                         response.setHeader(name, value);
                     }
                 }
@@ -360,6 +340,13 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         response.setHeader("Last-Modified",
                                            "Tue, 20 Jan 2010 01:45:54 GMT");
                     }
+                }
+
+
+                if(isHeadRequest) {
+                    response.setStatus(
+                                       repositoryResult.getResponseCode());
+                    return;
                 }
 
                 if (repositoryResult.getRedirectUrl() != null) {

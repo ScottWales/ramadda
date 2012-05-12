@@ -21,22 +21,17 @@
 package org.ramadda.repository.server;
 
 
-import org.mortbay.jetty.*;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.NCSARequestLog;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.Server;
 
 
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.handler.*;
-import org.mortbay.jetty.handler.AbstractHandler;
+import org.eclipse.jetty.server.*;
 
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.*;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
+//import org.eclipse.jetty.servlet.Context;
+
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 import org.ramadda.repository.*;
 
@@ -95,15 +90,19 @@ public class JettyServer extends RepositoryServlet implements Constants {
 
         Server                   server   = new Server(port);
         Repository repository             = repositoryServlet.getRepository();
-        HandlerCollection        handlers = new HandlerCollection();
-        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        //        HandlerCollection        handlers = new HandlerCollection();
+        //        ContextHandlerCollection contexts = new ContextHandlerCollection();
 
-        Context context = new Context(contexts, "/", Context.SESSIONS);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
         context.addServlet(new ServletHolder(repositoryServlet), "/*");
+        server.setHandler(context);
 
 
+        //        Context context = new Context(contexts, "/", Context.SESSIONS);
+        //        context.addServlet(new ServletHolder(repositoryServlet), "/*");
+        /*
         RequestLogHandler requestLogHandler = new RequestLogHandler();
-
         if ( !repository.isReadOnly()) {
             NCSARequestLog logger =
                 new NCSARequestLog(repository.getStorageManager().getLogDir()
@@ -122,7 +121,7 @@ public class JettyServer extends RepositoryServlet implements Constants {
                     new DefaultHandler() });
         }
         server.setHandler(handlers);
-
+        */
         try {
             initSsl(server, repository);
         } catch (Throwable exc) {
