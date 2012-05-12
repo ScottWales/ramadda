@@ -166,6 +166,8 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_USERLINK = "userlinks";
 
+    public static final String MACRO_ALLLINKS = "alllinks";
+
     /** html template macro */
     public static final String MACRO_FAVORITES = "favorites";
 
@@ -251,61 +253,34 @@ public class PageHandler extends RepositoryManager {
     public void decorateResult(Request request, Result result)
             throws Exception {
 
-        Repository repository = getRepository();
+        if (!request.get(ARG_DECORATE, true)) {
+            return;
+        }
 
+        Repository repository = getRepository();
         Entry currentEntry =
             (Entry) getSessionManager().getSessionProperty(request,
                 "lastentry");
         String   template     = null;
-        Metadata metadata     = null;
+        HtmlTemplate htmlTemplate;
+        if (request.isMobile()) {
+            htmlTemplate = getMobileTemplate();
+        } else {
+            htmlTemplate = getTemplate(request);
+        }
+        template = htmlTemplate.getTemplate();
+
         String sessionMessage =
             getSessionManager().getSessionMessage(request);
 
-        //        System.err.println(request +" DECORAT=" + request.get(ARG_DECORATE, true));
-
-        if ( !request.get(ARG_DECORATE, true)) {
-            if (true) {
-                return;
-            }
-            template = repository.getResource(
-                "/org/ramadda/repository/resources/templates/plain.html");
-        }
-
-        /*
-        //            getMetadataManager().findMetadata((request.getCollectionEntry()
-        //                != null)
-        //                ? request.getCollectionEntry()
-        //                : topGroup, AdminMetadataHandler.TYPE_TEMPLATE, true);
-        */
-        if (request.isMobile()) {
-            template = getMobileTemplate().getTemplate();
-        }
-        if (template == null) {
-            if (metadata != null) {
-                template = metadata.getAttr1();
-                if (template.startsWith("file:")) {
-                    template =
-                        getStorageManager().localizePath(template.trim());
-                    template = getStorageManager().readSystemResource(
-                        template.substring("file:".length()));
-                }
-                if (template.indexOf("${content}") < 0) {
-                    template = null;
-                }
-            }
-        }
-
-        if (template == null) {
-            template = getTemplate(request).getTemplate();
-            //            template = getResource(PROP_HTML_TEMPLATE);
-        }
 
         String jsContent = getTemplateJavascriptContent();
 
         List   links     = (List) result.getProperty(PROP_NAVLINKS);
         String linksHtml = HtmlUtil.space(1);
+
         if (links != null) {
-            linksHtml = StringUtil.join(getTemplateProperty(request,
+            linksHtml = StringUtil.join(htmlTemplate.getTemplateProperty(
                     "ramadda.template.link.separator", ""), links);
         }
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER);
@@ -329,15 +304,14 @@ public class PageHandler extends RepositoryManager {
             header = entryHeader;
         }
 
-        String favoritesWrapper = getTemplateProperty(request,
+        String favoritesWrapper = htmlTemplate.getTemplateProperty(
                                       "ramadda.template.favorites.wrapper",
                                       "${link}");
         String favoritesTemplate =
-            getTemplateProperty(
-                request, "ramadda.template.favorites",
+            htmlTemplate.getTemplateProperty("ramadda.template.favorites",
                 "<span class=\"linkslabel\">Favorites:</span>${entries}");
         String favoritesSeparator =
-            getTemplateProperty(request,
+            htmlTemplate.getTemplateProperty(
                                 "ramadda.template.favorites.separator", "");
 
         List<FavoriteEntry> favoritesList =
@@ -364,7 +338,7 @@ public class PageHandler extends RepositoryManager {
 
         List<Entry> cartEntries = getUserManager().getCart(request);
         if (cartEntries.size() > 0) {
-            String cartTemplate = getTemplateProperty(request,
+            String cartTemplate = htmlTemplate.getTemplateProperty(
                                       "ramadda.template.cart",
                                       "<b>Cart:<b><br>${entries}");
             List cartLinks = new ArrayList();
@@ -419,7 +393,7 @@ public class PageHandler extends RepositoryManager {
         String[] macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, iconUrl(ICON_HEADER), MACRO_HEADER_TITLE,
-            pageTitle, MACRO_USERLINK, getUserManager().getUserLinks(request),
+            pageTitle, MACRO_USERLINK, getUserManager().getUserLinks(request, htmlTemplate),
             MACRO_REPOSITORY_NAME,
             repository.getProperty(PROP_REPOSITORY_NAME, "Repository"),
             MACRO_FOOTER, repository.getProperty(PROP_HTML_FOOTER, BLANK),

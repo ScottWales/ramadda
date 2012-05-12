@@ -33,6 +33,7 @@ import org.ramadda.util.TTLCache;
 
 import org.ramadda.util.TempDir;
 
+import java.text.SimpleDateFormat;
 
 import org.w3c.dom.*;
 
@@ -1060,16 +1061,17 @@ public class EntryManager extends RepositoryManager {
             dataType = request.getString(ARG_DATATYPE_SELECT, "");
         }
 
-        boolean isLocalFile   = false;
-        String  localFileName = null;
-        if (request.defined(ARG_LOCALFILE)) {
+        boolean isServerFile   = false;
+        String  serverFileName = null;
+        if (request.defined(ARG_SERVERFILE)) {
             if ( !user.getAdmin()) {
                 fatalError(request,
                            "Only administrators can add a local file");
             }
-            localFileName = request.getString(ARG_LOCALFILE, (String) null);
-            getStorageManager().checkLocalFile(new File(localFileName));
-            isLocalFile = true;
+            
+            serverFileName = request.getString(ARG_SERVERFILE, (String) null);
+            getStorageManager().checkLocalFile(new File(serverFileName));
+            isServerFile = true;
         }
 
 
@@ -1114,8 +1116,8 @@ public class EntryManager extends RepositoryManager {
             boolean isFile       = false;
             String  resourceName = request.getString(ARG_FILE, BLANK);
 
-            if (isLocalFile && (localFileName != null)) {
-                filename = localFileName;
+            if (isServerFile && (serverFileName != null)) {
+                filename = serverFileName;
             }
 
 
@@ -1128,7 +1130,7 @@ public class EntryManager extends RepositoryManager {
                             : request.get(ARG_FILE_UNZIP, false));
 
 
-            if (isLocalFile) {
+            if (isServerFile) {
                 isFile   = true;
                 resource = filename;
                 if (forUpload) {
@@ -1203,12 +1205,13 @@ public class EntryManager extends RepositoryManager {
                 //TODO: use GZIPInputStream to unzip the file
             }
 
-            if ( !unzipArchive) {
+            if(isServerFile) {
+            } else if ( !unzipArchive) {
                 resources.add(resource);
                 origNames.add(resourceName);
                 parents.add(parentEntry);
             } else {
-                isLocalFile = false;
+                isServerFile = false;
                 Hashtable<String, Entry> nameToGroup = new Hashtable<String,
                                                            Entry>();
                 FileInputStream fis =
@@ -1297,7 +1300,7 @@ public class EntryManager extends RepositoryManager {
                 resourceName = (String) resources.get(resourceIdx);
                 String theResource = (String) resources.get(resourceIdx);
                 String origName    = (String) origNames.get(resourceIdx);
-                if (isFile && !isLocalFile) {
+                if (isFile && !isServerFile) {
                     if (forUpload) {
                         theResource =
                             getStorageManager().moveToAnonymousStorage(
@@ -1352,7 +1355,7 @@ public class EntryManager extends RepositoryManager {
 
                 String id           = getRepository().getGUID();
                 String resourceType = Resource.TYPE_UNKNOWN;
-                if (isLocalFile) {
+                if (isServerFile) {
                     resourceType = Resource.TYPE_LOCAL_FILE;
                 } else if (isFile) {
                     resourceType = Resource.TYPE_STOREDFILE;
@@ -1397,8 +1400,8 @@ public class EntryManager extends RepositoryManager {
                 newResourceName = getStorageManager().moveToStorage(request,
                         new File(newResourceName)).toString();
                 newResourceType = Resource.TYPE_STOREDFILE;
-            } else if (isLocalFile) {
-                newResourceName = localFileName;
+            } else if (isServerFile) {
+                newResourceName = serverFileName;
                 newResourceType = Resource.TYPE_LOCAL_FILE;
             } else if (request.defined(ARG_URL)) {
                 newResourceName = request.getAnonymousEncodedString(ARG_URL,
@@ -2532,20 +2535,20 @@ public class EntryManager extends RepositoryManager {
             File file   = entry.getFile();
             long length = file.length();
             if (request.isHeadRequest()) {
+                System.err.println("got head request");
                 Result result = new Result("", new StringBuffer());
-                result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH,
-                                     "" + length);
+                result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH, "" + length);
+                result.addHttpHeader("Connection", "close");
+                result.setLastModified(new Date(file.lastModified()));
                 return result;
             }
 
+            System.err.println("serving file");
             InputStream inputStream =
                 getStorageManager().getFileInputStream(file);
             Result result = new Result(BLANK, inputStream, mimeType);
-            result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH, "" + length);
-            result.setLastModified(new Date(file.lastModified()));
+            //            result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH, "" + length);
             result.setCacheOk(true);
-            //            response.setHeader("Last-Modified",
-            //                               "Tue, 20 Jan 2009 01:45:54 GMT");
             return result;
         }
 

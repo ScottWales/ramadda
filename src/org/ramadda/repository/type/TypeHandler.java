@@ -2672,9 +2672,14 @@ public class TypeHandler extends RepositoryManager {
             }
 
             if (showLocalFile) {
-                String formContent = HtmlUtil.input(ARG_LOCALFILE, "", size);
-                tabTitles.add(msg("File on Server"));
-                tabContent.add(HtmlUtil.inset(formContent, 8));
+                StringBuffer localFilesSB = new StringBuffer();
+                localFilesSB.append(HtmlUtil.formTable());
+                localFilesSB.append(HtmlUtil.formEntry(msgLabel("File or directory"), HtmlUtil.input(ARG_SERVERFILE, "", size)+" " +
+                                                       msg("Note: If a directory then all files will be added")));
+                localFilesSB.append(HtmlUtil.formEntry(msgLabel("Pattern"), HtmlUtil.input(ARG_SERVERFILE_PATTERN, "", HtmlUtil.SIZE_10)+" (regexp)"));
+                localFilesSB.append(HtmlUtil.formTableClose());
+                tabTitles.add(msg("Files on Server"));
+                tabContent.add(HtmlUtil.inset(localFilesSB.toString(), 8));
             }
 
             String addMetadata = HtmlUtil.checkbox(ARG_METADATA_ADD)

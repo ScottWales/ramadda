@@ -4600,19 +4600,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getPageHandler().translate(request, s);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public String getTemplateProperty(Request request, String name,
-                                      String dflt) {
-        return getPageHandler().getTemplateProperty(request, name, dflt);
-    }
 
 
     /**

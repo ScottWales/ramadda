@@ -1545,9 +1545,9 @@ public class OutputHandler extends RepositoryManager {
 
         List   items          = new ArrayList();
         Object initialMessage = request.remove(ARG_MESSAGE);
-        String onLinkTemplate = getRepository().getTemplateProperty(request,
+        String onLinkTemplate = getRepository().getPageHandler().getTemplateProperty(request,
                                     "ramadda.template.sublink.on", "");
-        String offLinkTemplate = getRepository().getTemplateProperty(request,
+        String offLinkTemplate = getRepository().getPageHandler().getTemplateProperty(request,
                                      "ramadda.template.sublink.off", "");
         for (Link link : links) {
             OutputType outputType = link.getOutputType();

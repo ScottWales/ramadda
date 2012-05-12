@@ -959,7 +959,9 @@ public interface Constants {
     public static final String ARG_LIMIT = "limit";
 
     /** _more_ */
-    public static final String ARG_LOCALFILE = "localfile";
+    public static final String ARG_SERVERFILE = "serverfile";
+    public static final String ARG_SERVERFILE_HARVEST= "serverfile_harvest";
+    public static final String ARG_SERVERFILE_PATTERN = "serverfile_pattern";
 
     /** _more_ */
     public static final String ARG_LOG = "log";

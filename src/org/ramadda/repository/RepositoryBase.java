@@ -254,6 +254,8 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
+    public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
+
 
 
     /** _more_ */

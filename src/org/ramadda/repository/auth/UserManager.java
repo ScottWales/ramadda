@@ -26,6 +26,8 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlTemplate;
+
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 
@@ -1865,16 +1867,12 @@ public class UserManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getUserLinks(Request request) {
+    public String getUserLinks(Request request, HtmlTemplate htmlTemplate) {
         User user = request.getUser();
-        String template = getRepository().getTemplateProperty(request,
-                              "ramadda.template.link.wrapper", "");
-        template = getRepository().getTemplateProperty(request,
-                "ramadda.template.userlink.wrapper", template);
-        String separator = getRepository().getTemplateProperty(request,
-                               "ramadda.template.link.separator", "");
-        separator = getRepository().getTemplateProperty(request,
-                "ramadda.template.userlink.separator", separator);
+        String template = htmlTemplate.getTemplateProperty("ramadda.template.link.wrapper", "");
+        template = htmlTemplate.getTemplateProperty("ramadda.template.userlink.wrapper", template);
+        String separator = htmlTemplate.getTemplateProperty("ramadda.template.link.separator", "");
+        separator = htmlTemplate.getTemplateProperty("ramadda.template.userlink.separator", separator);
 
         List extras = new ArrayList();
         List urls   = new ArrayList();
