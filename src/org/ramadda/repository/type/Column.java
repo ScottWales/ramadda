@@ -475,6 +475,9 @@ public class Column implements DataTypes, Constants {
             return null;
         }
         int idx = getOffset();
+        if(idx>=values.length) {
+            return null;
+        }
         if (values[idx] == null) {
             return null;
         }
