@@ -253,7 +253,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
                 //                System.err.println("Fetching:" + path);
                 //                System.err.println("writing to:" + cacheFile);
                 OutputStream fos =
-                    getStorageManager().getFileOutputStream(cacheFile);
+                    getStorageManager().getUncheckedFileOutputStream(cacheFile);
                 if (ftpClient.retrieveFile(path, fos)) {
                     fos.flush();
                     fos.close();

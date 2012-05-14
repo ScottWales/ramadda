@@ -284,7 +284,7 @@ public class ZipOutputHandler extends OutputHandler {
         } else {
             tmpFile = getRepository().getStorageManager().getTmpFile(request,
                     ".zip");
-            os        = getStorageManager().getFileOutputStream(tmpFile);
+            os        = getStorageManager().getUncheckedFileOutputStream(tmpFile);
             doingFile = true;
         }
 

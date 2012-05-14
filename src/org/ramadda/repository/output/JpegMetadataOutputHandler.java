@@ -100,11 +100,12 @@ public class JpegMetadataOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.entry != null) {
-            String path = state.entry.getResource().getPath();
-            if ( !(path.toLowerCase().endsWith(".jpg")
-                    || path.toLowerCase().endsWith(".jpeg"))) {
-                return;
-            }
+            String path = state.entry.getResource().getPath().toLowerCase();
+            if ( !(path.endsWith(".jpg") || 
+                   path.endsWith(".jpeg")||
+                   path.endsWith(".tiff"))) {
+                    return;
+                }
             links.add(makeLink(request, state.getEntry(),
                                OUTPUT_JPEG_METADATA));
         }
@@ -133,8 +134,8 @@ public class JpegMetadataOutputHandler extends OutputHandler {
 
     private static void outputTags(StringBuffer sb, File jpegFile, boolean forHtml) throws Exception {
 
-        com.drew.metadata.Metadata metadata =
-            JpegMetadataReader.readMetadata(jpegFile);
+        com.drew.metadata.Metadata metadata  = com.drew.imaging.ImageMetadataReader.readMetadata(jpegFile);
+        //            JpegMetadataReader.readMetadata(jpegFile);
 
         if(forHtml) 
             sb.append("<ul>");

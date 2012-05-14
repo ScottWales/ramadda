@@ -1456,6 +1456,8 @@ public class HtmlOutputHandler extends OutputHandler {
         //            return typeResult;
         //        }
 
+        boolean doSimpleListing  = !request.exists(ARG_OUTPUT);
+
         boolean showTimeline = outputType.equals(OUTPUT_TIMELINE);
         if ( !showTimeline && (typeHandler != null)) {
             Result typeResult = typeHandler.getHtmlDisplay(request, group,
@@ -1491,6 +1493,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     getRepository().showDialogNote(msg("No entries found")));
             }
         }
+        
 
 
         String wikiTemplate = null;
@@ -1523,13 +1526,15 @@ public class HtmlOutputHandler extends OutputHandler {
         } else if ((wikiTemplate == null) && !group.isDummy()) {
 
             //            sb.append(getHtmlHeader(request,  group));
-
             addDescription(request, group, sb, !hasChildren);
-            String informationBlock = getInformationTabs(request, group,
-                                          false, false);
-            sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
-                    informationBlock,
-                    request.get(ARG_SHOW_ASSOCIATIONS, !hasChildren)));
+            //If its the default view of an entry then just show the children listing
+            if(!doSimpleListing) {
+                String informationBlock = getInformationTabs(request, group,
+                                                             false, false);
+                sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
+                                                     informationBlock,
+                                                     request.get(ARG_SHOW_ASSOCIATIONS, !hasChildren)));
+            }
 
             StringBuffer metadataSB = new StringBuffer();
             getMetadataManager().decorateEntry(request, group, metadataSB,
@@ -1555,8 +1560,16 @@ public class HtmlOutputHandler extends OutputHandler {
                                              allEntries, true, false, true,
                                              group.isDummy(),
                                              group.isDummy());
-                sb.append(HtmlUtil.makeShowHideBlock(msg("Entries") + link,
-                        groupsSB.toString(), true));
+                if(!doSimpleListing) {
+                    sb.append(HtmlUtil.makeShowHideBlock(msg("Entries") + link,
+                                                         groupsSB.toString(), true));
+                } else {
+                    sb.append(HtmlUtil.br());
+                    sb.append(HtmlUtil.span(msg("Entries"), HtmlUtil.cssClass("toggleblocklabel")) + link);
+                    sb.append(HtmlUtil.br());
+                    sb.append(groupsSB.toString());
+
+                }
             }
 
             if ( !group.isDummy() && (subGroups.size() == 0)
