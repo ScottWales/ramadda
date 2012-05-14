@@ -1091,7 +1091,7 @@ public class OutputHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String[] getEntryFormStart(Request request, List entries,
-                                      boolean hideIt)
+                                      boolean hideIt, String dummyEntryName)
             throws Exception {
         if (hideIt) {
             hideIt = !request.get(ARG_SHOWENTRYSELECTFORM, false);
@@ -1106,14 +1106,18 @@ public class OutputHandler extends RepositoryManager {
 
 
         List<Link> links = getRepository().getOutputLinks(request,
-                               new State(getEntryManager().getDummyGroup(),
+                               new State(getEntryManager().getDummyGroup(dummyEntryName),
                                          entries));
 
         List<String> linkCategories = new ArrayList<String>();
         Hashtable<String, List<HtmlUtil.Selector>> linkMap =
             new Hashtable<String, List<HtmlUtil.Selector>>();
+        linkCategories.add("File");
+        linkMap.put("File", new ArrayList<HtmlUtil.Selector>());
+
         linkCategories.add("View");
         linkMap.put("View", new ArrayList<HtmlUtil.Selector>());
+
         for (Link link : links) {
             OutputType outputType = link.getOutputType();
             if (outputType == null) {
@@ -1145,6 +1149,7 @@ public class OutputHandler extends RepositoryManager {
 
         ArrayList<HtmlUtil.Selector> tfos =
             new ArrayList<HtmlUtil.Selector>();
+        tfos.add(new HtmlUtil.Selector(" -- select --", "", null, 0, true));
         for (String category : linkCategories) {
             List<HtmlUtil.Selector> linksForCategory = linkMap.get(category);
             if (linksForCategory.size() == 0) {
@@ -1155,11 +1160,13 @@ public class OutputHandler extends RepositoryManager {
         }
 
         StringBuffer selectSB = new StringBuffer();
-        //        selectSB.append(msgLabel("Do"));
-        selectSB.append(msgLabel("Apply action to selected entries"));
+        selectSB.append(msgLabel("Apply action"));
         selectSB.append(HtmlUtil.select(ARG_OUTPUT, tfos));
-        selectSB.append(HtmlUtil.submit(msg("Selected"), "getselected"));
+        selectSB.append(HtmlUtil.space(2));
+        selectSB.append(msgLabel("to"));
         selectSB.append(HtmlUtil.submit(msg("All"), "getall"));
+        selectSB.append(HtmlUtil.submit(msg("Selected"), "getselected"));
+        selectSB.append(HtmlUtil.space(4));
         selectSB.append(getSortLinks(request));
 
 
@@ -1327,7 +1334,7 @@ public class OutputHandler extends RepositoryManager {
             String[] tuple = getEntryFormStart(request,
                                  ((entriesToCheck != null)
                                   ? entriesToCheck
-                                  : entries), true);
+                                  : entries), true,"Search Results");
             link = tuple[0];
             base = tuple[1];
             sb.append(tuple[2]);

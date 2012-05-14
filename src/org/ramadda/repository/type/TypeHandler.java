@@ -2943,6 +2943,7 @@ public class TypeHandler extends RepositoryManager {
                             HtmlUtil.input(ARG_TEXT, name,
                                            HtmlUtil.SIZE_50
                                            + " autofocus ") + " " + extra));
+
     }
 
 

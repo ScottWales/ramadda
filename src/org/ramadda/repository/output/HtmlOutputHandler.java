@@ -1199,9 +1199,9 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             if(!hasFields) {
                 if(typeHandler.isGroup()) {
-                    type = "Folder";
-                } else {
-                    type = "File";
+                    type = "Folders";
+                } else if(entry.isFile()) {
+                    type = "Files";
                 }
             }
             List<Entry> entries = map.get(type);
@@ -1233,7 +1233,6 @@ public class HtmlOutputHandler extends OutputHandler {
             //            tableSB.append(HtmlUtil.col("<b>" + msg("Date") +"</b>"));
 
 
-
             boolean isFile = false;
             for(Entry entry: entries) {
                 if(entry.isFile()) {
@@ -1245,14 +1244,14 @@ public class HtmlOutputHandler extends OutputHandler {
                 numCols++;
                 tableSB.append(HtmlUtil.col(""));
                 numCols++;
-                tableSB.append(HtmlUtil.col("<b>" + msg("Size") +"</b>"));
+                tableSB.append(HtmlUtil.col(HtmlUtil.b(msg("Size"))," align=right "));
             }
-            tableSB.append(HtmlUtil.col("&nbsp;"));
+            //            tableSB.append(HtmlUtil.col("&nbsp;"));
             if(columns!=null) {
                 for(Column column: columns) {
                     if(column.getCanList() && column.getCanShow()) {
                         numCols++;
-                        tableSB.append(HtmlUtil.col("<b>" + column.getLabel() +"</b>"));
+                        tableSB.append(HtmlUtil.col(HtmlUtil.b(column.getLabel())));
                     }
                 }
             }
@@ -1266,7 +1265,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                                                new Date(entry.getStartDate()),
                                                                             getEntryManager().getTimezone(entry), "")," width=10% align=right "));
 
-                if(isFile) {
+                if(entry.isFile()) {
                     tableSB.append(HtmlUtil.col(HtmlUtil.href(entry.getTypeHandler().getEntryResourceUrl(request,
                                                                                        entry), HtmlUtil.img(iconUrl(ICON_DOWNLOAD),
                                                                                                             msg("Download"), ""))," width=2% "));
@@ -1278,7 +1277,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     if(entry.isFile()) {
                         tableSB.append(HtmlUtil.col(formatFileLength(entry.getResource().getFileSize()), " align=right nowrap "));
                     } else {
-                        tableSB.append(HtmlUtil.col("NA"));
+                        tableSB.append(HtmlUtil.col("NA"," align=right nowrap "));
                     }
 
                 }

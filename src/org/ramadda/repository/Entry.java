@@ -218,9 +218,14 @@ public class Entry implements Cloneable {
      * @param isDummy _more_
      */
     public Entry(TypeHandler handler, boolean isDummy) {
+        this(handler, isDummy, "Search Results");
+    }
+
+
+    public Entry(TypeHandler handler, boolean isDummy, String dummyName) {
         this("", handler);
         this.isDummy = isDummy;
-        setName("Search Results");
+        setName(dummyName);
         setDescription("");
     }
 

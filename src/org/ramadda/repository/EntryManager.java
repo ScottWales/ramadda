@@ -2543,11 +2543,11 @@ public class EntryManager extends RepositoryManager {
                 return result;
             }
 
-            System.err.println("serving file");
             InputStream inputStream =
                 getStorageManager().getFileInputStream(file);
             Result result = new Result(BLANK, inputStream, mimeType);
-            //            result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH, "" + length);
+            result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH, "" + length);
+            result.setLastModified(new Date(file.lastModified()));
             result.setCacheOk(true);
             return result;
         }
@@ -6256,8 +6256,12 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getDummyGroup() throws Exception {
+        return getDummyGroup("Search Results");
+    }
+
+    public Entry getDummyGroup(String name) throws Exception {
         Entry dummyGroup = new Entry(getRepository().getGroupTypeHandler(),
-                                     true);
+                                     true, name);
         dummyGroup.setId(getRepository().getGUID());
         dummyGroup.setUser(getUserManager().getAnonymousUser());
         return dummyGroup;

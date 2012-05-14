@@ -80,7 +80,7 @@ public class ZipOutputHandler extends OutputHandler {
 
 
     /** _more_ */
-    public static final OutputType OUTPUT_ZIP = new OutputType("Zip File",
+    public static final OutputType OUTPUT_ZIP = new OutputType("Zip and Download File",
                                                     "zip.zip",
                                                     OutputType.TYPE_FILE, "",
                                                     ICON_ZIP);
@@ -88,13 +88,13 @@ public class ZipOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
-        new OutputType("Zip Folders", "zip.tree", OutputType.TYPE_FILE, "",
+        new OutputType("Zip and Download Tree", "zip.tree", OutputType.TYPE_FILE, "",
                        ICON_ZIP);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPGROUP =
-        new OutputType("Zip Folder", "zip.zipgroup", OutputType.TYPE_FILE,
+        new OutputType("Zip and Download Files", "zip.zipgroup", OutputType.TYPE_FILE,
                        "", ICON_ZIP);
 
 
@@ -137,6 +137,7 @@ public class ZipOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+
         if (state.entry != null) {
             if (getAccessManager().canDownload(request, state.entry)) {
                 links.add(
@@ -174,8 +175,8 @@ public class ZipOutputHandler extends OutputHandler {
             }
         }
 
-        if ((state.group != null) && !state.group.isTopEntry()
-                && (hasFile || hasGroup)) {
+
+        if ((state.group != null) && hasGroup && (!state.group.isTopEntry() ||state.group.isDummy())) {
             links.add(makeLink(request, state.group, OUTPUT_ZIPTREE,
                                "/"
                                + IOUtil.stripExtension(state.group.getName())

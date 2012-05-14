@@ -1633,9 +1633,8 @@ public class UserManager extends RepositoryManager {
             entries = new ArrayList<Entry>();
             sb.append(
                 getRepository().showDialogNote(
-                    msg("No entries in cart") + HtmlUtil.space(1)
-                    + msg("Using top folder")));
-            entries.add(getEntryManager().getTopGroup());
+                    msg("No entries in cart")));
+            //            entries.add(getEntryManager().getTopGroup());
         }
 
         sb.append(HtmlUtil.p());
@@ -1684,10 +1683,11 @@ public class UserManager extends RepositoryManager {
         }
 
 
+
         if ( !haveFrom && !splitScreen) {
             String[] formTuple =
                 getRepository().getHtmlOutputHandler().getEntryFormStart(
-                    request, entries, false);
+                                                                         request, entries, false,"Cart");
 
             sb.append(formTuple[2]);
         }
@@ -1802,6 +1802,8 @@ public class UserManager extends RepositoryManager {
         if ( !haveFrom && !splitScreen) {
             sb.append("</form>");
         }
+
+
         return makeResult(request, "User Cart", sb);
 
     }
@@ -2651,17 +2653,20 @@ public class UserManager extends RepositoryManager {
                     Link link;
                     if(isCartEnabled()) {
                         List<Entry> cart = getCart(request);
-                        link = makeLink(request, state.getEntry(),
-                                             OUTPUT_CART_ADD);
-                        link.setLinkType(OutputType.TYPE_FILE
-                                         | OutputType.TYPE_TOOLBAR);
-                        links.add(link);
-
-                        link = makeLink(request, state.getEntry(),
-                                        OUTPUT_CART_REMOVE);
-                        link.setLinkType(OutputType.TYPE_FILE
-                                         | OutputType.TYPE_ACTION);
-                        links.add(link);
+                        boolean entryIsInCart = cart.contains(state.getEntry());
+                        if(!entryIsInCart) {
+                            link = makeLink(request, state.getEntry(),
+                                            OUTPUT_CART_ADD);
+                            link.setLinkType(OutputType.TYPE_FILE
+                                             | OutputType.TYPE_TOOLBAR);
+                            links.add(link);
+                        } else {
+                            link = makeLink(request, state.getEntry(),
+                                            OUTPUT_CART_REMOVE);
+                            link.setLinkType(OutputType.TYPE_FILE
+                                             | OutputType.TYPE_ACTION);
+                            links.add(link);
+                        }
                     }
 
 
