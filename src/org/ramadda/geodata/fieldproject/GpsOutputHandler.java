@@ -929,7 +929,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
             //Write the text out
             File f = getStorageManager().getTmpFile(request, fileName);
-            FileOutputStream out = getStorageManager().getFileOutputStream(f);
+            FileOutputStream out = getStorageManager().getUncheckedFileOutputStream(f);
             out.write(buff.toString().getBytes());
             out.flush();
             out.close();
