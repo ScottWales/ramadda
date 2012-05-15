@@ -117,7 +117,7 @@ public class FitsOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.entry != null) {
-            if (state.entry.getType().equals("fits_data")) {
+            if (state.entry.getTypeHandler().isType("fits_data")) {
                 links.add(makeLink(request, state.entry, OUTPUT_INFO));
                 links.add(makeLink(request, state.entry, OUTPUT_VIEWER));
                 //                links.add(makeLink(request, state.entry, OUTPUT_IMAGE));
