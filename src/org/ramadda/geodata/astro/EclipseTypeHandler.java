@@ -73,6 +73,9 @@ public class EclipseTypeHandler extends FitsTypeHandler  {
     public static final int IDX_MAGNITUDE = IDX_BASE  + 3;
 
     public static final String PROP_MAGNITUDE  ="MAGNITUD";
+
+
+
     /**
      * ctor
      *
@@ -93,7 +96,9 @@ public class EclipseTypeHandler extends FitsTypeHandler  {
 
     public void processHeader(Entry entry, Header header, Object[] values) {
         super.processHeader(entry, header, values);
+
         String value = header.getStringValue(PROP_MAGNITUDE);
+        System.err.println("processHeader:" + value);
         if(value!=null) {
             values[IDX_MAGNITUDE] = new Double(value.trim()).doubleValue();
         }
