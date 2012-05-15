@@ -65,7 +65,7 @@ import java.util.List;
  */
 public class EclipseTypeHandler extends FitsTypeHandler  {
 
-    public static final int IDX_BASE = FITS_PROPS.length+1;
+    public static final int IDX_BASE = FITS_PROPS.length;
 
     public static final int IDX_LOCATION = IDX_BASE  + 0;
     public static final int IDX_SOURCE = IDX_BASE  + 1;
@@ -89,20 +89,20 @@ public class EclipseTypeHandler extends FitsTypeHandler  {
     }
 
 
-    public Object[] createValueArray() {
-        return new Object[FITS_PROPS.length+4];
-    }
-
 
     public void processHeader(Entry entry, Header header, Object[] values) {
         super.processHeader(entry, header, values);
 
-        String value = header.getStringValue(PROP_MAGNITUDE);
-        System.err.println("processHeader:" + value);
-        if(value!=null) {
-            values[IDX_MAGNITUDE] = new Double(value.trim()).doubleValue();
+        values[IDX_MAGNITUDE] = new Double(header.getDoubleValue(PROP_MAGNITUDE,0));
+        values[IDX_LOCATION] = header.getStringValue("LOCATION");
+        String source = header.getStringValue("SOURCE");
+        if(source!=null) {
+            List<String> tuples = StringUtil.splitUpTo(source," ",2);
+            if(tuples.size()==2) {
+                values[IDX_SOURCE] = tuples.get(1).trim();
+                values[IDX_SOURCETYPE] = tuples.get(0).trim();
+            }
         }
-
     }
 
 }

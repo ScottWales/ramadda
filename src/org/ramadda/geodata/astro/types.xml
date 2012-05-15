@@ -26,8 +26,8 @@
   <type name="fits_eclipse" super="fits_data"  description="FITS Eclipse Data File" handler="org.ramadda.geodata.astro.EclipseTypeHandler" category="Astronomy" >
      <property name="icon" value="/astro/eclipse.png"/>
      <column name="location"  label="Location"/>
-     <column name="source"  label="Source"/>
-     <column name="sourcetype"  label="Source Type"/>
+     <column name="source"     label="Source" type="enumerationplus"/>
+     <column name="sourcetype"  label="Source Type" />
      <column name="magnitude"  type="double" label="Magnitude"/>
    </type>
 

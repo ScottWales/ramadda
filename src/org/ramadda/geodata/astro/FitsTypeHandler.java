@@ -244,10 +244,6 @@ public class FitsTypeHandler extends GenericTypeHandler {
     }
 
 
-    public Object[] createValueArray() {
-        return new Object[4];
-    }
-
     /**
      * _more_
      *
@@ -259,8 +255,9 @@ public class FitsTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Entry entry) throws Exception {
         Object[] values = entry.getValues();
         if (values == null) {
-            values = createValueArray();
+            values = makeEntryValueArray();
         }
+
         Fits fits = new Fits(entry.getFile());
         for (int headerIdx = 0; headerIdx < fits.size(); headerIdx++) {
             BasicHDU            hdu       = fits.getHDU(headerIdx);
