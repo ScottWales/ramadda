@@ -2698,7 +2698,7 @@ public class TypeHandler extends RepositoryManager {
             String unzipWidget =
                 HtmlUtil.checkbox(ARG_FILE_UNZIP) + HtmlUtil.space(1)
                 + msg("Unzip archive")
-                + HtmlUtil.checkbox(ARG_FILE_PRESERVEDIRECTORY)
+                + HtmlUtil.checkbox(ARG_FILE_PRESERVEDIRECTORY,"true", true)
                 + HtmlUtil.space(1) + msg("Make folders from archive");
 
 

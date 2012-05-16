@@ -1205,12 +1205,16 @@ public class EntryManager extends RepositoryManager {
                 //TODO: use GZIPInputStream to unzip the file
             }
 
+            boolean hasZip = false;
+
             if(isServerFile) {
             } else if ( !unzipArchive) {
                 resources.add(resource);
                 origNames.add(resourceName);
                 parents.add(parentEntry);
             } else {
+                hasZip = true;
+
                 isServerFile = false;
                 Hashtable<String, Entry> nameToGroup = new Hashtable<String,
                                                            Entry>();
@@ -1234,7 +1238,8 @@ public class EntryManager extends RepositoryManager {
                             List<String> toks = StringUtil.split(path, "/",
                                                     true, true);
                             String ancestors = "";
-                            if (toks.size() > 1) {
+                            //Remove the file name from the list of tokens
+                            if (toks.size() > 0) {
                                 toks.remove(toks.size() - 1);
                             }
                             for (String parentName : toks) {
@@ -1312,10 +1317,15 @@ public class EntryManager extends RepositoryManager {
                                 new File(theResource)).toString();
                     }
                 }
-                String name = (forUpload
+
+                //If its an anon upload  or we're unzipping an archive then don't set the name
+                String name = (forUpload||hasZip
                                ? ""
                                : request.getAnonymousEncodedString(ARG_NAME,
                                    BLANK));
+
+
+
                 if (name.indexOf("${") >= 0) {}
 
                 if (name.trim().length() == 0) {
