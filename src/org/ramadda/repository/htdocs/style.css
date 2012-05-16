@@ -220,6 +220,15 @@ a..ramadda-heading-2-link:visited {
    text-align:center;
 }
 
+.ramadda-acknowledgement, .ramadda-acknowledgement a {
+   text-align: center;
+   font-style:italic;
+   font-family: Arial;
+   font-size: smaller;
+   padding-bottom:10px;
+}
+
+
 .ramadda-footer {
    margin:10px;
    margin-left: auto;
