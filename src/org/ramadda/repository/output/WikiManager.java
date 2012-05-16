@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -87,6 +88,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String PROP_ENTRY = "entry";
 
+    /** attribute in import tag */
+    public static final String PROP_ENTRIES = "entries";
+
     /** _more_ */
     public static final String PROP_ALT = "alt";
 
@@ -172,7 +176,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String PROP_WIDTH = "width";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_WIKIFY = "wikify";
 
     /** attribute in import tag */
@@ -184,7 +188,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_IMPORT = "import";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKIPROP_FIELD = "field";
 
     /** _more_ */
@@ -208,7 +212,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_TREE = "tree";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKIPROP_TABLE = "table";
 
     /** wiki import */
@@ -290,7 +294,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String ATTR_COLUMNS = "columns";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FIELDNAME = "name";
 
 
@@ -678,7 +682,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         boolean hasOpenProperty = props.get(PROP_OPEN) != null;
 
-        boolean open = Misc.getProperty(props, PROP_OPEN,
+        boolean open            = Misc.getProperty(props, PROP_OPEN,
                                         ((hasChildren != null)
                                          ? hasChildren.equals("false")
                                          : true));
@@ -767,7 +771,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         } else if (include.equals(WIKIPROP_CALENDAR)) {
             StringBuffer calendarSB = new StringBuffer();
-            List<Entry> children = getEntries(request, wikiUtil, entry,
+            List<Entry>  children   = getEntries(request, wikiUtil, entry,
                                        props);
             boolean doDay = Misc.getProperty(props, "day", false);
             getCalendarOutputHandler().outputCalendar(request,
@@ -777,12 +781,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return calendarSB.toString();
         } else if (include.equals(WIKIPROP_TIMELINE)) {
             StringBuffer calendarSB = new StringBuffer();
-            List<Entry> children = getEntries(request, wikiUtil, entry,
+            List<Entry>  children   = getEntries(request, wikiUtil, entry,
                                        props);
 
             int    height = Misc.getProperty(props, PROP_HEIGHT, 150);
             String style  = "height: " + height + "px;";
-            String head = getHtmlOutputHandler().makeTimeline(request,
+            String head   = getHtmlOutputHandler().makeTimeline(request,
                               children, calendarSB, style);
             StringBuffer html = new StringBuffer();
             if (head != null) {
@@ -792,12 +796,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return html.toString();
         } else if (include.equals(WIKIPROP_MAP)
                    || include.equals(WIKIPROP_EARTH)) {
-            StringBuffer mapSB  = new StringBuffer();
-            int          width  = Misc.getProperty(props, PROP_WIDTH, 400);
+            StringBuffer mapSB       = new StringBuffer();
+            int          width = Misc.getProperty(props, PROP_WIDTH, 400);
             int          height = Misc.getProperty(props, PROP_HEIGHT, 300);
-            boolean justPoints  = Misc.getProperty(props, "justpoints",
-                                      false);
-            boolean listEntries = Misc.getProperty(props, "listentries",
+            boolean justPoints = Misc.getProperty(props, "justpoints", false);
+            boolean      listEntries = Misc.getProperty(props, "listentries",
                                       true);
             boolean googleEarth =
                 include.equals(WIKIPROP_EARTH)
@@ -819,13 +822,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     return "No maps";
                 }
                 boolean[] haveBearingLines = { false };
-                MapInfo map = mapOutputHandler.getMap(request, children,
+                MapInfo   map = mapOutputHandler.getMap(request, children,
                                   mapSB, width, height, haveBearingLines);
             }
             return mapSB.toString();
         } else if (include.equals(WIKIPROP_MAPENTRY)) {
-            StringBuffer mapSB = new StringBuffer();
-            int          width = Misc.getProperty(props, PROP_WIDTH, 400);
+            StringBuffer     mapSB            = new StringBuffer();
+            int              width = Misc.getProperty(props, PROP_WIDTH, 400);
             int height = Misc.getProperty(props, PROP_HEIGHT, 300);
             MapOutputHandler mapOutputHandler =
                 (MapOutputHandler) getRepository().getOutputHandler(
@@ -837,13 +840,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = new ArrayList<Entry>();
             children.add(entry);
             boolean[] haveBearingLines = { false };
-            MapInfo map = mapOutputHandler.getMap(request, children, mapSB,
+            MapInfo   map = mapOutputHandler.getMap(request, children, mapSB,
                               width, height, haveBearingLines);
             return mapSB.toString();
         } else if (include.equals(WIKIPROP_MENU)) {
             boolean popup = Misc.getProperty(props, PROP_POPUP, false);
             String  menus = Misc.getProperty(props, PROP_MENUS, "");
-            int type = OutputType.getTypeMask(StringUtil.split(menus, ",",
+            int     type  = OutputType.getTypeMask(StringUtil.split(menus, ",",
                            true, true));
             blockTitle = Misc.getProperty(props, PROP_TITLE,
                                           msg(LABEL_LINKS));
@@ -856,27 +859,33 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKIPROP_TABS)) {
             List        tabTitles   = new ArrayList<String>();
             List        tabContents = new ArrayList<String>();
-            List<Entry> children = getEntries(request, wikiUtil, entry,
+            List<Entry> children    = getEntries(request, wikiUtil, entry,
                                        props);
-            boolean showDescription = Misc.getProperty(props, "showdescription", true);
-            boolean wikify  = Misc.getProperty(props, PROP_WIKIFY, true);
+            boolean showDescription = Misc.getProperty(props,
+                                          "showdescription", true);
+            boolean wikify = Misc.getProperty(props, PROP_WIKIFY, true);
 
             for (Entry child : children) {
                 tabTitles.add(child.getName());
                 String content;
-                if(!showDescription)  {
-                    content = 
-                        getRepository().getHtmlOutputHandler().getInformationTabs(
-                                                                                  request, child, false, true);
+                if ( !showDescription) {
+                    content =
+                        getRepository().getHtmlOutputHandler()
+                            .getInformationTabs(request, child, false, true);
                 } else {
                     content = child.getDescription();
-                    if(wikify) {
-                        content = new WikiUtil().wikify("{{noheading}}\n" + content, null);
+                    if (wikify) {
+                        content = new WikiUtil().wikify("{{noheading}}\n"
+                                + content, null);
                     }
-                    if(child.getResource().isImage()) {
-                        content = HtmlUtil.img(getRepository().getHtmlOutputHandler().getImageUrl(request, child)) +"<br>"+content;
+                    if (child.getResource().isImage()) {
+                        content =
+                            HtmlUtil
+                                .img(getRepository().getHtmlOutputHandler()
+                                    .getImageUrl(request, child)) + "<br>"
+                                        + content;
                     }
-                    
+
                 }
 
                 String href = HtmlUtil.href(
@@ -903,15 +912,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             int numDays = Misc.getProperty(props, PROP_DAYS, 3);
-            StringBuffer        sb  = new StringBuffer();
-            BufferMapList<Date> map = new BufferMapList<Date>();
-            SimpleDateFormat dateFormat =
+            StringBuffer        sb         = new StringBuffer();
+            BufferMapList<Date> map        = new BufferMapList<Date>();
+            SimpleDateFormat    dateFormat =
                 new SimpleDateFormat("EEEEE MMMMM d");
             dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
-            Date firstDay = ((children.size() > 0)
-                             ? new Date(children.get(0).getChangeDate())
-                             : new Date());
-            GregorianCalendar cal1 =
+            Date              firstDay = ((children.size() > 0)
+                                          ? new Date(children.get(0).getChangeDate())
+                                          : new Date());
+            GregorianCalendar cal1     =
                 new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
             cal1.setTime(new Date(firstDay.getTime()));
             cal1.set(cal1.MILLISECOND, 0);
@@ -967,7 +976,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (imageEntries.size() == 0) {
                 return getMessage(props, "");
             }
-            StringBuffer sb = new StringBuffer();
+            StringBuffer       sb                 = new StringBuffer();
             ImageOutputHandler imageOutputHandler =
                 (ImageOutputHandler) getRepository().getOutputHandler(
                     ImageOutputHandler.OUTPUT_PLAYER);
@@ -978,8 +987,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int         width    = Misc.getProperty(props, PROP_WIDTH, -1);
             int         columns  = Misc.getProperty(props, ATTR_COLUMNS, 1);
 
-            boolean     random   = Misc.getProperty(props, PROP_RANDOM,
-                                       false);
+            boolean     random   = Misc.getProperty(props, PROP_RANDOM, false);
 
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
@@ -1088,8 +1096,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 open = true;
             }
             doBG = false;
-            StringBuffer sb      = new StringBuffer();
-            List<Entry> children = getEntries(request, wikiUtil, entry,
+            StringBuffer sb       = new StringBuffer();
+            List<Entry>  children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
                 return getMessage(props, "");
@@ -1097,7 +1105,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
             blockContent = sb.toString();
-            blockTitle = Misc.getProperty(props, PROP_TITLE, msg("Links"))
+            blockTitle   = Misc.getProperty(props, PROP_TITLE, msg("Links"))
                          + link;
         } else if (include.equals(WIKIPROP_LINKS)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
@@ -1111,8 +1119,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String       cssClass = Misc.getProperty(props, PROP_CLASS, "");
             String       style = Misc.getProperty(props, PROP_STYLE, "style");
             String       tagOpen  = Misc.getProperty(props, PROP_TAGOPEN, "");
-            String       tagClose = Misc.getProperty(props, PROP_TAGCLOSE,
-                                        "");
+            String       tagClose = Misc.getProperty(props, PROP_TAGCLOSE, "");
 
             StringBuffer sb       = new StringBuffer();
             List<String> links    = new ArrayList<String>();
@@ -1189,10 +1196,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry entry, Hashtable props)
             throws Exception {
-        boolean folders = Misc.getProperty(props, PROP_FOLDERS, false);
-        boolean files   = Misc.getProperty(props, PROP_FILES, false);
+        boolean folders        = Misc.getProperty(props, PROP_FOLDERS, false);
+        boolean files          = Misc.getProperty(props, PROP_FILES, false);
         boolean doAssociations = Misc.getProperty(props, PROP_ASSOCIATIONS,
                                      false);
+        String uentries = Misc.getProperty(props, PROP_ENTRIES,
+                                           (String) null);
 
         if (doAssociations) {
             List<Association> associations =
@@ -1213,12 +1222,24 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return linkedEntries;
         }
 
-        String type  = (String) props.get(PROP_TYPE);
-        int    level = Misc.getProperty(props, PROP_LEVEL, 1);
+        String      type     = (String) props.get(PROP_TYPE);
+        int         level    = Misc.getProperty(props, PROP_LEVEL, 1);
         List<Entry> children =
             (List<Entry>) wikiUtil.getProperty(entry.getId() + "_children");
         if (children == null) {
             children = getEntryManager().getChildren(request, entry);
+        }
+        if (uentries != null) {
+            List<Entry>  tmp      = new ArrayList<Entry>();
+            List<String> entryids = StringUtil.split(uentries, ",", true,
+                                        true);
+            for (String entryid : entryids) {
+                Entry foo = getEntryManager().getEntry(request, entryid);
+                if (foo != null) {
+                    tmp.add(foo);
+                }
+            }
+            children = tmp;
         }
         if (level == 2) {
             List<Entry> grandChildren = new ArrayList<Entry>();
@@ -1325,13 +1346,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (handler == null) {
                 return null;
             }
-            OutputType outputType = handler.findOutputType(tag);
+            OutputType outputType     = handler.findOutputType(tag);
 
-            String originalOutput = request.getString(ARG_OUTPUT,
+            String     originalOutput = request.getString(ARG_OUTPUT,
                                         (String) "");
-            String originalId = request.getString(ARG_ENTRYID, (String) "");
+            String  originalId = request.getString(ARG_ENTRYID, (String) "");
 
-            Request myRequest =
+            Request myRequest  =
                 new Request(getRepository(), request.getUser(),
                             getRepository().URL_ENTRY_SHOW.toString()) {
                 public void putExtraProperty(Object key, Object value) {
@@ -1544,7 +1565,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
             String prop = link.getOutputType().getId();
-            String js = "javascript:insertTags("
+            String js   = "javascript:insertTags("
                         + HtmlUtil.squote(textAreaId) + ","
                         + HtmlUtil.squote("{{") + "," + HtmlUtil.squote("}}")
                         + "," + HtmlUtil.squote(prop) + ");";
@@ -1656,7 +1677,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             name = name.trim();
             if (name.startsWith("Category:")) {
                 String category = name.substring("Category:".length());
-                String url =
+                String url      =
                     request.url(
                         getRepository().getSearchManager().URL_ENTRY_SEARCH,
                         ARG_METADATA_TYPE + ".wikicategory", "wikicategory",
