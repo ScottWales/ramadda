@@ -858,11 +858,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List        tabContents = new ArrayList<String>();
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
+            boolean showDescription = Misc.getProperty(props, "showdescription", true);
+            boolean wikify  = Misc.getProperty(props, PROP_WIKIFY, true);
+
             for (Entry child : children) {
                 tabTitles.add(child.getName());
-                String content =
-                    getRepository().getHtmlOutputHandler().getInformationTabs(
-                        request, child, false, true);
+                String content;
+                if(!showDescription)  {
+                    content = 
+                        getRepository().getHtmlOutputHandler().getInformationTabs(
+                                                                                  request, child, false, true);
+                } else {
+                    content = child.getDescription();
+                    if(wikify) {
+                        content = new WikiUtil().wikify("{{noheading}}\n" + content, null);
+                    }
+                    if(child.getResource().isImage()) {
+                        content = HtmlUtil.img(getRepository().getHtmlOutputHandler().getImageUrl(request, child)) +"<br>"+content;
+                    }
+                    
+                }
 
                 String href = HtmlUtil.href(
                                   request.entryUrl(

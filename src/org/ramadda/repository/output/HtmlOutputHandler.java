@@ -98,9 +98,10 @@ public class HtmlOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_TABLE =
-        new OutputType("Tablular Layout", "html.table",
-    //                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
-    OutputType.TYPE_FORSEARCH, "", ICON_TABLE);
+        new OutputType("Tabular Layout", "html.table",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, 
+                       "",
+                       ICON_TABLE);
 
     /** _more_ */
     public static final OutputType OUTPUT_CLOUD = new OutputType("Cloud",
