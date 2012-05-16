@@ -193,16 +193,18 @@ Show the menu actions in a popup:
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
 other groups of entries with:
-[wiki::text {{{property entry="some other entry" folders="true" files="true" type="entries of a specific type" level="1 or 2" associations="true|false"}}}]
+[wiki::text {{{property entry="some other entry" folders="true" files="true" type="entries of a specific type" level="1 or 2" associations="true|false" entries="entryid1,entryid2,entryid3.."}}}]
 </ul>
 If <i>folders</i> is set then only show folder like entries.<br>
 If <i>files</i> is set then only show non folders.<br>
 If <i>type</i> is set then only show entries of  that type.<br>
-The attribute <i>level</i> can be set to "1" (the default) or "2". Level 1 refers to the immediate children
+The attribute <i>level</i> can be set to "1" (the default) or "2". 
+Level 1 refers to the immediate children
 entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).<br>
-If <i> associations</i> is set to true then the entries that are used are those that
-the current entry has an association to. Associations are named and typed links
-between arbitrary entries.
+If <i> associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
+and typed links between arbitrary entries.<br>
+If <i>entries</i> is set to a list of entryids, then only those entrys are 
+included.
 
 
 
@@ -234,7 +236,16 @@ Show a vertical listing of the grandchildren entry images:
 Set the image width and only show up to 5 images:
 [wiki::text {{{gallery  width="300" count="5"}}}] </pre>
 
-<li> [wiki::tagdef tabs]: Show the children as tabs.
+<li> [wiki::tagdef tabs]: Show the children as tabs:
+[wiki::text {{{tabs}}}] </pre>
+
+Show only the 3 specified entries in tabs:
+[wiki::text {{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
+                 83539d5c-e9d9-408e-b0af-35f480000ae6,
+                 49684d25-6af1-4188-a0ae-4d5302d22f2a" }}] </pre>
+
+Show only the children of type wikipage in tabs:
+[wiki::text {{tabs type="wikipage"}}]</pre>
 
 <li> [wiki::tagdef links {separator="separator text to use" 
                           style="inline css style for the link"
