@@ -1457,7 +1457,14 @@ public class HtmlOutputHandler extends OutputHandler {
         //            return typeResult;
         //        }
 
+        
         boolean doSimpleListing  = !request.exists(ARG_OUTPUT);
+
+        //If no children then show the details of this group
+        if(subGroups.size() == 0 && entries.size() ==0) {
+            doSimpleListing = false;
+        }
+
 
         boolean showTimeline = outputType.equals(OUTPUT_TIMELINE);
         if ( !showTimeline && (typeHandler != null)) {

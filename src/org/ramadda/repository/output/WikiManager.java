@@ -224,6 +224,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKIPROP_GALLERY = "gallery";
 
+    public static final String WIKIPROP_SLIDESHOW = "slideshow";
+
     /** _more_ */
     public static final String WIKIPROP_PLAYER = "player";
 
@@ -306,6 +308,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKIPROP_EARTH, WIKIPROP_CALENDAR, WIKIPROP_TIMELINE,
         WIKIPROP_COMMENTS, WIKIPROP_BREADCRUMBS, WIKIPROP_TOOLBAR,
         WIKIPROP_IMAGE, WIKIPROP_MENU, WIKIPROP_RECENT, WIKIPROP_GALLERY,
+        WIKIPROP_SLIDESHOW, 
         WIKIPROP_TABS, WIKIPROP_GRID, WIKIPROP_TREE, WIKIPROP_TABLE,
         WIKIPROP_LINKS, WIKIPROP_ENTRYID
     };
@@ -861,17 +864,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List        tabContents = new ArrayList<String>();
             List<Entry> children    = getEntries(request, wikiUtil, entry,
                                        props);
-            boolean showDescription = Misc.getProperty(props,
-                                          "showdescription", true);
+            boolean useDescription = Misc.getProperty(props,
+                                          "usedescription", true);
             boolean wikify = Misc.getProperty(props, PROP_WIKIFY, true);
 
+            int imageWidth = Misc.getProperty(props, "width", 400);
             for (Entry child : children) {
                 tabTitles.add(child.getName());
                 String content;
-                if ( !showDescription) {
-                    content =
-                        getRepository().getHtmlOutputHandler()
-                            .getInformationTabs(request, child, false, true);
+                if(!useDescription) {
+                    Result result =
+                        getHtmlOutputHandler().getHtmlResult(request,
+                                                             OutputHandler.OUTPUT_HTML, child);
+
+                    content = new String(result.getContent());
                 } else {
                     content = child.getDescription();
                     if (wikify) {
@@ -882,10 +888,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         content =
                             HtmlUtil
                                 .img(getRepository().getHtmlOutputHandler()
-                                    .getImageUrl(request, child)) + "<br>"
+                                     .getImageUrl(request, child), "", " width=" + imageWidth) + "<br>"
                                         + content;
                     }
-
                 }
 
                 String href = HtmlUtil.href(
@@ -1055,6 +1060,63 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             sb.append("</table>");
             return sb.toString();
+
+
+        } else if (include.equals(WIKIPROP_SLIDESHOW)) {
+            List<Entry> children = getEntries(request, wikiUtil, entry,
+                                       props);
+            StringBuffer sb        = new StringBuffer();
+
+            List<Entry>  onesToUse = new ArrayList<Entry>();
+            for (Entry child : children) {
+                if ( !child.getResource().isImage()) {
+                    continue;
+                }
+                onesToUse.add(child);
+            }
+            int         count    = Misc.getProperty(props, PROP_COUNT, -1);
+            int num = 0;
+
+            String css = ".slides_container {width:400px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:400px;height:270px;display:block;}\n";
+            sb.append("<style type=\"text/css\">\n");
+            sb.append(css);
+            sb.append("</style>\n\n");
+
+
+            
+            String js = "\n$(function(){alert('x');\n\n$('#slides').slides({ preload: true, preloadImage: 'http://localhost:8080/repository/htdocs/slides/img/loading.gif', play: 5000, pause: 2500, hoverPause: true, generatePagination: false,\nslidesLoaded: function() { $('.caption').animate({ bottom:0 },200); }\n});\n});\n\n";
+
+
+            sb.append("<div id=\"slides\">");
+            sb.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
+            sb.append("<td><a href=\"#\" class=\"prev\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-prev.png\" width=\"24\" height=\"43\" alt=\"Arrow Prev\"></a></td>");
+            sb.append("<td width=\"400\">");
+            sb.append("<div class=\"slides_container\">");
+            for (Entry child : onesToUse) {
+                num++;
+                if ((count > 0) && (num > count)) {
+                    break;
+                }
+                String imgUrl = getHtmlOutputHandler().getImageUrl(request,
+                                                                   child);
+                sb.append("<div class=\"slide\">");
+                //                sb.append(HtmlUtil.img(imgUrl, "", "width=400"));
+                sb.append(child.getName());
+                sb.append("</div>");
+            }
+            sb.append("</div>\n");
+            sb.append("<td><a href=\"#\" class=\"next\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-next.png\" width=\"24\" height=\"43\" alt=\"Arrow Next\"></a></td>\n");
+            sb.append("</tr></table></div>\n");
+            //            sb.append(HtmlUtil.importJS(getRepository().fileUrl("/slides/slides.min.jquery.js")));
+            sb.append(HtmlUtil.importJS(getRepository().fileUrl("http://localhost:8080/repository/htdocs/slides/slides.min.jquery.js")));
+
+            sb.append("\n\n");
+            sb.append(HtmlUtil.script(js));
+            sb.append("\n\n");
+
+            System.out.println(sb);
+            return sb.toString();
+
         } else if (include.equals(WIKIPROP_CHILDREN_GROUPS)) {
             if ( !hasOpenProperty) {
                 open = true;
