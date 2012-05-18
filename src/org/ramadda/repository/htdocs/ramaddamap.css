@@ -11,3 +11,7 @@ div.olControlMousePosition {
  font-weight:bold;
 }
 
+.olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
+visibility:hidden;
+}
+
