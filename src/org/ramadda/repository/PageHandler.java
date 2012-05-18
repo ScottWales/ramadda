@@ -21,93 +21,35 @@
 package org.ramadda.repository;
 
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.*;
-
-
-import org.ramadda.repository.admin.*;
-
 import org.ramadda.repository.auth.*;
-
-
-import org.ramadda.repository.database.*;
-
-import org.ramadda.repository.ftp.FtpManager;
-import org.ramadda.repository.harvester.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.monitor.*;
-
 import org.ramadda.repository.output.*;
-import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
 
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.PropertyProvider;
 
-import org.ramadda.util.TempDir;
 
-
-import org.w3c.dom.*;
-
-import ucar.unidata.sql.Clause;
-
-import ucar.unidata.sql.SqlUtil;
-
-import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.Cache;
-import ucar.unidata.util.CacheManager;
-
-import ucar.unidata.util.Counter;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.PatternFileFilter;
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlEncoder;
-
-import ucar.unidata.xml.XmlUtil;
-
-
 
 import java.io.*;
-
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 
-import java.lang.reflect.*;
-
-import java.net.*;
-
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TimeZone;
-
-
-import java.util.regex.*;
-import java.util.zip.*;
-
 
 
 
@@ -116,6 +58,9 @@ import java.util.zip.*;
  *
  */
 public class PageHandler extends RepositoryManager {
+
+    public static final String DEFAULT_TEMPLATE  = "aodnStyle";
+
 
     /** _more_          */
     private static final org.ramadda.util.HttpFormField dummyFieldToForceCompile =
@@ -716,8 +661,10 @@ public class PageHandler extends RepositoryManager {
                                       getRepository().getUrlBase());
             theTemplates = new ArrayList<HtmlTemplate>();
 
+
+
             String defaultId = getProperty(PROP_HTML_TEMPLATE_DEFAULT,
-                                           "mapheader");
+                                           DEFAULT_TEMPLATE);
 
             List<String> templatePaths =
                 new ArrayList<String>(
