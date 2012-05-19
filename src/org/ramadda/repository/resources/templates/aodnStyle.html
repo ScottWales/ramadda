@@ -33,7 +33,7 @@ body {
 .ramadda-menubar {
         border-bottom: 2px #aaa solid; 
 	background-color: #3c668d;
-	opacity: 0.9;
+
 	padding-top: 5px;
 	padding-right: 15px;
 	padding-bottom: 3px;
@@ -52,6 +52,7 @@ body {
 	background-repeat: none;  
 }
 
+
 .entryheader {
    font-family: Arial;
 	font-size: smaller;
@@ -69,6 +70,7 @@ body {
 
 
 
+
 .ramadda-menubutton, .ramadda-menubutton:hover {
   color: white;
   font-weight: bold;
@@ -81,14 +83,14 @@ body {
 	color: white;
 }
 
-.xxxramadda-popup {
+.ramadda-popup {
   padding:1px;
-   text-decoration: none;
+  text-decoration: none;
    border : 1px #000 solid;
    background-color : #FFFFFF;
    position: absolute; 
    visibility: hidden; 
-   z-index: 1;
+// z-index: 1;
 //Shadow effect
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
@@ -367,12 +369,17 @@ a.ramadda-header-leftcolumn  {
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected,
 .ui-tabs ul.ui-tabs-nav li.ui-state-default
 {
-  position:static;
+//this results in an extra line under the tabs
+//  position:static;
 }
 
 hr {
 	color: #435e78;
 }
+
+
+
+
 </style>
 
 ${headfinal}
