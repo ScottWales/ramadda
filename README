@@ -26,9 +26,13 @@ Plugins
 ###########################################################################
 To build the ramadda.org plugins run:
 ant plugins
-This compiles all of the plugins and installs them in your local
+This compiles all of the released plugins and installs them in your local
 ~/.ramadda/plugins
 directory
+
+You can build the individual plugins from their build.xml in their own directory, e.g.:
+    cd src/org/ramadda/geodata/data
+    ant
 
 The user guide and the workshop plugins use a tcl script from the IDV source release.
 We have a copy of that in bin/idvdocgen. This relies on having tclsh in your path. 
