@@ -20,9 +20,7 @@
 
 package org.ramadda.geodata.idv;
 
-
 import org.ramadda.geodata.data.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -36,18 +34,7 @@ import org.ramadda.repository.util.*;
 import org.w3c.dom.*;
 
 
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
-
-import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.PointObsDataset;
-import ucar.nc2.dt.PointObsDatatype;
-import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
-
 import ucar.nc2.ft.FeatureDatasetPoint;
 
 import ucar.unidata.data.*;
@@ -74,9 +61,7 @@ import ucar.unidata.idv.ViewState;
 import ucar.unidata.idv.ui.ImageGenerator;
 import ucar.unidata.idv.ui.ImageSequenceGrabber;
 
-import ucar.unidata.sql.SqlUtil;
 
-import ucar.unidata.ui.ImageUtils;
 
 import ucar.unidata.ui.symbol.StationModel;
 import ucar.unidata.ui.symbol.StationModelManager;
@@ -94,33 +79,20 @@ import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.ThreeDSize;
 import ucar.unidata.util.Trace;
-import ucar.unidata.util.Trace;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import visad.Unit;
 
-
 import java.awt.Color;
-
 import java.io.*;
-
 import java.io.File;
 import java.io.InputStream;
-
-
-
 import java.net.*;
-
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.Date;
-
-
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -129,357 +101,59 @@ import java.util.Properties;
 
 
 /**
+ * This class provides IDV based server side visualization services. It works
+ * for both gridded data and point data though the point data needs alot of work.
+ * The main entry point is the method outputEntry. This gets called by the IDV
+ * and handles all of the html and image generation
  *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author Jeff McWhirter
  */
-public class IdvOutputHandler extends OutputHandler {
+public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
-    /** Visualization metadata type */
-    public static final String METADATA_TYPE_VISUALIZATION =
-        "data.visualization";
 
-    /** product argument id */
-    public static final String ARG_PRODUCT = "product";
 
-    /** azimuth argument id */
-    public static final String ARG_AZIMUTH = "azimuth";
-
-    /** tilt argument id */
-    public static final String ARG_TILT = "tilt";
-
-    /** wireframe argument id */
-    public static final String ARG_WIREFRAME = "wireframe";
-
-    /** view direction argument id */
-    public static final String ARG_VIEWDIR = "viewdir";
-
-    /** lat/lon lines visible argument id */
-    public static final String ARG_LATLON_VISIBLE = "latlon.visible";
-
-    /** lat/lon lines spacing argument id */
-    public static final String ARG_LATLON_SPACING = "latlon.spacing";
-
-    /** Latitude 1 argument id */
-    public static final String ARG_LAT1 = "lat1";
-
-    /** Longitude 1 argument id */
-    public static final String ARG_LON1 = "lon1";
-
-    /** Latitude 2 argument id */
-    public static final String ARG_LAT2 = "lat2";
-
-    /** Longitude 2 argument id */
-    public static final String ARG_LON2 = "lon2";
-
-    /** submit/save argument id */
-    public static final String ARG_SUBMIT_SAVE = "submit.save";
-
-    /** save attach argument id */
-    public static final String ARG_SAVE_ATTACH = "save.attach";
-
-    /** Save name argument id */
-    public static final String ARG_SAVE_NAME = "save.name";
-
-    /** predefined argument id */
-    public static final String ARG_PREDEFINED = "predefined";
-
-    /** image product id */
-    public static final String PRODUCT_IMAGE = "product.image";
-
-    /** QuickTime movie product id */
-    public static final String PRODUCT_MOV = "product.mov";
-
-    /** KMZ product id */
-    public static final String PRODUCT_KMZ = "product.kmz";
-
-    /** GE Plugin product id */
-    public static final String PRODUCT_GEPLUGIN = "product.geplugin";
-
-    /** IDV product id */
-    public static final String PRODUCT_IDV = "product.idv";
-
-    /** ISL product id */
-    public static final String PRODUCT_ISL = "product.isl";
-
-    /** output products */
-    private static TwoFacedObject[] products = { new TwoFacedObject("Image",
-                                                   PRODUCT_IMAGE),
-            new TwoFacedObject("Quicktime Movie", PRODUCT_MOV),
-            new TwoFacedObject("Google Earth KMZ", PRODUCT_KMZ) };
-
-    /** optional GE Plugin product */
-    private static TwoFacedObject gePluginProduct =
-        new TwoFacedObject("Google Earth Plugin", PRODUCT_GEPLUGIN);
-
-
-    /** globe view argument id */
-    public static final String ARG_VIEW_GLOBE = "globe";
-
-    /** projection argument id */
-    public static final String ARG_VIEW_PROJECTION = "proj";
-
-    /** viewpoint argument id */
-    public static final String ARG_VIEW_VIEWPOINT = "viewpoint";
-
-    /** view bounds argument id */
-    public static final String ARG_VIEW_BOUNDS = "bounds";
-
-    /** "just clip" argument id */
-    public static final String ARG_VIEW_JUSTCLIP = "justclip";
-
-    /** background image argument id */
-    public static final String ARG_VIEW_BACKGROUNDIMAGE = "backgroundimage";
-
-    /** parameter argument id */
-    public static final String ARG_PARAM = "param";
-
-    /** target argument id */
-    public static final String ARG_TARGET = "target";
-
-    /** target image id */
-    public static final String TARGET_IMAGE = "image";
-
-    /** target jnlp id */
-    public static final String TARGET_JNLP = "jnlp";
-
-    /** target isl id */
-    public static final String TARGET_ISL = "isl";
-
-    /** zoom argument id */
-    public static final String ARG_ZOOM = "zoom";
-
-    /** layoutmodel argument id */
-    public static final String ARG_POINT_LAYOUTMODEL = "layoutmodel";
-
-    /** animation argument id */
-    public static final String ARG_POINT_DOANIMATION = "doanimation";
-
-    /** display list label arg id */
-    public static final String ARG_DISPLAYLISTLABEL = "dll";
-
-    /** display list color arg id */
-    public static final String ARG_DISPLAYCOLOR = "clr";
-
-    /** colortable arg id */
-    public static final String ARG_COLORTABLE = "ct";
-
-    /** stride arg id */
-    public static final String ARG_STRIDE = "stride";
-
-    /** flow scale arg id */
-    public static final String ARG_FLOW_SCALE = "f_s";
-
-    /** flow density arg id */
-    public static final String ARG_FLOW_DENSITY = "f_d";
-
-    /** flow skip arg id */
-    public static final String ARG_FLOW_SKIP = "f_sk";
-
-    /** display unit arg id */
-    public static final String ARG_DISPLAYUNIT = "unit";
-
-    /** isosurface value arg id */
-    public static final String ARG_ISOSURFACEVALUE = "iso_value";
-
-    /** contour width arg id */
-    public static final String ARG_CONTOUR_WIDTH = "c_w";
-
-    /** contour min arg id */
-    public static final String ARG_CONTOUR_MIN = "c_mn";
-
-    /** contour max arg id */
-    public static final String ARG_CONTOUR_MAX = "c_mx";
-
-    /** contour interval arg id */
-    public static final String ARG_CONTOUR_INTERVAL = "c_int";
-
-    /** contour base arg id */
-    public static final String ARG_CONTOUR_BASE = "c_b";
-
-    /** contour dash arg id */
-    public static final String ARG_CONTOUR_DASHED = "c_d";
-
-    /** contour labels arg id */
-    public static final String ARG_CONTOUR_LABELS = "c_l";
-
-    /** scale visible arg id */
-    public static final String ARG_SCALE_VISIBLE = "s_v";
-
-    /** scale orientation arg id */
-    public static final String ARG_SCALE_ORIENTATION = "s_o";
-
-    /** scale placement arg id */
-    public static final String ARG_SCALE_PLACEMENT = "s_p";
-
-    /** _more_ */
-    public static final String ARG_RANGE_MIN = "r_mn";
-
-    /** _more_ */
-    public static final String ARG_RANGE_MAX = "r_mx";
-
-    /** _more_ */
-    public static final String ARG_DISPLAY = "dsp";
-
-    /** _more_ */
-    public static final String ARG_ACTION = "action";
-
-    /** _more_ */
-    public static final String ARG_TIMES = "times";
-
-    /** _more_ */
-    public static final String ARG_MAPS = "maps";
-
-    /** _more_ */
-    public static final String ARG_MAPWIDTH = "mapwidth";
-
-    /** _more_ */
-    public static final String ARG_MAPCOLOR = "mapcolor";
-
-
-    /** _more_ */
-    public static final String ARG_CLIP = "clip";
-
-    /** _more_ */
-    public static final String ARG_VIEW_BACKGROUND = "bg";
-
-    /** _more_ */
-    public static final String ARG_LEVELS = "levels";
-
-    /** _more_ */
-    public static final String ARG_IMAGE_WIDTH = "width";
-
-    /** _more_ */
-    public static final String ARG_IMAGE_HEIGHT = "height";
-
-    /** _more_ */
-    public static final String ARG_BACKGROUND_TRANSPARENT = "bgTrans";
-
-
-    /** _more_ */
-    private static final String[] NOTARGS = {
-        ARG_SUBMIT_SAVE, ARG_SUBMIT_PUBLISH, ARG_PUBLISH_NAME,
-        ARG_PUBLISH_ENTRY, ARG_PUBLISH_ENTRY + "_hidden",
-        ARG_PUBLISH_DESCRIPTION, ARG_SAVE_ATTACH, ARG_SAVE_NAME, ARG_ACTION
-    };
-
-    /** _more_ */
-    private HashSet<String> exceptArgs = new HashSet<String>();
-
-    /** _more_ */
-    private Properties valueToAbbrev;
-
-    /** _more_ */
-    private Properties keyToAbbrev;
-
-    /** _more_ */
-    public static final String ACTION_ERROR = "action.error";
-
-
-    /** _more_ */
-    public static final String ACTION_MAKEINITFORM = "action.makeinitform";
-
-    /** _more_ */
-    public static final String ACTION_MAKEFORM = "action.makeform";
-
-
-    /** _more_ */
-    public static final String ACTION_MAKEPAGE = "action.makepage";
-
-    /** _more_ */
-    public static final String ACTION_MAKEIMAGE = "action.makeimage";
-
-
-    /** _more_ */
-    public static final String ACTION_POINT_MAKEPAGE =
-        "action.point.makepage";
-
-    /** _more_ */
-    public static final String ACTION_POINT_MAKEIMAGE =
-        "action.point.makeimage";
-
-
-
-    /** _more_ */
-    public static final String DISPLAY_XS_CONTOUR = "contourxs";
-
-    /** _more_ */
-    public static final String DISPLAY_XS_COLOR = "colorxs";
-
-    /** _more_ */
-    public static final String DISPLAY_XS_FILLEDCONTOUR = "contourxsfilled";
-
-
-
-    /** _more_ */
-    public static final String DISPLAY_PLANVIEWFLOW = "planviewflow";
-
-    /** _more_ */
-    public static final String DISPLAY_STREAMLINES = "streamlines";
-
-    /** _more_ */
-    public static final String DISPLAY_WINDBARBPLAN = "windbarbplan";
-
-    /** _more_ */
-    public static final String DISPLAY_PLANVIEWCONTOUR = "planviewcontour";
-
-    /** _more_ */
-    public static final String DISPLAY_PLANVIEWCONTOURFILLED =
-        "planviewcontourfilled";
-
-    /** _more_ */
-    public static final String DISPLAY_PLANVIEWCOLOR = "planviewcolor";
-
-    /** _more_ */
-    public static final String DISPLAY_ISOSURFACE = "isosurface";
-
-
-    /** _more_ */
-    public static final String GROUP_DATA = "Data";
-
-
-    /** _more_ */
+    /** grid output id */
     public static final OutputType OUTPUT_IDV_GRID =
         new OutputType("Grid Displays", "idv.grid", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE, ICON_PLANVIEW, GROUP_DATA);
 
 
-    /** _more_ */
+    /** point output id */
     public static final OutputType OUTPUT_IDV_POINT =
         new OutputType("Point Displays", "idv.point", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE, ICON_PLANVIEW, GROUP_DATA);
 
 
-    /** _more_ */
+    /** false if there is no graphics environment */
+    private boolean idvOk = false;
+
+    /** The IDV */
     IdvServer idvServer;
 
-    /** _more_ */
-    int callCnt = 0;
-
-    /** _more_ */
+    /** background images available */
     private List backgrounds;
 
     /** _more_ */
+    private HashSet<String> exceptArgs = new HashSet<String>();
+
+
+    /** The display controls that we can use */
     private HashSet<String> okControls = new HashSet<String>();
 
-    /** _more_ */
+    /** The display controls that we can use for 3D data */
     private HashSet<String> vertControls = new HashSet<String>();
 
 
-    /** _more_ */
-    private boolean idvOk = false;
-
-    /** _more_ */
+    /** Holds previously generated images */
     private Hashtable<String, File> imageCache = new Hashtable<String,
                                                      File>();
 
     /**
-     *     _more_
+     *    Ctor
      *
-     *     @param repository _more_
-     *     @param element _more_
-     *     @throws Exception _more_
+     *     @param repository ramadda
+     *     @param element outputhandlers.xml node
+     *     @throws Exception On badness
      */
     public IdvOutputHandler(Repository repository, Element element)
             throws Exception {
@@ -506,24 +180,6 @@ public class IdvOutputHandler extends OutputHandler {
             exceptArgs.add(notArg);
         }
 
-        valueToAbbrev = new Properties();
-        keyToAbbrev   = new Properties();
-        try {
-
-            /*
-            valueToAbbrev.load(
-                               IOUtil.getInputStream(
-                                                     "/org/ramadda/repository/idv/values.properties",
-                                                     getClass()));
-            keyToAbbrev.load(
-                             IOUtil.getInputStream(
-                                                   "/org/ramadda/repository/idv/keys.properties",
-                                                   getClass()));
-            */
-
-        } catch (Exception exc) {
-            exc.printStackTrace();
-        }
         //Call this in a thread because if there is any problem with xvfb this will just hang
         //Run in a couple of seconds because we are deadlocking deep down in Java on the mac
         Misc.runInABit(2000, this, "checkIdv", null);
@@ -531,7 +187,7 @@ public class IdvOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Check if there is a graphics environment
      */
     public void checkIdv() {
         try {
@@ -557,26 +213,38 @@ public class IdvOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * This is from the ../data plugin. It provides routines for checking if an Entry is a grid
+     * and provides a netcdf file cache
      *
-     * @return _more_
+     * @return The DataOutputHandler
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public OutputHandler getDataOutputHandler() throws Exception {
         return getRepository().getOutputHandler(
             DataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
+    /**
+     * Gets an IDV instance from the IdvServer
+     *
+     * @return The IDV to use
+     *
+     * @throws Exception On badness
+     */
+    private IntegratedDataViewer getIdv() throws Exception {
+        return idvServer.getIdv();
+    }
+
 
     /**
-     * _more_
+     * Called by ramadda to determine if this OutputHandler is applicable to the given entry
      *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
+     * @param request The request
+     * @param state holds the Entry or the list of Entries
+     * @param links List to add the applicable links to
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -584,14 +252,14 @@ public class IdvOutputHandler extends OutputHandler {
             return;
         }
         Entry entry = state.entry;
+
+        //Check if its an aggregation
         if ((state.group != null)
                 && state.group.getType().equals(
                     GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             entry = state.group;
         }
 
-
-        List<Entry> theEntries = null;
         if (entry != null) {
             if ( !((DataOutputHandler) getDataOutputHandler()).canLoadAsGrid(
                     entry)) {
@@ -602,56 +270,20 @@ public class IdvOutputHandler extends OutputHandler {
                 return;
             }
             links.add(makeLink(request, entry, OUTPUT_IDV_GRID));
-        } else {
-            //            theEntries = getRadarEntries(state.getAllEntries());
         }
-
-        /*        if(theEntries!=null && theEntries.size()>0) {
-                  types.add(OUTPUT_IDV);
-                  }*/
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private IntegratedDataViewer getIdv() throws Exception {
-        return idvServer.getIdv();
-    }
 
 
 
     /**
      * _more_
      *
-     * @param entries _more_
-     *
-     * @return _more_
-     */
-    private List<Entry> getRadarEntries(List<Entry> entries) {
-        List<Entry> theEntries = new ArrayList<Entry>();
-        for (Entry entry : entries) {
-            String type = entry.getTypeHandler().getType();
-            if (type.equals("level3radar") || type.equals("level2radar")) {
-                theEntries.add(entry);
-            }
-        }
-        return theEntries;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
+     * @param entry The entry
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private DataSourceDescriptor getDescriptor(Entry entry) throws Exception {
         String path = entry.getResource().getPath();
@@ -670,15 +302,15 @@ public class IdvOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * The main entry point
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request The request
+     * @param outputType what output
+     * @param entry The entry
      *
-     * @return _more_
+     * @return The Result
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
@@ -695,22 +327,23 @@ public class IdvOutputHandler extends OutputHandler {
     }
 
 
-
     /**
-     * _more_
+     * Handles all grid related requests
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request The request
+     * @param entry The entry
      *
-     * @return _more_
+     * @return The Result
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result outputGrid(final Request request, Entry entry)
             throws Exception {
         DataOutputHandler dataOutputHandler =
             (DataOutputHandler) getDataOutputHandler();
-        String action = request.getString(ARG_ACTION, ACTION_MAKEINITFORM);
+
+
+        //Check the data file path
         String path   = dataOutputHandler.getPath(request, entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
@@ -718,12 +351,16 @@ public class IdvOutputHandler extends OutputHandler {
             return new Result("Grid Displays", sb);
         }
 
+        String action = request.getString(ARG_IDV_ACTION, ACTION_MAKEINITFORM);
+
+        //Get the dataset and create the data source
         GridDataset dataset = dataOutputHandler.getGridDataset(entry, path);
         DataSourceDescriptor descriptor =
             idvServer.getIdv().getDataManager().getDescriptor("File.Grid");
         DataSource dataSource = new GeoGridDataSource(descriptor, dataset,
                                     entry.getName(), path);
 
+        //See what we need to do
         try {
             if (action.equals(ACTION_MAKEINITFORM)) {
                 return outputGridInitForm(request, entry, dataSource);
@@ -742,17 +379,16 @@ public class IdvOutputHandler extends OutputHandler {
 
 
 
-
     /**
-     * _more_
+     * Makes the form
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param dataSource _more_
+     * @param request The request
+     * @param entry The entry
+     * @param dataSource The IDV DataSource
      *
-     * @return _more_
+     * @return The Result
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private Result outputGridForm(final Request request, Entry entry,
                                   DataSource dataSource)
@@ -763,88 +399,15 @@ public class IdvOutputHandler extends OutputHandler {
     }
 
 
-
     /**
-     * _more_
+     * Make the grid image form
      *
-     * @param request _more_
-     * @param arg _more_
-     * @param dflt _more_
+     * @param request The request
+     * @param sb buffer to append to
+     * @param entry The entry
+     * @param dataSource The IDV DataSource
      *
-     * @return _more_
-     */
-    private String htmlCheckbox(Request request, String arg, boolean dflt) {
-        boolean value = dflt;
-        if (request.exists(arg)) {
-            value = request.get(arg, dflt);
-        } else if (request.exists(arg + "_gvdflt")) {
-            value = false;
-        }
-        return HtmlUtil.checkbox(arg, "true", value)
-               + HtmlUtil.hidden(arg + "_gvdflt", "" + value);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param items _more_
-     * @param selectFirstOne _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
-    private String htmlSelect(Request request, String arg, List items,
-                              boolean selectFirstOne, String extra) {
-        List selected = request.get(arg, new ArrayList());
-        if ((selected.size() == 0) && selectFirstOne && (items.size() > 0)) {
-            selected.add(items.get(0));
-        }
-        return HtmlUtil.select(arg, items, selected, extra);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param items _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
-    private String htmlSelect(Request request, String arg, List items,
-                              String extra) {
-        return htmlSelect(request, arg, items, false, extra);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param items _more_
-     *
-     * @return _more_
-     */
-    private String htmlSelect(Request request, String arg, List items) {
-        return htmlSelect(request, arg, items, "");
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entry _more_
-     * @param dataSource _more_
-     *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private void makeGridForm(Request request, StringBuffer sb, Entry entry,
                               DataSource dataSource)
@@ -856,7 +419,7 @@ public class IdvOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.p());
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
-        sb.append(HtmlUtil.hidden(ARG_ACTION, ACTION_MAKEPAGE));
+        sb.append(HtmlUtil.hidden(ARG_IDV_ACTION, ACTION_MAKEPAGE));
 
         StringBuffer basic = new StringBuffer();
         basic.append(HtmlUtil.formTable());
@@ -870,7 +433,7 @@ public class IdvOutputHandler extends OutputHandler {
         basic.append(
             HtmlUtil.formEntry(
                 msgLabel("Product"),
-                htmlSelect(request, ARG_PRODUCT, productList)
+                htmlSelect(request, ARG_IDV_PRODUCT, productList)
                 + HtmlUtil.space(2)
                 + msg("Note: For Google Earth, make sure to set the view bounds")));
 
@@ -972,12 +535,6 @@ public class IdvOutputHandler extends OutputHandler {
                                         htmlCheckbox(request, ARG_CLIP,
                                             false)));
         */
-
-
-
-
-
-
 
         double   zoom     = request.get(ARG_ZOOM, 1.0);
         Object[] zoomList = new Object[] {
@@ -1544,15 +1101,15 @@ public class IdvOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * The initial grid form. Lists the data choices available
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param dataSource _more_
+     * @param request The request
+     * @param entry The entry
+     * @param dataSource The IDV DataSource
      *
-     * @return _more_
+     * @return The Result
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private Result outputGridInitForm(final Request request, Entry entry,
                                       DataSource dataSource)
@@ -1563,12 +1120,10 @@ public class IdvOutputHandler extends OutputHandler {
         sb.append(HtmlUtil.form(formUrl, ""));
         sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
-        sb.append(HtmlUtil.hidden(ARG_ACTION, ACTION_MAKEFORM));
-
+        sb.append(HtmlUtil.hidden(ARG_IDV_ACTION, ACTION_MAKEFORM));
 
         List<DataChoice> choices =
             (List<DataChoice>) dataSource.getDataChoices();
-
 
         sb.append(msgHeader("Select one or more fields to view"));
 
@@ -1628,7 +1183,7 @@ public class IdvOutputHandler extends OutputHandler {
                     HtmlUtil.url(getRepository().URL_ENTRY_SHOW.toString(),
                                  new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
-                    OUTPUT_IDV_GRID.toString(), ARG_ACTION, ACTION_MAKEPAGE,
+                    OUTPUT_IDV_GRID.toString(), ARG_IDV_ACTION, ACTION_MAKEPAGE,
                     ARG_PREDEFINED, metadata.getId()
                 });
                 sb.append(HtmlUtil.li(HtmlUtil.href(url,
@@ -1639,7 +1194,6 @@ public class IdvOutputHandler extends OutputHandler {
             sb.append(HtmlUtil.close(HtmlUtil.TAG_UL));
         }
 
-
         return new Result("Grid Displays", sb);
     }
 
@@ -1648,13 +1202,13 @@ public class IdvOutputHandler extends OutputHandler {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
     private Hashtable getRequestArgs(Request request) {
         Hashtable requestArgs = new Hashtable(request.getArgs());
-        requestArgs.remove(ARG_ACTION);
+        requestArgs.remove(ARG_IDV_ACTION);
         requestArgs.remove(ARG_ENTRYID);
         requestArgs.remove(ARG_SUBMIT);
         requestArgs.remove(ARG_OUTPUT);
@@ -1667,52 +1221,17 @@ public class IdvOutputHandler extends OutputHandler {
         return requestArgs;
     }
 
-    /*
-      Hashtable requestArgs = getRequestArgs(request);
-      List<String> argList = new ArrayList<String>();
-      List<String> valueList = new ArrayList<String>();
-
-      Hashtable abbrev = new Hashtable();
-      Hashtable abbrev2 = new Hashtable();
-      for (Enumeration keys = requestArgs.keys(); keys.hasMoreElements(); ) {
-      String arg = (String) keys.nextElement();
-      if(abbrev.get(arg)==null) {
-      String s = null;
-      for(int length=1;length<10;length++) {
-      s = null;
-      for(String tok : StringUtil.split(arg,"_",true,true)) {
-      String sub = tok.substring(0,Math.min(tok.length(),length));
-      if(s==null) s = sub;
-      else s = s+"_" + sub;
-      }
-      if(arg.endsWith("1")) s = s+"1";
-      else if(arg.endsWith("2")) s = s+"2";
-      else if(arg.endsWith("3")) s = s+"3";
-      if(abbrev2.get(s)==null || Misc.equals(abbrev2.get(s), arg)) {
-      abbrev2.put(s, arg);
-      break;
-      }
-      }
-      System.out.println(arg+ "=" + s);
-      abbrev.put(arg,s);
-      } else {
-      }
-      }
-    */
-
-
-
 
     /**
      * _more_
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param dataSource _more_
+     * @param request The request
+     * @param entry The entry
+     * @param dataSource The IDV DataSource
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private Result outputGridPage(final Request request, Entry entry,
                                   DataSource dataSource)
@@ -1776,7 +1295,7 @@ public class IdvOutputHandler extends OutputHandler {
 
 
         String baseName = IOUtil.stripExtension(entry.getName());
-        String product  = request.getString(ARG_PRODUCT, PRODUCT_IMAGE);
+        String product  = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
         String url      = getRepository().URL_ENTRY_SHOW.getFullUrl();
 
 
@@ -1792,13 +1311,8 @@ public class IdvOutputHandler extends OutputHandler {
             url = url + "/" + baseName + ".kmz";
         }
 
-
-
-
         String args = request.getUrlArgs(exceptArgs, null, ".*_gvdflt");
-        url = url + "?" + ARG_ACTION + "=" + ACTION_MAKEIMAGE + "&" + args;
-
-
+        url = url + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE + "&" + args;
 
         if (request.defined(ARG_SUBMIT_SAVE)) {
             if ( !getAccessManager().canDoAction(request, entry,
@@ -1836,10 +1350,10 @@ public class IdvOutputHandler extends OutputHandler {
 
         }
 
-        islUrl = islUrl + "?" + ARG_ACTION + "=" + ACTION_MAKEIMAGE + "&"
-                 + args + "&" + ARG_TARGET + "=" + TARGET_ISL;
-        jnlpUrl = jnlpUrl + "?" + ARG_ACTION + "=" + ACTION_MAKEIMAGE + "&"
-                  + args + "&" + ARG_TARGET + "=" + TARGET_JNLP;
+        islUrl = islUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE + "&"
+                 + args + "&" + ARG_IDV_TARGET + "=" + TARGET_ISL;
+        jnlpUrl = jnlpUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE + "&"
+                  + args + "&" + ARG_IDV_TARGET + "=" + TARGET_JNLP;
 
         boolean showForm = true;
 
@@ -1889,15 +1403,15 @@ public class IdvOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * This makes the image
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param dataSource _more_
+     * @param request The request
+     * @param entry The entry
+     * @param dataSource The IDV DataSource
      *
-     * @return _more_
+     * @return The Result
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result outputGridImage(final Request request, Entry entry,
                                   DataSource dataSource)
@@ -1918,13 +1432,13 @@ public class IdvOutputHandler extends OutputHandler {
     /**
      * _more_
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param dataSource _more_
+     * @param request The request
+     * @param entry The entry
+     * @param dataSource The IDV DataSource
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private Object generateGridImage(Request request, Entry entry,
                                      DataSource dataSource)
@@ -1932,19 +1446,12 @@ public class IdvOutputHandler extends OutputHandler {
 
         DataOutputHandler dataOutputHandler =
             (DataOutputHandler) getDataOutputHandler();
-        //      Trace.addNot(".*ShadowFunction.*");
-        //      Trace.addNot(".*GeoGrid.*");
-        //      Trace.addOnly(".*MapProjection.*");
-        //      Trace.addOnly(".*ProjectionCoordinateSystem.*");
-        //Trace.startTrace();
 
         String  id      = entry.getId();
-
-        String  product = request.getString(ARG_PRODUCT, PRODUCT_IMAGE);
-
-        boolean forIsl  = request.getString(ARG_TARGET,
+        String  product = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
+        boolean forIsl  = request.getString(ARG_IDV_TARGET,
                                             "").equals(TARGET_ISL);
-        boolean forJnlp = request.getString(ARG_TARGET,
+        boolean forJnlp = request.getString(ARG_IDV_TARGET,
                                             "").equals(TARGET_JNLP);
         if (forJnlp) {
             forIsl = true;
@@ -2035,10 +1542,7 @@ public class IdvOutputHandler extends OutputHandler {
             }
         }
 
-
         viewProps.append("\n");
-
-
 
         if (request.get(ARG_VIEW_GLOBE, false)) {
             viewProps.append(makeProperty("useGlobeDisplay", true));
@@ -2506,16 +2010,14 @@ public class IdvOutputHandler extends OutputHandler {
             }
             imageCache.put(imageKey, imageFile);
         }
-
-
-        Trace.stopTrace();
         return imageFile;
     }
+
 
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param outputType _more_
      * @param group _more_
      * @param subGroups _more_
@@ -2523,7 +2025,7 @@ public class IdvOutputHandler extends OutputHandler {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
@@ -2536,145 +2038,22 @@ public class IdvOutputHandler extends OutputHandler {
         }
         return super.outputGroup(request, outputType, group, subGroups,
                                  entries);
-
-        /*
-
-        final List<Entry> radarEntries = getRadarEntries(entries);
-        Entry             theEntry     = null;
-        String            id           = group.getId();
-        if (group.isDummy()) {
-            if (entries.size() == 1) {
-                theEntry = entries.get(0);
-                id       = entries.get(0).getId();
-            }
-        }
-
-        StringBuffer sb = new StringBuffer();
-
-        if ( !request.exists("doimage")) {
-            //TODO: the id is wrong if we are a search result
-            String url =
-                HtmlUtil.url(
-                    getRepository().URL_ENTRY_SHOW + "/" + theEntry.getId()
-                    + "_preview.gif", ARG_ENTRYID, id, ARG_OUTPUT,
-                                      OUTPUT_IDV_GRID, "doimage", "true");
-
-            request.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML);
-            String title = "";
-            if ( !group.isDummy() || (theEntry != null)) {
-                String[] crumbs = getEntryManager().getBreadCrumbs(request,
-                                      ((theEntry != null)
-                                       ? theEntry
-                                       : (Entry) group), false);
-                title = crumbs[0];
-                sb.append(crumbs[1]);
-            }
-
-
-            DataSourceDescriptor descriptor = getDescriptor(theEntry);
-            if (false && (descriptor != null)) {
-                DataSource dataSource = getIdv().makeOneDataSource(
-                                            theEntry.getResource().getPath(),
-                                            descriptor.getId(), null);
-                if (dataSource != null) {
-                    sb.append(dataSource.getFullDescription());
-                    Result result = new Result("Metadata - " + title, sb);
-                    addLinks(request, result,
-                             new State(group, subGroups, entries));
-                    return result;
-                }
-            }
-
-            sb.append("&nbsp;<p>");
-            sb.append(HtmlUtil.img(url));
-            Result result = new Result("Preview - " + title, sb);
-            addLinks(request, result, new State(group, subGroups, entries));
-            return result;
-        }
-
-        File image = getStorageManager().getThumbFile("preview_"
-                         + id.replace("/", "_") + ".gif");
-        if (image.exists()) {
-            return new Result("preview.gif",
-                              getStorageManager().getFileInputStream(image),
-                              "image/gif");
-        }
-
-
-        StringBuffer isl = new StringBuffer();
-        isl.append("<isl debug=\"false\" loop=\"1\" offscreen=\"true\">\n");
-        String datasource = "";
-        if (radarEntries.size() > 0) {
-            datasource = "FILE.RADAR";
-        } else if (theEntry.getResource().getPath().endsWith(".shp")) {
-            datasource = "FILE.SHAPEFILE";
-        } else {
-            String path = theEntry.getResource().getPath();
-            if (path.length() > 0) {
-                List<DataSourceDescriptor> descriptors =
-                    getIdv().getDataManager().getDescriptors();
-                for (DataSourceDescriptor descriptor : descriptors) {
-                    if ((descriptor.getPatternFileFilter() != null)
-                            && descriptor.getPatternFileFilter().match(
-                                path)) {
-                        datasource = descriptor.getId();
-                    }
-                }
-            }
-        }
-        //        isl.append("<datasource type=\"" + datasource + "\" url=\""
-        //                   + entry.getResource().getPath() + "\">\n");
-        isl.append("<datasource type=\"" + datasource + "\" >\n");
-        int cnt = 0;
-        for (Entry entry : entries) {
-            isl.append("<fileset file=\"" + entry.getResource().getPath()
-                       + "\"/>\n");
-        }
-        //        System.err.println ("datasource:" + datasource);
-        if (datasource.equalsIgnoreCase("FILE.RADAR")) {
-            isl.append(
-                "<display type=\"planviewcolor\" param=\"#0\"><property name=\"id\" value=\"thedisplay\"/></display>\n");
-            isl.append("</datasource>\n");
-            //        isl.append("<center display=\"thedisplay\" useprojection=\"true\"/>\n");
-            isl.append("<display type=\"rangerings\" wait=\"false\"/>\n");
-        } else if (datasource.equalsIgnoreCase("FILE.SHAPEFILE")) {
-            isl.append(
-                "<display type=\"shapefilecontrol\" param=\"#0\"><property name=\"id\" value=\"thedisplay\"/></display>\n");
-            isl.append("</datasource>\n");
-        } else if (datasource.equalsIgnoreCase("FILE.AREAFILE")) {
-            isl.append(
-                "<display type=\"imagedisplay\" param=\"#0\"><property name=\"id\" value=\"thedisplay\"/></display>\n");
-            isl.append("</datasource>\n");
-        } else {
-            isl.append("</datasource>\n");
-        }
-        isl.append("<pause/>\n");
-        //        isl.append("<pause seconds=\"60\"/>\n");
-
-        if (cnt == 1) {
-            isl.append("<image file=\"" + image + "\"/>\n");
-        } else {
-            isl.append("<movie file=\"" + image + "\"/>\n");
-        }
-        isl.append("</isl>\n");
-        //        System.out.println(isl);
-        idvServer.evaluateIsl(isl);
-        return new Result("preview.png",
-                          getStorageManager().getFileInputStream(image),
-                          "image/png");
-        */
     }
+
+
+
+
 
 
     /**
      * _more_
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request The request
+     * @param entry The entry
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result outputPointPage(final Request request, Entry entry)
             throws Exception {
@@ -2692,7 +2071,7 @@ public class IdvOutputHandler extends OutputHandler {
         formSB.append(HtmlUtil.p());
         formSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
         formSB.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_POINT));
-        formSB.append(HtmlUtil.hidden(ARG_ACTION, ACTION_POINT_MAKEPAGE));
+        formSB.append(HtmlUtil.hidden(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE));
         formSB.append(HtmlUtil.formTable());
         StationModelManager smm = idvServer.getIdv().getStationModelManager();
         List                layoutModels     = smm.getStationModels();
@@ -2732,16 +2111,16 @@ public class IdvOutputHandler extends OutputHandler {
                          + ".jnlp";
 
         HashSet<String> exceptArgs = new HashSet<String>();
-        exceptArgs.add(ARG_ACTION);
+        exceptArgs.add(ARG_IDV_ACTION);
         String args = request.getUrlArgs(exceptArgs, null, ".*_gvdflt");
 
 
-        url = url + "?" + ARG_ACTION + "=" + ACTION_POINT_MAKEIMAGE + "&"
+        url = url + "?" + ARG_IDV_ACTION + "=" + ACTION_POINT_MAKEIMAGE + "&"
               + args;
-        islUrl = islUrl + "?" + ARG_ACTION + "=" + ACTION_POINT_MAKEIMAGE
-                 + "&" + args + "&" + ARG_TARGET + "=" + TARGET_ISL;
-        jnlpUrl = jnlpUrl + "?" + ARG_ACTION + "=" + ACTION_POINT_MAKEIMAGE
-                  + "&" + args + "&" + ARG_TARGET + "=" + TARGET_JNLP;
+        islUrl = islUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_POINT_MAKEIMAGE
+                 + "&" + args + "&" + ARG_IDV_TARGET + "=" + TARGET_ISL;
+        jnlpUrl = jnlpUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_POINT_MAKEIMAGE
+                  + "&" + args + "&" + ARG_IDV_TARGET + "=" + TARGET_JNLP;
 
         StringBuffer imageSB = new StringBuffer();
 
@@ -2767,38 +2146,12 @@ public class IdvOutputHandler extends OutputHandler {
     /**
      * _more_
      *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
-    private String makeProperty(String name, boolean value) {
-        return makeProperty(name, "" + value);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
-    private String makeProperty(String name, String value) {
-        return XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
-                           XmlUtil.attrs("name", name, "value", value));
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
+     * @param request The request
+     * @param entry The entry
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result outputPointImage(final Request request, Entry entry)
             throws Exception {
@@ -2814,7 +2167,7 @@ public class IdvOutputHandler extends OutputHandler {
 
         DataOutputHandler dataOutputHandler =
             (DataOutputHandler) getDataOutputHandler();
-        String action = request.getString(ARG_ACTION, ACTION_POINT_MAKEPAGE);
+        String action = request.getString(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE);
         String path   = dataOutputHandler.getPath(entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
@@ -2841,9 +2194,9 @@ public class IdvOutputHandler extends OutputHandler {
             File image = getStorageManager().getThumbFile("preview_"
                              + id.replace("/", "_") + ".gif");
 
-            boolean forIsl = request.getString(ARG_TARGET,
+            boolean forIsl = request.getString(ARG_IDV_TARGET,
                                  "").equals(TARGET_ISL);
-            boolean forJnlp = request.getString(ARG_TARGET,
+            boolean forJnlp = request.getString(ARG_IDV_TARGET,
                                   "").equals(TARGET_JNLP);
             if (forJnlp) {
                 forIsl = true;
@@ -2983,22 +2336,126 @@ public class IdvOutputHandler extends OutputHandler {
     /**
      * _more_
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request The request
+     * @param entry The entry
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result outputPoint(final Request request, Entry entry)
             throws Exception {
-        String action = request.getString(ARG_ACTION, ACTION_POINT_MAKEPAGE);
+        String action = request.getString(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE);
         if (action.equals(ACTION_POINT_MAKEPAGE)) {
             return outputPointPage(request, entry);
         } else {
             return outputPointImage(request, entry);
         }
     }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    private String makeProperty(String name, boolean value) {
+        return makeProperty(name, "" + value);
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    private String makeProperty(String name, String value) {
+        return XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
+                           XmlUtil.attrs("name", name, "value", value));
+    }
+
+
+    /**
+     * utility method 
+     *
+     * @param request The request
+     * @param arg _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    private String htmlCheckbox(Request request, String arg, boolean dflt) {
+        boolean value = dflt;
+        if (request.exists(arg)) {
+            value = request.get(arg, dflt);
+        } else if (request.exists(arg + "_gvdflt")) {
+            value = false;
+        }
+        return HtmlUtil.checkbox(arg, "true", value)
+               + HtmlUtil.hidden(arg + "_gvdflt", "" + value);
+    }
+
+
+    /**
+     * utility method 
+     *
+     * @param request The request
+     * @param arg _more_
+     * @param items _more_
+     * @param selectFirstOne _more_
+     * @param extra _more_
+     *
+     * @return _more_
+     */
+    private String htmlSelect(Request request, String arg, List items,
+                              boolean selectFirstOne, String extra) {
+        List selected = request.get(arg, new ArrayList());
+        if ((selected.size() == 0) && selectFirstOne && (items.size() > 0)) {
+            selected.add(items.get(0));
+        }
+        return HtmlUtil.select(arg, items, selected, extra);
+    }
+
+
+    /**
+     * utility method 
+     *
+     * @param request The request
+     * @param arg _more_
+     * @param items _more_
+     * @param extra _more_
+     *
+     * @return _more_
+     */
+    private String htmlSelect(Request request, String arg, List items,
+                              String extra) {
+        return htmlSelect(request, arg, items, false, extra);
+    }
+
+    /**
+     * utility method 
+     *
+     * @param request The request
+     * @param arg _more_
+     * @param items _more_
+     *
+     * @return _more_
+     */
+    private String htmlSelect(Request request, String arg, List items) {
+        return htmlSelect(request, arg, items, "");
+    }
+
+
 
 
 

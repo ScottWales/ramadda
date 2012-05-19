@@ -20,6 +20,14 @@ You can run RAMADDA stand-alone from the source tree. After building do:
    cd  dist/ramadda<version>/
    sh ramadda.sh
 
+You can also run from your classpath.
+
+Add:
+classpath="<ramadda dir>/src:<ramadda dir>/lib"
+and run:
+java -XX:MaxPermSize=256m -Xmx2048m org.ramadda.repository.server.JettyServer
+
+
 
 ###########################################################################
 Plugins
