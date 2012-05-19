@@ -72,14 +72,14 @@ public class FitsOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_VIEWER =
         new OutputType("FITS Viewer", "fits.viewer", OutputType.TYPE_VIEW,
-                       "", "/fits/fits.gif");
+                       "", "/astro/fits.gif");
 
 
     /** _more_ */
     public static final OutputType OUTPUT_INFO = new OutputType("FITS Info",
                                                      "fits.info",
                                                      OutputType.TYPE_VIEW,
-                                                     "", "/fits/fits.gif");
+                                                     "", "/astro/fits.gif");
 
     /** _more_ */
     public static final OutputType OUTPUT_IMAGE =

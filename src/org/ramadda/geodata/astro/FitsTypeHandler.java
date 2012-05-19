@@ -276,11 +276,9 @@ public class FitsTypeHandler extends GenericTypeHandler {
 
     public void processHeader(Entry entry, Header header, Object[] values) {
         for (int i = 0; i < FITS_PROPS.length; i++) {
-            if (values[i] == null) {
-                String value = header.getStringValue(FITS_PROPS[i]);
-                if (value != null) {
-                    values[i] = value.trim();
-                }
+            String value = header.getStringValue(FITS_PROPS[i]);
+            if (value != null) {
+                values[i] = value.trim();
             }
         }
     }
