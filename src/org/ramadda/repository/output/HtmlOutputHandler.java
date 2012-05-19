@@ -238,7 +238,7 @@ public class HtmlOutputHandler extends OutputHandler {
         OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE, OUTPUT_GRID,
                 OUTPUT_TIMELINE, CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
-            new StringBuffer("<table cellspacing=0 cellpadding=0><tr>");
+            new StringBuffer("<table border=0 cellspacing=0 cellpadding=0><tr>");
         String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
         sb.append("<td align=center>" + msgLabel(title) + "</td>");
         for (OutputType output : types) {
@@ -260,7 +260,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append("</td>");
         }
         sb.append("</table>");
-        return "<table cellspacing=0 cellpadding=0 width=100%><tr><td align=right>"
+        return "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td align=right>"
                + sb.toString() + "</td></tr></table>";
     }
 

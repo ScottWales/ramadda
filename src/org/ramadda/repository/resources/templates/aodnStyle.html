@@ -31,22 +31,12 @@ body {
 /* Top menu bar */
 
 .ramadda-menubar {
-        border-bottom: 2px #aaa solid; 
 	background-color: #3c668d;
-
 	padding-top: 5px;
-	padding-right: 15px;
-	padding-bottom: 3px;
-	padding-left: 15px;
+	padding-right: 10px;
+	padding-bottom: 1px;
+	padding-left: 10px;
 
-/* offset left, top, thickness, color with alpha */
-//  -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-//  -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-//  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-  /* IE */
-//  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=1, OffY=1, Color='gray');
-  /* slightly different syntax for IE8 */
-//  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=1, OffY=1, Color='gray')";
 	/* Overwrite previous styles*/
 	background-image: none;
 	background-repeat: none;  
@@ -55,8 +45,9 @@ body {
 
 .entryheader {
    font-family: Arial;
-	font-size: smaller;
-	padding-bottom:5px;
+   font-size: smaller;
+   padding-bottom:3px;
+   border-bottom:1px solid #aaa;
 }
 
 .entryFooter {
@@ -86,7 +77,7 @@ body {
 .ramadda-popup {
   padding:1px;
   text-decoration: none;
-   border : 1px #000 solid;
+   border : 1px #3c668d solid;
    background-color : #FFFFFF;
    position: absolute; 
    visibility: hidden; 
@@ -236,10 +227,11 @@ a.ramadda-header-leftcolumn  {
 
 .leftside {
    margin:5px;
+   margin-right:3px;
    padding:5px;
    background-color:#ffffff;
-   border-top: 1px #aaa solid;
-   margin-top
+   border-top:  1px #999 solid;
+
    //Shadow effect
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
@@ -321,7 +313,7 @@ a.ramadda-header-leftcolumn  {
 
 /* Header for the subpages*/
 .subheader-container {
-	background-color: #3c668d;
+	xbackground-color: #3c668d;
 	opacity: 0.9;
 	padding-top: 10px;
 	padding-right: 20px;
@@ -330,22 +322,12 @@ a.ramadda-header-leftcolumn  {
 	margin-left:-30px;
 	margin-right:-4px;
 	margin-top:-5px;
-	/* offset left, top, thickness, color with alpha */
-    -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-    /* IE */
-    filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=1, OffY=1, Color='gray');
-    /* slightly different syntax for IE8 */
-    -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=1, OffY=1, Color='gray')";
-	/* Overwrite previous styles*/
 	background-image: none;
 	background-repeat: none;
-	color:white;
-	  
 }
-.subheader-container a , subheader-container a:hover, .subheader-container a:link, .subheader-container a:visited, .subheader-container a:active  {
-	color:white;
+
+.subheader-container a , subheader-container a:hover, .subheader-container a:link, .subheader-container a:visited, .subheader-container a:active, a  {
+//	color:black;
 }
 
 .ramadda-footer {

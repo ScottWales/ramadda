@@ -797,7 +797,6 @@ public class EntryManager extends RepositoryManager {
         //Table to englobe this toolbar
         sb.append("<table width=\"100%\"><tr><td>");
 
-
         // Comments
         List<Comment> comments = entry.getComments();
         if (comments != null) {
@@ -5133,6 +5132,8 @@ public class EntryManager extends RepositoryManager {
                              ? getEntryMenubar(request, entry)
                              : "";
 
+
+
             if (showToolbar || showMenubar) {
                 menubar =
                     HtmlUtil.leftRight(menubar, toolbar,
@@ -5149,7 +5150,7 @@ public class EntryManager extends RepositoryManager {
             String style       = "";
             if (showEntryHeader) {
                 entryHeader =
-                    "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
+                    "<table border=0 cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
                     + HtmlUtil.rowBottom("<td class=\"entryname\" >" + img
                                          + entryLink
                                          + "</td><td align=\"right\">"
