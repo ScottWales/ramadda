@@ -165,9 +165,17 @@ public class CatalogHarvester extends Harvester {
         setName("Catalog harvester");
         this.recurse  = recurse;
         this.download = download;
-        this.topUrl   = url;
+        setTopUrl(url);
         setUser(user);
         baseGroupId = group.getId();
+    }
+
+
+    private void setTopUrl(String url) {
+        if(url.endsWith(".html")) {
+            url = url.replace(".html",".xml");
+        }
+        this.topUrl = url;
     }
 
 
@@ -210,7 +218,7 @@ public class CatalogHarvester extends Harvester {
      */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
-        topUrl = request.getUnsafeString(ATTR_TOPURL, topUrl);
+        setTopUrl(request.getUnsafeString(ATTR_TOPURL, topUrl));
         if (request.exists(ATTR_RECURSE)) {
             recurse = request.get(ATTR_RECURSE, recurse);
         } else {
@@ -237,7 +245,7 @@ public class CatalogHarvester extends Harvester {
         super.createEditForm(request, sb);
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 
-        sb.append(HtmlUtil.formEntry(msgLabel("URL"),
+        sb.append(HtmlUtil.formEntry(msgLabel("Catalog URL"),
                                      HtmlUtil.input(ATTR_TOPURL, topUrl,
                                          HtmlUtil.SIZE_60)));
         sb.append(HtmlUtil.formEntry("",
