@@ -826,7 +826,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
                 boolean[] haveBearingLines = { false };
                 MapInfo   map = mapOutputHandler.getMap(request, children,
-                                  mapSB, width, height, haveBearingLines);
+                                                        mapSB, width, height, false, haveBearingLines);
             }
             return mapSB.toString();
         } else if (include.equals(WIKIPROP_MAPENTRY)) {
@@ -844,7 +844,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             children.add(entry);
             boolean[] haveBearingLines = { false };
             MapInfo   map = mapOutputHandler.getMap(request, children, mapSB,
-                              width, height, haveBearingLines);
+                                                    width, height, false, haveBearingLines);
             return mapSB.toString();
         } else if (include.equals(WIKIPROP_MENU)) {
             boolean popup = Misc.getProperty(props, PROP_POPUP, false);

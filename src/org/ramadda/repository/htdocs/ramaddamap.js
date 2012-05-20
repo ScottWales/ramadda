@@ -483,7 +483,7 @@ function RepositoryMap(mapId, params) {
                 this.box = new OpenLayers.Handler.Box(theMap.selectorControl, {
                     "done" : this.notice
                 }, {
-                    keyMask : OpenLayers.Handler.MOD_SHIFT
+                        keyMask : OpenLayers.Handler.MOD_SHIFT
                 });
                 this.box.activate();
             },

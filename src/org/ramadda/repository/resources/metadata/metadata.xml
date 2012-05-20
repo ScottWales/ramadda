@@ -33,6 +33,38 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
     </type>
 
+
+    <type name="Keyword" id="content.keyword" searchable="true" browsable="true">
+      <element name="Keyword" />
+      <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
+      <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+    </type>
+
+    <type
+       name="URL"
+       searchable="false"
+       id="content.url">
+      <element datatype="url" name="URL"/>
+      <element name="Name"/>
+    </type>
+
+    <type
+       name="Author"
+       searchable="false"
+       id="content.author">
+      <element name="Author"/>
+    </type>
+
+    <type
+       name="Email"
+       searchable="false"
+       id="content.email">
+      <element name="Email"/>
+    </type>
+
+
+
     <type name="Wiki Category" id="wikicategory" foruser="false">
       <element name="Wiki Category" />
     </type>

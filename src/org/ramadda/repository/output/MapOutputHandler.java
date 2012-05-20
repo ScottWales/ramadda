@@ -167,6 +167,7 @@ public class MapOutputHandler extends OutputHandler {
         }
 
         MapInfo map = getMap(request, entriesToUse, sb, 700, 500,
+                             true,
                              new boolean[] { false });
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
     }
@@ -194,7 +195,7 @@ public class MapOutputHandler extends OutputHandler {
         entriesToUse.addAll(entries);
         StringBuffer sb = new StringBuffer();
         if (entriesToUse.size() == 0) {
-            sb.append("<b>Nothing Found</b><p>");
+            sb.append(HtmlUtil.b(msg("No entries")) +HtmlUtil.p());
             return makeLinksResult(request, msg("Map"), sb,
                                    new State(group, subGroups, entries));
         }
@@ -210,6 +211,7 @@ public class MapOutputHandler extends OutputHandler {
         boolean[] haveBearingLines = { false };
         StringBuffer mapBuff = new StringBuffer();
         MapInfo map = getMap(request, entriesToUse, mapBuff, 700, 500,
+                             false, 
                              haveBearingLines);
 
         StringBuffer entryBuff=  new StringBuffer();
@@ -268,6 +270,7 @@ public class MapOutputHandler extends OutputHandler {
      */
     public MapInfo getMap(Request request, List<Entry> entriesToUse,
                           StringBuffer sb, int width, int height,
+                          boolean detailed,
                           boolean[] haveBearingLines)
             throws Exception {
         MapInfo map = getRepository().getMapManager().createMap(request,
@@ -275,7 +278,7 @@ public class MapOutputHandler extends OutputHandler {
         if (map == null) {
             return map;
         }
-        addToMap(request, map, entriesToUse, haveBearingLines, true);
+        addToMap(request, map, entriesToUse, detailed, haveBearingLines,  true);
 
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
         map.centerOn(bounds);
@@ -296,6 +299,7 @@ public class MapOutputHandler extends OutputHandler {
      */
     public void addToMap(Request request, MapInfo map,
                          List<Entry> entriesToUse,
+                         boolean detailed,
                          boolean[] haveBearingLines, boolean screenBigRects)
             throws Exception {
         screenBigRects = false;
@@ -319,7 +323,9 @@ public class MapOutputHandler extends OutputHandler {
             if (makeRectangles) {
                 boolean didMetadata = map.addSpatialMetadata(entry,
                                           metadataList);
-                entry.getTypeHandler().addToMap(request, entry, map);
+                if(detailed) {
+                    entry.getTypeHandler().addToMap(request, entry, map);
+                }
                 if (entry.hasAreaDefined() && !didMetadata) {
                     if ( !screenBigRects
                             || (Math.abs(entry.getEast() - entry.getWest())

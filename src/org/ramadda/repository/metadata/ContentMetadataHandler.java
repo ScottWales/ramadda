@@ -76,6 +76,11 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_PAGESTYLE = "content.pagestyle";
 
+    public static final String TYPE_KEYWORD = "content.keyword";
+    public static final String TYPE_URL = "content.url";
+    public static final String TYPE_EMAIL = "content.email";
+    public static final String TYPE_AUTHOR = "content.author";
+
     /** _more_ */
     public static final String TYPE_LOGO = "content.logo";
 

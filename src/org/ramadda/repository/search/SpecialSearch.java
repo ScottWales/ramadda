@@ -252,7 +252,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             (MapOutputHandler) getRepository().getOutputHandler(
                 MapOutputHandler.OUTPUT_MAP);
         if (mapOutputHandler != null) {
-            mapOutputHandler.addToMap(request, map, entries, null, true);
+            mapOutputHandler.addToMap(request, map, entries, false, null, true);
         }
         Rectangle2D.Double bounds = getEntryManager().getBounds(entries);
 
