@@ -200,7 +200,6 @@ function RepositoryMap(mapId, params) {
         this.inited = true;
         this.name = "map";
         var theMap = this;
-        var mousecontrols = new OpenLayers.Control.Navigation();
         var options = {
             projection : sphericalMercatorCS,
             displayProjection : earthCS,
@@ -209,11 +208,12 @@ function RepositoryMap(mapId, params) {
             maxExtent : maxExtent
         };
 
-        this.map = new OpenLayers.Map(this.mapDivId, options);
+        this.map = new OpenLayers.Map(this.mapDivId,options);
         this.addBaseLayers();
 
         //this.vectors = new OpenLayers.Layer.Vector("Drawing");
         //this.map.addLayer(this.vectors);
+        var mousecontrols = new OpenLayers.Control.Navigation();
         this.map.addControl(mousecontrols);
         this.map.addControl(new OpenLayers.Control.LayerSwitcher());
         var latLonReadout = util.getDomObject(this.latlonReadout);
