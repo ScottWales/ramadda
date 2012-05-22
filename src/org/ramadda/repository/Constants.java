@@ -1407,33 +1407,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_WIDTH = "width";
 
-    /** _more_ */
-    public static final String ARG_WIKI_CHANGEDESCRIPTION =
-        "wiki.changedescription";
-
-    /** _more_ */
-    public static final String ARG_WIKI_COMPARE1 = "wiki.compare1";
-
-    /** _more_ */
-    public static final String ARG_WIKI_COMPARE2 = "wiki.compare2";
-
-    /** _more_ */
-    public static final String ARG_WIKI_CREATE = "wiki.create";
-
-    /** _more_ */
-    public static final String ARG_WIKI_DETAILS = "wiki.details";
-
-    /** _more_ */
-    public static final String ARG_WIKI_EDITWITH = "wiki.editwith";
-
-    /** _more_ */
-    public static final String ARG_WIKI_RAW = "wiki.raw";
-
-    /** _more_ */
-    public static final String ARG_WIKI_TEXT = "wiki.text";
-
-    /** _more_ */
-    public static final String ARG_WIKI_VERSION = "wiki.version";
 
     /** _more_ */
     public static final String ARG_YEAR = "year";
