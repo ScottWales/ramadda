@@ -122,6 +122,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private static final org.ramadda.util.HttpFormField dummyFieldToForceCompile =
         null;
 
+    private static final org.ramadda.util.ObjectPool dummyObjectToForceCompile =
+        null;
+
 
 
 
