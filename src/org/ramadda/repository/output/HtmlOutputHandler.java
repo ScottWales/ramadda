@@ -455,6 +455,11 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMetadataXml(request, entry);
         }
 
+        Result typeResult = typeHandler.getHtmlDisplay(request, entry);
+        if (typeResult != null) {
+            return typeResult;
+        }
+
         return getHtmlResult(request, outputType, entry);
     }
 
@@ -473,14 +478,6 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getHtmlResult(Request request, OutputType outputType,
                                 Entry entry)
             throws Exception {
-        TypeHandler typeHandler =
-            getRepository().getTypeHandler(entry.getType());
-
-
-        Result typeResult = typeHandler.getHtmlDisplay(request, entry);
-        if (typeResult != null) {
-            return typeResult;
-        }
 
         StringBuffer sb           = new StringBuffer();
 
