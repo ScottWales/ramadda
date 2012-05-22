@@ -901,10 +901,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
 
                 String href = showlink
-                              ? linklabel + HtmlUtil.href(
+                              ? HtmlUtil.href(
                                   request.entryUrl(
                                       getRepository().URL_ENTRY_SHOW,
-                                      child), child.getName())
+                                      child), linklabel.isEmpty() ? child.getName() : linklabel)
                               : "";
                 tabContents.add(content + "<br>" + href);
             }
