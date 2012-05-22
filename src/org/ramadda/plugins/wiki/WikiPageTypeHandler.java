@@ -68,14 +68,15 @@ import java.util.Properties;
  */
 public class WikiPageTypeHandler extends GenericTypeHandler {
 
+    public static final String ARG_WIKI_TEXTAREA = "wikipage.wikitext";
+
+
     /** _more_ */
     public static String ASSOC_WIKILINK = "wikilink";
 
     /** _more_ */
     public static String TYPE_WIKIPAGE = "wikipage";
 
-    /** _more_ */
-    public static final String ARG_WIKI_TEXT = "wikipage.wikitext";
 
     /**
      * _more_
@@ -122,13 +123,9 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        if (request.get(ARG_WIKI_DETAILS, false)) {
-            return null;
-        }
-        Result result = getRepository().getOutputHandler(
-                            WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
-                            request, request.getOutput(), entry);
-        return result;
+        return  getRepository().getOutputHandler(
+                                                 WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
+                                                                                                request, request.getOutput(), entry);
     }
 
 
@@ -178,7 +175,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             if (wasNew) {
                 desc = "Created";
             } else {
-                desc = request.getString(ARG_WIKI_CHANGEDESCRIPTION, "");
+                desc = request.getString(WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "");
             }
 
             getDatabaseManager().executeInsert(Tables.WIKIPAGEHISTORY.INSERT,
@@ -300,8 +297,8 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
                 wikiText = (String) values[0];
             }
         }
-        if (request.defined(ARG_WIKI_EDITWITH)) {
-            Date dttm = new Date((long) request.get(ARG_WIKI_EDITWITH, 0.0));
+        if (request.defined(WikiPageOutputHandler.ARG_WIKI_EDITWITH)) {
+            Date dttm = new Date((long) request.get(WikiPageOutputHandler.ARG_WIKI_EDITWITH, 0.0));
             WikiPageHistory wph = getHistory(entry, dttm);
             if (wph == null) {
                 throw new IllegalArgumentException(
@@ -322,7 +319,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             sb.append(
                 HtmlUtil.formEntry(
                     msgLabel("Edit&nbsp;Summary"),
-                    HtmlUtil.input(ARG_WIKI_CHANGEDESCRIPTION, "", size)));
+                    HtmlUtil.input(WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "", size)));
         }
 
 
@@ -342,10 +339,10 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
 
         String buttons =
             getRepository().getWikiManager().makeWikiEditBar(request, entry,
-                ARG_WIKI_TEXT);
+                                                             ARG_WIKI_TEXTAREA );
         String textWidget = buttons + HtmlUtil.br()
-                            + HtmlUtil.textArea(ARG_WIKI_TEXT, wikiText, 250,
-                                80, HtmlUtil.id(ARG_WIKI_TEXT));
+                            + HtmlUtil.textArea(ARG_WIKI_TEXTAREA, wikiText, 250,
+                                80, HtmlUtil.id(ARG_WIKI_TEXTAREA));
 
         String right = HtmlUtil.div(help.toString(),
                                     HtmlUtil.cssClass(CSS_CLASS_SMALLHELP));

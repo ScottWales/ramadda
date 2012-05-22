@@ -60,20 +60,63 @@ import java.util.Properties;
 /**
  *
  */
-public class WikiPageOutputHandler extends OutputHandler {
+public class WikiPageOutputHandler extends HtmlOutputHandler {
 
+
+    /** _more_ */
+    public static final String ARG_WIKI_CHANGEDESCRIPTION =
+        "wiki.changedescription";
+
+
+
+
+    /** _more_ */
+    public static final String ARG_WIKI_COMPARE1 = "wiki.compare1";
+
+    /** _more_ */
+    public static final String ARG_WIKI_COMPARE2 = "wiki.compare2";
+
+    /** _more_ */
+    public static final String ARG_WIKI_CREATE = "wiki.create";
+
+    /** _more_ */
+    public static final String ARG_WIKI_DETAILS = "wiki.details";
+
+    /** _more_ */
+    public static final String ARG_WIKI_EDITWITH = "wiki.editwith";
+
+    /** _more_ */
+    public static final String ARG_WIKI_RAW = "wiki.raw";
+
+
+    /** _more_ */
+    public static final String ARG_WIKI_TEXT = "wiki.text";
+
+    /** _more_ */
+    public static final String ARG_WIKI_VERSION = "wiki.version";
+
+
+    public static final String GROUP_WIKI = "Wiki";
 
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
                                                      "wiki.view",
-                                                     OutputType.TYPE_VIEW,
-                                                     "", ICON_WIKI);
+                                                     OutputType.TYPE_OTHER,
+                                                     "", ICON_WIKI, GROUP_WIKI);
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI_HISTORY =
-        new OutputType("Wiki History", "wiki.history", OutputType.TYPE_VIEW,
-                       "", ICON_WIKI);
+        new OutputType("Wiki History", "wiki.history", OutputType.TYPE_OTHER,
+                       "", ICON_WIKI, GROUP_WIKI);
+
+    public static final OutputType OUTPUT_WIKI_DETAILS =
+        new OutputType("Entry Details", "wiki.details", OutputType.TYPE_OTHER,
+                       "", ICON_WIKI, GROUP_WIKI);
+
+    public static final OutputType OUTPUT_WIKI_TEXT =
+        new OutputType("Wiki Text", "wiki.text", OutputType.TYPE_OTHER,
+                       "", ICON_WIKI, GROUP_WIKI);
 
 
     /**
@@ -89,6 +132,8 @@ public class WikiPageOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_WIKI);
         addType(OUTPUT_WIKI_HISTORY);
+        addType(OUTPUT_WIKI_DETAILS);
+        addType(OUTPUT_WIKI_TEXT);
     }
 
 
@@ -112,6 +157,8 @@ public class WikiPageOutputHandler extends OutputHandler {
         if (state.entry.getType().equals(WikiPageTypeHandler.TYPE_WIKIPAGE)) {
             links.add(makeLink(request, state.entry, OUTPUT_WIKI));
             links.add(makeLink(request, state.entry, OUTPUT_WIKI_HISTORY));
+            links.add(makeLink(request, state.entry, OUTPUT_WIKI_DETAILS));
+            links.add(makeLink(request, state.entry, OUTPUT_WIKI_TEXT));
         }
     }
 
@@ -132,14 +179,21 @@ public class WikiPageOutputHandler extends OutputHandler {
                               Entry entry)
             throws Exception {
 
+        if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
+            return super.getHtmlResult(request, outputType, entry);
+        }
 
         if (outputType.equals(OUTPUT_WIKI_HISTORY)) {
             return outputWikiHistory(request, entry);
         }
 
+        if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
+            request.put(ARG_WIKI_DETAILS,"true");
+        }
 
-
-
+        if (outputType.equals(OUTPUT_WIKI_TEXT)) {
+            request.put(ARG_WIKI_RAW,"true");
+        }
 
         String wikiText = "";
         String header   = "";
@@ -175,6 +229,7 @@ public class WikiPageOutputHandler extends OutputHandler {
         }
 
 
+        /*
         String detailsView =
             HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry, ARG_WIKI_DETAILS,
@@ -188,6 +243,7 @@ public class WikiPageOutputHandler extends OutputHandler {
         header = HtmlUtil.leftRight(header,
                                     HtmlUtil.div(detailsView + " " + rawLink,
                                         HtmlUtil.cssClass(CSS_CLASS_SMALLLINK)));
+        */
         WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {
                                 OutputHandler.PROP_REQUEST,
                                 request, OutputHandler.PROP_ENTRY, entry }));
