@@ -1,5 +1,13 @@
 <types>
 
+  <type name="geo_gpx"  description="GPX GPS File"  category="Geo Data" handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
+     <property name="icon" value="/icons/map.png"/>
+   </type>
+
+
+<!--
+
+
   <type name="map"  description="Map"  category="Geo Data">
      <property name="icon" value="/icons/map.png"/>
      <column name="maptype" label="Map Type" type="enumerationplus" cansearch="true" values="file:/org/ramadda/plugins/map/maptypes.txt" showinhtml="true"/>
@@ -8,7 +16,7 @@
      <column name="state" label="State" type="enumerationplus" cansearch="true" showinhtml="true"/>
      <column name="scale" label="Scale"  type="enumerationplus" cansearch="true" showinhtml="true"/>
    </type>
-
+-->
 
 <!--
   <type name="map_map"  description="Editable Map" handler="org.ramadda.plugins.map.MapTypeHandler" category="Geo Data">
