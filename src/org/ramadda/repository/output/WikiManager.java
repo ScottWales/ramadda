@@ -869,6 +869,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                          "usedescription", true);
             boolean wikify     = Misc.getProperty(props, PROP_WIKIFY, true);
             boolean showlink   = Misc.getProperty(props, "showlink", true);
+            String linklabel   = Misc.getProperty(props, "linklabel", "");
 
             int     imageWidth = Misc.getProperty(props, "width", 400);
             for (Entry child : children) {
@@ -882,6 +883,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     content = new String(result.getContent());
                 } else {
                     content = child.getDescription();
+                    if (child.getType().equals(TYPE_WIKIPAGE)) {
+                        content = child.getValue(0,content);
+                    }
                     if (wikify) {
                         content = new WikiUtil().wikify("{{noheading}}\n"
                                 + content, null);
@@ -897,7 +901,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
 
                 String href = showlink
-                              ? HtmlUtil.href(
+                              ? linklabel + HtmlUtil.href(
                                   request.entryUrl(
                                       getRepository().URL_ENTRY_SHOW,
                                       child), child.getName())
