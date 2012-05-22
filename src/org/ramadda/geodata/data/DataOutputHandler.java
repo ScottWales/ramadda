@@ -58,6 +58,7 @@ import org.ramadda.repository.type.TypeHandler;
 
 
 import org.ramadda.util.TempDir;
+import org.ramadda.util.ObjectPool;
 
 import org.w3c.dom.*;
 
@@ -132,7 +133,6 @@ import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.Pool;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
@@ -355,8 +355,8 @@ public class DataOutputHandler extends OutputHandler {
     Counter pointCloseCounter = new Counter();
 
     /** nc dataset pool */
-    private Pool<String, NetcdfDataset> ncDatasetPool =
-        new Pool<String, NetcdfDataset>(10) {
+    private ObjectPool<String, NetcdfDataset> ncDatasetPool =
+        new ObjectPool<String, NetcdfDataset>(10) {
         protected void removeValue(String key, NetcdfDataset dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -379,7 +379,6 @@ public class DataOutputHandler extends OutputHandler {
             ncGetCounter.incr();
             try {
                 dataset.sync();
-
                 return dataset;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -402,10 +401,8 @@ public class DataOutputHandler extends OutputHandler {
     };
 
 
-
-
     /** nc file pool */
-    private Pool<String, NetcdfFile> ncFilePool = new Pool<String,
+    private ObjectPool<String, NetcdfFile> ncFilePool = new ObjectPool<String,
                                                       NetcdfFile>(10) {
         protected void removeValue(String key, NetcdfFile ncFile) {
             try {
@@ -462,7 +459,7 @@ public class DataOutputHandler extends OutputHandler {
     private boolean doGridPool = true;
 
     /** grid pool */
-    private Pool<String, GridDataset> gridPool = new Pool<String,
+    private ObjectPool<String, GridDataset> gridPool = new ObjectPool<String,
                                                      GridDataset>(10) {
         protected void removeValue(String key, GridDataset dataset) {
             try {
@@ -537,8 +534,8 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /** point pool */
-    private Pool<String, FeatureDatasetPoint> pointPool =
-        new Pool<String, FeatureDatasetPoint>(10) {
+    private ObjectPool<String, FeatureDatasetPoint> pointPool =
+        new ObjectPool<String, FeatureDatasetPoint>(10) {
         protected void removeValue(String key, FeatureDatasetPoint dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -579,8 +576,8 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /** trajectory pool */
-    private Pool<String, TrajectoryObsDataset> trajectoryPool =
-        new Pool<String, TrajectoryObsDataset>(10) {
+    private ObjectPool<String, TrajectoryObsDataset> trajectoryPool =
+        new ObjectPool<String, TrajectoryObsDataset>(10) {
         protected void removeValue(String key, TrajectoryObsDataset dataset) {
             try {
                 super.removeValue(key, dataset);
