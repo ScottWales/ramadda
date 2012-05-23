@@ -50,6 +50,13 @@ import java.util.regex.*;
  */
 public class WikiUtil {
 
+    public static final String PROP_NOHEADING = "noheading";
+    public static final String PROP_HEADING = "heading";
+
+    public static final String TAG_PREFIX = "{{";
+    public static final String TAG_SUFFIX = "}}";
+
+
     /** _more_ */
     private Hashtable properties;
 
@@ -60,7 +67,7 @@ public class WikiUtil {
     private List floatBoxes = new ArrayList();
 
     /** _more_          */
-    private boolean makeHeadings = true;
+    private boolean makeHeadings = false;
 
     /** _more_          */
     private boolean replaceNewlineWithP = true;
@@ -70,6 +77,12 @@ public class WikiUtil {
      * _more_
      */
     public WikiUtil() {}
+
+
+    public WikiUtil(boolean makeHeadings) {
+        this.makeHeadings = makeHeadings;
+    }
+
 
     /**
      * _more_
@@ -337,7 +350,7 @@ public class WikiUtil {
             int    end   = matcher.end(0);
             int    level = prefix.length();
             String value;
-            if (label.startsWith("{{")) {
+            if (label.startsWith(TAG_PREFIX)) {
                 value = "<div class=\"wiki-h" + level + "\">" + label
                         + "</div>";
             } else {
@@ -451,7 +464,7 @@ public class WikiUtil {
                 sb.append(s.substring(baseIdx));
                 break;
             }
-            int idx2 = s.indexOf("}}", idx1);
+            int idx2 = s.indexOf(TAG_SUFFIX, idx1);
             if (idx2 <= idx1) {
                 //                System.err.println("no idx2");
                 sb.append(s.substring(baseIdx));
@@ -461,8 +474,10 @@ public class WikiUtil {
             String property = s.substring(idx1 + 2, idx2);
             baseIdx = idx2 + 2;
 
-            if (property.equals("noheading")) {
+            if (property.equals(PROP_NOHEADING)) {
                 makeHeadings = false;
+            } else if (property.equals(PROP_HEADING)) {
+                makeHeadings = true;
             } else {
                 String value = null;
                 if (handler != null) {
