@@ -978,7 +978,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             imageOutputHandler.makePlayer(request, children, sb, false);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_GALLERY)) {
-            int         count    = Misc.getProperty(props, ATTR_COUNT, -1);
             int         width    = Misc.getProperty(props, ATTR_WIDTH, -1);
             int         columns  = Misc.getProperty(props, ATTR_COLUMNS, 1);
             boolean     random   = Misc.getProperty(props, ATTR_RANDOM, false);
@@ -1002,9 +1001,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             sb.append("<tr valign=\"bottom\">");
             for (Entry child : children) {
                 num++;
-                if ((count > 0) && (num > count)) {
-                    break;
-                }
                 if (colCnt >= columns) {
                     sb.append("</tr>");
                     sb.append("<tr valign=\"bottom\">");
@@ -1044,8 +1040,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKI_PROP_SLIDESHOW)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                               props, true);
-            int    count = Misc.getProperty(props, ATTR_COUNT, -1);
-            int    num   = 0;
 
             String css   =
                 ".slides_container {width:400px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:400px;height:270px;display:block;}\n";
@@ -1065,10 +1059,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             sb.append("<td width=\"400\">");
             sb.append("<div class=\"slides_container\">");
             for (Entry child : children) {
-                num++;
-                if ((count > 0) && (num > count)) {
-                    break;
-                }
                 String imgUrl = getHtmlOutputHandler().getImageUrl(request,
                                     child);
                 sb.append("<div class=\"slide\">");
@@ -1336,7 +1326,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             children = tmp;
         }
-        if(onlyImages) children =  getImageEntries(children);
+
+        if(onlyImages) {
+            children =  getImageEntries(children);
+        }
+
+        int    count = Misc.getProperty(props, ATTR_COUNT, -1);
+        if (count > 0) {
+            List<Entry> tmp = new ArrayList<Entry>();
+            for(Entry child: children)  {
+                tmp.add(child);
+                if(tmp.size()>count) break;
+            }
+            children = tmp;
+        }
+
         return children;
     }
 
