@@ -878,12 +878,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                     content = new String(result.getContent());
                 } else {
-                    content = child.getDescription();
                     if (child.getType().equals(TYPE_WIKIPAGE)) {
-                        content = child.getValue(0,content);
-                    }
-                    if (wikify) {
-                        content = new WikiUtil(false).wikify(content, null);
+                        String wikitext = child.getValue(0,child.getDescription());
+                        content = wikifyEntry(request, entry, wikiUtil, wikitext, false, null, null);
+                    } else {
+                        content = child.getDescription();
+                        if (wikify) {
+                            content = new WikiUtil(false).wikify(content, null);
+                        }
                     }
                     if (child.getResource().isImage()) {
                         content =
