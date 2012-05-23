@@ -4475,12 +4475,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return pageStyle;
             }
 
+            //menus -1, showbreadcrumbs-2, toolbar-3, entry header-4, layout toolbar-5, type-6,  apply to this-7, wiki-8
             Metadata theMetadata = null;
             for (Metadata metadata : metadataList) {
                 String types = metadata.getAttr(6);
                 if ((types == null) || (types.trim().length() == 0)) {
                     theMetadata = metadata;
-
                     break;
                 }
                 for (String type : StringUtil.split(types, ",", true, true)) {
@@ -4512,6 +4512,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     "true"));
             pageStyle.setShowEntryHeader(Misc.equals(theMetadata.getAttr4(),
                     "true"));
+            pageStyle.setShowLayoutToolbar(Misc.equals(theMetadata.getAttr(5),
+                    "true"));
 
             boolean canEdit = getAccessManager().canDoAction(request, entry,
                                   Permission.ACTION_EDIT);
@@ -4528,9 +4530,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     }
                 }
             }
-            if ((theMetadata.getAttr(5) != null)
-                    && (theMetadata.getAttr(5).trim().length() > 0)) {
-                pageStyle.setWikiTemplate(theMetadata.getAttr(5));
+            if ((theMetadata.getAttr(8) != null)
+                    && (theMetadata.getAttr(8).trim().length() > 0)) {
+                pageStyle.setWikiTemplate(theMetadata.getAttr(8));
             }
 
             return pageStyle;

@@ -5118,6 +5118,7 @@ public class EntryManager extends RepositoryManager {
             boolean showToolbar     = pageStyle.getShowToolbar(entry);
             boolean showMenubar     = pageStyle.getShowMenubar(entry);
             boolean showEntryHeader = pageStyle.getShowEntryHeader(entry);
+            boolean showLayoutToolbar = pageStyle.getShowLayoutToolbar(entry);
 
             String  breadcrumbHtml  = "";
             if (showBreadcrumbs) {
@@ -5154,7 +5155,7 @@ public class EntryManager extends RepositoryManager {
                     + HtmlUtil.rowBottom("<td class=\"entryname\" >" + img
                                          + entryLink
                                          + "</td><td align=\"right\">"
-                                         + htmlViewLinks
+                                         + (showLayoutToolbar?htmlViewLinks:"")
                                          + "</td>") + "</table>";
             }
 

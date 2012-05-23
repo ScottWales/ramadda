@@ -67,6 +67,7 @@ public class PageStyle {
     /** _more_ */
     private boolean showBreadcrumbs = true;
 
+    private boolean showLayoutToolbar = true;
 
     /**
      * _more_
@@ -164,6 +165,28 @@ public class PageStyle {
     public boolean getShowToolbar(Entry entry) {
         //        if(true) return false;
         return showToolbar;
+    }
+
+
+    /**
+     *  Set the ShowLayoutToolbar property.
+     *
+     *  @param value The new value for ShowLayoutToolbar
+     */
+    public void setShowLayoutToolbar(boolean value) {
+        showLayoutToolbar = value;
+    }
+
+    /**
+     *  Get the ShowLayoutToolbar property.
+     *
+     *
+     * @param entry _more_
+     *  @return The ShowLayoutToolbar
+     */
+    public boolean getShowLayoutToolbar(Entry entry) {
+        //        if(true) return false;
+        return showLayoutToolbar;
     }
 
 
