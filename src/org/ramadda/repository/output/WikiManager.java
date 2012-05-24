@@ -80,6 +80,9 @@ import java.util.zip.*;
 public class WikiManager extends RepositoryManager implements WikiUtil
     .WikiPageHandler {
 
+    static int idCounter = 0;
+
+
     /** wiki page type */
     public static String TYPE_WIKIPAGE = "wikipage";
 
@@ -91,6 +94,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in the tabs tag */
     public static final String ATTR_SHOWLINK = "showlink";
+
+    public static final String ATTR_INCLUDEICON = "includeicon";
 
     /** attribute in the tabs tag */
     public static final String ATTR_LINKLABEL = "linklabel";
@@ -246,6 +251,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_TABS = "tabs";
 
+    public static final String WIKI_PROP_ACCORDIAN = "accordian";
+
     /** wiki import */
     public static final String WIKI_PROP_GRID = "grid";
 
@@ -313,6 +320,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_TIMELINE, WIKI_PROP_COMMENTS, WIKI_PROP_BREADCRUMBS,
         WIKI_PROP_TOOLBAR, WIKI_PROP_IMAGE, WIKI_PROP_MENU, WIKI_PROP_RECENT,
         WIKI_PROP_GALLERY, WIKI_PROP_SLIDESHOW, WIKI_PROP_TABS,
+        WIKI_PROP_ACCORDIAN,
         WIKI_PROP_GRID, WIKI_PROP_TREE, WIKI_PROP_TABLE, WIKI_PROP_LINKS,
         WIKI_PROP_ENTRYID
     };
@@ -871,18 +879,24 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return getRepository().makePopupLink(blockTitle,
                         blockContent);
             }
-        } else if (include.equals(WIKI_PROP_TABS)) {
-            List        titles   = new ArrayList<String>();
-            List        contents = new ArrayList<String>();
+        } else if (include.equals(WIKI_PROP_TABS) || include.equals(WIKI_PROP_ACCORDIAN) ||
+                   include.equals(WIKI_PROP_SLIDESHOW)) {
+            List<String>        titles   = new ArrayList<String>();
+            List<String>        contents = new ArrayList<String>();
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             boolean useDescription = Misc.getProperty(props,
                                          ATTR_USEDESCRIPTION, true);
             boolean showlink   = Misc.getProperty(props, ATTR_SHOWLINK, true);
+            boolean includeIcon   = Misc.getProperty(props, ATTR_INCLUDEICON, true);
             String  linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
             int     imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
             for (Entry child : children) {
-                titles.add(child.getName());
+                String title  = child.getName();
+                if(includeIcon) {
+                    title = HtmlUtil.img(entryIcon)+" " + title;
+                }
+                titles.add(title);
                 String content;
                 if ( !useDescription) {
                     Result result =
@@ -918,13 +932,76 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                   request.entryUrl(
                                       getRepository().URL_ENTRY_SHOW,
                                       child), linklabel.isEmpty()
-                        ? child.getName()
-                        : linklabel)
-                              : "";
-                contents.add(content + HtmlUtil.br() + href);
+                                  ? child.getName()
+                                  : linklabel)
+                    : "";
+                contents.add(content + HtmlUtil.br() + 
+                             HtmlUtil.leftRight("",href));
             }
 
-            return OutputHandler.makeTabs(titles, contents, true);
+
+            if(include.equals(WIKI_PROP_ACCORDIAN)) {
+                String accordianId = "accordion_" +(idCounter++);
+                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("ui-accordion ui-widget ui-helper-reset") + HtmlUtil.id(accordianId)));
+                for (int i=0;i<titles.size();i++) {
+                    String title = titles.get(i);
+                    String content = contents.get(i);
+                    sb.append(HtmlUtil.open(HtmlUtil.TAG_H3, HtmlUtil.cssClass("ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
+                    sb.append("<a href=\"#\">");
+                    sb.append(title);
+                    sb.append("</a></h3>");
+                    sb.append(HtmlUtil.div(content,""));
+                }
+                sb.append("</div>");
+                String args = "autoHeight: false, navigation: true, collapsible: true";
+                sb.append(HtmlUtil.script("$(function() {\n$(\"#" + accordianId +"\" ).accordion({" + args +"});});\n"));
+                return sb.toString();
+            } else if (include.equals(WIKI_PROP_SLIDESHOW)) {
+                String css =
+                    ".slides_container {width:400px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:400px;height:270px;display:block;}\n";
+                sb.append("<style type=\"text/css\">\n");
+                sb.append(css);
+                sb.append("</style>\n\n");
+
+                String js =
+                    "\n$(function(){alert('x');\n\n$('#slides').slides({ preload: true, preloadImage: 'http://localhost:8080/repository/htdocs/slides/img/loading.gif', play: 5000, pause: 2500, hoverPause: true, generatePagination: false,\nslidesLoaded: function() { $('.caption').animate({ bottom:0 },200); }\n});\n});\n\n";
+
+
+                sb.append("<div id=\"slides\">");
+                sb.append(
+                          "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
+                sb.append(
+                          "<td><a href=\"#\" class=\"prev\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-prev.png\" width=\"24\" height=\"43\" alt=\"Arrow Prev\"></a></td>");
+                sb.append("<td width=\"400\">");
+                sb.append("<div class=\"slides_container\">");
+                for (int i=0;i<titles.size();i++) {
+                    String title = titles.get(i);
+                    String content = contents.get(i);
+                    sb.append("<div class=\"slide\">");
+                    sb.append(contents);
+                    sb.append(HtmlUtil.br());
+                    sb.append(title);
+                    sb.append("</div>");
+                }
+                sb.append("</div>\n");
+                sb.append(
+                          "<td><a href=\"#\" class=\"next\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-next.png\" width=\"24\" height=\"43\" alt=\"Arrow Next\"></a></td>\n");
+                sb.append("</tr></table></div>\n");
+                sb.append(
+                          HtmlUtil.importJS(
+                                            getRepository().fileUrl(
+                                                                    "http://localhost:8080/repository/htdocs/slides/slides.min.jquery.js")));
+
+                sb.append("\n\n");
+                sb.append(HtmlUtil.script(js));
+                sb.append("\n\n");
+
+                System.out.println(sb);
+
+                return sb.toString();
+            } else {
+                return OutputHandler.makeTabs(titles, contents, true);
+            }
         } else if (include.equals(WIKI_PROP_GRID)) {
             getHtmlOutputHandler().makeGrid(request,
                                             getEntries(request, wikiUtil,
@@ -1063,54 +1140,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             sb.append("</table>");
 
             return sb.toString();
-
-
-        } else if (include.equals(WIKI_PROP_SLIDESHOW)) {
-            List<Entry> children = getEntries(request, wikiUtil, entry,
-                                       props, true);
-
-            String css =
-                ".slides_container {width:400px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:400px;height:270px;display:block;}\n";
-            sb.append("<style type=\"text/css\">\n");
-            sb.append(css);
-            sb.append("</style>\n\n");
-
-            String js =
-                "\n$(function(){alert('x');\n\n$('#slides').slides({ preload: true, preloadImage: 'http://localhost:8080/repository/htdocs/slides/img/loading.gif', play: 5000, pause: 2500, hoverPause: true, generatePagination: false,\nslidesLoaded: function() { $('.caption').animate({ bottom:0 },200); }\n});\n});\n\n";
-
-
-            sb.append("<div id=\"slides\">");
-            sb.append(
-                "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
-            sb.append(
-                "<td><a href=\"#\" class=\"prev\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-prev.png\" width=\"24\" height=\"43\" alt=\"Arrow Prev\"></a></td>");
-            sb.append("<td width=\"400\">");
-            sb.append("<div class=\"slides_container\">");
-            for (Entry child : children) {
-                String imgUrl = getHtmlOutputHandler().getImageUrl(request,
-                                    child);
-                sb.append("<div class=\"slide\">");
-                //                sb.append(HtmlUtil.img(imgUrl, "", "width=400"));
-                sb.append(child.getName());
-                sb.append("</div>");
-            }
-            sb.append("</div>\n");
-            sb.append(
-                "<td><a href=\"#\" class=\"next\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-next.png\" width=\"24\" height=\"43\" alt=\"Arrow Next\"></a></td>\n");
-            sb.append("</tr></table></div>\n");
-            sb.append(
-                HtmlUtil.importJS(
-                    getRepository().fileUrl(
-                        "http://localhost:8080/repository/htdocs/slides/slides.min.jquery.js")));
-
-            sb.append("\n\n");
-            sb.append(HtmlUtil.script(js));
-            sb.append("\n\n");
-
-            System.out.println(sb);
-
-            return sb.toString();
-
         } else if (include.equals(WIKI_PROP_CHILDREN_GROUPS)) {
             if ( !hasOpenProperty) {
                 open = true;
