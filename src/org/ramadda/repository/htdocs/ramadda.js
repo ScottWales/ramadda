@@ -1726,7 +1726,7 @@ function testReturn(request) {
 //This gets called from toggleBlockVisibility
 //It updates any map on the page to fix some sort of offset problem
 function ramaddaUpdateMaps() {
-    if(ramaddaMaps) {
+    if (!(typeof ramaddaMaps === 'undefined')) {
         for(i=0;i<ramaddaMaps.length;i++) {
             var ramaddaMap = ramaddaMaps[i];
             if(!ramaddaMap.map) continue;
