@@ -894,7 +894,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             for (Entry child : children) {
                 String title  = child.getName();
                 if(includeIcon) {
-                    title = HtmlUtil.img(entryIcon)+" " + title;
+                    
+                    title = HtmlUtil.img(getEntryManager().getIconUrl(request, child))+" " + title;
                 }
                 titles.add(title);
                 String content;
