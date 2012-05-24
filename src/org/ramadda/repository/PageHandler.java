@@ -187,6 +187,11 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    public void adminSettingsChanged() {
+        super.adminSettingsChanged();
+        phraseMap = null;
+    }
+
     /**
      * _more_
      *
@@ -467,16 +472,18 @@ public class PageHandler extends RepositoryManager {
             map.putAll(tmpMap);
         }
 
-        if (phraseMap == null) {
+        Properties tmpPhraseMap = phraseMap;
+        if (tmpPhraseMap == null) {
             String phrases = getProperty(PROP_ADMIN_PHRASES, (String) null);
             if (phrases != null) {
                 Object[] result = parsePhrases("", phrases);
-                phraseMap = (Properties) result[2];
+                tmpPhraseMap = (Properties) result[2];
+                phraseMap = tmpPhraseMap;
             }
         }
 
-        if (phraseMap != null) {
-            map.putAll(phraseMap);
+        if (tmpPhraseMap != null) {
+            map.putAll(tmpPhraseMap);
         }
 
 

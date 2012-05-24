@@ -700,4 +700,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         getRepository().getLogManager().logInfo(message);
     }
 
+    public void adminSettingsChanged() {
+    }
+
 }

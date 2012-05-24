@@ -475,6 +475,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    public List<RepositoryManager> getRepositoryManagers() {
+        return repositoryManagers;
+    }
+
+
     /**
      * _more_
      *

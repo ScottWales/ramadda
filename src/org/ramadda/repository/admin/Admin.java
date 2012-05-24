@@ -1557,6 +1557,11 @@ public class Admin extends RepositoryManager {
             adminHandler.applyAdminSettingsForm(request);
         }
 
+        //Tell the other repositoryManagers that the settings changed
+        for(RepositoryManager repositoryManager: getRepository().getRepositoryManagers()) {
+            repositoryManager.adminSettingsChanged();
+        }
+
         return new Result(request.url(URL_ADMIN_SETTINGS));
 
     }
