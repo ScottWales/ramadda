@@ -167,7 +167,8 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private HashSet<String> seenMsg = new HashSet<String>();
 
-    /** _more_ */
+    /** Set this to true to print to a file the missing messages and this also
+        adds a "NA:" to the missing labels.*/
     private boolean debugMsg = false;
 
     /** _more_ */

@@ -64,6 +64,7 @@ import java.util.Enumeration;
 
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -103,6 +104,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRIES = "entries";
 
+    public static final String ATTR_EXCEPT = "except";
+
     /** the alt attribute for images */
     public static final String ATTR_ALT = "alt";
 
@@ -138,6 +141,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in import tag */
     public static final String ATTR_FOLDERS = "folders";
+
+    public static final String ATTR_IMAGES = "images";
 
     /** attribute in import tag */
     public static final String ATTR_TYPE = "type";
@@ -242,8 +247,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_GALLERY = "gallery";
 
-    /** the slideshow property */
-    public static final String WIKI_PROP_SLIDESHOW = "slideshow";
+
 
     /** the image player property */
     public static final String WIKI_PROP_PLAYER = "player";
@@ -252,6 +256,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKI_PROP_TABS = "tabs";
 
     public static final String WIKI_PROP_ACCORDIAN = "accordian";
+
+    /** the slideshow property */
+    public static final String WIKI_PROP_SLIDESHOW = "slideshow";
 
     /** wiki import */
     public static final String WIKI_PROP_GRID = "grid";
@@ -894,7 +901,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             for (Entry child : children) {
                 String title  = child.getName();
                 if(includeIcon) {
-                    
                     title = HtmlUtil.img(getEntryManager().getIconUrl(request, child))+" " + title;
                 }
                 titles.add(title);
@@ -1321,12 +1327,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                   boolean onlyImages)
             throws Exception {
 
+        if(!onlyImages) {
+            onlyImages = Misc.getProperty(props, ATTR_IMAGES,
+                                          onlyImages);
+        }
+
         boolean folders        = Misc.getProperty(props, ATTR_FOLDERS, false);
         boolean files          = Misc.getProperty(props, ATTR_FILES, false);
         boolean doAssociations = Misc.getProperty(props, ATTR_ASSOCIATIONS,
                                      false);
-        String uentries = Misc.getProperty(props, ATTR_ENTRIES,
-                                           (String) null);
 
         if (doAssociations) {
             List<Association> associations =
@@ -1358,18 +1367,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         if (children == null) {
             children = getEntryManager().getChildren(request, entry);
         }
-        if (uentries != null) {
-            List<Entry>  tmp      = new ArrayList<Entry>();
-            List<String> entryids = StringUtil.split(uentries, ",", true,
-                                        true);
-            for (String entryid : entryids) {
-                Entry foo = getEntryManager().getEntry(request, entryid);
-                if (foo != null) {
-                    tmp.add(foo);
-                }
-            }
-            children = tmp;
-        }
+
+
+        String userDefinedEntries = Misc.getProperty(props, ATTR_ENTRIES,
+                                           (String) null);
+        if (userDefinedEntries != null) {
+            children = getEntries(request, userDefinedEntries);
+        } 
+
+
         if (level == 2) {
             List<Entry> grandChildren = new ArrayList<Entry>();
             for (Entry child : children) {
@@ -1387,6 +1393,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 getEntryManager().sortEntriesOnDate(grandChildren, true);
             children = grandChildren;
         }
+
         if (folders) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
@@ -1398,7 +1405,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (files) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
-                if ( !child.isGroup()) {
+                if (!child.isGroup()) {
                     tmp.add(child);
                 }
             }
@@ -1418,6 +1425,25 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             children = getImageEntries(children);
         }
 
+        String exceptEntries = Misc.getProperty(props, ATTR_EXCEPT,
+                                           (String) null);
+
+        if(exceptEntries!=null) {
+            HashSet seen = new HashSet();
+            for(String id: StringUtil.split(exceptEntries, ",")) {
+                seen.add(id);
+            }
+            List<Entry>  okEntries = new ArrayList<Entry>();
+            for(Entry e: children) {
+                if(!seen.contains(e.getId())) {
+                    okEntries.add(e);
+                }
+            }
+            children = okEntries;
+        }
+
+
+
         int count = Misc.getProperty(props, ATTR_COUNT, -1);
         if (count > 0) {
             List<Entry> tmp = new ArrayList<Entry>();
@@ -1430,8 +1456,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             children = tmp;
         }
 
+
         return children;
 
+    }
+
+
+    private List<Entry> getEntries(Request request, String ids) throws Exception {
+        List<Entry>  entries      = new ArrayList<Entry>();
+        for (String entryid : StringUtil.split(ids, ",", true,true)) {
+            Entry entry = getEntryManager().getEntry(request, entryid);
+            if (entry != null) {
+                entries.add(entry);
+            }
+        }
+        return entries;
     }
 
 
