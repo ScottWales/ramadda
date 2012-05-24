@@ -221,7 +221,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (entry.isDummy() || !entry.isGroup()) {
             return "";
         }
-        return makeHtmlHeader(request, entry, "Change layout");
+        return makeHtmlHeader(request, entry, "Layout");
     }
 
 
@@ -240,7 +240,9 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer sb =
             new StringBuffer("<table border=0 cellspacing=0 cellpadding=0><tr>");
         String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
-        sb.append("<td align=center>" + msgLabel(title) + "</td>");
+        if(title.length()>0) {
+            sb.append("<td align=center>" + msgLabel(title) + "</td>");
+        }
         for (OutputType output : types) {
             String link = HtmlUtil.href(
                               request.entryUrl(
