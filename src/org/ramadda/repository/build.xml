@@ -132,7 +132,6 @@
     <target name="compile" depends="init,clean,jc"/>
 
     <target name="jc" depends="init">
-<echo  message="CP = ${classpath}"/>
         <javac
             classpath="${classpath}"
             debug="true"
