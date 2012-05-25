@@ -96,6 +96,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in the tabs tag */
     public static final String ATTR_SHOWLINK = "showlink";
 
+
     public static final String ATTR_INCLUDEICON = "includeicon";
 
     /** attribute in the tabs tag */
@@ -890,11 +891,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                    include.equals(WIKI_PROP_SLIDESHOW)) {
             List<String>        titles   = new ArrayList<String>();
             List<String>        contents = new ArrayList<String>();
+            titles.add("dummy");
+            contents.add("dummy");
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             boolean useDescription = Misc.getProperty(props,
                                          ATTR_USEDESCRIPTION, true);
-            boolean showlink   = Misc.getProperty(props, ATTR_SHOWLINK, true);
+            boolean showLink   = Misc.getProperty(props, ATTR_SHOWLINK, true);
             boolean includeIcon   = Misc.getProperty(props, ATTR_INCLUDEICON, true);
             String  linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
             int     imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
@@ -909,7 +912,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     Result result =
                         getHtmlOutputHandler().getHtmlResult(request,
                             OutputHandler.OUTPUT_HTML, child);
-
                     content = new String(result.getContent());
                 } else {
                     if (child.getTypeHandler().isType(TYPE_WIKIPAGE)) {
@@ -929,21 +931,23 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             HtmlUtil
                                 .img(getRepository().getHtmlOutputHandler()
                                     .getImageUrl(request, child), "",
-                                        " width=" + imageWidth) + "<br>"
-                                            + content;
+                                     HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, ""+imageWidth));
+                        // + HtmlUtil.br() + content;
                     }
                 }
 
-                String href = showlink
-                              ? HtmlUtil.href(
+                if(showLink) {
+                    String href =  HtmlUtil.href(
                                   request.entryUrl(
                                       getRepository().URL_ENTRY_SHOW,
                                       child), linklabel.isEmpty()
                                   ? child.getName()
-                                  : linklabel)
-                    : "";
-                contents.add(content + HtmlUtil.br() + 
-                             HtmlUtil.leftRight("",href));
+                                  : linklabel);
+
+                    content = content + HtmlUtil.br() + 
+                        HtmlUtil.leftRight("",href);
+                } 
+                contents.add(content);
             }
 
 
@@ -964,47 +968,60 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(HtmlUtil.script("$(function() {\n$(\"#" + accordianId +"\" ).accordion({" + args +"});});\n"));
                 return sb.toString();
             } else if (include.equals(WIKI_PROP_SLIDESHOW)) {
-                String css =
-                    ".slides_container {width:400px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:400px;height:270px;display:block;}\n";
+                int   width = Misc.getProperty(props, ATTR_WIDTH, 400);
+                int   height = Misc.getProperty(props, ATTR_HEIGHT, 270);
+                String arrowWidth = "24";
+                String arrowHeight = "43";
                 sb.append("<style type=\"text/css\">\n");
-                sb.append(css);
+                sb.append(".slides_container {width:" + width +"px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:" + width +"px;height:" + height +"px;display:block;}\n");
                 sb.append("</style>\n\n");
 
-                String js =
-                    "\n$(function(){alert('x');\n\n$('#slides').slides({ preload: true, preloadImage: 'http://localhost:8080/repository/htdocs/slides/img/loading.gif', play: 5000, pause: 2500, hoverPause: true, generatePagination: false,\nslidesLoaded: function() { $('.caption').animate({ bottom:0 },200); }\n});\n});\n\n";
+                String slideParams = "preload: false, preloadImage: " + HtmlUtil.squote(getRepository().fileUrl("/slides/img/loading.gif"))+ ", play: 5000, pause: 2500, hoverPause: true, generatePagination: false\n";
+                StringBuffer js = new StringBuffer();
+                String slideId =  "slide_" +(idCounter++);
 
+                js.append("$(function(){\n$(" + HtmlUtil.squote("#" + slideId) +
+                          ").slides({" + slideParams +",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
 
-                sb.append("<div id=\"slides\">");
+                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.id(slideId)));
                 sb.append(
-                          "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
-                sb.append(
-                          "<td><a href=\"#\" class=\"prev\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-prev.png\" width=\"24\" height=\"43\" alt=\"Arrow Prev\"></a></td>");
-                sb.append("<td width=\"400\">");
-                sb.append("<div class=\"slides_container\">");
+                          "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
+                sb.append(HtmlUtil.col(HtmlUtil.href("#", HtmlUtil.img(getRepository().fileUrl("/slides/img/arrow-prev.png"), "Prev", HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth) + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, arrowHeight)),HtmlUtil.cssClass("prev")), HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth)));
+                sb.append(HtmlUtil.open(HtmlUtil.TAG_TD, HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, ""+ width)));
+                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("slides_container")));
                 for (int i=0;i<titles.size();i++) {
                     String title = titles.get(i);
                     String content = contents.get(i);
-                    sb.append("<div class=\"slide\">");
-                    sb.append(contents);
-                    sb.append(HtmlUtil.br());
-                    sb.append(title);
-                    sb.append("</div>");
+                    sb.append("\n");
+                    sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("slide")));
+                    sb.append("\n");
+                    sb.append(content);
+                    //                    sb.append("\n");
+                    //                    sb.append(HtmlUtil.br());
+                    //                    sb.append("\n");
+                    //                    sb.append(title);
+                    sb.append("\n");
+                    sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+                    sb.append("\n");
                 }
-                sb.append("</div>\n");
-                sb.append(
-                          "<td><a href=\"#\" class=\"next\"><img src=\"http://localhost:8080/repository/htdocs/slides/img/arrow-next.png\" width=\"24\" height=\"43\" alt=\"Arrow Next\"></a></td>\n");
-                sb.append("</tr></table></div>\n");
+                sb.append("\n");
+                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+                sb.append("\n");
+                sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
+                sb.append("\n");
+                sb.append(HtmlUtil.col(HtmlUtil.href("#", HtmlUtil.img(getRepository().fileUrl("/slides/img/arrow-next.png"), "Next", HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth) + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, arrowHeight)),HtmlUtil.cssClass("next")), HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth)));
+
+                sb.append("\n");
+                sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
+                sb.append("</tr></table>");
+                sb.append("\n");
                 sb.append(
                           HtmlUtil.importJS(
                                             getRepository().fileUrl(
-                                                                    "http://localhost:8080/repository/htdocs/slides/slides.min.jquery.js")));
+                                                                    "/slides/slides.min.jquery.js")));
 
-                sb.append("\n\n");
-                sb.append(HtmlUtil.script(js));
-                sb.append("\n\n");
-
+                sb.append(HtmlUtil.script(js.toString()));
                 System.out.println(sb);
-
                 return sb.toString();
             } else {
                 return OutputHandler.makeTabs(titles, contents, true);
