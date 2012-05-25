@@ -24,7 +24,7 @@
            <argument>-oneinstanceport</argument>
            <argument>14445</argument>
            <argument>-installplugin</argument>
-           <argument>http://motherlode.ucar.edu/repository/entry/get/noaacsi.jar?entryid=dfd8ddb3-6d2e-4f46-bdd7-576effb36af7</argument>
+           <argument>http://ramadda.psd.esrl.noaa.gov/psd/repository/entry/get/noaapsd.jar?entryid=be105b2f-ff5a-4f38-af36-3fb5fd3b5359</argument>
            ${args}
         </application-desc>
        <security>
