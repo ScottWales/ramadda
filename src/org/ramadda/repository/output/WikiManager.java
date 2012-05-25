@@ -248,10 +248,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_GALLERY = "gallery";
 
-
-
     /** the image player property */
-    public static final String WIKI_PROP_PLAYER = "player";
+    public static final String WIKI_PROP_PLAYER = "imageplayer";
+    
+    /** the old image player property */
+    private static final String WIKI_PROP_PLAYER_OLD = "player";
 
     /** wiki import */
     public static final String WIKI_PROP_TABS = "tabs";
@@ -1093,7 +1094,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
 
-        } else if (include.equals(WIKI_PROP_PLAYER)) {
+        } else if (include.equals(WIKI_PROP_PLAYER) ||
+                   include.equals(WIKI_PROP_PLAYER_OLD)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props, true);
             if (children.size() == 0) {
