@@ -1022,7 +1022,8 @@ public class Admin extends RepositoryManager {
                 PROP_ACCESS_ALLSSL, "true",
                 getProperty(PROP_ACCESS_ALLSSL, false)) + " "
                     + msg("Force all connections to be secure");
-        String sslMsg = "Note: To enable ssl see the installation guide";
+
+        String sslMsg = "Note: To enable ssl see the <a href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
         csb.append(
             HtmlUtil.formEntryTop(
                 msgLabel("SSL"),
