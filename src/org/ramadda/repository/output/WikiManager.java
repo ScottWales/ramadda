@@ -63,8 +63,8 @@ import java.util.Date;
 import java.util.Enumeration;
 
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -81,6 +81,7 @@ import java.util.zip.*;
 public class WikiManager extends RepositoryManager implements WikiUtil
     .WikiPageHandler {
 
+    /** _more_          */
     static int idCounter = 0;
 
 
@@ -97,6 +98,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ATTR_SHOWLINK = "showlink";
 
 
+    /** _more_          */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
     /** attribute in the tabs tag */
@@ -105,6 +107,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRIES = "entries";
 
+    /** _more_          */
     public static final String ATTR_EXCEPT = "except";
 
     /** the alt attribute for images */
@@ -143,6 +146,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_FOLDERS = "folders";
 
+    /** _more_          */
     public static final String ATTR_IMAGES = "images";
 
     /** attribute in import tag */
@@ -250,13 +254,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** the image player property */
     public static final String WIKI_PROP_PLAYER = "imageplayer";
-    
+
     /** the old image player property */
     private static final String WIKI_PROP_PLAYER_OLD = "player";
 
     /** wiki import */
     public static final String WIKI_PROP_TABS = "tabs";
 
+    /** _more_          */
     public static final String WIKI_PROP_ACCORDIAN = "accordian";
 
     /** the slideshow property */
@@ -329,9 +334,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_TIMELINE, WIKI_PROP_COMMENTS, WIKI_PROP_BREADCRUMBS,
         WIKI_PROP_TOOLBAR, WIKI_PROP_IMAGE, WIKI_PROP_MENU, WIKI_PROP_RECENT,
         WIKI_PROP_GALLERY, WIKI_PROP_SLIDESHOW, WIKI_PROP_TABS,
-        WIKI_PROP_ACCORDIAN,
-        WIKI_PROP_GRID, WIKI_PROP_TREE, WIKI_PROP_TABLE, WIKI_PROP_LINKS,
-        WIKI_PROP_ENTRYID
+        WIKI_PROP_ACCORDIAN, WIKI_PROP_GRID, WIKI_PROP_TREE, WIKI_PROP_TABLE,
+        WIKI_PROP_LINKS, WIKI_PROP_ENTRYID
     };
 
     /** the id for this */
@@ -888,24 +892,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return getRepository().makePopupLink(blockTitle,
                         blockContent);
             }
-        } else if (include.equals(WIKI_PROP_TABS) || include.equals(WIKI_PROP_ACCORDIAN) ||
-                   include.equals(WIKI_PROP_SLIDESHOW)) {
-            List<String>        titles   = new ArrayList<String>();
-            List<String>        contents = new ArrayList<String>();
-            titles.add("dummy");
-            contents.add("dummy");
-            List<Entry> children = getEntries(request, wikiUtil, entry,
+        } else if (include.equals(WIKI_PROP_TABS)
+                   || include.equals(WIKI_PROP_ACCORDIAN)
+                   || include.equals(WIKI_PROP_SLIDESHOW)) {
+            List<String> titles   = new ArrayList<String>();
+            List<String> contents = new ArrayList<String>();
+            List<Entry>  children = getEntries(request, wikiUtil, entry,
                                        props);
             boolean useDescription = Misc.getProperty(props,
                                          ATTR_USEDESCRIPTION, true);
-            boolean showLink   = Misc.getProperty(props, ATTR_SHOWLINK, true);
-            boolean includeIcon   = Misc.getProperty(props, ATTR_INCLUDEICON, true);
-            String  linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
-            int     imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
+            boolean showLink    = Misc.getProperty(props, ATTR_SHOWLINK, true);
+            boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
+                                      true);
+            String linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
+            int    imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
             for (Entry child : children) {
-                String title  = child.getName();
-                if(includeIcon) {
-                    title = HtmlUtil.img(getEntryManager().getIconUrl(request, child))+" " + title;
+                String title = child.getName();
+                if (includeIcon) {
+                    title =
+                        HtmlUtil.img(getEntryManager().getIconUrl(request,
+                            child)) + " " + title;
                 }
                 titles.add(title);
                 String content;
@@ -932,69 +938,112 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             HtmlUtil
                                 .img(getRepository().getHtmlOutputHandler()
                                     .getImageUrl(request, child), "",
-                                     HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, ""+imageWidth));
+                                        HtmlUtil
+                                            .attr(HtmlUtil.ATTR_WIDTH,
+                                                "" + imageWidth));
                         // + HtmlUtil.br() + content;
                     }
                 }
 
-                if(showLink) {
-                    String href =  HtmlUtil.href(
-                                  request.entryUrl(
-                                      getRepository().URL_ENTRY_SHOW,
-                                      child), linklabel.isEmpty()
-                                  ? child.getName()
-                                  : linklabel);
+                if (showLink) {
+                    String href = HtmlUtil.href(
+                                      request.entryUrl(
+                                          getRepository().URL_ENTRY_SHOW,
+                                          child), linklabel.isEmpty()
+                            ? child.getName()
+                            : linklabel);
 
-                    content = content + HtmlUtil.br() + 
-                        HtmlUtil.leftRight("",href);
-                } 
+                    content = content + HtmlUtil.br()
+                              + HtmlUtil.leftRight("", href);
+                }
                 contents.add(content);
             }
 
 
-            if(include.equals(WIKI_PROP_ACCORDIAN)) {
-                String accordianId = "accordion_" +(idCounter++);
-                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("ui-accordion ui-widget ui-helper-reset") + HtmlUtil.id(accordianId)));
-                for (int i=0;i<titles.size();i++) {
-                    String title = titles.get(i);
+            if (include.equals(WIKI_PROP_ACCORDIAN)) {
+                String accordianId = "accordion_" + (idCounter++);
+                sb.append(
+                    HtmlUtil.open(
+                        HtmlUtil.TAG_DIV,
+                        HtmlUtil.cssClass(
+                            "ui-accordion ui-widget ui-helper-reset") + HtmlUtil.id(
+                            accordianId)));
+                for (int i = 0; i < titles.size(); i++) {
+                    String title   = titles.get(i);
                     String content = contents.get(i);
-                    sb.append(HtmlUtil.open(HtmlUtil.TAG_H3, HtmlUtil.cssClass("ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
+                    sb.append(
+                        HtmlUtil.open(
+                            HtmlUtil.TAG_H3,
+                            HtmlUtil.cssClass(
+                                "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
                     sb.append("<a href=\"#\">");
                     sb.append(title);
                     sb.append("</a></h3>");
-                    sb.append(HtmlUtil.div(content,""));
+                    sb.append(HtmlUtil.div(content, ""));
                 }
                 sb.append("</div>");
-                String args = "autoHeight: false, navigation: true, collapsible: true";
-                sb.append(HtmlUtil.script("$(function() {\n$(\"#" + accordianId +"\" ).accordion({" + args +"});});\n"));
+                String args =
+                    "autoHeight: false, navigation: true, collapsible: true";
+                sb.append(HtmlUtil.script("$(function() {\n$(\"#"
+                                          + accordianId + "\" ).accordion({"
+                                          + args + "});});\n"));
                 return sb.toString();
             } else if (include.equals(WIKI_PROP_SLIDESHOW)) {
-                int   width = Misc.getProperty(props, ATTR_WIDTH, 400);
-                int   height = Misc.getProperty(props, ATTR_HEIGHT, 270);
-                String arrowWidth = "24";
+                int    width       = Misc.getProperty(props, ATTR_WIDTH, 400);
+                int    height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
+                String arrowWidth  = "24";
                 String arrowHeight = "43";
                 sb.append("<style type=\"text/css\">\n");
-                sb.append(".slides_container {width:" + width +"px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:" + width +"px;height:" + height +"px;display:block;}\n");
+                sb.append(
+                    ".slides_container {width:" + width
+                    + "px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
+                    + width + "px;height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
 
-                String slideParams = "preload: false, preloadImage: " + HtmlUtil.squote(getRepository().fileUrl("/slides/img/loading.gif"))+ ", play: 5000, pause: 2500, hoverPause: true, generatePagination: false\n";
-                StringBuffer js = new StringBuffer();
-                String slideId =  "slide_" +(idCounter++);
+                String slideParams =
+                    "preload: false, preloadImage: "
+                    + HtmlUtil.squote(getRepository().fileUrl("/slides/img/loading.gif"))
+                    + ", play: 5000, pause: 2500, hoverPause: true, generatePagination: false\n";
+                StringBuffer js      = new StringBuffer();
+                String       slideId = "slide_" + (idCounter++);
 
-                js.append("$(function(){\n$(" + HtmlUtil.squote("#" + slideId) +
-                          ").slides({" + slideParams +",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
+                js.append(
+                    "$(function(){\n$(" + HtmlUtil.squote("#" + slideId)
+                    + ").slides({" + slideParams
+                    + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
 
-                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.id(slideId)));
+                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                        HtmlUtil.id(slideId)));
                 sb.append(
-                          "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
-                sb.append(HtmlUtil.col(HtmlUtil.href("#", HtmlUtil.img(getRepository().fileUrl("/slides/img/arrow-prev.png"), "Prev", HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth) + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, arrowHeight)),HtmlUtil.cssClass("prev")), HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth)));
-                sb.append(HtmlUtil.open(HtmlUtil.TAG_TD, HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, ""+ width)));
-                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("slides_container")));
-                for (int i=0;i<titles.size();i++) {
-                    String title = titles.get(i);
+                    "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
+                sb.append(
+                    HtmlUtil.col(
+                        HtmlUtil.href(
+                            "#",
+                            HtmlUtil.img(
+                                getRepository().fileUrl(
+                                    "/slides/img/arrow-prev.png"), "Prev",
+                                        HtmlUtil.attr(
+                                            HtmlUtil.ATTR_WIDTH,
+                                            arrowWidth) + HtmlUtil.attr(
+                                                HtmlUtil.ATTR_HEIGHT,
+                                                    arrowHeight)), HtmlUtil.cssClass(
+                                                        "prev")), HtmlUtil.attr(
+                                                            HtmlUtil.ATTR_WIDTH,
+                                                                arrowWidth)));
+                sb.append(HtmlUtil.open(HtmlUtil.TAG_TD,
+                                        HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+                                            "" + width)));
+                sb.append(
+                    HtmlUtil.open(
+                        HtmlUtil.TAG_DIV,
+                        HtmlUtil.cssClass("slides_container")));
+                for (int i = 0; i < titles.size(); i++) {
+                    String title   = titles.get(i);
                     String content = contents.get(i);
                     sb.append("\n");
-                    sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.cssClass("slide")));
+                    sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                            HtmlUtil.cssClass("slide")));
                     sb.append("\n");
                     sb.append(content);
                     //                    sb.append("\n");
@@ -1010,16 +1059,30 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append("\n");
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
                 sb.append("\n");
-                sb.append(HtmlUtil.col(HtmlUtil.href("#", HtmlUtil.img(getRepository().fileUrl("/slides/img/arrow-next.png"), "Next", HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth) + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, arrowHeight)),HtmlUtil.cssClass("next")), HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, arrowWidth)));
+                sb.append(
+                    HtmlUtil.col(
+                        HtmlUtil.href(
+                            "#",
+                            HtmlUtil.img(
+                                getRepository().fileUrl(
+                                    "/slides/img/arrow-next.png"), "Next",
+                                        HtmlUtil.attr(
+                                            HtmlUtil.ATTR_WIDTH,
+                                            arrowWidth) + HtmlUtil.attr(
+                                                HtmlUtil.ATTR_HEIGHT,
+                                                    arrowHeight)), HtmlUtil.cssClass(
+                                                        "next")), HtmlUtil.attr(
+                                                            HtmlUtil.ATTR_WIDTH,
+                                                                arrowWidth)));
 
                 sb.append("\n");
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
                 sb.append("</tr></table>");
                 sb.append("\n");
                 sb.append(
-                          HtmlUtil.importJS(
-                                            getRepository().fileUrl(
-                                                                    "/slides/slides.min.jquery.js")));
+                    HtmlUtil.importJS(
+                        getRepository().fileUrl(
+                            "/slides/slides.min.jquery.js")));
 
                 sb.append(HtmlUtil.script(js.toString()));
                 System.out.println(sb);
@@ -1094,8 +1157,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
 
-        } else if (include.equals(WIKI_PROP_PLAYER) ||
-                   include.equals(WIKI_PROP_PLAYER_OLD)) {
+        } else if (include.equals(WIKI_PROP_PLAYER)
+                   || include.equals(WIKI_PROP_PLAYER_OLD)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props, true);
             if (children.size() == 0) {
@@ -1346,9 +1409,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                   boolean onlyImages)
             throws Exception {
 
-        if(!onlyImages) {
-            onlyImages = Misc.getProperty(props, ATTR_IMAGES,
-                                          onlyImages);
+        if ( !onlyImages) {
+            onlyImages = Misc.getProperty(props, ATTR_IMAGES, onlyImages);
         }
 
         boolean folders        = Misc.getProperty(props, ATTR_FOLDERS, false);
@@ -1389,10 +1451,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
 
         String userDefinedEntries = Misc.getProperty(props, ATTR_ENTRIES,
-                                           (String) null);
+                                        (String) null);
         if (userDefinedEntries != null) {
             children = getEntries(request, userDefinedEntries);
-        } 
+        }
 
 
         if (level == 2) {
@@ -1424,7 +1486,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (files) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
-                if (!child.isGroup()) {
+                if ( !child.isGroup()) {
                     tmp.add(child);
                 }
             }
@@ -1445,16 +1507,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         String exceptEntries = Misc.getProperty(props, ATTR_EXCEPT,
-                                           (String) null);
+                                   (String) null);
 
-        if(exceptEntries!=null) {
+        if (exceptEntries != null) {
             HashSet seen = new HashSet();
-            for(String id: StringUtil.split(exceptEntries, ",")) {
+            for (String id : StringUtil.split(exceptEntries, ",")) {
                 seen.add(id);
             }
-            List<Entry>  okEntries = new ArrayList<Entry>();
-            for(Entry e: children) {
-                if(!seen.contains(e.getId())) {
+            List<Entry> okEntries = new ArrayList<Entry>();
+            for (Entry e : children) {
+                if ( !seen.contains(e.getId())) {
                     okEntries.add(e);
                 }
             }
@@ -1481,9 +1543,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     }
 
 
-    private List<Entry> getEntries(Request request, String ids) throws Exception {
-        List<Entry>  entries      = new ArrayList<Entry>();
-        for (String entryid : StringUtil.split(ids, ",", true,true)) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param ids _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private List<Entry> getEntries(Request request, String ids)
+            throws Exception {
+        List<Entry> entries = new ArrayList<Entry>();
+        for (String entryid : StringUtil.split(ids, ",", true, true)) {
             Entry entry = getEntryManager().getEntry(request, entryid);
             if (entry != null) {
                 entries.add(entry);
@@ -1519,7 +1592,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
 
     /**
-     * Handle the wiki import 
+     * Handle the wiki import
      *
      * @param wikiUtil The wiki util
      * @param request The request

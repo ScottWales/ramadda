@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -74,6 +75,9 @@ import java.util.zip.*;
  * @version $Revision: 1.3 $
  */
 public class ImageOutputHandler extends OutputHandler {
+
+    /** _more_ */
+    public static final String ARG_IMAGE_STYLE = "image.style";
 
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
@@ -625,7 +629,7 @@ public class ImageOutputHandler extends OutputHandler {
                     firstImage = url;
                 }
                 String entryUrl = getEntryLink(request, entry);
-                String title =
+                String title    =
                     "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
                 title += "<tr><td><b>Image:</b> " + entryUrl
                          + "</td><td align=right>"
@@ -725,6 +729,9 @@ public class ImageOutputHandler extends OutputHandler {
                              sb.toString());
             tmp = tmp.replace("${imagehtml}", imageHtml);
             tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
+            String imgstyle = request.getString(ARG_IMAGE_STYLE,
+                                  "height: 750px; max-height: 750px;");
+            tmp = StringUtil.replace(tmp, "${style}", imgstyle);
             String fullUrl = "";
             if (width > 0) {
                 request.put(ARG_WIDTH, "0");
@@ -752,6 +759,7 @@ public class ImageOutputHandler extends OutputHandler {
         finalSB.append(HtmlUtil.p());
         finalSB.append(sb);
         return new Result(group.getName(), finalSB, getMimeType(output));
+
     }
 
 
@@ -793,7 +801,7 @@ public class ImageOutputHandler extends OutputHandler {
                 firstImage = url;
             }
             String entryUrl = getEntryLink(request, entry);
-            String title =
+            String title    =
                 "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
             title += "<tr><td><b>Image:</b> " + entryUrl
                      + "</td><td align=right>"
