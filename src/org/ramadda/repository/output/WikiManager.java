@@ -108,7 +108,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ATTR_ENTRIES = "entries";
 
     /** _more_          */
-    public static final String ATTR_EXCEPT = "except";
+    public static final String ATTR_EXCLUDE = "exclude";
 
     /** the alt attribute for images */
     public static final String ATTR_ALT = "alt";
@@ -907,7 +907,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                          ATTR_USEDESCRIPTION, true);
             boolean showLink    = Misc.getProperty(props, ATTR_SHOWLINK, true);
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
-                                      true);
+                                      false);
             String linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
             int width = Misc.getProperty(props, ATTR_WIDTH, 400);
             int height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
@@ -1536,12 +1536,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             children = getImageEntries(children);
         }
 
-        String exceptEntries = Misc.getProperty(props, ATTR_EXCEPT,
+        String excludeEntries = Misc.getProperty(props, ATTR_EXCLUDE,
                                    (String) null);
 
-        if (exceptEntries != null) {
+        if (excludeEntries != null) {
             HashSet seen = new HashSet();
-            for (String id : StringUtil.split(exceptEntries, ",")) {
+            for (String id : StringUtil.split(excludeEntries, ",")) {
                 seen.add(id);
             }
             List<Entry> okEntries = new ArrayList<Entry>();
@@ -1560,7 +1560,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
                 tmp.add(child);
-                if (tmp.size() > count) {
+                if (tmp.size() >= count) {
                     break;
                 }
             }
