@@ -203,12 +203,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in import tag */
     public static final String ATTR_WIDTH = "width";
+    public static final String ATTR_IMAGEWIDTH = "imagewidth";
 
     /** attribute to wikify the content */
     public static final String ATTR_WIKIFY = "wikify";
 
     /** attribute in import tag */
     public static final String ATTR_HEIGHT = "height";
+
+    public static final String ATTR_MAXIMAGEHEIGHT = "maximageheight";
 
     /** attribute in import tag */
     public static final String ATTR_DAYS = "days";
@@ -895,6 +898,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKI_PROP_TABS)
                    || include.equals(WIKI_PROP_ACCORDIAN)
                    || include.equals(WIKI_PROP_SLIDESHOW)) {
+            boolean doingSlideshow = include.equals(WIKI_PROP_SLIDESHOW);
             List<String> titles   = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
             List<Entry>  children = getEntries(request, wikiUtil, entry,
@@ -905,7 +909,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
                                       true);
             String linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
-            int    imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
+            int width = Misc.getProperty(props, ATTR_WIDTH, 400);
+            int height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
+            int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, width);
+            int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT, height-40);
+
+
             for (Entry child : children) {
                 String title = child.getName();
                 if (includeIcon) {
@@ -934,20 +943,42 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         }
                     }
                     if (child.getResource().isImage()) {
-                        content =
-                            HtmlUtil
-                                .img(getRepository().getHtmlOutputHandler()
-                                    .getImageUrl(request, child), "",
-                                        HtmlUtil
-                                            .attr(HtmlUtil.ATTR_WIDTH,
-                                                "" + imageWidth));
-                        // + HtmlUtil.br() + content;
+                        String image = HtmlUtil.img(getHtmlOutputHandler()
+                                                    .getImageUrl(request, child), "",
+                                                    HtmlUtil
+                                                    .attr(HtmlUtil.ATTR_WIDTH,
+                                                          "" + imageWidth));
+                        image = HtmlUtil.href(request.entryUrl(
+                                          getRepository().URL_ENTRY_SHOW,
+                                          child), image);
+                        if(doingSlideshow) {
+                            image =  HtmlUtil.div(image,
+                                                  HtmlUtil.cssClass("slides_image"));
+                        } 
+                        String position  = Misc.getProperty(props, "textposition","bottom");
+                        if(position.equals("bottom")) {
+                            content =image +"<br>" + content;
+                        } else if(position.equals("top")) {
+                            content =content +"<br>" +image;
+                        } else if(position.equals("right")) {
+                            content =HtmlUtil.table(HtmlUtil.row(
+                                                                 HtmlUtil.col(image) +
+                                                                 HtmlUtil.col(content), 
+                                                                 HtmlUtil.attr(HtmlUtil.ATTR_VALIGN, "top")),
+                                                                 HtmlUtil.attr(HtmlUtil.ATTR_CELLPADDING,"4"));
+                        } else  {
+                            content =HtmlUtil.table(HtmlUtil.row(
+                                                                 HtmlUtil.col(content)+
+                                                                 HtmlUtil.col(image),
+                                                                 HtmlUtil.attr(HtmlUtil.ATTR_VALIGN, "top")),
+                                                    HtmlUtil.attr(HtmlUtil.ATTR_CELLPADDING,"4"));
+                        }
                     }
                 }
 
                 if (showLink) {
                     String href = HtmlUtil.href(
-                                      request.entryUrl(
+                                                request.entryUrl(
                                           getRepository().URL_ENTRY_SHOW,
                                           child), linklabel.isEmpty()
                             ? child.getName()
@@ -988,14 +1019,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                           + accordianId + "\" ).accordion({"
                                           + args + "});});\n"));
                 return sb.toString();
-            } else if (include.equals(WIKI_PROP_SLIDESHOW)) {
-                int    width       = Misc.getProperty(props, ATTR_WIDTH, 400);
-                int    height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
+            } else if (doingSlideshow) {
                 String arrowWidth  = "24";
                 String arrowHeight = "43";
-                sb.append("<style type=\"text/css\">\n");
+                sb.append(HtmlUtil.open("style", HtmlUtil.attr("type","text/css")));
+                sb.append(".slides_image {max-height: " + maxImageHeight +"px; overflow-x: none; overflow-y: auto;}\n");
+                int border = Misc.getProperty(props, "border",1);
                 sb.append(
-                    ".slides_container {width:" + width
+                    ".slides_container {border: " + border +"px solid #aaa; width:" + width
                     + "px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
                     + width + "px;height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
@@ -1085,7 +1116,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             "/slides/slides.min.jquery.js")));
 
                 sb.append(HtmlUtil.script(js.toString()));
-                System.out.println(sb);
                 return sb.toString();
             } else {
                 return OutputHandler.makeTabs(titles, contents, true);
