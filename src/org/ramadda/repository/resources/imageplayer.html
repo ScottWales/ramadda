@@ -17,7 +17,7 @@
 
 .imageplayer_icon {
 margin: 1px;
-padding:2px;
+padding:1px;
 width: 18px;
 //border: 1px #aaa solid;
 }
@@ -360,16 +360,16 @@ function setBoxes() {
           width--;
       }
       imgAttrs = attr("border",0) + attr("width", width) + attr("height",10);
-      box = tag("A", attr2("HREF","JavaScript: noop()", "onClick", call("setImage", i + ",-1")),
+      box = tag("A", attr2("href","JavaScript: noop()", "onClick", call("setImage", i + ",-1")),
                   span(attr("style", "background-color:" + color),img(icon_blank,imgAttrs + gotoalt)))+"&nbsp";
-      hidebox = tag("A", attr2("HREF","JavaScript: noop()", "onClick", call("toggleImageOk",i)),
+      hidebox = tag("A", attr2("href","JavaScript: noop()", "onClick", call("toggleImageOk",i)),
             span(attr("style", "background-color:" + hidecolor),img(icon_blank,imgAttrs + hidealt)))+"&nbsp;";
       boxes+=box;
       hideboxes+=hidebox;
     }
 
     document.getElementById('boxes').innerHTML =span(attr("style","font-size:10"),boxes);
-    document.getElementById('hideboxes').innerHTML =span(attr("style","font-size:10"),hideboxes);
+//    document.getElementById('hideboxes').innerHTML =span(attr("style","font-size:10"),hideboxes);
 
 }
 
@@ -463,14 +463,15 @@ function displayImage() {
 </noscript>
 
 
-<TABLE BORDER="1" CELLPADDING="0" CELLSPACING="0" width="100%" class="imageplayer">
-    <TR>
-    <TD width="150" align="center" valign="center" > 
-<a HREF="JavaScript: noop()" onClick="setImage(0,1)"><img class="imageplayer_icon"  xxxwidth="24" BORDER="0" SRC="${root}/imageplayer/control_rewind_blue.png" ALT="Got to first frame" title="Go to first frame"></A><a HREF="JavaScript: noop()" onClick="setImage(current_image-1,-1)"><img class="imageplayer_icon"  xxxwidth="24" BORDER="0" SRC="${root}/imageplayer/control_start_blue.png" ALT="One step back" TITLE="One step back"></A><a HREF="JavaScript: noop()" onClick="startStop()"><img class="imageplayer_icon"  xxxwidth="24" BORDER="0" NAME="startstop" SRC="${root}/imageplayer/control_play_blue.png" ALT="Start/Stop" TITLE="Start/Stop"></A><a HREF="JavaScript: noop()" onClick="setImage(current_image+1,1)"><img class="imageplayer_icon"  xxxwidth="24" BORDER="0" SRC="${root}/imageplayer/control_end_blue.png" ALT="One step forward" TITLE="One step forward"></A><a HREF="JavaScript: noop()" onClick="setImage(-1,-1)"><img class="imageplayer_icon"  xxxwidth="24" BORDER="0" SRC="${root}/imageplayer/control_fastforward_blue.png" ALT="Go to last frame" TITLE="Go to last frame"></A></TD>
-<TD  valign="bottom">
+<table xborder="1" style="border: 1px #aaa solid;" cellpadding="0" cellspacing="0" width="100%" class="imageplayer">
+    <tr valign="bottom">
+    <td width="150"> 
+<a href="JavaScript: noop()" onClick="setImage(0,1)"><img class="imageplayer_icon"  border="0" SRC="${root}/imageplayer/control_rewind_blue.png" ALT="Got to first frame" title="Go to first frame"></A><a href="JavaScript: noop()" onClick="setImage(current_image-1,-1)"><img class="imageplayer_icon"   border="0" SRC="${root}/imageplayer/control_start_blue.png" ALT="One step back" TITLE="One step back"></A><a href="JavaScript: noop()" onClick="startStop()"><img class="imageplayer_icon"   border="0" NAME="startstop" SRC="${root}/imageplayer/control_play_blue.png" ALT="Start/Stop" TITLE="Start/Stop"></A><a href="JavaScript: noop()" onClick="setImage(current_image+1,1)"><img class="imageplayer_icon"   border="0" SRC="${root}/imageplayer/control_end_blue.png" ALT="One step forward" TITLE="One step forward"></A><a href="JavaScript: noop()" onClick="setImage(-1,-1)"><img class="imageplayer_icon"   border="0" SRC="${root}/imageplayer/control_fastforward_blue.png" ALT="Go to last frame" TITLE="Go to last frame"></A></td>
+
+<td  valign="bottom">
 <table  width="100%"><tr valign="bottom">
 <td>
-<div style="margin-bottom:2" id="hideboxes">&nbsp;</div>
+<div style="display:none;margin-bottom:2" id="hideboxes">&nbsp;</div>
 <div id="boxes">&nbsp;</div>
 </td>
 <td width="5%" align="right">
@@ -479,43 +480,37 @@ function displayImage() {
 </FORM>
 </td>
 </table>
-</TD>
-</TR>
-<TR VALIGN="top" >
-<TD>
-<p>
-<table cellspacing="0" cellpadding="3">
-<tr><td align="right">Loop Mode:</td>
-<td>
-<a HREF="JavaScript: noop()" onClick="toggle_mode();">
-<IMG BORDER=0 name="loopmode" SRC="${root}/imageplayer/button_norm.gif">
-</A>
-</td></tr>
-
-<tr><td align="right">Adjust Speed:</td>
-<td>
-<a HREF="JavaScript: noop()" onClick="change_speed(delay_step)"><IMG  BORDER=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce animation speed" TITLE="Reduce animation speed"></A><a HREF="JavaScript: noop()" onClick="change_speed(-delay_step)"><IMG  BORDER=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase animation speed" TITLE="Increase animation speed"></A>
-</td></tr>
-<tr><td  align="right">Start Dwell:</td>
-<td>
-<a HREF="JavaScript: noop()" onClick="change_start_dwell(-dwell_step)"><IMG  BORDER=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce start dwell" TITLE="Reduce start dwell"></A><a HREF="JavaScript: noop()" onClick="change_start_dwell(dwell_step)"><IMG  BORDER=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase start dwell" TITLE="Increase start dwell"></A>
-</td></tr>
-<tr><td  align="right">End Dwell:</td>
-<td>
-<a HREF="JavaScript: noop()" onClick="change_end_dwell(-dwell_step)"><IMG  BORDER=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce end dwell" TITLE="Reduce end dwell"></A><a HREF="JavaScript: noop()" onClick="change_end_dwell(dwell_step)"><IMG BORDER=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase end dwell" TITLE="Increase end dwell"></A>
-</td></tr>
-</table>
-
-</TD>
-<TD VALIGN=top>
+</td>
+</tr>
+<tr VALIGN="top" >
+<td style="border-top: 1px #aaa solid;" colspan="2" valign=top>
    <div  id="header" style="margin:2">&nbsp;</div>
    <div class="imageblock">
 ${imagehtml}
    </div>
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+<tr>
+<td colspan="2">
 
-<SCRIPT LANGUAGE="JavaScript">
+Loop Mode:
+<a href="JavaScript: noop()" onClick="toggle_mode();">
+<img border=0 name="loopmode" SRC="${root}/imageplayer/button_norm.gif">
+</a>
+&nbsp;
+Adjust Speed:
+<a href="JavaScript: noop()" onClick="change_speed(delay_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce animation speed" TITLE="Reduce animation speed"></A><a href="JavaScript: noop()" onClick="change_speed(-delay_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase animation speed" TITLE="Increase animation speed"></A>
+&nbsp;
+Start Dwell:
+<a href="JavaScript: noop()" onClick="change_start_dwell(-dwell_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce start dwell" TITLE="Reduce start dwell"></A><a href="JavaScript: noop()" onClick="change_start_dwell(dwell_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase start dwell" TITLE="Increase start dwell"></A>
+&nbsp;
+End Dwell:
+<a href="JavaScript: noop()" onClick="change_end_dwell(-dwell_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce end dwell" TITLE="Reduce end dwell"></A><a href="JavaScript: noop()" onClick="change_end_dwell(dwell_step)"><img border=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase end dwell" TITLE="Increase end dwell"></A>
+
+</tr>
+</table>
+
+
+<script language="JavaScript">
 displayImage();
-</SCRIPT>
+</script>

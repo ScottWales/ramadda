@@ -721,9 +721,9 @@ public class ImageOutputHandler extends OutputHandler {
             if (width > 0) {
                 widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
             }
-            String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
+            String imageHtml = "<img name=\"animation\" border=\"0\" "
                                + widthAttr + HtmlUtil.attr("SRC", firstImage)
-                               + " ALT=\"image\">";
+                               + " alt=\"image\">";
 
             String tmp = playerTemplate.replace("${imagelist}",
                              sb.toString());
@@ -743,9 +743,10 @@ public class ImageOutputHandler extends OutputHandler {
                                         msg("Use fixed width"));
             }
 
-            sb = new StringBuffer(HtmlUtil.leftRight(getSortLinks(request),
-                    fullUrl));
+            sb  = new StringBuffer();
             sb.append(tmp);
+            sb.append(HtmlUtil.leftRight(getSortLinks(request),
+                    fullUrl));
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
             String template = repository.getResource(PROP_HTML_SLIDESHOW);
             template = template.replace("${imagelist}", sb.toString());
