@@ -17,8 +17,9 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 /*
- * Copyright 2010 ramadda.org
+ * Originally written by Kristian Sebastia°n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  */
 
 package org.ramadda.repository.auth.ldap;
@@ -44,8 +45,8 @@ import javax.naming.NamingException;
  * This is a user authenticator to implement LDAP authentication
  *
  *
- * @author Kristian Sebasti√°n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
- * @autho Jeff McWhirter ramadda.org
+ * @author Kristian Sebastia°n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
+ * @author Jeff McWhirter ramadda.org
  */
 public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
 
@@ -230,7 +231,6 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
             return null;
         }
     }
-
 
 
 
