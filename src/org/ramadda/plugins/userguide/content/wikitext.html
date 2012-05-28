@@ -133,6 +133,7 @@ This follows the
 Java <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
 
 
+
 <li> [wiki::tagdef information]: The information tabs.
 <li> [wiki::tagdef properties]: Show the properties listing.
 <li> [wiki::tagdef html]: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
@@ -193,19 +194,28 @@ Show the menu actions in a popup:
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
 other groups of entries with:
-[wiki::text {{{property entry="some other entry" folders="true" files="true" type="entries of a specific type" level="1 or 2" associations="true|false" entries="entryid1,entryid2,entryid3.."}}}]
+[wiki::text {{{property entry="some other entry" folders="true" files="true" type="entries of a specific type" level="1 or 2" associations="true|false" entries="entryid1,entryid2,entryid3.." except="entryid1,entryid2,entryid3.."  images="true" count="number of entries to use"}}}]
 </ul>
-If <i>folders</i> is set then only show folder like entries.<br>
-If <i>files</i> is set then only show non folders.<br>
-If <i>type</i> is set then only show entries of  that type.<br>
+If <i>folders</i> is set then only show folder like entries.
+<br>
+If <i>files</i> is set then only show non folders.
+<br>
+If <i>type</i> is set then only show entries of  that type.
+<br>
 The attribute <i>level</i> can be set to "1" (the default) or "2". 
 Level 1 refers to the immediate children
-entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).<br>
+entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).
+<br>
 If <i> associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
-and typed links between arbitrary entries.<br>
-If <i>entries</i> is set to a list of entryids, then only those entrys are 
+and typed links between arbitrary entries.
+<br>
+If <i>entries</i> is set to a list of comma separated entry ids, then only those entrys are 
 included.
-
+<br>
+Exclude any entries in the <i>entries</i> comma separated list of entry ids.
+<br>
+If <i>images</i> is set to true then only entries that are image files are included
+<br>
 
 
 <ul>
@@ -246,6 +256,11 @@ Show only the 3 specified entries in tabs:
 
 Show only the children of type wikipage in tabs:
 [wiki::text {{tabs type="wikipage"}}]</pre>
+
+<li> [wiki::tagdef accordian]: Show the children in an accordian:
+[wiki::text {{{accordian}}}] </pre>
+Has the same arguments as the tabs tag.
+
 
 <li> [wiki::tagdef links {separator="separator text to use" 
                           style="inline css style for the link"
