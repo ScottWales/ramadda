@@ -19,7 +19,7 @@
 */
 //jeffmc: change the package name to a ramadda package
 //package ldap;
-package org.ramadda.repository.auth.ldap;
+package org.ramadda.plugins.ldap;
 
 
 import java.util.ArrayList;

@@ -17,14 +17,13 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
-/*
- * Copyright 2010 ramadda.org
- */
 
-package org.ramadda.repository.auth.ldap;
+
+package org.ramadda.plugins.ldap;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.admin.*;
 
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.xml.XmlUtil;

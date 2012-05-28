@@ -22,7 +22,7 @@
  * Originally written by Kristian Sebastia¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  */
 
-package org.ramadda.repository.auth.ldap;
+package org.ramadda.plugins.ldap;
 
 
 import org.ramadda.repository.Repository;
