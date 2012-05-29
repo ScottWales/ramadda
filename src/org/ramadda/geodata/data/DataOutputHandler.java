@@ -2908,8 +2908,9 @@ public class DataOutputHandler extends OutputHandler {
         //        System.err.println("nd:" + metadataList);
         for (Metadata metadata : metadataList) {
             String fileAttachment = metadata.getAttr1();
-            if (fileAttachment.endsWith(SUFFIX_NCML)
-                    || fileAttachment.endsWith(SUFFIX_CTL)) {
+            boolean isNcml = fileAttachment.endsWith(SUFFIX_NCML);
+            boolean isCtl = fileAttachment.endsWith(SUFFIX_CTL);
+            if (isNcml || isCtl) {
                 File templateNcmlFile =
                     new File(
                         IOUtil.joinDir(
@@ -2923,11 +2924,10 @@ public class DataOutputHandler extends OutputHandler {
                 //Use the last modified time of the ncml file so we pick up any updated file
                 String dttm     = templateNcmlFile.lastModified() + "";
                 String fileName = dttm + "_" + entry.getId() + "_"
-                                  + metadata.getId() + SUFFIX_NCML;
+                    + metadata.getId() + (isNcml?SUFFIX_NCML:SUFFIX_CTL);
                 File ncmlFile = getStorageManager().getScratchFile(fileName);
                 IOUtil.writeBytes(ncmlFile, ncml.getBytes());
                 location = ncmlFile.toString();
-
                 break;
             }
         }
