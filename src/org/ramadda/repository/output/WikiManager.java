@@ -81,9 +81,8 @@ import java.util.zip.*;
 public class WikiManager extends RepositoryManager implements WikiUtil
     .WikiPageHandler {
 
-    /** _more_          */
+    /** id counter */
     static int idCounter = 0;
-
 
     /** wiki page type */
     public static String TYPE_WIKIPAGE = "wikipage";
@@ -98,7 +97,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ATTR_SHOWLINK = "showlink";
 
 
-    /** _more_          */
+    /** include icon attribute */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
     /** attribute in the tabs tag */
@@ -107,7 +106,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRIES = "entries";
 
-    /** _more_          */
+    /** exclude attribute */
     public static final String ATTR_EXCLUDE = "exclude";
 
     /** the alt attribute for images */
@@ -146,7 +145,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_FOLDERS = "folders";
 
-    /** _more_          */
+    /** images only attribute */
     public static final String ATTR_IMAGES = "images";
 
     /** attribute in import tag */
@@ -203,6 +202,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in import tag */
     public static final String ATTR_WIDTH = "width";
+
+    /** imagewidth attribute */
     public static final String ATTR_IMAGEWIDTH = "imagewidth";
 
     /** attribute to wikify the content */
@@ -211,6 +212,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_HEIGHT = "height";
 
+    /** max image height attribute */
     public static final String ATTR_MAXIMAGEHEIGHT = "maximageheight";
 
     /** attribute in import tag */
@@ -264,7 +266,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_TABS = "tabs";
 
-    /** _more_          */
+    /** accordian property */
     public static final String WIKI_PROP_ACCORDIAN = "accordian";
 
     /** the slideshow property */
@@ -898,21 +900,22 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKI_PROP_TABS)
                    || include.equals(WIKI_PROP_ACCORDIAN)
                    || include.equals(WIKI_PROP_SLIDESHOW)) {
-            boolean doingSlideshow = include.equals(WIKI_PROP_SLIDESHOW);
-            List<String> titles   = new ArrayList<String>();
-            List<String> contents = new ArrayList<String>();
-            List<Entry>  children = getEntries(request, wikiUtil, entry,
+            boolean      doingSlideshow = include.equals(WIKI_PROP_SLIDESHOW);
+            List<String> titles         = new ArrayList<String>();
+            List<String> contents       = new ArrayList<String>();
+            List<Entry>  children       = getEntries(request, wikiUtil, entry,
                                        props);
             boolean useDescription = Misc.getProperty(props,
                                          ATTR_USEDESCRIPTION, true);
             boolean showLink    = Misc.getProperty(props, ATTR_SHOWLINK, true);
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
                                       false);
-            String linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
-            int width = Misc.getProperty(props, ATTR_WIDTH, 400);
-            int height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
+            String linklabel   = Misc.getProperty(props, ATTR_LINKLABEL, "");
+            int    width       = Misc.getProperty(props, ATTR_WIDTH, 400);
+            int    height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
             int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, width);
-            int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT, height-40);
+            int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT,
+                                     height - 40);
 
 
             for (Entry child : children) {
@@ -943,42 +946,56 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         }
                     }
                     if (child.getResource().isImage()) {
-                        String image = HtmlUtil.img(getHtmlOutputHandler()
-                                                    .getImageUrl(request, child), "",
-                                                    HtmlUtil
-                                                    .attr(HtmlUtil.ATTR_WIDTH,
-                                                          "" + imageWidth));
-                        image = HtmlUtil.href(request.entryUrl(
-                                          getRepository().URL_ENTRY_SHOW,
-                                          child), image);
-                        if(doingSlideshow) {
-                            image =  HtmlUtil.div(image,
-                                                  HtmlUtil.cssClass("slides_image"));
-                        } 
-                        String position  = Misc.getProperty(props, "textposition","bottom");
-                        if(position.equals("bottom")) {
-                            content =image +"<br>" + content;
-                        } else if(position.equals("top")) {
-                            content =content +"<br>" +image;
-                        } else if(position.equals("right")) {
-                            content =HtmlUtil.table(HtmlUtil.row(
-                                                                 HtmlUtil.col(image) +
-                                                                 HtmlUtil.col(content), 
-                                                                 HtmlUtil.attr(HtmlUtil.ATTR_VALIGN, "top")),
-                                                                 HtmlUtil.attr(HtmlUtil.ATTR_CELLPADDING,"4"));
-                        } else  {
-                            content =HtmlUtil.table(HtmlUtil.row(
-                                                                 HtmlUtil.col(content)+
-                                                                 HtmlUtil.col(image),
-                                                                 HtmlUtil.attr(HtmlUtil.ATTR_VALIGN, "top")),
-                                                    HtmlUtil.attr(HtmlUtil.ATTR_CELLPADDING,"4"));
+                        String image = HtmlUtil.img(
+                                           getHtmlOutputHandler().getImageUrl(
+                                               request, child), "",
+                                                   HtmlUtil.attr(
+                                                       HtmlUtil.ATTR_WIDTH,
+                                                       "" + imageWidth));
+                        image = HtmlUtil.href(
+                            request.entryUrl(
+                                getRepository().URL_ENTRY_SHOW,
+                                child), image);
+                        if (doingSlideshow) {
+                            image = HtmlUtil.div(image,
+                                    HtmlUtil.cssClass("slides_image"));
+                        }
+                        String position = Misc.getProperty(props,
+                                              "textposition", "bottom");
+                        if (position.equals("none")) {
+                            content = image + "<br>";
+                        } else if (position.equals("bottom")) {
+                            content = image + "<br>" + content;
+                        } else if (position.equals("top")) {
+                            content = content + "<br>" + image;
+                        } else if (position.equals("right")) {
+                            content =
+                                HtmlUtil.table(
+                                    HtmlUtil.row(
+                                        HtmlUtil.col(image)
+                                        + HtmlUtil.col(
+                                            content), HtmlUtil.attr(
+                                            HtmlUtil.ATTR_VALIGN,
+                                            "top")), HtmlUtil.attr(
+                                                HtmlUtil.ATTR_CELLPADDING,
+                                                    "4"));
+                        } else {
+                            content =
+                                HtmlUtil.table(
+                                    HtmlUtil.row(
+                                        HtmlUtil.col(content)
+                                        + HtmlUtil.col(image), HtmlUtil.attr(
+                                            HtmlUtil.ATTR_VALIGN,
+                                            "top")), HtmlUtil.attr(
+                                                HtmlUtil.ATTR_CELLPADDING,
+                                                    "4"));
                         }
                     }
                 }
 
                 if (showLink) {
                     String href = HtmlUtil.href(
-                                                request.entryUrl(
+                                      request.entryUrl(
                                           getRepository().URL_ENTRY_SHOW,
                                           child), linklabel.isEmpty()
                             ? child.getName()
@@ -1018,15 +1035,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(HtmlUtil.script("$(function() {\n$(\"#"
                                           + accordianId + "\" ).accordion({"
                                           + args + "});});\n"));
+
                 return sb.toString();
             } else if (doingSlideshow) {
                 String arrowWidth  = "24";
                 String arrowHeight = "43";
-                sb.append(HtmlUtil.open("style", HtmlUtil.attr("type","text/css")));
-                sb.append(".slides_image {max-height: " + maxImageHeight +"px; overflow-x: none; overflow-y: auto;}\n");
-                int border = Misc.getProperty(props, "border",1);
+                sb.append(HtmlUtil.open("style",
+                                        HtmlUtil.attr("type", "text/css")));
+                sb.append(".slides_image {max-height: " + maxImageHeight
+                          + "px; overflow-x: none; overflow-y: auto;}\n");
+                int border = Misc.getProperty(props, "border", 1);
                 sb.append(
-                    ".slides_container {border: " + border +"px solid #aaa; width:" + width
+                    ".slides_container {border: " + border
+                    + "px solid #aaa; width:" + width
                     + "px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
                     + width + "px;height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
@@ -1116,6 +1137,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             "/slides/slides.min.jquery.js")));
 
                 sb.append(HtmlUtil.script(js.toString()));
+
                 return sb.toString();
             } else {
                 return OutputHandler.makeTabs(titles, contents, true);
@@ -1537,7 +1559,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         String excludeEntries = Misc.getProperty(props, ATTR_EXCLUDE,
-                                   (String) null);
+                                    (String) null);
 
         if (excludeEntries != null) {
             HashSet seen = new HashSet();
@@ -1574,14 +1596,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
 
     /**
-     * _more_
+     * Get the entries corresponding to the ids
      *
-     * @param request _more_
-     * @param ids _more_
+     * @param request the Request
+     * @param ids  list of comma separated ids
      *
-     * @return _more_
+     * @return List of Entrys
      *
-     * @throws Exception _more_
+     * @throws Exception problem getting entries
      */
     private List<Entry> getEntries(Request request, String ids)
             throws Exception {
@@ -1592,6 +1614,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 entries.add(entry);
             }
         }
+
         return entries;
     }
 
