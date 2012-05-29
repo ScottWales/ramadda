@@ -553,12 +553,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        String  img  = HtmlUtil.img(url, entry.getName(), extra);
-        boolean link = Misc.equals("true", props.get("link"));
+        String  img     = HtmlUtil.img(url, entry.getName(), extra);
+        boolean link    = Misc.equals("true", props.get("link"));
+        boolean linkrsc = Misc.equals("true", props.get("linkresource"));
         if (link) {
             return HtmlUtil.href(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
 
+        } else if (linkrsc) {
+            return HtmlUtil.href(
+                request.entryUrl(getRepository().URL_ENTRY_GET, entry), img);
         }
 
         return img;
