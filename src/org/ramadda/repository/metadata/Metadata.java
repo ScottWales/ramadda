@@ -74,7 +74,7 @@ import java.util.zip.*;
 public class Metadata implements Constants {
 
     /** _more_ */
-    public static final int MAX_LENGTH = 10000;
+    public static final int MAX_LENGTH = 6000;
 
     /** _more_ */
     public static final int INDEX_BASE = 1;
