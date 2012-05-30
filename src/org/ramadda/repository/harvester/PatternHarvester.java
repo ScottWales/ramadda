@@ -882,8 +882,15 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         currentStatus = "Done initializng entries";
         if (getAddMetadata() || getAddShortMetadata()) {
             currentStatus = "Adding metadata";
-            getEntryManager().addInitialMetadata(null, entriesToAdd, true,
-                    getAddShortMetadata());
+            int count=0;
+            for(Entry entry: entriesToAdd) {
+                List<Entry> tmpList =new ArrayList<Entry>();
+                tmpList.add(entry);
+                count++;
+                getEntryManager().addInitialMetadata(null, tmpList, true,
+                                                     getAddShortMetadata());
+                currentStatus = "Added metadata for " + count +" entries. " + (entriesToAdd.size()-count) + " more entries to process";
+            }
         }
         currentStatus = "";
         logHarvesterInfo("Inserting " + entriesToAdd.size() + " new entries");
