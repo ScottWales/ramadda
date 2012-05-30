@@ -4379,7 +4379,7 @@ public class EntryManager extends RepositoryManager {
                           : "");
         String imgUrl  = null;
         if (entry.getResource().isUrl()) {
-            imgUrl  = entry.getTypeHandler().getResourceUrl(request, entry);
+            imgUrl  = entry.getTypeHandler().getResourcePath(request, entry);
             imgText += msg("Click to view URL");
         } else if (entry.getResource().isFile()) {
             if (getAccessManager().canDownload(request, entry)) {
