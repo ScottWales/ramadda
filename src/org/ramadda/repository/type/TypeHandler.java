@@ -1811,7 +1811,7 @@ public class TypeHandler extends RepositoryManager {
             String   resourceLabel = msgLabel("Resource");
             if (resourceLink.length() > 0) {
                 if (entry.getResource().isUrl()) {
-                    resourceLink = getResourceUrl(request, entry);
+                    resourceLink = getResourcePath(request, entry);
                     resourceLink = HtmlUtil.href(resourceLink, resourceLink);
                 } else if (entry.getResource().isFile()) {
                     resourceLink =
@@ -2015,7 +2015,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * 
      *
      * @param request _more_
      * @param entry _more_
@@ -2024,10 +2024,9 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getResourceUrl(Request request, Entry entry)
+    public String getResourcePath(Request request, Entry entry)
             throws Exception {
         Resource resource = entry.getResource();
-
         return resource.getPath();
     }
 
