@@ -90,6 +90,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
+
+    public static final String  ATTR_LINKRESOURCE = "linkresource";
+    
+    public static final String  ATTR_LINK = "link";
+
     /** attribute in the tabs tag */
     public static final String ATTR_USEDESCRIPTION = "usedescription";
 
@@ -194,6 +199,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_POPUP = "popup";
 
+    public static final String ATTR_TEXTPOSITION = "textposition";
+
     /** attribute in import tag */
     public static final String ATTR_LEVEL = "level";
 
@@ -217,6 +224,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in import tag */
     public static final String ATTR_DAYS = "days";
+
+    public static final String  POS_LEFT = "left";
+    public static final String  POS_BOTTOM = "bottom";
+    public static final String  POS_RIGHT = "right";
+    public static final String  POS_TOP = "top";
+    public static final String  POS_NONE = "none";
+
 
     /** wiki import */
     public static final String WIKI_PROP_IMPORT = "import";
@@ -552,19 +566,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             extra = extra + " style=\"position:absolute; " + style + "\" ";
         }
 
-
         String  img     = HtmlUtil.img(url, entry.getName(), extra);
-        boolean link    = Misc.equals("true", props.get("link"));
-        boolean linkrsc = Misc.equals("true", props.get("linkresource"));
+        boolean link    = Misc.equals("true", props.get(ATTR_LINK));
+        boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE, false);
         if (link) {
             return HtmlUtil.href(
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
-
-        } else if (linkrsc) {
-            return HtmlUtil.href(
-                request.entryUrl(getRepository().URL_ENTRY_GET, entry), img);
+                                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
+        } else if (linkResource) {
+            return HtmlUtil.href(entry.getTypeHandler().getEntryResourceUrl(request, entry), img);
         }
-
         return img;
     }
 
@@ -921,6 +931,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT,
                                      height - 40);
 
+            boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE, false);
 
             for (Entry child : children) {
                 String title = child.getName();
@@ -951,57 +962,66 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     }
                     if (child.getResource().isImage()) {
                         String image = HtmlUtil.img(
-                                           getHtmlOutputHandler().getImageUrl(
-                                               request, child), "",
-                                                   HtmlUtil.attr(
-                                                       HtmlUtil.ATTR_WIDTH,
-                                                       "" + imageWidth));
+                                                    getHtmlOutputHandler().getImageUrl(
+                                                                                       request, child), "",
+                                                    HtmlUtil.attr(
+                                                                  HtmlUtil.ATTR_WIDTH,
+                                                                  "" + imageWidth));
                         image = HtmlUtil.href(
-                            request.entryUrl(
-                                getRepository().URL_ENTRY_SHOW,
-                                child), image);
+                                              request.entryUrl(
+                                                               getRepository().URL_ENTRY_SHOW,
+                                                               child), image);
                         if (doingSlideshow) {
                             image = HtmlUtil.div(image,
-                                    HtmlUtil.cssClass("slides_image"));
+                                                 HtmlUtil.cssClass("slides_image"));
                         }
+
                         String position = Misc.getProperty(props,
-                                              "textposition", "bottom");
-                        if (position.equals("none")) {
-                            content = image + "<br>";
-                        } else if (position.equals("bottom")) {
-                            content = image + "<br>" + content;
-                        } else if (position.equals("top")) {
-                            content = content + "<br>" + image;
-                        } else if (position.equals("right")) {
+                                                           ATTR_TEXTPOSITION, POS_BOTTOM);
+                        if (position.equals(POS_NONE)) {
+                            content = image + HtmlUtil.br();
+                        } else if (position.equals(POS_BOTTOM)) {
+                            content = image + HtmlUtil.br() + content;
+                        } else if (position.equals(POS_TOP)) {
+                            content = content + HtmlUtil.br() + image;
+                        } else if (position.equals(POS_RIGHT)) {
                             content =
                                 HtmlUtil.table(
-                                    HtmlUtil.row(
-                                        HtmlUtil.col(image)
-                                        + HtmlUtil.col(
-                                            content), HtmlUtil.attr(
-                                            HtmlUtil.ATTR_VALIGN,
-                                            "top")), HtmlUtil.attr(
-                                                HtmlUtil.ATTR_CELLPADDING,
-                                                    "4"));
+                                               HtmlUtil.row(
+                                                            HtmlUtil.col(image)
+                                                            + HtmlUtil.col(
+                                                                           content), HtmlUtil.attr(
+                                                                                                   HtmlUtil.ATTR_VALIGN,
+                                                                                                   "top")), HtmlUtil.attr(
+                                                                                                                          HtmlUtil.ATTR_CELLPADDING,
+                                                                                                                          "4"));
+                        } else if (position.equals(POS_LEFT)) {
+                            content =
+                                HtmlUtil.table(
+                                               HtmlUtil.row(
+                                                            HtmlUtil.col(content)
+                                                            + HtmlUtil.col(image), HtmlUtil.attr(
+                                                                                                 HtmlUtil.ATTR_VALIGN,
+                                                                                                 "top")), HtmlUtil.attr(
+                                                                                                                        HtmlUtil.ATTR_CELLPADDING,
+                                                                                                                        "4"));
                         } else {
-                            content =
-                                HtmlUtil.table(
-                                    HtmlUtil.row(
-                                        HtmlUtil.col(content)
-                                        + HtmlUtil.col(image), HtmlUtil.attr(
-                                            HtmlUtil.ATTR_VALIGN,
-                                            "top")), HtmlUtil.attr(
-                                                HtmlUtil.ATTR_CELLPADDING,
-                                                    "4"));
+                            content = "Unknown position:" + position;
                         }
                     }
                 }
 
                 if (showLink) {
+                    String url;
+                    if(linkResource && (child.isFile()||child.getResource().isUrl())) {
+                        url = child.getTypeHandler().getEntryResourceUrl(request, child);
+                    } else {
+                        url = request.entryUrl(
+                                               getRepository().URL_ENTRY_SHOW,
+                                               child);
+                    }
                     String href = HtmlUtil.href(
-                                      request.entryUrl(
-                                          getRepository().URL_ENTRY_SHOW,
-                                          child), linklabel.isEmpty()
+                                                url, linklabel.isEmpty()
                             ? child.getName()
                             : linklabel);
 
@@ -1009,6 +1029,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                               + HtmlUtil.leftRight("", href);
                 }
                 contents.add(content);
+
             }
 
 
@@ -1341,6 +1362,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return getMessage(props, "");
             }
 
+            boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE, false);
             String separator = Misc.getProperty(props, ATTR_SEPARATOR,
                                    "&nbsp;|&nbsp;");
             String       cssClass = Misc.getProperty(props, ATTR_CLASS, "");
@@ -1350,12 +1372,18 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             List<String> links    = new ArrayList<String>();
             for (Entry child : children) {
-                String href = HtmlUtil.href(
-                                  request.entryUrl(
-                                      getRepository().URL_ENTRY_SHOW,
-                                      child), child.getName(),
-                                          HtmlUtil.cssClass(cssClass)
-                                          + HtmlUtil.style(style));
+                String url;
+                if(linkResource && (child.isFile()||child.getResource().isUrl())) {
+                    url = child.getTypeHandler().getEntryResourceUrl(request, child);
+                } else {
+                    url = request.entryUrl(
+                                           getRepository().URL_ENTRY_SHOW,
+                                           child);
+                }
+
+                String href = HtmlUtil.href(url, child.getName(),
+                                            HtmlUtil.cssClass(cssClass)
+                                            + HtmlUtil.style(style));
                 links.add(tagOpen + href + tagClose);
             }
 
