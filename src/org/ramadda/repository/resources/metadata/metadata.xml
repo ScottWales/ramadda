@@ -211,6 +211,9 @@
        showinhtml="false"
        id="spatial.polygon">
       <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
+      <element name="polygon2" suffix="..."/>
+      <element name="polygon3" suffix="..."/>
+      <element name="polygon4" suffix="..."/>
     </type>
 
     <type
