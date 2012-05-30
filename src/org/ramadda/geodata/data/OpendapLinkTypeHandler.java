@@ -115,7 +115,8 @@ public class OpendapLinkTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getResourceUrl(Request request, Entry entry)
+    @Override
+    public String getResourcePath(Request request, Entry entry)
             throws Exception {
         Resource resource = entry.getResource();
         return resource.getPath() + ".html";
