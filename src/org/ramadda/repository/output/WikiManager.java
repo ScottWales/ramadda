@@ -90,6 +90,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
+    public static final String ATTR_DETAILS = "details";
+
 
     public static final String  ATTR_LINKRESOURCE = "linkresource";
     
@@ -892,10 +894,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
             List<Entry> children = new ArrayList<Entry>();
+            boolean details = Misc.getProperty(props, ATTR_DETAILS, false);
             children.add(entry);
             boolean[] haveBearingLines = { false };
             MapInfo   map = mapOutputHandler.getMap(request, children, sb,
-                              width, height, false, haveBearingLines);
+                              width, height, details, haveBearingLines);
 
             return sb.toString();
         } else if (include.equals(WIKI_PROP_MENU)) {
@@ -1373,7 +1376,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<String> links    = new ArrayList<String>();
             for (Entry child : children) {
                 String url;
-                if(linkResource && (child.isFile()||child.getResource().isUrl())) {
+                if(linkResource && (child.getTypeHandler().isType("link") || child.isFile()||child.getResource().isUrl())) {
                     url = child.getTypeHandler().getEntryResourceUrl(request, child);
                 } else {
                     url = request.entryUrl(

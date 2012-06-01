@@ -6245,6 +6245,10 @@ public class EntryManager extends RepositoryManager {
      */
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean full) {
+        if(entry.getResource().isUrl()) {
+            return entry.getResource().getPath();
+        }
+
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
         //For now use the full entry path
