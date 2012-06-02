@@ -775,6 +775,10 @@ public class Column implements DataTypes, Constants {
             return;
         }
         String stringValue = null;
+        //Don't export the password
+        if (isType(DATATYPE_PASSWORD)) {
+            return;
+        } 
         if (isType(DATATYPE_LATLON)) {
             stringValue = values[offset] + ";" + values[offset + 1];
         } else if (isType(DATATYPE_LATLONBBOX)) {
