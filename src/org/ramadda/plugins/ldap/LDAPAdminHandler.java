@@ -40,18 +40,12 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
     /** _more_          */
     private int version = 0;
 
-    /** ??? This is the default ldap port */
-    public static final int DEFAULT_PORT = 389;
-
     /** property id */
     public static final String LDAP_HANDLER_ID = "ldaphandler";
 
 
     /** property id */
-    public static final String PROP_LDAP_SERVER = "ldap.server";
-
-    /** property id */
-    public static final String PROP_LDAP_PORT = "ldap.port";
+    public static final String PROP_LDAP_URL = "ldap.url";
 
     /** property id */
     public static final String PROP_LDAP_USER_DIRECTORY =
@@ -66,13 +60,6 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
 
     /** property id */
     public static final String PROP_LDAP_PASSWORD = "ldap.password";
-
-
-    /** property label */
-    public static final String LABEL_LDAP_SERVER = "Server";
-
-    /** property label */
-    public static final String LABEL_LDAP_PORT = "Port";
 
     /** property label */
     public static final String LABEL_LDAP_USER_DIRECTORY = "User Directory";
@@ -89,20 +76,22 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
 
     /** list of property ids */
     public static final String[] PROPERTY_IDS = {
-        PROP_LDAP_SERVER, PROP_LDAP_PORT, PROP_LDAP_USER_DIRECTORY,
+        PROP_LDAP_URL, PROP_LDAP_USER_DIRECTORY,
         PROP_LDAP_GROUP_DIRECTORY, PROP_LDAP_ADMIN, PROP_LDAP_PASSWORD,
     };
 
     /** list of property labels */
     public static final String[] PROPERTY_LABELS = {
-        LABEL_LDAP_SERVER, LABEL_LDAP_PORT, LABEL_LDAP_USER_DIRECTORY,
+        "LDAP URL", LABEL_LDAP_USER_DIRECTORY,
         LABEL_LDAP_GROUP_DIRECTORY, LABEL_LDAP_ADMIN, LABEL_LDAP_PASSWORD,
     };
 
     /**
-     * ctor. The repository gets set after the ctor
+     * ctor. 
      */
-    public LDAPAdminHandler() {}
+    public LDAPAdminHandler(Repository repository) {
+        super(repository);
+    }
 
 
     /**
@@ -132,7 +121,10 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
      * @param blockId which section
      * @param sb form buffer to append to
      */
-    public void addToSettingsForm(String blockId, StringBuffer sb) {
+    @Override
+    public void addToAdminSettingsForm(String blockId, StringBuffer sb) {
+        //For now don't do this
+        if(true) return;
         //Are we in the access section
         if ( !blockId.equals(Admin.BLOCK_ACCESS)) {
             return;
@@ -189,7 +181,10 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
      *
      * @throws Exception On badness
      */
-    public void applySettingsForm(Request request) throws Exception {
+    @Override
+    public void applyAdminSettingsForm(Request request) throws Exception {
+        //For now don't do this
+        if(true) return;
         version++;
         for (int i = 0; i < PROPERTY_IDS.length; i++) {
             String prop  = PROPERTY_IDS[i];
@@ -207,20 +202,10 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
      *
      * @return the server
      */
-    public String getServer() {
-        return getRepository().getProperty(PROP_LDAP_SERVER, (String) null);
+    public String getLdapUrl() {
+        return getRepository().getProperty(PROP_LDAP_URL, (String) null);
     }
 
-    /**
-     * get the port
-     *
-     * @return the port
-     */
-    public int getPort() {
-        String value = getRepository().getProperty(PROP_LDAP_PORT,
-                           "" + DEFAULT_PORT).trim();
-        return new Integer(value).intValue();
-    }
 
     /**
      * _more_

@@ -31,6 +31,8 @@ import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserAuthenticator;
 import org.ramadda.repository.auth.UserAuthenticatorImpl;
 
+import org.ramadda.util.TTLCache;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -53,17 +55,21 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
     /** property name */
     private static final String PROP_GROUP_ADMIN = "ldap.group.admin";
 
+    /** default value for admin role */
+    private static final String DFLT_GROUP_ADMIN = "ramaddaadmin";
+
+    private static final String PROP_GROUP_ATTR = "ldap.group.attribute";
+
+    private static final String DFLT_GROUP_ATTR = "memberUid";
+
     /** property name */
     private static final String PROP_ATTR_GIVENNAME = "ldap.attr.givenname";
 
-    /** property name */
-    private static final String PROP_ATTR_SURNAME = "ldap.attr.surname";
-
-    /** default value for admin role */
-    private static final String DFLT_GROUP_ADMIN = "reposAdmin";
-
     /** default value for given name */
     private static final String DFLT_ATTR_GIVENNAME = "givenName";
+
+    /** property name */
+    private static final String PROP_ATTR_SURNAME = "ldap.attr.surname";
 
     /** default value for  surname */
     private static final String DFLT_ATTR_SURNAME = "sn";
@@ -74,29 +80,38 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
     /** _more_          */
     private int lastLDAPServerVersion = -1;
 
-
+    /** User cache. Keep in memory for 60 minutes */
+    private  TTLCache<String, User> userCache = new TTLCache<String,User>(60*60*1000);
 
     /**
      * constructor.
      */
     public LDAPUserAuthenticator() {
-        debug("created");
-
+        log("LDAPUserAuthenticator created");
     }
 
     /**
-     * _more_
+     * ctor
      *
-     * @param repository _more_
+     * @param repository the repository
      */
     public LDAPUserAuthenticator(Repository repository) {
         super(repository);
-        debug("created");
+        log("LDAPUserAuthenticator created");
+    }
+
+    public void log(String msg) {
+        System.err.println ("LDAP:" + msg);
+    }
+
+
+    public void debug(String msg) {
+        //        System.err.println ("LDAP:" + msg);
     }
 
     /**
-     * If not already created create and return the LDAPManager. If manager fails then log the error
-     * and return null
+     * If not already created then create and return the LDAPManager. 
+     * If manager fails then log the error and return null
      *
      * @return LDAPManager
      */
@@ -107,12 +122,9 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         //Check if the admin handler has changed its state
         if ((lastLDAPServerVersion != adminHandler.getVersion())
                 || (manager == null)) {
-            //Connection instance with ldap server. 
-            //It's necessary the admin user and password.
             try {
                 lastLDAPServerVersion = adminHandler.getVersion();
-                manager = LDAPManager.getInstance(adminHandler.getServer(),
-                        adminHandler.getPort(),
+                manager = LDAPManager.getInstance(adminHandler.getLdapUrl(),
                         adminHandler.getUserDirectory(),
                         adminHandler.getGroupDirectory(),
                         adminHandler.getAdminID(),
@@ -148,10 +160,13 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
     public User authenticateUser(Repository repository, Request request,
                                  StringBuffer extraLoginForm, String userId,
                                  String password) {
-        debug("authenticateUser: " + userId);
+        if(userId.length()==0) return null;
+        debug("authenticate user: " + userId);
         if ( !hasManager()) {
             return null;
         }
+
+        userCache.remove(userId);
         if (getManager().isValidUser(userId, password)) {
             return findUser(repository, userId);
         } else {
@@ -173,61 +188,73 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         if ( !hasManager()) {
             return null;
         }
+        if(userId.length()==0) return null;
         try {
+            User user = userCache.get(userId);
+            if(user!=null) return user;
             debug("findUser: " + userId);
-            debug("creating local user");
-
-            // List of groups the user belongs
-            List groupList = new LinkedList();
-            // Group name
-            String group = new String();
-            // List of user roles, defined by the user groups list
-            ArrayList<String> roles = new ArrayList<String>();
 
             // Hashtable with attributes names and their values
-            Hashtable userAttr = new Hashtable();
-            // List of attribute values
-            List attrValues = new ArrayList();
+            Hashtable<String,List<String>> userAttr =  getManager().getUserAttributes(userId);
 
-            userAttr = getManager().getUserAttributes(userId);
-
-            /*
-              NOTE: I moved the names of the givenname, admin role, etc, into the ldap.properties
-              file. The getProperty method looks up those values, if they are defined then return the value
-              else return the DFLT value
-            */
-
-
-            // Attribute givenName only have one value
-            attrValues =
+            List<String> values;
+            StringBuffer userName = new StringBuffer();
+            values  =
                 (ArrayList) userAttr.get(getProperty(PROP_ATTR_GIVENNAME,
-                    DFLT_ATTR_GIVENNAME));
-            String userName = (String) attrValues.get(0);
-            // Attribute sn only have one value
-            attrValues =
+                                                     DFLT_ATTR_GIVENNAME));
+            if(values!=null) {
+                userName.append(values.get(0));
+                userName.append(" ");
+            }
+            values =
                 (ArrayList) userAttr.get(getProperty(PROP_ATTR_SURNAME,
                     DFLT_ATTR_SURNAME));
-            String userSurname = (String) attrValues.get(0);
+            if(values!=null) {
+                userName.append(values.get(0));
+            }
+
+            if(userName.length()==0) {
+                userName.append(userId);
+            }
 
             // Create the user with admin priviligies if user is in group reposAdmin
             String adminGroup = getProperty(PROP_GROUP_ADMIN,
                                             DFLT_GROUP_ADMIN);
-            boolean isAdmin = getManager().userInGroup(userId, adminGroup);
-            User user = new User(userId, userName + " " + userSurname,
-                                 isAdmin);
+            boolean isAdmin = false;
+            List<String> roles = new ArrayList<String>();
+            //Get the list of groups 
+            String groupMemberAttribute = getProperty(PROP_GROUP_ATTR,
+                                                      DFLT_GROUP_ATTR);
 
-            groupList = getManager().getGroups(userName);
-            List     groups = new ArrayList(groupList);
-            Iterator iter   = groups.iterator();
-            while (iter.hasNext()) {
-                group = (String) iter.next();
-                roles.add(group);
+            List<String> groups =  getManager().getGroups(userId, groupMemberAttribute);
+            for(String group: groups) {
+                //Is this user a member of the ramadda admin group?
+                if(group.equals(adminGroup)) {
+                    isAdmin = true;
+                } else {
+                    roles.add(group);
+                }
             }
-            user.setRoles(roles);
-            return user;
+            user = new User(userId, userName.toString().trim(),
+                            isAdmin);
+            values  =
+                (ArrayList) userAttr.get("email");
+            if(values==null) {
+                values  =
+                    (ArrayList) userAttr.get("mail");
+            }
+            if(values!=null) {
+                user.setEmail(values.get(0));
+            }
 
-        } catch (NamingException ex) {
-            logError("LDAP Error: finding user", ex);
+            user.setRoles(roles);
+            userCache.put(userId, user);
+            return user;
+        } catch(javax.naming.NameNotFoundException nnfe) {
+            debug ("Could not find user: " + userId +" " + nnfe);
+            return null;
+        } catch (Exception exc) {
+            logError("LDAP Error: finding user", exc);
             return null;
         }
     }
@@ -241,6 +268,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      */
     @Override
     public List<String> getAllRoles() {
+        //Do nothing for now
         ArrayList<String> roles = new ArrayList<String>();
         return roles;
     }
