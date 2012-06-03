@@ -33,6 +33,7 @@ import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.InvalidNameException;
 import javax.naming.NameClassPair;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -97,17 +98,22 @@ public class LDAPManager {
         if(localContext == null) {
             localContext = getInitialContext(ldapUrl, username, password);
         }
-        //Try to connect.
+
+        //Try to connect with a dummy path
         try {
-            localContext.getAttributes("foobar");
-        } catch(NamingException ignoreThis) {
+            localContext.getAttributes("dummypath");
+        } catch(InvalidNameException ignoreThis) {
+            //            System.err.println ("Connection OK with dummy path");
         } catch(Exception badConnection) {
+            //            System.err.println ("bad connection:" + badConnection);
             //Maybe the connection got dropped so we'll try again
             localContext = null;
         } 
 
         if(localContext == null) {
+            //            System.err.println ("Trying again");
             localContext = getInitialContext(ldapUrl, username, password);
+            //            System.err.println ("OK");
         }
         theContext = localContext;
         return localContext;
@@ -263,13 +269,14 @@ public class LDAPManager {
      */
     public List<String> getGroups(String username, String groupMemberAttribute) throws NamingException {
         List<String> groups = new LinkedList<String>();
-        NamingEnumeration<NameClassPair> enums = getContext().list(groupsPath);
+        DirContext context = getContext();
+        NamingEnumeration<NameClassPair> enums = context.list(groupsPath);
         String[] searchAttributes = new String[]{groupMemberAttribute};
         while(enums.hasMoreElements()) {
             NameClassPair key = enums.nextElement();
             String id = key.getName();
             String groupId = getGroupCN(id);
-            Attributes attributes = getContext().getAttributes(getGroupDN(groupId),
+            Attributes attributes = context.getAttributes(getGroupDN(groupId),
                                                           searchAttributes);
             if (attributes == null) {
                 continue;
