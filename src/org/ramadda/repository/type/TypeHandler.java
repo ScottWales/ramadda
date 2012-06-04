@@ -1,5 +1,6 @@
 /*
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -149,7 +150,9 @@ public class TypeHandler extends RepositoryManager {
     public static final int MATCH_FALSE = 2;
 
 
-    public static final String PROP_CREATED_DISPLAY_MODE ="ramadda.created.display";
+    /** _more_ */
+    public static final String PROP_CREATED_DISPLAY_MODE =
+        "ramadda.created.display";
 
 
     /** _more_ */
@@ -1785,25 +1788,27 @@ public class TypeHandler extends RepositoryManager {
                             "title=\"View user profile\"");
 
 
-            String createdDisplayMode = getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,"all").trim();
+            String createdDisplayMode =
+                getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
+                                            "all").trim();
             boolean showCreated = true;
-            if(createdDisplayMode.equals("none")) {
+            if (createdDisplayMode.equals("none")) {
                 showCreated = false;
-            } else if(createdDisplayMode.equals("admin")) {
+            } else if (createdDisplayMode.equals("admin")) {
                 showCreated = request.getUser().getAdmin();
-            } else if(createdDisplayMode.equals("user")) {
+            } else if (createdDisplayMode.equals("user")) {
                 showCreated = !request.isAnonymous();
-            } else if(createdDisplayMode.equals("all")) {
+            } else if (createdDisplayMode.equals("all")) {
                 showCreated = true;
             } else {
                 showCreated = false;
             }
 
-            if(showCreated) {
+            if (showCreated) {
                 sb.append(formEntry(request, msgLabel("Created by"),
                                     userSearchLink + " @ "
-                                    + formatDate(request, entry.getCreateDate(),
-                                                 entry)));
+                                    + formatDate(request,
+                                        entry.getCreateDate(), entry)));
             }
 
             Resource resource      = entry.getResource();
@@ -1938,8 +1943,8 @@ public class TypeHandler extends RepositoryManager {
             if (showMap) {
                 if (entry.hasLocationDefined()) {
                     sb.append(formEntry(request, msgLabel("Location"),
-                                        entry.getSouth() + "/"
-                                        + entry.getEast()));
+                                        Misc.format(entry.getSouth()) + "/"
+                                        + Misc.format(entry.getEast())));
                 } else if (entry.hasAreaDefined()) {
                     /*
                     String img =
@@ -2015,7 +2020,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**
-     * 
+     *
      *
      * @param request _more_
      * @param entry _more_
@@ -2027,6 +2032,7 @@ public class TypeHandler extends RepositoryManager {
     public String getResourcePath(Request request, Entry entry)
             throws Exception {
         Resource resource = entry.getResource();
+
         return resource.getPath();
     }
 
@@ -2312,9 +2318,10 @@ public class TypeHandler extends RepositoryManager {
         if (request.getUser().getAdmin()) {
             sb.append(formEntry(request, msgLabel("Owner"),
                                 HtmlUtil.input(ARG_USER_ID, ((entry != null)
-                                                             ? entry.getUser().getId()
-                                                             : ""), HtmlUtil.SIZE_20) +" " + msg("Optionally specify an owner")));
-         }
+                    ? entry.getUser().getId()
+                    : ""), HtmlUtil.SIZE_20) + " "
+                    + msg("Optionally specify an owner")));
+        }
 
     }
 
@@ -2427,7 +2434,7 @@ public class TypeHandler extends RepositoryManager {
         if (okToShowInForm(entry, ARG_ALTITUDE, false)) {
             String altitude = "";
             if ((entry != null) && entry.hasAltitude()) {
-                altitude = "" + entry.getAltitude();
+                altitude = "" + Misc.format(entry.getAltitude());
             }
             sb.append(formEntry(request, "Altitude:",
                                 HtmlUtil.input(ARG_ALTITUDE, altitude,
@@ -2437,10 +2444,11 @@ public class TypeHandler extends RepositoryManager {
             String altitudeBottom = "";
             if (entry != null) {
                 if (entry.hasAltitudeTop()) {
-                    altitudeTop = "" + entry.getAltitudeTop();
+                    altitudeTop = "" + Misc.format(entry.getAltitudeTop());
                 }
                 if (entry.hasAltitudeBottom()) {
-                    altitudeBottom = "" + entry.getAltitudeBottom();
+                    altitudeBottom =
+                        "" + Misc.format(entry.getAltitudeBottom());
                 }
             }
             sb.append(formEntry(request, "Altitude Range:",
@@ -2671,9 +2679,14 @@ public class TypeHandler extends RepositoryManager {
             if (showLocalFile) {
                 StringBuffer localFilesSB = new StringBuffer();
                 localFilesSB.append(HtmlUtil.formTable());
-                localFilesSB.append(HtmlUtil.formEntry(msgLabel("File or directory"), HtmlUtil.input(ARG_SERVERFILE, "", size)+" " +
-                                                       msg("Note: If a directory then all files will be added")));
-                localFilesSB.append(HtmlUtil.formEntry(msgLabel("Pattern"), HtmlUtil.input(ARG_SERVERFILE_PATTERN, "", HtmlUtil.SIZE_10)+" (regexp)"));
+                localFilesSB.append(
+                    HtmlUtil.formEntry(
+                        msgLabel("File or directory"),
+                        HtmlUtil.input(ARG_SERVERFILE, "", size) + " "
+                        + msg("Note: If a directory then all files will be added")));
+                localFilesSB.append(HtmlUtil.formEntry(msgLabel("Pattern"),
+                        HtmlUtil.input(ARG_SERVERFILE_PATTERN, "",
+                                       HtmlUtil.SIZE_10) + " (regexp)"));
                 localFilesSB.append(HtmlUtil.formTableClose());
                 tabTitles.add(msg("Files on Server"));
                 tabContent.add(HtmlUtil.inset(localFilesSB.toString(), 8));
@@ -2695,7 +2708,7 @@ public class TypeHandler extends RepositoryManager {
             String unzipWidget =
                 HtmlUtil.checkbox(ARG_FILE_UNZIP) + HtmlUtil.space(1)
                 + msg("Unzip archive")
-                + HtmlUtil.checkbox(ARG_FILE_PRESERVEDIRECTORY,"true", true)
+                + HtmlUtil.checkbox(ARG_FILE_PRESERVEDIRECTORY, "true", true)
                 + HtmlUtil.space(1) + msg("Make folders from archive");
 
 
@@ -2708,10 +2721,11 @@ public class TypeHandler extends RepositoryManager {
 
             */
 
-            String datePatternWidget = msgLabel("Date pattern")
-                                       + HtmlUtil.space(1)
-                + HtmlUtil.input(ARG_DATE_PATTERN, request.getString(ARG_DATE_PATTERN,"")) 
-                + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
+            String datePatternWidget =
+                msgLabel("Date pattern") + HtmlUtil.space(1)
+                + HtmlUtil.input(ARG_DATE_PATTERN,
+                    request.getString(ARG_DATE_PATTERN,
+                        "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
 
 
 
@@ -2925,9 +2939,9 @@ public class TypeHandler extends RepositoryManager {
                                      + msg("Match exactly");
         String extra = HtmlUtil.p() + searchExact + searchMetaData;
         if (getDatabaseManager().supportsRegexp()) {
-            extra = HtmlUtil.checkbox(
-                ARG_ISREGEXP, "true", request.get(ARG_ISREGEXP, false)) + " "
-                    + msg("Use regular expression");
+            extra = HtmlUtil.checkbox(ARG_ISREGEXP, "true",
+                                      request.get(ARG_ISREGEXP, false)) + " "
+                                          + msg("Use regular expression");
 
             extra = HtmlUtil.makeToggleInline(msg("More..."), extra, false);
         } else {
@@ -3857,7 +3871,6 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param request _more_
-     * @param searchCriteria _more_
      *
      * @return _more_
      */
@@ -4097,7 +4110,6 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param isNew _more_
      * @param typeInserts _more_
-     * @return _more_
      */
     public void getInsertSql(boolean isNew,
                              List<TypeInsertInfo> typeInserts) {

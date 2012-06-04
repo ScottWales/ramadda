@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -63,17 +64,19 @@ import java.util.List;
 public class MapManager extends RepositoryManager {
 
 
-    /** _more_          */
+    /** default height for GE plugin */
     public static int DFLT_EARTH_HEIGHT = 500;
 
-
-    /** _more_ */
+    /** default width for the entries list */
     public static final int EARTH_ENTRIES_WIDTH = 150;
 
+    /** GoogleEarth keys */
+    private List<List<String>> geKeys;
+
     /**
-     * _more_
+     * Create a new MapManager for the repository
      *
-     * @param repository _more_
+     * @param repository  the repository
      */
     public MapManager(Repository repository) {
         super(repository);
@@ -81,18 +84,19 @@ public class MapManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Should maps be shown?
      *
-     * @return _more_
+     * @return  true if okay to show maps
+     * @deprecated
      */
     public boolean shouldShowMaps() {
         return showMaps();
     }
 
     /**
-     * _more_
+     * Should maps be shown?
      *
-     * @return _more_
+     * @return the show maps property value
      */
     public boolean showMaps() {
         return getRepository().getProperty(PROP_SHOWMAP, true);
@@ -103,12 +107,12 @@ public class MapManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Create a map
      *
-     * @param request _more_
-     * @param forSelection _more_
+     * @param request      the Request
+     * @param forSelection true if map used for selection
      *
-     * @return _more_
+     * @return a map information holder
      */
     public MapInfo createMap(Request request, boolean forSelection) {
         return createMap(request, MapInfo.DFLT_WIDTH, MapInfo.DFLT_HEIGHT,
@@ -117,14 +121,14 @@ public class MapManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Create a map
      *
-     * @param request _more_
-     * @param width _more_
-     * @param height _more_
-     * @param forSelection _more_
+     * @param request      the Request
+     * @param width        map width
+     * @param height       map height
+     * @param forSelection true if map used for selection
      *
-     * @return _more_
+     * @return a map information holder
      */
     public MapInfo createMap(Request request, int width, int height,
                              boolean forSelection) {
@@ -168,24 +172,21 @@ public class MapManager extends RepositoryManager {
     }
 
 
-    /** _more_ */
-    private List<List<String>> geKeys;
-
     /**
-     * _more_
+     * Apply the admin configuration
      *
-     * @param request _more_
+     * @param request the Request
      */
     public void applyAdminConfig(Request request) {
         geKeys = null;
     }
 
     /**
-     * _more_
+     * Is GoogleEarth plugin enabled?
      *
-     * @param request _more_
+     * @param request  the Request
      *
-     * @return _more_
+     * @return true if enabled
      */
     public boolean isGoogleEarthEnabled(Request request) {
         //Exclude iphone, android and linux
@@ -196,15 +197,16 @@ public class MapManager extends RepositoryManager {
         if (userAgent.indexOf("linux") >= 0) {
             return false;
         }
+
         return getGoogleMapsKey(request) != null;
     }
 
     /**
-     * _more_
+     * Get the GoogleMaps key for the Request
      *
-     * @param request _more_
+     * @param request the Request
      *
-     * @return _more_
+     * @return  a list of GE keys
      */
     public String[] getGoogleMapsKey(Request request) {
         if (geKeys == null) {
@@ -241,6 +243,7 @@ public class MapManager extends RepositoryManager {
                 }
             }
         }
+
         return null;
     }
 
@@ -248,17 +251,17 @@ public class MapManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the GoogleEarth plugin html
      *
-     * @param request _more_
-     * @param sb _more_
-     * @param width _more_
-     * @param height _more_
-     * @param url _more_
+     * @param request   The Request
+     * @param sb        StringBuffer for passing strings
+     * @param width     width of GE plugin
+     * @param height    height of GE plugin
+     * @param url       the KML URL
      *
-     * @return _more_
+     * @return  the html for the plugin
      *
-     * @throws Exception _more_
+     * @throws Exception  problem creating the HTML
      */
     public String getGoogleEarthPlugin(Request request, Appendable sb,
                                        int width, int height, String url)
@@ -267,6 +270,7 @@ public class MapManager extends RepositoryManager {
         String[] keyAndOther = getGoogleMapsKey(request);
         if (keyAndOther == null) {
             sb.append("Google Earth is not enabled");
+
             return null;
         }
 
@@ -334,42 +338,46 @@ public class MapManager extends RepositoryManager {
                                   + ((url == null)
                                      ? "null"
                                      : HtmlUtil.squote(url)) + ");\n"));
+
         return id;
     }
 
 
     /**
-     * _more_
+     * Get the HTML for the entries
      *
-     * @param request _more_
-     * @param entries _more_
-     * @param sb _more_
-     * @param width _more_
-     * @param height _more_
+     * @param request      the Request
+     * @param entries      the Entrys
+     * @param sb           StringBuffer to pass info back
+     * @param width        width of GE plugin
+     * @param height       height of GE plugin
+     * @param includeList  true to include a list of entries
+     * @param justPoints   true to just make the points
      *
-     * @throws Exception _more_
+     * @throws Exception problem creating the plugin
      */
     public void getGoogleEarth(Request request, List<Entry> entries,
-                               StringBuffer sb, int width, int height, boolean includeList, boolean justPoints)
+                               StringBuffer sb, int width, int height,
+                               boolean includeList, boolean justPoints)
             throws Exception {
 
 
 
         StringBuffer mapSB = new StringBuffer();
 
-        String id = getMapManager().getGoogleEarthPlugin(request, mapSB,
-                                                         width, height, null);
+        String       id = getMapManager().getGoogleEarthPlugin(request, mapSB,
+                        width, height, null);
 
-        StringBuffer js         = new StringBuffer();
-        List<String> categories = new ArrayList<String>();
-        Hashtable<String, StringBuffer> catMap = new Hashtable<String,
-            StringBuffer>();
+        StringBuffer                    js         = new StringBuffer();
+        List<String>                    categories = new ArrayList<String>();
+        Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
+                                                     StringBuffer>();
         int kmlCnt = 0;
         for (Entry entry : entries) {
             String kmlUrl = KmlOutputHandler.getKmlUrl(request, entry);
             if ((kmlUrl == null)
-                && !(entry.hasLocationDefined()
-                     || entry.hasAreaDefined())) {
+                    && !(entry.hasLocationDefined()
+                         || entry.hasAreaDefined())) {
                 continue;
             }
 
@@ -380,7 +388,7 @@ public class MapManager extends RepositoryManager {
                 categories.add(category);
             }
             String call = id + ".entryClicked("
-                + HtmlUtil.squote(entry.getId()) + ");";
+                          + HtmlUtil.squote(entry.getId()) + ");";
             catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_NAV)
                                        + "" /*HtmlUtil.onMouseClick(call)*/));
@@ -389,20 +397,20 @@ public class MapManager extends RepositoryManager {
             if (kmlUrl != null) {
                 visible = (kmlCnt++ < 3);
             }
-            catSB.append("<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
+            catSB.append(
+                "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
             catSB.append(HtmlUtil.checkbox("tmp", "true", visible,
-                                           HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;")
-                                           + HtmlUtil.id("googleearth.visibility." + entry.getId())
-                                           + HtmlUtil.onMouseClick(id + ".togglePlacemarkVisible("
-                                                                   + HtmlUtil.squote(entry.getId()) + ")")));
+                    HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;")
+                    + HtmlUtil.id("googleearth.visibility." + entry.getId())
+                    + HtmlUtil.onMouseClick(id + ".togglePlacemarkVisible("
+                        + HtmlUtil.squote(entry.getId()) + ")")));
 
             String iconUrl = getEntryManager().getIconUrl(request, entry);
             catSB.append(
-                         HtmlUtil.href(
-                                       getEntryManager().getEntryURL(request, entry),
-                                       HtmlUtil.img(
-
-                                                    iconUrl, msg("Click to view entry details")) +" " + entry.getName()));
+                HtmlUtil.href(
+                    getEntryManager().getEntryURL(request, entry),
+                    HtmlUtil.img(iconUrl, msg("Click to view entry details"))
+                    + " " + entry.getName()));
             catSB.append("</td><td align=right>");
             catSB.append(HtmlUtil.space(2));
             double lat = entry.getSouth();
@@ -418,20 +426,22 @@ public class MapManager extends RepositoryManager {
                                        HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
             */
             catSB.append(
-                         HtmlUtil.href(
-                                       "javascript:" + call, HtmlUtil.img(getRepository().iconUrl(ICON_MAP_NAV),
-                                                                          "View entry"),
-                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
+                HtmlUtil.href(
+                    "javascript:" + call,
+                    HtmlUtil.img(
+                        getRepository().iconUrl(ICON_MAP_NAV),
+                        "View entry"), HtmlUtil.cssClass(
+                            CSS_CLASS_EARTH_LINK)));
             catSB.append("</td></tr></table>");
             catSB.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
 
-            String  pointsString = "null";
-            boolean hasPolygon   = false;
+            String         pointsString = "null";
+            boolean        hasPolygon   = false;
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
             for (Metadata metadata : metadataList) {
                 if ( !metadata.getType().equals(
-                                                MetadataHandler.TYPE_SPATIAL_POLYGON)) {
+                        MetadataHandler.TYPE_SPATIAL_POLYGON)) {
                     continue;
                 }
                 List<double[]> points   = new ArrayList<double[]>();
@@ -459,14 +469,15 @@ public class MapManager extends RepositoryManager {
             }
 
             //            hasPolygon = false;
-            if ((kmlUrl == null) && !hasPolygon && entry.hasAreaDefined() && !justPoints) {
+            if ((kmlUrl == null) && !hasPolygon && entry.hasAreaDefined()
+                    && !justPoints) {
                 pointsString = "new Array(" + entry.getNorth() + ","
-                    + entry.getWest() + "," + entry.getNorth()
-                    + "," + entry.getEast() + ","
-                    + entry.getSouth() + "," + entry.getEast()
-                    + "," + entry.getSouth() + ","
-                    + entry.getWest() + "," + entry.getNorth()
-                    + "," + entry.getWest() + ")";
+                               + entry.getWest() + "," + entry.getNorth()
+                               + "," + entry.getEast() + ","
+                               + entry.getSouth() + "," + entry.getEast()
+                               + "," + entry.getSouth() + ","
+                               + entry.getWest() + "," + entry.getNorth()
+                               + "," + entry.getWest() + ")";
             }
 
             String name = entry.getName();
@@ -477,7 +488,7 @@ public class MapManager extends RepositoryManager {
             name = name.replace("'", "\\'");
 
             String desc = HtmlUtil.img(iconUrl)
-                + getEntryManager().getEntryLink(request, entry);
+                          + getEntryManager().getEntryLink(request, entry);
             desc = desc.replace("\r", " ");
             desc = desc.replace("\n", " ");
             desc = desc.replace("\"", "\\\"");
@@ -499,29 +510,29 @@ public class MapManager extends RepositoryManager {
             String toTime   = "null";
             if (entry.getCreateDate() != entry.getStartDate()) {
                 fromTime = HtmlUtil.squote(
-                                           DateUtil.getTimeAsISO8601(entry.getStartDate()));
+                    DateUtil.getTimeAsISO8601(entry.getStartDate()));
                 if (entry.getStartDate() != entry.getEndDate()) {
                     toTime = HtmlUtil.squote(
-                                             DateUtil.getTimeAsISO8601(entry.getEndDate()));
+                        DateUtil.getTimeAsISO8601(entry.getEndDate()));
                 }
             }
 
 
             js.append(
-                      HtmlUtil.call(
-                                    id + ".addPlacemark",
-                                    HtmlUtil.comma(
-                                                   HtmlUtil.squote(entry.getId()),
-                                                   HtmlUtil.squote(name), HtmlUtil.squote(desc),
-                                                   "" + lat, "" + lon) + ","
+                HtmlUtil.call(
+                    id + ".addPlacemark",
+                    HtmlUtil.comma(
+                        HtmlUtil.squote(entry.getId()),
+                            HtmlUtil.squote(name), HtmlUtil.squote(desc),
+                                "" + lat, "" + lon) + ","
                                     + HtmlUtil.squote(detailsUrl) + ","
-                                    + HtmlUtil.squote(
-                                                      request.getAbsoluteUrl(
-                                                                             iconUrl)) + ","
-                                    + pointsString + ","
-                                    + kmlUrl + ","
-                                    + fromTime + ","
-                                    + toTime));
+                                        + HtmlUtil.squote(
+                                            request.getAbsoluteUrl(
+                                                iconUrl)) + ","
+                                                    + pointsString + ","
+                                                        + kmlUrl + ","
+                                                            + fromTime + ","
+                                                                + toTime));
             js.append("\n");
         }
 
@@ -530,21 +541,24 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        if(includeList) {
+        if (includeList) {
             sb.append(
-                      "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
+                "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
             sb.append("<td width=\"250\" style=\"max-width:250px;\">");
-            sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                    HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES)
-                                    + HtmlUtil.style("max-height:" + height
-                                                     + "px; overflow-y: auto;")));
+            sb.append(
+                HtmlUtil.open(
+                    HtmlUtil.TAG_DIV,
+                    HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES)
+                    + HtmlUtil.style(
+                        "max-height:" + height + "px; overflow-y: auto;")));
 
-            boolean doToggle = (entries.size() > 5) && (categories.size() > 1);
+            boolean doToggle = (entries.size() > 5)
+                               && (categories.size() > 1);
             for (String category : categories) {
                 StringBuffer catSB = catMap.get(category);
                 if (doToggle) {
                     sb.append(HtmlUtil.makeShowHideBlock(category,
-                                                         catSB.toString(), true));
+                            catSB.toString(), true));
                 } else {
                     sb.append(HtmlUtil.b(category));
                     sb.append(HtmlUtil.br());
@@ -557,7 +571,7 @@ public class MapManager extends RepositoryManager {
         }
         sb.append(mapSB);
         sb.append(HtmlUtil.script(js.toString()));
-        if(includeList) {
+        if (includeList) {
             sb.append("</td></tr></table>");
         }
 
@@ -565,14 +579,14 @@ public class MapManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Make the info bubble for the map popups
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request   the Request
+     * @param entry     the Entry
      *
-     * @return _more_
+     * @return  the HTML for the popup
      *
-     * @throws Exception _more_
+     * @throws Exception   problem getting the entry info
      */
     public String makeInfoBubble(Request request, Entry entry)
             throws Exception {
@@ -588,7 +602,7 @@ public class MapManager extends RepositoryManager {
         List<String> urls = new ArrayList<String>();
         getMetadataManager().getThumbnailUrls(request, entry, urls);
         boolean isImage = entry.getResource().isImage();
-        if(!isImage && urls.size() > 0) {
+        if ( !isImage && (urls.size() > 0)) {
             info.append("<tr><td colspan=2>"
                         + HtmlUtil.img(urls.get(0), "", " width=300 ")
                         + "</td></tr>");
@@ -603,7 +617,7 @@ public class MapManager extends RepositoryManager {
                                       + getStorageManager().getFileTail(
                                           entry), ARG_ENTRYID, entry.getId(),
                                               ARG_IMAGEWIDTH, "300"));
-            info.append(HtmlUtil.img(thumbUrl, "", ""));
+            info.append(HtmlUtil.center(HtmlUtil.img(thumbUrl, "", "")));
 
         }
 
