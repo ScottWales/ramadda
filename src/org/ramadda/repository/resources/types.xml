@@ -28,8 +28,12 @@
 -->
 
 
+
   <type name="homepage"  description="Home Page" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
      <property name="icon" value="/icons/user.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
    </type>
 
 
