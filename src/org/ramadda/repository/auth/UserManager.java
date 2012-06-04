@@ -2791,7 +2791,10 @@ public class UserManager extends RepositoryManager {
         List<String> roles = new ArrayList<String>(Misc.toList(roleArray));
 
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
-            roles.addAll(userAuthenticator.getAllRoles());
+            List<String> authenticatorRoles = userAuthenticator.getAllRoles();
+            if(authenticatorRoles!=null) {
+                roles.addAll(authenticatorRoles);
+            }
         }
 
         roles.add(0, ROLE_ANY);
