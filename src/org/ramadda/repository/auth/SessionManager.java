@@ -123,6 +123,11 @@ public class SessionManager extends RepositoryManager {
     }
 
 
+    public void deleteAllSessions() throws Exception {
+        sessionMap = new Hashtable<String, Session>();
+    }
+
+
     /**
      * _more_
      *

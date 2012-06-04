@@ -602,6 +602,11 @@ public class User {
      */
     public boolean canEditSettings() {
         return !(getAnonymous() || getIsGuest() || !getIsLocal());
+        //        return !(getAnonymous() || getIsGuest());
+    }
+
+    public boolean canEditFavorites() {
+        return !(getAnonymous() || getIsGuest());
     }
 
 
@@ -611,9 +616,12 @@ public class User {
      * @return _more_
      */
     public boolean canChangePassword() {
-        return canEditSettings() && getCanChangePassword();
+        return getIsLocal() && canEditSettings() && getCanChangePassword();
     }
 
+    public boolean canChangeNameAndEmail() {
+        return getIsLocal() && canEditSettings();
+    }
 
     /**
      *  Set the Favorites property.

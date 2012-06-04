@@ -128,6 +128,12 @@ public class UserManager extends RepositoryManager {
             getRepositoryBase().URL_USER_CART,
             getRepositoryBase().URL_USER_MONITORS });
 
+    protected List<RequestUrl> remoteUserUrls =
+        RepositoryUtil.toList(new RequestUrl[] {
+            getRepositoryBase().URL_USER_HOME,
+            getRepositoryBase().URL_USER_CART,
+            getRepositoryBase().URL_USER_MONITORS });
+
 
     /** urls to use with no user */
     protected List<RequestUrl> anonUserUrls =
@@ -518,6 +524,9 @@ public class UserManager extends RepositoryManager {
         return findUser(id, false);
     }
 
+    private static final boolean TESTAUTH  = false;
+
+
     /**
      * _more_
      *
@@ -538,6 +547,17 @@ public class UserManager extends RepositoryManager {
             //            System.err.println ("got from user map:" + id +" " + user);
             return user;
         }
+
+        if(TESTAUTH) {
+            for (UserAuthenticator userAuthenticator : userAuthenticators) {
+                user = userAuthenticator.findUser(getRepository(), id);
+                if (user != null) {
+                    user.setIsLocal(false);
+                    return user;
+                }
+            }
+        }
+
         Statement statement =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
                                         Tables.USERS.NAME,
@@ -549,6 +569,7 @@ public class UserManager extends RepositoryManager {
             for (UserAuthenticator userAuthenticator : userAuthenticators) {
                 user = userAuthenticator.findUser(getRepository(), id);
                 if (user != null) {
+                    user.setIsLocal(false);
                     break;
                 }
             }
@@ -903,9 +924,11 @@ public class UserManager extends RepositoryManager {
             throws Exception {
         //        System.err.println ("User:" + user);
         sb.append(HtmlUtil.formTable());
-        sb.append(formEntry(request, msgLabel("Name"),
-                            HtmlUtil.input(ARG_USER_NAME, user.getName(),
-                                           HtmlUtil.SIZE_40)));
+        if(user.canChangeNameAndEmail()) {
+            sb.append(formEntry(request, msgLabel("Name"),
+                                HtmlUtil.input(ARG_USER_NAME, user.getName(),
+                                               HtmlUtil.SIZE_40)));
+        }
         if (includeAdmin) {
             if ( !request.getUser().getAdmin()) {
                 throw new IllegalArgumentException("Need to be admin");
@@ -940,9 +963,11 @@ public class UserManager extends RepositoryManager {
             sb.append(formEntryTop(request, msgLabel("Roles"), roleEntry));
         }
 
-        sb.append(formEntry(request, msgLabel("Email"),
-                            HtmlUtil.input(ARG_USER_EMAIL, user.getEmail(),
-                                           HtmlUtil.SIZE_40)));
+        if(user.canChangeNameAndEmail()) {
+            sb.append(formEntry(request, msgLabel("Email"),
+                                HtmlUtil.input(ARG_USER_EMAIL, user.getEmail(),
+                                               HtmlUtil.SIZE_40)));
+        }
 
         List<TwoFacedObject> templates =
             getPageHandler().getTemplateSelectList();
@@ -1841,7 +1866,6 @@ public class UserManager extends RepositoryManager {
     }
 
 
-
     /**
      * _more_
      *
@@ -1849,10 +1873,14 @@ public class UserManager extends RepositoryManager {
      * @param sb _more_
      */
     public void addUserHeader(Request request, StringBuffer sb) {
-        List<RequestUrl> links = !request.getUser().canEditSettings()
-                                 ? anonUserUrls
-                                 : userUrls;
-
+        User user = request.getUser();
+        boolean useAnon  = user.getAnonymous() || user.getIsGuest();
+        List<RequestUrl> links = userUrls;
+        if(user.getAnonymous() || user.getIsGuest()) {
+            links = anonUserUrls;
+        } else if(!user.getIsLocal()) {
+            links = remoteUserUrls;
+        }
         sb.append(getRepository().makeHeader(request, links, ""));
     }
 
@@ -1951,7 +1979,7 @@ public class UserManager extends RepositoryManager {
         String message = "";
         User   user    = request.getUser();
 
-        if ( !request.getUser().canEditSettings()) {
+        if ( !request.getUser().canEditFavorites()) {
             return addHeader(
                 request,
                 new Result(
@@ -2017,7 +2045,7 @@ public class UserManager extends RepositoryManager {
             throw new IllegalArgumentException(
                 "Need to be logged in to add favorites");
         }
-        if ( !request.getUser().canEditSettings()) {
+        if ( !request.getUser().canEditFavorites()) {
             throw new IllegalArgumentException("Cannot add favorites");
         }
 
@@ -2479,7 +2507,6 @@ public class UserManager extends RepositoryManager {
     public Result processLogin(Request request) throws Exception {
 
 
-
         if ( !canDoLogin(request)) {
             return new Result(
                 msg("Login"),
@@ -2516,14 +2543,23 @@ public class UserManager extends RepositoryManager {
                 }
                 getDatabaseManager().closeAndReleaseConnection(statement);
 
+                if(TESTAUTH) {
+                    user = null;
+                }
+
                 //Check  the authenticators
                 if (user == null) {
+                    //For testing - we can specify a ldap:... user name to force connecting through ldap
+                    if(name.startsWith("ldap:")) {
+                        name = name.substring(5);
+                    }
                     for (UserAuthenticator userAuthenticator :
                             userAuthenticators) {
                         user = userAuthenticator.authenticateUser(
                             getRepository(), request, loginFormExtra, name,
                             password);
                         if (user != null) {
+                            user.setIsLocal(false);
                             break;
                         }
                     }
