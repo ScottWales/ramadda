@@ -69,7 +69,16 @@ Alternatively, you can run RAMADDA with the command line argument:
 </faqitem>
 
 <faqitem cat="Administration" q="I forgot the administrator password and cannot access RAMADDA. How do I login?" >
-You can specify an administrator user id and password from the command line when starting RAMADDA.
+
+The easiest way is to set a username/password  in the repository.properties file in the 
+RAMADDA home directory. Just add:<pre>
+ramadda.admin=userid:password
+</pre>
+and then restart RAMADDA. This sets the password for the given userid.
+Note: you should remove this entry once you have reset your password.
+
+<p>
+You can also specify an administrator user id and password from the command line when starting RAMADDA.
 If you are running RAMADDA stand alone then just provide the arguments:<pre>
 -admin &lt;user id&gt; &lt;password&gt;
 </pre>
@@ -83,15 +92,19 @@ that are processed by RAMADDA.
     &lt;param-value&gt;-admin,userid,password&lt;/param-value&gt;
 </pre>
 
-<p>
-You can also set a username/password  in the repository.properties file in the RAMADDA home directory. Just add:<pre>
-ramadda.admin=userid:password
-</pre>
-and then restart RAMADDA. This sets the password for the given userid.
-Note: you should remove this entry once you have reset your password.
 </faqitem>
 
 
+<faqitem cat="Administration" id="hostname" q="I set the hostname to an incorrect hostname. Now I can't login?" >
+Make a &lt;anyname&gt;.properties that contains:
+<pre>
+override.ramadda.hostname=&lt;good host name&gt;
+</pre>
+and place it in your ramadda home directory or plugins directory and restart ramadda. 
+Once you are logged in go to the Admin Settings page and change the hostname then remove
+the properties file.
+<p>
+In general, you can override any property that has been set by defining a property with the "override." prefix.
 
 <faqitem cat="Administration" id="email" q="How do I configure RAMADDA to send email?" >
 RAMADDA can send email for both the password reset process and for monitoring new entries.
