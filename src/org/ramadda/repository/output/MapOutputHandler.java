@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -80,13 +81,13 @@ import java.util.zip.*;
 public class MapOutputHandler extends OutputHandler {
 
 
-    /** _more_ */
+    /** Map output type */
     public static final OutputType OUTPUT_MAP =
         new OutputType("Coverage Map", "map.map",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 
-    /** _more_ */
+    /** GoogleEarth output type */
     public static final OutputType OUTPUT_GEMAP =
         new OutputType("Google Earth", "map.gemap",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -94,12 +95,12 @@ public class MapOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create a MapOutputHandler
      *
      *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
+     * @param repository  the repository
+     * @param element     the Element
+     * @throws Exception  problem generating handler
      */
     public MapOutputHandler(Repository repository, Element element)
             throws Exception {
@@ -113,14 +114,13 @@ public class MapOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the entry links
      *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
+     * @param request  the Request
+     * @param state    the repository State
+     * @param links    the links
      *
-     *
-     * @throws Exception _more_
+     * @throws Exception  problem creating links
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -128,6 +128,7 @@ public class MapOutputHandler extends OutputHandler {
         for (Entry entry : state.getAllEntries()) {
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 ok = true;
+
                 break;
             }
         }
@@ -143,15 +144,15 @@ public class MapOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output the entry
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request      the Request
+     * @param outputType   the type of output
+     * @param entry        the Entry to output
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception  problem outputting entry
      */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
@@ -161,31 +162,33 @@ public class MapOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
 
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1, true, false);
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1,
+                                           true, false);
+
             return makeLinksResult(request, msg("Google Earth"), sb,
                                    new State(entry));
         }
 
-        MapInfo map = getMap(request, entriesToUse, sb, 700, 500,
-                             true,
-                             new boolean[] { false });
+        MapInfo map = getMap(request, entriesToUse, sb, 700, 500, true,
+                             new boolean[] { false }, false);
+
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
     }
 
 
 
     /**
-     * _more_
+     * Output a group
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request      The Request
+     * @param outputType   the type of output
+     * @param group        the group Entry
+     * @param subGroups    the subgroups
+     * @param entries      The list of Entrys
      *
-     * @return _more_
+     * @return  the resule
      *
-     * @throws Exception _more_
+     * @throws Exception    problem on output
      */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
@@ -195,111 +198,153 @@ public class MapOutputHandler extends OutputHandler {
         entriesToUse.addAll(entries);
         StringBuffer sb = new StringBuffer();
         if (entriesToUse.size() == 0) {
-            sb.append(HtmlUtil.b(msg("No entries")) +HtmlUtil.p());
+            sb.append(HtmlUtil.b(msg("No entries")) + HtmlUtil.p());
+
             return makeLinksResult(request, msg("Map"), sb,
                                    new State(group, subGroups, entries));
         }
 
         showNext(request, subGroups, entries, sb);
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1,true, false);
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1,
+                                           true, false);
+
             return makeLinksResult(request, msg("Google Earth"), sb,
                                    new State(group));
         }
 
 
         boolean[] haveBearingLines = { false };
-        StringBuffer mapBuff = new StringBuffer();
-        MapInfo map = getMap(request, entriesToUse, mapBuff, 700, 500,
-                             false, 
-                             haveBearingLines);
+        MapInfo   map = getMap(request, entriesToUse, sb, 700, 500, false,
+                             haveBearingLines, true);
 
-        StringBuffer entryBuff=  new StringBuffer();
-        for (Entry entry : entriesToUse) {
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                entryBuff.append("<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
-                entryBuff.append("<td>");
-                String iconUrl = getEntryManager().getIconUrl(request, entry);
-                entryBuff.append(
-                          HtmlUtil.href(
-                                        getEntryManager().getEntryURL(request, entry),
-                                       HtmlUtil.img(
-                                                    iconUrl, msg("Click to view entry details")) +" " + entry.getName()));
-                entryBuff.append("</td><td align=right>");
-                entryBuff.append(HtmlUtil.href("javascript:" + map.getVariableName()
-                                        + ".hiliteMarker(" + sqt(entry.getId()) + ");", 
-                                        HtmlUtil.img(getRepository().iconUrl(ICON_MAP_NAV),
-                                                     "View entry")));
-                entryBuff.append("</td></tr></table>");
-            }
-        }
-
-
-
-        sb.append(
-            "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
-        sb.append("<td width=\"250\">");
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.style("max-width:250px; overflow-x: auto;  overflow-y: auto; max-height:" + map.getHeight())));
-        sb.append(entryBuff);
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
-        sb.append("</td>");
-        sb.append("<td>");
-        sb.append(mapBuff);
-        sb.append("</td>");
-        sb.append("</tr></table>");
         return makeLinksResult(request, msg("Map"), sb,
                                new State(group, subGroups, entries));
     }
 
 
-
-
     /**
-     * _more_
+     * Get the map information
      *
-     * @param request _more_
-     * @param entriesToUse _more_
-     * @param sb _more_
-     * @param width _more_
-     * @param height _more_
-     * @param haveBearingLines _more_
+     * @param request       the Request
+     * @param entriesToUse  the list of Entrys
+     * @param sb            StringBuffer to pass back html
+     * @param width         width of the map
+     * @param height        height of the map
+     * @param detailed      detailed or not
+     * @param haveBearingLines   true if plot bearing lines
      *
-     * @return _more_
+     * @return MapInfo (not really used)
      *
-     * @throws Exception _more_
+     * @throws Exception  problem creating map
      */
     public MapInfo getMap(Request request, List<Entry> entriesToUse,
                           StringBuffer sb, int width, int height,
-                          boolean detailed,
-                          boolean[] haveBearingLines)
+                          boolean detailed, boolean[] haveBearingLines)
+            throws Exception {
+        return getMap(request, entriesToUse, sb, width, height, detailed,
+                      haveBearingLines, false);
+    }
+
+
+    /**
+     * Get the map information
+     *
+     * @param request       the Request
+     * @param entriesToUse  the list of Entrys
+     * @param sb            StringBuffer to pass back html
+     * @param width         width of the map
+     * @param height        height of the map
+     * @param detailed      detailed or not
+     * @param haveBearingLines   true if plot bearing lines
+     * @param listentries  if true, include the entries on the side
+     *
+     * @return MapInfo (not really used)
+     *
+     * @throws Exception  problem creating map
+     */
+    public MapInfo getMap(Request request, List<Entry> entriesToUse,
+                          StringBuffer sb, int width, int height,
+                          boolean detailed, boolean[] haveBearingLines,
+                          boolean listentries)
             throws Exception {
         MapInfo map = getRepository().getMapManager().createMap(request,
                           width, height, false);
         if (map == null) {
             return map;
         }
-        addToMap(request, map, entriesToUse, detailed, haveBearingLines,  true);
+        addToMap(request, map, entriesToUse, detailed, haveBearingLines,
+                 true);
 
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
         map.centerOn(bounds);
-        sb.append(map.getHtml());
+        if (listentries) {
+            StringBuffer entryBuff = new StringBuffer();
+            for (Entry entry : entriesToUse) {
+                if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
+                    entryBuff.append(
+                        "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
+                    entryBuff.append("<td>");
+                    String iconUrl = getEntryManager().getIconUrl(request,
+                                         entry);
+                    entryBuff.append(
+                        HtmlUtil.href(
+                            getEntryManager().getEntryURL(request, entry),
+                            HtmlUtil.img(
+                                iconUrl,
+                                msg("Click to view entry details")) + " "
+                                    + entry.getName()));
+                    entryBuff.append("</td><td align=right>");
+                    entryBuff.append(
+                        HtmlUtil.href(
+                            "javascript:" + map.getVariableName()
+                            + ".hiliteMarker(" + sqt(entry.getId())
+                            + ");", HtmlUtil.img(
+                                getRepository().iconUrl(
+                                    ICON_MAP_NAV), "View entry")));
+                    entryBuff.append("</td></tr></table>");
+                }
+            }
+
+
+
+            sb.append(
+                "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
+            sb.append("<td width=\"250\">");
+            sb.append(
+                HtmlUtil.open(
+                    HtmlUtil.TAG_DIV,
+                    HtmlUtil.style(
+                        "max-width:250px; overflow-x: auto;  overflow-y: auto; max-height:"
+                        + map.getHeight())));
+            sb.append(entryBuff);
+            sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+            sb.append("</td>");
+            sb.append("<td>");
+            sb.append(map.getHtml());
+            sb.append("</td>");
+            sb.append("</tr></table>");
+        } else {
+            sb.append(map.getHtml());
+        }
+
         return map;
     }
 
     /**
-     * _more_
+     * Add the entry to the map
      *
-     * @param request _more_
-     * @param map _more_
-     * @param entriesToUse _more_
-     * @param haveBearingLines _more_
-     * @param screenBigRects _more_
+     * @param request      The request
+     * @param map          the map information
+     * @param entriesToUse the Entrys to use
+     * @param detailed     deatiled or not
+     * @param haveBearingLines   have bearing lines flag
+     * @param screenBigRects     handle big rectangles
      *
-     * @throws Exception _more_
+     * @throws Exception  problem adding entries to map
      */
     public void addToMap(Request request, MapInfo map,
-                         List<Entry> entriesToUse,
-                         boolean detailed,
+                         List<Entry> entriesToUse, boolean detailed,
                          boolean[] haveBearingLines, boolean screenBigRects)
             throws Exception {
         screenBigRects = false;
@@ -316,14 +361,14 @@ public class MapOutputHandler extends OutputHandler {
         makeRectangles = true;
 
         for (Entry entry : entriesToUse) {
-            String idBase = entry.getId();
+            String         idBase       = entry.getId();
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
 
             if (makeRectangles) {
                 boolean didMetadata = map.addSpatialMetadata(entry,
                                           metadataList);
-                if(detailed) {
+                if (detailed) {
                     entry.getTypeHandler().addToMap(request, entry, map);
                 }
                 if (entry.hasAreaDefined() && !didMetadata) {
@@ -357,6 +402,7 @@ public class MapOutputHandler extends OutputHandler {
                         if (haveBearingLines != null) {
                             haveBearingLines[0] = true;
                         }
+
                         break;
                     }
                 }
@@ -369,30 +415,32 @@ public class MapOutputHandler extends OutputHandler {
                 infoHtml = getRepository().translate(request, infoHtml);
                 String icon = getEntryManager().getIconUrl(request, entry);
                 map.addMarker(entry.getId(),
-                              new LatLonPointImpl(Math.max(-80,Math.min(80,location[0])), location[1]),
-                              icon, infoHtml);
+                              new LatLonPointImpl(Math.max(-80,
+                                  Math.min(80,
+                                           location[0])), location[1]), icon,
+                                               infoHtml);
             }
         }
     }
 
 
     /**
-     * _more_
+     * Quote a String with double quotes (&quot;)
      *
-     * @param s _more_
+     * @param s  the String
      *
-     * @return _more_
+     * @return  the quoted String
      */
     private static String qt(String s) {
         return "\"" + s + "\"";
     }
 
     /**
-     * _more_
+     * Quote a String with single quotes (')
      *
-     * @param s _more_
+     * @param s  the String
      *
-     * @return _more_
+     * @return  the quoted String
      */
     private static String sqt(String s) {
         return "'" + s + "'";
@@ -401,12 +449,12 @@ public class MapOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create a lat/lon point string for OpenLayers
      *
-     * @param lat _more_
-     * @param lon _more_
+     * @param lat  the latitude
+     * @param lon  the longitude
      *
-     * @return _more_
+     * @return  the OpenLayers String
      */
     public static String llp(double lat, double lon) {
         if (lat < -90) {
@@ -421,6 +469,7 @@ public class MapOutputHandler extends OutputHandler {
         if (lon > 180) {
             lon = 180;
         }
+
         return "new OpenLayers.LonLat(" + lon + "," + lat + ")";
     }
 
