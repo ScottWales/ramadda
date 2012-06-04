@@ -33,8 +33,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.geoloc.Bearing;
-import ucar.unidata.geoloc.LatLonPointImpl;
+
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
@@ -46,7 +45,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import java.awt.geom.Rectangle2D;
 
 
 import java.io.*;
@@ -169,8 +167,8 @@ public class MapOutputHandler extends OutputHandler {
                                    new State(entry));
         }
 
-        MapInfo map = getMap(request, entriesToUse, sb, 700, 500, true,
-                             new boolean[] { false }, false);
+        MapInfo map = getMapManager().getMap(request, entriesToUse, sb, 700, 500, true,
+                                             new boolean[] { false }, false);
 
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
     }
@@ -215,263 +213,13 @@ public class MapOutputHandler extends OutputHandler {
 
 
         boolean[] haveBearingLines = { false };
-        MapInfo   map = getMap(request, entriesToUse, sb, 700, 500, false,
+        MapInfo   map = getMapManager().getMap(request, entriesToUse, sb, 700, 500, false,
                              haveBearingLines, true);
 
         return makeLinksResult(request, msg("Map"), sb,
                                new State(group, subGroups, entries));
     }
 
-
-    /**
-     * Get the map information
-     *
-     * @param request       the Request
-     * @param entriesToUse  the list of Entrys
-     * @param sb            StringBuffer to pass back html
-     * @param width         width of the map
-     * @param height        height of the map
-     * @param detailed      detailed or not
-     * @param haveBearingLines   true if plot bearing lines
-     *
-     * @return MapInfo (not really used)
-     *
-     * @throws Exception  problem creating map
-     */
-    public MapInfo getMap(Request request, List<Entry> entriesToUse,
-                          StringBuffer sb, int width, int height,
-                          boolean detailed, boolean[] haveBearingLines)
-            throws Exception {
-        return getMap(request, entriesToUse, sb, width, height, detailed,
-                      haveBearingLines, false);
-    }
-
-
-    /**
-     * Get the map information
-     *
-     * @param request       the Request
-     * @param entriesToUse  the list of Entrys
-     * @param sb            StringBuffer to pass back html
-     * @param width         width of the map
-     * @param height        height of the map
-     * @param detailed      detailed or not
-     * @param haveBearingLines   true if plot bearing lines
-     * @param listentries  if true, include the entries on the side
-     *
-     * @return MapInfo (not really used)
-     *
-     * @throws Exception  problem creating map
-     */
-    public MapInfo getMap(Request request, List<Entry> entriesToUse,
-                          StringBuffer sb, int width, int height,
-                          boolean detailed, boolean[] haveBearingLines,
-                          boolean listentries)
-            throws Exception {
-        MapInfo map = getRepository().getMapManager().createMap(request,
-                          width, height, false);
-        if (map == null) {
-            return map;
-        }
-        addToMap(request, map, entriesToUse, detailed, haveBearingLines,
-                 true);
-
-        Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
-        map.centerOn(bounds);
-        if (listentries) {
-            StringBuffer entryBuff = new StringBuffer();
-            for (Entry entry : entriesToUse) {
-                if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                    entryBuff.append(
-                        "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
-                    entryBuff.append("<td>");
-                    String iconUrl = getEntryManager().getIconUrl(request,
-                                         entry);
-                    entryBuff.append(
-                        HtmlUtil.href(
-                            getEntryManager().getEntryURL(request, entry),
-                            HtmlUtil.img(
-                                iconUrl,
-                                msg("Click to view entry details")) + " "
-                                    + entry.getName()));
-                    entryBuff.append("</td><td align=right>");
-                    entryBuff.append(
-                        HtmlUtil.href(
-                            "javascript:" + map.getVariableName()
-                            + ".hiliteMarker(" + sqt(entry.getId())
-                            + ");", HtmlUtil.img(
-                                getRepository().iconUrl(
-                                    ICON_MAP_NAV), "View entry")));
-                    entryBuff.append("</td></tr></table>");
-                }
-            }
-
-
-
-            sb.append(
-                "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
-            sb.append("<td width=\"250\">");
-            sb.append(
-                HtmlUtil.open(
-                    HtmlUtil.TAG_DIV,
-                    HtmlUtil.style(
-                        "max-width:250px; overflow-x: auto;  overflow-y: auto; max-height:"
-                        + map.getHeight())));
-            sb.append(entryBuff);
-            sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
-            sb.append("</td>");
-            sb.append("<td>");
-            sb.append(map.getHtml());
-            sb.append("</td>");
-            sb.append("</tr></table>");
-        } else {
-            sb.append(map.getHtml());
-        }
-
-        return map;
-    }
-
-    /**
-     * Add the entry to the map
-     *
-     * @param request      The request
-     * @param map          the map information
-     * @param entriesToUse the Entrys to use
-     * @param detailed     deatiled or not
-     * @param haveBearingLines   have bearing lines flag
-     * @param screenBigRects     handle big rectangles
-     *
-     * @throws Exception  problem adding entries to map
-     */
-    public void addToMap(Request request, MapInfo map,
-                         List<Entry> entriesToUse, boolean detailed,
-                         boolean[] haveBearingLines, boolean screenBigRects)
-            throws Exception {
-        screenBigRects = false;
-        int cnt = 0;
-        for (Entry entry : entriesToUse) {
-            if (entry.hasAreaDefined()) {
-                cnt++;
-            }
-        }
-
-
-        boolean       makeRectangles = cnt <= 100;
-        MapProperties mapProperties  = new MapProperties("blue", true);
-        makeRectangles = true;
-
-        for (Entry entry : entriesToUse) {
-            String         idBase       = entry.getId();
-            List<Metadata> metadataList =
-                getMetadataManager().getMetadata(entry);
-
-            if (makeRectangles) {
-                boolean didMetadata = map.addSpatialMetadata(entry,
-                                          metadataList);
-                if (detailed) {
-                    entry.getTypeHandler().addToMap(request, entry, map);
-                }
-                if (entry.hasAreaDefined() && !didMetadata) {
-                    if ( !screenBigRects
-                            || (Math.abs(entry.getEast() - entry.getWest())
-                                < 90)) {
-                        map.addBox(entry, mapProperties);
-                    }
-                }
-            }
-
-
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-
-                double[] location;
-                if (makeRectangles || !entry.hasAreaDefined()) {
-                    location = entry.getLocation();
-                } else {
-                    location = entry.getCenter();
-                }
-
-                for (Metadata metadata : metadataList) {
-                    if (metadata.getType().equals(
-                            JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
-                        double dir = Double.parseDouble(metadata.getAttr1());
-                        LatLonPointImpl fromPt =
-                            new LatLonPointImpl(location[0], location[1]);
-                        LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
-                                                 0.25, null);
-                        map.addLine(entry.getId(), fromPt, pt);
-                        if (haveBearingLines != null) {
-                            haveBearingLines[0] = true;
-                        }
-
-                        break;
-                    }
-                }
-                String infoHtml = getMapManager().makeInfoBubble(request,
-                                      entry);
-                infoHtml = infoHtml.replace("\r", " ");
-                infoHtml = infoHtml.replace("\n", " ");
-                infoHtml = infoHtml.replace("\"", "\\\"");
-                infoHtml = infoHtml.replace("'", "\\'");
-                infoHtml = getRepository().translate(request, infoHtml);
-                String icon = getEntryManager().getIconUrl(request, entry);
-                map.addMarker(entry.getId(),
-                              new LatLonPointImpl(Math.max(-80,
-                                  Math.min(80,
-                                           location[0])), location[1]), icon,
-                                               infoHtml);
-            }
-        }
-    }
-
-
-    /**
-     * Quote a String with double quotes (&quot;)
-     *
-     * @param s  the String
-     *
-     * @return  the quoted String
-     */
-    private static String qt(String s) {
-        return "\"" + s + "\"";
-    }
-
-    /**
-     * Quote a String with single quotes (')
-     *
-     * @param s  the String
-     *
-     * @return  the quoted String
-     */
-    private static String sqt(String s) {
-        return "'" + s + "'";
-    }
-
-
-
-    /**
-     * Create a lat/lon point string for OpenLayers
-     *
-     * @param lat  the latitude
-     * @param lon  the longitude
-     *
-     * @return  the OpenLayers String
-     */
-    public static String llp(double lat, double lon) {
-        if (lat < -90) {
-            lat = -90;
-        }
-        if (lat > 90) {
-            lat = 90;
-        }
-        if (lon < -180) {
-            lon = -180;
-        }
-        if (lon > 180) {
-            lon = 180;
-        }
-
-        return "new OpenLayers.LonLat(" + lon + "," + lat + ")";
-    }
 
 
 

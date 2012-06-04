@@ -895,7 +895,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     return "No maps";
                 }
                 boolean[] haveBearingLines = { false };
-                MapInfo   map = mapOutputHandler.getMap(request, children, sb,
+                MapInfo   map = getMapManager().getMap(request, children, sb,
                                   width, height, false, haveBearingLines,
                                   listEntries);
             }
@@ -915,7 +915,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean     details = Misc.getProperty(props, ATTR_DETAILS, false);
             children.add(entry);
             boolean[] haveBearingLines = { false };
-            MapInfo   map = mapOutputHandler.getMap(request, children, sb,
+            MapInfo   map = getMapManager().getMap(request, children, sb,
                               width, height, details, haveBearingLines);
 
             return sb.toString();
