@@ -324,6 +324,22 @@ public class LDAPManager {
     }
 
 
+    private List<String> allGroups;
+
+    public List<String> getAllGroups() throws NamingException {
+        if(allGroups==null) {
+            List<String> groups = new ArrayList();
+            NamingEnumeration<NameClassPair> enums = getContext().list(groupsPath);
+            while(enums.hasMoreElements()) {
+                NameClassPair key = enums.nextElement();
+                String id = key.getName();
+                groups.add(getGroupCN(id));
+            }
+            allGroups = groups;
+        }
+        return allGroups;
+    }
+
     /**
      * _more_
      *

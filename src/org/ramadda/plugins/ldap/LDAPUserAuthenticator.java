@@ -268,9 +268,15 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      */
     @Override
     public List<String> getAllRoles() {
-        //Do nothing for now
-        ArrayList<String> roles = new ArrayList<String>();
-        return roles;
+        if ( !hasManager()) {
+            return null;
+        }
+        try {
+            return getManager().getAllGroups();
+        } catch(Exception exception) {
+            log("LDAPUserAuthenticatorgetAllRoles:" + exception);
+            return null;
+        }
     }
 
     /**
