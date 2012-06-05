@@ -31,9 +31,10 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.Misc;
-
+import ucar.unidata.data.gis.KmlUtil;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -65,18 +66,20 @@ public class GpxTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public GpxTypeHandler(Repository repository, Element node)
-            throws Exception {
+        throws Exception {
         super(repository, node);
+    }
+
+    private Element readXml(Entry entry) throws Exception {
+        return  XmlUtil.getRoot(getStorageManager().readSystemResource(entry.getFile()));
     }
 
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
         throws Exception {
-        Element root =
-            XmlUtil.getRoot(getStorageManager().readSystemResource(entry.getFile()));
+        Element root = readXml(entry);
         Element metadata = XmlUtil.findChild(root, GpxUtil.TAG_METADATA);
         Element bounds = null;
-
 
         if(metadata!=null) {
             bounds = XmlUtil.findChild(metadata, GpxUtil.TAG_BOUNDS);
@@ -111,32 +114,32 @@ public class GpxTypeHandler extends GenericTypeHandler {
         String url = XmlUtil.getGrandChildText(root,GpxUtil.TAG_URL,null);
         String urlName = XmlUtil.getGrandChildText(root,GpxUtil.TAG_URLNAME,"");
         if(url!=null) {
-                entry.addMetadata(
-                                  new Metadata(
-                                               getRepository().getGUID(), entry.getId(),
-                                               ContentMetadataHandler.TYPE_URL, false, url, urlName,
-                                               "", "", ""));
+            entry.addMetadata(
+                              new Metadata(
+                                           getRepository().getGUID(), entry.getId(),
+                                           ContentMetadataHandler.TYPE_URL, false, url, urlName,
+                                           "", "", ""));
 
         }
 
         String author = XmlUtil.getGrandChildText(root,GpxUtil.TAG_AUTHOR,null);
         if(author!=null) {
-                entry.addMetadata(
-                                  new Metadata(
-                                               getRepository().getGUID(), entry.getId(),
-                                               ContentMetadataHandler.TYPE_AUTHOR, false,author,"",
-                                               "", "", ""));
+            entry.addMetadata(
+                              new Metadata(
+                                           getRepository().getGUID(), entry.getId(),
+                                           ContentMetadataHandler.TYPE_AUTHOR, false,author,"",
+                                           "", "", ""));
 
         }
 
 
         String email = XmlUtil.getGrandChildText(root,GpxUtil.TAG_EMAIL,null);
         if(email!=null) {
-                entry.addMetadata(
-                                  new Metadata(
-                                               getRepository().getGUID(), entry.getId(),
-                                               ContentMetadataHandler.TYPE_EMAIL, false,email,"",
-                                               "", "", ""));
+            entry.addMetadata(
+                              new Metadata(
+                                           getRepository().getGUID(), entry.getId(),
+                                           ContentMetadataHandler.TYPE_EMAIL, false,email,"",
+                                           "", "", ""));
 
         }
 
@@ -172,12 +175,65 @@ public class GpxTypeHandler extends GenericTypeHandler {
     }
 
 
+    public void getEntryLinks(Request request, Entry entry, List<Link> links)
+            throws Exception {
+        super.getEntryLinks(request, entry, links);
+        links.add(
+                  new Link(
+                           request.entryUrl(getRepository().URL_ENTRY_ACCESS, entry,"type","kml"),
+                           getRepository().iconUrl(ICON_KML), "Convert GPX to KML",
+                           OutputType.TYPE_FILE));
+    }
+
+
+    public Result processEntryAccess(Request request, Entry entry) throws Exception {
+        Element gpxRoot = readXml(entry);
+
+        Element root  = KmlUtil.kml(entry.getName());
+        Element folder = KmlUtil.folder(root, entry.getName(), true);
+
+        for(Element child: ((List<Element>)XmlUtil.findChildren(gpxRoot, GpxUtil.TAG_WPT))) {
+            String name = XmlUtil.getGrandChildText(child, GpxUtil.TAG_NAME,"");
+            String desc = XmlUtil.getGrandChildText(child, GpxUtil.TAG_DESC,"");
+            String sym = XmlUtil.getGrandChildText(child, GpxUtil.TAG_SYM,"");
+            double lat = XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,0.0);
+            double lon = XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,0.0);
+            KmlUtil.placemark(folder, name, desc,lat,lon,0,null);
+        }
+
+        for(Element track: ((List<Element>)XmlUtil.findChildren(gpxRoot, GpxUtil.TAG_TRK))) {
+            for(Element trackSeg: ((List<Element>)XmlUtil.findChildren(track, GpxUtil.TAG_TRKSEG))) {
+                List<double[]> points = new ArrayList<double[]>();
+                for(Element trackPoint: ((List<Element>)XmlUtil.findChildren(trackSeg, GpxUtil.TAG_TRKPT))) {
+                    double lat = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LAT,0.0);
+                    double lon = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LON,0.0);
+                    points.add(new double[]{lat,lon});
+                }
+                float[][] coords = new float[2][points.size()];
+                int cnt=0;
+                for(double[]point: points) {
+                    coords[0][cnt] = (float)point[0];
+                    coords[1][cnt] = (float)point[1];
+                    cnt++;
+                }
+                KmlUtil.placemark(folder,"track","",coords, java.awt.Color.RED,2);
+            }
+        }
+
+
+
+        StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
+        sb.append(XmlUtil.toString(root));
+
+        Result result = new  Result("GPX Entry", sb.toString().getBytes(),
+                                    getRepository().getMimeTypeFromSuffix(".kml"), false);
+        result.setReturnFilename(IOUtil.stripExtension(entry.getName()) +".kml");
+        return result;
+    }
 
     public void addToMap(Request request, Entry entry, MapInfo map)     {
         try {
-            
-            Element root =
-                XmlUtil.getRoot(getStorageManager().readSystemResource(entry.getFile()));
+            Element root =readXml(entry);
             int cnt = 0;
             for(Element child: ((List<Element>)XmlUtil.findChildren(root, GpxUtil.TAG_WPT))) {
                 if(cnt++>500) break;
