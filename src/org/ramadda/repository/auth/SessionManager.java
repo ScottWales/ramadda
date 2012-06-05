@@ -123,7 +123,7 @@ public class SessionManager extends RepositoryManager {
     }
 
 
-    public void deleteAllSessions() throws Exception {
+    private void deleteAllSessions() throws Exception {
         sessionMap = new Hashtable<String, Session>();
     }
 
@@ -298,6 +298,7 @@ public class SessionManager extends RepositoryManager {
     public Session getSession(String sessionId) throws Exception {
         Session session = sessionMap.get(sessionId);
         if (session == null) {
+            //            System.err.println ("getSession from db:" + sessionId);
             Statement stmt = getDatabaseManager().select(
                                  Tables.SESSIONS.COLUMNS,
                                  Tables.SESSIONS.NAME,
@@ -312,6 +313,7 @@ public class SessionManager extends RepositoryManager {
                 boolean ok = true;
                 while ((results = iter.getNext()) != null && ok) {
                     session = makeSession(results);
+                    //                    System.err.println ("Got session:" + session);
                     session.setLastActivity(new Date());
                     //Remove it from the DB and then readd it so we update the lastActivity
                     removeSession(session.getId());
@@ -323,6 +325,8 @@ public class SessionManager extends RepositoryManager {
                 getDatabaseManager().closeAndReleaseConnection(stmt);
             }
         }
+        //        if(session==null)
+            //            System.err.println ("No session found");
         return session;
     }
 
@@ -362,6 +366,7 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void removeSession(String sessionId) throws Exception {
+        //        System.err.println("removeSession:" + sessionId);
         sessionMap.remove(sessionId);
         getDatabaseManager().delete(Tables.SESSIONS.NAME,
                                     Clause.eq(Tables.SESSIONS.COL_SESSION_ID,
@@ -378,6 +383,7 @@ public class SessionManager extends RepositoryManager {
     public void addSession(Session session) throws Exception {
         sessionMap.put(session.getId(), session);
         //COL_SESSION_ID,COL_USER_ID,COL_CREATE_DATE,COL_LAST_ACTIVE_DATE,COL_EXTRA
+        //        System.err.println("addSession:" + session.getId() +" " + session.getUserId());
         getDatabaseManager().executeInsert(Tables.SESSIONS.INSERT,
                                            new Object[] { session.getId(),
                 session.getUserId(), new Date(), new Date(), "" });
