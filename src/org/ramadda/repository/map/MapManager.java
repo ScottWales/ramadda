@@ -598,6 +598,68 @@ public class MapManager extends RepositoryManager {
         if (fromEntry != null) {
             return fromEntry;
         }
+        if (entry.getResource().isImage()) {
+            int    width       = request.get(ATTR_WIDTH, 400);
+            int    height      = request.get(ATTR_HEIGHT, 270);
+            int imageWidth = request.get(ATTR_IMAGEWIDTH, width);
+            String imageClass=request.getString("imageclass", (String)null);
+            //"slides_image"
+            String image = HtmlUtil.img(
+                                        
+                                        getRepository().getHtmlOutputHandler().getImageUrl(
+                                                                           request, entry), "",
+                                        HtmlUtil.attr(
+                                                      HtmlUtil.ATTR_WIDTH,
+                                                      "" + imageWidth));
+            image = HtmlUtil.href(
+                                  request.entryUrl(
+                                                   getRepository().URL_ENTRY_SHOW,
+                                                   entry), image);
+            if (imageClass!=null) {
+                image = HtmlUtil.div(image,
+                                     HtmlUtil.cssClass(imageClass));
+            }
+
+            
+            String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
+            String content =  entry.getDescription();
+            if (position.equals(POS_NONE)) {
+                content = image + HtmlUtil.br();
+            } else if (position.equals(POS_BOTTOM)) {
+                content = image + HtmlUtil.br() + content;
+            } else if (position.equals(POS_TOP)) {
+                content = content + HtmlUtil.br() + image;
+            } else if (position.equals(POS_RIGHT)) {
+                content =
+                    HtmlUtil.table(
+                                   HtmlUtil.row(
+                                                HtmlUtil.col(image)
+                                                + HtmlUtil.col(
+                                                               content), HtmlUtil.attr(
+                                                                                       HtmlUtil.ATTR_VALIGN,
+                                                                                       "top")), HtmlUtil.attr(
+                                                                                                              HtmlUtil.ATTR_CELLPADDING,
+                                                                                                              "4"));
+            } else if (position.equals(POS_LEFT)) {
+                content =
+                    HtmlUtil.table(
+                                   HtmlUtil.row(
+                                                HtmlUtil.col(content)
+                                                + HtmlUtil.col(image), HtmlUtil.attr(
+                                                                                     HtmlUtil.ATTR_VALIGN,
+                                                                                     "top")), HtmlUtil.attr(
+                                                                                                            HtmlUtil.ATTR_CELLPADDING,
+                                                                                                            "4"));
+            } else {
+                content = "Unknown position:" + position;
+            }
+            return content;
+        }
+
+
+
+
+
         StringBuffer info = new StringBuffer("<table>");
         info.append(entry.getTypeHandler().getInnerEntryContent(entry,
                 request, OutputHandler.OUTPUT_HTML, true, false, false));
@@ -677,8 +739,8 @@ public class MapManager extends RepositoryManager {
                           boolean detailed, boolean[] haveBearingLines,
                           boolean listentries)
             throws Exception {
-        MapInfo map = getRepository().getMapManager().createMap(request,
-                          width, height, false);
+        MapInfo map = createMap(request,
+                                width, height, false);
         if (map == null) {
             return map;
         }
@@ -816,7 +878,7 @@ public class MapManager extends RepositoryManager {
                     }
                 }
                 String infoHtml = getMapManager().makeInfoBubble(request,
-                                      entry);
+                                                                 entry);
                 infoHtml = infoHtml.replace("\r", " ");
                 infoHtml = infoHtml.replace("\n", " ");
                 infoHtml = infoHtml.replace("\"", "\\\"");
