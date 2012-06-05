@@ -491,8 +491,9 @@ public class HtmlOutputHandler extends OutputHandler {
             addDescription(request, entry, sb, true);
             String informationBlock = getInformationTabs(request, entry,
                                           false, false);
-            sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
-                    informationBlock, true));
+            //            sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
+            //                    informationBlock, true));
+            sb.append(informationBlock);
 
             //            sb.append(getAttachmentsHtml(request, entry));
         }
@@ -971,10 +972,13 @@ public class HtmlOutputHandler extends OutputHandler {
         entry.getTypeHandler().addToInformationTabs(request, entry,
                 tabTitles, tabContents);
 
-        tabTitles.add(msg("Comments"));
+
         StringBuffer comments = getCommentBlock(request, entry, true);
-        //        System.out.println (comments);
-        tabContents.add(comments);
+        if(comments.length()>0) {
+            tabTitles.add(msg("Comments"));
+            //        System.out.println (comments);
+            tabContents.add(comments);
+        }
 
         String attachments = getAttachmentsHtml(request, entry);
         if (attachments.length() > 0) {
@@ -984,18 +988,24 @@ public class HtmlOutputHandler extends OutputHandler {
 
         StringBuffer associationBlock =
             getAssociationManager().getAssociationBlock(request, entry);
-        if (request.get(ARG_SHOW_ASSOCIATIONS, false)) {
-            tabTitles.add(0, msg("Links"));
-            tabContents.add(0, associationBlock);
-        } else {
-            tabTitles.add(msg("Links"));
-            tabContents.add(associationBlock);
+        if(associationBlock.length()>0) {
+            if (request.get(ARG_SHOW_ASSOCIATIONS, false)) {
+                tabTitles.add(0, msg("Links"));
+                tabContents.add(0, associationBlock);
+            } else {
+                tabTitles.add(msg("Links"));
+                tabContents.add(associationBlock);
+            }
         }
 
 
         //        tabTitles.add(msg(LABEL_LINKS));
         //        tabContents.add(getEntryManager().getEntryActionsTable(request, entry,
         //                OutputType.TYPE_ALL));
+
+        if(tabContents.size()==1) {
+            return tabContents.get(0).toString();
+        }
 
 
         return OutputHandler.makeTabs(tabTitles, tabContents, true);
@@ -1538,10 +1548,16 @@ public class HtmlOutputHandler extends OutputHandler {
             if(!doSimpleListing) {
                 String informationBlock = getInformationTabs(request, group,
                                                              false, false);
-                sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
+
+                if(hasChildren) {
+                  sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
                                                      informationBlock,
                                                      request.get(ARG_SHOW_ASSOCIATIONS, !hasChildren)));
+                } else {
+                    sb.append(informationBlock);
+                }
             }
+
 
             StringBuffer metadataSB = new StringBuffer();
             getMetadataManager().decorateEntry(request, group, metadataSB,

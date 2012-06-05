@@ -204,8 +204,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_POPUP = "popup";
 
-    /** text position attribute */
-    public static final String ATTR_TEXTPOSITION = "textposition";
+
 
     /** attribute in import tag */
     public static final String ATTR_LEVEL = "level";
@@ -213,38 +212,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_COUNT = "count";
 
-    /** attribute in import tag */
-    public static final String ATTR_WIDTH = "width";
-
-    /** imagewidth attribute */
-    public static final String ATTR_IMAGEWIDTH = "imagewidth";
-
     /** attribute to wikify the content */
     public static final String ATTR_WIKIFY = "wikify";
-
-    /** attribute in import tag */
-    public static final String ATTR_HEIGHT = "height";
 
     /** max image height attribute */
     public static final String ATTR_MAXIMAGEHEIGHT = "maximageheight";
 
     /** attribute in import tag */
     public static final String ATTR_DAYS = "days";
-
-    /** position left id */
-    public static final String POS_LEFT = "left";
-
-    /** position bottom id */
-    public static final String POS_BOTTOM = "bottom";
-
-    /** position right id */
-    public static final String POS_RIGHT = "right";
-
-    /** position top id */
-    public static final String POS_TOP = "top";
-
-    /** position none (hide) id */
-    public static final String POS_NONE = "none";
 
 
     /** wiki import */
@@ -895,7 +870,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     return "No maps";
                 }
                 boolean[] haveBearingLines = { false };
-                MapInfo   map = getMapManager().getMap(request, children, sb,
+                Request newRequest = request.cloneMe();
+                newRequest.putAll(props);
+                MapInfo   map = getMapManager().getMap(newRequest, children, sb,
                                   width, height, false, haveBearingLines,
                                   listEntries);
             }
@@ -983,53 +960,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         }
                     }
                     if (child.getResource().isImage()) {
-                        String image = HtmlUtil.img(
-                                           getHtmlOutputHandler().getImageUrl(
-                                               request, child), "",
-                                                   HtmlUtil.attr(
-                                                       HtmlUtil.ATTR_WIDTH,
-                                                       "" + imageWidth));
-                        image = HtmlUtil.href(
-                            request.entryUrl(
-                                getRepository().URL_ENTRY_SHOW,
-                                child), image);
                         if (doingSlideshow) {
-                            image = HtmlUtil.div(image,
-                                    HtmlUtil.cssClass("slides_image"));
+                            props.put("imageclass", "slides_image");
                         }
-
-                        String position = Misc.getProperty(props,
-                                              ATTR_TEXTPOSITION, POS_BOTTOM);
-                        if (position.equals(POS_NONE)) {
-                            content = image + HtmlUtil.br();
-                        } else if (position.equals(POS_BOTTOM)) {
-                            content = image + HtmlUtil.br() + content;
-                        } else if (position.equals(POS_TOP)) {
-                            content = content + HtmlUtil.br() + image;
-                        } else if (position.equals(POS_RIGHT)) {
-                            content =
-                                HtmlUtil.table(
-                                    HtmlUtil.row(
-                                        HtmlUtil.col(image)
-                                        + HtmlUtil.col(
-                                            content), HtmlUtil.attr(
-                                            HtmlUtil.ATTR_VALIGN,
-                                            "top")), HtmlUtil.attr(
-                                                HtmlUtil.ATTR_CELLPADDING,
-                                                    "4"));
-                        } else if (position.equals(POS_LEFT)) {
-                            content =
-                                HtmlUtil.table(
-                                    HtmlUtil.row(
-                                        HtmlUtil.col(content)
-                                        + HtmlUtil.col(image), HtmlUtil.attr(
-                                            HtmlUtil.ATTR_VALIGN,
-                                            "top")), HtmlUtil.attr(
-                                                HtmlUtil.ATTR_CELLPADDING,
-                                                    "4"));
-                        } else {
-                            content = "Unknown position:" + position;
-                        }
+                        Request newRequest = request.cloneMe();
+                        newRequest.putAll(props);
+                        content = getMapManager().makeInfoBubble(newRequest, child);
                     }
                 }
 
