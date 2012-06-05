@@ -68,6 +68,8 @@ import java.util.zip.*;
  */
 public class GpsOutputHandler extends OutputHandler {
 
+    public static final String PROP_TEQC = "fieldproject.teqc";
+
     /** _more_ */
     private static final String TEQC_FLAG_QC = "+qcq";
 
@@ -200,7 +202,7 @@ public class GpsOutputHandler extends OutputHandler {
         addType(OUTPUT_GPS_QC);
         addType(OUTPUT_GPS_OPUS);
         addType(OUTPUT_GPS_CONTROLPOINTS);
-        teqcPath = getProperty("fieldproject.teqc", null);
+        teqcPath = getProperty(PROP_TEQC, null);
     }
 
 
