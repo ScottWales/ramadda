@@ -2151,6 +2151,34 @@ public interface Constants {
 
 
 
+    /** text position attribute */
+    public static final String ATTR_TEXTPOSITION = "textposition";
+
+    /** position left id */
+    public static final String POS_LEFT = "left";
+
+    /** position bottom id */
+    public static final String POS_BOTTOM = "bottom";
+
+    /** position right id */
+    public static final String POS_RIGHT = "right";
+
+    /** position top id */
+    public static final String POS_TOP = "top";
+
+    /** position none (hide) id */
+    public static final String POS_NONE = "none";
+
+
+    /** attribute in import tag */
+    public static final String ATTR_WIDTH = "width";
+
+    /** attribute in import tag */
+    public static final String ATTR_HEIGHT = "height";
+
+
+    /** imagewidth attribute */
+    public static final String ATTR_IMAGEWIDTH = "imagewidth";
 
 
 }

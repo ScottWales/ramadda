@@ -1191,6 +1191,11 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
+    public void putAll(Hashtable props) {
+        parameters.putAll(props);
+    }
+
+
     /**
      * _more_
      *

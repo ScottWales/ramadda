@@ -170,6 +170,10 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_FORM = new RequestUrl(this,
                                                  "/entry/form", "Edit Entry");
 
+    /** _more_ */
+    public final RequestUrl URL_ENTRY_ACCESS = new RequestUrl(this,
+                                                 "/entry/access", "Edit Entry");
+
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_NEW = new RequestUrl(this,

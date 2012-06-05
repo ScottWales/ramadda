@@ -641,6 +641,11 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public Result processEntryAccess(Request request, Entry entry) throws Exception {
+        return new Result("Error",
+                          new StringBuffer("Entry access not defined"));
+    }
+
     /**
      * _more_
      *
@@ -1804,6 +1809,27 @@ public class TypeHandler extends RepositoryManager {
                 showCreated = false;
             }
 
+            if (showResource && entry.getResource().isImage()) {
+                String width = "600";
+                if (request.isMobile()) {
+                    width = "250";
+                }
+                String img = null;
+                if (entry.getResource().isFile()
+                        && getAccessManager().canDownload(request, entry)) {
+                    img = HtmlUtil.img(
+                                       getEntryResourceUrl(request, entry), "",
+                                       "width=" + width);
+                } else if (entry.getResource().isUrl()) {
+                    img = HtmlUtil.img(
+                                entry.getResource().getPath(), "",
+                                "width=" + width);
+                }
+                if(img!=null) {
+                    sb.append(HtmlUtil.col(img, " colspan=2 "));
+                }
+            }
+
             if (showCreated) {
                 sb.append(formEntry(request, msgLabel("Created by"),
                                     userSearchLink + " @ "
@@ -1969,33 +1995,8 @@ public class TypeHandler extends RepositoryManager {
             if (entry.hasAltitude()) {
                 sb.append(formEntry(request, msgLabel("Elevation"),
                                     "" + entry.getAltitude()));
-            }
+          }
 
-
-            if (showResource && entry.getResource().isImage()) {
-                String width = "600";
-                if (request.isMobile()) {
-                    width = "250";
-                }
-                if (entry.getResource().isFile()
-                        && getAccessManager().canDownload(request, entry)) {
-                    sb.append(
-                        formEntryTop(
-                            request, msgLabel("Image"),
-                            HtmlUtil.img(
-                                getEntryResourceUrl(request, entry), "",
-                                "width=" + width)));
-
-
-                } else if (entry.getResource().isUrl()) {
-                    sb.append(
-                        formEntryTop(
-                            request, msgLabel("Image"),
-                            HtmlUtil.img(
-                                entry.getResource().getPath(), "",
-                                "width=" + width)));
-                }
-            }
 
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
 

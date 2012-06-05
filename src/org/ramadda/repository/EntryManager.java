@@ -631,6 +631,12 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public Result processEntryAccess(Request request) throws Exception {
+        Entry        entry =  getEntry(request);
+        return entry.getTypeHandler().processEntryAccess(request, entry);
+    }
+
+
     /**
      * _more_
      *
