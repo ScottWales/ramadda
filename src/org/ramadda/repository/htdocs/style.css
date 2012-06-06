@@ -86,7 +86,7 @@ form {
    background-color : #FFFFFF;
    position: absolute; 
    left:-10000px; 
-   z-index: 1000;
+   z-index: 10000;
 //Shadow effect
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
