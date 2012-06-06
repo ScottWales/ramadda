@@ -1214,12 +1214,16 @@ public class EntryManager extends RepositoryManager {
                 }
 
                 if(serverFile.isDirectory()) {
-                    final String pattern = request.getString(ARG_SERVERFILE_PATTERN, null);
+                    String pattern = request.getString(ARG_SERVERFILE_PATTERN, null);
+                    if(pattern.length()==0) pattern  = null;
+                    if(pattern!=null)
+                        pattern = StringUtil.wildcardToRegexp(pattern);
+                    final String thePattern = pattern;
                     File[] files = serverFile.listFiles(new FileFilter(){
                             public boolean accept(File f) {
-                                if(pattern == null || pattern.length()==0) return true;
+                                if(thePattern == null) return true;
                                 String name = f.getName();
-                                if(name.matches(pattern)) {
+                                if(name.matches(thePattern)) {
                                     return true;
                                 }
                                 return false;

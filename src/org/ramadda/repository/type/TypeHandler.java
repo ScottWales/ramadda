@@ -2687,7 +2687,7 @@ public class TypeHandler extends RepositoryManager {
                         + msg("Note: If a directory then all files will be added")));
                 localFilesSB.append(HtmlUtil.formEntry(msgLabel("Pattern"),
                         HtmlUtil.input(ARG_SERVERFILE_PATTERN, "",
-                                       HtmlUtil.SIZE_10) + " (regexp)"));
+                                       HtmlUtil.SIZE_10)));
                 localFilesSB.append(HtmlUtil.formTableClose());
                 tabTitles.add(msg("Files on Server"));
                 tabContent.add(HtmlUtil.inset(localFilesSB.toString(), 8));
