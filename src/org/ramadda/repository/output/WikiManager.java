@@ -933,7 +933,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT,
                                      height - 40);
             // for slideshow
-            boolean paginate     = Misc.getProperty(props, "paginate", false);
+            boolean shownav      = Misc.getProperty(props, "shownav", false);
 
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
@@ -1031,26 +1031,36 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             } else if (doingSlideshow) {
                 String arrowWidth  = "24";
                 String arrowHeight = "43";
+                String slideId     = "slides_" + (idCounter++);
+                String slidedivId  = "slidediv_" + (idCounter);
+
+                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
+                                        HtmlUtil.id(slidedivId)));
                 sb.append(HtmlUtil.open("style",
                                         HtmlUtil.attr("type", "text/css")));
+                sb.append("#" + slidedivId + " { width: " + width
+                          + "px; }\n");
                 sb.append(".slides_image {max-height: " + maxImageHeight
                           + "px; overflow-x: none; overflow-y: auto;}\n");
-                int border = Misc.getProperty(props, "border", 1);
+
+                int    border      = Misc.getProperty(props, "border", 1);
+                String borderColor = Misc.getProperty(props, "bordercolor",
+                                         "#aaa");
                 sb.append(
-                    ".slides_container {border: " + border
-                    + "px solid #aaa; width:" + width
+                    "#" + slideId + " .slides_container {border: " + border
+                    + "px solid " + borderColor + "; width:" + width
                     + "px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
                     + width + "px;height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
-                //sb.append("<link rel=\"stylesheet\" href=\"/slides/paginate.css\">\n");
+                sb.append(
+                    "<link rel=\"stylesheet\" href=\"/slides/paginate.css\">\n");
 
                 String slideParams =
                     "preload: false, preloadImage: "
                     + HtmlUtil.squote(getRepository().fileUrl("/slides/img/loading.gif"))
                     + ", play: 0, pause: 2500, hoverPause: true, generatePagination: "
-                    + paginate + "\n";
-                StringBuffer js      = new StringBuffer();
-                String       slideId = "slide_" + (idCounter++);
+                    + shownav + "\n";
+                StringBuffer js = new StringBuffer();
 
                 js.append(
                     "$(function(){\n$(" + HtmlUtil.squote("#" + slideId)
@@ -1098,12 +1108,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     sb.append(content);
                     //                    sb.append(HtmlUtil.br());
                     //                    sb.append(title);
-                    sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+                    sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slide
                 }
-                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slides_container
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
                 sb.append(HtmlUtil.col(nextImage, "width=1"));
                 sb.append("</tr></table>");
+                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slideId
+
+                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slidediv
+
                 sb.append(
                     HtmlUtil.importJS(
                         getRepository().fileUrl(
@@ -1755,7 +1769,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             throws Exception {
         name = name.trim();
         Entry theEntry = null;
-        if (parent.isGroup()) {
+        if ((parent != null  /* top group */
+                ) && parent.isGroup()) {
             for (Entry child :
                     getEntryManager().getChildren(request, (Entry) parent)) {
                 if (child.getName().trim().equalsIgnoreCase(name)) {
