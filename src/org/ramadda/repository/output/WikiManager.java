@@ -119,9 +119,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** exclude attribute */
     public static final String ATTR_EXCLUDE = "exclude";
 
-    /** the alt attribute for images */
-    public static final String ATTR_ALT = "alt";
-
     /** the message attribute */
     public static final String ATTR_MESSAGE = "message";
 
@@ -528,6 +525,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             extra = extra + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, width);
         }
 
+        if (alt == null) {
+            String name = entry.getName();
+            if ((name != null) && !name.isEmpty()) {
+                alt = name;
+            }
+        }
+
         if (alt != null) {
             extra = extra + HtmlUtil.attr(HtmlUtil.ATTR_ALT, alt);
         }
@@ -870,10 +874,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     return "No maps";
                 }
                 boolean[] haveBearingLines = { false };
-                Request newRequest = request.cloneMe();
+                Request   newRequest       = request.cloneMe();
                 newRequest.putAll(props);
-                MapInfo   map = getMapManager().getMap(newRequest, children, sb,
-                                  width, height, false, haveBearingLines,
+                MapInfo map = getMapManager().getMap(newRequest, children,
+                                  sb, width, height, false, haveBearingLines,
                                   listEntries);
             }
 
@@ -928,6 +932,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, width);
             int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT,
                                      height - 40);
+            // for slideshow
+            boolean paginate     = Misc.getProperty(props, "paginate", false);
 
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
@@ -965,7 +971,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         }
                         Request newRequest = request.cloneMe();
                         newRequest.putAll(props);
-                        content = getMapManager().makeInfoBubble(newRequest, child);
+                        content = getMapManager().makeInfoBubble(newRequest,
+                                child);
                     }
                 }
 
@@ -1035,11 +1042,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     + "px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
                     + width + "px;height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
+                //sb.append("<link rel=\"stylesheet\" href=\"/slides/paginate.css\">\n");
 
                 String slideParams =
                     "preload: false, preloadImage: "
                     + HtmlUtil.squote(getRepository().fileUrl("/slides/img/loading.gif"))
-                    + ", play: 0, pause: 2500, hoverPause: true, generatePagination: false\n";
+                    + ", play: 0, pause: 2500, hoverPause: true, generatePagination: "
+                    + paginate + "\n";
                 StringBuffer js      = new StringBuffer();
                 String       slideId = "slide_" + (idCounter++);
 
@@ -1050,21 +1059,29 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                         HtmlUtil.id(slideId)));
-                
-                
 
-                String prevImage = HtmlUtil.href("#",
-                                                 HtmlUtil.img(getRepository().fileUrl(
-                                                                                      "/slides/img/arrow-prev.png"), "Prev"," width=18 "),HtmlUtil.cssClass("next"));
 
-                String nextImage = HtmlUtil.href("#",
-                                                 HtmlUtil.img(getRepository().fileUrl(
-                                                                                      "/slides/img/arrow-next.png"), "Next", " width=18 "),HtmlUtil.cssClass("next"));
+
+                String prevImage =
+                    HtmlUtil.href(
+                        "#",
+                        HtmlUtil.img(
+                            getRepository().fileUrl(
+                                "/slides/img/arrow-prev.png"), "Prev",
+                                    " width=18 "), HtmlUtil.cssClass("next"));
+
+                String nextImage =
+                    HtmlUtil.href(
+                        "#",
+                        HtmlUtil.img(
+                            getRepository().fileUrl(
+                                "/slides/img/arrow-next.png"), "Next",
+                                    " width=18 "), HtmlUtil.cssClass("next"));
 
 
                 sb.append(
                     "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
-                sb.append(HtmlUtil.col(prevImage,"width=1"));
+                sb.append(HtmlUtil.col(prevImage, "width=1"));
                 sb.append(HtmlUtil.open(HtmlUtil.TAG_TD,
                                         HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
                                             "" + width)));
@@ -1085,7 +1102,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
-                sb.append(HtmlUtil.col(nextImage,"width=1"));
+                sb.append(HtmlUtil.col(nextImage, "width=1"));
                 sb.append("</tr></table>");
                 sb.append(
                     HtmlUtil.importJS(

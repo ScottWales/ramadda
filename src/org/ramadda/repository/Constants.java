@@ -2176,9 +2176,11 @@ public interface Constants {
     /** attribute in import tag */
     public static final String ATTR_HEIGHT = "height";
 
-
     /** imagewidth attribute */
     public static final String ATTR_IMAGEWIDTH = "imagewidth";
+
+    /** the alt attribute for images */
+    public static final String ATTR_ALT = "alt";
 
 
 }
