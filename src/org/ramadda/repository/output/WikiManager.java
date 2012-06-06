@@ -1039,7 +1039,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String slideParams =
                     "preload: false, preloadImage: "
                     + HtmlUtil.squote(getRepository().fileUrl("/slides/img/loading.gif"))
-                    + ", play: 5000, pause: 2500, hoverPause: true, generatePagination: false\n";
+                    + ", play: 0, pause: 2500, hoverPause: true, generatePagination: false\n";
                 StringBuffer js      = new StringBuffer();
                 String       slideId = "slide_" + (idCounter++);
 
@@ -1050,23 +1050,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                         HtmlUtil.id(slideId)));
+                
+                
+
+                String prevImage = HtmlUtil.href("#",
+                                                 HtmlUtil.img(getRepository().fileUrl(
+                                                                                      "/slides/img/arrow-prev.png"), "Prev"," width=18 "),HtmlUtil.cssClass("next"));
+
+                String nextImage = HtmlUtil.href("#",
+                                                 HtmlUtil.img(getRepository().fileUrl(
+                                                                                      "/slides/img/arrow-next.png"), "Next", " width=18 "),HtmlUtil.cssClass("next"));
+
+
                 sb.append(
                     "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
-                sb.append(
-                    HtmlUtil.col(
-                        HtmlUtil.href(
-                            "#",
-                            HtmlUtil.img(
-                                getRepository().fileUrl(
-                                    "/slides/img/arrow-prev.png"), "Prev",
-                                        HtmlUtil.attr(
-                                            HtmlUtil.ATTR_WIDTH,
-                                            arrowWidth) + HtmlUtil.attr(
-                                                HtmlUtil.ATTR_HEIGHT,
-                                                    arrowHeight)), HtmlUtil.cssClass(
-                                                        "prev")), HtmlUtil.attr(
-                                                            HtmlUtil.ATTR_WIDTH,
-                                                                arrowWidth)));
+                sb.append(HtmlUtil.col(prevImage,"width=1"));
                 sb.append(HtmlUtil.open(HtmlUtil.TAG_TD,
                                         HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
                                             "" + width)));
@@ -1080,41 +1078,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     sb.append("\n");
                     sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
                                             HtmlUtil.cssClass("slide")));
-                    sb.append("\n");
                     sb.append(content);
-                    //                    sb.append("\n");
                     //                    sb.append(HtmlUtil.br());
-                    //                    sb.append("\n");
                     //                    sb.append(title);
-                    sb.append("\n");
                     sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
-                    sb.append("\n");
                 }
-                sb.append("\n");
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
-                sb.append("\n");
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
-                sb.append("\n");
-                sb.append(
-                    HtmlUtil.col(
-                        HtmlUtil.href(
-                            "#",
-                            HtmlUtil.img(
-                                getRepository().fileUrl(
-                                    "/slides/img/arrow-next.png"), "Next",
-                                        HtmlUtil.attr(
-                                            HtmlUtil.ATTR_WIDTH,
-                                            arrowWidth) + HtmlUtil.attr(
-                                                HtmlUtil.ATTR_HEIGHT,
-                                                    arrowHeight)), HtmlUtil.cssClass(
-                                                        "next")), HtmlUtil.attr(
-                                                            HtmlUtil.ATTR_WIDTH,
-                                                                arrowWidth)));
-
-                sb.append("\n");
-                sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
+                sb.append(HtmlUtil.col(nextImage,"width=1"));
                 sb.append("</tr></table>");
-                sb.append("\n");
                 sb.append(
                     HtmlUtil.importJS(
                         getRepository().fileUrl(
