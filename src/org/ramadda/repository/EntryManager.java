@@ -1066,17 +1066,11 @@ public class EntryManager extends RepositoryManager {
             dataType = request.getString(ARG_DATATYPE_SELECT, "");
         }
 
-        boolean isServerFile   = false;
-        String  serverFileName = null;
+        File  serverFile = null;
         if (request.defined(ARG_SERVERFILE)) {
-            if ( !user.getAdmin()) {
-                fatalError(request,
-                           "Only administrators can add a local file");
-            }
-            
-            serverFileName = request.getString(ARG_SERVERFILE, (String) null);
-            getStorageManager().checkLocalFile(new File(serverFileName));
-            isServerFile = true;
+            request.ensureAdmin();
+            serverFile = new File(request.getString(ARG_SERVERFILE, (String) null));
+            getStorageManager().checkLocalFile(serverFile);
         }
 
 
@@ -1121,8 +1115,8 @@ public class EntryManager extends RepositoryManager {
             boolean isFile       = false;
             String  resourceName = request.getString(ARG_FILE, BLANK);
 
-            if (isServerFile && (serverFileName != null)) {
-                filename = serverFileName;
+            if (serverFile != null) {
+                filename = serverFile.toString();
             }
 
 
@@ -1135,7 +1129,7 @@ public class EntryManager extends RepositoryManager {
                             : request.get(ARG_FILE_UNZIP, false));
 
 
-            if (isServerFile) {
+            if (serverFile!=null) {
                 isFile   = true;
                 resource = filename;
                 if (forUpload) {
@@ -1212,15 +1206,50 @@ public class EntryManager extends RepositoryManager {
 
             boolean hasZip = false;
 
-            if(isServerFile) {
+            if(serverFile!=null) {
+                if(!serverFile.exists()) {
+                    StringBuffer message = new StringBuffer(
+                                                            getRepository().showDialogError(msg("File does not exist")));
+                    return addEntryHeader(request, parentEntry,  new Result("", message));
+                }
+
+                if(serverFile.isDirectory()) {
+                    final String pattern = request.getString(ARG_SERVERFILE_PATTERN, null);
+                    File[] files = serverFile.listFiles(new FileFilter(){
+                            public boolean accept(File f) {
+                                if(pattern == null || pattern.length()==0) return true;
+                                String name = f.getName();
+                                if(name.matches(pattern)) {
+                                    return true;
+                                }
+                                return false;
+                            }
+                        });
+                    int fileCnt = 0;
+                    for(File f: files) {
+                        if(f.isFile()) {
+                            resources.add(f.toString());
+                            origNames.add(f.toString());
+                            parents.add(parentEntry);
+                            fileCnt++;
+                        }
+                    }
+                    if(fileCnt == 0) {
+                        StringBuffer message = new StringBuffer(
+                                                                getRepository().showDialogError(msg("No files found matching pattern")));
+                        return addEntryHeader(request, parentEntry,  new Result("", message));
+                    }
+                } else {
+                    resources.add(serverFile.toString());
+                    origNames.add(resourceName);
+                    parents.add(parentEntry);
+                }
             } else if ( !unzipArchive) {
                 resources.add(resource);
                 origNames.add(resourceName);
                 parents.add(parentEntry);
             } else {
                 hasZip = true;
-
-                isServerFile = false;
                 Hashtable<String, Entry> nameToGroup = new Hashtable<String,
                                                            Entry>();
                 FileInputStream fis =
@@ -1310,7 +1339,7 @@ public class EntryManager extends RepositoryManager {
                 resourceName = (String) resources.get(resourceIdx);
                 String theResource = (String) resources.get(resourceIdx);
                 String origName    = (String) origNames.get(resourceIdx);
-                if (isFile && !isServerFile) {
+                if (isFile && serverFile==null) {
                     if (forUpload) {
                         theResource =
                             getStorageManager().moveToAnonymousStorage(
@@ -1370,7 +1399,7 @@ public class EntryManager extends RepositoryManager {
 
                 String id           = getRepository().getGUID();
                 String resourceType = Resource.TYPE_UNKNOWN;
-                if (isServerFile) {
+                if (serverFile!=null) {
                     resourceType = Resource.TYPE_LOCAL_FILE;
                 } else if (isFile) {
                     resourceType = Resource.TYPE_STOREDFILE;
@@ -1415,8 +1444,8 @@ public class EntryManager extends RepositoryManager {
                 newResourceName = getStorageManager().moveToStorage(request,
                         new File(newResourceName)).toString();
                 newResourceType = Resource.TYPE_STOREDFILE;
-            } else if (isServerFile) {
-                newResourceName = serverFileName;
+            } else if (serverFile!=null) {
+                newResourceName = serverFile.toString();
                 newResourceType = Resource.TYPE_LOCAL_FILE;
             } else if (request.defined(ARG_URL)) {
                 newResourceName = request.getAnonymousEncodedString(ARG_URL,
