@@ -24,6 +24,7 @@ package org.ramadda.repository.auth;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
+import org.ramadda.util.TTLCache;
 
 
 import org.w3c.dom.*;
@@ -100,8 +101,9 @@ public class AccessManager extends RepositoryManager {
     /** _more_ */
     private Object MUTEX_PERMISSIONS = new Object();
 
-    /** _more_ */
-    private Hashtable recentPermissions = new Hashtable();
+
+    private TTLCache<String, Object[]> recentPermissions= new TTLCache<String,Object[]>(5*60*1000);
+
 
 
     /**
@@ -116,7 +118,7 @@ public class AccessManager extends RepositoryManager {
 
 
     public void clearCache() {
-        recentPermissions = new Hashtable();
+        recentPermissions= new TTLCache<String,Object[]>(5*60*1000);
     }
 
 
@@ -356,7 +358,7 @@ public class AccessManager extends RepositoryManager {
 
         String key = "a:" + action + "_u:" + user.getId() + "_ip:"
                      + requestIp + "_e:" + entry.getId();
-        Object[] pastResult = (Object[]) recentPermissions.get(key);
+        Object[] pastResult =  recentPermissions.get(key);
         Date     now        = new Date();
         if (pastResult != null) {
             Date    then = (Date) pastResult[0];
@@ -378,7 +380,7 @@ public class AccessManager extends RepositoryManager {
                                           requestIp);
         //        logInfo("Upload:canDoAction:  result= " + result);
         if (recentPermissions.size() > 10000) {
-            recentPermissions = new Hashtable();
+            clearCache();
         }
         recentPermissions.put(key, new Object[] { now, new Boolean(result) });
         return result;
@@ -733,7 +735,7 @@ public class AccessManager extends RepositoryManager {
     public void insertPermissions(Request request, Entry entry,
                                   List<Permission> permissions)
             throws Exception {
-        recentPermissions = new Hashtable();
+        clearCache();
         getDatabaseManager().delete(
             Tables.PERMISSIONS.NAME,
             Clause.eq(Tables.PERMISSIONS.COL_ENTRY_ID, entry.getId()));
