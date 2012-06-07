@@ -1039,7 +1039,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(HtmlUtil.open("style",
                                         HtmlUtil.attr("type", "text/css")));
                 sb.append("#" + slidedivId + " { width: " + width
-                          + "px; }\n");
+                          + "px; height: " + (height + 50) + "}\n");
                 sb.append(".slides_image {max-height: " + maxImageHeight
                           + "px; overflow-x: none; overflow-y: auto;}\n");
 
