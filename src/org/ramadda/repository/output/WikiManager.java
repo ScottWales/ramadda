@@ -932,9 +932,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, width);
             int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT,
                                      height - 40);
-            // for slideshow
-            boolean shownav      = Misc.getProperty(props, "shownav", false);
-
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
 
@@ -1029,17 +1026,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 return sb.toString();
             } else if (doingSlideshow) {
-                String arrowWidth  = "24";
-                String arrowHeight = "43";
-                String slideId     = "slides_" + (idCounter++);
-                String slidedivId  = "slidediv_" + (idCounter);
+                // for slideshow
+                boolean shownav = Misc.getProperty(props, "shownav", false);
+                boolean autoplay = Misc.getProperty(props, "autoplay", false);
+                int     playSpeed   = Misc.getProperty(props, "speed", 5);
 
-                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                        HtmlUtil.id(slidedivId)));
+                String  arrowWidth  = "24";
+                String  arrowHeight = "43";
+                String  slideId     = "slides_" + (idCounter++);
+
                 sb.append(HtmlUtil.open("style",
                                         HtmlUtil.attr("type", "text/css")));
-                sb.append("#" + slidedivId + " { width: " + width
-                          + "px; height: " + (height + 50) + "}\n");
+                // need to set the height of the div to include the nav bar
+                sb.append("#" + slideId + " { width: " + width
+                          + "px; height: " + (height + 30) + "}\n");
                 sb.append(".slides_image {max-height: " + maxImageHeight
                           + "px; overflow-x: none; overflow-y: auto;}\n");
 
@@ -1055,11 +1055,18 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(
                     "<link rel=\"stylesheet\" href=\"/slides/paginate.css\">\n");
 
+                // user speed is seconds, script uses milliseconds - 0 == no play
+                int    startSpeed  = (autoplay)
+                                     ? playSpeed * 1000
+                                     : 0;
                 String slideParams =
                     "preload: false, preloadImage: "
-                    + HtmlUtil.squote(getRepository().fileUrl("/slides/img/loading.gif"))
-                    + ", play: 0, pause: 2500, hoverPause: true, generatePagination: "
-                    + shownav + "\n";
+                    + HtmlUtil
+                        .squote(getRepository()
+                            .fileUrl("/slides/img/loading.gif")) + ", play: "
+                                + startSpeed
+                                + ", pause: 2500, hoverPause: true"
+                                + ", generatePagination: " + shownav + "\n";
                 StringBuffer js = new StringBuffer();
 
                 js.append(
@@ -1115,8 +1122,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(HtmlUtil.col(nextImage, "width=1"));
                 sb.append("</tr></table>");
                 sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slideId
-
-                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slidediv
 
                 sb.append(
                     HtmlUtil.importJS(
