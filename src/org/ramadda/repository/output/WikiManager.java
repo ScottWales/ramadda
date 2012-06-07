@@ -1085,7 +1085,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         HtmlUtil.img(
                             getRepository().fileUrl(
                                 "/slides/img/arrow-prev.png"), "Prev",
-                                    " width=18 "), HtmlUtil.cssClass("next"));
+                                    " width=18 "), HtmlUtil.cssClass("prev"));
 
                 String nextImage =
                     HtmlUtil.href(
