@@ -377,7 +377,9 @@ public class MapManager extends RepositoryManager {
         List<String>                    categories = new ArrayList<String>();
         Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
                                                      StringBuffer>();
-        int kmlCnt = 0;
+        String categoryType = request.getString("category", "type");
+
+        int    kmlCnt       = 0;
         for (Entry entry : entries) {
             String kmlUrl = KmlOutputHandler.getKmlUrl(request, entry);
             if ((kmlUrl == null)
@@ -386,8 +388,13 @@ public class MapManager extends RepositoryManager {
                 continue;
             }
 
-            String       category = entry.getTypeHandler().getCategory(entry);
-            StringBuffer catSB    = catMap.get(category);
+            String category;
+            if (Misc.equals(categoryType, "parent")) {
+                category = entry.getParentEntry().getName();
+            } else {
+                category = entry.getTypeHandler().getCategory(entry);
+            }
+            StringBuffer catSB = catMap.get(category);
             if (catSB == null) {
                 catMap.put(category, catSB = new StringBuffer());
                 categories.add(category);

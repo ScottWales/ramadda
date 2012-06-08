@@ -216,6 +216,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ATTR_MAXIMAGEHEIGHT = "maximageheight";
 
     /** attribute in import tag */
+    public static final String ATTR_DAY = "day";
+
+    /** attribute in import tag */
     public static final String ATTR_DAYS = "days";
 
 
@@ -828,7 +831,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKI_PROP_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
-            boolean doDay = Misc.getProperty(props, "day", false);
+            boolean doDay = Misc.getProperty(props, ATTR_DAY, false);
             getCalendarOutputHandler().outputCalendar(request,
                     getCalendarOutputHandler().makeCalendarEntries(request,
                         children), sb, doDay);
@@ -861,8 +864,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
 
+            Request newRequest = request.cloneMe();
+            newRequest.putAll(props);
+
             if (googleEarth) {
-                getMapManager().getGoogleEarth(request, children, sb,
+                getMapManager().getGoogleEarth(newRequest, children, sb,
                         Misc.getProperty(props, ATTR_WIDTH, -1),
                         Misc.getProperty(props, ATTR_HEIGHT, -1),
                         listEntries, justPoints);
@@ -874,8 +880,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     return "No maps";
                 }
                 boolean[] haveBearingLines = { false };
-                Request   newRequest       = request.cloneMe();
-                newRequest.putAll(props);
+                //Request   newRequest       = request.cloneMe();
+                //newRequest.putAll(props);
                 MapInfo map = getMapManager().getMap(newRequest, children,
                                   sb, width, height, false, haveBearingLines,
                                   listEntries);
