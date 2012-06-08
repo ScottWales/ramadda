@@ -1707,7 +1707,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             String title = null;
             String propertyValue;
-            if ( !outputType.getIsView()) {
+            if (false && !outputType.getIsView()) {
                 List<Link> links = new ArrayList<Link>();
                 handler.getEntryLinks(myRequest,
                                       new OutputHandler.State(importEntry),
