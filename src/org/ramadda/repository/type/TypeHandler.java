@@ -4358,18 +4358,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
     /**
-     * Set the DfltDataType property.
-     *
-     * @param value The new value for DfltDataType
      */
     public void setDefaultCategory(String value) {
         defaultCategory = value;
     }
 
     /**
-     * Get the DfltDataType property.
-     *
-     * @return The DfltDataType
      */
     public String getDefaultCategory() {
         return defaultCategory;
