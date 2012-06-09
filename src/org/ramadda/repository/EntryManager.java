@@ -681,10 +681,14 @@ public class EntryManager extends RepositoryManager {
             sb.append(request.form(getRepository().URL_ENTRY_FORM,
                                    HtmlUtil.attr("name", "entryform")));
         } else {
+            String onsubmit = " onsubmit=\"return submitEntryForm();\" ";
             request.uploadFormWithAuthToken(sb,
                                             getRepository().URL_ENTRY_CHANGE,
-                                            HtmlUtil.attr("name",
+                                            onsubmit + HtmlUtil.attr("name",
                                                 "entryform"));
+            String loadingImage = HtmlUtil.img(getRepository().iconUrl(ICON_PROGRESS));
+            String loadingMessage = (entry==null?msg("Creating entry..."):msg("Changing entry..."));
+            sb.append("<div style=\"display:none;\" id=\"dialog-confirm\">" + loadingImage +" " + loadingMessage +"</div>");
         }
 
         sb.append(HtmlUtil.formTable());
@@ -1058,13 +1062,16 @@ public class EntryManager extends RepositoryManager {
                     TypeHandler.TYPE_ANY));
         }
 
+        boolean figureOutType = request.get(ARG_TYPE_GUESS,false);
+
         List<Entry> entries  = new ArrayList<Entry>();
-        String      dataType = "";
-        if (request.defined(ARG_DATATYPE)) {
-            dataType = request.getString(ARG_DATATYPE, "");
+        String      category = "";
+        if (request.defined(ARG_CATEGORY)) {
+            category = request.getString(ARG_CATEGORY, "");
         } else {
-            dataType = request.getString(ARG_DATATYPE_SELECT, "");
+            category = request.getString(ARG_CATEGORY_SELECT, "");
         }
+
 
         File  serverFile = null;
         if (request.defined(ARG_SERVERFILE)) {
@@ -1072,7 +1079,6 @@ public class EntryManager extends RepositoryManager {
             serverFile = new File(request.getString(ARG_SERVERFILE, (String) null));
             getStorageManager().checkLocalFile(serverFile);
         }
-
 
         if (entry == null) {
             if (forUpload) {
@@ -1425,7 +1431,7 @@ public class EntryManager extends RepositoryManager {
                 entry = typeHandler.createEntry(id);
                 entry.initEntry(name, description, parent, request.getUser(),
                                 new Resource(theResource, resourceType),
-                                dataType, createDate.getTime(),
+                                category, createDate.getTime(),
                                 createDate.getTime(),
                                 theDateRange[0].getTime(),
                                 theDateRange[1].getTime(), null);
@@ -1485,7 +1491,7 @@ public class EntryManager extends RepositoryManager {
                     publishAnonymousEntry(request, entry);
                 }
             } else {
-                entry.setDataType(dataType);
+                entry.setCategory(category);
             }
 
 
@@ -2226,15 +2232,15 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryUploadOk(Request request) throws Exception {
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntry(request);
-        //We use the datatype on the entry to flag the uploaded entries
-        entry.setDataType("");
+        //We use the category on the entry to flag the uploaded entries
+        entry.setCategory("");
         insertEntries((List<Entry>) Misc.newList(entry), true);
         return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry));
     }
 
     /** _more_ */
-    public final static String DATATYPE_UPLOAD = "upload";
+    public final static String CATEGORY_UPLOAD = "upload";
 
     /**
      * _more_
@@ -2250,7 +2256,7 @@ public class EntryManager extends RepositoryManager {
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(entry,
                 AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD, false);
-        //Reset the datatype
+        //Reset the category
         if (metadataList != null) {
             Metadata metadata = metadataList.get(0);
             User     newUser  =
@@ -2260,9 +2266,9 @@ public class EntryManager extends RepositoryManager {
             } else {
                 entry.setUser(entry.getParentEntry().getUser());
             }
-            entry.setDataType(metadata.getAttr3());
+            entry.setCategory(metadata.getAttr3());
         } else {
-            entry.setDataType("");
+            entry.setCategory("");
         }
         entry.setTypeHandler(
             getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
@@ -2283,7 +2289,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public boolean isAnonymousUpload(Entry entry) {
-        return Misc.equals(entry.getDataType(), DATATYPE_UPLOAD);
+        return Misc.equals(entry.getCategory(), CATEGORY_UPLOAD);
     }
 
 
@@ -2299,8 +2305,8 @@ public class EntryManager extends RepositoryManager {
     private void initUploadedEntry(Request request, Entry entry,
                                    Entry parentEntry)
             throws Exception {
-        String oldType = entry.getDataType();
-        entry.setDataType(DATATYPE_UPLOAD);
+        String oldType = entry.getCategory();
+        entry.setCategory(CATEGORY_UPLOAD);
 
         //Encode the name and description to prevent xss attacks
         entry.setName(RepositoryUtil.encodeInput(entry.getName()));
@@ -3032,7 +3038,7 @@ public class EntryManager extends RepositoryManager {
                 newEntry.initEntry(oldEntry.getName(),
                                    oldEntry.getDescription(),
                                    (Entry) newParent, request.getUser(),
-                                   newResource, oldEntry.getDataType(),
+                                   newResource, oldEntry.getCategory(),
                                    oldEntry.getCreateDate(),
                                    new Date().getTime(),
                                    oldEntry.getStartDate(),
@@ -3619,7 +3625,7 @@ public class EntryManager extends RepositoryManager {
         }
         String type = XmlUtil.getAttribute(node, ATTR_TYPE,
                                            TypeHandler.TYPE_FILE);
-        String dataType = XmlUtil.getAttribute(node, ATTR_DATATYPE, "");
+        String category = XmlUtil.getAttribute(node, ATTR_CATEGORY, "");
         String description = XmlUtil.getAttribute(node, ATTR_DESCRIPTION,
                                  (String) null);
         if (description == null) {
@@ -3743,7 +3749,7 @@ public class EntryManager extends RepositoryManager {
         }
         Entry entry = typeHandler.createEntry(id);
         entry.initEntry(name, description, parentEntry, request.getUser(),
-                        resource, dataType, createDate.getTime(),
+                        resource, category, createDate.getTime(),
                         new Date().getTime(), fromDate.getTime(),
                         toDate.getTime(), null);
 
@@ -5884,7 +5890,7 @@ public class EntryManager extends RepositoryManager {
         statement.setString(col++, entry.getResource().getType());
         statement.setString(col++, entry.getResource().getMd5());
         statement.setLong(col++, entry.getResource().getFileSize());
-        statement.setString(col++, entry.getDataType());
+        statement.setString(col++, entry.getCategory());
         //create date
         getDatabaseManager().setDate(statement, col++, entry.getCreateDate());
 

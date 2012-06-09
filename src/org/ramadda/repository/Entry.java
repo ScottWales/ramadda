@@ -119,7 +119,7 @@ public class Entry implements Cloneable {
     private Resource resource = new Resource();
 
     /** _more_ */
-    private String dataType;
+    private String category;
 
     /** _more_ */
     private TypeHandler typeHandler;
@@ -444,7 +444,7 @@ public class Entry implements Cloneable {
      * @param parentEntry _more_
      * @param user _more_
      * @param resource _more_
-     * @param dataType _more_
+     * @param category _more_
      * @param createDate _more_
      * @param changeDate _more_
      * @param startDate _more_
@@ -452,7 +452,7 @@ public class Entry implements Cloneable {
      * @param values _more_
      */
     public void initEntry(String name, String description, Entry parentEntry,
-                          User user, Resource resource, String dataType,
+                          User user, Resource resource, String category,
                           long createDate, long changeDate, long startDate,
                           long endDate, Object[] values) {
         //        super.init(name, description, parentEntry, user, createDate,changeDate);
@@ -466,12 +466,12 @@ public class Entry implements Cloneable {
 
 
         this.resource    = resource;
-        this.dataType    = dataType;
-        if ((dataType == null) || (dataType.length() == 0)) {
-            this.dataType = typeHandler.getDefaultDataType();
+        this.category    = category;
+        if ((category == null) || (category.length() == 0)) {
+            this.category = typeHandler.getDefaultCategory();
         }
-        if (this.dataType == null) {
-            this.dataType = "";
+        if (this.category == null) {
+            this.category = "";
         }
         this.startDate = startDate;
         this.endDate   = endDate;
@@ -1093,21 +1093,21 @@ public class Entry implements Cloneable {
 
 
     /**
-     * Set the DataType property.
+     * Set the Category property.
      *
-     * @param value The new value for DataType
+     * @param value The new value for Category
      */
-    public void setDataType(String value) {
-        dataType = value;
+    public void setCategory(String value) {
+        category = value;
     }
 
     /**
-     * Get the DataType property.
+     * Get the Category property.
      *
-     * @return The DataType
+     * @return The Category
      */
-    public String getDataType() {
-        return dataType;
+    public String getCategory() {
+        return category;
     }
 
     /**

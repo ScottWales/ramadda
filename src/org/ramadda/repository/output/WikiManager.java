@@ -339,7 +339,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_INFORMATION, WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION,
         WIKI_PROP_DATE_FROM, WIKI_PROP_DATE_TO, WIKI_PROP_FIELD,
         WIKI_PROP_LAYOUT, WIKI_PROP_PROPERTIES, WIKI_PROP_HTML, WIKI_PROP_MAP,
-        WIKI_PROP_MAPENTRY, WIKI_PROP_EARTH, WIKI_PROP_CALENDAR,
+        WIKI_PROP_MAPENTRY, WIKI_PROP_EARTH+":width=400 height=400", WIKI_PROP_CALENDAR,
         WIKI_PROP_TIMELINE, WIKI_PROP_COMMENTS, WIKI_PROP_BREADCRUMBS,
         WIKI_PROP_TOOLBAR, WIKI_PROP_IMAGE, WIKI_PROP_MENU, WIKI_PROP_RECENT,
         WIKI_PROP_GALLERY, WIKI_PROP_SLIDESHOW, WIKI_PROP_TABS,
@@ -1877,18 +1877,24 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         StringBuffer importMenu   = new StringBuffer();
         for (int i = 0; i < WIKIPROPS.length; i++) {
             String prop = WIKIPROPS[i];
-            //            System.out.println(prop);
+            String textToInsert  = prop;
+            int colonIdx = prop.indexOf(":");
+            if(colonIdx>=0) {
+                prop = prop.substring(0,colonIdx);
+                textToInsert = prop +" " + textToInsert.substring(colonIdx+1);
+            }
+            //            System.out.println("prop:" + prop +" text:" + textToInsert);
             String js = "javascript:insertTags("
                         + HtmlUtil.squote(textAreaId) + ","
                         + HtmlUtil.squote("{{") + ","
                         + HtmlUtil.squote(" }}") + ","
-                        + HtmlUtil.squote(prop) + ");";
+                        + HtmlUtil.squote(textToInsert) + ");";
             propertyMenu.append(HtmlUtil.href(js, prop));
             propertyMenu.append(HtmlUtil.br());
 
             String js2 = "javascript:insertTags("
                          + HtmlUtil.squote(textAreaId) + ","
-                         + HtmlUtil.squote("{{" + prop + " ") + ","
+                         + HtmlUtil.squote("{{" + textToInsert + " ") + ","
                          + HtmlUtil.squote("}}") + "," + HtmlUtil.squote("")
                          + ");";
             importMenu.append(HtmlUtil.href(js2, prop));

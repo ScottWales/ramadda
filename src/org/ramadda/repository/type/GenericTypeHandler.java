@@ -155,7 +155,7 @@ public class GenericTypeHandler extends TypeHandler {
             //            throw new IllegalArgumentException ("Cannot have a '.' in the type name: "+ getType());
         }
 
-        setDefaultDataType(XmlUtil.getAttribute(entryNode, ATTR_DATATYPE,
+        setDefaultCategory(XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
                 (String) null));
 
         List columnNodes = XmlUtil.findChildren(entryNode, TAG_COLUMN);

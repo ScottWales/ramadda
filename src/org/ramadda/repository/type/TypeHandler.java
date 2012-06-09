@@ -115,8 +115,6 @@ public class TypeHandler extends RepositoryManager {
     public static final String ATTR_NAME = "name";
 
 
-    /** _more_ */
-    public static final String ATTR_CATEGORY = "category";
 
     /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
@@ -128,7 +126,7 @@ public class TypeHandler extends RepositoryManager {
     public static final String ATTR_VALUE = "value";
 
     /** _more_ */
-    public static final String ATTR_DATATYPE = "datatype";
+    public static final String ATTR_CATEGORY = "category";
 
     /** _more_ */
     public static final String TAG_TYPE = "type";
@@ -199,7 +197,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /** _more_ */
-    private String defaultDataType;
+    private String defaultCategory;
 
     /** _more_ */
     private String displayTemplatePath;
@@ -1257,7 +1255,7 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      * @param root _more_
      * @param extraXml _more_
-     * @param metadataType _more_
+     * @param metacategory _more_
      */
     public void addMetadataToXml(Entry entry, Element root,
                                  StringBuffer extraXml,
@@ -1958,11 +1956,11 @@ public class TypeHandler extends RepositoryManager {
                 //                }
             }
 
-            String datatype = entry.getDataType();
-            if ( !entry.getTypeHandler().hasDefaultDataType()
-                    && (datatype != null) && (datatype.length() > 0)) {
+            String category = entry.getCategory();
+            if ( !entry.getTypeHandler().hasDefaultCategory()
+                    && (category != null) && (category.length() > 0)) {
                 sb.append(formEntry(request, msgLabel("Data Type"),
-                                    entry.getDataType()));
+                                    entry.getCategory()));
             }
 
             boolean showMap = true;
@@ -2707,12 +2705,10 @@ public class TypeHandler extends RepositoryManager {
             }
 
             String unzipWidget =
-                HtmlUtil.checkbox(ARG_FILE_UNZIP) + HtmlUtil.space(1)
-                + msg("Unzip archive")
+                HtmlUtil.checkbox(ARG_FILE_UNZIP,"true", true) + 
+                HtmlUtil.space(1)       + msg("Unzip archive")
                 + HtmlUtil.checkbox(ARG_FILE_PRESERVEDIRECTORY, "true", true)
                 + HtmlUtil.space(1) + msg("Make folders from archive");
-
-
             /*
             String datePatternWidget = msgLabel("Date pattern")
                                        + HtmlUtil.space(1)
@@ -2730,7 +2726,15 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+            String extraMore = "";
+
+            if(entry == null && getType().equals(TYPE_FILE)) {
+                extraMore = HtmlUtil.checkbox(ARG_TYPE_GUESS, "true", true) +" " +
+                    msg("Figure out the type") +HtmlUtil.br();
+            }
+
             String extra = HtmlUtil.makeShowHideBlock(msg("More..."),
+                                                      extraMore +
                                addMetadata + HtmlUtil.br() + unzipWidget
                                + HtmlUtil.br() + datePatternWidget, false);
             if (forUpload || !showDownload) {
@@ -2809,18 +2813,18 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-            if ( !hasDefaultDataType()
-                    && okToShowInForm(entry, ARG_DATATYPE, false)) {
+            if ( !hasDefaultCategory()
+                    && okToShowInForm(entry, ARG_CATEGORY, false)) {
                 String selected = "";
                 if (entry != null) {
-                    selected = entry.getDataType();
+                    selected = entry.getCategory();
                 }
-                List   types  = getRepository().getDefaultDataTypes();
+                List   types  = getRepository().getDefaultCategorys();
                 String widget = ((types.size() > 1)
-                                 ? HtmlUtil.select(ARG_DATATYPE_SELECT,
+                                 ? HtmlUtil.select(ARG_CATEGORY_SELECT,
                                      types, selected) + HtmlUtil.space(1)
                                          + msgLabel("Or")
-                                 : "") + HtmlUtil.input(ARG_DATATYPE);
+                                 : "") + HtmlUtil.input(ARG_CATEGORY);
                 sb.append(formEntry(request, msgLabel("Data Type"), widget));
             }
 
@@ -3418,11 +3422,11 @@ public class TypeHandler extends RepositoryManager {
             addOrClause(Tables.ENTRIES.COL_RESOURCE, resource, where);
         }
 
-        if (request.defined(ARG_DATATYPE)) {
-            addCriteria(request, searchCriteria, "Datatype=",
-                        request.getString(ARG_DATATYPE, ""));
+        if (request.defined(ARG_CATEGORY)) {
+            addCriteria(request, searchCriteria, "Category=",
+                        request.getString(ARG_CATEGORY, ""));
             addOrClause(Tables.ENTRIES.COL_DATATYPE,
-                        request.getString(ARG_DATATYPE, ""), where);
+                        request.getString(ARG_CATEGORY, ""), where);
         }
 
         if (request.defined(ARG_USER_ID)) {
@@ -4358,8 +4362,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param value The new value for DfltDataType
      */
-    public void setDefaultDataType(String value) {
-        defaultDataType = value;
+    public void setDefaultCategory(String value) {
+        defaultCategory = value;
     }
 
     /**
@@ -4367,8 +4371,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return The DfltDataType
      */
-    public String getDefaultDataType() {
-        return defaultDataType;
+    public String getDefaultCategory() {
+        return defaultCategory;
     }
 
     /**
@@ -4376,8 +4380,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public boolean hasDefaultDataType() {
-        return (defaultDataType != null) && (defaultDataType.length() > 0);
+    public boolean hasDefaultCategory() {
+        return (defaultCategory != null) && (defaultCategory.length() > 0);
     }
 
 

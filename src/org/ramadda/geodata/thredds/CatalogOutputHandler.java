@@ -797,19 +797,19 @@ public class CatalogOutputHandler extends OutputHandler {
                                       "ramadda.host", CatalogUtil.ATTR_VALUE,
                                       getRepository().getHostname() });
 
-        String dataType = null;
+        String category = null;
         if (path.endsWith(".area")) {
-            dataType = "Image";
+            category = "Image";
         } else {
             //TODO: more types here
         }
 
-        if (dataType != null) {
-            dataset.setAttribute(CatalogUtil.ATTR_DATATYPE, dataType);
+        if (category != null) {
+            dataset.setAttribute(CatalogUtil.ATTR_DATATYPE, category);
         }
 
-        if (entry.getDataType() != null) {
-            String type = entry.getDataType();
+        if (entry.getCategory() != null) {
+            String type = entry.getCategory();
             if (false && (type != null) && (type.length() > 0)) {
                 XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                dataset, new String[] { CatalogUtil.ATTR_NAME,

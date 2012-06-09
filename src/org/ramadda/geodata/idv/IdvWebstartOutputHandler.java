@@ -280,8 +280,8 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                 } else {
                     args.append("<argument>-data</argument>\n<argument>");
                     String type = "OPENDAP.GRID";
-                    if (entry.getDataType() != null) {
-                        if (entry.getDataType().equals("point")) {
+                    if (entry.getCategory() != null) {
+                        if (entry.getCategory().equals("point")) {
                             type = "NetCDF.POINT";
                         }
                     }

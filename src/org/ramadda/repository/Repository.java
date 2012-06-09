@@ -359,7 +359,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    private List dataTypeList = null;
+    private List categoryList = null;
 
     /** _more_ */
     private List<String> htdocRoots = new ArrayList<String>();
@@ -2047,7 +2047,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         pageCacheList = new ArrayList();
         getEntryManager().clearCache();
         getAccessManager().clearCache();
-        dataTypeList = null;
+        categoryList = null;
     }
 
 
@@ -4966,9 +4966,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public List getDefaultDataTypes() throws Exception {
-        if (dataTypeList != null) {
-            return dataTypeList;
+    public List getDefaultCategorys() throws Exception {
+        if (categoryList != null) {
+            return categoryList;
         }
         Statement stmt = getDatabaseManager().select(
                              SqlUtil.distinct(Tables.ENTRIES.COL_DATATYPE),
@@ -4978,10 +4978,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List      tmp  = new ArrayList();
         Hashtable seen = new Hashtable();
         for (TypeHandler typeHandler : getTypeHandlers()) {
-            if (typeHandler.hasDefaultDataType()
-                    && (seen.get(typeHandler.getDefaultDataType()) == null)) {
-                tmp.add(typeHandler.getDefaultDataType());
-                seen.put(typeHandler.getDefaultDataType(), "");
+            if (typeHandler.hasDefaultCategory()
+                    && (seen.get(typeHandler.getDefaultCategory()) == null)) {
+                tmp.add(typeHandler.getDefaultCategory());
+                seen.put(typeHandler.getDefaultCategory(), "");
             }
         }
 
@@ -4994,7 +4994,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         tmp.add(0, "");
 
-        return dataTypeList = tmp;
+        return categoryList = tmp;
     }
 
 

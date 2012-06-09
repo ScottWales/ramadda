@@ -392,6 +392,8 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_DESCRIPTION = "description";
 
+    public static final String ATTR_CATEGORY = "category";
+
     /** _more_ */
     public static final String ATTR_EAST = "east";
 
@@ -657,10 +659,10 @@ public interface Constants {
     public static final String ARG_DATASET = "dataset";
 
     /** _more_ */
-    public static final String ARG_DATATYPE = "datatype";
+    public static final String ARG_CATEGORY = "category";
 
     /** _more_ */
-    public static final String ARG_DATATYPE_SELECT = "datatype.select";
+    public static final String ARG_CATEGORY_SELECT = "category.select";
 
     /** _more_ */
     public static final String ARG_DATE = "date";
@@ -1309,6 +1311,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_TYPE = "type";
+
+    public static final String ARG_TYPE_GUESS = "type.guess";
 
     /** _more_ */
     public static final String ARG_TYPE_FREEFORM = "type.freeform";
