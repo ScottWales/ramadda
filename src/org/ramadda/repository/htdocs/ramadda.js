@@ -1738,3 +1738,18 @@ function ramaddaUpdateMaps() {
 
 
 
+function popupFormLoadingDialog () { 
+    var dialog =   $( "#dialog-confirm" );
+    dialog.dialog({
+            resizable: false,
+                height:100,
+                modal: true,
+                }
+        );
+}
+
+
+function submitEntryForm () {
+    popupFormLoadingDialog ();
+    return true;
+}
