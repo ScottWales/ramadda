@@ -481,6 +481,10 @@ public class Column implements DataTypes, Constants {
         if (values[idx] == null) {
             return null;
         }
+        if(isType(DATATYPE_PASSWORD)) {
+            return  null;
+        }
+
         return values[idx].toString();
     }
 
@@ -2069,6 +2073,7 @@ public class Column implements DataTypes, Constants {
      *  @return The CanShow
      */
     public boolean getCanShow() {
+        if(isType(DATATYPE_PASSWORD)) return false;
         return canShow;
     }
 

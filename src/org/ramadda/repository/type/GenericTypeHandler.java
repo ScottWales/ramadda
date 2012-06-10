@@ -952,7 +952,7 @@ public class GenericTypeHandler extends TypeHandler {
                     StringBuffer tmpSb = new StringBuffer();
                     formatColumnHtmlValue(request, entry, column, tmpSb,
                                           values);
-                    sb.append(HtmlUtil.formEntry(column.getLabel() + ":",
+                    sb.append(formEntry(request, column.getLabel() + ":",
                             tmpSb.toString()));
                 }
 

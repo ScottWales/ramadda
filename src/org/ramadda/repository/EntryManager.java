@@ -681,14 +681,12 @@ public class EntryManager extends RepositoryManager {
             sb.append(request.form(getRepository().URL_ENTRY_FORM,
                                    HtmlUtil.attr("name", "entryform")));
         } else {
-            String onsubmit = " onsubmit=\"return submitEntryForm();\" ";
+            String loadingMessage = (entry==null?msg("Creating entry..."):msg("Changing entry..."));
             request.uploadFormWithAuthToken(sb,
                                             getRepository().URL_ENTRY_CHANGE,
-                                            onsubmit + HtmlUtil.attr("name",
+                                            makeFormSubmitDialog(sb,loadingMessage)
+                                            + HtmlUtil.attr("name",
                                                 "entryform"));
-            String loadingImage = HtmlUtil.img(getRepository().iconUrl(ICON_PROGRESS));
-            String loadingMessage = (entry==null?msg("Creating entry..."):msg("Changing entry..."));
-            sb.append("<div style=\"display:none;\" id=\"dialog-confirm\">" + loadingImage +" " + loadingMessage +"</div>");
         }
 
         sb.append(HtmlUtil.formTable());
@@ -1421,14 +1419,30 @@ public class EntryManager extends RepositoryManager {
 
                 }
 
-                if ( !canBeCreatedBy(request, typeHandler)) {
-                    fatalError(request,
-                               "Cannot create an entry of type "
-                               + typeHandler.getDescription());
+                TypeHandler typeHandlerToUse = typeHandler;
+                //See if we can figure out the type 
+                if(figureOutType) {
+                    File newFile = new File(theResource);
+                    if(newFile.exists()) {
+                        for (TypeHandler otherTypeHandler :
+                                 getRepository().getTypeHandlers()) {
+                            if (otherTypeHandler.canHarvestFile(newFile)) {
+                                typeHandlerToUse = otherTypeHandler;
+                                break;
+                            }
+                        }
+                    }
                 }
 
 
-                entry = typeHandler.createEntry(id);
+                if ( !canBeCreatedBy(request, typeHandlerToUse)) {
+                    fatalError(request,
+                               "Cannot create an entry of type "
+                               + typeHandlerToUse.getDescription());
+                }
+
+
+                entry = typeHandlerToUse.createEntry(id);
                 entry.initEntry(name, description, parent, request.getUser(),
                                 new Resource(theResource, resourceType),
                                 category, createDate.getTime(),
@@ -1564,7 +1578,7 @@ public class EntryManager extends RepositoryManager {
 
         if (entries.size() == 1) {
             entry = (Entry) entries.get(0);
-            if (typeHandler.returnToEditForm()) {
+            if (entry.getTypeHandler().returnToEditForm()) {
                 return new Result(
                     request.entryUrl(getRepository().URL_ENTRY_FORM, entry));
             } else {
@@ -1863,14 +1877,15 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
         StringBuffer inner = new StringBuffer();
         if (entry.isGroup()) {
             inner.append(
                 msg("Are you sure you want to delete the following folder?"));
             inner.append(HtmlUtil.p());
             inner.append(
-                msg(
-                "Note: This will also delete everything contained by this folder"));
+                         HtmlUtil.b(msg(
+                                        "Note: This will also delete everything contained by this folder")));
         } else {
             inner.append(
                 msg("Are you sure you want to delete the following entry?"));
@@ -1878,6 +1893,7 @@ public class EntryManager extends RepositoryManager {
 
         StringBuffer fb = new StringBuffer();
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
+
         getRepository().addAuthToken(request, fb);
         fb.append(RepositoryUtil.buttons(HtmlUtil.submit(msg("OK"),
                 ARG_DELETE_CONFIRM), HtmlUtil.submit(msg("Cancel"),
@@ -3876,12 +3892,6 @@ public class EntryManager extends RepositoryManager {
                                     HtmlUtil.VALUE_TOP)), HtmlUtil.attr(
                                         HtmlUtil.ATTR_WIDTH, "100%")));
         }
-
-
-
-
-        String chat =
-            "<script type='text/javascript' src='http://cache.static.userplane.com/CommunicationSuite/assets/js/flashobject.js'></script><script type='text/javascript' src='http://cache.static.userplane.com/CommunicationSuite/assets/js/userplane.js'></script><div id='myCoolContainer'><strong>You need to upgrade your Flash Player by clicking <a href='http://www.macromedia.com/go/getflash/' target='_blank'>this link</a>.</strong><br><br><strong>If you see this and have already upgraded we suggest you follow <a href='http://www.adobe.com/cfusion/knowledgebase/index.cfm?id=tn_14157' target='_blank'>this link</a>to uninstall Flash and reinstall again.</strong></div><script type='text/javascript'>USERPLANE.config.minichat = {container : 'myCoolContainer',flashcomServer : 'flashcom.public.userplane.com',swfServer: 'swf.userplane.com',domainID : 'public.userplane.com',instanceID : 'up_domain',sessionGUID : 'User1234',width : '50%',height : '50%'};var mc = new USERPLANE.app.Minichat(USERPLANE.config.minichat);mc.render();</script>";
 
 
 

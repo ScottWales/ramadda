@@ -714,7 +714,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         sb.append(HtmlUtil.form(getSearchUrl(request),
-                                " name=\"searchform\" "));
+                                makeFormSubmitDialog(sb,msg("Searching...")) + " name=\"searchform\" "));
 
         if (justText) {
             sb.append(HtmlUtil.hidden(ARG_SEARCH_TYPE, SEARCH_TYPE_TEXT));

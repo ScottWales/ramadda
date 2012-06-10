@@ -1295,7 +1295,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 if(columns!=null) {
                     for(Column column: columns) {
-                        if(column.getCanList()) {
+                        if(column.getCanList() && column.getCanShow()) {
                             String s = column.getString(values);
                             if(s==null) s = "NA";
                             tableSB.append(HtmlUtil.col(s));

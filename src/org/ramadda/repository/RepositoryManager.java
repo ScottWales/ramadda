@@ -168,7 +168,9 @@ public class RepositoryManager implements RepositorySource, Constants,
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"
                    + contents + "</td></tr>";
         } else {
-            return HtmlUtil.formEntryTop(label, contents);
+            return "<tr valign=top><td><div class=\"formlabel\">" + label
+                   + "</div></td><td>" + contents + "</td></tr>";
+            //            return HtmlUtil.formEntryTop(label, contents);
         }
     }
 
@@ -702,5 +704,17 @@ public class RepositoryManager implements RepositorySource, Constants,
 
     public void adminSettingsChanged() {
     }
+
+
+    private static int dialogCnt=0;
+    public String makeFormSubmitDialog(StringBuffer sb, String message) {
+        String id = "dialog-message" + (dialogCnt++);
+        String onSubmit = " onsubmit=\"return submitEntryForm('#" + id +"');\" ";
+        String loadingImage = HtmlUtil.img(getRepository().iconUrl(ICON_PROGRESS));
+        sb.append("<div style=\"display:none;\" id=\"" + id +"\">" + loadingImage +" " + message +"</div>");
+        return onSubmit;
+
+    }
+
 
 }

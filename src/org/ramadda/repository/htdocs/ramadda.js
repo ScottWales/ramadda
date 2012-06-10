@@ -1738,8 +1738,8 @@ function ramaddaUpdateMaps() {
 
 
 
-function popupFormLoadingDialog () { 
-    var dialog =   $( "#dialog-confirm" );
+function popupFormLoadingDialog (dialogId) { 
+    var dialog =   $(dialogId);
     dialog.dialog({
             resizable: false,
                 height:100,
@@ -1749,7 +1749,7 @@ function popupFormLoadingDialog () {
 }
 
 
-function submitEntryForm () {
-    popupFormLoadingDialog ();
+function submitEntryForm (dialogId) {
+    popupFormLoadingDialog (dialogId);
     return true;
 }
