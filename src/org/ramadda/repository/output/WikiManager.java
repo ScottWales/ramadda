@@ -97,7 +97,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** linkresource attribute */
     public static final String ATTR_LINKRESOURCE = "linkresource";
 
+    public static final String ATTR_LISTENTRIES = "listentries";
+
     /** link attribute */
+
     public static final String ATTR_LINK = "link";
 
     /** attribute in the tabs tag */
@@ -105,6 +108,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in the tabs tag */
     public static final String ATTR_SHOWLINK = "showlink";
+
+    public static final String ATTR_SRC = "src";
 
 
     /** include icon attribute */
@@ -222,6 +227,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ATTR_DAYS = "days";
 
 
+    public static final String WIKI_PROP_GROUP = "wiki.group";
+
     /** wiki import */
     public static final String WIKI_PROP_IMPORT = "import";
 
@@ -334,18 +341,79 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKI_PROP_URL = "url";
 
 
+    private static String attr(String name, String value) {
+        return " " + name +"=" + value +" ";
+    }
+
+    private static String attrs(String... attrs) {
+        StringBuffer sb = new StringBuffer();
+        String qt = "&quote;";
+
+        for(int i=0;i<attrs.length;i+=2) {
+            sb.append(attr(attrs[i],qt +attrs[i+1]+ qt));
+        }
+        return sb.toString();
+    }
+
+    private static String prop(String prop,String args) {
+        return prop+PROP_DELIM +args;
+    }
+
+    //j--
+
+    public static final String PROP_DELIM =":";
+
+    public static final String ATTRS_LAYOUT = attrs(ATTR_TEXTPOSITION,POS_LEFT);
+
     /** list of import items for the text editor menu */
     public static final String[] WIKIPROPS = {
-        WIKI_PROP_INFORMATION, WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION,
-        WIKI_PROP_DATE_FROM, WIKI_PROP_DATE_TO, WIKI_PROP_FIELD,
-        WIKI_PROP_LAYOUT, WIKI_PROP_PROPERTIES, WIKI_PROP_HTML, WIKI_PROP_MAP,
-        WIKI_PROP_MAPENTRY, WIKI_PROP_EARTH+":width=400 height=400", WIKI_PROP_CALENDAR,
-        WIKI_PROP_TIMELINE, WIKI_PROP_COMMENTS, WIKI_PROP_BREADCRUMBS,
-        WIKI_PROP_TOOLBAR, WIKI_PROP_IMAGE, WIKI_PROP_MENU, WIKI_PROP_RECENT,
-        WIKI_PROP_GALLERY, WIKI_PROP_SLIDESHOW, WIKI_PROP_TABS,
-        WIKI_PROP_ACCORDIAN, WIKI_PROP_GRID, WIKI_PROP_TREE, WIKI_PROP_TABLE,
-        WIKI_PROP_LINKS, WIKI_PROP_ENTRYID
+        WIKI_PROP_GROUP+"Information",
+        WIKI_PROP_INFORMATION, 
+        WIKI_PROP_NAME, 
+        WIKI_PROP_DESCRIPTION,
+        WIKI_PROP_DATE_FROM, 
+        WIKI_PROP_DATE_TO, 
+        WIKI_PROP_HTML, 
+
+
+        WIKI_PROP_GROUP+"Layout",
+        prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
+        prop(WIKI_PROP_TABS,  ATTRS_LAYOUT),
+        prop(WIKI_PROP_ACCORDIAN,  ATTRS_LAYOUT),
+
+        WIKI_PROP_GRID, 
+        WIKI_PROP_TREE, 
+        WIKI_PROP_TABLE,
+
+
+        WIKI_PROP_GROUP+"Earth",
+        prop(WIKI_PROP_MAP, attrs(ATTR_WIDTH,"400", ATTR_HEIGHT,"400",ATTR_LISTENTRIES,"false")),
+        prop(WIKI_PROP_MAPENTRY,attrs(ATTR_WIDTH,"400", ATTR_HEIGHT,"400")),
+        prop(WIKI_PROP_EARTH, attrs(ATTR_WIDTH,"400", ATTR_HEIGHT,"400",ATTR_LISTENTRIES,"false")), 
+        prop(WIKI_PROP_CALENDAR,attrs(ATTR_DAY,"false")),
+        prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT,  "150")),
+
+
+
+        WIKI_PROP_GROUP+"Images",
+        prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC,"")), 
+        WIKI_PROP_GALLERY, 
+        prop(WIKI_PROP_SLIDESHOW,  ATTRS_LAYOUT +attrs(ATTR_WIDTH, "400",ATTR_HEIGHT,"270")),
+        WIKI_PROP_GROUP+"Misc",
+        prop(WIKI_PROP_LINKS, attrs(ATTR_SEPARATOR," | ",ATTR_TAGOPEN,"",ATTR_TAGCLOSE,"")), 
+        WIKI_PROP_COMMENTS, 
+        WIKI_PROP_PROPERTIES, 
+        WIKI_PROP_BREADCRUMBS,
+        WIKI_PROP_FIELD,
+        WIKI_PROP_TOOLBAR, 
+        WIKI_PROP_LAYOUT, 
+        WIKI_PROP_MENU, 
+        WIKI_PROP_ENTRYID
     };
+
+
+
+    //j++
 
     /** the id for this */
     public static final String ID_THIS = "this";
@@ -520,7 +588,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public String getWikiImage(WikiUtil wikiUtil, Request request,
                                String url, Entry entry, Hashtable props)
             throws Exception {
-        String width = (String) props.get(HtmlUtil.ATTR_WIDTH);
+        String width = (String) props.get(ATTR_WIDTH);
         String alt   = (String) props.get(HtmlUtil.ATTR_ALT);
         String extra = "";
 
@@ -638,7 +706,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                Entry entry, Hashtable props)
             throws Exception {
 
-        String src = (String) props.get("src");
+        String src = (String) props.get(ATTR_SRC);
         if (src == null) {
             if ( !entry.getResource().isImage()) {
                 return msg("Not an image");
@@ -855,7 +923,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             int     width       = Misc.getProperty(props, ATTR_WIDTH, 400);
             int     height      = Misc.getProperty(props, ATTR_HEIGHT, 300);
             boolean justPoints  = Misc.getProperty(props, "justpoints", false);
-            boolean listEntries = Misc.getProperty(props, "listentries",
+            boolean listEntries = Misc.getProperty(props, ATTR_LISTENTRIES,
                                       false);
             boolean googleEarth =
                 include.equals(WIKI_PROP_EARTH)
@@ -1873,39 +1941,51 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                          "\\n----\\n", "", "",
                                          "mw-editbutton-hr"));
 
-        StringBuffer propertyMenu = new StringBuffer();
+
         StringBuffer importMenu   = new StringBuffer();
+        String inset = "&nbsp;&nbsp;";
+        int cnt = 0;
+        importMenu.append("<table><tr valign=top><td>");
         for (int i = 0; i < WIKIPROPS.length; i++) {
             String prop = WIKIPROPS[i];
+
+            if(prop.startsWith(WIKI_PROP_GROUP)) {
+                cnt++;
+                if(cnt>2) {
+                    importMenu.append("</td><td>&nbsp;</td><td>");
+                    cnt=1;
+                }
+                String group = prop.substring(WIKI_PROP_GROUP.length());
+                importMenu.append(HtmlUtil.b(group));
+                importMenu.append(HtmlUtil.br());
+                continue;
+            }
             String textToInsert  = prop;
-            int colonIdx = prop.indexOf(":");
+            int colonIdx = prop.indexOf(PROP_DELIM);
             if(colonIdx>=0) {
                 prop = prop.substring(0,colonIdx);
                 textToInsert = prop +" " + textToInsert.substring(colonIdx+1);
             }
-            //            System.out.println("prop:" + prop +" text:" + textToInsert);
-            String js = "javascript:insertTags("
-                        + HtmlUtil.squote(textAreaId) + ","
-                        + HtmlUtil.squote("{{") + ","
-                        + HtmlUtil.squote(" }}") + ","
-                        + HtmlUtil.squote(textToInsert) + ");";
-            propertyMenu.append(HtmlUtil.href(js, prop));
-            propertyMenu.append(HtmlUtil.br());
+
+
 
             String js2 = "javascript:insertTags("
                          + HtmlUtil.squote(textAreaId) + ","
                          + HtmlUtil.squote("{{" + textToInsert + " ") + ","
                          + HtmlUtil.squote("}}") + "," + HtmlUtil.squote("")
                          + ");";
+            importMenu.append(inset);
             importMenu.append(HtmlUtil.href(js2, prop));
             importMenu.append(HtmlUtil.br());
+
         }
+        importMenu.append("</td><tr></table>");
 
         List<Link> links = getRepository().getOutputLinks(request,
                                new OutputHandler.State(entry));
 
 
-        propertyMenu.append("<hr>");
+
         for (Link link : links) {
             if (link.getOutputType() == null) {
                 continue;
@@ -1916,8 +1996,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         + HtmlUtil.squote(textAreaId) + ","
                         + HtmlUtil.squote("{{") + "," + HtmlUtil.squote("}}")
                         + "," + HtmlUtil.squote(prop) + ");";
-            propertyMenu.append(HtmlUtil.href(js, link.getLabel()));
-            propertyMenu.append(HtmlUtil.br());
         }
 
 
@@ -1936,13 +2014,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
         */
 
-        String propertyMenuLabel =
-            HtmlUtil.img(iconUrl("/icons/wiki/button_property.png"),
-                         "Add Entry Property");
-        String propertyButton =
-            getRepository().makePopupLink(propertyMenuLabel,
-                                          propertyMenu.toString());
-        //        buttons.append(propertyButton);
 
         String importMenuLabel = msg("Add property");
         //            HtmlUtil.img(iconUrl("/icons/wiki/button_import.png"),
@@ -2205,6 +2276,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     }
 
 
+    public static class Attr {
+        String name;
+        String dflt;
+        String label;
+        public Attr(String name,String dflt, String label) {
+            this.name = name;
+            this.dflt = dflt;
+            this.label  =label;
+        }
 
+        public String toString () {
+            return name;
+        }
+    }
 
 }

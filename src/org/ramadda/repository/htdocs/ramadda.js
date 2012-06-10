@@ -1581,6 +1581,9 @@ function insertTags(id, tagOpen, tagClose, sampleText) {
 // use sampleText instead of selection if there is none
 function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
     var selText, isSample = false;
+    tagOpen = tagOpen.replace(/&quote;/gi,'\"');
+    tagClose = tagClose.replace(/&quote;/gi,'\"');
+
 
     if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla
         //save textarea scroll position

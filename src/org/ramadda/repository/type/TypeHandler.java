@@ -2596,6 +2596,7 @@ public class TypeHandler extends RepositoryManager {
                 getProperty(entry, "form.description.html",
                             getRepository().getProperty("ramadda.edit.html",
                                 false));
+            boolean makeWidget = true;
             if (entry != null) {
                 desc = entry.getDescription();
                 if (desc.length() > 100) {
@@ -2603,21 +2604,34 @@ public class TypeHandler extends RepositoryManager {
                 }
                 if (isWikiText(desc)) {
                     showHtmlEditor = false;
+                    makeWidget = false;
                     rows           = 20;
                     buttons        =
                         getRepository().getWikiManager().makeWikiEditBar(
                             request, entry, ARG_DESCRIPTION) + HtmlUtil.br();
+                    sb.append("<tr><td colspan=2>");
+                    sb.append(buttons);
+                    //                    sb.append(HtmlUtil.br());
+                    sb.append(
+                              HtmlUtil.textArea(
+                                                ARG_DESCRIPTION, desc, rows, 
+                                                getProperty(entry, "form.description.columns", 60), 
+                                                HtmlUtil.id(ARG_DESCRIPTION)));
+                    sb.append("</td></tr>");
                 }
             }
-            sb.append(
-                formEntryTop(
-                    request, msgLabel(
-                        getFormLabel(
-                            entry, ARG_DESCRIPTION, "Description")), buttons
-                                + HtmlUtil.textArea(
-                                    ARG_DESCRIPTION, desc, rows, getProperty(
-                                        entry, "form.description.columns", 60), HtmlUtil.id(
-                                        ARG_DESCRIPTION))));
+
+            if(makeWidget) {
+                sb.append(
+                          formEntryTop(
+                                       request, msgLabel(
+                                                         getFormLabel(
+                                                                      entry, ARG_DESCRIPTION, "Description")), buttons
+                                       + HtmlUtil.textArea(
+                                                           ARG_DESCRIPTION, desc, rows, getProperty(
+                                                                                                    entry, "form.description.columns", 60), HtmlUtil.id(
+                                                                                                                                                        ARG_DESCRIPTION))));
+            }
 
             if (showHtmlEditor) {
                 sb.append(
