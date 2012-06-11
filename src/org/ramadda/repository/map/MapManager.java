@@ -566,11 +566,12 @@ public class MapManager extends RepositoryManager {
 
             boolean doToggle = (entries.size() > 5)
                                && (categories.size() > 1);
-            for (String category : categories) {
+            for (int catIdx=0;catIdx<categories.size();catIdx++) {
+                String category =  categories.get(catIdx);
                 StringBuffer catSB = catMap.get(category);
                 if (doToggle) {
                     sb.append(HtmlUtil.makeShowHideBlock(category,
-                            catSB.toString(), true));
+                            catSB.toString(), catIdx==0));
                 } else {
                     sb.append(HtmlUtil.b(category));
                     sb.append(HtmlUtil.br());
