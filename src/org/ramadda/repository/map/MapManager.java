@@ -278,9 +278,11 @@ public class MapManager extends RepositoryManager {
 
             return null;
         }
+        boolean zoomOnClick = request.get("zoom", true);
+        boolean showdetails = request.get("showdetails", true);
 
-        String otherOpts = "";
-        String mapsKey   = "";
+        String  otherOpts   = "";
+        String  mapsKey     = "";
         if ( !keyAndOther[0].isEmpty()) {
             mapsKey = "?key=" + keyAndOther[0];
         }
@@ -326,13 +328,13 @@ public class MapManager extends RepositoryManager {
         sb.append(earthHtml);
         sb.append(HtmlUtil.italics(msgLabel("On click")));
         sb.append(HtmlUtil.space(2));
-        sb.append(HtmlUtil.checkbox("tmp", "true", true,
+        sb.append(HtmlUtil.checkbox("tmp", "true", showdetails,
                                     HtmlUtil.id("googleearth.showdetails")));
         sb.append("\n");
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.italics(msg("Show details")));
         sb.append(HtmlUtil.space(2));
-        sb.append(HtmlUtil.checkbox("tmp", "true", true,
+        sb.append(HtmlUtil.checkbox("tmp", "true", zoomOnClick,
                                     HtmlUtil.id("googleearth.zoomonclick")));
         sb.append(HtmlUtil.space(1));
         sb.append(HtmlUtil.italics(msg("Zoom")));
@@ -566,12 +568,12 @@ public class MapManager extends RepositoryManager {
 
             boolean doToggle = (entries.size() > 5)
                                && (categories.size() > 1);
-            for (int catIdx=0;catIdx<categories.size();catIdx++) {
-                String category =  categories.get(catIdx);
-                StringBuffer catSB = catMap.get(category);
+            for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
+                String       category = categories.get(catIdx);
+                StringBuffer catSB    = catMap.get(category);
                 if (doToggle) {
                     sb.append(HtmlUtil.makeShowHideBlock(category,
-                            catSB.toString(), catIdx==0));
+                            catSB.toString(), catIdx == 0));
                 } else {
                     sb.append(HtmlUtil.b(category));
                     sb.append(HtmlUtil.br());
