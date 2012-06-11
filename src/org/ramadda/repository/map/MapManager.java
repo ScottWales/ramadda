@@ -628,6 +628,7 @@ public class MapManager extends RepositoryManager {
             image = HtmlUtil.href(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                 image);
+            image = HtmlUtil.center(image);
             if (imageClass != null) {
                 image = HtmlUtil.div(image, HtmlUtil.cssClass(imageClass));
             }
