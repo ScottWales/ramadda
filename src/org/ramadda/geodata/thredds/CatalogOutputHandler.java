@@ -24,6 +24,7 @@ package org.ramadda.geodata.thredds;
 import org.ramadda.geodata.data.*;
 
 import org.ramadda.repository.*;
+import org.ramadda.util.EntryGroup;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;

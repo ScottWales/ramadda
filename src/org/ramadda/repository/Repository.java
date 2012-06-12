@@ -115,10 +115,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {
 
     /** _more_ */
-    private static final org.ramadda.util.HttpFormField dummyFieldToForceCompile =
+    private static final org.ramadda.util.HttpFormField dummyField1ToForceCompile =
         null;
 
-    private static final org.ramadda.util.ObjectPool dummyObjectToForceCompile =
+    private static final org.ramadda.util.ObjectPool dummyField2ToForceCompile =
+        null;
+
+    private static final org.ramadda.util.EntryGroup dummyField3ToForceCompile =
         null;
 
 
