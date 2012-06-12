@@ -70,6 +70,10 @@ public class TwitterAction extends PasswordAction {
      * @return _more_
      */
     public String getActionName() {
+        return "twitter";
+    }
+
+    public String getActionLabel() {
         return "Twitter Action";
     }
 

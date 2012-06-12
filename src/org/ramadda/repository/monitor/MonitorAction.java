@@ -31,7 +31,7 @@ import org.ramadda.repository.auth.*;
  * @author RAMADDA Development Team
  * @version $Revision: 1.30 $
  */
-public abstract class MonitorAction implements Constants {
+public abstract class MonitorAction implements Constants, Cloneable {
 
     /** _more_ */
     public static final String macroTooltip =
@@ -59,9 +59,19 @@ public abstract class MonitorAction implements Constants {
         this.id = id;
     }
 
+    public MonitorAction cloneMe() throws CloneNotSupportedException {
+        return (MonitorAction) super.clone();
+    }
+
+    public boolean enabled(Repository repository) {
+        return true;
+    }
+
     public boolean adminOnly() {
         return false;
     }
+
+    public abstract String getActionLabel();
 
 
     /**
@@ -70,6 +80,7 @@ public abstract class MonitorAction implements Constants {
      * @return _more_
      */
     public abstract String getActionName();
+
 
     /**
      * _more_

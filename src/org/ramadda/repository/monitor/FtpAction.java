@@ -108,6 +108,10 @@ public class FtpAction extends MonitorAction {
      * @return _more_
      */
     public String getActionName() {
+        return "ftp";
+    }
+
+    public String getActionLabel() {
         return "FTP Action";
     }
 

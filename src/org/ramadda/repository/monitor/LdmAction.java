@@ -110,8 +110,12 @@ public class LdmAction extends MonitorAction {
      *
      * @return _more_
      */
-    public String getActionName() {
+    public String getActionLabel() {
         return "LDM Action";
+    }
+
+    public String getActionName() {
+        return "ldm";
     }
 
     /**

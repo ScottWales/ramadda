@@ -68,9 +68,14 @@ public class EmailAction extends PasswordAction {
      *
      * @return _more_
      */
-    public String getActionName() {
+    public String getActionLabel() {
         return "Email Action";
     }
+
+    public String getActionName() {
+        return "email";
+    }
+
 
     /**
      * _more_

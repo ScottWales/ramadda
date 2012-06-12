@@ -83,6 +83,10 @@ public class CopyAction extends MonitorAction {
      * @return _more_
      */
     public String getActionName() {
+        return "copy";
+    }
+
+    public String getActionLabel() {
         return "Copy Action";
     }
 

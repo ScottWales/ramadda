@@ -79,7 +79,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
     private List<EntryMonitor> monitors = new ArrayList<EntryMonitor>();
 
 
-
+    private List<MonitorAction> actions = new ArrayList<MonitorAction>();
 
     /**
      * _more_
@@ -90,11 +90,21 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         super(repository);
         repository.addEntryChecker(this);
         try {
+            initActions();
             initMonitors();
         } catch (Exception exc) {
-            exc.printStackTrace();
-            //            throw new RuntimeException(exc);
+            throw new RuntimeException(exc);
         }
+    }
+
+
+    private void initActions() throws Exception {
+        actions.add(new EmailAction());
+        actions.add(new TwitterAction());
+        actions.add(new CopyAction());
+        //        actions.add(new FtpAction());
+        actions.add(new LdmAction());
+        actions.add(new ExecAction());
     }
 
 
@@ -386,24 +396,16 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                                    request.getUser(), "New Monitor", true);
         String type = request.getString(ARG_MONITOR_TYPE, "email");
         MonitorAction action = null;
-        if (type.equals("email")) {
-            action = new EmailAction(getRepository().getGUID());
-        } else if (type.equals("twitter")) {
-            action = new TwitterAction(getRepository().getGUID());
-        } else if (type.equals("ftp")) {
-            action = new FtpAction(getRepository().getGUID());
-        } else if (type.equals("copy")) {
-            action = new CopyAction(getRepository().getGUID());
-        } else if (type.equals("ldm")) {
-            action = new LdmAction(getRepository().getGUID());
-        } else if (type.equals("exec")) {
-            if ( !getRepository().getProperty(PROP_MONITOR_ENABLE_EXEC,
-                                              false)) {
-                throw new IllegalArgumentException(
-                                                   "Exec action not enabled");
+        for(MonitorAction templateAction: actions) {
+            if(!templateAction.enabled(getRepository())) {
+                continue;
             }
-            action = new ExecAction(getRepository().getGUID());
-        } 
+            if(templateAction.getActionName().equals(type)) {
+                action = templateAction.cloneMe();
+                action.setId(getRepository().getGUID());
+                break;
+            }
+        }
 
         if(action == null) {
             throw new IllegalArgumentException("unknown action type:" + type);
@@ -507,44 +509,24 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         }
 
         sb.append(HtmlUtil.br());
-        String ldmCreate  = "";
-        String execCreate = "";
-        if (request.getUser().getAdmin()) {
-            ldmCreate = request.form(getRepositoryBase().URL_USER_MONITORS)
-                        + HtmlUtil.submit("LDM Action", ARG_MONITOR_CREATE)
-                        + HtmlUtil.hidden(ARG_MONITOR_TYPE, "ldm")
-                        + HtmlUtil.formClose();
-            if (getRepository().getProperty(PROP_MONITOR_ENABLE_EXEC,
-                                            false)) {
-                execCreate =
-                    request.form(getRepositoryBase().URL_USER_MONITORS)
-                    + HtmlUtil.submit("Exec Action", ARG_MONITOR_CREATE)
-                    + HtmlUtil.hidden(ARG_MONITOR_TYPE, "exec")
-                    + HtmlUtil.formClose();
-            }
-        }
-
-        String[] createTypesxxx = {
-            "email", "Email Action", "twitter", "Twitter Action", "copy",
-            "Copy Action", "ftp", "FTP Action"
-        };
-
-
-        String[] createTypes = { "email", "Email Action", "twitter",
-                                 "Twitter Action" };
-
         sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE));
         sb.append(HtmlUtil.open(HtmlUtil.TAG_TR));
-        for (int i = 0; i < createTypes.length; i += 2) {
+
+        for(MonitorAction templateAction: actions) {
+            if(!templateAction.enabled(getRepository())) {
+                continue;
+            }
+            if(templateAction.adminOnly() && !request.getUser().getAdmin()) {
+                continue;
+            }
             String form =
                 request.form(getRepositoryBase().URL_USER_MONITORS)
-                + HtmlUtil.submit(createTypes[i + 1], ARG_MONITOR_CREATE)
-                + HtmlUtil.hidden(ARG_MONITOR_TYPE, createTypes[i])
+                + HtmlUtil.submit(templateAction.getActionLabel(), ARG_MONITOR_CREATE)
+                + HtmlUtil.hidden(ARG_MONITOR_TYPE, templateAction.getActionName())
                 + HtmlUtil.formClose();
             sb.append(HtmlUtil.col(form));
         }
-        sb.append(HtmlUtil.col(ldmCreate));
-        sb.append(HtmlUtil.col(execCreate));
+
 
         sb.append(HtmlUtil.close(HtmlUtil.TAG_TR));
         sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));

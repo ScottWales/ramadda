@@ -71,6 +71,12 @@ public class ExecAction extends MonitorAction {
     }
 
 
+    public boolean enabled(Repository repository) {
+        return repository.getProperty(PROP_MONITOR_ENABLE_EXEC,
+                                      false);
+    }
+
+
     public boolean adminOnly() {
         return true;
     }
@@ -82,6 +88,10 @@ public class ExecAction extends MonitorAction {
      * @return _more_
      */
     public String getActionName() {
+        return "exec";
+    }
+
+    public String getActionLabel() {
         return "Exec Action";
     }
 
