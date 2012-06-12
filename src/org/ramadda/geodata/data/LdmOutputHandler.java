@@ -114,11 +114,11 @@ public class LdmOutputHandler extends OutputHandler {
             throws Exception {
 
         //Are we configured to do the LDM
-        if (getRepository().getProperty(PROP_LDM_PQINSERT, "").length()
+        if (getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT, "").length()
                 == 0) {
             return;
         }
-        if (getRepository().getProperty(PROP_LDM_QUEUE, "").length() == 0) {
+        if (getRepository().getProperty(LdmAction.PROP_LDM_QUEUE, "").length() == 0) {
             return;
         }
 
@@ -216,10 +216,10 @@ public class LdmOutputHandler extends OutputHandler {
             }
         }
 
-        String feed = request.getString(PROP_LDM_FEED, lastFeed);
-        String productId = request.getString(PROP_LDM_PRODUCTID,
+        String feed = request.getString(LdmAction.PROP_LDM_FEED, lastFeed);
+        String productId = request.getString(LdmAction.PROP_LDM_PRODUCTID,
                                              lastProductId);
-        if ( !request.defined(PROP_LDM_FEED)) {
+        if ( !request.defined(LdmAction.PROP_LDM_FEED)) {
             String formUrl;
             if (parent.isGroup() && parent.isDummy()) {
                 formUrl = request.url(getRepository().URL_ENTRY_GETENTRIES);
@@ -252,15 +252,15 @@ public class LdmOutputHandler extends OutputHandler {
 
 
             sb.append(HtmlUtil.formEntry("Feed:",
-                                         HtmlUtil.select(PROP_LDM_FEED,
-                                             Misc.toList(LDM_FEED_TYPES),
+                                         HtmlUtil.select(LdmAction.PROP_LDM_FEED,
+                                             Misc.toList(LdmAction.LDM_FEED_TYPES),
                                              feed)));
             String tooltip =
                 "macros: ${fromday}  ${frommonth} ${fromyear} ${frommonthname}  <br>"
                 + "${today}  ${tomonth} ${toyear} ${tomonthname} <br> "
                 + "${filename}  ${fileextension}";
             sb.append(HtmlUtil.formEntry("Product ID:",
-                                         HtmlUtil.input(PROP_LDM_PRODUCTID,
+                                         HtmlUtil.input(LdmAction.PROP_LDM_PRODUCTID,
                                              productId,
                                              HtmlUtil.SIZE_60
                                              + HtmlUtil.title(tooltip))));
@@ -272,8 +272,8 @@ public class LdmOutputHandler extends OutputHandler {
                 sb.append(HtmlUtil.submit(msg("Insert file into LDM")));
             }
         } else {
-            String queue = getRepository().getProperty(PROP_LDM_QUEUE, "");
-            String pqinsert = getRepository().getProperty(PROP_LDM_PQINSERT,
+            String queue = getRepository().getProperty(LdmAction.PROP_LDM_QUEUE, "");
+            String pqinsert = getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT,
                                   "");
             for (Entry entry : fileEntries) {
                 String id =

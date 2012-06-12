@@ -1216,37 +1216,6 @@ public class Admin extends RepositoryManager {
 
 
 
-        asb.append(
-            HtmlUtil.colspan(
-                msgHeader("Enable Unidata Local Data Manager (LDM) Access"),
-                2));
-        String pqinsertPath = getProperty(PROP_LDM_PQINSERT, "");
-        String ldmExtra1    = "";
-        if ((pqinsertPath.length() > 0) && !new File(pqinsertPath).exists()) {
-            ldmExtra1 =
-                HtmlUtil.space(2)
-                + HtmlUtil.span("File does not exist!",
-                                HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
-        }
-
-        asb.append(HtmlUtil.formEntry("Path to pqinsert:",
-                                      HtmlUtil.input(PROP_LDM_PQINSERT,
-                                          pqinsertPath,
-                                          HtmlUtil.SIZE_60) + ldmExtra1));
-        String ldmQueue  = getProperty(PROP_LDM_QUEUE, "");
-        String ldmExtra2 = "";
-        if ((ldmQueue.length() > 0) && !new File(ldmQueue).exists()) {
-            ldmExtra2 =
-                HtmlUtil.space(2)
-                + HtmlUtil.span("File does not exist!",
-                                HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
-        }
-
-        asb.append(HtmlUtil.formEntry("Queue Location:",
-                                      HtmlUtil.input(PROP_LDM_QUEUE,
-                                          ldmQueue,
-                                          HtmlUtil.SIZE_60) + ldmExtra2));
-
 
 
 
@@ -1472,8 +1441,7 @@ public class Admin extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_ADMIN_PHRASES);
         getRepository().writeGlobal(request, PROP_HTML_FOOTER);
 
-        getRepository().writeGlobal(request, PROP_LDM_PQINSERT, true);
-        getRepository().writeGlobal(request, PROP_LDM_QUEUE, true);
+
         getRepository().writeGlobal(request, PROP_GOOGLEAPIKEYS, true);
         getRepository().writeGlobal(request, PROP_FACEBOOK_CONNECT_KEY);
         getRepository().writeGlobal(PROP_NOSTYLE,
