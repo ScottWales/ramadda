@@ -25,7 +25,7 @@ import org.ramadda.repository.Constants;
 import org.ramadda.repository.RepositoryBase;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
-import org.ramadda.repository.ServerInfo;
+import org.ramadda.repository.util.ServerInfo;
 
 
 import org.w3c.dom.Document;

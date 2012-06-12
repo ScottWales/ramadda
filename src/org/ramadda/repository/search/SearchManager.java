@@ -20,6 +20,8 @@
 
 package org.ramadda.repository.search;
 
+import org.ramadda.repository.util.ServerInfo;
+
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
