@@ -125,6 +125,7 @@ The first set of property tags show some information for the entry. Note: the at
 
 <ul>
 <li> [wiki::tagdef name]:  Entry name
+<li> [wiki::tagdef entryid]:  Entry ID
 <li> [wiki::tagdef description]: Entry description
 <li> [wiki::tagdef fromdate {format="date time format"} ], [wiki::tagdef todate {format="date time format"} ]: 
 From date/to date of entry. 
@@ -149,9 +150,9 @@ If enabled, display the Google Earth plugin. To enable the Google Earth see the
 <li> [wiki::tagdef breadcrumbs]: Show the breadcrumb path.
 <li> [wiki::tagdef layout]: This shows the "Layout:" toolbar bar for an entry.
 <li> [wiki::tagdef toolbar]: Show the entry toolbar.
-<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position"}]: Include an image. If src is not given then
-this shows the image (if there is one) from the entry.
-If src is specified it can take on the form: <pre>
+<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}]: Include an image. If src is not given then this shows the image (if there is one) 
+from the entry.  If src is specified it can take on the form: 
+<pre>
 src="entry name"
 </pre>
 to show an entry. This is equivalent to using entry="...". You can also specify the name of a file attachment with:
@@ -164,6 +165,12 @@ Or any attachment with:
 <pre>
 src="::*"
 </pre>
+
+If link is true, the image displayed will be linked to the entry page, if 
+linkresource is true, it will be linked to the full sized image (the entry
+resource).  height and width can be used to scale the image, the alt 
+attribute will be used in place of the entry id as a label on the image
+for accessibility.
 
 <li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}]: 
 Show the menu actions. If menus is not specified
@@ -201,26 +208,21 @@ other groups of entries with:
                except="entryid1,entryid2,entryid3.."  
                images="true" count="number of entries to use"}}}]
 </ul>
-If <i>folders</i> is set then only show folder like entries.
-<br>
-If <i>files</i> is set then only show non folders.
-<br>
-If <i>type</i> is set then only show entries of  that type.
-<br>
-The attribute <i>level</i> can be set to "1" (the default) or "2". 
+<ul>
+<ul>
+<li>If <i>folders</i> is set then only show folder like entries.
+<li>If <i>files</i> is set then only show non folders.
+<li>If <i>type</i> is set then only show entries of  that type.
+<li>The attribute <i>level</i> can be set to "1" (the default) or "2". 
 Level 1 refers to the immediate children
 entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).
-<br>
-If <i> associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
+<li>If <i> associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
 and typed links between arbitrary entries.
-<br>
-If <i>entries</i> is set to a list of comma separated entry ids, then only those entrys are 
-included.
-<br>
-Exclude any entries in the <i>entries</i> comma separated list of entry ids.
-<br>
-If <i>images</i> is set to true then only entries that are image files are included
-<br>
+<li>If <i>entries</i> is set to a list of comma separated entry ids, then only those entrys are included.
+<li>Exclude any entries in the <i>except</i> comma separated list of entry ids.
+<li>If <i>images</i> is set to true then only entries that are image files are included
+</ul>
+</ul>
 
 
 <ul>
@@ -230,12 +232,11 @@ The [wiki::tagdef tree] tag is used to display the children entries of a folder.
 It can take the form:
 [wiki::text [wiki::tagdef tree {title="Links" showtoggle="false" open="true"}]]
 
-
-
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
-<li> [wiki::tagdef grid]: Show the children in a grid. e.g., show the grandchildren as a grid:
+<li> [wiki::tagdef grid]: Show the children in a grid. e.g., show 
+the grandchildren as a grid:
 [wiki::text {{{grid level="2"}}}]
 
 <li> [wiki::tagdef recent {days="number of days to show"}]:
@@ -255,17 +256,46 @@ Set the image width and only show up to 5 images:
 [wiki::text {{{tabs}}}] </pre>
 
 Show only the 3 specified entries in tabs:
-[wiki::text {{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
+[wiki::text {{{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
                  83539d5c-e9d9-408e-b0af-35f480000ae6,
-                 49684d25-6af1-4188-a0ae-4d5302d22f2a" }}] </pre>
+                 49684d25-6af1-4188-a0ae-4d5302d22f2a" }}}] </pre>
 
 Show only the children of type wikipage in tabs:
-[wiki::text {{tabs type="wikipage"}}]</pre>
+[wiki::text {{{tabs type="wikipage"}}}]</pre>
 
 <li> [wiki::tagdef accordian]: Show the children in an accordian:
 [wiki::text {{{accordian}}}] </pre>
-Has the same arguments as the tabs tag.
 
+<li> [wiki::tagdef slideshow]: Show the children in a slideshow:
+[wiki::text {{{slideshow}}}] </pre>
+<p>
+Additional arguments:
+<ul>
+<li>autoplay="true|false" - if true, start the slideshow (default: false)
+<li>speed="secs" - number of seconds to pause on each entry in slideshow
+<li>border="pixs" - border size in pixels
+<li>bordercolor="color" - border color (name or hexadecimal value)
+</ul>
+
+<p>
+<p>
+
+Additional arguments for tabs, accordian and slideshow:
+
+<ul>
+<li>usedescription="true|false" - show the description instead of the entry
+<li>wikify="true|false" - convert any wiki tags in the description (default: true)
+<li>showlink="true|false" - show a link to the entry (default: true)
+<li>linklabel="label" - if showlink is true, use label in place of the entry
+    name
+<li>width="width" - width of the display (slideshow only)
+<li>height="height" - height of the display (slideshow only)
+<li>imagewidth="width" - width of images
+<li>maximageheight="max height" - maximum height of images
+<li>linkresource="true|false" - if true, link to the entry resource
+<li>includeicon="true|false" - if true, include the appropriate icon
+  (tabs and accordian)
+</ul>
 
 <li> [wiki::tagdef links {separator="separator text to use" 
                           style="inline css style for the link"
@@ -293,16 +323,18 @@ If you wanted to make a vertical list do:
 
 
 
-You can also import any of the views of an entry, e.g., the map view, the opendap view, the 
-calendar view, etc., with the  [wiki::tag import] tag:<br>
+You can also import any of the views of an entry, e.g., the map view, 
+the OPeNDAP view, the calendar view, etc., with the  
+[wiki::tag import] tag:<br>
 [wiki::tagdef import {output="<any of the output types>"}]
 <p>
 
 So, if you wanted to show the calendar view of an entry you would do:
 [wiki::text [wiki::tag import {output="calendar.calendar"}]]
 
-To find the correct output identifier just navigate to the page you want to include
-and look at the url for the output=... url argument and use that.
+To find the correct output identifier just navigate to the page you 
+want to include and look at the url for the output=... url argument 
+and use that.
 
 
 [ht::foot]
