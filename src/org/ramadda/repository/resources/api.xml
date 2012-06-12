@@ -1,7 +1,6 @@
 <api handler="repository">
 
   <property name="admin" value="false"/>
-  <property name="cancache" value="true"/>
 
   <group>
      <api request="/ping"             method="processPing"/>
@@ -19,8 +18,8 @@
       <api request="/entry/deletelist"       method="processEntryListDelete" actions="edit"/>
       <api request="/entry/new"              method="processEntryNew"        actions="new"/>
       <api request="/entry/upload"           method="processEntryUpload"     actions="upload"/>
-      <api request="/entry/getbyfilename/*"      method="processEntryGetByFilename"    authmethod="httpauth" cancache="false" />
-      <api request="/entry/get/*"            method="processEntryGet"        authmethod="httpauth" cancache="false" />
+      <api request="/entry/getbyfilename/*"      method="processEntryGetByFilename"    authmethod="httpauth"  />
+      <api request="/entry/get/*"            method="processEntryGet"        authmethod="httpauth"  />
 
       <api request="/entry/getentries"       method="processGetEntries" />
       <api request="/entry/copy"             method="processEntryCopy"/>
@@ -55,8 +54,8 @@
   </group>
 
   <group handler="repository">
-      <api request="/message"                method="processMessage"    cancache="false" />
-      <api request="/sslredirect"            method="processSslRedirect"    cancache="false"  needs_ssl="true" checkauthmethod="true"/>
+      <api request="/message"                method="processMessage"     />
+      <api request="/sslredirect"            method="processSslRedirect"    needs_ssl="true" checkauthmethod="true"/>
       <api request="/dummy"                  method="processDummy"/>
       <api request="/install"                method="processDummy"/>
       <api request="/test/memory"            method="processTestMemory"/>
@@ -87,9 +86,8 @@
   </group>
  
 
-  <api  handler="actionmanager" request="/status"      method="processStatus"    cancache="false" />
+  <api  handler="actionmanager" request="/status"      method="processStatus"    />
 
-  <property name="cancache" value="false"/>
 
   <group handler="usermanager">
       <api request="/user/login"              method="processLogin"    needs_ssl="true" />
@@ -138,7 +136,7 @@
   </group>
 
   <group handler="harvestermanager">
-      <api request="/harvester/processfile"    method="processFile"           admin="true" cancache="false"/>
+      <api request="/harvester/processfile"    method="processFile"           admin="true" />
       <api request="/harvester/list"           method="processList"           admin="true" />
       <api request="/harvester/new"            method="processNew"            admin="true" />
       <api request="/harvester/form/*"           method="processForm"           admin="true" />

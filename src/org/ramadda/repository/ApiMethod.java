@@ -90,8 +90,6 @@ public class ApiMethod {
     /** _more_ */
     public static final String ATTR_REQUIRESAUTHTOKEN = "requires_auth_token";
 
-    /** _more_ */
-    public static final String ATTR_CANCACHE = "cancache";
 
     /** _more_ */
     public static final String ATTR_ISHOME = "ishome";
@@ -122,9 +120,6 @@ public class ApiMethod {
 
     /** _more_ */
     private Method method;
-
-    /** _more_ */
-    private boolean canCache = false;
 
     /** _more_ */
     private List actions;
@@ -166,14 +161,13 @@ public class ApiMethod {
      * @param needsSsl _more_
      * @param authMethod _more_
      * @param checkAuthMethod _more_
-     * @param canCache _more_
      * @param isTopLevel _more_
      */
     public ApiMethod(Repository repository, RequestHandler requestHandler,
                      String request, String name, Method method,
                      boolean mustBeAdmin, boolean requiresAuthToken,
                      boolean needsSsl, String authMethod,
-                     boolean checkAuthMethod, boolean canCache,
+                     boolean checkAuthMethod,
                      boolean isTopLevel) {
         this.repository        = repository;
         this.requestHandler    = requestHandler;
@@ -184,10 +178,7 @@ public class ApiMethod {
         this.needsSsl          = needsSsl;
         this.authMethod        = authMethod;
         this.checkAuthMethod   = checkAuthMethod;
-
-
         this.method            = method;
-        this.canCache          = canCache;
         this.isTopLevel        = isTopLevel;
     }
 
@@ -331,24 +322,6 @@ public class ApiMethod {
 
 
 
-
-    /**
-     * Set the CanCache property.
-     *
-     * @param value The new value for CanCache
-     */
-    public void setCanCache(boolean value) {
-        canCache = value;
-    }
-
-    /**
-     * Get the CanCache property.
-     *
-     * @return The CanCache
-     */
-    public boolean getCanCache() {
-        return canCache;
-    }
 
 
     /**
