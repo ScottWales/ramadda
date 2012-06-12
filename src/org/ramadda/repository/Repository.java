@@ -52,10 +52,8 @@ import org.ramadda.util.TempDir;
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
-
 import ucar.unidata.sql.SqlUtil;
 
-import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.CacheManager;
 
@@ -65,7 +63,6 @@ import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.PatternFileFilter;
 
 
 import ucar.unidata.util.StringUtil;
@@ -93,9 +90,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -350,12 +345,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private GroupTypeHandler groupTypeHandler;
 
-
-    /** _more_ */
-    private Hashtable pageCache = new Hashtable();
-
-    /** _more_ */
-    private List pageCacheList = new ArrayList();
 
 
     /** _more_ */
@@ -2043,8 +2032,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      */
     public void clearCache() {
-        pageCache     = new Hashtable();
-        pageCacheList = new ArrayList();
         getEntryManager().clearCache();
         getAccessManager().clearCache();
         categoryList = null;
@@ -2148,10 +2135,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                             ApiMethod.ATTR_REQUIRESAUTHTOKEN,
                                             false));
 
-        boolean canCache = XmlUtil.getAttributeFromTree(node,
-                               ApiMethod.ATTR_CANCACHE,
-                               Misc.getProperty(props,
-                                   ApiMethod.ATTR_CANCACHE, true));
 
         String handlerName = XmlUtil.getAttributeFromTree(node,
                                  ApiMethod.ATTR_HANDLER,
@@ -2253,7 +2236,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                           XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
                               request), method, admin, requiresAuthToken,
                                         needsSsl, authMethod,
-                                        checkAuthMethod, canCache,
+                                        checkAuthMethod, 
                                         XmlUtil.getAttribute(node,
                                             ApiMethod.ATTR_TOPLEVEL, false));
         List actions = StringUtil.split(XmlUtil.getAttribute(node,
@@ -2700,8 +2683,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-
-
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
                                   + request.toString());
@@ -3004,25 +2985,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         Result result = null;
-        if (canCache() && apiMethod.getCanCache()) {
-            result = (Result) pageCache.get(request);
-            if (result != null) {
-                pageCacheList.remove(request);
-                pageCacheList.add(request);
-                result.setShouldDecorate(false);
-
-                return result;
-            }
-        }
-
-        boolean cachingOk = canCache();
 
         //TODO: how to handle when the DB is shutdown
         boolean hasConnection = true;
         //        hasConnection = getDatabaseManager().hasConnection();
         if ( !hasConnection) {
             //                && !incoming.startsWith(getUrlBase() + "/admin")) {
-            cachingOk = false;
             result    = new Result("No Database",
                                 new StringBuffer("Database is shutdown"));
         } else {
@@ -3035,16 +3003,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         getLogManager().logRequest(request);
 
-
-        if ((result.getInputStream() == null) && cachingOk
-                && apiMethod.getCanCache()) {
-            pageCache.put(request, result);
-            pageCacheList.add(request);
-            while (pageCacheList.size() > PAGE_CACHE_LIMIT) {
-                Request tmp = (Request) pageCacheList.remove(0);
-                pageCache.remove(tmp);
-            }
-        }
 
         return result;
 
@@ -3137,11 +3095,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getHtdocsFile(Request request) throws Exception {
 
+        String urlBase = getUrlBase();
         String path = request.getRequestPath();
-        if ( !path.startsWith(getUrlBase())) {
-            path = getUrlBase() + path;
+        if ( !path.startsWith(urlBase)) {
+            path = urlBase + path;
         }
 
+        //        System.err.println("path:" + path);
+        /*
         //Some hackery so we can reload applets when developing
         if ((path.indexOf("/graph") >= 0) && path.endsWith(".jar")) {
             path = "/repository/applets/graph.jar";
@@ -3155,11 +3116,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((path.indexOf("/gantt") >= 0) && path.endsWith(".jar")) {
             path = "/repository/applets/gantt/gantt.jar";
         }
+        */
 
         path = path.replaceAll("//", "/");
         //        System.err.println("path:" + path);
-        if ( !path.startsWith(getUrlBase())) {
-            //            System.err.println("bad:" + getUrlBase());
+        if ( !path.startsWith(urlBase)) {
             getLogManager().log(request,
                                 "Unknown request" + " \"" + path + "\"");
             Result result = new Result(
@@ -3169,14 +3130,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                         msgLabel("Unknown request") + "\""
                                         + path + "\"")));
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
-
             return result;
         }
 
 
-
-        int length = getUrlBase().length();
-        //        path = StringUtil.replace(path, getUrlBase(), BLANK);
+        int length = urlBase.length();
+        //        path = StringUtil.replace(path, urlBase, BLANK);
         path = path.substring(length);
         String type = getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
 
@@ -3190,17 +3149,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     getStorageManager().getInputStream(fullPath);
                 if (path.endsWith(".js") || path.endsWith(".css")) {
                     String js = IOUtil.readInputStream(inputStream);
-                    js          = js.replace("${urlroot}", getUrlBase());
+                    js          = js.replace("${urlroot}", urlBase);
                     inputStream = new ByteArrayInputStream(js.getBytes());
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
-
                     return getEntryManager().addHeaderToAncillaryPage(
                         request, new Result(BLANK, new StringBuffer(html)));
                 }
                 Result result = new Result(BLANK, inputStream, type);
-
-                //                result.setCacheOk(false);
+                result.setCacheOk(true);
                 return result;
             } catch (IOException fnfe) {
                 //noop
@@ -3224,14 +3181,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String mimeType =
                 getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
 
-            return new Result(BLANK, inputStream, mimeType);
+            Result result  =  new Result(BLANK, inputStream, mimeType);
+            result.setCacheOk(true);
+            return result;
         }
 
 
-        String userAgent = request.getHeaderArg(HtmlUtil.HTTP_USER_AGENT);
-        if (userAgent == null) {
-            userAgent = "Unknown";
-        }
 
         if (path.startsWith("/alias/")) {
             String alias = path.substring("/alias/".length());
@@ -3245,6 +3200,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+
+        String userAgent = request.getHeaderArg(HtmlUtil.HTTP_USER_AGENT);
+        if (userAgent == null) {
+            userAgent = "Unknown";
+        }
 
         getLogManager().log(request,
                             "Unknown request:" + request.getUrl()
@@ -3266,18 +3226,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    protected boolean canCache() {
-        if (true) {
-            return false;
-        }
 
-        return getProperty(PROP_DB_CANCACHE, true);
-    }
 
     /** _more_ */
     private Boolean cacheResources = null;
