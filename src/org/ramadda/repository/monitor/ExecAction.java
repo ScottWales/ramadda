@@ -71,6 +71,11 @@ public class ExecAction extends MonitorAction {
     }
 
 
+    public boolean adminOnly() {
+        return true;
+    }
+
+
     /**
      * _more_
      *

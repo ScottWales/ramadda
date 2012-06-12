@@ -45,6 +45,10 @@ public class TwitterAction extends PasswordAction {
      */
     public TwitterAction() {}
 
+    public TwitterAction(String id) {
+        super(id);
+    }
+
 
 
     /**

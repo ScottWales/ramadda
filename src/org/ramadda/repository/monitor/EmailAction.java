@@ -48,6 +48,9 @@ public class EmailAction extends PasswordAction {
      * _more_
      */
     public EmailAction() {}
+    public EmailAction(String id) {
+        super(id);
+    }
 
 
     /**

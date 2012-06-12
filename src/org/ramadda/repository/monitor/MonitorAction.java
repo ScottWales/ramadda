@@ -59,6 +59,11 @@ public abstract class MonitorAction implements Constants {
         this.id = id;
     }
 
+    public boolean adminOnly() {
+        return false;
+    }
+
+
     /**
      * _more_
      *

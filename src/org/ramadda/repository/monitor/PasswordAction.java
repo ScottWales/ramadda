@@ -67,6 +67,10 @@ public abstract class PasswordAction extends MonitorAction {
      */
     public PasswordAction() {}
 
+    public PasswordAction(String id) {
+        super(id);
+    }
+
 
 
     /**

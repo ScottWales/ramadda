@@ -77,6 +77,11 @@ public class LdmAction extends MonitorAction {
     }
 
 
+    public boolean adminOnly() {
+        return true;
+    }
+
+
     /**
      * _more_
      *

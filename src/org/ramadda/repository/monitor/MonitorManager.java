@@ -385,33 +385,37 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         EntryMonitor monitor = new EntryMonitor(getRepository(),
                                    request.getUser(), "New Monitor", true);
         String type = request.getString(ARG_MONITOR_TYPE, "email");
+        MonitorAction action = null;
         if (type.equals("email")) {
-            monitor.addAction(new EmailAction(getRepository().getGUID(), ""));
+            action = new EmailAction(getRepository().getGUID());
         } else if (type.equals("twitter")) {
-            monitor.addAction(new TwitterAction(getRepository().getGUID(),
-                    "", ""));
+            action = new TwitterAction(getRepository().getGUID());
         } else if (type.equals("ftp")) {
-            monitor.addAction(new FtpAction(getRepository().getGUID()));
+            action = new FtpAction(getRepository().getGUID());
         } else if (type.equals("copy")) {
-            monitor.addAction(new CopyAction(getRepository().getGUID()));
-        } else if (type.equals("ldm") || type.equals("exec")) {
-            if ( !request.getUser().getAdmin()) {
+            action = new CopyAction(getRepository().getGUID());
+        } else if (type.equals("ldm")) {
+            action = new LdmAction(getRepository().getGUID());
+        } else if (type.equals("exec")) {
+            if ( !getRepository().getProperty(PROP_MONITOR_ENABLE_EXEC,
+                                              false)) {
                 throw new IllegalArgumentException(
-                    "You need to be an admin to add an " + type + " action");
+                                                   "Exec action not enabled");
             }
-            if (type.equals("ldm")) {
-                monitor.addAction(new LdmAction(getRepository().getGUID()));
-            } else {
-                if ( !getRepository().getProperty(PROP_MONITOR_ENABLE_EXEC,
-                        false)) {
-                    throw new IllegalArgumentException(
-                        "Exec action not enabled");
-                }
-                monitor.addAction(new ExecAction(getRepository().getGUID()));
-            }
-        } else {
-            System.err.println("unknown type:" + type);
+            action = new ExecAction(getRepository().getGUID());
+        } 
+
+        if(action == null) {
+            throw new IllegalArgumentException("unknown action type:" + type);
         }
+
+        if(action.adminOnly() && !request.getUser().getAdmin()) {
+            throw new IllegalArgumentException(
+                                               "You need to be an admin to add an " + type + " action");
+        }
+
+
+        monitor.addAction(action);
         addNewMonitor(monitor);
         return new Result(
             HtmlUtil.url(
