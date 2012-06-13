@@ -259,11 +259,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             for (String f : StringUtil.split(files, "\n", true, true)) {
                 File file = new File(f);
                 if (file.isDirectory()) {
+                    PatternFileFilter filter = null;
+                    if(pattern!=null && pattern.length()>0) {
+                        filter =  new PatternFileFilter(StringUtil.wildcardToRegexp(pattern));
+                    }
                     List<File> childFiles = IOUtil.getFiles(new ArrayList(),
-                                                file, false,
-                                                ((pattern.length() == 0)
-                            ? null
-                            : new PatternFileFilter(pattern)));
+                                                file, false, filter);
 
                     for (File child : childFiles) {
                         if (child.isDirectory()) {
