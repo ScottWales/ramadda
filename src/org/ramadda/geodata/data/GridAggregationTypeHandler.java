@@ -50,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -75,6 +76,13 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** _more_ */
     public static final int INDEX_PATTERN = 4;
+
+
+    /** _more_ */
+    public static final int INDEX_INGEST = 5;
+
+
+    public static final int INDEX_HARVESTMETADATA = 6;
 
 
     /** _more_ */
@@ -155,6 +163,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         String timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
         String files          = entry.getValue(INDEX_FILES, "").trim();
         String pattern        = entry.getValue(INDEX_PATTERN, "").trim();
+        boolean ingest        = Misc.equals(entry.getValue(INDEX_INGEST, ""),"true");
+        boolean harvestMetadata        = Misc.equals(entry.getValue(INDEX_HARVESTMETADATA, ""),"true");
 
 
         ncmlUtil.openNcml(sb);
@@ -197,12 +207,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             getRepository().getEntryManager().getChildren(request, entry);
 
         //Check if the user specified any files directly
-        if (files.length() > 0) {
+        if (files!=null && files.length() > 0) {
             if ( !entry.getUser().getAdmin()) {
                 throw new IllegalArgumentException(
                     "When using the files list in the grid aggregation you must be an administrator");
             }
-            childrenEntries = new ArrayList<Entry>();
+            List<Entry> dummyEntries = new ArrayList<Entry>();
             List<File> filesToUse = new ArrayList<File>();
             for (String f : StringUtil.split(files, "\n", true, true)) {
                 File file = new File(f);
@@ -237,7 +247,25 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 
                 dummyEntry.setResource(new Resource(dataFile,
                         Resource.TYPE_LOCAL_FILE));
-                childrenEntries.add(dummyEntry);
+                dummyEntries.add(dummyEntry);
+            }
+
+            if(ingest) {
+                //See if we have all of the files
+                HashSet seen = new HashSet();
+                for(Entry existingEntry: childrenEntries) {
+                    seen.add(existingEntry.getFile());
+                }
+                for(File dataFile: filesToUse) {
+                    if(seen.contains(dataFile)) {
+                        continue;
+                    }
+                    System.err.println("New file:" + dataFile);
+                    Entry newEntry = getEntryManager().addFileEntry(request, dataFile,entry, dataFile.getName(), entry.getUser(), null, null);
+                    childrenEntries.add(newEntry);
+                }
+            } else {
+                childrenEntries = dummyEntries;
             }
         }
 

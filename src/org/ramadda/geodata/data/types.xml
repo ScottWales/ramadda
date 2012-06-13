@@ -15,6 +15,8 @@
      <column name="fields" rows="5" type="string"  label="Ensemble Fields" cansearch="false" showinhtml="true" suffix="Not implemented yet"/>
      <column name="files" rows="5" type="string"  label="Files" cansearch="false" showinhtml="true" suffix="Only allowed for admin"/>
      <column name="pattern"  type="string"  label="File Pattern" cansearch="false" showinhtml="true" suffix=""/>
+     <column name="ingestintoramadda"  type="boolean"  label="Ingest Files" suffix="Ingest any files found"  />
+     <column name="harvestmetadata"  type="boolean"  label="Harvest metadata" suffix="Harvest metadata of ingest files"  />
 
 
      <property name="icon" value="/icons/aggregation.png"/>
