@@ -138,6 +138,11 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         StringBuffer sb   = new StringBuffer();
+        String desc = group.getDescription();
+        if(desc!=null && desc.length()>0) {
+            sb.append(desc);
+            sb.append(HtmlUtil.br());
+        }
         StringBuffer divs = new StringBuffer();
         int          col  = 1;
         sb.append(
