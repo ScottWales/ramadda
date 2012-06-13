@@ -6987,8 +6987,6 @@ public class EntryManager extends RepositoryManager {
                     ((Date) extra.get(ARG_FROMDATE)).getTime());
                 theEntry.setEndDate(((Date) extra.get(ARG_TODATE)).getTime());
                 changed = true;
-                System.err.println("EntryManager: setting date: "
-                                   + extra.get(ARG_FROMDATE));
             }
             if (changed) {
                 changedEntries.add(theEntry);
