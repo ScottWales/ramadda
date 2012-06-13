@@ -242,6 +242,11 @@ the grandchildren as a grid:
 <li> [wiki::tagdef recent {days="number of days to show"}]:
 Show the most recent N days in a list organized by day.
 
+<li> [wiki::tagdef imageplayer {width="image width"}]:
+Show images in an image player, e.g.
+[wiki::text {{{imageplayer}}}] </pre>
+
+
 <li> [wiki::tagdef gallery {width="image width" count="max number to show"}]:
 Show a vertical listing of the children entry images, e.g.
 [wiki::text {{{gallery}}}] </pre>
@@ -263,24 +268,7 @@ Show only the 3 specified entries in tabs:
 Show only the children of type wikipage in tabs:
 [wiki::text {{{tabs type="wikipage"}}}]</pre>
 
-<li> [wiki::tagdef accordian]: Show the children in an accordian:
-[wiki::text {{{accordian}}}] </pre>
-
-<li> [wiki::tagdef slideshow]: Show the children in a slideshow:
-[wiki::text {{{slideshow}}}] </pre>
-<p>
 Additional arguments:
-<ul>
-<li>autoplay="true|false" - if true, start the slideshow (default: false)
-<li>speed="secs" - number of seconds to pause on each entry in slideshow
-<li>border="pixs" - border size in pixels
-<li>bordercolor="color" - border color (name or hexadecimal value)
-</ul>
-
-<p>
-<p>
-
-Additional arguments for tabs, accordian and slideshow:
 
 <ul>
 <li>usedescription="true|false" - show the description instead of the entry
@@ -288,14 +276,30 @@ Additional arguments for tabs, accordian and slideshow:
 <li>showlink="true|false" - show a link to the entry (default: true)
 <li>linklabel="label" - if showlink is true, use label in place of the entry
     name
-<li>width="width" - width of the display (slideshow only)
-<li>height="height" - height of the display (slideshow only)
 <li>imagewidth="width" - width of images
 <li>maximageheight="max height" - maximum height of images
 <li>linkresource="true|false" - if true, link to the entry resource
-<li>includeicon="true|false" - if true, include the appropriate icon
-  (tabs and accordian)
+<li>includeicon="true|false" - if true, include the appropriate icon in the tab
 </ul>
+
+<li> [wiki::tagdef accordian]: Show the children in an accordian:
+[wiki::text {{{accordian}}}] </pre>
+Uses the same arguments as tabs.
+
+<li> [wiki::tagdef slideshow]: Show the children in a slideshow:
+[wiki::text {{{slideshow}}}] </pre>
+<p>
+Uses the same arguments as tabs, plus:
+<ul>
+<li>autoplay="true|false" - if true, start the slideshow (default: false)
+<li>speed="secs" - number of seconds to pause on each entry in slideshow
+<li>border="pixs" - border size in pixels
+<li>bordercolor="color" - border color (name or hexadecimal value)
+<li>width="width" - width of the display 
+<li>height="height" - height of the display
+</ul>
+
+<p>
 
 <li> [wiki::tagdef links {separator="separator text to use" 
                           style="inline css style for the link"
