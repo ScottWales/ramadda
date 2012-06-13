@@ -1795,21 +1795,8 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-
         if (request.get(ARG_SETTIMEFROMCHILDREN, false)) {
-            if (children == null) {
-                children = getChildren(request, entry);
-            }
-            long minTime = Long.MAX_VALUE;
-            long maxTime = Long.MIN_VALUE;
-            for (Entry child : children) {
-                minTime = Math.min(minTime, child.getStartDate());
-                maxTime = Math.max(maxTime, child.getEndDate());
-            }
-            if (minTime != Long.MAX_VALUE) {
-                entry.setStartDate(minTime);
-                entry.setEndDate(maxTime);
-            }
+            setTimeFromChildren(request, entry, children);
         }
 
         double altitudeTop    = Entry.NONGEO;
@@ -1832,6 +1819,24 @@ public class EntryManager extends RepositoryManager {
         entry.getTypeHandler().initializeEntryFromForm(request, entry,
                 parent, newEntry);
     }
+
+    public void setTimeFromChildren(Request request, Entry entry, List<Entry> children) throws Exception {
+        if (children == null) {
+            children = getChildren(request, entry);
+        }
+        long minTime = Long.MAX_VALUE;
+        long maxTime = Long.MIN_VALUE;
+        for (Entry child : children) {
+            minTime = Math.min(minTime, child.getStartDate());
+            maxTime = Math.max(maxTime, child.getEndDate());
+        }
+        if (minTime != Long.MAX_VALUE) {
+            entry.setStartDate(minTime);
+            entry.setEndDate(maxTime);
+        }
+    }
+
+
 
 
     /**
@@ -5774,6 +5779,14 @@ public class EntryManager extends RepositoryManager {
                               TypeHandler typeHandler,
                               EntryInitializer initializer)
             throws Exception {
+        String resourceType;
+
+        //Is it a ramadda managed file?
+        if (IOUtil.isADescendent(getStorageManager().getRepositoryDir(), newFile)) {
+            resourceType = Resource.TYPE_STOREDFILE;
+        } else {
+            resourceType = Resource.TYPE_LOCAL_FILE;
+        }
 
 
         if ( !getRepository().getAccessManager().canDoAction(request, group,
@@ -5787,12 +5800,16 @@ public class EntryManager extends RepositoryManager {
         }
 
         Entry entry = typeHandler.createEntry(getRepository().getGUID());
+
+
+
         Resource resource = new Resource(newFile.toString(),
-                                         Resource.TYPE_STOREDFILE);
+                                         resourceType);
         Date dttm = new Date();
         entry.initEntry(name, "", group, request.getUser(), resource, "",
                         dttm.getTime(), dttm.getTime(), dttm.getTime(),
                         dttm.getTime(), null);
+
         typeHandler.initializeNewEntry(entry);
         if (initializer != null) {
             initializer.initEntry(entry);
@@ -5999,7 +6016,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void updateEntry(Entry entry) throws Exception {
+    public void updateEntry(Entry entry) throws Exception {
         PreparedStatement entryStmt =
             getDatabaseManager().getPreparedStatement(Tables.ENTRIES.UPDATE);
         setStatement(entry, entryStmt, false, entry.getTypeHandler());

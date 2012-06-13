@@ -164,7 +164,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         String files          = entry.getValue(INDEX_FILES, "").trim();
         String pattern        = entry.getValue(INDEX_PATTERN, "").trim();
         boolean ingest        = Misc.equals(entry.getValue(INDEX_INGEST, ""),"true");
-        boolean harvestMetadata        = Misc.equals(entry.getValue(INDEX_HARVESTMETADATA, ""),"true");
+        final boolean harvestMetadata        = Misc.equals(entry.getValue(INDEX_HARVESTMETADATA, ""),"true");
 
 
         ncmlUtil.openNcml(sb);
@@ -256,13 +256,35 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 for(Entry existingEntry: childrenEntries) {
                     seen.add(existingEntry.getFile());
                 }
+                boolean addedNewOne = false;
                 for(File dataFile: filesToUse) {
                     if(seen.contains(dataFile)) {
                         continue;
                     }
-                    System.err.println("New file:" + dataFile);
-                    Entry newEntry = getEntryManager().addFileEntry(request, dataFile,entry, dataFile.getName(), entry.getUser(), null, null);
+                    addedNewOne = true;
+                    final Request finalRequest = request;
+                    EntryInitializer initializer = new EntryInitializer() {
+                            public void initEntry(Entry entry) {
+                                if(harvestMetadata) {
+                                    try {
+                                        List<Entry> entries = (List<Entry>) Misc.newList(entry);
+                                        getEntryManager().addInitialMetadataToEntries(finalRequest, entries, true);
+                                    } catch(Exception exc) {
+                                        throw new RuntimeException(exc);
+                                    }
+                                }
+                            }
+                        };
+                    Entry newEntry = getEntryManager().addFileEntry(request, dataFile,entry, dataFile.getName(), entry.getUser(), null, initializer);
                     childrenEntries.add(newEntry);
+                }
+                if(addedNewOne && harvestMetadata) {
+                    getEntryManager().setTimeFromChildren(request, entry, childrenEntries);
+                    Rectangle2D.Double rect = getEntryManager().getBounds(childrenEntries);
+                    if (rect != null) {
+                        entry.setBounds(rect);
+                    }
+                    getEntryManager().updateEntry(entry);
                 }
             } else {
                 childrenEntries = dummyEntries;
