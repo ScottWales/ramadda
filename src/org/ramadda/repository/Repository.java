@@ -1119,7 +1119,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getUserManager().initUsers(cmdLineUsers);
 
         //This finds or creates the top-level group
-        getEntryManager().initTopGroup();
+        getEntryManager().initTopEntry();
 
 
         setLocalFilePaths();

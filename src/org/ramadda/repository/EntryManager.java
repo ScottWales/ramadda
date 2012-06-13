@@ -31,6 +31,7 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
 import org.ramadda.util.TTLCache;
+import org.ramadda.util.TTLObject;
 
 import org.ramadda.util.TempDir;
 
@@ -118,13 +119,12 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     private static final String ID_ROOT = "root";
 
-    /** _more_ */
-    private Entry topEntry;
-
 
     /** _more_ */
     public static final String ID_PREFIX_REMOTE = "remote:";
 
+
+    private TTLObject<Entry> rootCache;
 
     /** Caches sites */
     private TTLCache<String, Entry> entryCache;
@@ -147,7 +147,18 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public Entry getTopGroup() {
-        return topEntry;
+        try {
+            if(rootCache==null) {
+                initTopEntry();
+            }
+            Entry topEntry = rootCache.get();
+            if(topEntry == null) {
+                topEntry  = initTopEntry();
+            }
+            return topEntry;
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     /**
@@ -7443,6 +7454,7 @@ public class EntryManager extends RepositoryManager {
                                        boolean isGroup, boolean isTop)
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
+        Entry topEntry = getTopGroup();
         String topEntryName = ((topEntry != null)
                                ? topEntry.getName()
                                : GROUP_TOP);
@@ -8125,7 +8137,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected void initTopGroup() throws Exception {
+    protected Entry initTopEntry() throws Exception {
         Statement statement = getDatabaseManager().select(
                                   Tables.ENTRIES.COLUMNS,
                                   Tables.ENTRIES.NAME,
@@ -8137,12 +8149,10 @@ public class EntryManager extends RepositoryManager {
         //            System.err.println("TOP:" + entry);
         //        }
 
+        Entry topEntry = null;
         if (entries.size() > 1) {
             System.err.println(
                 "RAMADDA: there are more than one top-level entries");
-            for (Entry topEntry : entries) {
-                //                System.err.println("\t:" + topEntry);
-            }
         }
 
         if (entries.size() > 0) {
@@ -8153,8 +8163,20 @@ public class EntryManager extends RepositoryManager {
         if (topEntry == null) {
             topEntry = makeNewGroup(null, GROUP_TOP,
                                     getUserManager().getDefaultUser());
-            getAccessManager().initTopGroup(topEntry);
+            getAccessManager().initTopEntry(topEntry);
         }
+
+
+        if(rootCache==null) {
+            int cacheTimeMinutes =
+                getRepository().getProperty(PROP_CACHE_TTL, 60);
+            //Convert to milliseconds
+
+            rootCache = new TTLObject<Entry>(cacheTimeMinutes * 60 * 1000);
+        }
+        rootCache.put(topEntry);
+        return topEntry;
+
     }
 
 

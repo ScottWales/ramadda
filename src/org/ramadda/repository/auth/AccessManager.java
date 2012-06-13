@@ -129,7 +129,7 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void initTopGroup(Entry mainEntry) throws Exception {
+    public void initTopEntry(Entry mainEntry) throws Exception {
         mainEntry.addPermission(new Permission(Permission.ACTION_VIEW,
                 getUserManager().ROLE_ANY));
         mainEntry.addPermission(
