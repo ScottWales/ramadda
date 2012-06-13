@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -41,8 +42,8 @@ import org.ramadda.repository.monitor.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.util.*;
+import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.PropertyProvider;
@@ -118,9 +119,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private static final org.ramadda.util.HttpFormField dummyField1ToForceCompile =
         null;
 
+    /** _more_          */
     private static final org.ramadda.util.ObjectPool dummyField2ToForceCompile =
         null;
 
+    /** _more_          */
     private static final org.ramadda.util.EntryGroup dummyField3ToForceCompile =
         null;
 
@@ -468,6 +471,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<RepositoryManager> getRepositoryManagers() {
         return repositoryManagers;
     }
@@ -2240,7 +2248,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                           XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
                               request), method, admin, requiresAuthToken,
                                         needsSsl, authMethod,
-                                        checkAuthMethod, 
+                                        checkAuthMethod,
                                         XmlUtil.getAttribute(node,
                                             ApiMethod.ATTR_TOPLEVEL, false));
         List actions = StringUtil.split(XmlUtil.getAttribute(node,
@@ -2995,7 +3003,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        hasConnection = getDatabaseManager().hasConnection();
         if ( !hasConnection) {
             //                && !incoming.startsWith(getUrlBase() + "/admin")) {
-            result    = new Result("No Database",
+            result = new Result("No Database",
                                 new StringBuffer("Database is shutdown"));
         } else {
             result = (Result) apiMethod.invoke(request);
@@ -3100,7 +3108,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected Result getHtdocsFile(Request request) throws Exception {
 
         String urlBase = getUrlBase();
-        String path = request.getRequestPath();
+        String path    = request.getRequestPath();
         if ( !path.startsWith(urlBase)) {
             path = urlBase + path;
         }
@@ -3134,6 +3142,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                         msgLabel("Unknown request") + "\""
                                         + path + "\"")));
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
+
             return result;
         }
 
@@ -3157,11 +3166,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     inputStream = new ByteArrayInputStream(js.getBytes());
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
+
                     return getEntryManager().addHeaderToAncillaryPage(
                         request, new Result(BLANK, new StringBuffer(html)));
                 }
                 Result result = new Result(BLANK, inputStream, type);
                 result.setCacheOk(true);
+
                 return result;
             } catch (IOException fnfe) {
                 //noop
@@ -3185,8 +3196,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String mimeType =
                 getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
 
-            Result result  =  new Result(BLANK, inputStream, mimeType);
+            Result result = new Result(BLANK, inputStream, mimeType);
             result.setCacheOk(true);
+
             return result;
         }
 
@@ -4439,6 +4451,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String types = metadata.getAttr(6);
                 if ((types == null) || (types.trim().length() == 0)) {
                     theMetadata = metadata;
+
                     break;
                 }
                 for (String type : StringUtil.split(types, ",", true, true)) {
@@ -4470,8 +4483,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     "true"));
             pageStyle.setShowEntryHeader(Misc.equals(theMetadata.getAttr4(),
                     "true"));
-            pageStyle.setShowLayoutToolbar(Misc.equals(theMetadata.getAttr(5),
-                    "true"));
+            pageStyle.setShowLayoutToolbar(
+                Misc.equals(theMetadata.getAttr(5), "true"));
 
             boolean canEdit = getAccessManager().canDoAction(request, entry,
                                   Permission.ACTION_EDIT);
@@ -5310,27 +5323,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String           js         =
             "<script>jQuery(function() {$( " + HtmlUtil.squote("#" + inputId)
             + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false });});</script>";
-
-        if (true) {
-            return "\n" + js + "\n"
-                   + HtmlUtil.input(name, dateString,
-                                    HtmlUtil.SIZE_10 + HtmlUtil.id(inputId)
-                                    + HtmlUtil.title(dateHelp));
+        String extra = "";
+        if (includeTime) {
+            extra = " T:"
+                    + HtmlUtil.input(name + ".time", timeString,
+                                     HtmlUtil.sizeAttr(6)
+                                     + HtmlUtil.attr(HtmlUtil.ATTR_TITLE,
+                                         timeHelp));
         }
 
-        return HtmlUtil.input(
-            name, dateString,
-            HtmlUtil.SIZE_10 + HtmlUtil.id(name)
-            + HtmlUtil.title(dateHelp)) + getCalendarSelector(formName, name)
-                                        + ( !includeTime
-                                            ? ""
-                                            : " T:"
-                                            + HtmlUtil.input(
-                                                name + ".time", timeString,
-                                                    HtmlUtil.sizeAttr(6)
-                                                        + HtmlUtil.attr(
-                                                            HtmlUtil.ATTR_TITLE,
-                                                                timeHelp)));
+        return "\n" + js + "\n"
+               + HtmlUtil.input(name, dateString,
+                                HtmlUtil.SIZE_10 + HtmlUtil.id(inputId)
+                                + HtmlUtil.title(dateHelp)) + extra;
     }
 
 
