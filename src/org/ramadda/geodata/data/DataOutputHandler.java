@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -54,11 +55,11 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.ObjectPool;
 
 
 
 import org.ramadda.util.TempDir;
-import org.ramadda.util.ObjectPool;
 
 import org.w3c.dom.*;
 
@@ -177,23 +178,23 @@ import javax.servlet.http.*;
  */
 public class DataOutputHandler extends OutputHandler {
 
-    /** _more_ */
+    /** CSV format */
     public static final String FORMAT_CSV = "csv";
 
-    /** _more_ */
+    /** KML format */
     public static final String FORMAT_KML = "kml";
 
-    /** _more_ */
+    /** NCML format */
+    public static final String FORMAT_NCML = "ncml";
+
+    /** NCML suffix */
     public static final String SUFFIX_NCML = ".ncml";
 
-    /** _more_ */
+    /** GrADS CTL suffix */
     public static final String SUFFIX_CTL = ".ctl";
 
-    /** _more_ */
+    /** bounding box argument */
     public static final String ARG_POINT_BBOX = "bbox";
-
-    /** _more_ */
-    public static final String FORMAT_NCML = "ncml";
 
     /** Variable prefix */
     public static final String VAR_PREFIX = ARG_VARIABLE + ".";
@@ -217,7 +218,7 @@ public class DataOutputHandler extends OutputHandler {
     /** format */
     public static final String ARG_IMAGE_HEIGHT = "image_height";
 
-    /** _more_ */
+    /** spatial arguments */
     private static final String[] SPATIALARGS = new String[] { ARG_AREA_NORTH,
             ARG_AREA_WEST, ARG_AREA_SOUTH, ARG_AREA_EAST, };
 
@@ -234,9 +235,29 @@ public class DataOutputHandler extends OutputHandler {
     /** chart image format */
     private static final String FORMAT_TIMESERIES_IMAGE = "timeseriesimage";
 
-    /** _more_ */
+    /** Data group */
     public static final String GROUP_DATA = "Data";
 
+    /** CDM Type */
+    public static final String TYPE_CDM = "cdm";
+
+    /** GRID type */
+    public static final String TYPE_GRID = "grid";
+
+    /** TRAJECTORY type */
+    public static final String TYPE_TRAJECTORY = "trajectory";
+
+    /** POINT_TYPE */
+    public static final String TYPE_POINT = "point";
+
+    /** set of suffixes */
+    private HashSet<String> suffixSet;
+
+    /** hash of patterns */
+    private Hashtable<String, List<Pattern>> patterns;
+
+    /** not patterns */
+    private Hashtable<String, List<Pattern>> notPatterns;
 
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
@@ -379,6 +400,7 @@ public class DataOutputHandler extends OutputHandler {
             ncGetCounter.incr();
             try {
                 dataset.sync();
+
                 return dataset;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -402,8 +424,8 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /** nc file pool */
-    private ObjectPool<String, NetcdfFile> ncFilePool = new ObjectPool<String,
-                                                      NetcdfFile>(10) {
+    private ObjectPool<String, NetcdfFile> ncFilePool =
+        new ObjectPool<String, NetcdfFile>(10) {
         protected void removeValue(String key, NetcdfFile ncFile) {
             try {
                 super.removeValue(key, ncFile);
@@ -455,12 +477,12 @@ public class DataOutputHandler extends OutputHandler {
         }
     };
 
-    /** _more_ */
+    /** grid pool flag */
     private boolean doGridPool = true;
 
     /** grid pool */
     private ObjectPool<String, GridDataset> gridPool = new ObjectPool<String,
-                                                     GridDataset>(10) {
+                                                           GridDataset>(10) {
         protected void removeValue(String key, GridDataset dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -506,11 +528,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create the GridDataset from the file
      *
-     * @param path _more_
+     * @param path file path
      *
-     * @return _more_
+     * @return  the GridDataset
      */
     private GridDataset createGrid(String path) {
         try {
@@ -618,12 +640,12 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create a new DataOutputHandler
      *
-     * @param repository _more_
-     * @param name _more_
+     * @param repository  the repository
+     * @param name        the name of this handler
      *
-     * @throws Exception _more_
+     * @throws Exception problem creating class
      */
     public DataOutputHandler(Repository repository, String name)
             throws Exception {
@@ -761,11 +783,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Check to see if an Entry is an aggregation
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return  true if an aggregation
      */
     public boolean isAggregation(Entry entry) {
         return entry.getType().equals(
@@ -845,11 +867,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the OPeNDAP URL
      *
-     * @param entry _more_
+     * @param entry the Entry
      *
-     * @return _more_
+     * @return  the URL as a string
      */
     public String getOpendapUrl(Entry entry) {
         return getOpendapHandler().getOpendapUrl(entry);
@@ -857,13 +879,13 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the absolute OPeNDAP URL
      *
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the request
+     * @param entry    the entry
      *
-     * @return _more_
+     * @return  the URL as a String
      */
     public String getAbsoluteOpendapUrl(Request request, Entry entry) {
         return getOpendapHandler().getAbsoluteOpendapUrl(request, entry);
@@ -871,11 +893,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Check if we can load the Entry
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return true if we can load it
      */
     private boolean canLoadEntry(Entry entry) {
         String url = entry.getResource().getPath();
@@ -971,11 +993,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Can the Entry be loaded a point data?
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return true if can load as point
      */
     public boolean canLoadAsPoint(Entry entry) {
         if (excludedByPattern(entry, TYPE_POINT)) {
@@ -1006,11 +1028,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Can the Entry be loaded as a trajectory?
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return  true if trajectory supported
      */
     public boolean canLoadAsTrajectory(Entry entry) {
         if (excludedByPattern(entry, TYPE_TRAJECTORY)) {
@@ -1039,60 +1061,39 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
-    /** _more_ */
-    public static final String TYPE_CDM = "cdm";
-
-    /** _more_ */
-    public static final String TYPE_GRID = "grid";
-
-    /** _more_ */
-    public static final String TYPE_TRAJECTORY = "trajectory";
-
-    /** _more_ */
-    public static final String TYPE_POINT = "point";
-
-    /** _more_ */
-    private HashSet<String> suffixSet;
-
-    /** _more_ */
-    private Hashtable<String, List<Pattern>> patterns;
-
-    /** _more_ */
-    private Hashtable<String, List<Pattern>> notPatterns;
-
 
     /**
-     * _more_
+     * See if an Entry is excluded by pattern for a type
      *
-     * @param entry _more_
-     * @param type _more_
+     * @param entry   the Entry
+     * @param type    the type to check
      *
-     * @return _more_
+     * @return true if excluded
      */
     private boolean excludedByPattern(Entry entry, String type) {
         return hasSuffixForType(entry, type, true);
     }
 
     /**
-     * _more_
+     * See if an Entry is included by pattern for a type
      *
-     * @param entry _more_
-     * @param type _more_
+     * @param entry   the Entry
+     * @param type    the type to check
      *
-     * @return _more_
+     * @return true if included
      */
     private boolean includedByPattern(Entry entry, String type) {
         return hasSuffixForType(entry, type, false);
     }
 
     /**
-     * _more_
+     * See if the Entry has a suffix for this type
      *
-     * @param entry _more_
-     * @param type _more_
-     * @param forNot _more_
+     * @param entry  the Entry
+     * @param type   the type
+     * @param forNot true if not for that type
      *
-     * @return _more_
+     * @return  true if has suffix
      */
     private boolean hasSuffixForType(Entry entry, String type,
                                      boolean forNot) {
@@ -1105,13 +1106,13 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * See if the URL has a suffix for this type
      *
-     * @param url _more_
-     * @param type _more_
-     * @param forNot _more_
+     * @param url    the URL
+     * @param type   the type
+     * @param forNot true if not for that type
      *
-     * @return _more_
+     * @return  true if has suffix
      */
     private boolean hasSuffixForType(String url, String type,
                                      boolean forNot) {
@@ -1205,11 +1206,11 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Check if this Entry can load as a grid
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return true if grid is supported
      */
     public boolean canLoadAsGrid(Entry entry) {
         if (isAggregation(entry)) {
@@ -1249,14 +1250,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output the CDL for the Entry
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request   the Request
+     * @param entry     the Entry
      *
-     * @return _more_
+     * @return the CDL Result
      *
-     * @throws Exception _more_
+     * @throws Exception problems
      */
     public Result outputCdl(final Request request, Entry entry)
             throws Exception {
@@ -1342,12 +1343,12 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Get the NetcdfDataset for the Entry
      *
-     * @param entry _more_
-     * @param path _more_
+     * @param entry  the Entry
+     * @param path   the path
      *
-     * @return _more_
+     * @return  the NetcdfDataset
      */
     public NetcdfDataset getNetcdfDataset(Entry entry, String path) {
         if ( !canLoadAsCdm(entry)) {
@@ -1359,10 +1360,10 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Return the NetcdfDataset
      *
-     * @param path _more_
-     * @param ncd _more_
+     * @param path  the path
+     * @param ncd   the NetcdfDataset
      */
     public void returnNetcdfDataset(String path, NetcdfDataset ncd) {
         extCounter.decr();
@@ -1371,14 +1372,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the Entry as a GridDataset
      *
-     * @param entry _more_
-     * @param path _more_
+     * @param entry  the Entry
+     * @param path   the path
      *
-     * @return _more_
+     * @return  the GridDataset
      *
-     * @throws Exception _more_
+     * @throws Exception problems making GridDataset
      */
     public GridDataset getGridDataset(Entry entry, String path)
             throws Exception {
@@ -1398,10 +1399,10 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Return the GridDataset back to the pool
      *
-     * @param path _more_
-     * @param ncd _more_
+     * @param path  the path
+     * @param ncd   The GridDataset
      */
     public void returnGridDataset(String path, GridDataset ncd) {
         if (doGridPool) {
@@ -1412,12 +1413,12 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the Entry as a point dataset
      *
-     * @param entry _more_
-     * @param path _more_
+     * @param entry  the Entry
+     * @param path   the path
      *
-     * @return _more_
+     * @return  the point dataset
      */
     public FeatureDatasetPoint getPointDataset(Entry entry, String path) {
         if ( !canLoadAsPoint(entry)) {
@@ -1428,22 +1429,22 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Return the point dataset to the pool
      *
-     * @param path _more_
-     * @param ncd _more_
+     * @param path  the path
+     * @param ncd   the point dataset
      */
     public void returnPointDataset(String path, FeatureDatasetPoint ncd) {
         pointPool.put(path, ncd);
     }
 
     /**
-     * _more_
+     * Output the Entry as a WCS result
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the Request
+     * @param entry    the Entry
      *
-     * @return _more_
+     * @return  the Result
      */
     public Result outputWcs(Request request, Entry entry) {
         return new Result("", new StringBuffer("TBD"));
@@ -1710,10 +1711,11 @@ public class DataOutputHandler extends OutputHandler {
                            new TwoFacedObject("Xml", QueryParams.XML),
                            new TwoFacedObject("Time Series Image",
                                FORMAT_TIMESERIES),
-                           new TwoFacedObject("Interactive Time Series",
-                               FORMAT_TIMESERIES_CHART),
-                           new TwoFacedObject("Comma Separated Values (CSV)",
-                               QueryParams.CSV) });
+        // Comment out until it works better to handled dates
+        //new TwoFacedObject("Interactive Time Series",
+        //    FORMAT_TIMESERIES_CHART),
+        new TwoFacedObject("Comma Separated Values (CSV)",
+                           QueryParams.CSV) });
 
         String format = request.getString(ARG_FORMAT, QueryParams.NETCDF);
 
@@ -1785,12 +1787,13 @@ public class DataOutputHandler extends OutputHandler {
      */
     protected StringBuffer getVariableForm(GridDataset dataset,
                                            boolean withLevelSelector) {
-        int          varCnt  = 0;
-        StringBuffer varSB   = new StringBuffer();
-        StringBuffer varSB2D = new StringBuffer();
-        StringBuffer varSB3D = new StringBuffer();
+        int                varCnt  = 0;
+        StringBuffer       varSB   = new StringBuffer();
+        StringBuffer       varSB2D = new StringBuffer();
+        StringBuffer       varSB3D = new StringBuffer();
+        List<GridDatatype> grids   = sortGrids(dataset);
 
-        for (GridDatatype grid : sortGrids(dataset)) {
+        for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
             String call  = HtmlUtil.attr(
                               HtmlUtil.ATTR_ONCLICK,
@@ -1809,7 +1812,7 @@ public class DataOutputHandler extends OutputHandler {
                     HtmlUtil.cols(
                         HtmlUtil.checkbox(
                             ARG_VARIABLE + "." + var.getShortName(),
-                            HtmlUtil.VALUE_TRUE, false,
+                            HtmlUtil.VALUE_TRUE, (grids.size() == 1),
                             HtmlUtil.id(cbxId) + call) + HtmlUtil.space(1)
                                 + var.getName() + HtmlUtil.space(1)
                                 + ((var.getUnitsString() != null)
@@ -2514,13 +2517,13 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Make the Point Subset form
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param suffix _more_
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param suffix    the type as a suffix
      *
-     * @return _more_
+     * @return the Result
      */
     private Result makePointSubsetForm(Request request, Entry entry,
                                        String suffix) {
@@ -2558,14 +2561,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output a point subset
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the Request
+     * @param entry    the Entry
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception problem making subset
      */
     public Result outputPointSubset(Request request, Entry entry)
             throws Exception {
@@ -2605,14 +2608,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output the point data as CSV
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param pw _more_
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param pw       the PrintWriter
      *
      *
-     * @throws Exception _more_
+     * @throws Exception  problem getting data
      */
     private void outputPointCsv(Request request, Entry entry, PrintWriter pw)
             throws Exception {
@@ -2678,14 +2681,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output the points as KML
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param pw _more_
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param pw       the PrintWriter
      *
      *
-     * @throws Exception _more_
+     * @throws Exception problem generating KML
      */
     private void outputPointKml(Request request, Entry entry, PrintWriter pw)
             throws Exception {
@@ -2736,11 +2739,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the Authorization method
      *
-     * @param request _more_
+     * @param request  the Request
      *
-     * @return _more_
+     * @return  the autorization method
      */
     public AuthorizationMethod getAuthorizationMethod(Request request) {
         OutputType output = request.getOutput();
@@ -2755,17 +2758,17 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output a group of entries
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request     the Request
+     * @param outputType  the output type
+     * @param group       the group
+     * @param subGroups   the subgroups
+     * @param entries     the List of Entrys
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception  problem outputting group
      */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
@@ -2784,11 +2787,11 @@ public class DataOutputHandler extends OutputHandler {
     /**
      * Serve up the entry
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request     the Request
+     * @param outputType  the output type
+     * @param entry       the Entry
      *
-     * @return _more_
+     * @return the Result
      *
      * @throws Exception On badness
      */
@@ -2852,13 +2855,13 @@ public class DataOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Get the path to the data
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return the path
      *
-     * @throws Exception _more_
+     * @throws Exception problemo
      */
     public String getPath(Entry entry) throws Exception {
         return getPath(null, entry);
@@ -2869,8 +2872,8 @@ public class DataOutputHandler extends OutputHandler {
      * Get the path for the Entry
      *
      *
-     * @param request _more_
-     * @param entry  the Entry
+     * @param request the Request
+     * @param entry   the Entry
      *
      * @return   the path
      *
@@ -2907,9 +2910,9 @@ public class DataOutputHandler extends OutputHandler {
         }
         //        System.err.println("nd:" + metadataList);
         for (Metadata metadata : metadataList) {
-            String fileAttachment = metadata.getAttr1();
-            boolean isNcml = fileAttachment.endsWith(SUFFIX_NCML);
-            boolean isCtl = fileAttachment.endsWith(SUFFIX_CTL);
+            String  fileAttachment = metadata.getAttr1();
+            boolean isNcml         = fileAttachment.endsWith(SUFFIX_NCML);
+            boolean isCtl          = fileAttachment.endsWith(SUFFIX_CTL);
             if (isNcml || isCtl) {
                 File templateNcmlFile =
                     new File(
@@ -2924,10 +2927,13 @@ public class DataOutputHandler extends OutputHandler {
                 //Use the last modified time of the ncml file so we pick up any updated file
                 String dttm     = templateNcmlFile.lastModified() + "";
                 String fileName = dttm + "_" + entry.getId() + "_"
-                    + metadata.getId() + (isNcml?SUFFIX_NCML:SUFFIX_CTL);
+                                  + metadata.getId() + (isNcml
+                        ? SUFFIX_NCML
+                        : SUFFIX_CTL);
                 File ncmlFile = getStorageManager().getScratchFile(fileName);
                 IOUtil.writeBytes(ncmlFile, ncml.getBytes());
                 location = ncmlFile.toString();
+
                 break;
             }
         }
@@ -2937,9 +2943,9 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the OPeNDAP handler
      *
-     * @return _more_
+     * @return  the handler
      */
     public OpendapApiHandler getOpendapHandler() {
         return (OpendapApiHandler) getRepository().getApiHandler(
@@ -2949,14 +2955,14 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output OPeNDAP
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request   the Request
+     * @param entry     the Entry
      *
-     * @return _more_
+     * @return the Result
      *
-     * @throws Exception _more_
+     * @throws Exception  problems
      */
     public Result outputOpendap(final Request request, final Entry entry)
             throws Exception {
@@ -3008,30 +3014,27 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * Class NcDODSServlet _more_
+     * NcDODSServlet to wrap the OPeNDAP servelet
      *
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
      */
     public class NcDODSServlet extends opendap.servlet.AbstractServlet {
 
 
-        /** _more_ */
+        /** repository request */
         Request repositoryRequest;
 
-        /** _more_ */
+        /** the NetcdfFile object */
         NetcdfFile ncFile;
 
-        /** _more_ */
+        /** the Entry */
         Entry entry;
 
         /**
-         * _more_
+         * Construct a new NcDODSServlet
          *
-         * @param request _more_
-         * @param entry _more_
-         * @param ncFile _more_
+         * @param request the Request
+         * @param entry   the Entry
+         * @param ncFile  the NetcdfFile object
          */
         public NcDODSServlet(Request request, Entry entry,
                              NetcdfFile ncFile) {
@@ -3066,9 +3069,9 @@ public class DataOutputHandler extends OutputHandler {
         }
 
         /**
-         * _more_
+         * Get the server version
          *
-         * @return _more_
+         * @return  the version
          */
         public String getServerVersion() {
             return "opendap/3.7";
@@ -3077,11 +3080,11 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Main for testing
      *
-     * @param args _more_
+     * @param args  arguments for testing
      *
-     * @throws Exception _more_
+     * @throws Exception  problems
      */
     public static void main(String[] args) throws Exception {
         Repository repository = new Repository(new String[] {}, 8080);
@@ -3309,26 +3312,26 @@ public class DataOutputHandler extends OutputHandler {
      */
     private static class MyTimeSeries extends TimeSeries {
 
-        /** _more_ */
+        /** the items */
         List<TimeSeriesDataItem> items = new ArrayList<TimeSeriesDataItem>();
 
-        /** _more_ */
+        /** seen items */
         HashSet<TimeSeriesDataItem> seen = new HashSet<TimeSeriesDataItem>();
 
         /**
-         * _more_
+         * Construct the time series
          *
-         * @param name _more_
-         * @param c _more_
+         * @param name  the name
+         * @param c     the class
          */
         public MyTimeSeries(String name, Class c) {
             super(name, c);
         }
 
         /**
-         * _more_
+         * Add an item to the timeseries
          *
-         * @param item _more_
+         * @param item  the item to add
          */
         public void addItem(TimeSeriesDataItem item) {
             if (seen.contains(item)) {
@@ -3339,7 +3342,7 @@ public class DataOutputHandler extends OutputHandler {
         }
 
         /**
-         * _more_
+         * finish this
          */
         public void finish() {
             items = new ArrayList<TimeSeriesDataItem>(Misc.sort(items));
@@ -3362,7 +3365,7 @@ public class DataOutputHandler extends OutputHandler {
      * @param entry    the entry
      * @param dataset  the dataset
      *
-     * @return _more_
+     * @return the chart
      */
     private static JFreeChart createChart(Request request, Entry entry,
                                           XYDataset dataset) {
