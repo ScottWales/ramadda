@@ -762,8 +762,7 @@ public class MapManager extends RepositoryManager {
             for (Entry entry : entriesToUse) {
                 if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                     entryBuff.append(
-                        "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
-                    entryBuff.append("<td>");
+                        "<table cellspacing=0 cellpadding=0  width=100%><tr><td nowrap=true>");
                     String iconUrl = getEntryManager().getIconUrl(request,
                                          entry);
                     entryBuff.append(
@@ -771,7 +770,7 @@ public class MapManager extends RepositoryManager {
                             getEntryManager().getEntryURL(request, entry),
                             HtmlUtil.img(
                                 iconUrl,
-                                msg("Click to view entry details")) + " "
+                                msg("Click to view entry details")) + "&nbsp;"
                                     + entry.getName()));
                     entryBuff.append("</td><td align=right>");
                     entryBuff.append(
