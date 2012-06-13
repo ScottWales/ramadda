@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -49,8 +50,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -82,7 +83,11 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     public static final int INDEX_INGEST = 5;
 
 
+    /** _more_          */
     public static final int INDEX_HARVESTMETADATA = 6;
+
+    /** _more_          */
+    public static final int INDEX_HARVESTFULLMETADATA = 7;
 
 
     /** _more_ */
@@ -112,28 +117,32 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param timestamp _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public File getNcmlFile(Request request, Entry entry, long[]timestamp) throws Exception {
+    public File getNcmlFile(Request request, Entry entry, long[] timestamp)
+            throws Exception {
         if (request == null) {
             request = getRepository().getTmpRequest();
         }
         String ncml = getNcmlString(request, entry, timestamp);
         if (ncml.length() != 0) {
-            String ncmlFileName = entry.getId() +"_" + timestamp[0] + ".ncml";
+            String ncmlFileName = entry.getId() + "_" + timestamp[0]
+                                  + ".ncml";
             //Use the timestamp from the files to make the ncml file name based on the input files
             File tmpFile = getStorageManager().getScratchFile(ncmlFileName);
             //File tmpFile =
             //  getRepository().getStorageManager().getTmpFile(request, "grid.ncml");
-            if(!tmpFile.exists()) {
+            if ( !tmpFile.exists()) {
                 System.err.println("writing new ncml file:" + tmpFile);
                 IOUtil.writeFile(tmpFile, ncml);
             } else {
                 System.err.println("using existing ncml file:" + tmpFile);
             }
+
             return tmpFile;
         } else {
             return null;
@@ -146,25 +155,58 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     */
+    @Override
+    public void doFinalInitialization(Request request, Entry entry) {
+        //Call this to force an initial ingest
+        try {
+            if(getIngest(entry)) {
+                getNcmlString(request, entry, new long[] { 0 });
+            }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
+    private boolean getIngest(Entry entry) {
+        return  Misc.equals(entry.getValue(INDEX_INGEST, ""),
+                                            "true");
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param timestamp _more_
      *
      * @return String containing the NCML with the NCML of its childrens
      *
      * @throws Exception _more_
      */
-    private String getNcmlString(Request request, Entry entry, long[]timestamp)
+    private String getNcmlString(Request request, Entry entry,
+                                 long[] timestamp)
             throws Exception {
+
         if (request == null) {
             request = getRepository().getTmpRequest();
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb       = new StringBuffer();
 
-        NcmlUtil ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
+        NcmlUtil     ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
                                 NcmlUtil.AGG_JOINEXISTING));
-        String timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
-        String files          = entry.getValue(INDEX_FILES, "").trim();
-        String pattern        = entry.getValue(INDEX_PATTERN, "").trim();
-        boolean ingest        = Misc.equals(entry.getValue(INDEX_INGEST, ""),"true");
-        final boolean harvestMetadata        = Misc.equals(entry.getValue(INDEX_HARVESTMETADATA, ""),"true");
+        String  timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
+        String  files          = entry.getValue(INDEX_FILES, "").trim();
+        String  pattern        = entry.getValue(INDEX_PATTERN, "").trim();
+        boolean ingest         = getIngest(entry);
+        final boolean harvestMetadata =
+            Misc.equals(entry.getValue(INDEX_HARVESTMETADATA, ""), "true");
+        final boolean harvestFullMetadata =
+            Misc.equals(entry.getValue(INDEX_HARVESTFULLMETADATA, ""),
+                        "true");
+
 
 
         ncmlUtil.openNcml(sb);
@@ -203,17 +245,17 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         List<String> sortedChillens      = new ArrayList<String>();
         boolean      childrenAggregation = false;
-        List<Entry> childrenEntries =
+        List<Entry>  childrenEntries     =
             getRepository().getEntryManager().getChildren(request, entry);
 
         //Check if the user specified any files directly
-        if (files!=null && files.length() > 0) {
+        if ((files != null) && (files.length() > 0)) {
             if ( !entry.getUser().getAdmin()) {
                 throw new IllegalArgumentException(
                     "When using the files list in the grid aggregation you must be an administrator");
             }
             List<Entry> dummyEntries = new ArrayList<Entry>();
-            List<File> filesToUse = new ArrayList<File>();
+            List<File>  filesToUse   = new ArrayList<File>();
             for (String f : StringUtil.split(files, "\n", true, true)) {
                 File file = new File(f);
                 if (file.isDirectory()) {
@@ -243,44 +285,54 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 //Check for access
                 getStorageManager().checkLocalFile(dataFile);
                 Entry dummyEntry = new Entry();
-                dummyEntry.setTypeHandler(getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
-                
+                dummyEntry.setTypeHandler(
+                    getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
+
                 dummyEntry.setResource(new Resource(dataFile,
                         Resource.TYPE_LOCAL_FILE));
                 dummyEntries.add(dummyEntry);
             }
 
-            if(ingest) {
+            if (ingest) {
                 //See if we have all of the files
                 HashSet seen = new HashSet();
-                for(Entry existingEntry: childrenEntries) {
+                for (Entry existingEntry : childrenEntries) {
                     seen.add(existingEntry.getFile());
                 }
                 boolean addedNewOne = false;
-                for(File dataFile: filesToUse) {
-                    if(seen.contains(dataFile)) {
+                for (File dataFile : filesToUse) {
+                    if (seen.contains(dataFile)) {
                         continue;
                     }
                     addedNewOne = true;
-                    final Request finalRequest = request;
-                    EntryInitializer initializer = new EntryInitializer() {
-                            public void initEntry(Entry entry) {
-                                if(harvestMetadata) {
-                                    try {
-                                        List<Entry> entries = (List<Entry>) Misc.newList(entry);
-                                        getEntryManager().addInitialMetadataToEntries(finalRequest, entries, true);
-                                    } catch(Exception exc) {
-                                        throw new RuntimeException(exc);
-                                    }
+                    final Request    finalRequest = request;
+                    EntryInitializer initializer  = new EntryInitializer() {
+                        public void initEntry(Entry entry) {
+                            if (harvestMetadata || harvestFullMetadata) {
+                                try {
+                                    List<Entry> entries =
+                                        (List<Entry>) Misc.newList(entry);
+                                    getEntryManager()
+                                        .addInitialMetadataToEntries(
+                                            finalRequest, entries,
+                                            !harvestFullMetadata);
+                                } catch (Exception exc) {
+                                    throw new RuntimeException(exc);
                                 }
                             }
-                        };
-                    Entry newEntry = getEntryManager().addFileEntry(request, dataFile,entry, dataFile.getName(), entry.getUser(), null, initializer);
+                        }
+                    };
+                    //                    System.err.println("Adding file to aggregation:" + dataFile);
+                    Entry newEntry = getEntryManager().addFileEntry(request,
+                                         dataFile, entry, dataFile.getName(),
+                                         entry.getUser(), null, initializer);
                     childrenEntries.add(newEntry);
                 }
-                if(addedNewOne && harvestMetadata) {
-                    getEntryManager().setTimeFromChildren(request, entry, childrenEntries);
-                    Rectangle2D.Double rect = getEntryManager().getBounds(childrenEntries);
+                if (addedNewOne && (harvestMetadata || harvestFullMetadata)) {
+                    getEntryManager().setTimeFromChildren(request, entry,
+                            childrenEntries);
+                    Rectangle2D.Double rect =
+                        getEntryManager().getBounds(childrenEntries);
                     if (rect != null) {
                         entry.setBounds(rect);
                     }
@@ -301,6 +353,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                     sb.append(ncml);
                     childrenAggregation = true;
                 }
+
                 continue;
             }
             sortedChillens.add(child.getResource().getPath());
@@ -331,6 +384,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         return sb.toString();
 
+
     }
 
 
@@ -345,7 +399,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     public void childEntryChanged(Entry entry, boolean isNew)
             throws Exception {
         super.childEntryChanged(entry, isNew);
-        Entry parent = entry.getParentEntry();
+        Entry       parent   = entry.getParentEntry();
         List<Entry> children =
             getEntryManager().getChildren(getRepository().getTmpRequest(),
                                           parent);
@@ -365,6 +419,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public List<Service> getServices(Request request, Entry entry) {
         List<Service> services = super.getServices(request, entry);
+
         /*
         String url =
             HtmlUtil.url(request.entryUrl(getRepository().URL_ENTRY_SHOW,

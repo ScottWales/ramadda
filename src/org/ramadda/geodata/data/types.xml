@@ -17,13 +17,13 @@
      <column name="pattern"  type="string"  label="File Pattern" cansearch="false" showinhtml="true" suffix=""/>
      <column name="ingestintoramadda"  type="boolean"  label="Ingest Files" suffix="Ingest any files found"  />
      <column name="harvestmetadata"  type="boolean"  label="Harvest metadata" suffix="Harvest metadata of ingest files"  />
+     <column name="harvestfull" default="false"  type="boolean"  label="Harvest full metadata" suffix="Harvest all metadata of ingest files"  />
 
 
      <property name="icon" value="/icons/aggregation.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="true"/>
      <property name="form.datatype.show" value="false"/>
-     <property name="form.date.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
    </type>
