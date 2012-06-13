@@ -56,50 +56,45 @@ import java.util.List;
 
 
 /**
+ * Class for handling grid aggregation
  *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /** _more_ */
+    /** Type index for GUI */
     public static final int INDEX_TYPE = 0;
 
-    /** _more_ */
+    /** Coordinate index for GUI */
     public static final int INDEX_COORDINATE = 1;
 
-    /** _more_ */
+    /** Fields index for GUI */
     public static final int INDEX_FIELDS = 2;
 
-    /** _more_ */
+    /** Files index for GUI */
     public static final int INDEX_FILES = 3;
 
-    /** _more_ */
+    /** Pattern index for GUI */
     public static final int INDEX_PATTERN = 4;
 
-
-    /** _more_ */
+    /** Ingest files index for GUI */
     public static final int INDEX_INGEST = 5;
 
+    /** Add short metadata index for GUI */
+    public static final int INDEX_ADDSHORTMETADATA = 6;
 
-    /** _more_          */
-    public static final int INDEX_HARVESTMETADATA = 6;
+    /** Add full metadata index for GUI */
+    public static final int INDEX_ADDFULLMETADATA = 7;
 
-    /** _more_          */
-    public static final int INDEX_HARVESTFULLMETADATA = 7;
-
-
-    /** _more_ */
+    /** GridAggregation type */
     public static final String TYPE_GRIDAGGREGATION = "gridaggregation";
 
 
     /**
-     * _more_
+     * Construct a new GridAggregationTypeHandler
      *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
+     * @param repository   the Repository
+     * @param node         the defining Element
+     * @throws Exception   problems
      */
     public GridAggregationTypeHandler(Repository repository, Element node)
             throws Exception {
@@ -113,15 +108,15 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /**
-     * _more_
+     * Get the NcML file
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param timestamp _more_
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param timestamp  the timestamp
      *
-     * @return _more_
+     * @return the file
      *
-     * @throws Exception _more_
+     * @throws Exception problems getting file
      */
     public File getNcmlFile(Request request, Entry entry, long[] timestamp)
             throws Exception {
@@ -151,16 +146,16 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /**
-     * _more_
+     * Do the final initialization
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the Request
+     * @param entry    the Entry
      */
     @Override
     public void doFinalInitialization(Request request, Entry entry) {
         //Call this to force an initial ingest
         try {
-            if(getIngest(entry)) {
+            if (getIngest(entry)) {
                 getNcmlString(request, entry, new long[] { 0 });
             }
         } catch (Exception exc) {
@@ -169,22 +164,28 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    /**
+     * Get whether we should ingest files
+     *
+     * @param entry  the Entry
+     *
+     * @return  true if should ingest
+     */
     private boolean getIngest(Entry entry) {
-        return  Misc.equals(entry.getValue(INDEX_INGEST, ""),
-                                            "true");
+        return Misc.equals(entry.getValue(INDEX_INGEST, ""), "true");
     }
 
 
     /**
-     * _more_
+     * Get the NcML as a String
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param timestamp _more_
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param timestamp the timestamp
      *
-     * @return String containing the NCML with the NCML of its childrens
+     * @return String containing the NcML with the NcML of its childrens
      *
-     * @throws Exception _more_
+     * @throws Exception  problems generating NcML
      */
     private String getNcmlString(Request request, Entry entry,
                                  long[] timestamp)
@@ -197,15 +198,14 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         NcmlUtil     ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
                                 NcmlUtil.AGG_JOINEXISTING));
-        String  timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
-        String  files          = entry.getValue(INDEX_FILES, "").trim();
-        String  pattern        = entry.getValue(INDEX_PATTERN, "").trim();
-        boolean ingest         = getIngest(entry);
+        String timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
+        String        files           = entry.getValue(INDEX_FILES, "").trim();
+        String        pattern = entry.getValue(INDEX_PATTERN, "").trim();
+        boolean       ingest          = getIngest(entry);
         final boolean harvestMetadata =
-            Misc.equals(entry.getValue(INDEX_HARVESTMETADATA, ""), "true");
+            Misc.equals(entry.getValue(INDEX_ADDSHORTMETADATA, ""), "true");
         final boolean harvestFullMetadata =
-            Misc.equals(entry.getValue(INDEX_HARVESTFULLMETADATA, ""),
-                        "true");
+            Misc.equals(entry.getValue(INDEX_ADDFULLMETADATA, ""), "true");
 
 
 
@@ -389,12 +389,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /**
-     * _more_
+     * Handle a change to a child entry
      *
-     * @param entry _more_
-     * @param isNew _more_
+     * @param entry  the Entry
+     * @param isNew  true if is new child
      *
-     * @throws Exception _more_
+     * @throws Exception problem handling
      */
     public void childEntryChanged(Entry entry, boolean isNew)
             throws Exception {
@@ -410,12 +410,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /**
-     * _more_
+     * Get the services for this type
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the Request
+     * @param entry    the Entry
      *
-     * @return _more_
+     * @return  the List of services
      */
     public List<Service> getServices(Request request, Entry entry) {
         List<Service> services = super.getServices(request, entry);
