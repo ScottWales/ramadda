@@ -2148,6 +2148,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
 
+            //If its an anonymous user then jusst show the label or the name
+            if(request.isAnonymous()) {
+                String extra = HtmlUtil.cssClass("wiki-link-noexist");
+                if(label!=null && label.length()>0) {
+                    return HtmlUtil.span(label,   extra);
+                }
+                return HtmlUtil.span(name,   extra);
+            }
+
             String url = request.url(getRepository().URL_ENTRY_FORM,
                                      ARG_NAME, name, ARG_GROUP,
                                      (entry.isGroup()
