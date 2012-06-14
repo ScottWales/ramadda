@@ -944,6 +944,10 @@ public class DataOutputHandler extends OutputHandler {
         if (entry.isType(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             return true;
         }
+        
+        if (isGrads(entry)) {
+            return true;
+        }
 
         if (isAggregation(entry)) {
             return true;
@@ -991,6 +995,12 @@ public class DataOutputHandler extends OutputHandler {
         return b.booleanValue();
     }
 
+    /**
+     *  Is this a GrADS entry
+     */
+    private boolean isGrads(Entry e) {
+        return e.getType().equals("gradsbinary");
+    }
 
     /**
      * Can the Entry be loaded a point data?
@@ -1214,6 +1224,9 @@ public class DataOutputHandler extends OutputHandler {
      */
     public boolean canLoadAsGrid(Entry entry) {
         if (isAggregation(entry)) {
+            return true;
+        }
+        if (isGrads(entry)) {
             return true;
         }
         if (excludedByPattern(entry, TYPE_GRID)) {
@@ -2922,7 +2935,16 @@ public class DataOutputHandler extends OutputHandler {
                                 false), metadata.getAttr1()));
                 String ncml =
                     getStorageManager().readSystemResource(templateNcmlFile);
-                ncml = ncml.replace("${location}", location);
+                if (isNcml) {
+                   ncml = ncml.replace("${location}", location);
+                } else {  // CTL
+                    int dsetIdx = ncml.indexOf("${location}");
+                    if (dsetIdx >= 0) {
+                        ncml = ncml.replace("${location}", location);
+                    } else {
+                        ncml = ncml.replaceAll("^(dset|DSET).*", "DSET "+location);
+                    }
+                }
                 //                System.err.println("ncml:" + ncml);
                 //Use the last modified time of the ncml file so we pick up any updated file
                 String dttm     = templateNcmlFile.lastModified() + "";
