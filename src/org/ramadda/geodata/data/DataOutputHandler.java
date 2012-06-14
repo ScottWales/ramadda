@@ -250,6 +250,9 @@ public class DataOutputHandler extends OutputHandler {
     /** POINT_TYPE */
     public static final String TYPE_POINT = "point";
 
+    /** GrADS type*/
+    public static final String TYPE_GRADS = "gradsbinary";
+
     /** set of suffixes */
     private HashSet<String> suffixSet;
 
@@ -944,7 +947,7 @@ public class DataOutputHandler extends OutputHandler {
         if (entry.isType(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             return true;
         }
-        
+
         if (isGrads(entry)) {
             return true;
         }
@@ -997,9 +1000,13 @@ public class DataOutputHandler extends OutputHandler {
 
     /**
      *  Is this a GrADS entry
+     *
+     * @param e the Entry
+     *
+     * @return true if GrADS type
      */
     private boolean isGrads(Entry e) {
-        return e.getType().equals("gradsbinary");
+        return e.getType().equals(TYPE_GRADS);
     }
 
     /**
@@ -2936,13 +2943,14 @@ public class DataOutputHandler extends OutputHandler {
                 String ncml =
                     getStorageManager().readSystemResource(templateNcmlFile);
                 if (isNcml) {
-                   ncml = ncml.replace("${location}", location);
+                    ncml = ncml.replace("${location}", location);
                 } else {  // CTL
                     int dsetIdx = ncml.indexOf("${location}");
                     if (dsetIdx >= 0) {
                         ncml = ncml.replace("${location}", location);
                     } else {
-                        ncml = ncml.replaceAll("^(dset|DSET).*", "DSET "+location);
+                        ncml = ncml.replaceAll("\n(dset|DSET).*\n",
+                                "\nDSET " + location + "\n");
                     }
                 }
                 //                System.err.println("ncml:" + ncml);
