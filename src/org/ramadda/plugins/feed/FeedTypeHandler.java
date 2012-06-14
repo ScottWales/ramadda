@@ -154,8 +154,11 @@ public class FeedTypeHandler extends GenericTypeHandler {
     public void processRss(Request request, Entry mainEntry,
                            List<Entry> items, Element root)
             throws Exception {
-        SimpleDateFormat sdf =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        //        Thu, 14 Jun 2012 14:50:14 -05:00
+        SimpleDateFormat []sdfs = new SimpleDateFormat[]{
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
+        };
         Element channel = XmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
         if (channel == null) {
             throw new IllegalArgumentException("No channel tag");
@@ -187,9 +190,15 @@ public class FeedTypeHandler extends GenericTypeHandler {
 
             Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
             Date  dttm  = new Date();
-            try {
-                dttm = sdf.parse(pubDate);
-            } catch (Exception exc) {
+            for(SimpleDateFormat sdf: sdfs) {
+                try {
+                    dttm = sdf.parse(pubDate);
+                    break;
+                } catch (Exception exc) {
+                }
+            }
+
+            if(dttm == null) {
                 dttm = DateUtil.parse(pubDate);
             }
 
