@@ -1,5 +1,8 @@
+
 .olLayerGoogleCopyright {
-    top:-1000px;
+//jeffmc: use display:none to fix the mouse controls not responding
+//    top:-1000px;
+    display: none;
 }
 
 .olControlAttribution {
@@ -12,6 +15,7 @@ div.olControlMousePosition {
 }
 
 .olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
-visibility:hidden;
+   visibility:hidden;
 }
+
 
