@@ -124,6 +124,7 @@ public class EntryManager extends RepositoryManager {
     public static final String ID_PREFIX_REMOTE = "remote:";
 
 
+    /** _more_          */
     private TTLObject<Entry> rootCache;
 
     /** Caches sites */
@@ -148,15 +149,16 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getTopGroup() {
         try {
-            if(rootCache==null) {
+            if (rootCache == null) {
                 initTopEntry();
             }
             Entry topEntry = rootCache.get();
-            if(topEntry == null) {
-                topEntry  = initTopEntry();
+            if (topEntry == null) {
+                topEntry = initTopEntry();
             }
+
             return topEntry;
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
@@ -3428,7 +3430,9 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         sb.append(msgHeader("Import Entries"));
         request.uploadFormWithAuthToken(sb,
-                                        getRepository().URL_ENTRY_XMLCREATE);
+                                        getRepository().URL_ENTRY_XMLCREATE,
+                                        makeFormSubmitDialog(sb,
+                                            msg("Importing Entries")));
         sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
         sb.append(HtmlUtil.formTable());
         sb.append(HtmlUtil.formEntry(msgLabel("File"),
@@ -7454,7 +7458,7 @@ public class EntryManager extends RepositoryManager {
                                        boolean isGroup, boolean isTop)
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
-        Entry topEntry = getTopGroup();
+        Entry  topEntry     = getTopGroup();
         String topEntryName = ((topEntry != null)
                                ? topEntry.getName()
                                : GROUP_TOP);
@@ -8135,6 +8139,8 @@ public class EntryManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     protected Entry initTopEntry() throws Exception {
@@ -8167,7 +8173,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        if(rootCache==null) {
+        if (rootCache == null) {
             int cacheTimeMinutes =
                 getRepository().getProperty(PROP_CACHE_TTL, 60);
             //Convert to milliseconds
@@ -8175,6 +8181,7 @@ public class EntryManager extends RepositoryManager {
             rootCache = new TTLObject<Entry>(cacheTimeMinutes * 60 * 1000);
         }
         rootCache.put(topEntry);
+
         return topEntry;
 
     }
