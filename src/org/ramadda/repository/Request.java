@@ -2173,6 +2173,10 @@ public class Request implements Constants, Cloneable {
         extraProperties.put(key, value);
     }
 
+    public void removeExtraProperty(Object key) {
+        extraProperties.remove(key);
+    }
+
     /**
      * _more_
      *

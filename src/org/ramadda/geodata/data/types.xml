@@ -58,7 +58,7 @@
 
 
   <type name="gradsbinary"  description="GrADS Binary File" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Geo Data">
-     <metadata id="content.attachment" label="Data Descriptor File" cansearch="true" suffix="GrADS Data Descriptor File" showinhtml="true"/>
+     <metadata id="content.attachment" label="GrADS Data Descriptor File"/>
      <property name="icon" value="/icons/cola.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="true"/>

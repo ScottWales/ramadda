@@ -986,6 +986,9 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_METADATA_ADD = "metadata.add";
 
+
+
+
     /** _more_ */
     public static final String ARG_METADATA_ADDSHORT = "metadata.addshort";
 
@@ -1027,7 +1030,7 @@ public interface Constants {
     public static final String ARG_METADATA_INHERITED = "metadata.inherited";
 
     /** _more_ */
-    public static final String ARG_METADATA_TYPE = "metadatatype";
+    public static final String ARG_METADATA_TYPE = "metadata.type";
 
     /** _more_ */
     public static final String ARG_MINLAT = "minlat";

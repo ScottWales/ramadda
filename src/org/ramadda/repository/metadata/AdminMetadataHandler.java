@@ -194,7 +194,7 @@ public class AdminMetadataHandler extends MetadataHandler {
         if ( !forEdit) {
             content = content + HtmlUtil.row(HtmlUtil.colspan(cancel, 2));
         }
-        String argtype = ARG_TYPE + suffix;
+        String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
         content = content + HtmlUtil.hidden(argtype, type.getId())
                   + HtmlUtil.hidden(argid, metadata.getId());

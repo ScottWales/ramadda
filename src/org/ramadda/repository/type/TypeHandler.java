@@ -204,7 +204,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /** _more_ */
-    private List<String> requiredMetadata = new ArrayList<String>();
+    private List<String[]> requiredMetadata = new ArrayList<String[]>();
 
     /** _more_ */
     private boolean forUser = true;
@@ -247,7 +247,7 @@ public class TypeHandler extends RepositoryManager {
         List metadataNodes = XmlUtil.findChildren(entryNode, TAG_METADATA);
         for (int i = 0; i < metadataNodes.size(); i++) {
             Element metadataNode = (Element) metadataNodes.get(i);
-            requiredMetadata.add(XmlUtil.getAttribute(metadataNode, ATTR_ID));
+            requiredMetadata.add(new String[]{XmlUtil.getAttribute(metadataNode, ATTR_ID), XmlUtil.getAttribute(metadataNode, "label",(String)null)});
         }
     }
 
@@ -1157,7 +1157,29 @@ public class TypeHandler extends RepositoryManager {
      * @param request _more_
      * @param entry _more_
      */
-    public void doFinalInitialization(Request request, Entry entry) {}
+    public void doFinalInitialization(Request request, Entry entry) {
+        try {
+            if(requiredMetadata.size()==0) return;
+            Hashtable<String, Metadata> existingMetadata = new Hashtable<String,
+                Metadata>();
+            List<Metadata> metadataList = new ArrayList<Metadata>();
+            for (String[] idLabel : requiredMetadata) {
+                MetadataHandler handler = getMetadataManager().findMetadataHandler(idLabel[0]);
+                if(handler!=null) {
+                    handler.handleForm(request, entry,
+                                       getRepository().getGUID(), "",
+                                       existingMetadata, metadataList, true);
+
+                }
+            }
+            for(Metadata metadata: metadataList) {
+                getMetadataManager().insertMetadata(metadata);
+            }
+
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
 
     /**
      * Does this type match the file being harvester
@@ -1260,37 +1282,6 @@ public class TypeHandler extends RepositoryManager {
     public void addMetadataToXml(Entry entry, Element root,
                                  StringBuffer extraXml,
                                  String metadataType) {}
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
-    public void applyNewForm(Request request, Entry entry) throws Exception {
-        Hashtable<String, Metadata> existingMetadata = new Hashtable<String,
-                                                           Metadata>();
-        List<Metadata> metadataList = new ArrayList<Metadata>();
-        for (String metadataId : requiredMetadata) {
-            for (MetadataHandler handler :
-                    getMetadataManager().getMetadataHandlers()) {
-                if (handler.canHandle(metadataId)) {
-                    handler.handleForm(request, entry,
-                                       getRepository().getGUID(), "",
-                                       existingMetadata, metadataList, true);
-
-                    break;
-                }
-            }
-        }
-        //        System.err.println("Added:" + metadataList);
-    }
-
-
-
-
 
     /**
      * _more_
@@ -2855,15 +2846,15 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (entry == null) {
-            for (String metadataId : requiredMetadata) {
-                for (MetadataHandler handler :
-                        getMetadataManager().getMetadataHandlers()) {
-                    if (handler.canHandle(metadataId)) {
-                        handler.makeAddForm(request, null,
-                                            handler.findType(metadataId), sb);
-
-                        break;
-                    }
+            for (String []idLabel : requiredMetadata) {
+                MetadataHandler handler = getMetadataManager().findMetadataHandler(idLabel[0]);
+                if(handler!=null) {
+                    if(idLabel[1]!=null) 
+                        request.putExtraProperty(MetadataType.PROP_METADATA_LABEL,idLabel[1]);
+                    handler.makeAddForm(request, null,
+                                        handler.findType(idLabel[0]), sb);
+                    request.removeExtraProperty(MetadataType.PROP_METADATA_LABEL);
+                    sb.append("<tr><td colspan=2><hr></td></tr>");
                 }
             }
         }

@@ -114,9 +114,7 @@ public class MetadataType extends MetadataTypeBase {
     public static final String ATTR_ = "";
 
 
-    /** _more_ */
-    public static String ARG_TYPE = "type";
-
+    public static final String PROP_METADATA_LABEL = "metadata.label";
 
     /** _more_ */
     public static String ARG_METADATAID = "metadataid";
@@ -924,7 +922,10 @@ public class MetadataType extends MetadataTypeBase {
                             boolean forEdit)
             throws Exception {
 
-        String lbl = msgLabel(getName());
+        String lbl = (String)request.getExtraProperty(PROP_METADATA_LABEL);
+        if(lbl==null) {
+            lbl = msgLabel(getName());
+        }
         String submit = HtmlUtil.submit(msg("Add") + HtmlUtil.space(1)
                                         + getName());
         String       cancel = HtmlUtil.submit(msg("Cancel"), ARG_CANCEL);
@@ -968,7 +969,7 @@ public class MetadataType extends MetadataTypeBase {
 
 
 
-        String argtype = ARG_TYPE + suffix;
+        String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
         sb.append(HtmlUtil.hidden(argtype, getId())
                   + HtmlUtil.hidden(argid, metadata.getId()));

@@ -66,9 +66,6 @@ public class MetadataHandler extends RepositoryManager {
     public static String ATTR_FORUSER = "foruser";
 
     /** _more_ */
-    public static String ARG_TYPE = "type";
-
-    /** _more_ */
     public static String ARG_METADATAID = "metadataid";
 
     /** _more_ */
@@ -988,7 +985,7 @@ public class MetadataHandler extends RepositoryManager {
                            List<Metadata> metadataList, boolean newMetadata)
             throws Exception {
 
-        String type = request.getString(ARG_TYPE + suffix, "");
+        String type = request.getString(ARG_METADATA_TYPE + suffix, "");
         if ( !canHandle(type)) {
             return;
         }

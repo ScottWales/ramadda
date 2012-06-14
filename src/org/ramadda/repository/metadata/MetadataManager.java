@@ -1183,10 +1183,10 @@ public class MetadataManager extends RepositoryManager {
             return processMetadataForm(request, entry, sb);
         }
 
-        if ( !request.exists(ARG_TYPE)) {
+        if ( !request.exists(ARG_METADATA_TYPE)) {
             makeAddList(request, entry, sb);
         } else {
-            String type = request.getString(ARG_TYPE, BLANK);
+            String type = request.getString(ARG_METADATA_TYPE, BLANK);
             sb.append(HtmlUtil.formTable());
             for (MetadataHandler handler : metadataHandlers) {
                 if (handler.canHandle(type)) {
@@ -1255,7 +1255,7 @@ public class MetadataManager extends RepositoryManager {
             }
             request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
             groupSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-            groupSB.append(HtmlUtil.hidden(ARG_TYPE, type.getId()));
+            groupSB.append(HtmlUtil.hidden(ARG_METADATA_TYPE, type.getId()));
             groupSB.append(HtmlUtil.submit(msg("Add")));
             groupSB.append(HtmlUtil.space(1)
                            + HtmlUtil.bold(type.getLabel()));

@@ -161,6 +161,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+        super.doFinalInitialization(request,  entry);
     }
 
 
