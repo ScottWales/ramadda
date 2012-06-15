@@ -631,9 +631,10 @@ public class ImageOutputHandler extends OutputHandler {
                 String entryUrl = getEntryLink(request, entry);
                 String title    =
                     "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
+                String dttm = formatDate(request,entry);
                 title += "<tr><td><b>Image:</b> " + entryUrl
                          + "</td><td align=right>"
-                         + new Date(entry.getStartDate());
+                    + dttm;
                 title += "</table>";
                 title = title.replace("\"", "\\\"");
                 sb.append("addImage(" + HtmlUtil.quote(url) + ","
@@ -705,7 +706,9 @@ public class ImageOutputHandler extends OutputHandler {
                                             imgExtra))));
                 sb.append("<br>\n");
                 sb.append(getEntryLink(request, entry));
-                sb.append(" " + new Date(entry.getStartDate()));
+                String dttm = formatDate(request,entry);
+                sb.append(" ");
+                sb.append(dttm);
                 sb.append("<p></td>");
             }
         }
@@ -764,6 +767,10 @@ public class ImageOutputHandler extends OutputHandler {
     }
 
 
+    private String formatDate(Request request, Entry entry) {
+        return  getRepository().formatDate(request,entry.getStartDate(),
+                                           getEntryManager().getTimezone(entry));
+    }
 
     /**
      * _more_
@@ -804,9 +811,10 @@ public class ImageOutputHandler extends OutputHandler {
             String entryUrl = getEntryLink(request, entry);
             String title    =
                 "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
+            String dttm = formatDate(request,entry);
             title += "<tr><td><b>Image:</b> " + entryUrl
                      + "</td><td align=right>"
-                     + new Date(entry.getStartDate());
+                     + dttm;
             title += "</table>";
             title = title.replace("\"", "\\\"");
             sb.append("addImage(" + HtmlUtil.quote(url) + ","
