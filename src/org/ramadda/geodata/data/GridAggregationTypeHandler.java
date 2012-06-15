@@ -315,8 +315,9 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                     List<Entry> entries =
                                         (List<Entry>) Misc.newList(entry);
                                     getEntryManager()
-                                        .addInitialMetadataToEntries(
+                                        .addInitialMetadata(
                                             finalRequest, entries,
+                                            true,
                                             !harvestFullMetadata);
                                 } catch (Exception exc) {
                                     throw new RuntimeException(exc);
