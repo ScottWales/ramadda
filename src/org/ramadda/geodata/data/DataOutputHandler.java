@@ -178,6 +178,9 @@ import javax.servlet.http.*;
  */
 public class DataOutputHandler extends OutputHandler {
 
+    /** _more_ */
+    public static final String ICON_OPENDAP = "/data/opendap.gif";
+
     /** CSV format */
     public static final String FORMAT_CSV = "csv";
 

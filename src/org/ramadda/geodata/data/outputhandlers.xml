@@ -5,4 +5,5 @@
 -->
   <outputhandler class="org.ramadda.geodata.data.DataOutputHandler" name="Data" required="true"/>
   <outputhandler class="org.ramadda.geodata.data.LdmOutputHandler" name="LDM Insert"/>
+  <outputhandler class="org.ramadda.geodata.data.NCOOutputHandler" name="NetCDF Operators"/>
 </outputhandlers>
