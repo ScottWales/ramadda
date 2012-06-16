@@ -30,7 +30,7 @@ import org.w3c.dom.*;
 import ucar.unidata.data.GeoLocationInfo;
 import ucar.unidata.data.gis.WmsSelection;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.WmsUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -145,7 +145,7 @@ public class WmsOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
 
         //Include the javascript library
-        sb.append(HtmlUtil.importJS(fileUrl("/wms/wms.js")));
+        sb.append(HtmlUtils.importJS(fileUrl("/wms/wms.js")));
 
 
         //Get the DOM
@@ -198,7 +198,7 @@ public class WmsOutputHandler extends OutputHandler {
                 layerSB.append(getHref(wms));
             }
             layerSB.append("</ul>");
-            sb.append(HtmlUtil.makeShowHideBlock(layers.get(0).getTitle(),
+            sb.append(HtmlUtils.makeShowHideBlock(layers.get(0).getTitle(),
                     layerSB.toString(), false));
         }
         return new Result("", sb);
@@ -213,7 +213,7 @@ public class WmsOutputHandler extends OutputHandler {
      * @return href
      */
     public String getHref(WmsSelection wms) {
-        String href = HtmlUtil.href(getUrl(wms), wms.getTitle());
+        String href = HtmlUtils.href(getUrl(wms), wms.getTitle());
         return href;
     }
 

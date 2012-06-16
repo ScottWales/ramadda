@@ -28,7 +28,7 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -347,25 +347,25 @@ public class MetadataHandler extends RepositoryManager {
      */
     protected String formEntry(String[] cols) {
         if (cols.length == 2) {
-            //            return HtmlUtil.rowTop(HtmlUtil.cols(cols[0])+"<td colspan=2>" + cols[1] +"</td>");
-            //            return HtmlUtil.rowTop(HtmlUtil.cols(cols[0])
+            //            return HtmlUtils.rowTop(HtmlUtils.cols(cols[0])+"<td colspan=2>" + cols[1] +"</td>");
+            //            return HtmlUtils.rowTop(HtmlUtils.cols(cols[0])
             //                                   + "<td xxcolspan=2>" + cols[1] + "</td>");
         }
         StringBuffer sb = new StringBuffer();
 
-        sb.append(HtmlUtil.rowTop("<td colspan=2>" + cols[0] + "</td>"));
+        sb.append(HtmlUtils.rowTop("<td colspan=2>" + cols[0] + "</td>"));
         for (int i = 1; i < cols.length; i += 2) {
             if (false && (i == 1)) {
                 sb.append(
-                    HtmlUtil.rowTop(
-                        HtmlUtil.cols(cols[0])
+                    HtmlUtils.rowTop(
+                        HtmlUtils.cols(cols[0])
                         + "<td class=\"formlabel\" align=right>" + cols[i]
                         + "</td>" + "<td>" + cols[i + 1]));
             } else {
-                //                sb.append(HtmlUtil.rowTop("<td></td><td class=\"formlabel\" align=right>" + cols[i] +"</td>" +
+                //                sb.append(HtmlUtils.rowTop("<td></td><td class=\"formlabel\" align=right>" + cols[i] +"</td>" +
                 //                                          "<td>" + cols[i+1]));
                 sb.append(
-                    HtmlUtil.rowTop(
+                    HtmlUtils.rowTop(
                         "<td class=\"formlabel\" align=right>" + cols[i]
                         + "</td>" + "<td>" + cols[i + 1]));
             }
@@ -718,7 +718,7 @@ public class MetadataHandler extends RepositoryManager {
         //        args.add(type.toString());
         args.add(ARG_METADATA_ATTR1 + "." + type.getId());
         args.add(value);
-        return HtmlUtil.url(
+        return HtmlUtils.url(
             request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
             args);
     }
@@ -734,9 +734,9 @@ public class MetadataHandler extends RepositoryManager {
      * @return _more_
      */
     public String getSearchLink(Request request, Metadata metadata) {
-        return HtmlUtil.href(
+        return HtmlUtils.href(
             getSearchUrl(request, metadata),
-            HtmlUtil.img(
+            HtmlUtils.img(
                 getRepository().iconUrl(ICON_SEARCH),
                 "Search for entries with this metadata", " border=0 "));
     }
@@ -755,10 +755,10 @@ public class MetadataHandler extends RepositoryManager {
                                 MetadataType type)
             throws Exception {
         boolean doSelect = true;
-        //        sb.append(HtmlUtil.hidden(ARG_METADATA_TYPE + "." + type,
+        //        sb.append(HtmlUtils.hidden(ARG_METADATA_TYPE + "." + type,
         //                                  type.toString()));
-        String inheritedCbx = HtmlUtil.checkbox(ARG_METADATA_INHERITED + "."
-                                  + type, "true", false) + HtmlUtil.space(1)
+        String inheritedCbx = HtmlUtils.checkbox(ARG_METADATA_INHERITED + "."
+                                  + type, "true", false) + HtmlUtils.space(1)
                                       + "inherited";
         inheritedCbx = "";
         String argName = ARG_METADATA_ATTR1 + "." + type;
@@ -772,12 +772,12 @@ public class MetadataHandler extends RepositoryManager {
             List l = trimValues((List<String>) Misc.toList(values));
             l.add(0, new TwoFacedObject("-" + msg("all") + "-", ""));
             String value = request.getString(argName, "");
-            sb.append(HtmlUtil.formEntry(msgLabel(type.getLabel()),
-                                         HtmlUtil.select(argName, l, value,
+            sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
+                                         HtmlUtils.select(argName, l, value,
                                              100) + inheritedCbx));
         } else {
-            sb.append(HtmlUtil.formEntry(msgLabel(type.getLabel()),
-                                         HtmlUtil.input(argName, "")
+            sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
+                                         HtmlUtils.input(argName, "")
                                          + inheritedCbx));
         }
     }
@@ -799,10 +799,10 @@ public class MetadataHandler extends RepositoryManager {
 
         boolean doSelect = true;
         String cloudLink =
-            HtmlUtil.href(
+            HtmlUtils.href(
                 request.url(
                     getRepository().getMetadataManager().URL_METADATA_LIST,
-                    ARG_METADATA_TYPE, type.toString()), HtmlUtil.img(
+                    ARG_METADATA_TYPE, type.toString()), HtmlUtils.img(
                         getRepository().iconUrl(ICON_LIST), "View Listing"));
         String url =
             request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH);
@@ -815,7 +815,7 @@ public class MetadataHandler extends RepositoryManager {
         content.append("<div class=\"browseblock\">");
         int rowNum = 1;
         for (int i = 0; i < values.length; i++) {
-            String browseUrl = HtmlUtil.url(url,
+            String browseUrl = HtmlUtils.url(url,
                                             ARG_METADATA_TYPE + "."
                                             + type.getId(), type.getId(),
                                                 ARG_METADATA_ATTR1 + "."
@@ -824,8 +824,8 @@ public class MetadataHandler extends RepositoryManager {
             if (value.length() == 0) {
                 value = "-blank-";
             }
-            content.append(HtmlUtil.div(HtmlUtil.href(browseUrl, value),
-                                        HtmlUtil.cssClass("listrow"
+            content.append(HtmlUtils.div(HtmlUtils.href(browseUrl, value),
+                                        HtmlUtils.cssClass("listrow"
                                             + rowNum)));
             rowNum++;
             if (rowNum > 2) {
@@ -835,8 +835,8 @@ public class MetadataHandler extends RepositoryManager {
         content.append("</div>");
 
         sb.append(
-            HtmlUtil.makeShowHideBlock(
-                cloudLink + HtmlUtil.space(1) + type.getLabel(),
+            HtmlUtils.makeShowHideBlock(
+                cloudLink + HtmlUtils.space(1) + type.getLabel(),
                 content.toString(), false));
 
 
@@ -889,15 +889,15 @@ public class MetadataHandler extends RepositoryManager {
         if (entry != null) {
             request.uploadFormWithAuthToken(
                 sb, getMetadataManager().URL_METADATA_ADD);
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         } else {
-            sb.append(HtmlUtil.row(HtmlUtil.colspan(header(html[0]), 2)));
+            sb.append(HtmlUtils.row(HtmlUtils.colspan(header(html[0]), 2)));
         }
 
         sb.append(html[1]);
 
         if (entry != null) {
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.formClose());
         }
     }
 

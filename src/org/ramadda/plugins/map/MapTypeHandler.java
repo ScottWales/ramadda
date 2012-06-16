@@ -29,7 +29,7 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 
 
@@ -102,7 +102,7 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
         List<Service> services = super.getServices(request, entry);
         /*
         String url =
-            HtmlUtil.url(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+            HtmlUtils.url(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                           entry), new String[] {
             ARG_OUTPUT, LidarOutputHandler.OUTPUT_LATLONALTCSV.toString(),
             LidarOutputHandler.ARG_LIDAR_SKIP,

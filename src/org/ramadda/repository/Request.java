@@ -26,7 +26,7 @@ import org.ramadda.repository.output.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -440,7 +440,7 @@ public class Request implements Constants, Cloneable {
             if (id.length() == 0) {
                 return entry.getRemoteServer() + theUrl.getPath();
             }
-            return HtmlUtil.url(entry.getRemoteServer() + theUrl.getPath(),
+            return HtmlUtils.url(entry.getRemoteServer() + theUrl.getPath(),
                                 arg, id);
         }
 
@@ -448,12 +448,12 @@ public class Request implements Constants, Cloneable {
 
         String url = getEntryUrl(theUrl.toString(), entry);
         if (entry.isTopEntry()) {
-            return checkUrl(HtmlUtil.url(url, arg, entry.getId()));
+            return checkUrl(HtmlUtils.url(url, arg, entry.getId()));
         }
         if (entry.getIsLocalFile()) {
-            return checkUrl(HtmlUtil.url(url, arg, entry.getId()));
+            return checkUrl(HtmlUtils.url(url, arg, entry.getId()));
         }
-        return checkUrl(HtmlUtil.url(url, arg, entry.getId()));
+        return checkUrl(HtmlUtils.url(url, arg, entry.getId()));
     }
 
     /**
@@ -468,7 +468,7 @@ public class Request implements Constants, Cloneable {
      */
     public String entryUrl(RequestUrl theUrl, Entry entry, String arg1,
                            Object value1) {
-        return checkUrl(HtmlUtil.url(entryUrl(theUrl, entry), arg1, value1));
+        return checkUrl(HtmlUtils.url(entryUrl(theUrl, entry), arg1, value1));
     }
 
 
@@ -483,7 +483,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String entryUrl(RequestUrl theUrl, Entry entry, List args) {
-        return checkUrl(HtmlUtil.url(entryUrl(theUrl, entry), args));
+        return checkUrl(HtmlUtils.url(entryUrl(theUrl, entry), args));
     }
 
 
@@ -497,7 +497,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String entryUrl(RequestUrl theUrl, Entry entry, String[] args) {
-        return checkUrl(HtmlUtil.url(entryUrl(theUrl, entry), args));
+        return checkUrl(HtmlUtils.url(entryUrl(theUrl, entry), args));
     }
 
     /**
@@ -514,7 +514,7 @@ public class Request implements Constants, Cloneable {
      */
     public String entryUrl(RequestUrl theUrl, Entry entry, String arg1,
                            Object value1, String arg2, Object value2) {
-        return checkUrl(HtmlUtil.url(entryUrl(theUrl, entry), arg1, value1,
+        return checkUrl(HtmlUtils.url(entryUrl(theUrl, entry), arg1, value1,
                                      arg2, value2));
     }
 
@@ -546,7 +546,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String form(RequestUrl theUrl) {
-        return HtmlUtil.form(url(theUrl));
+        return HtmlUtils.form(url(theUrl));
     }
 
 
@@ -558,7 +558,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String formPost(RequestUrl theUrl) {
-        return HtmlUtil.formPost(url(theUrl));
+        return HtmlUtils.formPost(url(theUrl));
     }
 
 
@@ -571,7 +571,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String formPost(RequestUrl theUrl, String extra) {
-        return HtmlUtil.formPost(url(theUrl), extra);
+        return HtmlUtils.formPost(url(theUrl), extra);
     }
 
 
@@ -618,7 +618,7 @@ public class Request implements Constants, Cloneable {
      */
     public void uploadFormWithAuthToken(StringBuffer sb, RequestUrl theUrl,
                                         String extra) {
-        sb.append(HtmlUtil.uploadForm(url(theUrl), extra));
+        sb.append(HtmlUtils.uploadForm(url(theUrl), extra));
         repository.addAuthToken(this, sb);
     }
 
@@ -634,7 +634,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String form(RequestUrl theUrl, String extra) {
-        return HtmlUtil.form(url(theUrl), extra);
+        return HtmlUtils.form(url(theUrl), extra);
     }
 
     /**
@@ -658,7 +658,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String uploadForm(RequestUrl theUrl, String extra) {
-        return HtmlUtil.uploadForm(url(theUrl), extra);
+        return HtmlUtils.uploadForm(url(theUrl), extra);
     }
 
 
@@ -672,7 +672,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String url(RequestUrl theUrl, String arg1, Object value1) {
-        return checkUrl(HtmlUtil.url(url(theUrl), arg1, value1));
+        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1));
     }
 
     /**
@@ -688,7 +688,7 @@ public class Request implements Constants, Cloneable {
      */
     public String url(RequestUrl theUrl, String arg1, Object value1,
                       String arg2, Object value2) {
-        return checkUrl(HtmlUtil.url(url(theUrl), arg1, value1, arg2,
+        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2,
                                      value2));
     }
 
@@ -708,7 +708,7 @@ public class Request implements Constants, Cloneable {
     public String url(RequestUrl theUrl, String arg1, Object value1,
                       String arg2, Object value2, String arg3,
                       Object value3) {
-        return checkUrl(HtmlUtil.url(url(theUrl), arg1, value1, arg2, value2,
+        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2, value2,
                                      arg3, value3));
     }
 
@@ -730,7 +730,7 @@ public class Request implements Constants, Cloneable {
     public String url(RequestUrl theUrl, String arg1, Object value1,
                       String arg2, Object value2, String arg3, Object value3,
                       String arg4, Object value4) {
-        return checkUrl(HtmlUtil.url(url(theUrl), arg1, value1, arg2, value2,
+        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2, value2,
                                      arg3, value3, arg4, value4));
     }
 
@@ -1336,7 +1336,7 @@ public class Request implements Constants, Cloneable {
         String s = getString(key, dflt);
         if (s != null) {
             //            s = RepositoryUtil.encodeInput(s);
-            s = HtmlUtil.entityEncode(s);
+            s = HtmlUtils.entityEncode(s);
         }
         return s;
     }
@@ -1368,10 +1368,10 @@ public class Request implements Constants, Cloneable {
     public void appendMessage(StringBuffer sb) {
         if (defined(ARG_MESSAGE)) {
             String message = getUnsafeString(ARG_MESSAGE, "");
-            //            message = HtmlUtil.entityEncode(getUnsafeString(ARG_MESSAGE, "");
+            //            message = HtmlUtils.entityEncode(getUnsafeString(ARG_MESSAGE, "");
             message = RepositoryBase.getDialogString(message);
             //Encode this to keep from a spoof attack
-            message = HtmlUtil.entityEncode(message);
+            message = HtmlUtils.entityEncode(message);
             sb.append(repository.showDialogNote(message));
             remove(ARG_MESSAGE);
         }
@@ -1408,7 +1408,7 @@ public class Request implements Constants, Cloneable {
                                         + " value:" + v + ":");
         }
 
-        //        v = HtmlUtil.entityEncode(v);
+        //        v = HtmlUtils.entityEncode(v);
         //TODO:Check the value
         return v;
         //        return repository.getDatabaseManager().escapeString(v);

@@ -40,7 +40,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -275,7 +275,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
     public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
             throws Exception {
 
-        String size = HtmlUtil.SIZE_70;
+        String size = HtmlUtils.SIZE_70;
         String name;
         if (entry != null) {
             name = entry.getName();
@@ -306,20 +306,20 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             }
             wikiText = wph.getText();
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     "",
                     msgLabel("Editing with text from version")
                     + getRepository().formatDate(wph.getDate())));
         }
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Title"),
-                                     HtmlUtil.input(ARG_NAME, name, size)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Title"),
+                                     HtmlUtils.input(ARG_NAME, name, size)));
 
         if (entry != null) {
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel("Edit&nbsp;Summary"),
-                    HtmlUtil.input(WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "", size)));
+                    HtmlUtils.input(WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "", size)));
         }
 
 
@@ -340,16 +340,16 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
         String buttons =
             getRepository().getWikiManager().makeWikiEditBar(request, entry,
                                                              ARG_WIKI_TEXTAREA );
-        String textWidget = buttons + HtmlUtil.br()
-                            + HtmlUtil.textArea(ARG_WIKI_TEXTAREA, wikiText, 250,
-                                80, HtmlUtil.id(ARG_WIKI_TEXTAREA));
+        String textWidget = buttons + HtmlUtils.br()
+                            + HtmlUtils.textArea(ARG_WIKI_TEXTAREA, wikiText, 250,
+                                80, HtmlUtils.id(ARG_WIKI_TEXTAREA));
 
-        String right = HtmlUtil.div(help.toString(),
-                                    HtmlUtil.cssClass(CSS_CLASS_SMALLHELP));
+        String right = HtmlUtils.div(help.toString(),
+                                    HtmlUtils.cssClass(CSS_CLASS_SMALLHELP));
         right = "";
         textWidget = "<table><tr valign=\"top\"><td>" + textWidget
                      + "</td><td>" + right + "</td></tr></table>";
-        sb.append(HtmlUtil.formEntryTop(msgLabel("Wiki Text"), textWidget));
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Wiki Text"), textWidget));
 
     }
 

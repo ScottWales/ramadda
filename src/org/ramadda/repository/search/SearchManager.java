@@ -69,7 +69,7 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -282,15 +282,15 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         if ( !block.equals(Admin.BLOCK_ACCESS)) {
             return;
         }
-        asb.append(HtmlUtil.colspan(msgHeader("Search"), 2));
+        asb.append(HtmlUtils.colspan(msgHeader("Search"), 2));
         asb.append(
-            HtmlUtil
+            HtmlUtils
                 .formEntry(
                     "",
-                    HtmlUtil
+                    HtmlUtils
                         .checkbox(
                             PROP_SEARCH_LUCENE_ENABLED, "true",
-                            isLuceneEnabled()) + HtmlUtil.space(2)
+                            isLuceneEnabled()) + HtmlUtils.space(2)
                                 + msg("Enable Lucene Indexing and Search")));
     }
 
@@ -620,7 +620,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
 
         String url = request.getAbsoluteUrl(URL_ENTRY_SEARCH.toString());
-        url = HtmlUtil.url(url, new String[] {
+        url = HtmlUtils.url(url, new String[] {
             ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(), ARG_TEXT,
             OpenSearchUtil.MACRO_TEXT, ARG_BBOX, OpenSearchUtil.MACRO_BBOX,
             Constants.dataDate.getFromArg(), OpenSearchUtil.MACRO_TIME_START,
@@ -715,16 +715,16 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             throws Exception {
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
-        sb.append(HtmlUtil.form(getSearchUrl(request),
+        sb.append(HtmlUtils.form(getSearchUrl(request),
                                 makeFormSubmitDialog(sb,msg("Searching...")) + " name=\"searchform\" "));
 
         if (justText) {
-            sb.append(HtmlUtil.hidden(ARG_SEARCH_TYPE, SEARCH_TYPE_TEXT));
+            sb.append(HtmlUtils.hidden(ARG_SEARCH_TYPE, SEARCH_TYPE_TEXT));
         }
 
         //Put in an empty submit button so when the user presses return 
         //it acts like a regular submit (not a submit to change the type)
-        sb.append(HtmlUtil.submitImage(iconUrl(ICON_BLANK),
+        sb.append(HtmlUtils.submitImage(iconUrl(ICON_BLANK),
                                        ARG_SEARCH_SUBMIT));
 
         String what = (String) request.getWhat(BLANK);
@@ -742,38 +742,38 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         if (servers.size() > 0) {
             buttons =
                 RepositoryUtil.buttons(
-                    HtmlUtil.submit(
+                    HtmlUtils.submit(
                         msg("Search this Repository"),
-                        ARG_SEARCH_SUBMIT), HtmlUtil.submit(
+                        ARG_SEARCH_SUBMIT), HtmlUtils.submit(
                             msg("Search Remote Repositories"),
                             ARG_SEARCH_SERVERS));
         } else {
-            buttons = HtmlUtil.submit(msg("Search"), ARG_SEARCH_SUBMIT);
+            buttons = HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT);
         }
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         if ( !justText) {
             sb.append(buttons);
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
         }
 
         if (justText) {
             String value = (String) request.getString(ARG_TEXT, "");
             String extra = "";
             /*            if (getDatabaseManager().supportsRegexp()) {
-                extra = HtmlUtil.checkbox(
+                extra = HtmlUtils.checkbox(
                                           ARG_ISREGEXP, "true", request.get(ARG_ISREGEXP, false)) + " "
                     + msg("Use regular expression");
                     }*/
-            sb.append(HtmlUtil.span(msgLabel("Text"),
-                                    HtmlUtil.cssClass("formlabel")) + " "
-                                        + HtmlUtil.input(ARG_TEXT, value,
-                                            HtmlUtil.SIZE_50
+            sb.append(HtmlUtils.span(msgLabel("Text"),
+                                    HtmlUtils.cssClass("formlabel")) + " "
+                                        + HtmlUtils.input(ARG_TEXT, value,
+                                            HtmlUtils.SIZE_50
                                             + " autofocus ") + " " + extra + " " + buttons);
             /*            sb.append(
                 "<table width=\"100%\" border=\"0\"><tr><td width=\"60\">");
             typeHandler.addTextSearch(request, sb);
             sb.append("</table>");
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             */
         } else {
             Object       oldValue = request.remove(ARG_RELATIVEDATE);
@@ -787,19 +787,19 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
             if (includeMetadata()) {
                 StringBuffer metadataSB = new StringBuffer();
-                metadataSB.append(HtmlUtil.formTable());
+                metadataSB.append(HtmlUtils.formTable());
                 getMetadataManager().addToSearchForm(request, metadataSB);
-                metadataSB.append(HtmlUtil.formTableClose());
-                sb.append(HtmlUtil.makeShowHideBlock(msg("Properties"),
+                metadataSB.append(HtmlUtils.formTableClose());
+                sb.append(HtmlUtils.makeShowHideBlock(msg("Properties"),
                         metadataSB.toString(), false));
             }
 
-            StringBuffer outputForm = new StringBuffer(HtmlUtil.formTable());
+            StringBuffer outputForm = new StringBuffer(HtmlUtils.formTable());
             /* Humm, we probably don't want to include this as it screws up setting the output in the form
             if (request.defined(ARG_OUTPUT)) {
 
                 OutputType output = request.getOutput(BLANK);
-                outputForm.append(HtmlUtil.hidden(ARG_OUTPUT,
+                outputForm.append(HtmlUtils.hidden(ARG_OUTPUT,
                         output.getId().toString()));
             }
             */
@@ -812,28 +812,28 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                     "createdate"));
             orderByList.add(new TwoFacedObject(msg("Name"), "name"));
 
-            String orderBy = HtmlUtil.select(
+            String orderBy = HtmlUtils.select(
                                  ARG_ORDERBY, orderByList,
                                  request.getString(
                                      ARG_ORDERBY,
-                                     "none")) + HtmlUtil.checkbox(
+                                     "none")) + HtmlUtils.checkbox(
                                          ARG_ASCENDING, "true",
                                          request.get(
                                              ARG_ASCENDING,
-                                             false)) + HtmlUtil.space(1)
+                                             false)) + HtmlUtils.space(1)
                                                  + msg("ascending");
-            outputForm.append(HtmlUtil.formEntry(msgLabel("Order By"),
+            outputForm.append(HtmlUtils.formEntry(msgLabel("Order By"),
                     orderBy));
-            outputForm.append(HtmlUtil.formEntry(msgLabel("Output"),
-                    HtmlUtil.select(ARG_OUTPUT, getOutputHandlerSelectList(),
+            outputForm.append(HtmlUtils.formEntry(msgLabel("Output"),
+                    HtmlUtils.select(ARG_OUTPUT, getOutputHandlerSelectList(),
                                     request.getString(ARG_OUTPUT, ""))));
 
-            outputForm.append(HtmlUtil.formTableClose());
+            outputForm.append(HtmlUtils.formTableClose());
 
 
 
 
-            sb.append(HtmlUtil.makeShowHideBlock(msg("Output"),
+            sb.append(HtmlUtils.makeShowHideBlock(msg("Output"),
                     outputForm.toString(), false));
 
         }
@@ -845,50 +845,50 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             String       call;
 
             cbxId = ATTR_SERVER + (serverCnt++);
-            call = HtmlUtil.attr(HtmlUtil.ATTR_ONCLICK,
-                                 HtmlUtil.call("checkboxClicked",
-                                     HtmlUtil.comma("event",
-                                         HtmlUtil.squote(ATTR_SERVER),
-                                         HtmlUtil.squote(cbxId))));
+            call = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+                                 HtmlUtils.call("checkboxClicked",
+                                     HtmlUtils.comma("event",
+                                         HtmlUtils.squote(ATTR_SERVER),
+                                         HtmlUtils.squote(cbxId))));
 
-            serverSB.append(HtmlUtil.checkbox(ARG_DOFRAMES, "true",
+            serverSB.append(HtmlUtils.checkbox(ARG_DOFRAMES, "true",
                     request.get(ARG_DOFRAMES, false)));
             serverSB.append(msg("Do frames"));
-            serverSB.append(HtmlUtil.br());
-            serverSB.append(HtmlUtil.checkbox(ATTR_SERVER,
-                    ServerInfo.ID_THIS, false, HtmlUtil.id(cbxId) + call));
+            serverSB.append(HtmlUtils.br());
+            serverSB.append(HtmlUtils.checkbox(ATTR_SERVER,
+                    ServerInfo.ID_THIS, false, HtmlUtils.id(cbxId) + call));
             serverSB.append(msg("Include this repository"));
-            serverSB.append(HtmlUtil.br());
+            serverSB.append(HtmlUtils.br());
             for (ServerInfo server : servers) {
                 cbxId = ATTR_SERVER + (serverCnt++);
-                call = HtmlUtil.attr(HtmlUtil.ATTR_ONCLICK,
-                                     HtmlUtil.call("checkboxClicked",
-                                         HtmlUtil.comma("event",
-                                             HtmlUtil.squote(ATTR_SERVER),
-                                             HtmlUtil.squote(cbxId))));
-                serverSB.append(HtmlUtil.checkbox(ATTR_SERVER,
-                        server.getId(), false, HtmlUtil.id(cbxId) + call));
-                serverSB.append(HtmlUtil.space(1));
+                call = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+                                     HtmlUtils.call("checkboxClicked",
+                                         HtmlUtils.comma("event",
+                                             HtmlUtils.squote(ATTR_SERVER),
+                                             HtmlUtils.squote(cbxId))));
+                serverSB.append(HtmlUtils.checkbox(ATTR_SERVER,
+                        server.getId(), false, HtmlUtils.id(cbxId) + call));
+                serverSB.append(HtmlUtils.space(1));
                 serverSB.append(server.getHref(" target=\"server\" "));
-                serverSB.append(HtmlUtil.br());
+                serverSB.append(HtmlUtils.br());
             }
             sb.append(
-                HtmlUtil.makeShowHideBlock(
+                HtmlUtils.makeShowHideBlock(
                     msg("Remote Search Settings"),
-                    HtmlUtil.div(
+                    HtmlUtils.div(
                         serverSB.toString(),
-                        HtmlUtil.cssClass(CSS_CLASS_SERVER)), false));
+                        HtmlUtils.cssClass(CSS_CLASS_SERVER)), false));
         }
 
 
 
 
         if ( !justText) {
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append(buttons);
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
         }
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.formClose());
 
 
 
@@ -907,7 +907,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 getRepository().getOutputHandlers()) {
             for (OutputType type : outputHandler.getTypes()) {
                 if (type.getIsForSearch()) {
-                    tfos.add(new HtmlUtil.Selector(type.getLabel(),
+                    tfos.add(new HtmlUtils.Selector(type.getLabel(),
                             type.getId(),
                             getRepository().iconUrl(type.getIcon())));
                 }
@@ -974,7 +974,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         StringBuffer sb = new StringBuffer();
         List<String> servers = (List<String>) request.get(ATTR_SERVER,
                                    new ArrayList());
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         request.remove(ATTR_SERVER);
 
         boolean      didone   = false;
@@ -988,7 +988,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 sb.append(header(msg("Selected Servers")));
             }
             serverSB.append(server.getHref(" target=\"server\" "));
-            serverSB.append(HtmlUtil.br());
+            serverSB.append(HtmlUtils.br());
             didone = true;
         }
 
@@ -997,12 +997,12 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 getRepository().showDialogNote(msg("No servers selected")));
         } else {
             sb.append(
-                HtmlUtil.div(
+                HtmlUtils.div(
                     serverSB.toString(),
-                    HtmlUtil.cssClass(CSS_CLASS_SERVER_BLOCK)));
-            sb.append(HtmlUtil.p());
+                    HtmlUtils.cssClass(CSS_CLASS_SERVER_BLOCK)));
+            sb.append(HtmlUtils.p());
         }
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append(header(msg("Search Results")));
 
         return makeResult(request, msg("Remote Form"), sb);
@@ -1130,22 +1130,22 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                              + URL_ENTRY_SEARCH.getPath()
                                              + "?" + linkUrl;
                     sb.append("\n");
-                    sb.append(HtmlUtil.p());
-                    String link = HtmlUtil.href(remoteSearchUrl,
+                    sb.append(HtmlUtils.p());
+                    String link = HtmlUtils.href(remoteSearchUrl,
                                       server.getUrl());
                     String fullUrl = server.getUrl()
                                      + URL_ENTRY_SEARCH.getPath() + "?"
                                      + embeddedUrl;
                     String content =
-                        HtmlUtil.tag(
-                            HtmlUtil.TAG_IFRAME,
-                            HtmlUtil.attrs(
-                                HtmlUtil.ATTR_WIDTH, "100%",
-                                HtmlUtil.ATTR_HEIGHT, "200",
-                                HtmlUtil.ATTR_SRC,
+                        HtmlUtils.tag(
+                            HtmlUtils.TAG_IFRAME,
+                            HtmlUtils.attrs(
+                                HtmlUtils.ATTR_WIDTH, "100%",
+                                HtmlUtils.ATTR_HEIGHT, "200",
+                                HtmlUtils.ATTR_SRC,
                                 fullUrl), "need to have iframe support");
-                    sb.append(HtmlUtil.makeShowHideBlock(server.getLabel()
-                            + HtmlUtil.space(2) + link, content, true));
+                    sb.append(HtmlUtils.makeShowHideBlock(server.getLabel()
+                            + HtmlUtils.space(2) + link, content, true));
 
                     sb.append("\n");
                 }
@@ -1183,8 +1183,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         StringBuffer searchForm = new StringBuffer();
         request.remove(ARG_SEARCH_SUBMIT);
         String url = request.getUrl(URL_SEARCH_FORM);
-        String searchLink = HtmlUtil.href(url,
-                                          HtmlUtil.img(iconUrl(ICON_SEARCH),
+        String searchLink = HtmlUtils.href(url,
+                                          HtmlUtils.img(iconUrl(ICON_SEARCH),
                                               "Search Again"));
         //            searchForm.append(searchLink);
         if (s.length() > 0) {
@@ -1194,8 +1194,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         boolean foundAny = (groups.size() > 0) || (entries.size() > 0);
         if (foundAny) {
             String searchUrl = request.getUrl();
-            searchForm.append(HtmlUtil.href(searchUrl, msg("Search URL")));
-            searchForm.append(HtmlUtil.br());
+            searchForm.append(HtmlUtils.href(searchUrl, msg("Search URL")));
+            searchForm.append(HtmlUtils.br());
         }
 
 
@@ -1203,7 +1203,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         makeSearchForm(request, textSearch, true, searchForm);
 
 
-        String form = HtmlUtil.makeShowHideBlock(
+        String form = HtmlUtils.makeShowHideBlock(
                           searchLink + msg("Search Again"),
                           RepositoryUtil.inset(
                               searchForm.toString(), 0, 20, 0, 0), false);
@@ -1399,9 +1399,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         for (int i = 0; i < whats.length; i++) {
             String item;
             if (what.equals(whats[i])) {
-                item = HtmlUtil.span(names[i], extra1);
+                item = HtmlUtils.span(names[i], extra1);
             } else {
-                item = HtmlUtil.href(request.url(URL_SEARCH_FORM, ARG_WHAT,
+                item = HtmlUtils.href(request.url(URL_SEARCH_FORM, ARG_WHAT,
                         whats[i], ARG_FORM_TYPE, formType), names[i], extra2);
             }
             if (i == 0) {
@@ -1414,9 +1414,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         List<TwoFacedObject> whatList = typeHandler.getListTypes(false);
         for (TwoFacedObject tfo : whatList) {
             if (tfo.getId().equals(what)) {
-                links.add(HtmlUtil.span(tfo.toString(), extra1));
+                links.add(HtmlUtils.span(tfo.toString(), extra1));
             } else {
-                links.add(HtmlUtil.href(request.url(URL_SEARCH_FORM,
+                links.add(HtmlUtils.href(request.url(URL_SEARCH_FORM,
                         ARG_WHAT, BLANK + tfo.getId(), ARG_TYPE,
                         typeHandler.getType()), tfo.toString(), extra2));
             }

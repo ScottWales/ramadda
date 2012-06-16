@@ -47,7 +47,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -420,13 +420,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         StringBuffer         openConnections = new StringBuffer();
         List<ConnectionInfo> infos           = getConnectionInfos();
         for (ConnectionInfo info : infos) {
-            openConnections.append(HtmlUtil.makeShowHideBlock("Open for:"
+            openConnections.append(HtmlUtils.makeShowHideBlock("Open for:"
                     + ((time - info.time) / 1000)
-                    + " seconds", HtmlUtil.pre(info.msg + "\nStack:"
+                    + " seconds", HtmlUtils.pre(info.msg + "\nStack:"
                         + info.where), false));
         }
         if (infos.size() > 0) {
-            poolSB.append(HtmlUtil.br());
+            poolSB.append(HtmlUtils.br());
             poolSB.append(msgLabel("Open connections"));
             poolSB.append(openConnections);
         }
@@ -435,7 +435,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         StringBuffer msgb = new StringBuffer();
         synchronized (scourMessages) {
             if (totalScours > 0) {
-                msgb.append("Total scours:" + totalScours + HtmlUtil.p());
+                msgb.append("Total scours:" + totalScours + HtmlUtils.p());
             }
             for (String msg : scourMessages) {
                 msgb.append("<pre>" + msg + "</pre>");
@@ -443,8 +443,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             }
             if (scourMessages.size() > 0) {
                 poolSB.append(
-                    HtmlUtil.insetLeft(
-                        HtmlUtil.makeShowHideBlock(
+                    HtmlUtils.insetLeft(
+                        HtmlUtils.makeShowHideBlock(
                             msg("Scoured Connections"), msgb.toString(),
                             false), 20));
             }
@@ -452,28 +452,28 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
         dbSB.append(
-            HtmlUtil.insetLeft(
-                HtmlUtil.makeShowHideBlock(
+            HtmlUtils.insetLeft(
+                HtmlUtils.makeShowHideBlock(
                     msg("Connection Pool"), poolSB.toString(), false), 20));
 
-        dbSB.append(HtmlUtil.br());
+        dbSB.append(HtmlUtils.br());
         dbSB.append("<table>\n");
         String[] names = { msg("Users"), msg("Associations"),
                            msg("Metadata Items") };
         String[] tables = { Tables.USERS.NAME, Tables.ASSOCIATIONS.NAME,
                             Tables.METADATA.NAME };
         for (int i = 0; i < tables.length; i++) {
-            dbSB.append(HtmlUtil.row(HtmlUtil.cols(""
+            dbSB.append(HtmlUtils.row(HtmlUtils.cols(""
                     + getDatabaseManager().getCount(tables[i].toLowerCase(),
                         new Clause()), names[i])));
         }
 
 
         dbSB.append(
-            HtmlUtil.row(
-                HtmlUtil.colspan(HtmlUtil.bold(msgLabel("Types")), 2)));
+            HtmlUtils.row(
+                HtmlUtils.colspan(HtmlUtils.bold(msgLabel("Types")), 2)));
         int total = 0;
-        dbSB.append(HtmlUtil.row(HtmlUtil.cols(""
+        dbSB.append(HtmlUtils.row(HtmlUtils.cols(""
                 + getDatabaseManager().getCount(Tables.ENTRIES.NAME,
                     new Clause()), msg("Total entries"))));
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
@@ -484,12 +484,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                Clause.eq("type", typeHandler.getType()));
 
             String url =
-                HtmlUtil.href(
+                HtmlUtils.href(
                     request.url(
                         getRepository().getSearchManager().URL_SEARCH_FORM,
                         ARG_TYPE,
                         typeHandler.getType()), typeHandler.getLabel());
-            dbSB.append(HtmlUtil.row(HtmlUtil.cols("" + cnt, url)));
+            dbSB.append(HtmlUtils.row(HtmlUtils.cols("" + cnt, url)));
         }
 
 
@@ -879,8 +879,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public void addInfo(StringBuffer sb) {
         String dbUrl = "" + (String) getRepository().getProperty(
                            PROP_DB_URL.replace("${db}", db));
-        sb.append(HtmlUtil.formEntry("Database:", db));
-        sb.append(HtmlUtil.formEntry("JDBC URL:", dbUrl));
+        sb.append(HtmlUtils.formEntry("Database:", db));
+        sb.append(HtmlUtils.formEntry("JDBC URL:", dbUrl));
     }
 
 
@@ -979,7 +979,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                             if (ts == null) {
                                 value.append("null");
                             } else {
-                                value.append(HtmlUtil.squote(ts.toString()));
+                                value.append(HtmlUtils.squote(ts.toString()));
                             }
 
                         } else if (type == java.sql.Types.VARCHAR) {

@@ -29,7 +29,7 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -575,15 +575,15 @@ public class MetadataType extends MetadataTypeBase {
                 String html = getFileHtml(request, entry, metadata, element,
                                           forLink);
                 if (html != null) {
-                    sb.append(HtmlUtil.space(1));
+                    sb.append(HtmlUtils.space(1));
                     sb.append(html);
-                    sb.append(HtmlUtil.space(1));
+                    sb.append(HtmlUtils.space(1));
                 } else {
                     String value = metadata.getAttr(element.getIndex());
                     if ((value != null) && value.startsWith("http")) {
-                        sb.append(HtmlUtil.space(1));
-                        sb.append(HtmlUtil.img(value));
-                        sb.append(HtmlUtil.space(1));
+                        sb.append(HtmlUtils.space(1));
+                        sb.append(HtmlUtils.img(value));
+                        sb.append(HtmlUtils.space(1));
                     }
                 }
                 continue;
@@ -592,9 +592,9 @@ public class MetadataType extends MetadataTypeBase {
                 String html = getFileHtml(request, entry, metadata, element,
                                           false);
                 if (html != null) {
-                    sb.append(HtmlUtil.space(1));
+                    sb.append(HtmlUtils.space(1));
                     sb.append(html);
-                    sb.append(HtmlUtil.space(1));
+                    sb.append(HtmlUtils.space(1));
                 }
             }
         }
@@ -750,7 +750,7 @@ public class MetadataType extends MetadataTypeBase {
         }
 
         try {
-            return HtmlUtil
+            return HtmlUtils
                 .url(request
                     .url(handler.getRepository().getSearchManager()
                         .URL_ENTRY_SEARCH), args);
@@ -863,10 +863,10 @@ public class MetadataType extends MetadataTypeBase {
                     //xxxx
                     if ( !element.isGroup() && (children.size() == 1)) {
                         content.append(
-                            HtmlUtil.row(
-                                HtmlUtil.colspan(formInfo.content, 2)));
+                            HtmlUtils.row(
+                                HtmlUtils.colspan(formInfo.content, 2)));
                     } else {
-                        content.append(HtmlUtil.formEntryTop(formInfo.label,
+                        content.append(HtmlUtils.formEntryTop(formInfo.label,
                                 formInfo.content));
                     }
                     didOne = true;
@@ -926,9 +926,9 @@ public class MetadataType extends MetadataTypeBase {
         if(lbl==null) {
             lbl = msgLabel(getName());
         }
-        String submit = HtmlUtil.submit(msg("Add") + HtmlUtil.space(1)
+        String submit = HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
                                         + getName());
-        String       cancel = HtmlUtil.submit(msg("Cancel"), ARG_CANCEL);
+        String       cancel = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
 
 
         StringBuffer sb     = new StringBuffer();
@@ -936,13 +936,13 @@ public class MetadataType extends MetadataTypeBase {
         if ( !forEdit) {
             sb.append(header(msgLabel("Add") + getName()));
         }
-        sb.append(HtmlUtil.br());
+        sb.append(HtmlUtils.br());
         String lastGroup = null;
         for (MetadataElement element : getChildren()) {
             if ((element.getGroup() != null)
                     && !Misc.equals(element.getGroup(), lastGroup)) {
                 lastGroup = element.getGroup();
-                sb.append(HtmlUtil.row(HtmlUtil.colspan(header(lastGroup),
+                sb.append(HtmlUtils.row(HtmlUtils.colspan(header(lastGroup),
                         2)));
             }
             String elementLbl = msgLabel(element.getLabel());
@@ -957,13 +957,13 @@ public class MetadataType extends MetadataTypeBase {
                     suffixLabel = "";
                 }
 
-                sb.append(HtmlUtil.formEntryTop(elementLbl,
+                sb.append(HtmlUtils.formEntryTop(elementLbl,
                         widget + suffixLabel));
             }
         }
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Inherited"),
-                                     HtmlUtil.checkbox(ARG_METADATA_INHERITED
+        sb.append(HtmlUtils.formEntry(msgLabel("Inherited"),
+                                     HtmlUtils.checkbox(ARG_METADATA_INHERITED
                                          + suffix, "true",
                                              metadata.getInherited())));
 
@@ -971,11 +971,11 @@ public class MetadataType extends MetadataTypeBase {
 
         String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
-        sb.append(HtmlUtil.hidden(argtype, getId())
-                  + HtmlUtil.hidden(argid, metadata.getId()));
+        sb.append(HtmlUtils.hidden(argtype, getId())
+                  + HtmlUtils.hidden(argid, metadata.getId()));
 
         if ( !forEdit && (entry != null)) {
-            sb.append(HtmlUtil.formEntry("", submit + cancel));
+            sb.append(HtmlUtils.formEntry("", submit + cancel));
         }
 
 

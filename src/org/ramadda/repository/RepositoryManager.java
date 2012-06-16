@@ -40,7 +40,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -149,7 +149,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         } else {
             return "<tr><td><div class=\"formlabel\">" + label
                    + "</div></td><td>" + contents + "</td></tr>";
-            //            return HtmlUtil.formEntry(label, contents);
+            //            return HtmlUtils.formEntry(label, contents);
         }
     }
 
@@ -170,7 +170,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         } else {
             return "<tr valign=top><td><div class=\"formlabel\">" + label
                    + "</div></td><td>" + contents + "</td></tr>";
-            //            return HtmlUtil.formEntryTop(label, contents);
+            //            return HtmlUtils.formEntryTop(label, contents);
         }
     }
 
@@ -278,7 +278,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         sv = sv.replace("<", "&lt;");
         sv = sv.replace(">", "&gt;");
         sb.append("<tr valign=\"top\"><td align=right>");
-        sb.append(HtmlUtil.b(label));
+        sb.append(HtmlUtils.b(label));
         sb.append("</td><td>");
         sb.append(sv);
         sb.append("</td></tr>");
@@ -303,7 +303,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public static String boldMsg(String msg) {
-        return HtmlUtil.b(msg(msg));
+        return HtmlUtils.b(msg(msg));
     }
 
     /**
@@ -350,7 +350,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public static String tableSubHeader(String s) {
-        return HtmlUtil.row(HtmlUtil.colspan(subHeader(s), 2));
+        return HtmlUtils.row(HtmlUtils.colspan(subHeader(s), 2));
     }
 
     /**
@@ -361,7 +361,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public static String subHeader(String s) {
-        return HtmlUtil.div(s, HtmlUtil.cssClass(CSS_CLASS_HEADING_2));
+        return HtmlUtils.div(s, HtmlUtils.cssClass(CSS_CLASS_HEADING_2));
     }
 
 
@@ -373,7 +373,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public static String formHeader(String s) {
-        return HtmlUtil.div(s, HtmlUtil.cssClass("formgroupheader"));
+        return HtmlUtils.div(s, HtmlUtils.cssClass("formgroupheader"));
     }
 
 
@@ -386,8 +386,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String subHeaderLink(String url, String label) {
-        return HtmlUtil.href(url, label,
-                             HtmlUtil.cssClass(CSS_CLASS_HEADING_2_LINK));
+        return HtmlUtils.href(url, label,
+                             HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
     }
 
 
@@ -402,13 +402,13 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String subHeaderLink(String url, String label, boolean toggle) {
         //        if(true) return "x";
-        String img = HtmlUtil.img(iconUrl(toggle
+        String img = HtmlUtils.img(iconUrl(toggle
                                           ? ICON_MINUS
                                           : ICON_PLUS));
-        label = img + HtmlUtil.space(1) + label;
+        label = img + HtmlUtils.space(1) + label;
         String html =
-            HtmlUtil.href(url, label,
-                          HtmlUtil.cssClass(CSS_CLASS_HEADING_2_LINK));
+            HtmlUtils.href(url, label,
+                          HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
         return html;
         //return "<table border=1><tr valign=bottom><td>" + html +"</table>";
     }
@@ -710,7 +710,7 @@ public class RepositoryManager implements RepositorySource, Constants,
     public String makeFormSubmitDialog(StringBuffer sb, String message) {
         String id = "dialog-message" + (dialogCnt++);
         String onSubmit = " onsubmit=\"return submitEntryForm('#" + id +"');\" ";
-        String loadingImage = HtmlUtil.img(getRepository().iconUrl(ICON_PROGRESS));
+        String loadingImage = HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
         sb.append("<div style=\"display:none;\" id=\"" + id +"\">" + loadingImage +" " + message +"</div>");
         return onSubmit;
 
@@ -720,7 +720,7 @@ public class RepositoryManager implements RepositorySource, Constants,
     public String makeButtonSubmitDialog(StringBuffer sb, String message) {
         String id = "dialog-message" + (dialogCnt++);
         String onSubmit = " onclick=\"return submitEntryForm('#" + id +"');\" ";
-        String loadingImage = HtmlUtil.img(getRepository().iconUrl(ICON_PROGRESS));
+        String loadingImage = HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
         sb.append("<div style=\"display:none;\" id=\"" + id +"\">" + loadingImage +" " + message +"</div>");
         return onSubmit;
 

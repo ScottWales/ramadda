@@ -30,7 +30,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -216,10 +216,10 @@ public class TextOutputHandler extends OutputHandler {
                     false)) {
             cnt++;
             line = line.replace("\r", "");
-            line = HtmlUtil.entityEncode(line);
-            sb.append("<a " + HtmlUtil.attr("name", "line" + cnt)
+            line = HtmlUtils.entityEncode(line);
+            sb.append("<a " + HtmlUtils.attr("name", "line" + cnt)
                       + "></a><a href=#line" + cnt + ">" + cnt + "</a> "
-                      + HtmlUtil.space(1) + line + "<br>");
+                      + HtmlUtils.space(1) + line + "<br>");
         }
         sb.append("</pre>");
         return makeLinksResult(request, msg("Text"), sb, new State(entry));
@@ -247,10 +247,10 @@ public class TextOutputHandler extends OutputHandler {
         head.append(
             "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.css\">\n");
         head.append(
-            HtmlUtil.importJS(
+            HtmlUtils.importJS(
                 "http://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.js"));
         head.append("\n");
-        head.append(HtmlUtil.importJS("http://www.google.com/jsapi"));
+        head.append(HtmlUtils.importJS("http://www.google.com/jsapi"));
         head.append("\n");
 
         sb.append("<div id=\"wcdiv\"></div>");
@@ -276,7 +276,7 @@ public class TextOutputHandler extends OutputHandler {
         js.append("var wc = new WordCloud(outputDiv);\n");
         js.append("wc.draw(data, null);\n");
         js.append("      }");
-        sb.append(HtmlUtil.script(js.toString()));
+        sb.append(HtmlUtils.script(js.toString()));
         Result result = makeLinksResult(request, msg("Word Cloud"), sb,
                                         new State(entry));
         result.putProperty(PROP_HTML_HEAD, head.toString());
@@ -306,9 +306,9 @@ public class TextOutputHandler extends OutputHandler {
         head.append(
             "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.css\">\n");
         head.append(
-            HtmlUtil.importJS(getRepository().fileUrl("/prettify.js")));
+            HtmlUtils.importJS(getRepository().fileUrl("/prettify.js")));
         head.append(
-            HtmlUtil.cssLink(getRepository().fileUrl("/prettify.css")));
+            HtmlUtils.cssLink(getRepository().fileUrl("/prettify.css")));
 
 
         sb.append(head);
@@ -320,14 +320,14 @@ public class TextOutputHandler extends OutputHandler {
                     false)) {
             cnt++;
             line = line.replace("\r", "");
-            line = HtmlUtil.entityEncode(line);
+            line = HtmlUtils.entityEncode(line);
             sb.append("<span class=nocode><a "
-                      + HtmlUtil.attr("name", "line" + cnt)
+                      + HtmlUtils.attr("name", "line" + cnt)
                       + "></a><a href=#line" + cnt + ">" + cnt
-                      + "</a></span>" + HtmlUtil.space(1) + line + "<br>");
+                      + "</a></span>" + HtmlUtils.space(1) + line + "<br>");
         }
         sb.append("</pre>\n");
-        sb.append(HtmlUtil.script("prettyPrint();"));
+        sb.append(HtmlUtils.script("prettyPrint();"));
         Result result = makeLinksResult(request, msg("Pretty Print"), sb,
                                         new State(entry));
         return result;

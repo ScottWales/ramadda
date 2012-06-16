@@ -30,7 +30,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -198,7 +198,7 @@ public class CalendarOutputHandler extends OutputHandler {
         monthSdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
         monthSdf.applyPattern("MM");
         StringBuffer header = new StringBuffer();
-        header.append(HtmlUtil.cols(HtmlUtil.bold(msg("Date"))));
+        header.append(HtmlUtils.cols(HtmlUtils.bold(msg("Date"))));
         for (Entry entry : entries) {
             String type = entry.getTypeHandler().getType();
             String day  = sdf.format(new Date(entry.getStartDate()));
@@ -206,7 +206,7 @@ public class CalendarOutputHandler extends OutputHandler {
                 types.add(entry.getTypeHandler());
                 typeMap.put(type, type);
                 header.append(
-                    "<td>" + HtmlUtil.bold(entry.getTypeHandler().getLabel())
+                    "<td>" + HtmlUtils.bold(entry.getTypeHandler().getLabel())
                     + "</td>");
             }
             if (dayMap.get(day) == null) {
@@ -469,7 +469,7 @@ public class CalendarOutputHandler extends OutputHandler {
                         label = label.substring(0, 19) + "...";
                     }
                     dayList.add(
-                        HtmlUtil.nobr(
+                        HtmlUtils.nobr(
                             getEntryManager().getAjaxLink(
                                 request, entry, label).toString()));
                 }
@@ -578,8 +578,8 @@ public class CalendarOutputHandler extends OutputHandler {
         List navList = new ArrayList();
 
         for (int i = 0; i < navLabels.length; i++) {
-            navList.add(HtmlUtil.href(navUrls.get(i),
-                                      HtmlUtil.img(iconUrl(navIcons[i]),
+            navList.add(HtmlUtils.href(navUrls.get(i),
+                                      HtmlUtils.img(iconUrl(navIcons[i]),
                                           navLabels[i], " border=\"0\"")));
         }
 
@@ -594,7 +594,7 @@ public class CalendarOutputHandler extends OutputHandler {
             request.remove(ARG_MONTH);
             request.remove(ARG_YEAR);
             request.remove(ARG_DAY);
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append("<table  cellpadding=10 border=0><tr valign=top><td>");
             getRepository().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
@@ -607,11 +607,11 @@ public class CalendarOutputHandler extends OutputHandler {
             request.put(ARG_YEAR, "" + selected[IDX_YEAR]);
             String monthUrl = request.getUrl();
             request.put(ARG_DAY, selected[IDX_DAY]);
-            //            sb.append(HtmlUtil.b(StringUtil.join(HtmlUtil.space(1),
+            //            sb.append(HtmlUtils.b(StringUtil.join(HtmlUtils.space(1),
             //                    navList)));
             sb.append(
-                HtmlUtil.href(
-                    monthUrl, HtmlUtil.b(headerSdf.format(cal.getTime()))));
+                HtmlUtils.href(
+                    monthUrl, HtmlUtils.b(headerSdf.format(cal.getTime()))));
             if (dayItems.size() == 0) {
                 sb.append("<p>No Entries");
             } else {
@@ -621,10 +621,10 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append("</table>");
         } else {
             sb.append(
-                HtmlUtil.center(
-                    HtmlUtil.b(StringUtil.join(HtmlUtil.space(1), navList))));
+                HtmlUtils.center(
+                    HtmlUtils.b(StringUtil.join(HtmlUtils.space(1), navList))));
             sb.append(
-                HtmlUtil.center(HtmlUtil.b(headerSdf.format(cal.getTime()))));
+                HtmlUtils.center(HtmlUtils.b(headerSdf.format(cal.getTime()))));
             sb.append(
                 "<table class=\"calendartable\"  cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
             String[] dayNames = {
@@ -655,7 +655,7 @@ public class CalendarOutputHandler extends OutputHandler {
             for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
                 sb.append("<tr valign=top>");
                 for (int colIdx = 0; colIdx < 7; colIdx++) {
-                    String content   = HtmlUtil.space(1);
+                    String content   = HtmlUtils.space(1);
                     String bg        = "";
                     int    thisDay   = cal.get(cal.DAY_OF_MONTH);
                     int    thisMonth = cal.get(cal.MONTH);
@@ -675,13 +675,13 @@ public class CalendarOutputHandler extends OutputHandler {
                     }
                     String dayContents = "&nbsp;";
                     if (inner != null) {
-                        dayContents = HtmlUtil.div(StringUtil.join("",
-                                inner), HtmlUtil.cssClass("calcontents"));
+                        dayContents = HtmlUtils.div(StringUtil.join("",
+                                inner), HtmlUtils.cssClass("calcontents"));
                     }
                     content =
                         "<table border=0 cellspacing=\"0\" cellpadding=\"2\" width=100%><tr valign=top><td>"
                         + dayContents + "</td><td align=right class=calday>"
-                        + HtmlUtil.href(dayUrl, "" + thisDay)
+                        + HtmlUtils.href(dayUrl, "" + thisDay)
                         + "<br>&nbsp;</td></tr></table>";
                     sb.append("<td class=\"calentry\" " + bg + " >" + content
                               + "</td>");
@@ -712,7 +712,7 @@ public class CalendarOutputHandler extends OutputHandler {
             if (label.length() > 20) {
                 label = label.substring(0, 19) + "...";
             }
-            String url = HtmlUtil.nobr(getEntryManager().getAjaxLink(request,
+            String url = HtmlUtils.nobr(getEntryManager().getAjaxLink(request,
                              entry, label, null, true, null,
                              false).toString());
 
@@ -958,8 +958,8 @@ public class CalendarOutputHandler extends OutputHandler {
         List navList = new ArrayList();
 
         for (int i = 0; i < navLabels.length; i++) {
-            navList.add(HtmlUtil.href(navUrls.get(i),
-                                      HtmlUtil.img(iconUrl(navIcons[i]),
+            navList.add(HtmlUtils.href(navUrls.get(i),
+                                      HtmlUtils.img(iconUrl(navIcons[i]),
                                           navLabels[i], " border=\"0\"")));
         }
 
@@ -978,7 +978,7 @@ public class CalendarOutputHandler extends OutputHandler {
             request.remove(ARG_MONTH);
             request.remove(ARG_YEAR);
             request.remove(ARG_DAY);
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append(
                 "<table  width=100% border=0 cellpadding=10><tr valign=top><td width=200>");
             getRepository().createMonthNav(sb, cal.getTime(),
@@ -991,25 +991,25 @@ public class CalendarOutputHandler extends OutputHandler {
             request.put(ARG_YEAR, "" + selected[IDX_YEAR]);
             String monthUrl = request.getUrl();
             request.put(ARG_DAY, selected[IDX_DAY]);
-            //            sb.append(HtmlUtil.b(StringUtil.join(HtmlUtil.space(1),
+            //            sb.append(HtmlUtils.b(StringUtil.join(HtmlUtils.space(1),
             //                    navList)));
             sb.append(
-                HtmlUtil.href(
-                    monthUrl, HtmlUtil.b(headerSdf.format(cal.getTime()))));
+                HtmlUtils.href(
+                    monthUrl, HtmlUtils.b(headerSdf.format(cal.getTime()))));
             if (dayItems.size() == 0) {
                 sb.append("<p>No Entries");
             } else {
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.br());
                 sb.append(link);
                 sb.append(tmp);
             }
             sb.append("</table>");
         } else {
             sb.append(
-                HtmlUtil.center(
-                    HtmlUtil.b(StringUtil.join(HtmlUtil.space(1), navList))));
+                HtmlUtils.center(
+                    HtmlUtils.b(StringUtil.join(HtmlUtils.space(1), navList))));
             sb.append(
-                HtmlUtil.center(HtmlUtil.b(headerSdf.format(cal.getTime()))));
+                HtmlUtils.center(HtmlUtils.b(headerSdf.format(cal.getTime()))));
             sb.append(
                 "<table class=\"calendartable\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
             String[] dayNames = {
@@ -1029,7 +1029,7 @@ public class CalendarOutputHandler extends OutputHandler {
             for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
                 sb.append("<tr valign=top>");
                 for (int colIdx = 0; colIdx < 7; colIdx++) {
-                    String content   = HtmlUtil.space(1);
+                    String content   = HtmlUtils.space(1);
                     String bg        = "";
                     int    thisDay   = cal.get(cal.DAY_OF_MONTH);
                     int    thisMonth = cal.get(cal.MONTH);
@@ -1049,14 +1049,14 @@ public class CalendarOutputHandler extends OutputHandler {
                     }
                     String dayContents = "&nbsp;";
                     if (inner != null) {
-                        dayContents = HtmlUtil.div(StringUtil.join("",
-                                inner), HtmlUtil.cssClass("calcontents"));
+                        dayContents = HtmlUtils.div(StringUtil.join("",
+                                inner), HtmlUtils.cssClass("calcontents"));
                     }
                     content =
                         "<table border=0 cellspacing=\"0\" cellpadding=\"2\" width=100%><tr valign=top><td>"
                         + dayContents
                         + "</td><td align=right class=calday width=5>"
-                        + HtmlUtil.href(dayUrl, "" + thisDay)
+                        + HtmlUtils.href(dayUrl, "" + thisDay)
                         + "<br>&nbsp;</td></tr></table>";
                     sb.append("<td class=\"calentry\" " + bg + " >" + content
                               + "</td>");

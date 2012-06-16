@@ -21,7 +21,7 @@
 package org.ramadda.repository;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 /**
@@ -60,7 +60,7 @@ public class EntryLink {
      * @return _more_
      */
     public String toString() {
-        return link + HtmlUtil.br() + folderBlock;
+        return link + HtmlUtils.br() + folderBlock;
     }
 
     /**

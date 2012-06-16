@@ -38,7 +38,7 @@ import ucar.unidata.sql.SqlUtil;
 
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -137,30 +137,30 @@ public class AssociationManager extends RepositoryManager {
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ASSOCIATION_ADD,
                                       BLANK);
-        sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.formTable());
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.formTable());
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Association Name"),
-                                     HtmlUtil.input(ARG_NAME)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Association Name"),
+                                     HtmlUtils.input(ARG_NAME)));
 
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject("None", ""));
         String select = ((types.size() == 1)
                          ? ""
-                         : HtmlUtil.select(ARG_TYPE, types)
-                           + HtmlUtil.space(1) + "Or:" + HtmlUtil.space(1));
-        sb.append(HtmlUtil.formEntry(msgLabel("Type"),
+                         : HtmlUtils.select(ARG_TYPE, types)
+                           + HtmlUtils.space(1) + "Or:" + HtmlUtils.space(1));
+        sb.append(HtmlUtils.formEntry(msgLabel("Type"),
                                      select
-                                     + HtmlUtil.input(ARG_TYPE_FREEFORM, "",
-                                         HtmlUtil.SIZE_20)));
+                                     + HtmlUtils.input(ARG_TYPE_FREEFORM, "",
+                                         HtmlUtils.SIZE_20)));
 
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
 
-        sb.append(HtmlUtil.hidden(ARG_FROM, fromEntry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_TO, toEntry.getId()));
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.submit(msg("Add Association")));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.hidden(ARG_FROM, fromEntry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_TO, toEntry.getId()));
+        sb.append(HtmlUtils.space(1));
+        sb.append(HtmlUtils.submit(msg("Add Association")));
+        sb.append(HtmlUtils.formClose());
 
         return getEntryManager().addEntryHeader(request, fromEntry,
                 new Result("Add Association", sb));
@@ -212,7 +212,7 @@ public class AssociationManager extends RepositoryManager {
         StringBuffer sb     = new StringBuffer();
         StringBuffer hidden = new StringBuffer();
         getRepository().addAuthToken(request, hidden);
-        hidden.append(HtmlUtil.hidden(ARG_ASSOCIATION, associationId));
+        hidden.append(HtmlUtils.hidden(ARG_ASSOCIATION, associationId));
         String form = Repository.makeOkCancelForm(request,
                           getRepository().URL_ASSOCIATION_DELETE,
                           ARG_DELETE_CONFIRM, hidden.toString());
@@ -222,9 +222,9 @@ public class AssociationManager extends RepositoryManager {
                 form));
 
         sb.append(associations.get(0).getName());
-        sb.append(HtmlUtil.br());
+        sb.append(HtmlUtils.br());
         sb.append(fromEntry.getLabel());
-        sb.append(HtmlUtil.pad(HtmlUtil.img(iconUrl(ICON_ARROW))));
+        sb.append(HtmlUtils.pad(HtmlUtils.img(iconUrl(ICON_ARROW))));
         sb.append(toEntry.getLabel());
         return new Result(msg("Delete Associations"), sb);
     }
@@ -417,11 +417,11 @@ public class AssociationManager extends RepositoryManager {
             return BLANK;
         }
         String search =
-            HtmlUtil.href(
+            HtmlUtils.href(
                 request.url(
                     getRepository().getSearchManager().URL_SEARCH_FORM,
                     ARG_ASSOCIATION,
-                    HtmlUtil.urlEncode(association)), HtmlUtil.img(
+                    HtmlUtils.urlEncode(association)), HtmlUtils.img(
                         iconUrl(ICON_SEARCH), msg("Search in association")));
 
         return search;
@@ -672,19 +672,19 @@ public class AssociationManager extends RepositoryManager {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {
             String first  = text.substring(0, idx);
-            String base   = "" + (HtmlUtil.blockCnt++);
+            String base   = "" + (HtmlUtils.blockCnt++);
             String divId  = "morediv_" + base;
             String linkId = "morelink_" + base;
             String second = text.substring(idx + "<more>".length());
-            String moreLink = "javascript:showMore(" + HtmlUtil.squote(base)
+            String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
                               + ")";
-            String lessLink = "javascript:hideMore(" + HtmlUtil.squote(base)
+            String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)
                               + ")";
-            text = first + "<br><a " + HtmlUtil.id(linkId) + " href="
-                   + HtmlUtil.quote(moreLink)
+            text = first + "<br><a " + HtmlUtils.id(linkId) + " href="
+                   + HtmlUtils.quote(moreLink)
                    + ">More...</a><div style=\"\" class=\"moreblock\" "
-                   + HtmlUtil.id(divId) + ">" + second + "<br>" + "<a href="
-                   + HtmlUtil.quote(lessLink) + ">...Less</a>" + "</div>";
+                   + HtmlUtils.id(divId) + ">" + second + "<br>" + "<a href="
+                   + HtmlUtils.quote(lessLink) + ">...Less</a>" + "</div>";
         }
         return text;
     }
@@ -765,12 +765,12 @@ public class AssociationManager extends RepositoryManager {
             }
             if (canEdit) {
                 cols.add(
-                    HtmlUtil.pad(
-                        HtmlUtil.href(
+                    HtmlUtils.pad(
+                        HtmlUtils.href(
                             request.url(
                                 getRepository().URL_ASSOCIATION_DELETE,
                                 ARG_ASSOCIATION,
-                                association.getId()), HtmlUtil.img(
+                                association.getId()), HtmlUtils.img(
                                     getRepository().iconUrl(ICON_DELETE),
                                     msg("Delete association")))) + "&nbsp;");
             } else {
@@ -784,7 +784,7 @@ public class AssociationManager extends RepositoryManager {
             if (fromIsMe) {
                 fromLabel = lastFromIsMe
                             ? "&nbsp;...&nbsp;"
-                            : HtmlUtil.b(fromEntry.getLabel());
+                            : HtmlUtils.b(fromEntry.getLabel());
             } else {
                 fromLabel = getEntryManager().getEntryLink(request,
                         fromEntry, args);
@@ -792,7 +792,7 @@ public class AssociationManager extends RepositoryManager {
             if (toIsMe) {
                 toLabel = lastToIsMe
                           ? "&nbsp;...&nbsp;"
-                          : HtmlUtil.b(toEntry.getLabel());
+                          : HtmlUtils.b(toEntry.getLabel());
             } else {
                 toLabel = getEntryManager().getEntryLink(request, toEntry,
                         args);
@@ -800,25 +800,25 @@ public class AssociationManager extends RepositoryManager {
 
             lastFromIsMe = fromIsMe;
             lastToIsMe   = toIsMe;
-            cols.add(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                    fromEntry)) + HtmlUtil.pad(fromLabel));
+            cols.add(HtmlUtils.img(getEntryManager().getIconUrl(request,
+                    fromEntry)) + HtmlUtils.pad(fromLabel));
             cols.add(association.getType());
             //            cols.add(association.getLabel());
-            cols.add(HtmlUtil.img(getRepository().iconUrl(ICON_ARROW)));
-            cols.add(HtmlUtil.img(getEntryManager().getIconUrl(request,
-                    toEntry)) + HtmlUtil.pad(toLabel));
+            cols.add(HtmlUtils.img(getRepository().iconUrl(ICON_ARROW)));
+            cols.add(HtmlUtils.img(getEntryManager().getIconUrl(request,
+                    toEntry)) + HtmlUtils.pad(toLabel));
         }
 
         List cols = Misc.toList(new Object[] { "&nbsp;",
-                HtmlUtil.bold(msg("From")), HtmlUtil.bold(msg("Type")),
-        /*HtmlUtil.bold(msg("Name")),*/
-        "&nbsp;", HtmlUtil.bold(msg("To")) });
+                HtmlUtils.bold(msg("From")), HtmlUtils.bold(msg("Type")),
+        /*HtmlUtils.bold(msg("Name")),*/
+        "&nbsp;", HtmlUtils.bold(msg("To")) });
 
         cols.addAll(cols1);
         cols.addAll(cols2);
 
-        return HtmlUtil.table(cols, 5,
-                              HtmlUtil.attr(HtmlUtil.ATTR_CELLSPACING, "3"));
+        return HtmlUtils.table(cols, 5,
+                              HtmlUtils.attr(HtmlUtils.ATTR_CELLSPACING, "3"));
     }
 
 
@@ -907,42 +907,42 @@ public class AssociationManager extends RepositoryManager {
      */
     private void getAssociationsSearchForm(Request request, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtil
+        sb.append(HtmlUtils
             .form(request
                 .url(getRepository().getSearchManager()
                     .URL_SEARCH_ASSOCIATIONS, ARG_NAME,
                         WHAT_ENTRIES), " name=\"searchform\" "));
 
-        sb.append(HtmlUtil.formTable());
+        sb.append(HtmlUtils.formTable());
 
         String searchExact = " "
-                             + HtmlUtil.checkbox(ARG_EXACT, "true",
+                             + HtmlUtils.checkbox(ARG_EXACT, "true",
                                  request.get(ARG_EXACT, false)) + " "
                                      + msg("Match exactly");
-        sb.append(HtmlUtil.formEntry(msgLabel("Name"),
-                                     HtmlUtil.input(ARG_NAME,
+        sb.append(HtmlUtils.formEntry(msgLabel("Name"),
+                                     HtmlUtils.input(ARG_NAME,
                                          request.getString(ARG_NAME, ""),
-                                         HtmlUtil.SIZE_40) + searchExact));
+                                         HtmlUtils.SIZE_40) + searchExact));
 
 
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject(msg("None"), ""));
         if (types.size() > 1) {
-            sb.append(HtmlUtil.formEntry(msgLabel("Type"),
-                                         HtmlUtil.select(ARG_TYPE, types,
+            sb.append(HtmlUtils.formEntry(msgLabel("Type"),
+                                         HtmlUtils.select(ARG_TYPE, types,
                                              request.getString(ARG_TYPE,
                                                  ""))));
         }
 
 
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
 
         OutputType output  = request.getOutput(BLANK);
-        String     buttons = HtmlUtil.submit(msg("Search"), "submit");
-        sb.append(HtmlUtil.p());
+        String     buttons = HtmlUtils.submit(msg("Search"), "submit");
+        sb.append(HtmlUtils.p());
         sb.append(buttons);
-        sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.formClose());
 
     }
 

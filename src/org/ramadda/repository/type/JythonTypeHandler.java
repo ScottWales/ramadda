@@ -34,7 +34,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -248,17 +248,17 @@ public class JythonTypeHandler extends GenericTypeHandler {
             if (formInfo.resultFileName != null) {
                 formUrl = formUrl + "/" + formInfo.resultFileName;
             }
-            formSB.append(HtmlUtil.uploadForm(formUrl, ""));
-            formSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-            formSB.append(HtmlUtil.formTable());
+            formSB.append(HtmlUtils.uploadForm(formUrl, ""));
+            formSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            formSB.append(HtmlUtils.formTable());
             if ((password != null) && (password.trim().length() > 0)) {
-                formSB.append(HtmlUtil.formEntry(msgLabel("Password"),
-                        HtmlUtil.password(ARG_SCRIPT_PASSWORD)));
+                formSB.append(HtmlUtils.formEntry(msgLabel("Password"),
+                        HtmlUtils.password(ARG_SCRIPT_PASSWORD)));
             }
             formSB.append(formInfo.sb);
-            formSB.append(HtmlUtil.formTableClose());
-            formSB.append(HtmlUtil.submit(msg("Submit"), ARG_SUBMIT));
-            formSB.append(HtmlUtil.formClose());
+            formSB.append(HtmlUtils.formTableClose());
+            formSB.append(HtmlUtils.submit(msg("Submit"), ARG_SUBMIT));
+            formSB.append(HtmlUtils.formClose());
         }
         Result result = new Result((formInfo.title != null)
                                    ? formInfo.title
@@ -654,10 +654,10 @@ public class JythonTypeHandler extends GenericTypeHandler {
             cnt++;
             inputs.add(new InputInfo(InputInfo.TYPE_FILE, id));
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     typeHandler.msgLabel(label),
-                    HtmlUtil.fileInput(
-                        id, HtmlUtil.attr(HtmlUtil.ATTR_SIZE, "80"))));
+                    HtmlUtils.fileInput(
+                        id, HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "80"))));
         }
 
 
@@ -672,14 +672,14 @@ public class JythonTypeHandler extends GenericTypeHandler {
         public void addFormEntry(String id, String label) throws Exception {
             inputs.add(new InputInfo(InputInfo.TYPE_ENTRY, id));
 
-            sb.append(HtmlUtil.hidden(id + "_hidden", "",
-                                      HtmlUtil.id(id + "_hidden")));
+            sb.append(HtmlUtils.hidden(id + "_hidden", "",
+                                      HtmlUtils.id(id + "_hidden")));
             String select = OutputHandler.getSelect(request, id, "Select",
                                 true, null, entry);
-            sb.append(HtmlUtil.formEntry(label,
-                                         HtmlUtil.disabledInput(id, "",
-                                             HtmlUtil.id(id)
-                                             + HtmlUtil.SIZE_60) + select));
+            sb.append(HtmlUtils.formEntry(label,
+                                         HtmlUtils.disabledInput(id, "",
+                                             HtmlUtils.id(id)
+                                             + HtmlUtils.SIZE_60) + select));
             cnt++;
         }
 
@@ -692,7 +692,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
          * @throws Exception _more_
          */
         public void addFormLabel(String label) throws Exception {
-            sb.append(HtmlUtil.formEntry("", label));
+            sb.append(HtmlUtils.formEntry("", label));
         }
 
 
@@ -711,15 +711,15 @@ public class JythonTypeHandler extends GenericTypeHandler {
             inputs.add(new InputInfo(InputInfo.TYPE_TEXT, id));
             if (rows == 1) {
                 sb.append(
-                    HtmlUtil.formEntry(
+                    HtmlUtils.formEntry(
                         typeHandler.msgLabel(label),
-                        HtmlUtil.input(
+                        HtmlUtils.input(
                             id, dflt,
-                            HtmlUtil.attr(
-                                HtmlUtil.ATTR_SIZE, "" + columns))));
+                            HtmlUtils.attr(
+                                HtmlUtils.ATTR_SIZE, "" + columns))));
             } else {
-                sb.append(HtmlUtil.formEntryTop(typeHandler.msgLabel(label),
-                        HtmlUtil.textArea(id, dflt, rows, columns)));
+                sb.append(HtmlUtils.formEntryTop(typeHandler.msgLabel(label),
+                        HtmlUtils.textArea(id, dflt, rows, columns)));
             }
         }
 
@@ -735,8 +735,8 @@ public class JythonTypeHandler extends GenericTypeHandler {
                                   List items) {
             cnt++;
             inputs.add(new InputInfo(InputInfo.TYPE_TEXT, id));
-            sb.append(HtmlUtil.formEntry(label,
-                                         HtmlUtil.select(id, items, dflt)));
+            sb.append(HtmlUtils.formEntry(label,
+                                         HtmlUtils.select(id, items, dflt)));
         }
 
 
@@ -751,11 +751,11 @@ public class JythonTypeHandler extends GenericTypeHandler {
             inputs.add(new InputInfo(InputInfo.TYPE_NUMBER, id));
             cnt++;
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     typeHandler.msgLabel(label),
-                    HtmlUtil.input(
+                    HtmlUtils.input(
                         id, "" + dflt,
-                        HtmlUtil.attr(HtmlUtil.ATTR_SIZE, "" + 5))));
+                        HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "" + 5))));
         }
 
 

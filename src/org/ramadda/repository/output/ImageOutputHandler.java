@@ -32,7 +32,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -321,7 +321,7 @@ public class ImageOutputHandler extends OutputHandler {
             if (link == null) {
                 sb.append("Not available");
             } else {
-                sb.append(HtmlUtil.p());
+                sb.append(HtmlUtils.p());
                 String html =
                     "<OBJECT CLASSID=\"clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B\" CODEBASE=\"http://www.apple.com/qtactivex/qtplugin.cab\"  > <PARAM NAME=\"src\" VALUE=\""
                     + link.getUrl()
@@ -384,73 +384,73 @@ public class ImageOutputHandler extends OutputHandler {
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
 
 
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_EDIT));
-        sb.append(HtmlUtil.submit(msgLabel("Change width"),
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_EDIT));
+        sb.append(HtmlUtils.submit(msgLabel("Change width"),
                                   ARG_IMAGE_EDIT_RESIZE));
-        sb.append(HtmlUtil.input(ARG_IMAGE_EDIT_WIDTH, "" + imageWidth,
-                                 HtmlUtil.SIZE_5));
-        sb.append(HtmlUtil.space(2));
+        sb.append(HtmlUtils.input(ARG_IMAGE_EDIT_WIDTH, "" + imageWidth,
+                                 HtmlUtils.SIZE_5));
+        sb.append(HtmlUtils.space(2));
 
-        sb.append(HtmlUtil.submit(msg("Crop"), ARG_IMAGE_EDIT_CROP));
-        sb.append(HtmlUtil.submit(msg("Remove Redeye"),
+        sb.append(HtmlUtils.submit(msg("Crop"), ARG_IMAGE_EDIT_CROP));
+        sb.append(HtmlUtils.submit(msg("Remove Redeye"),
                                   ARG_IMAGE_EDIT_REDEYE));
-        sb.append(HtmlUtil.hidden(ARG_IMAGE_CROPX1, "",
-                                  HtmlUtil.SIZE_3
-                                  + HtmlUtil.id(ARG_IMAGE_CROPX1)));
-        sb.append(HtmlUtil.hidden(ARG_IMAGE_CROPY1, "",
-                                  HtmlUtil.SIZE_3
-                                  + HtmlUtil.id(ARG_IMAGE_CROPY1)));
-        sb.append(HtmlUtil.hidden(ARG_IMAGE_CROPX2, "",
-                                  HtmlUtil.SIZE_3
-                                  + HtmlUtil.id(ARG_IMAGE_CROPX2)));
-        sb.append(HtmlUtil.hidden(ARG_IMAGE_CROPY2, "",
-                                  HtmlUtil.SIZE_3
-                                  + HtmlUtil.id(ARG_IMAGE_CROPY2)));
-        sb.append(HtmlUtil.div("",
-                               HtmlUtil.cssClass("image_edit_box")
-                               + HtmlUtil.id("image_edit_box")));
+        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX1, "",
+                                  HtmlUtils.SIZE_3
+                                  + HtmlUtils.id(ARG_IMAGE_CROPX1)));
+        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY1, "",
+                                  HtmlUtils.SIZE_3
+                                  + HtmlUtils.id(ARG_IMAGE_CROPY1)));
+        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX2, "",
+                                  HtmlUtils.SIZE_3
+                                  + HtmlUtils.id(ARG_IMAGE_CROPX2)));
+        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY2, "",
+                                  HtmlUtils.SIZE_3
+                                  + HtmlUtils.id(ARG_IMAGE_CROPY2)));
+        sb.append(HtmlUtils.div("",
+                               HtmlUtils.cssClass("image_edit_box")
+                               + HtmlUtils.id("image_edit_box")));
 
 
 
-        sb.append(HtmlUtil.space(2));
-        sb.append(HtmlUtil.submitImage(iconUrl(ICON_ANTIROTATE),
+        sb.append(HtmlUtils.space(2));
+        sb.append(HtmlUtils.submitImage(iconUrl(ICON_ANTIROTATE),
                                        ARG_IMAGE_EDIT_ROTATE_LEFT,
                                        msg("Rotate Left")));
-        sb.append(HtmlUtil.space(2));
-        sb.append(HtmlUtil.submitImage(iconUrl(ICON_ROTATE),
+        sb.append(HtmlUtils.space(2));
+        sb.append(HtmlUtils.submitImage(iconUrl(ICON_ROTATE),
                                        ARG_IMAGE_EDIT_ROTATE_RIGHT,
                                        msg("Rotate Right")));
         File entryDir = getStorageManager().getEntryDir(entry.getId(), false);
         File original = new File(entryDir + "/" + "originalimage");
         if (original.exists()) {
-            sb.append(HtmlUtil.space(2));
-            sb.append(HtmlUtil.submit(msg("Undo all edits"), ARG_IMAGE_UNDO));
+            sb.append(HtmlUtils.space(2));
+            sb.append(HtmlUtils.submit(msg("Undo all edits"), ARG_IMAGE_UNDO));
         }
 
-        sb.append(HtmlUtil.space(20));
-        sb.append(HtmlUtil.checkbox(ARG_IMAGE_APPLY_TO_GROUP, "true",
+        sb.append(HtmlUtils.space(20));
+        sb.append(HtmlUtils.checkbox(ARG_IMAGE_APPLY_TO_GROUP, "true",
                                     applyToGroup));
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.space(1));
         sb.append(msg("Apply to siblings"));
 
 
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.formClose());
 
 
         String clickParams =
             "event,'imgid',"
-            + HtmlUtil.comma(HtmlUtil.squote(ARG_IMAGE_CROPX1),
-                             HtmlUtil.squote(ARG_IMAGE_CROPY1),
-                             HtmlUtil.squote(ARG_IMAGE_CROPX2),
-                             HtmlUtil.squote(ARG_IMAGE_CROPY2));
+            + HtmlUtils.comma(HtmlUtils.squote(ARG_IMAGE_CROPX1),
+                             HtmlUtils.squote(ARG_IMAGE_CROPY1),
+                             HtmlUtils.squote(ARG_IMAGE_CROPX2),
+                             HtmlUtils.squote(ARG_IMAGE_CROPY2));
 
         sb.append(
-            HtmlUtil.importJS(getRepository().fileUrl("/editimage.js")));
+            HtmlUtils.importJS(getRepository().fileUrl("/editimage.js")));
 
-        String call = HtmlUtil.onMouseClick(HtmlUtil.call("editImageClick",
+        String call = HtmlUtils.onMouseClick(HtmlUtils.call("editImageClick",
                           clickParams));
-        sb.append(HtmlUtil.img(url, "", HtmlUtil.id("imgid") + call));
+        sb.append(HtmlUtils.img(url, "", HtmlUtils.id("imgid") + call));
         return new Result("Image Edit", sb);
 
     }
@@ -637,8 +637,8 @@ public class ImageOutputHandler extends OutputHandler {
                     + dttm;
                 title += "</table>";
                 title = title.replace("\"", "\\\"");
-                sb.append("addImage(" + HtmlUtil.quote(url) + ","
-                          + HtmlUtil.quote(title) + ");\n");
+                sb.append("addImage(" + HtmlUtils.quote(url) + ","
+                          + HtmlUtils.quote(title) + ");\n");
                 cnt++;
             }
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
@@ -647,11 +647,11 @@ public class ImageOutputHandler extends OutputHandler {
                 if ( !entry.getResource().isImage()) {
                     continue;
                 }
-                String url = HtmlUtil.url(
+                String url = HtmlUtils.url(
                                  request.url(repository.URL_ENTRY_GET) + "/"
                                  + getStorageManager().getFileTail(
                                      entry), ARG_ENTRYID, entry.getId());
-                String thumburl = HtmlUtil.url(
+                String thumburl = HtmlUtils.url(
                                       request.url(repository.URL_ENTRY_GET)
                                       + "/"
                                       + getStorageManager().getFileTail(
@@ -664,9 +664,9 @@ public class ImageOutputHandler extends OutputHandler {
                 request.put(ARG_OUTPUT, output);
                 title = title.replace("\"", "\\\"");
                 title = title.replace("\n", " ");
-                sb.append("addImage(" + HtmlUtil.quote(url) + ","
-                          + HtmlUtil.quote(thumburl) + ","
-                          + HtmlUtil.quote(title) + ");\n");
+                sb.append("addImage(" + HtmlUtils.quote(url) + ","
+                          + HtmlUtils.quote(thumburl) + ","
+                          + HtmlUtils.quote(title) + ");\n");
 
             }
         } else {
@@ -678,12 +678,12 @@ public class ImageOutputHandler extends OutputHandler {
                 }
                 /*
                 if(cnt==0) {
-                    sb.append(HtmlUtil.href(url,"View Gallery","  rel=\"shadowbox[gallery]\" "));
+                    sb.append(HtmlUtils.href(url,"View Gallery","  rel=\"shadowbox[gallery]\" "));
                 } else {
-                    sb.append(HtmlUtil.href(url,entry.getName(),"  rel=\"shadowbox[gallery]\" class=\"hidden\" "));
+                    sb.append(HtmlUtils.href(url,entry.getName(),"  rel=\"shadowbox[gallery]\" class=\"hidden\" "));
                 }
                 cnt++;
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.br());
                 if(true)
                     continue;
                 */
@@ -701,8 +701,8 @@ public class ImageOutputHandler extends OutputHandler {
                 //                String imgExtra = XmlUtil.attr(ARG_WIDTH, "400");
                 String imageUrl = url + "&imagewidth="
                                   + request.get(ARG_IMAGEWIDTH, 400);
-                sb.append(HtmlUtil.href(url,
-                                        (HtmlUtil.img(imageUrl, "",
+                sb.append(HtmlUtils.href(url,
+                                        (HtmlUtils.img(imageUrl, "",
                                             imgExtra))));
                 sb.append("<br>\n");
                 sb.append(getEntryLink(request, entry));
@@ -722,10 +722,10 @@ public class ImageOutputHandler extends OutputHandler {
             String widthAttr = "";
             int    width     = request.get(ARG_WIDTH, 600);
             if (width > 0) {
-                widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
+                widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
             }
             String imageHtml = "<img name=\"animation\" border=\"0\" "
-                               + widthAttr + HtmlUtil.attr("SRC", firstImage)
+                               + widthAttr + HtmlUtils.attr("SRC", firstImage)
                                + " alt=\"image\">";
 
             String tmp = playerTemplate.replace("${imagelist}",
@@ -738,17 +738,17 @@ public class ImageOutputHandler extends OutputHandler {
             String fullUrl = "";
             if (width > 0) {
                 request.put(ARG_WIDTH, "0");
-                fullUrl = HtmlUtil.href(request.getUrl(),
+                fullUrl = HtmlUtils.href(request.getUrl(),
                                         msg("Use image width"));
             } else {
                 request.put(ARG_WIDTH, "600");
-                fullUrl = HtmlUtil.href(request.getUrl(),
+                fullUrl = HtmlUtils.href(request.getUrl(),
                                         msg("Use fixed width"));
             }
 
             sb  = new StringBuffer();
             sb.append(tmp);
-            sb.append(HtmlUtil.leftRight(getSortLinks(request),
+            sb.append(HtmlUtils.leftRight(getSortLinks(request),
                     fullUrl));
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
             String template = repository.getResource(PROP_HTML_SLIDESHOW);
@@ -760,7 +760,7 @@ public class ImageOutputHandler extends OutputHandler {
         StringBuffer finalSB = new StringBuffer();
         showNext(request, new ArrayList<Entry>(), entries, finalSB);
 
-        finalSB.append(HtmlUtil.p());
+        finalSB.append(HtmlUtils.p());
         finalSB.append(sb);
         return new Result(group.getName(), finalSB, getMimeType(output));
 
@@ -817,8 +817,8 @@ public class ImageOutputHandler extends OutputHandler {
                      + dttm;
             title += "</table>";
             title = title.replace("\"", "\\\"");
-            sb.append("addImage(" + HtmlUtil.quote(url) + ","
-                      + HtmlUtil.quote(title) + ");\n");
+            sb.append("addImage(" + HtmlUtils.quote(url) + ","
+                      + HtmlUtils.quote(title) + ");\n");
             cnt++;
         }
 
@@ -826,10 +826,10 @@ public class ImageOutputHandler extends OutputHandler {
         String widthAttr      = "";
         int    width          = request.get(ARG_WIDTH, 600);
         if (width > 0) {
-            widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
+            widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
         }
         String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
-                           + widthAttr + HtmlUtil.attr("SRC", firstImage)
+                           + widthAttr + HtmlUtils.attr("SRC", firstImage)
                            + " ALT=\"image\">";
 
         String tmp = playerTemplate.replace("${imagelist}", sb.toString());
@@ -839,14 +839,14 @@ public class ImageOutputHandler extends OutputHandler {
             String fullUrl = "";
             if (width > 0) {
                 request.put(ARG_WIDTH, "0");
-                fullUrl = HtmlUtil.href(request.getUrl(),
+                fullUrl = HtmlUtils.href(request.getUrl(),
                                         msg("Use image width"));
             } else {
                 request.put(ARG_WIDTH, "600");
-                fullUrl = HtmlUtil.href(request.getUrl(),
+                fullUrl = HtmlUtils.href(request.getUrl(),
                                         msg("Use fixed width"));
             }
-            sb = new StringBuffer(HtmlUtil.leftRight(getSortLinks(request),
+            sb = new StringBuffer(HtmlUtils.leftRight(getSortLinks(request),
                     fullUrl));
         } else {
             sb = new StringBuffer();
@@ -873,7 +873,7 @@ public class ImageOutputHandler extends OutputHandler {
      *       entries = getEntryManager().sortEntriesOnDate(entries, true);
      *   }
      *   finalSB.append(
-     *       HtmlUtil.importJS(getRepository().fileUrl("/slides/js/slides.min.jquery.js")));
+     *       HtmlUtils.importJS(getRepository().fileUrl("/slides/js/slides.min.jquery.js")));
      *   String slidesTemplate = repository.getResource("ramadda.html.slides");
      *   System.out.println(slidesTemplate);
      *   finalSB.append(slidesTemplate);
@@ -888,8 +888,8 @@ public class ImageOutputHandler extends OutputHandler {
      *       //            title += "<tr><td><b>Image:</b> " + entryUrl
      *       //                     + "</td><td align=right>"
      *       //                     + new Date(entry.getStartDate());
-     *       sb.append("addImage(" + HtmlUtil.quote(url) + ","
-     *                 + HtmlUtil.quote(title) + ");\n");
+     *       sb.append("addImage(" + HtmlUtils.quote(url) + ","
+     *                 + HtmlUtils.quote(title) + ");\n");
      *       cnt++;
      *   }
      *
@@ -897,10 +897,10 @@ public class ImageOutputHandler extends OutputHandler {
      *   String widthAttr      = "";
      *   int    width          = request.get(ARG_WIDTH, 600);
      *   if (width > 0) {
-     *       widthAttr = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width);
+     *       widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
      *   }
      *   String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
-     *                      + widthAttr + HtmlUtil.attr("SRC", firstImage)
+     *                      + widthAttr + HtmlUtils.attr("SRC", firstImage)
      *                      + " ALT=\"image\">";
      *
      *   String tmp = playerTemplate.replace("${imagelist}", sb.toString());
@@ -910,14 +910,14 @@ public class ImageOutputHandler extends OutputHandler {
      *       String fullUrl = "";
      *       if (width > 0) {
      *           request.put(ARG_WIDTH, "0");
-     *           fullUrl = HtmlUtil.href(request.getUrl(),
+     *           fullUrl = HtmlUtils.href(request.getUrl(),
      *                                   msg("Use image width"));
      *       } else {
      *           request.put(ARG_WIDTH, "600");
-     *           fullUrl = HtmlUtil.href(request.getUrl(),
+     *           fullUrl = HtmlUtils.href(request.getUrl(),
      *                                   msg("Use fixed width"));
      *       }
-     *       sb = new StringBuffer(HtmlUtil.leftRight(getSortLinks(request),
+     *       sb = new StringBuffer(HtmlUtils.leftRight(getSortLinks(request),
      *               fullUrl));
      *   } else {
      *       sb = new StringBuffer();

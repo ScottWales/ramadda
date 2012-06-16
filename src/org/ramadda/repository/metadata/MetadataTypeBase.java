@@ -28,7 +28,7 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -215,7 +215,7 @@ public class MetadataTypeBase extends RepositoryManager {
             String path =
                 handler.getRepository().getMetadataManager().URL_METADATA_VIEW
                     .getFullUrl("/" + tail);
-            String url = HtmlUtil.url(path, ARG_ELEMENT,
+            String url = HtmlUtils.url(path, ARG_ELEMENT,
                                       element.getIndex() + "", ARG_ENTRYID,
                                       metadata.getEntryId(), ARG_METADATA_ID,
                                       metadata.getId());
@@ -531,7 +531,7 @@ public class MetadataTypeBase extends RepositoryManager {
                         .URL_METADATA_VIEW + "/" + tail;
 
 
-                return HtmlUtil.url(path, ARG_ELEMENT,
+                return HtmlUtils.url(path, ARG_ELEMENT,
                                     element.getIndex() + "", ARG_ENTRYID,
                                     metadata.getEntryId(), ARG_METADATA_ID,
                                     metadata.getId());
@@ -569,7 +569,7 @@ public class MetadataTypeBase extends RepositoryManager {
 
 
         if (ImageUtils.isImage(f.toString())) {
-            String img = HtmlUtil.img(HtmlUtil.url(path, ARG_ELEMENT,
+            String img = HtmlUtils.img(HtmlUtils.url(path, ARG_ELEMENT,
                              element.getIndex() + "", ARG_ENTRYID,
                              metadata.getEntryId(), ARG_METADATA_ID,
                              metadata.getId(), ARG_THUMBNAIL,
@@ -578,13 +578,13 @@ public class MetadataTypeBase extends RepositoryManager {
                                              : ""), extra);
 
             if (forLink) {
-                String bigimg = HtmlUtil.img(HtmlUtil.url(path, ARG_ELEMENT,
+                String bigimg = HtmlUtils.img(HtmlUtils.url(path, ARG_ELEMENT,
                                     element.getIndex() + "", ARG_ENTRYID,
                                     metadata.getEntryId(), ARG_METADATA_ID,
                                     metadata.getId()), "thumbnail", "");
 
 
-                String imgUrl = HtmlUtil.url(path, ARG_ELEMENT,
+                String imgUrl = HtmlUtils.url(path, ARG_ELEMENT,
                                              element.getIndex() + "",
                                              ARG_ENTRYID,
                                              metadata.getEntryId(),
@@ -599,7 +599,7 @@ public class MetadataTypeBase extends RepositoryManager {
             return img;
         } else if (f.exists()) {
             String name = getStorageManager().getFileTail(f.getName());
-            return HtmlUtil.href(HtmlUtil.url(path, ARG_ELEMENT,
+            return HtmlUtils.href(HtmlUtils.url(path, ARG_ELEMENT,
                     element.getIndex() + "", ARG_ENTRYID,
                     metadata.getEntryId(), ARG_METADATA_ID,
                     metadata.getId()), name);

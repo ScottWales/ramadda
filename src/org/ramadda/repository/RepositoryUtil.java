@@ -21,7 +21,7 @@
 package org.ramadda.repository;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -65,7 +65,7 @@ public class RepositoryUtil implements Constants {
      * @return _more_
      */
     public static String buttons(String b1, String b2) {
-        return b1 + HtmlUtil.space(2) + b2;
+        return b1 + HtmlUtils.space(2) + b2;
     }
 
     /**
@@ -78,7 +78,7 @@ public class RepositoryUtil implements Constants {
      * @return _more_
      */
     public static String buttons(String b1, String b2, String b3) {
-        return b1 + HtmlUtil.space(2) + b2 + HtmlUtil.space(2) + b3;
+        return b1 + HtmlUtils.space(2) + b2 + HtmlUtils.space(2) + b3;
     }
 
 
@@ -242,7 +242,7 @@ public class RepositoryUtil implements Constants {
      * @return _more_
      */
     public static String header(String h) {
-        return HtmlUtil.div(h, HtmlUtil.cssClass(CSS_CLASS_HEADING_1));
+        return HtmlUtils.div(h, HtmlUtils.cssClass(CSS_CLASS_HEADING_1));
     }
 
 
@@ -254,7 +254,7 @@ public class RepositoryUtil implements Constants {
      * @return _more_
      */
     public static final String encodeInput(String s) {
-        s = HtmlUtil.urlEncode(s);
+        s = HtmlUtils.urlEncode(s);
         s = s.replace("+", " ");
         return s;
     }
@@ -312,7 +312,7 @@ public class RepositoryUtil implements Constants {
      */
     public static String inset(String html, int top, int left, int bottom,
                                int right) {
-        return HtmlUtil.div(html, HtmlUtil.style(((top == 0)
+        return HtmlUtils.div(html, HtmlUtils.style(((top == 0)
                 ? ""
                 : "margin-top:" + top + "px;") + ((left == 0)
                 ? ""

@@ -34,7 +34,7 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -273,7 +273,7 @@ public class RssOutputHandler extends OutputHandler {
             String       resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
                 String imageUrl = request.getAbsoluteUrl(
-                                      HtmlUtil.url(
+                                      HtmlUtils.url(
                                           getRepository().URL_ENTRY_GET
                                           + entry.getId()
                                           + IOUtil.getFileExtension(
@@ -281,8 +281,8 @@ public class RssOutputHandler extends OutputHandler {
                                                   entry.getId()
                 /*,                                                                    ARG_IMAGEWIDTH, "75"*/
                 ));
-                extra.append(HtmlUtil.br());
-                extra.append(HtmlUtil.img(imageUrl));
+                extra.append(HtmlUtils.br());
+                extra.append(HtmlUtils.img(imageUrl));
             }
 
             sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));

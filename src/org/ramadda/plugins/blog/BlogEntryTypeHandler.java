@@ -38,7 +38,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -126,7 +126,7 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
         }
         StringBuffer sb = new StringBuffer();
         sb.append(
-            HtmlUtil.cssLink(getRepository().fileUrl("/blog/blogstyle.css")));
+            HtmlUtils.cssLink(getRepository().fileUrl("/blog/blogstyle.css")));
         sb.append(weblogOutputHandler.getBlogEntry(request, entry));
         return new Result("", sb);
     }

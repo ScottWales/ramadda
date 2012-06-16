@@ -43,7 +43,7 @@ import ucar.unidata.data.DataSource;
 
 import ucar.unidata.data.grid.GeoGridDataSource;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;

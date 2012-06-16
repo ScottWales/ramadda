@@ -24,7 +24,7 @@ package org.ramadda.repository;
 import org.ramadda.repository.auth.*;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import java.io.InputStream;
 
@@ -540,7 +540,7 @@ public class Result {
      * @param value _more_
      */
     public void addCookie(String name, String value) {
-        addHttpHeader(HtmlUtil.HTTP_SET_COOKIE, name + "=" + value);
+        addHttpHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
     }
 
     /**

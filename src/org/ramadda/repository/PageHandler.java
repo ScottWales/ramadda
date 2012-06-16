@@ -30,7 +30,7 @@ import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.PropertyProvider;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -228,7 +228,7 @@ public class PageHandler extends RepositoryManager {
         String jsContent = getTemplateJavascriptContent();
 
         List   links     = (List) result.getProperty(PROP_NAVLINKS);
-        String linksHtml = HtmlUtil.space(1);
+        String linksHtml = HtmlUtils.space(1);
 
         if (links != null) {
             linksHtml = StringUtil.join(htmlTemplate.getTemplateProperty(
@@ -301,7 +301,7 @@ public class PageHandler extends RepositoryManager {
                                   entryLink.toString());
                 cartLinks.add("<nobr>" + link + "<nobr>");
             }
-            favorites.append(HtmlUtil.br());
+            favorites.append(HtmlUtils.br());
             favorites.append(cartTemplate.replace("${entries}",
                     StringUtil.join(favoritesSeparator, cartLinks)));
         }
@@ -391,11 +391,11 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String getTemplateJavascriptContent() {
-        return HtmlUtil.div(
-            "", " id=\"tooltipdiv\" class=\"tooltip-outer\" ") + HtmlUtil.div(
-            "", " id=\"popupdiv\" class=\"tooltip-outer\" ") + HtmlUtil.div(
-            "", " id=\"output\"") + HtmlUtil.div(
-            "", " id=\"selectdiv\" class=\"selectdiv\" ") + HtmlUtil.div(
+        return HtmlUtils.div(
+            "", " id=\"tooltipdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
+            "", " id=\"popupdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
+            "", " id=\"output\"") + HtmlUtils.div(
+            "", " id=\"selectdiv\" class=\"selectdiv\" ") + HtmlUtils.div(
             "", " id=\"floatdiv\" class=\"floatdiv\" ");
     }
 
@@ -950,7 +950,7 @@ public class PageHandler extends RepositoryManager {
             return msg;
         }
         msg = msg(msg);
-        return msg(msg) + ":" + HtmlUtil.space(1);
+        return msg(msg) + ":" + HtmlUtils.space(1);
     }
 
     /**
@@ -961,7 +961,7 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public static String msgHeader(String h) {
-        return HtmlUtil.div(msg(h), HtmlUtil.cssClass(CSS_CLASS_HEADING_1));
+        return HtmlUtils.div(msg(h), HtmlUtils.cssClass(CSS_CLASS_HEADING_1));
     }
 
 

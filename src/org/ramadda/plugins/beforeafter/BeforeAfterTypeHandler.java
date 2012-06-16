@@ -39,7 +39,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -141,12 +141,12 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
         String desc = group.getDescription();
         if(desc!=null && desc.length()>0) {
             sb.append(desc);
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.br());
         }
         StringBuffer divs = new StringBuffer();
         int          col  = 1;
         sb.append(
-            HtmlUtil.importJS(
+            HtmlUtils.importJS(
                 getRepository().getUrlBase()
                 + "/beforeandafter/jquery.beforeafter.js"));
         String template =
@@ -198,33 +198,33 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             }
             String id = "bandacontainer" + (cnt++);
             divs.append("<div id=\"" + id + "\">\n");
-            String url1 = HtmlUtil.url(
+            String url1 = HtmlUtils.url(
                               request.url(repository.URL_ENTRY_GET) + "/"
                               + getStorageManager().getFileTail(
                                   entry1), ARG_ENTRYID, entry1.getId());
-            String url2 = HtmlUtil.url(
+            String url2 = HtmlUtils.url(
                               request.url(repository.URL_ENTRY_GET) + "/"
                               + getStorageManager().getFileTail(
                                   entry2), ARG_ENTRYID, entry2.getId());
 
             divs.append(
-                HtmlUtil.div(
+                HtmlUtils.div(
                     "<img src=\"" + url1 + "\""
-                    + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width)
-                    + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, "" + height)
+                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width)
+                    + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT, "" + height)
                     + ">", ""));
 
             divs.append(
-                HtmlUtil.div(
+                HtmlUtils.div(
                     "<img src=\"" + url2 + "\""
-                    + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "" + width)
-                    + HtmlUtil.attr(HtmlUtil.ATTR_HEIGHT, "" + height)
+                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width)
+                    + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT, "" + height)
                     + ">", ""));
             divs.append("</div>\n");
             String path = getRepository().getUrlBase() + "/beforeandafter/";
             String args = "{imagePath:'" + path + "'}";
             sb.append("\n");
-            sb.append(HtmlUtil.script("\n$(function(){$('#" + id
+            sb.append(HtmlUtils.script("\n$(function(){$('#" + id
                                       + "').beforeAfter(" + args
                                       + ");});\n"));
         }

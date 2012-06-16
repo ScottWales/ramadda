@@ -21,7 +21,7 @@
 package org.ramadda.repository.harvester;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -220,10 +220,10 @@ public class FileInfo {
         String s   = file.toString();
         List   tmp = addedFiles;
         if ((tmp != null) && (tmp.size() > 0)) {
-            String fileBlock = HtmlUtil.insetDiv("Added files:<br>"
+            String fileBlock = HtmlUtils.insetDiv("Added files:<br>"
                                    + StringUtil.join("<br>", tmp), 0, 10, 0,
                                        0);
-            return HtmlUtil.makeShowHideBlock(s, fileBlock, false);
+            return HtmlUtils.makeShowHideBlock(s, fileBlock, false);
         }
         return s;
     }

@@ -27,7 +27,7 @@ import org.ramadda.repository.metadata.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;

@@ -37,7 +37,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -189,11 +189,11 @@ public class EchoPublisher extends Harvester {
             throws Exception {
 
         super.createEditForm(request, sb);
-        sb.append(HtmlUtil.formEntry("ECHO FTP URL",
-                                     HtmlUtil.input(ATTR_FTP_URL, ftpUrl,
+        sb.append(HtmlUtils.formEntry("ECHO FTP URL",
+                                     HtmlUtils.input(ATTR_FTP_URL, ftpUrl,
                                          60)));
-        sb.append(HtmlUtil.formEntry("ECHO User",
-                                     HtmlUtil.input(ATTR_FTP_USER, ftpUser,
+        sb.append(HtmlUtils.formEntry("ECHO User",
+                                     HtmlUtils.input(ATTR_FTP_USER, ftpUser,
                                          60)));
     }
 

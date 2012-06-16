@@ -28,7 +28,7 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.util.Date;
@@ -93,7 +93,7 @@ public class WeatherTypeHandler extends GenericTypeHandler {
             if (orientation.equals("horizontal")) {
                 sb.append("</td>");
             } else {
-                sb.append(HtmlUtil.p());
+                sb.append(HtmlUtils.p());
             }
         }
         if (orientation.equals("horizontal")) {

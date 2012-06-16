@@ -24,7 +24,7 @@ package org.ramadda.repository;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 
@@ -132,7 +132,7 @@ public class ActionManager extends RepositoryManager {
             } else {
                 sb.append("<meta http-equiv=\"refresh\" content=\"2\">");
                 sb.append(getRepository().progress(msg("In progress")));
-                sb.append(HtmlUtil.href(request.url(URL_STATUS,
+                sb.append(HtmlUtils.href(request.url(URL_STATUS,
                         ARG_ACTION_ID, id), msg("Reload")));
                 sb.append("<p>");
                 if (action.getExtraHtml() != null) {
@@ -146,9 +146,9 @@ public class ActionManager extends RepositoryManager {
                 }
                 sb.append("<p>");
                 sb.append(request.form(URL_STATUS));
-                sb.append(HtmlUtil.submit(msg("Cancel Action"), ARG_CANCEL));
-                sb.append(HtmlUtil.hidden(ARG_ACTION_ID, id));
-                sb.append(HtmlUtil.formClose());
+                sb.append(HtmlUtils.submit(msg("Cancel Action"), ARG_CANCEL));
+                sb.append(HtmlUtils.hidden(ARG_ACTION_ID, id));
+                sb.append(HtmlUtils.formClose());
             }
         }
         Result result = new Result(msg("Status"), sb);

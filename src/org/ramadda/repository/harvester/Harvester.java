@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -430,22 +430,22 @@ public abstract class Harvester extends RepositoryManager {
         String extra = "";
         if (baseGroup == null) {
             extra =
-                HtmlUtil.br()
-                + HtmlUtil.span(msg("Required"),
-                                HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
+                HtmlUtils.br()
+                + HtmlUtils.span(msg("Required"),
+                                HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
         }
 
-        sb.append(HtmlUtil.hidden(selectId + "_hidden", ((baseGroup != null)
+        sb.append(HtmlUtils.hidden(selectId + "_hidden", ((baseGroup != null)
                 ? baseGroup.getId()
-                : ""), HtmlUtil.id(selectId + "_hidden")));
-        sb.append(HtmlUtil.formEntry(msgLabel("Base Folder"),
-                                     HtmlUtil.disabledInput(selectId,
+                : ""), HtmlUtils.id(selectId + "_hidden")));
+        sb.append(HtmlUtils.formEntry(msgLabel("Base Folder"),
+                                     HtmlUtils.disabledInput(selectId,
                                          ((baseGroup != null)
                                           ? baseGroup.getFullName()
-                                          : ""), HtmlUtil.id(selectId)
-                                          + HtmlUtil.SIZE_60
+                                          : ""), HtmlUtils.id(selectId)
+                                          + HtmlUtils.SIZE_60
                                           + ((baseGroup == null)
-                                             ? HtmlUtil.cssClass(
+                                             ? HtmlUtils.cssClass(
                                              CSS_CLASS_REQUIRED_DISABLED)
                                              : "")) + baseSelect + extra));
     }
@@ -521,7 +521,7 @@ public abstract class Harvester extends RepositoryManager {
      */
     public String getRunLink(Request request, boolean redirectToEdit) {
         if (getActive()) {
-            return HtmlUtil
+            return HtmlUtils
                 .href(request
                     .url(getRepository().getHarvesterManager()
                         .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_STOP,
@@ -529,7 +529,7 @@ public abstract class Harvester extends RepositoryManager {
                             ARG_HARVESTER_REDIRECTTOEDIT,
                             "" + redirectToEdit), msg("Stop"));
         } else {
-            return HtmlUtil
+            return HtmlUtils
                 .href(request
                     .url(getRepository().getHarvesterManager()
                         .URL_HARVESTERS_LIST, ARG_ACTION, ACTION_START,
@@ -600,9 +600,9 @@ public abstract class Harvester extends RepositoryManager {
      */
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtil.formEntry(msgLabel("Harvester name"),
-                                     HtmlUtil.input(ARG_NAME, name,
-                                         HtmlUtil.SIZE_40)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
+                                     HtmlUtils.input(ARG_NAME, name,
+                                         HtmlUtils.SIZE_40)));
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject(msg("Absolute (minutes)"),
@@ -617,11 +617,11 @@ public abstract class Harvester extends RepositoryManager {
         } else if (sleepUnit.equals(UNIT_DAY)) {
             minutes = "" + (sleepMinutes / (60 * 60));
         }
-        String sleepType = HtmlUtil.select(ATTR_SLEEPUNIT, tfos, sleepUnit);
+        String sleepType = HtmlUtils.select(ATTR_SLEEPUNIT, tfos, sleepUnit);
         String sleepLbl =
-            "<br>" + HtmlUtil.space(3)
+            "<br>" + HtmlUtils.space(3)
             + "e.g., 30 minutes = on the hour and the half hour<br>"
-            + HtmlUtil.space(3);
+            + HtmlUtils.space(3);
 
         if (sleepUnit.equals(UNIT_ABSOLUTE)) {
             sleepLbl += msg("Would run in") + " " + sleepMinutes + " "
@@ -636,18 +636,18 @@ public abstract class Harvester extends RepositoryManager {
         StringBuffer runWidgets = new StringBuffer();
 
         //J-
-        runWidgets.append(HtmlUtil.checkbox(ATTR_TESTMODE, "true", testMode) + HtmlUtil.space(1) + msg("Test mode") +
-                HtmlUtil.space(3) +  msgLabel("Count") + HtmlUtil.input(ATTR_TESTCOUNT, "" + testCount, HtmlUtil.SIZE_5) +
-                HtmlUtil.br()    +
-                HtmlUtil.checkbox(ATTR_ACTIVEONSTART, "true", activeOnStart) + HtmlUtil.space(1) + msg("Active on startup") +
-                HtmlUtil.br() + 
-                HtmlUtil.checkbox(ATTR_MONITOR, "true", monitor) + HtmlUtil.space(1) + msg("Run continually") +
-                HtmlUtil.br() + HtmlUtil.space(3) +
-                          msgLabel("Every") + HtmlUtil.space(1) + HtmlUtil.input(ATTR_SLEEP, ""+ minutes, HtmlUtil.SIZE_5) + HtmlUtil.space(1) + sleepType + sleepLbl);
+        runWidgets.append(HtmlUtils.checkbox(ATTR_TESTMODE, "true", testMode) + HtmlUtils.space(1) + msg("Test mode") +
+                HtmlUtils.space(3) +  msgLabel("Count") + HtmlUtils.input(ATTR_TESTCOUNT, "" + testCount, HtmlUtils.SIZE_5) +
+                HtmlUtils.br()    +
+                HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true", activeOnStart) + HtmlUtils.space(1) + msg("Active on startup") +
+                HtmlUtils.br() + 
+                HtmlUtils.checkbox(ATTR_MONITOR, "true", monitor) + HtmlUtils.space(1) + msg("Run continually") +
+                HtmlUtils.br() + HtmlUtils.space(3) +
+                          msgLabel("Every") + HtmlUtils.space(1) + HtmlUtils.input(ATTR_SLEEP, ""+ minutes, HtmlUtils.SIZE_5) + HtmlUtils.space(1) + sleepType + sleepLbl);
 
         sb.append(
-                  HtmlUtil.formEntryTop("",
-                                        HtmlUtil.makeShowHideBlock(msg("Run Settings"), 
+                  HtmlUtils.formEntryTop("",
+                                        HtmlUtils.makeShowHideBlock(msg("Run Settings"), 
                                                                    runWidgets.toString(), false)));
                //J+
     }
@@ -1145,7 +1145,7 @@ public abstract class Harvester extends RepositoryManager {
             msg = msg.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             msg = msg.replace("\n", "<br>");
             status.append(msg);
-            status.append(HtmlUtil.br());
+            status.append(HtmlUtils.br());
         }
     }
 

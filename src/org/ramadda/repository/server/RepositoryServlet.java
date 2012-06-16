@@ -555,7 +555,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
 
             //TODO: what should we do with the fileName to ensure against XSS
-            //            fileName = HtmlUtil.encode(fileName);
+            //            fileName = HtmlUtils.encode(fileName);
 
 
             String contentType = item.getContentType();

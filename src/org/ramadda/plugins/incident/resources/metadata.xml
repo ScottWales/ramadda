@@ -6,7 +6,7 @@
     <type name="Fire Situation" id="incident.fire.situation"  searchable="false" browsable="true">
       <element id="personnel" name="Total Personnel"  datatype="int"/>
       <element id="size" name="Size"  datatype="int"/>
-      <element id="percentcontained"   datatype="int"/>
+      <element id="percentcontained" name="Percent Contained"  datatype="int"/>
       <element id="fuels"  name="Fuels Involved" datatype="string"/>
       <element id="behavior" name="Fire Behavior"  datatype="string" rows="5"/>
       <element id="events" name="Significant Events"  datatype="string" rows="5"/>

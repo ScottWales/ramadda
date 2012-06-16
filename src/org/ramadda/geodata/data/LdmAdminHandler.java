@@ -26,7 +26,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.monitor.LdmAction;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.List;
@@ -70,35 +70,35 @@ public class LdmAdminHandler extends AdminHandlerImpl {
             return;
         }
         sb.append(
-            HtmlUtil.colspan(
+            HtmlUtils.colspan(
                 msgHeader("Enable Unidata Local Data Manager (LDM) Access"),
                 2));
         String pqinsertPath = getProperty(LdmAction.PROP_LDM_PQINSERT, "");
         String ldmExtra1    = "";
         if ((pqinsertPath.length() > 0) && !new File(pqinsertPath).exists()) {
             ldmExtra1 =
-                HtmlUtil.space(2)
-                + HtmlUtil.span("File does not exist!",
-                                HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
+                HtmlUtils.space(2)
+                + HtmlUtils.span("File does not exist!",
+                                HtmlUtils.cssClass(CSS_CLASS_ERROR_LABEL));
         }
 
-        sb.append(HtmlUtil.formEntry("Path to pqinsert:",
-                                      HtmlUtil.input(LdmAction.PROP_LDM_PQINSERT,
+        sb.append(HtmlUtils.formEntry("Path to pqinsert:",
+                                      HtmlUtils.input(LdmAction.PROP_LDM_PQINSERT,
                                           pqinsertPath,
-                                          HtmlUtil.SIZE_60) + ldmExtra1));
+                                          HtmlUtils.SIZE_60) + ldmExtra1));
         String ldmQueue  = getProperty(LdmAction.PROP_LDM_QUEUE, "");
         String ldmExtra2 = "";
         if ((ldmQueue.length() > 0) && !new File(ldmQueue).exists()) {
             ldmExtra2 =
-                HtmlUtil.space(2)
-                + HtmlUtil.span("File does not exist!",
-                                HtmlUtil.cssClass(CSS_CLASS_ERROR_LABEL));
+                HtmlUtils.space(2)
+                + HtmlUtils.span("File does not exist!",
+                                HtmlUtils.cssClass(CSS_CLASS_ERROR_LABEL));
         }
 
-        sb.append(HtmlUtil.formEntry("Queue Location:",
-                                      HtmlUtil.input(LdmAction.PROP_LDM_QUEUE,
+        sb.append(HtmlUtils.formEntry("Queue Location:",
+                                      HtmlUtils.input(LdmAction.PROP_LDM_QUEUE,
                                           ldmQueue,
-                                          HtmlUtil.SIZE_60) + ldmExtra2));
+                                          HtmlUtils.SIZE_60) + ldmExtra2));
 
 
 

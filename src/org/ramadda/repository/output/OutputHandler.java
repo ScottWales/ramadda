@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -312,27 +312,27 @@ public class OutputHandler extends RepositoryManager {
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
             sb.append(msgLabel("Showing") + (skip + 1) + "-" + (skip + cnt));
-            sb.append(HtmlUtil.space(4));
+            sb.append(HtmlUtils.space(4));
             List<String> toks = new ArrayList<String>();
             if (skip > 0) {
-                toks.add(HtmlUtil.href(request.getUrl(ARG_SKIP) + "&"
+                toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                        + ARG_SKIP + "="
                                        + (skip - max), msg("Previous...")));
             }
             if (cnt >= max) {
-                toks.add(HtmlUtil.href(request.getUrl(ARG_SKIP) + "&"
+                toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                        + ARG_SKIP + "="
                                        + (skip + max), msg("Next...")));
             }
             request.put(ARG_MAX, "" + (max + VIEW_MAX_ROWS));
             if (cnt >= max) {
-                toks.add(HtmlUtil.href(request.getUrl(), msg("View More")));
+                toks.add(HtmlUtils.href(request.getUrl(), msg("View More")));
                 request.put(ARG_MAX, "" + (max / 2));
-                toks.add(HtmlUtil.href(request.getUrl(), msg("View Less")));
+                toks.add(HtmlUtils.href(request.getUrl(), msg("View Less")));
             }
             if (toks.size() > 0) {
-                sb.append(StringUtil.join(HtmlUtil.span("&nbsp;|&nbsp;",
-                        HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)), toks));
+                sb.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
+                        HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)), toks));
             }
             request.put(ARG_MAX, max);
         }
@@ -372,11 +372,11 @@ public class OutputHandler extends RepositoryManager {
                     stats.append(outputType.getLabel() + " # "
                                  + msgLabel("Calls")
                                  + outputType.getNumberOfCalls()
-                                 + HtmlUtil.br());
+                                 + HtmlUtils.br());
                 }
             }
 
-            sb.append(HtmlUtil.formEntryTop(msgLabel(name),
+            sb.append(HtmlUtils.formEntryTop(msgLabel(name),
                                             stats.toString()));
 
         }
@@ -608,12 +608,12 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
         String url;
         if (entry == null) {
-            url = HtmlUtil.url(getRepository().URL_ENTRY_SHOW + suffix,
+            url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + suffix,
                                ARG_OUTPUT, outputType.toString());
         } else {
             url = request.getEntryUrl(getRepository().URL_ENTRY_SHOW
                                       + suffix, entry);
-            url = HtmlUtil.url(url, ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+            url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                                outputType.toString());
         }
         return new Link(url, (outputType.getIcon() == null)
@@ -835,23 +835,23 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
 
         String selectorId = elementId + "_" + type;
-        String event = HtmlUtil.call("selectInitialClick",
-                                     HtmlUtil.comma("event",
-                                         HtmlUtil.squote(selectorId),
-                                         HtmlUtil.squote(elementId),
-                                         HtmlUtil.squote("" + allEntries),
-                                         HtmlUtil.squote(type)) + ","
+        String event = HtmlUtils.call("selectInitialClick",
+                                     HtmlUtils.comma("event",
+                                         HtmlUtils.squote(selectorId),
+                                         HtmlUtils.squote(elementId),
+                                         HtmlUtils.squote("" + allEntries),
+                                         HtmlUtils.squote(type)) + ","
                                              + ((entry != null)
-                ? HtmlUtil.squote(entry.getId())
+                ? HtmlUtils.squote(entry.getId())
                 : "null"));
-        String clearEvent = HtmlUtil.call("clearSelect",
-                                          HtmlUtil.squote(selectorId));
-        String link = HtmlUtil.mouseClickHref(event, label,
-                          HtmlUtil.id(selectorId + ".selectlink"));
+        String clearEvent = HtmlUtils.call("clearSelect",
+                                          HtmlUtils.squote(selectorId));
+        String link = HtmlUtils.mouseClickHref(event, label,
+                          HtmlUtils.id(selectorId + ".selectlink"));
         if (addClear) {
             link = link + " "
-                   + HtmlUtil.mouseClickHref(clearEvent, "Clear",
-                                             HtmlUtil.id(selectorId
+                   + HtmlUtils.mouseClickHref(clearEvent, "Clear",
+                                             HtmlUtils.id(selectorId
                                                  + ".selectlink"));
         }
         return link;
@@ -875,10 +875,10 @@ public class OutputHandler extends RepositoryManager {
         String       entryId  = entry.getId();
         String       icon     = getEntryManager().getIconUrl(request, entry);
         String       event;
-        String       uid = "link_" + HtmlUtil.blockCnt++;
+        String       uid = "link_" + HtmlUtils.blockCnt++;
         String folderClickUrl =
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
-            + HtmlUtil.args(new String[] {
+            + HtmlUtils.args(new String[] {
             ARG_NOREDIRECT, "true", ARG_OUTPUT,
             request.getString(ARG_OUTPUT, "inline"), ATTR_TARGET, target,
             ARG_ALLENTRIES, request.getString(ARG_ALLENTRIES, "true"),
@@ -890,28 +890,28 @@ public class OutputHandler extends RepositoryManager {
                             : "Click to view contents";
         boolean showArrow = true;
         String  prefix    = ( !showArrow
-                              ? HtmlUtil.img(
+                              ? HtmlUtils.img(
                                   getRepository().iconUrl(ICON_BLANK), "",
-                                  HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "10"))
-                              : HtmlUtil.img(
+                                  HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10"))
+                              : HtmlUtils.img(
                                   getRepository().iconUrl(
                                       ICON_TOGGLEARROWRIGHT), msg(message),
-                                          HtmlUtil.id("img_" + uid)
-                                          + HtmlUtil.onMouseClick(
-                                              HtmlUtil.call(
+                                          HtmlUtils.id("img_" + uid)
+                                          + HtmlUtils.onMouseClick(
+                                              HtmlUtils.call(
                                                   "folderClick",
-                                                  HtmlUtil.comma(
-                                                      HtmlUtil.squote(uid),
-                                                      HtmlUtil.squote(
-                                                          folderClickUrl), HtmlUtil.squote(
+                                                  HtmlUtils.comma(
+                                                      HtmlUtils.squote(uid),
+                                                      HtmlUtils.squote(
+                                                          folderClickUrl), HtmlUtils.squote(
                                                           iconUrl(
                                                               ICON_TOGGLEARROWDOWN)))))));
 
 
-        String img = prefix + HtmlUtil.space(1) + HtmlUtil.img(icon);
+        String img = prefix + HtmlUtils.space(1) + HtmlUtils.img(icon);
 
         sb.append(img);
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.space(1));
 
         String type      = request.getString(ARG_SELECTTYPE, "");
         String elementId = entry.getId();
@@ -921,18 +921,18 @@ public class OutputHandler extends RepositoryManager {
         value = value.replace("'", "\\'");
 
 
-        sb.append(HtmlUtil.mouseClickHref(HtmlUtil.call("selectClick",
-                HtmlUtil.comma(HtmlUtil.squote(target),
-                               HtmlUtil.squote(entry.getId()),
-                               HtmlUtil.squote(value),
-                               HtmlUtil.squote(type))), linkText));
+        sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("selectClick",
+                HtmlUtils.comma(HtmlUtils.squote(target),
+                               HtmlUtils.squote(entry.getId()),
+                               HtmlUtils.squote(value),
+                               HtmlUtils.squote(type))), linkText));
 
-        sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.div("",
-                               HtmlUtil.attrs(HtmlUtil.ATTR_STYLE,
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.div("",
+                               HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
                                    "display:none;visibility:hidden",
-                                   HtmlUtil.ATTR_CLASS,
-                                   CSS_CLASS_FOLDER_BLOCK, HtmlUtil.ATTR_ID,
+                                   HtmlUtils.ATTR_CLASS,
+                                   CSS_CLASS_FOLDER_BLOCK, HtmlUtils.ATTR_ID,
                                    uid)));
         return sb.toString();
     }
@@ -1024,23 +1024,23 @@ public class OutputHandler extends RepositoryManager {
         String       oldAscending = request.getString(ARG_ASCENDING, "false");
         String[]     order        = {
             "name", "true",
-            msg("Name") + HtmlUtil.img(getRepository().iconUrl(ICON_UPARROW)),
+            msg("Name") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
             "Sort by name ascending", "name", "false",
             msg("Name")
-            + HtmlUtil.img(getRepository().iconUrl(ICON_DOWNARROW)),
+            + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),
             "Sort by name descending", "fromdate", "true",
-            msg("Date") + HtmlUtil.img(getRepository().iconUrl(ICON_UPARROW)),
+            msg("Date") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
             "Sort by date ascending", "fromdate", "false",
             msg("Date")
-            + HtmlUtil.img(getRepository().iconUrl(ICON_DOWNARROW)),
+            + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),
             "Sort by date descending"
         };
 
         if (request.isMobile()) {
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.br());
         }
-        sb.append(HtmlUtil.span(msgLabel("Sort"),
-                                HtmlUtil.cssClass("sortlinkoff")));
+        sb.append(HtmlUtils.span(msgLabel("Sort"),
+                                HtmlUtils.cssClass("sortlinkoff")));
         String entryIds = request.getString(ARG_ENTRYIDS, (String) null);
         //Swap out the long value
         if (entryIds != null) {
@@ -1054,16 +1054,16 @@ public class OutputHandler extends RepositoryManager {
         for (int i = 0; i < order.length; i += 4) {
             if (Misc.equals(order[i], oldOrderBy)
                     && Misc.equals(order[i + 1], oldAscending)) {
-                sb.append(HtmlUtil.span(order[i + 2],
-                                        HtmlUtil.cssClass("sortlinkon")));
+                sb.append(HtmlUtils.span(order[i + 2],
+                                        HtmlUtils.cssClass("sortlinkon")));
             } else {
                 request.put(ARG_ORDERBY, order[i]);
                 request.put(ARG_ASCENDING, order[i + 1]);
                 request.put(ARG_SHOWENTRYSELECTFORM, "true");
                 String url = request.getUrl();
-                sb.append(HtmlUtil.span(HtmlUtil.href(url, order[i + 2]),
-                                        HtmlUtil.title(order[i + 3])
-                                        + HtmlUtil.cssClass("sortlinkoff")));
+                sb.append(HtmlUtils.span(HtmlUtils.href(url, order[i + 2]),
+                                        HtmlUtils.title(order[i + 3])
+                                        + HtmlUtils.cssClass("sortlinkoff")));
             }
         }
 
@@ -1099,10 +1099,10 @@ public class OutputHandler extends RepositoryManager {
 
 
         String       base   = "toggleentry" + (entryCnt++);
-        String       formId = "entryform_" + (HtmlUtil.blockCnt++);
+        String       formId = "entryform_" + (HtmlUtils.blockCnt++);
         StringBuffer formSB = new StringBuffer();
         formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
-                                       HtmlUtil.id(formId)));
+                                       HtmlUtils.id(formId)));
 
 
         List<Link> links = getRepository().getOutputLinks(request,
@@ -1110,13 +1110,13 @@ public class OutputHandler extends RepositoryManager {
                                          entries));
 
         List<String> linkCategories = new ArrayList<String>();
-        Hashtable<String, List<HtmlUtil.Selector>> linkMap =
-            new Hashtable<String, List<HtmlUtil.Selector>>();
+        Hashtable<String, List<HtmlUtils.Selector>> linkMap =
+            new Hashtable<String, List<HtmlUtils.Selector>>();
         linkCategories.add("File");
-        linkMap.put("File", new ArrayList<HtmlUtil.Selector>());
+        linkMap.put("File", new ArrayList<HtmlUtils.Selector>());
 
         linkCategories.add("View");
-        linkMap.put("View", new ArrayList<HtmlUtil.Selector>());
+        linkMap.put("View", new ArrayList<HtmlUtils.Selector>());
 
         for (Link link : links) {
             OutputType outputType = link.getOutputType();
@@ -1131,10 +1131,10 @@ public class OutputHandler extends RepositoryManager {
             } else {
                 category = "View";
             }
-            List<HtmlUtil.Selector> linksForCategory = linkMap.get(category);
+            List<HtmlUtils.Selector> linksForCategory = linkMap.get(category);
 
             if (linksForCategory == null) {
-                linksForCategory = new ArrayList<HtmlUtil.Selector>();
+                linksForCategory = new ArrayList<HtmlUtils.Selector>();
                 linkCategories.add(category);
                 linkMap.put(category, linksForCategory);
             }
@@ -1143,57 +1143,57 @@ public class OutputHandler extends RepositoryManager {
             if (icon == null) {
                 icon = getRepository().iconUrl(ICON_BLANK);
             }
-            linksForCategory.add(new HtmlUtil.Selector(outputType.getLabel(),
+            linksForCategory.add(new HtmlUtils.Selector(outputType.getLabel(),
                     outputType.getId(), icon, 20));
         }
 
-        ArrayList<HtmlUtil.Selector> tfos =
-            new ArrayList<HtmlUtil.Selector>();
-        tfos.add(new HtmlUtil.Selector(" -- select --", "", null, 0, true));
+        ArrayList<HtmlUtils.Selector> tfos =
+            new ArrayList<HtmlUtils.Selector>();
+        tfos.add(new HtmlUtils.Selector(" -- select --", "", null, 0, true));
         for (String category : linkCategories) {
-            List<HtmlUtil.Selector> linksForCategory = linkMap.get(category);
+            List<HtmlUtils.Selector> linksForCategory = linkMap.get(category);
             if (linksForCategory.size() == 0) {
                 continue;
             }
-            tfos.add(new HtmlUtil.Selector(category, "", null, 0, true));
+            tfos.add(new HtmlUtils.Selector(category, "", null, 0, true));
             tfos.addAll(linksForCategory);
         }
 
         StringBuffer selectSB = new StringBuffer();
         selectSB.append(msgLabel("Apply action"));
-        selectSB.append(HtmlUtil.select(ARG_OUTPUT, tfos));
-        selectSB.append(HtmlUtil.space(2));
+        selectSB.append(HtmlUtils.select(ARG_OUTPUT, tfos));
+        selectSB.append(HtmlUtils.space(2));
         selectSB.append(msgLabel("to"));
-        selectSB.append(HtmlUtil.submit(msg("All"), "getall"));
-        selectSB.append(HtmlUtil.submit(msg("Selected"), "getselected"));
-        selectSB.append(HtmlUtil.space(4));
+        selectSB.append(HtmlUtils.submit(msg("All"), "getall"));
+        selectSB.append(HtmlUtils.submit(msg("Selected"), "getselected"));
+        selectSB.append(HtmlUtils.space(4));
         selectSB.append(getSortLinks(request));
 
 
-        String arrowImg = HtmlUtil.img(hideIt
+        String arrowImg = HtmlUtils.img(hideIt
                                        ? getRepository().iconUrl(
                                            ICON_RIGHTDART)
                                        : getRepository().iconUrl(
                                            ICON_DOWNDART), msg(
-                                               "Show/Hide Form"), HtmlUtil.id(
+                                               "Show/Hide Form"), HtmlUtils.id(
                                                base + "img"));
-        String link = HtmlUtil.space(2)
-                      + HtmlUtil.jsLink(HtmlUtil.onMouseClick(base
+        String link = HtmlUtils.space(2)
+                      + HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
                           + ".groupToggleVisibility()"), arrowImg);
         String selectId = base + "select";
-        formSB.append(HtmlUtil.span(selectSB.toString(),
-                                    HtmlUtil.cssClass("entrylistform")
-                                    + HtmlUtil.id(selectId) + (hideIt
-                ? HtmlUtil.style("display:none; visibility:hidden;")
+        formSB.append(HtmlUtils.span(selectSB.toString(),
+                                    HtmlUtils.cssClass("entrylistform")
+                                    + HtmlUtils.id(selectId) + (hideIt
+                ? HtmlUtils.style("display:none; visibility:hidden;")
                 : "")));
         formSB.append(
-            HtmlUtil.script(
-                HtmlUtil.callln(
+            HtmlUtils.script(
+                HtmlUtils.callln(
                     base + "= new EntryFormList",
-                    HtmlUtil.comma(
-                        HtmlUtil.squote(formId),
-                        HtmlUtil.squote(base + "img"),
-                        HtmlUtil.squote(selectId), (hideIt
+                    HtmlUtils.comma(
+                        HtmlUtils.squote(formId),
+                        HtmlUtils.squote(base + "img"),
+                        HtmlUtils.squote(selectId), (hideIt
                 ? "0"
                 : "1")))));
         return new String[] { link, base, formSB.toString() };
@@ -1213,30 +1213,30 @@ public class OutputHandler extends RepositoryManager {
     public void addEntryCheckbox(Request request, Entry entry,
                                  StringBuffer htmlSB, StringBuffer jsSB)
             throws Exception {
-        String rowId        = "entryrow_" + (HtmlUtil.blockCnt++);
-        String cbxId        = "entry_" + (HtmlUtil.blockCnt++);
+        String rowId        = "entryrow_" + (HtmlUtils.blockCnt++);
+        String cbxId        = "entry_" + (HtmlUtils.blockCnt++);
         String cbxArgId     = "entry_" + entry.getId();
-        String cbxWrapperId = "cbx_" + (HtmlUtil.blockCnt++);
+        String cbxWrapperId = "cbx_" + (HtmlUtils.blockCnt++);
         jsSB.append(
-            HtmlUtil.callln(
+            HtmlUtils.callln(
                 "new EntryRow",
-                HtmlUtil.comma(
-                    HtmlUtil.squote(entry.getId()), HtmlUtil.squote(rowId),
-                    HtmlUtil.squote(cbxId), HtmlUtil.squote(cbxWrapperId))));
+                HtmlUtils.comma(
+                    HtmlUtils.squote(entry.getId()), HtmlUtils.squote(rowId),
+                    HtmlUtils.squote(cbxId), HtmlUtils.squote(cbxWrapperId))));
 
         String cbx =
-            HtmlUtil.checkbox(
+            HtmlUtils.checkbox(
                 cbxArgId, "true", false,
-                HtmlUtil.id(cbxId) + " "
-                + HtmlUtil.attr(
-                    HtmlUtil.ATTR_TITLE,
+                HtmlUtils.id(cbxId) + " "
+                + HtmlUtils.attr(
+                    HtmlUtils.ATTR_TITLE,
                     msg(
-                    "Shift-click: select range; Control-click: toggle all")) + HtmlUtil.attr(
-                        HtmlUtil.ATTR_ONCLICK,
-                        HtmlUtil.call(
+                    "Shift-click: select range; Control-click: toggle all")) + HtmlUtils.attr(
+                        HtmlUtils.ATTR_ONCLICK,
+                        HtmlUtils.call(
                             "entryRowCheckboxClicked",
-                            HtmlUtil.comma(
-                                "event", HtmlUtil.squote(cbxId)))));
+                            HtmlUtils.comma(
+                                "event", HtmlUtils.squote(cbxId)))));
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry,
                              entry.getLabel()), rowId, cbx);
@@ -1253,8 +1253,8 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getEntryFormEnd(Request request, String formId) {
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtil.formClose());
-        //        sb.append(HtmlUtil.script(HtmlUtil.callln("initEntryListForm",HtmlUtil.squote(formId))));
+        sb.append(HtmlUtils.formClose());
+        //        sb.append(HtmlUtils.script(HtmlUtils.callln("initEntryListForm",HtmlUtils.squote(formId))));
         return sb.toString();
     }
 
@@ -1339,8 +1339,8 @@ public class OutputHandler extends RepositoryManager {
             base = tuple[1];
             sb.append(tuple[2]);
         }
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                HtmlUtil.cssClass(CSS_CLASS_FOLDER_BLOCK)));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
         sb.append("\n\n");
         int          cnt  = 0;
         StringBuffer jsSB = new StringBuffer();
@@ -1350,31 +1350,31 @@ public class OutputHandler extends RepositoryManager {
             String       cbxId        = "entry_" + entry.getId();
             String       cbxWrapperId = "checkboxwrapper_" + (cnt++);
             jsSB.append(
-                HtmlUtil.callln(
+                HtmlUtils.callln(
                     "new EntryRow",
-                    HtmlUtil.comma(
-                        HtmlUtil.squote(entry.getId()),
-                        HtmlUtil.squote(rowId), HtmlUtil.squote(cbxId),
-                        HtmlUtil.squote(cbxWrapperId))));
+                    HtmlUtils.comma(
+                        HtmlUtils.squote(entry.getId()),
+                        HtmlUtils.squote(rowId), HtmlUtils.squote(cbxId),
+                        HtmlUtils.squote(cbxWrapperId))));
             if (doCbx) {
-                cbxSB.append(HtmlUtil.hidden("all_" + entry.getId(), "1"));
+                cbxSB.append(HtmlUtils.hidden("all_" + entry.getId(), "1"));
                 String cbx =
-                    HtmlUtil.checkbox(
+                    HtmlUtils.checkbox(
                         cbxId, "true", false,
-                        HtmlUtil.id(cbxId) + " "
-                        + HtmlUtil.style("display:none; visibility:hidden;")
-                        + HtmlUtil.attr(
-                            HtmlUtil.ATTR_TITLE,
+                        HtmlUtils.id(cbxId) + " "
+                        + HtmlUtils.style("display:none; visibility:hidden;")
+                        + HtmlUtils.attr(
+                            HtmlUtils.ATTR_TITLE,
                             msg(
-                            "Shift-click: select range; Control-click: toggle all")) + HtmlUtil.attr(
-                                HtmlUtil.ATTR_ONCLICK,
-                                HtmlUtil.call(
+                            "Shift-click: select range; Control-click: toggle all")) + HtmlUtils.attr(
+                                HtmlUtils.ATTR_ONCLICK,
+                                HtmlUtils.call(
                                     "entryRowCheckboxClicked",
-                                    HtmlUtil.comma(
-                                        "event", HtmlUtil.squote(cbxId)))));
+                                    HtmlUtils.comma(
+                                        "event", HtmlUtils.squote(cbxId)))));
 
 
-                cbxSB.append(HtmlUtil.span(cbx, HtmlUtil.id(cbxWrapperId)));
+                cbxSB.append(HtmlUtils.span(cbx, HtmlUtils.id(cbxWrapperId)));
             }
 
             String crumbs = "";
@@ -1384,13 +1384,13 @@ public class OutputHandler extends RepositoryManager {
                          ? entry.getParentEntry()
                          : entry), null, 60);
                 if (hideParents) {
-                    crumbs = HtmlUtil.makeToggleInline(
+                    crumbs = HtmlUtils.makeToggleInline(
                         "", crumbs
-                        + HtmlUtil.pad(
+                        + HtmlUtils.pad(
                             Repository.BREADCRUMB_SEPARATOR), false);
                 } else {
                     crumbs = crumbs
-                             + HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR);
+                             + HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR);
                 }
 
             }
@@ -1401,8 +1401,8 @@ public class OutputHandler extends RepositoryManager {
             entryLink.setLink(cbxSB + entryLink.getLink());
             decorateEntryRow(request, entry, sb, entryLink, rowId, "");
         }
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
-        sb.append(HtmlUtil.script(jsSB.toString()));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        sb.append(HtmlUtils.script(jsSB.toString()));
         sb.append("\n\n");
         if (doFormClose) {
             sb.append(getEntryFormEnd(request, base));
@@ -1425,26 +1425,26 @@ public class OutputHandler extends RepositoryManager {
                                     StringBuffer sb, EntryLink link,
                                     String rowId, String extra) {
         if (rowId == null) {
-            rowId = "entryrow_" + (HtmlUtil.blockCnt++);
+            rowId = "entryrow_" + (HtmlUtils.blockCnt++);
         }
 
 
         sb.append(
-            HtmlUtil.open(
-                HtmlUtil.TAG_DIV,
-                HtmlUtil.id(rowId) + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW)
-                + HtmlUtil.onMouseClick(
-                    HtmlUtil.call(
+            HtmlUtils.open(
+                HtmlUtils.TAG_DIV,
+                HtmlUtils.id(rowId) + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW)
+                + HtmlUtils.onMouseClick(
+                    HtmlUtils.call(
                         "entryRowClick",
                         "event, "
-                        + HtmlUtil.squote(rowId))) + HtmlUtil.onMouseOver(
-                            HtmlUtil.call(
+                        + HtmlUtils.squote(rowId))) + HtmlUtils.onMouseOver(
+                            HtmlUtils.call(
                                 "entryRowOver",
-                                HtmlUtil.squote(
-                                    rowId))) + HtmlUtil.onMouseOut(
-                                        HtmlUtil.call(
+                                HtmlUtils.squote(
+                                    rowId))) + HtmlUtils.onMouseOut(
+                                        HtmlUtils.call(
                                             "entryRowOut",
-                                            HtmlUtil.squote(rowId)))));
+                                            HtmlUtils.squote(rowId)))));
         sb.append(
             "<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr>");
 
@@ -1459,7 +1459,7 @@ public class OutputHandler extends RepositoryManager {
         /*
         String desc = entry.getDescription();
         StringBuffer descSB = new StringBuffer();
-        String toggleJS = HtmlUtil.makeToggleBlock(desc,
+        String toggleJS = HtmlUtils.makeToggleBlock(desc,
                                                    descSB, false);
         sb.append(descSB);
         */
@@ -1478,22 +1478,22 @@ public class OutputHandler extends RepositoryManager {
 
         if (request.isMobile()) {
             sb.append("<td align=right><div "
-                      + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
         } else {
             sb.append("<td align=right width=200><div "
-                      + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
         }
         sb.append(getRepository().formatDateShort(request,
                 new Date(entry.getStartDate()),
                 getEntryManager().getTimezone(entry), extraAlt.toString()));
         sb.append("</div></td><td width=\"1%\" align=right "
-                  + HtmlUtil.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
-        sb.append(HtmlUtil.space(1));
+                  + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+        sb.append(HtmlUtils.space(1));
 
-        //      sb.append(HtmlUtil.jsLink(toggleJS,"X"));
+        //      sb.append(HtmlUtils.jsLink(toggleJS,"X"));
         /*        String userSearchLink =
-            HtmlUtil.href(
-                HtmlUtil.url(
+            HtmlUtils.href(
+                HtmlUtils.url(
                     request.url(getRepository().URL_USER_PROFILE),
                     ARG_USER_ID, entry.getUser().getId()), userLabel,
                         "title=\"View user profile\"");
@@ -1501,16 +1501,16 @@ public class OutputHandler extends RepositoryManager {
                         sb.append(userSearchLink);*/
         sb.append("  ");
         sb.append(
-            HtmlUtil.div(
-                HtmlUtil.img(
+            HtmlUtils.div(
+                HtmlUtils.img(
                     getRepository().iconUrl(ICON_BLANK), "",
-                    HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "10")
-                    + HtmlUtil.id(
-                        "entrymenuarrow_" + rowId)), HtmlUtil.cssClass(
+                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10")
+                    + HtmlUtils.id(
+                        "entrymenuarrow_" + rowId)), HtmlUtils.cssClass(
                             "entrymenuarrow")));
 
         sb.append("</td></tr></table>");
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         sb.append(link.getFolderBlock());
 
     }
@@ -1695,7 +1695,7 @@ public class OutputHandler extends RepositoryManager {
         }
 
 
-        return HtmlUtil.url(request.url(repository.URL_ENTRY_GET) + "/"
+        return HtmlUtils.url(request.url(repository.URL_ENTRY_GET) + "/"
                             + (addVersion
                                ? ("v" + (imageVersionCnt++))
                                : "") + getStorageManager().getFileTail(
@@ -1810,8 +1810,8 @@ public class OutputHandler extends RepositoryManager {
         StringBuffer tabHtml = new StringBuffer();
         String       tabId   = "tabId" + (tabCnt++);
         tabHtml.append("\n\n");
-        tabHtml.append(HtmlUtil.open(HtmlUtil.TAG_DIV, HtmlUtil.id(tabId)));
-        tabHtml.append(HtmlUtil.open(HtmlUtil.TAG_UL));
+        tabHtml.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.id(tabId)));
+        tabHtml.append(HtmlUtils.open(HtmlUtils.TAG_UL));
         int cnt = 1;
         for (int i = 0; i < titles.size(); i++) {
             String title       = titles.get(i).toString();
@@ -1824,7 +1824,7 @@ public class OutputHandler extends RepositoryManager {
             tabHtml.append("<li><a href=\"#" + tabId + "-" + (cnt++) + "\">"
                            + title + "</a></li>");
         }
-        tabHtml.append(HtmlUtil.close(HtmlUtil.TAG_UL));
+        tabHtml.append(HtmlUtils.close(HtmlUtils.TAG_UL));
         cnt = 1;
         for (int i = 0; i < titles.size(); i++) {
             String tabContents = tabs.get(i).toString();
@@ -1833,14 +1833,14 @@ public class OutputHandler extends RepositoryManager {
                         || (tabContents.length() == 0))) {
                 continue;
             }
-            tabHtml.append(HtmlUtil.div(tabContents,
-                                        HtmlUtil.id(tabId + "-" + (cnt++))));
+            tabHtml.append(HtmlUtils.div(tabContents,
+                                        HtmlUtils.id(tabId + "-" + (cnt++))));
             tabHtml.append("\n");
         }
 
-        tabHtml.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+        tabHtml.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         tabHtml.append("\n");
-        tabHtml.append(HtmlUtil.script("\njQuery(function(){\njQuery('#"
+        tabHtml.append(HtmlUtils.script("\njQuery(function(){\njQuery('#"
                                        + tabId + "').tabs();\n});\n"));
         tabHtml.append("\n\n");
         return tabHtml.toString();
@@ -1860,8 +1860,8 @@ public class OutputHandler extends RepositoryManager {
      */
     public String htmlInput(Request request, String arg, String dflt,
                             int width) {
-        return HtmlUtil.input(arg, request.getString(arg, dflt),
-                              HtmlUtil.attr(HtmlUtil.ATTR_SIZE, "" + width));
+        return HtmlUtils.input(arg, request.getString(arg, dflt),
+                              HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "" + width));
     }
 
 
@@ -1937,29 +1937,29 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
-            sb.append(HtmlUtil.hidden(ARG_PUBLISH_ENTRY + "_hidden", "",
-                                      HtmlUtil.id(ARG_PUBLISH_ENTRY
+            sb.append(HtmlUtils.hidden(ARG_PUBLISH_ENTRY + "_hidden", "",
+                                      HtmlUtils.id(ARG_PUBLISH_ENTRY
                                           + "_hidden")));
-            sb.append(HtmlUtil.row(HtmlUtil.colspan(header, 2)));
+            sb.append(HtmlUtils.row(HtmlUtils.colspan(header, 2)));
 
             String select = OutputHandler.getSelect(request,
                                 ARG_PUBLISH_ENTRY, "Select folder", false,
                                 null, entry);
-            String addMetadata = HtmlUtil.checkbox(ARG_METADATA_ADD,
-                                     HtmlUtil.VALUE_TRUE,
+            String addMetadata = HtmlUtils.checkbox(ARG_METADATA_ADD,
+                                     HtmlUtils.VALUE_TRUE,
                                      request.get(ARG_METADATA_ADD,
                                          false)) + msg("Add properties");
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel("Folder"),
-                    HtmlUtil.disabledInput(
+                    HtmlUtils.disabledInput(
                         ARG_PUBLISH_ENTRY, "",
-                        HtmlUtil.id(ARG_PUBLISH_ENTRY)
-                        + HtmlUtil.SIZE_60) + select + HtmlUtil.space(2)
+                        HtmlUtils.id(ARG_PUBLISH_ENTRY)
+                        + HtmlUtils.SIZE_60) + select + HtmlUtils.space(2)
                                             + addMetadata));
 
             if (addNameField) {
-                sb.append(HtmlUtil.formEntry(msgLabel("Name"),
+                sb.append(HtmlUtils.formEntry(msgLabel("Name"),
                                              htmlInput(request,
                                                  ARG_PUBLISH_NAME, "", 30)));
             }

@@ -38,7 +38,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -139,12 +139,12 @@ public class UserTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (canAdd) {
             /*
-            sb.append(HtmlUtil
-                .href(HtmlUtil
+            sb.append(HtmlUtils
+                .href(HtmlUtils
                     .url(request
                         .entryUrl(getRepository().URL_ENTRY_FORM, group,
                             ARG_GROUP), ARG_TYPE,
-                         FaqEntryTypeHandler.TYPE_FAQENTRY), HtmlUtil
+                         FaqEntryTypeHandler.TYPE_FAQENTRY), HtmlUtils
                       .img(getRepository().iconUrl(ICON_NEW),
                            msg("New Note"))));
             */
@@ -153,17 +153,17 @@ public class UserTypeHandler extends ExtensibleGroupTypeHandler {
         subGroups.addAll(entries);
 
         for (Entry entry : subGroups) {
-            String link = HtmlUtil.href(
+            String link = HtmlUtils.href(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW,
-                                  entry), HtmlUtil.img(
+                                  entry), HtmlUtils.img(
                                       getRepository().iconUrl(ICON_ENTRY),
                                       msg("View entry details")));
             sb.append("<a name=" + entry.getId() + "></a>");
             sb.append("<li>");
             sb.append(" ");
-            sb.append(HtmlUtil.b(entry.getName()));
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.b(entry.getName()));
+            sb.append(HtmlUtils.br());
             sb.append(entry.getDescription());
         }
 

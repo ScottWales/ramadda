@@ -25,7 +25,7 @@ package org.ramadda.plugins.ldap;
 import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.List;
@@ -130,8 +130,8 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
             return;
         }
         sb.append(
-            HtmlUtil.row(
-                HtmlUtil.colspan(msgHeader("LDAP Configuration"), 2)));
+            HtmlUtils.row(
+                HtmlUtils.colspan(msgHeader("LDAP Configuration"), 2)));
         for (int i = 0; i < PROPERTY_IDS.length; i++) {
             String prop  = PROPERTY_IDS[i];
             String value = getRepository().getProperty(PROPERTY_IDS[i], "");
@@ -141,13 +141,13 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
                 value = deobfuscate(value);
             }
             if (isPassword) {
-                sb.append(HtmlUtil.formEntry(msgLabel(PROPERTY_LABELS[i]),
-                                             HtmlUtil.password(prop, value,
-                                                 HtmlUtil.SIZE_40)));
+                sb.append(HtmlUtils.formEntry(msgLabel(PROPERTY_LABELS[i]),
+                                             HtmlUtils.password(prop, value,
+                                                 HtmlUtils.SIZE_40)));
             } else {
-                sb.append(HtmlUtil.formEntry(msgLabel(PROPERTY_LABELS[i]),
-                                             HtmlUtil.input(prop, value,
-                                                 HtmlUtil.SIZE_40)));
+                sb.append(HtmlUtils.formEntry(msgLabel(PROPERTY_LABELS[i]),
+                                             HtmlUtils.input(prop, value,
+                                                 HtmlUtils.SIZE_40)));
             }
         }
     }

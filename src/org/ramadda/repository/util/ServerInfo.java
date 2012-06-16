@@ -25,7 +25,7 @@ import org.ramadda.repository.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
 
@@ -284,7 +284,7 @@ public class ServerInfo implements Constants {
      * @return _more_
      */
     public String getHref(String extra, boolean includeUrl) {
-        return HtmlUtil.href("http://" + hostname + ":" + port + basePath,
+        return HtmlUtils.href("http://" + hostname + ":" + port + basePath,
                              getLabel(includeUrl), extra);
     }
 
@@ -317,7 +317,7 @@ public class ServerInfo implements Constants {
     public String getLabel(boolean includeUrl) {
         if ((title != null) && (title.length() > 0)) {
             return title + (includeUrl
-                            ? HtmlUtil.space(3) + getUrl()
+                            ? HtmlUtils.space(3) + getUrl()
                             : "");
         }
         if (port != 80) {

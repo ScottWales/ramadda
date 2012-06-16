@@ -24,7 +24,7 @@ package org.ramadda.repository.monitor;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.xml.XmlUtil;
 
 

@@ -30,7 +30,7 @@ import org.ramadda.util.TempDir;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -400,11 +400,11 @@ public class PluginManager extends RepositoryManager {
                                         getAdmin().URL_ADMIN_PLUGIN_UPLOAD,
                                         "");
         formBuffer.append(msgLabel("Plugin File"));
-        formBuffer.append(HtmlUtil.fileInput(ARG_PLUGIN_FILE,
-                                             HtmlUtil.SIZE_60));
-        formBuffer.append(HtmlUtil.submit("Upload new plugin file"));
-        formBuffer.append(HtmlUtil.formClose());
-        formBuffer.append(HtmlUtil.br());
+        formBuffer.append(HtmlUtils.fileInput(ARG_PLUGIN_FILE,
+                                             HtmlUtils.SIZE_60));
+        formBuffer.append(HtmlUtils.submit("Upload new plugin file"));
+        formBuffer.append(HtmlUtils.formClose());
+        formBuffer.append(HtmlUtils.br());
         formBuffer.append(msg("Installed Plugins"));
         formBuffer.append("<table>");
         formBuffer.append(pluginSB);

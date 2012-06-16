@@ -40,7 +40,7 @@ import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.ui.RovingProgress;
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;

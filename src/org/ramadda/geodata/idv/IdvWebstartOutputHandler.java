@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -232,7 +232,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
             String fileTail = getStorageManager().getFileTail(entry);
             String url =
-                HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET) + "/"
+                HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET) + "/"
                              + fileTail, ARG_ENTRYID, entry.getId());
             url = request.getAbsoluteUrl(url);
             args.append("<argument>-bundle</argument>");

@@ -26,7 +26,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.util.List;
@@ -77,14 +77,14 @@ public class FramesTypeHandler extends GenericTypeHandler {
         int colCnt = 0;
         for (String url : StringUtil.split(urls, "\n", true, true)) {
             sb.append("<td>");
-            sb.append(HtmlUtil.href(url, url));
+            sb.append(HtmlUtils.href(url, url));
             sb.append(
-                HtmlUtil.tag(
-                    HtmlUtil.TAG_IFRAME,
-                    HtmlUtil.attr(HtmlUtil.ATTR_SRC, url)
-                    + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "100%")
-                    + HtmlUtil.attr(
-                        HtmlUtil.ATTR_HEIGHT, height), "Need frames"));
+                HtmlUtils.tag(
+                    HtmlUtils.TAG_IFRAME,
+                    HtmlUtils.attr(HtmlUtils.ATTR_SRC, url)
+                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%")
+                    + HtmlUtils.attr(
+                        HtmlUtils.ATTR_HEIGHT, height), "Need frames"));
             sb.append("</td>");
             colCnt++;
             if (colCnt >= cols) {

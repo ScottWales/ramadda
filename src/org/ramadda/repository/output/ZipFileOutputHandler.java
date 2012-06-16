@@ -30,7 +30,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -190,9 +190,9 @@ public class ZipFileOutputHandler extends OutputHandler {
                 String name = IOUtil.getFileTail(path);
                 String url  = getRepository().URL_ENTRY_SHOW + "/" + name;
 
-                url = HtmlUtil.url(url, ARG_ENTRYID, entry.getId(), ARG_FILE,
+                url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(), ARG_FILE,
                                    path, ARG_OUTPUT, OUTPUT_LIST.getId());
-                sb.append(HtmlUtil.href(url, path));
+                sb.append(HtmlUtils.href(url, path));
             }
             sb.append("</ul>");
         } finally {

@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -348,9 +348,9 @@ public class FitsOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-        sb.append(HtmlUtil.submit(msg("Subset"), ARG_FITS_SUBSET));
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_INFO.getId()));
+        sb.append(HtmlUtils.submit(msg("Subset"), ARG_FITS_SUBSET));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_INFO.getId()));
 
         Fits fits = new Fits(entry.getFile());
         for (int hduIdx = 0; hduIdx < fits.size(); hduIdx++) {
@@ -372,14 +372,14 @@ public class FitsOutputHandler extends OutputHandler {
                 int[]    axes     = imageHdu.getAxes();
                 if ((axes != null) && (axes.length > 1)) {
                     String imageUrl =
-                        HtmlUtil.url(getRepository().URL_ENTRY_SHOW + "/"
+                        HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
                                      + IOUtil.stripExtension(entry.getName())
                                      + ".png", ARG_ENTRYID, entry.getId(),
                                          ARG_OUTPUT, OUTPUT_IMAGE,
                                          ARG_FITS_HDU, "" + hduIdx);
 
-                    hduLink = HtmlUtil.href(imageUrl, msg("View Image"))
-                              + HtmlUtil.br();
+                    hduLink = HtmlUtils.href(imageUrl, msg("View Image"))
+                              + HtmlUtils.br();
                 }
             } else if (hdu instanceof BinaryTableHDU) {
                 hduType   = "Binary Table";
@@ -417,7 +417,7 @@ public class FitsOutputHandler extends OutputHandler {
                 }
                 tableSB.append("</table>");
                 tableSB.append("</div>");
-                subSB.append(HtmlUtil.makeShowHideBlock("Data",
+                subSB.append(HtmlUtils.makeShowHideBlock("Data",
                         tableSB.toString(), false));
             }
 
@@ -441,7 +441,7 @@ public class FitsOutputHandler extends OutputHandler {
                         card = card.substring(1);
                     }
                     subSB.append("<td colspan=3><i>"
-                                 + HtmlUtil.entityEncode(card) + "</i></td>");
+                                 + HtmlUtils.entityEncode(card) + "</i></td>");
                 } else {
                     String key     = toks.get(0).trim();
                     String comment = "";
@@ -462,23 +462,23 @@ public class FitsOutputHandler extends OutputHandler {
                         }
                     }
 
-                    subSB.append("<td><b>" + HtmlUtil.entityEncode(key)
+                    subSB.append("<td><b>" + HtmlUtils.entityEncode(key)
                                  + "</b></td><td>"
-                                 + HtmlUtil.entityEncode(value)
+                                 + HtmlUtils.entityEncode(value)
                                  + "</td><td><i>"
-                                 + HtmlUtil.entityEncode(comment)
+                                 + HtmlUtils.entityEncode(comment)
                                  + "</i></td></tr>");
                 }
                 subSB.append("</tr>");
             }
             subSB.append("</table>");
             subSB.append("</div>");
-            String label = HtmlUtil.checkbox(ARG_FITS_HDU, "" + hduIdx, true)
+            String label = HtmlUtils.checkbox(ARG_FITS_HDU, "" + hduIdx, true)
                            + " " + hduType;
-            sb.append(HtmlUtil.makeShowHideBlock(label, subSB.toString(),
+            sb.append(HtmlUtils.makeShowHideBlock(label, subSB.toString(),
                     false));
         }
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.formClose());
         return new Result("", sb);
 
 

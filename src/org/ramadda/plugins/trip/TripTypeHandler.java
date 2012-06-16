@@ -38,7 +38,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -178,11 +178,11 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
                     sb.append("&nbsp;|&nbsp;");
                 }
                 sb.append(
-                    HtmlUtil.href(
-                        HtmlUtil.url(
+                    HtmlUtils.href(
+                        HtmlUtils.url(
                             request.entryUrl(
                                 getRepository().URL_ENTRY_FORM, group,
-                                ARG_GROUP), ARG_TYPE, types[i]), HtmlUtil.img(
+                                ARG_GROUP), ARG_TYPE, types[i]), HtmlUtils.img(
                                     getRepository().iconUrl(icons[i]),
                                     msg(names[i]))));
             }

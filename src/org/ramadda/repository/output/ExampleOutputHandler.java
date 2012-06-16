@@ -27,7 +27,7 @@ import org.ramadda.repository.auth.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -163,11 +163,11 @@ public class ExampleOutputHandler extends OutputHandler {
             sb.append("Sub-groups:<br>");
             for (Entry childGroup : subGroups) {
                 sb.append(
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         request.entryUrl(
                             getRepository().URL_ENTRY_SHOW,
                             childGroup), childGroup.getName()));
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.br());
             }
         }
 
@@ -175,11 +175,11 @@ public class ExampleOutputHandler extends OutputHandler {
             sb.append("<p>Sub-entries:<br>");
             for (Entry entry : entries) {
                 sb.append(
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         request.entryUrl(
                             getRepository().URL_ENTRY_SHOW,
                             entry), entry.getName()));
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.br());
             }
         }
 
@@ -279,10 +279,10 @@ public class ExampleOutputHandler extends OutputHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("Here is the content for example3");
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append("Name:");
         sb.append(entry.getName());
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append("Description:");
         sb.append(entry.getDescription());
 

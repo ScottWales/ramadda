@@ -35,7 +35,7 @@ import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -1193,10 +1193,10 @@ public class GenericTypeHandler extends TypeHandler {
         }
 
         if (makeToggleBox && (typeSB.toString().length() > 0)) {
-            typeSB = new StringBuffer(HtmlUtil.formTable() + typeSB
-                                      + HtmlUtil.formTableClose());
-            formBuffer.append(HtmlUtil.p());
-            formBuffer.append(HtmlUtil.makeShowHideBlock(msg(getLabel()),
+            typeSB = new StringBuffer(HtmlUtils.formTable() + typeSB
+                                      + HtmlUtils.formTableClose());
+            formBuffer.append(HtmlUtils.p());
+            formBuffer.append(HtmlUtils.makeShowHideBlock(msg(getLabel()),
                     typeSB.toString(), true));
         }
     }

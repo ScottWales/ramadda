@@ -24,7 +24,7 @@ package org.ramadda.repository.monitor;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -149,16 +149,16 @@ public class CopyAction extends MonitorAction {
      * @param sb _more_
      */
     public void addToEditForm(EntryMonitor monitor, StringBuffer sb) {
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.colspan("Copy Action", 2));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.colspan("Copy Action", 2));
         try {
             Entry  group      = getGroup(monitor);
             String errorLabel = "";
             if ((group != null) && !monitor.okToAddNew(group)) {
-                errorLabel = HtmlUtil.span(
+                errorLabel = HtmlUtils.span(
                     monitor.getRepository().msg(
-                        "You cannot add to the folder"), HtmlUtil.cssClass(
-                        HtmlUtil.CLASS_ERRORLABEL));
+                        "You cannot add to the folder"), HtmlUtils.cssClass(
+                        HtmlUtils.CLASS_ERRORLABEL));
             }
             String groupName = ((group != null)
                                 ? group.getFullName()
@@ -167,28 +167,28 @@ public class CopyAction extends MonitorAction {
             String select =
                 monitor.getRepository().getHtmlOutputHandler().getSelect(
                     null, inputId,
-                    HtmlUtil.img(
+                    HtmlUtils.img(
                         monitor.getRepository().iconUrl(
-                            ICON_FOLDER_OPEN)) + HtmlUtil.space(1)
+                            ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                 + monitor.getRepository().msg(
                                     "Select"), false, "");
-            sb.append(HtmlUtil.hidden(inputId + "_hidden", parentGroupId,
-                                      HtmlUtil.id(inputId + "_hidden")));
+            sb.append(HtmlUtils.hidden(inputId + "_hidden", parentGroupId,
+                                      HtmlUtils.id(inputId + "_hidden")));
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     "Folder:",
-                    HtmlUtil.disabledInput(
+                    HtmlUtils.disabledInput(
                         inputId, groupName,
-                        HtmlUtil.SIZE_60 + HtmlUtil.id(inputId)) + select));
+                        HtmlUtils.SIZE_60 + HtmlUtils.id(inputId)) + select));
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     "Sub-Folder Template:",
-                    HtmlUtil.input(
-                        getArgId(ARG_SUBGROUP), subGroup, HtmlUtil.SIZE_60)));
+                    HtmlUtils.input(
+                        getArgId(ARG_SUBGROUP), subGroup, HtmlUtils.SIZE_60)));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
     }
 
 

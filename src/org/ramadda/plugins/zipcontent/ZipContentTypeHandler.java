@@ -33,7 +33,7 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.Clause;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 

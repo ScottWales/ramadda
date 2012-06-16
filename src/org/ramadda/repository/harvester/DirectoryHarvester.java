@@ -29,7 +29,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -129,21 +129,21 @@ public class DirectoryHarvester extends Harvester {
      */
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtil.formEntry(msgLabel("Harvester name"),
-                                     HtmlUtil.input(ARG_NAME, getName(),
-                                         HtmlUtil.SIZE_40)));
-        sb.append(HtmlUtil
-            .formEntry(msgLabel("Run"), HtmlUtil
-                .checkbox(ATTR_ACTIVEONSTART, "true", getActiveOnStart()) + HtmlUtil
-                .space(1) + msg("Active on startup") + HtmlUtil.space(3)
-                    + HtmlUtil.checkbox(ATTR_MONITOR, "true", getMonitor())
-                        + HtmlUtil.space(1) + msg("Monitor")
-                            + HtmlUtil.space(3) + msgLabel("Sleep")
-                                + HtmlUtil.space(1)
-                                    + HtmlUtil
+        sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
+                                     HtmlUtils.input(ARG_NAME, getName(),
+                                         HtmlUtils.SIZE_40)));
+        sb.append(HtmlUtils
+            .formEntry(msgLabel("Run"), HtmlUtils
+                .checkbox(ATTR_ACTIVEONSTART, "true", getActiveOnStart()) + HtmlUtils
+                .space(1) + msg("Active on startup") + HtmlUtils.space(3)
+                    + HtmlUtils.checkbox(ATTR_MONITOR, "true", getMonitor())
+                        + HtmlUtils.space(1) + msg("Monitor")
+                            + HtmlUtils.space(3) + msgLabel("Sleep")
+                                + HtmlUtils.space(1)
+                                    + HtmlUtils
                                         .input(ATTR_SLEEP, ""
-                                            + getSleepMinutes(), HtmlUtil
-                                                .SIZE_5) + HtmlUtil.space(1)
+                                            + getSleepMinutes(), HtmlUtils
+                                                .SIZE_5) + HtmlUtils.space(1)
                                                     + "(" + msg("minutes")
                                                         + ")"));
 
@@ -159,17 +159,17 @@ public class DirectoryHarvester extends Harvester {
             inputText.append(path);
             inputText.append("\n");
             if (!rootDir.exists()) {
-                extraLabel = HtmlUtil.space(2)
-                    + HtmlUtil.bold("Directory does not exist");
+                extraLabel = HtmlUtils.space(2)
+                    + HtmlUtils.bold("Directory does not exist");
             }
         }
 
 
         sb.append(
             RepositoryManager.tableSubHeader("Walk the directory tree"));
-        sb.append(HtmlUtil.formEntry(msgLabel("Under directory"),
-                                     HtmlUtil.input(ATTR_ROOTDIR, inputText,
-                                         HtmlUtil.SIZE_60) + extraLabel));
+        sb.append(HtmlUtils.formEntry(msgLabel("Under directory"),
+                                     HtmlUtils.input(ATTR_ROOTDIR, inputText,
+                                         HtmlUtils.SIZE_60) + extraLabel));
         sb.append(
             RepositoryManager.tableSubHeader("Create new folders under"));
 

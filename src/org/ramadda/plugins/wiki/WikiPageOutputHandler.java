@@ -31,7 +31,7 @@ import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 
@@ -220,10 +220,10 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
         if (request.get(ARG_WIKI_RAW, false)) {
             StringBuffer sb = new StringBuffer();
-            sb.append(HtmlUtil.form(""));
-            sb.append(HtmlUtil.textArea(ARG_WIKI_TEXT, wikiText, 250, 60,
-                                        HtmlUtil.id(ARG_WIKI_TEXT)));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.form(""));
+            sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 250, 60,
+                                        HtmlUtils.id(ARG_WIKI_TEXT)));
+            sb.append(HtmlUtils.formClose());
             return makeLinksResult(request, msg("Wiki"), sb,
                                    new State(entry));
         }
@@ -231,18 +231,18 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
         /*
         String detailsView =
-            HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+            HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry, ARG_WIKI_DETAILS,
                                            "" + true), msg("Details"));
 
         String rawLink =
-            HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+            HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry, ARG_WIKI_RAW,
                                            "" + true), msg("Text"));
 
-        header = HtmlUtil.leftRight(header,
-                                    HtmlUtil.div(detailsView + " " + rawLink,
-                                        HtmlUtil.cssClass(CSS_CLASS_SMALLLINK)));
+        header = HtmlUtils.leftRight(header,
+                                    HtmlUtils.div(detailsView + " " + rawLink,
+                                        HtmlUtils.cssClass(CSS_CLASS_SMALLLINK)));
         */
         WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {
                                 OutputHandler.PROP_REQUEST,
@@ -295,14 +295,14 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
         String lbl1 = "Revision as of "
                       + getRepository().formatDate(wph1.getDate())
-                      + HtmlUtil.br() + wph1.getUser() + HtmlUtil.br()
+                      + HtmlUtils.br() + wph1.getUser() + HtmlUtils.br()
                       + wph1.getDescription();
         String lbl2 = "Revision as of "
                       + getRepository().formatDate(wph2.getDate())
-                      + HtmlUtil.br() + wph2.getUser() + HtmlUtil.br()
+                      + HtmlUtils.br() + wph2.getUser() + HtmlUtils.br()
                       + wph2.getDescription();
         sb.append("<table width=100% border=0 cellspacing=5 cellpadding=4>");
-        sb.append(HtmlUtil.row(HtmlUtil.cols("", lbl1, "", lbl2)));
+        sb.append(HtmlUtils.row(HtmlUtils.cols("", lbl1, "", lbl2)));
 
         getDiff(wph1.getText(), wph2.getText(), sb);
         sb.append("</table>");
@@ -335,43 +335,43 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
 
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_WIKI_HISTORY));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_WIKI_HISTORY));
 
         List<WikiPageHistory> history =
             ((WikiPageTypeHandler) entry.getTypeHandler()).getHistoryList(
                 entry, null, false);
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE,
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
                                 " cellspacing=5 cellpadding=5 "));
-        sb.append(HtmlUtil.row(HtmlUtil.cols(new Object[] {
-            HtmlUtil.b(msg("Version")), "", "", "", HtmlUtil.b(msg("User")),
-            HtmlUtil.b(msg("Date")), HtmlUtil.b(msg("Description"))
+        sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
+            HtmlUtils.b(msg("Version")), "", "", "", HtmlUtils.b(msg("User")),
+            HtmlUtils.b(msg("Date")), HtmlUtils.b(msg("Description"))
         })));
         int version = 1;
         for (int i = history.size() - 1; i >= 0; i--) {
             WikiPageHistory wph  = history.get(i);
             String          edit = "";
             if (canEdit) {
-                edit = HtmlUtil
+                edit = HtmlUtils
                     .href(request
                         .entryUrl(
                             getRepository().URL_ENTRY_FORM, entry,
                             ARG_WIKI_EDITWITH,
-                            wph.getDate().getTime() + ""), HtmlUtil
+                            wph.getDate().getTime() + ""), HtmlUtils
                                 .img(getRepository().iconUrl(ICON_EDIT),
                                      msg("Edit with this version")));
             }
-            String view = HtmlUtil.href(
+            String view = HtmlUtils.href(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry,
                                   ARG_WIKI_VERSION,
-                                  wph.getDate().getTime() + ""), HtmlUtil.img(
+                                  wph.getDate().getTime() + ""), HtmlUtils.img(
                                       getRepository().iconUrl(ICON_WIKI),
                                       msg("View this page")));
             String btns =
-                HtmlUtil.radio(ARG_WIKI_COMPARE1,
+                HtmlUtils.radio(ARG_WIKI_COMPARE1,
                                "" + wph.getDate().getTime(),
-                               false) + HtmlUtil.radio(ARG_WIKI_COMPARE2,
+                               false) + HtmlUtils.radio(ARG_WIKI_COMPARE2,
                                    "" + wph.getDate().getTime(), false);
             String versionLabel;
             if (i == history.size() - 1) {
@@ -379,17 +379,17 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             } else {
                 versionLabel = "" + wph.getVersion();
             }
-            sb.append(HtmlUtil.row(HtmlUtil.cols(new Object[] {
+            sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
                 versionLabel, btns, edit, view, wph.getUser().getLabel(),
                 getRepository().formatDate(wph.getDate()),
                 wph.getDescription()
             })));
         }
 
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
-        sb.append(HtmlUtil.submit("Compare Selected Versions"));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.submit("Compare Selected Versions"));
+        sb.append(HtmlUtils.formClose());
 
         return makeLinksResult(request, msg("Wiki History"), sb,
                                new State(entry));
@@ -553,7 +553,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                 break;
             }
             String line = lines[lnum];
-            line = HtmlUtil.entityEncode(line);
+            line = HtmlUtils.entityEncode(line);
             if (includeLineNumber) {
                 sb.append("<b>" + lnum + ": </b>");
             }

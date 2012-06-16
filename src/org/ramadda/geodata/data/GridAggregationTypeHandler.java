@@ -30,7 +30,7 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -425,7 +425,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         /*
         String url =
-            HtmlUtil.url(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+            HtmlUtils.url(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                           entry), new String[] {
             ARG_OUTPUT, LidarOutputHandler.OUTPUT_LATLONALTCSV.toString(),
             LidarOutputHandler.ARG_LIDAR_SKIP,

@@ -28,7 +28,7 @@ import org.ramadda.repository.type.*;
 import org.w3c.dom.*;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.util.Date;
@@ -96,14 +96,14 @@ public class TwitterSearchTypeHandler extends GenericTypeHandler {
                 sb.append("<td>");
             }
 
-            sb.append(HtmlUtil.href("http://twitter.com/#search?q="
-                                    + HtmlUtil.urlEncode(tok), tok));
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.href("http://twitter.com/#search?q="
+                                    + HtmlUtils.urlEncode(tok), tok));
+            sb.append(HtmlUtils.br());
             sb.append(html);
             if (orientation.equals("horizontal")) {
                 sb.append("</td>");
             } else {
-                sb.append(HtmlUtil.p());
+                sb.append(HtmlUtils.p());
             }
         }
         if (orientation.equals("horizontal")) {

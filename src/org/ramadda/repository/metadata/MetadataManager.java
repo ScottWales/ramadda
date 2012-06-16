@@ -37,7 +37,7 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -920,23 +920,23 @@ public class MetadataManager extends RepositoryManager {
         String       header;
         if (doCloud) {
             request.put(ARG_TYPE, "list");
-            header = HtmlUtil.href(request.getUrl(), msg("List"))
-                     + HtmlUtil.span(
+            header = HtmlUtils.href(request.getUrl(), msg("List"))
+                     + HtmlUtils.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)) + HtmlUtil.b(
+                         HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)) + HtmlUtils.b(
                              msg("Cloud"));
         } else {
             request.put(ARG_TYPE, "cloud");
-            header = HtmlUtil.b(msg("List"))
-                     + HtmlUtil.span(
+            header = HtmlUtils.b(msg("List"))
+                     + HtmlUtils.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtil.cssClass(
-                             CSS_CLASS_SEPARATOR)) + HtmlUtil.href(
+                         HtmlUtils.cssClass(
+                             CSS_CLASS_SEPARATOR)) + HtmlUtils.href(
                                  request.getUrl(), msg("Cloud"));
         }
-        sb.append(HtmlUtil.center(HtmlUtil.span(header,
-                HtmlUtil.cssClass(CSS_CLASS_HEADING_2))));
-        sb.append(HtmlUtil.hr());
+        sb.append(HtmlUtils.center(HtmlUtils.span(header,
+                HtmlUtils.cssClass(CSS_CLASS_HEADING_2))));
+        sb.append(HtmlUtils.hr());
         MetadataHandler handler =
             findMetadataHandler(request.getString(ARG_METADATA_TYPE, ""));
         MetadataType type =
@@ -974,15 +974,15 @@ public class MetadataManager extends RepositoryManager {
             }
             tuples = Misc.sortTuples(tuples, false);
             sb.append("<table>");
-            sb.append(HtmlUtil.row(HtmlUtil.cols(HtmlUtil.b("Count"),
-                    HtmlUtil.b(type.getLabel()))));
+            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.b("Count"),
+                    HtmlUtils.b(type.getLabel()))));
             for (int i = 0; i < tuples.size(); i++) {
                 Object[] tuple = (Object[]) tuples.get(i);
                 sb.append("<tr><td width=\"1%\" align=right>");
                 sb.append(tuple[0]);
                 sb.append("</td><td>");
                 String value = (String) tuple[1];
-                sb.append(HtmlUtil.href(handler.getSearchUrl(request, type,
+                sb.append(HtmlUtils.href(handler.getSearchUrl(request, type,
                         value), value));
                 sb.append("</td></tr>");
             }
@@ -1006,7 +1006,7 @@ public class MetadataManager extends RepositoryManager {
                                              + ttValue, "title",
                                                  "Count:" + cnt[i] + " "
                                                  + ttValue);
-                sb.append(HtmlUtil.href(handler.getSearchUrl(request, type,
+                sb.append(HtmlUtils.href(handler.getSearchUrl(request, type,
                         values[i]), value, extra));
                 sb.append("</span>");
                 sb.append(" &nbsp; ");
@@ -1070,7 +1070,7 @@ public class MetadataManager extends RepositoryManager {
         //        sb.append(getEntryManager().makeEntryHeader(request, entry));
 
         List<Metadata> metadataList = getMetadata(entry);
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         if (metadataList.size() == 0) {
             sb.append(
                 getRepository().showDialogNote(
@@ -1079,18 +1079,18 @@ public class MetadataManager extends RepositoryManager {
             makeAddList(request, entry, sb);
         } else {
             request.uploadFormWithAuthToken(sb, URL_METADATA_CHANGE);
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-            sb.append(HtmlUtil.submit(msg("Change")));
-            sb.append(HtmlUtil.space(2));
-            sb.append(HtmlUtil.submit(msg("Delete selected"),
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HtmlUtils.submit(msg("Change")));
+            sb.append(HtmlUtils.space(2));
+            sb.append(HtmlUtils.submit(msg("Delete selected"),
                                       ARG_METADATA_DELETE));
-            sb.append(HtmlUtil.space(2));
+            sb.append(HtmlUtils.space(2));
             sb.append(
-                      HtmlUtil.submit(
+                      HtmlUtils.submit(
                                       msg("Copy selected to clipboard"),
                                       ARG_METADATA_CLIPBOARD_COPY));
-            //            sb.append(HtmlUtil.formTable());
-            sb.append(HtmlUtil.br());
+            //            sb.append(HtmlUtils.formTable());
+            sb.append(HtmlUtils.br());
             for (Metadata metadata : metadataList) {
                 metadata.setEntry(entry);
                 MetadataHandler metadataHandler =
@@ -1106,42 +1106,42 @@ public class MetadataManager extends RepositoryManager {
 
                 String cbxId = "cbx_" + metadata.getId();
                 String cbx =
-                    HtmlUtil.checkbox(
+                    HtmlUtils.checkbox(
                         ARG_METADATA_ID + SUFFIX_SELECT + metadata.getId(),
                         metadata.getId(), false,
-                        HtmlUtil.id(cbxId) + " "
-                        + HtmlUtil.attr(
-                            HtmlUtil.ATTR_TITLE,
+                        HtmlUtils.id(cbxId) + " "
+                        + HtmlUtils.attr(
+                            HtmlUtils.ATTR_TITLE,
                             msg(
-                            "Shift-click: select range; Control-click: toggle all")) + HtmlUtil.attr(
-                                HtmlUtil.ATTR_ONCLICK,
-                                HtmlUtil.call(
+                            "Shift-click: select range; Control-click: toggle all")) + HtmlUtils.attr(
+                                HtmlUtils.ATTR_ONCLICK,
+                                HtmlUtils.call(
                                     "checkboxClicked",
-                                    HtmlUtil.comma(
-                                        "event", HtmlUtil.squote("cbx_"),
-                                        HtmlUtil.squote(cbxId)))));
+                                    HtmlUtils.comma(
+                                        "event", HtmlUtils.squote("cbx_"),
+                                        HtmlUtils.squote(cbxId)))));
 
                 StringBuffer metadataEntry = new StringBuffer();
-                metadataEntry.append(HtmlUtil.formTable());
+                metadataEntry.append(HtmlUtils.formTable());
                 metadataEntry.append(html[1]);
-                metadataEntry.append(HtmlUtil.formTableClose());
+                metadataEntry.append(HtmlUtils.formTableClose());
                 sb.append(
-                    HtmlUtil.makeShowHideBlock(
+                    HtmlUtils.makeShowHideBlock(
                         cbx + html[0],
-                        HtmlUtil.div(
+                        HtmlUtils.div(
                             metadataEntry.toString(),
-                            HtmlUtil.cssClass("metadatagroup")), false));
+                            HtmlUtils.cssClass("metadatagroup")), false));
             }
-            sb.append(HtmlUtil.p());
-            sb.append(HtmlUtil.submit(msg("Change")));
-            sb.append(HtmlUtil.space(2));
-            sb.append(HtmlUtil.submit(msg("Delete Selected"),
+            sb.append(HtmlUtils.p());
+            sb.append(HtmlUtils.submit(msg("Change")));
+            sb.append(HtmlUtils.space(2));
+            sb.append(HtmlUtils.submit(msg("Delete Selected"),
                                       ARG_METADATA_DELETE));
             sb.append(
-                      HtmlUtil.submit(
+                      HtmlUtils.submit(
                                       msg("Copy selected to clipboard"),
                                       ARG_METADATA_CLIPBOARD_COPY));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.formClose());
         }
 
         return getEntryManager().makeEntryEditResult(request, entry,
@@ -1163,7 +1163,7 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataAddForm(Request request) throws Exception {
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntryManager().getEntry(request);
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
 
         if(request.get(ARG_METADATA_CLIPBOARD_PASTE, false)) {
             List<Metadata>clipboard = getMetadataFromClipboard(request);
@@ -1187,7 +1187,7 @@ public class MetadataManager extends RepositoryManager {
             makeAddList(request, entry, sb);
         } else {
             String type = request.getString(ARG_METADATA_TYPE, BLANK);
-            sb.append(HtmlUtil.formTable());
+            sb.append(HtmlUtils.formTable());
             for (MetadataHandler handler : metadataHandlers) {
                 if (handler.canHandle(type)) {
                     handler.makeAddForm(request, entry,
@@ -1195,7 +1195,7 @@ public class MetadataManager extends RepositoryManager {
                     break;
                 }
             }
-            sb.append(HtmlUtil.formTableClose());
+            sb.append(HtmlUtils.formTableClose());
         }
         return getEntryManager().makeEntryEditResult(request, entry,
                 msg("Add Property"), sb);
@@ -1231,13 +1231,13 @@ public class MetadataManager extends RepositoryManager {
             }
             
             request.uploadFormWithAuthToken(sb, URL_METADATA_ADDFORM);
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-            sb.append(HtmlUtil.hidden(ARG_METADATA_CLIPBOARD_PASTE, "true"));
-            sb.append(HtmlUtil.submit(msg("Copy from Clipboard")));
-            sb.append(HtmlUtil.formClose());
-            sb.append(HtmlUtil.makeShowHideBlock("Clipboard", clipboardSB.toString(),
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_METADATA_CLIPBOARD_PASTE, "true"));
+            sb.append(HtmlUtils.submit(msg("Copy from Clipboard")));
+            sb.append(HtmlUtils.formClose());
+            sb.append(HtmlUtils.makeShowHideBlock("Clipboard", clipboardSB.toString(),
                     false));
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
         }
 
         for (MetadataType type : metadataTypes) {
@@ -1254,13 +1254,13 @@ public class MetadataManager extends RepositoryManager {
                 groups.add(name);
             }
             request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
-            groupSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-            groupSB.append(HtmlUtil.hidden(ARG_METADATA_TYPE, type.getId()));
-            groupSB.append(HtmlUtil.submit(msg("Add")));
-            groupSB.append(HtmlUtil.space(1)
-                           + HtmlUtil.bold(type.getLabel()));
-            groupSB.append(HtmlUtil.formClose());
-            groupSB.append(HtmlUtil.p());
+            groupSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            groupSB.append(HtmlUtils.hidden(ARG_METADATA_TYPE, type.getId()));
+            groupSB.append(HtmlUtils.submit(msg("Add")));
+            groupSB.append(HtmlUtils.space(1)
+                           + HtmlUtils.bold(type.getLabel()));
+            groupSB.append(HtmlUtils.formClose());
+            groupSB.append(HtmlUtils.p());
             groupSB.append(NEWLINE);
         }
 
@@ -1270,7 +1270,7 @@ public class MetadataManager extends RepositoryManager {
             tmp.append("<ul>");
             tmp.append(groupMap.get(name));
             tmp.append("</ul>");
-            sb.append(HtmlUtil.makeShowHideBlock(name, tmp.toString(),
+            sb.append(HtmlUtils.makeShowHideBlock(name, tmp.toString(),
                     false));
 
         }

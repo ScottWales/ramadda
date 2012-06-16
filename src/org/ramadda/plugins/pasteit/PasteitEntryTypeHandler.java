@@ -30,7 +30,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 import java.io.*;
@@ -76,10 +76,10 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
             return;
         }
         sb.append(formEntry(request, msgLabel("File suffix"),
-                            HtmlUtil.input(ARG_SUFFIX, "txt", 10)));
+                            HtmlUtils.input(ARG_SUFFIX, "txt", 10)));
 
         sb.append(formEntryTop(request, msgLabel("Paste text"),
-                               HtmlUtil.textArea(ARG_TEXT, "", 50, 60)));
+                               HtmlUtils.textArea(ARG_TEXT, "", 50, 60)));
     }
 
     /**

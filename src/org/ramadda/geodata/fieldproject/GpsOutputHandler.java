@@ -22,9 +22,6 @@ package org.ramadda.geodata.fieldproject;
 
 
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.*;
 
 
 import org.ramadda.repository.*;
@@ -38,7 +35,7 @@ import org.ramadda.util.TempDir;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -447,7 +444,7 @@ public class GpsOutputHandler extends OutputHandler {
     private Result outputMetadata(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtil.formTable());
+        sb.append(HtmlUtils.formTable());
         int cnt = 0;
         for (String line :
                 StringUtil.split(extractGpsMetadata(entry.getFile(),
@@ -462,12 +459,12 @@ public class GpsOutputHandler extends OutputHandler {
                 continue;
             }
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel(StringUtil.camelCase(toks.get(0))),
                     toks.get(1)));
             sb.append("</tr>");
         }
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
         return new Result("GPS Metadata", sb);
     }
 
@@ -509,7 +506,7 @@ public class GpsOutputHandler extends OutputHandler {
                 if (trimmed.startsWith("*******")) {
                     state = STATE_PRELIST;
                     sb.append("</pre>");
-                    sb.append(HtmlUtil.formTable());
+                    sb.append(HtmlUtils.formTable());
                 } else {
                     sb.append(line);
                     sb.append("\n");
@@ -527,13 +524,13 @@ public class GpsOutputHandler extends OutputHandler {
                     continue;
                 }
                 sb.append(
-                    HtmlUtil.formEntry(
+                    HtmlUtils.formEntry(
                         msgLabel(
                             toks.get(0).replaceAll("<", "&lt").replaceAll(
                                 ">", "&gt;")), toks.get(1)));
             }
         }
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
         return new Result("GPS Metadata", sb);
     }
 
@@ -560,15 +557,15 @@ public class GpsOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         if ( !request.get(ARG_RINEX_PROCESS, false)) {
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+            sb.append(HtmlUtils.hidden(ARG_OUTPUT,
                                       OUTPUT_GPS_TORINEX.getId()));
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
-            sb.append(HtmlUtil.hidden(ARG_RINEX_PROCESS, "true"));
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_RINEX_PROCESS, "true"));
 
             if (entries.size() == 1) {
-                sb.append(HtmlUtil.hidden(ARG_GPS_FILE,
+                sb.append(HtmlUtils.hidden(ARG_GPS_FILE,
                                           entries.get(0).getId()));
             } else {
                 sb.append(msgHeader("Select entries"));
@@ -585,30 +582,30 @@ public class GpsOutputHandler extends OutputHandler {
                                         .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
                                             .TYPE_RINEX).size() > 0;
 
-                    sb.append(HtmlUtil.checkbox(ARG_GPS_FILE, entry.getId(),
+                    sb.append(HtmlUtils.checkbox(ARG_GPS_FILE, entry.getId(),
                             !hasRinex));
                     sb.append(" ");
                     sb.append(entry.getName());
                     if (hasRinex) {
                         sb.append(" ");
                         sb.append(
-                            HtmlUtil.italics("Already has a RINEX file"));
+                            HtmlUtils.italics("Already has a RINEX file"));
                     }
-                    sb.append(HtmlUtil.br());
+                    sb.append(HtmlUtils.br());
                 }
             }
 
 
-            sb.append(HtmlUtil.p());
-            sb.append(HtmlUtil.formTable());
+            sb.append(HtmlUtils.p());
+            sb.append(HtmlUtils.formTable());
             addPublishWidget(
                 request, mainEntry, sb,
                 msg("Optionally select a folder to publish the RINEX to"),
                 false);
-            sb.append(HtmlUtil.formTableClose());
+            sb.append(HtmlUtils.formTableClose());
 
-            sb.append(HtmlUtil.submit("Make RINEX"));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.submit("Make RINEX"));
+            sb.append(HtmlUtils.formClose());
             return new Result("", sb);
         }
 
@@ -636,7 +633,7 @@ public class GpsOutputHandler extends OutputHandler {
             if ( !isRawGps(rawEntry)) {
                 sb.append("<li>");
                 sb.append("Skipping:" + rawEntry.getName());
-                sb.append(HtmlUtil.p());
+                sb.append(HtmlUtils.p());
                 continue;
             }
 
@@ -748,8 +745,8 @@ public class GpsOutputHandler extends OutputHandler {
                 }
                 cnt++;
                 sb.append(
-                    HtmlUtil.href(
-                        HtmlUtil.url(
+                    HtmlUtils.href(
+                        HtmlUtils.url(
                             getRepository().URL_ENTRY_SHOW.toString(),
                             new String[] { ARG_ENTRYID,
                                            newEntry.getId() }), newEntry
@@ -763,14 +760,14 @@ public class GpsOutputHandler extends OutputHandler {
             }
 
 
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+            sb.append(HtmlUtils.hidden(ARG_OUTPUT,
                                       OUTPUT_GPS_TORINEX.getId()));
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
-            sb.append(HtmlUtil.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
-            sb.append(HtmlUtil.submit(msg("Download Results")));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
+            sb.append(HtmlUtils.submit(msg("Download Results")));
+            sb.append(HtmlUtils.formClose());
         }
         return new Result("", sb);
     }
@@ -795,19 +792,19 @@ public class GpsOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         if ( !request.get(ARG_PROCESS, false)) {
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+            sb.append(HtmlUtils.hidden(ARG_OUTPUT,
                                       OUTPUT_GPS_CONTROLPOINTS.getId()));
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
-            sb.append(HtmlUtil.hidden(ARG_PROCESS, "true"));
-            sb.append(HtmlUtil.formTable());
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_PROCESS, "true"));
+            sb.append(HtmlUtils.formTable());
 
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel("Comment"),
-                    HtmlUtil.input(
-                        ARG_CONTROLPOINTS_COMMENT, "", HtmlUtil.SIZE_60)));
+                    HtmlUtils.input(
+                        ARG_CONTROLPOINTS_COMMENT, "", HtmlUtils.SIZE_60)));
 
 
             StringBuffer entryTable = new StringBuffer();
@@ -818,7 +815,7 @@ public class GpsOutputHandler extends OutputHandler {
                     continue;
                 }
                 entryTable.append("<tr><td>");
-                entryTable.append(HtmlUtil.checkbox(ARG_GPS_FILE,
+                entryTable.append(HtmlUtils.checkbox(ARG_GPS_FILE,
                         entry.getId(), true));
                 entryTable.append(" ");
                 entryTable.append(entry.getName());
@@ -835,16 +832,16 @@ public class GpsOutputHandler extends OutputHandler {
 
             }
             entryTable.append("</table>");
-            sb.append(HtmlUtil.formEntryTop(msgLabel("Entries"),
+            sb.append(HtmlUtils.formEntryTop(msgLabel("Entries"),
                                             entryTable.toString()));
             addPublishWidget(
                 request, mainEntry, sb,
                 msg(
                 "Optionally select a folder to publish the control point file to"), true);
-            sb.append(HtmlUtil.formTableClose());
+            sb.append(HtmlUtils.formTableClose());
 
-            sb.append(HtmlUtil.submit("Make Control Point File"));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.submit("Make Control Point File"));
+            sb.append(HtmlUtils.formClose());
             return new Result("", sb);
         }
 
@@ -874,7 +871,7 @@ public class GpsOutputHandler extends OutputHandler {
             if ( !isOpus(opusEntry)) {
                 sb.append("<li>");
                 sb.append("Skipping:" + opusEntry.getName());
-                sb.append(HtmlUtil.p());
+                sb.append(HtmlUtils.p());
                 continue;
             }
 
@@ -954,8 +951,8 @@ public class GpsOutputHandler extends OutputHandler {
             });
             sb.append("Control points file created:");
             sb.append(
-                HtmlUtil.href(
-                    HtmlUtil.url(
+                HtmlUtils.href(
+                    HtmlUtils.url(
                         getRepository().URL_ENTRY_SHOW.toString(),
                         new String[] { ARG_ENTRYID,
                                        newEntry.getId() }), newEntry
@@ -1262,7 +1259,7 @@ public class GpsOutputHandler extends OutputHandler {
 
         sb.append("</ul>");
         sb.append("When you get the results in your email click ");
-        sb.append(HtmlUtil.href(getRepository().getUrlBase()
+        sb.append(HtmlUtils.href(getRepository().getUrlBase()
                                 + "/fieldproject/addopus", "here"));
         sb.append(" to upload the OPUS solutions");
         return new Result("", sb);
@@ -1285,21 +1282,21 @@ public class GpsOutputHandler extends OutputHandler {
                                   List<Entry> entries, StringBuffer sb)
             throws Exception {
 
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_GPS_OPUS.getId()));
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, mainEntry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_OPUS_PROCESS, "true"));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_GPS_OPUS.getId()));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OPUS_PROCESS, "true"));
 
-        sb.append(HtmlUtil.submit("Submit to OPUS"));
+        sb.append(HtmlUtils.submit("Submit to OPUS"));
 
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msgLabel("Email"),
-                                     HtmlUtil.input(ARG_OPUS_EMAIL,
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(msgLabel("Email"),
+                                     HtmlUtils.input(ARG_OPUS_EMAIL,
                                          request.getString(ARG_OPUS_EMAIL,
                                              request.getUser().getEmail()))));
 
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
         //request.getString(ARG_OPUS_ANTENNA, entry.getValue(IDX_ANTENNA_TYPE,"")
         String selectedAntenna = "";
         for (Entry entry : entries) {
@@ -1310,8 +1307,8 @@ public class GpsOutputHandler extends OutputHandler {
             break;
         }
 
-        /*        sb.append(HtmlUtil.formEntry(msgLabel("Rapid"),
-                  HtmlUtil.checkbox(ARG_OPUS_RAPID,
+        /*        sb.append(HtmlUtils.formEntry(msgLabel("Rapid"),
+                  HtmlUtils.checkbox(ARG_OPUS_RAPID,
                   "true", request.get(ARG_OPUS_RAPID,false)) +" " +"for data &gt; 15 min. &lt; 2 hrs."));
         */
 
@@ -1336,7 +1333,7 @@ public class GpsOutputHandler extends OutputHandler {
             StringBuffer comment = new StringBuffer("");
             if ((minutes > 0) && (minutes < 120)) {
                 selected = false;
-                comment.append(HtmlUtil.italics("&lt; 2 hours. "));
+                comment.append(HtmlUtils.italics("&lt; 2 hours. "));
             }
             if (getEntryManager()
                     .getEntriesWithType(getAssociationManager()
@@ -1345,14 +1342,14 @@ public class GpsOutputHandler extends OutputHandler {
                                 .ASSOCIATION_TYPE_GENERATED_FROM), OpusTypeHandler
                                     .TYPE_OPUS).size() > 0) {
                 selected = false;
-                comment.append(HtmlUtil.italics("Already has an OPUS entry"));
+                comment.append(HtmlUtils.italics("Already has an OPUS entry"));
             }
 
             String argSuffix = "_" + cnt;
             cnt++;
 
             entriesSB.append("<tr><td>");
-            entriesSB.append(HtmlUtil.checkbox(ARG_RINEX_FILE + argSuffix,
+            entriesSB.append(HtmlUtils.checkbox(ARG_RINEX_FILE + argSuffix,
                     entry.getId(), selected));
             entriesSB.append(" ");
             entriesSB.append(entry.getName());
@@ -1376,18 +1373,18 @@ public class GpsOutputHandler extends OutputHandler {
             entriesSB.append("</td>");
             entriesSB.append("<td align=right>");
             selectedAntenna = (String) entry.getValue(IDX_ANTENNA_TYPE, "");
-            entriesSB.append(HtmlUtil.select(ARG_OPUS_ANTENNA + argSuffix,
+            entriesSB.append(HtmlUtils.select(ARG_OPUS_ANTENNA + argSuffix,
                                              Antenna.getAntennas(),
                                              selectedAntenna));
             entriesSB.append("</td>");
             entriesSB.append("<td align=right>");
             entriesSB.append(
-                HtmlUtil.input(
+                HtmlUtils.input(
                     ARG_OPUS_HEIGHT + argSuffix,
                     request.getString(
                         ARG_OPUS_HEIGHT + argSuffix,
                         entry.getValue(
-                            IDX_ANTENNA_HEIGHT, "")), HtmlUtil.SIZE_5));
+                            IDX_ANTENNA_HEIGHT, "")), HtmlUtils.SIZE_5));
             entriesSB.append("</td>");
 
             entriesSB.append("</tr>");
@@ -1398,22 +1395,22 @@ public class GpsOutputHandler extends OutputHandler {
 
 
         sb.append(msgHeader("Overrides"));
-        sb.append(HtmlUtil.formTable());
+        sb.append(HtmlUtils.formTable());
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "", "If defined use these values for antenna or height"));
-        sb.append(HtmlUtil.formEntry(msgLabel("Antenna"),
-                                     HtmlUtil.select(ARG_OPUS_ANTENNA,
+        sb.append(HtmlUtils.formEntry(msgLabel("Antenna"),
+                                     HtmlUtils.select(ARG_OPUS_ANTENNA,
                                          Antenna.getAntennas(), "")));
-        sb.append(HtmlUtil.formEntry(msgLabel("Antenna Height"),
-                                     HtmlUtil.input(ARG_OPUS_HEIGHT,
+        sb.append(HtmlUtils.formEntry(msgLabel("Antenna Height"),
+                                     HtmlUtils.input(ARG_OPUS_HEIGHT,
                                          request.getString(ARG_OPUS_HEIGHT,
-                                             ""), HtmlUtil.SIZE_5)));
+                                             ""), HtmlUtils.SIZE_5)));
 
-        sb.append(HtmlUtil.formTableClose());
-        sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.submit("Submit to OPUS"));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit("Submit to OPUS"));
+        sb.append(HtmlUtils.formClose());
         return new Result("", sb);
     }
 
@@ -1540,11 +1537,11 @@ public class GpsOutputHandler extends OutputHandler {
 
 
 
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append("OPUS entry created: ");
             sb.append(
-                HtmlUtil.href(
-                    HtmlUtil.url(
+                HtmlUtils.href(
+                    HtmlUtils.url(
                         getRepository().URL_ENTRY_SHOW.toString(),
                         new String[] { ARG_ENTRYID,
                                        newEntry.getId() }), newEntry
@@ -1576,15 +1573,15 @@ public class GpsOutputHandler extends OutputHandler {
             throws Exception {
         String base    = getRepository().getUrlBase();
         String formUrl = base + URL_ADDOPUS;
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append("Enter the OPUS solution text below");
-        sb.append(HtmlUtil.formPost(formUrl));
-        sb.append(HtmlUtil.submit("Add OPUS Solution"));
-        sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.textArea(ARG_OPUS, "", 20, 70));
-        sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.submit("Add OPUS Solution"));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.formPost(formUrl));
+        sb.append(HtmlUtils.submit("Add OPUS Solution"));
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.textArea(ARG_OPUS, "", 20, 70));
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.submit("Add OPUS Solution"));
+        sb.append(HtmlUtils.formClose());
         return new Result(OPUS_TITLE, sb);
     }
 

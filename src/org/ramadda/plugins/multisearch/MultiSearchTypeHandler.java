@@ -27,7 +27,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
@@ -77,13 +77,13 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
         String formUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                           entry);
         String query = request.getString(ARG_QUERY, "");
-        sb.append(HtmlUtil.form(formUrl, ""));
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.form(formUrl, ""));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(msg("Search across multiple search engines"));
-        sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.input(ARG_QUERY, query, 40));
-        sb.append(HtmlUtil.submit("Search"));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.input(ARG_QUERY, query, 40));
+        sb.append(HtmlUtils.submit("Search"));
+        sb.append(HtmlUtils.formClose());
         if (request.defined(ARG_QUERY)) {
             List<String> tabTitles = new ArrayList<String>();
             List<String> tabs      = new ArrayList<String>();
@@ -102,14 +102,14 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
                 tabTitles.add(title);
                 url = url.replace("${query}", query);
                 StringBuffer tmp = new StringBuffer();
-                tmp.append(HtmlUtil.href(url, "Go to " + title));
+                tmp.append(HtmlUtils.href(url, "Go to " + title));
                 tmp.append(
-                    HtmlUtil.tag(
-                        HtmlUtil.TAG_IFRAME,
-                        HtmlUtil.attr(HtmlUtil.ATTR_SRC, url)
-                        + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "100%")
-                        + HtmlUtil.attr(
-                            HtmlUtil.ATTR_HEIGHT, "300"), "Need frames"));
+                    HtmlUtils.tag(
+                        HtmlUtils.TAG_IFRAME,
+                        HtmlUtils.attr(HtmlUtils.ATTR_SRC, url)
+                        + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%")
+                        + HtmlUtils.attr(
+                            HtmlUtils.ATTR_HEIGHT, "300"), "Need frames"));
                 tabs.add(tmp.toString());
             }
             sb.append(OutputHandler.makeTabs(tabTitles, tabs, true));

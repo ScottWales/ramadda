@@ -35,7 +35,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -101,7 +101,7 @@ public class OpendapLinkTypeHandler extends GenericTypeHandler {
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".html";
         System.err.println("getEntry:" + fileTail);
-        return HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET) + "/"
+        return HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET) + "/"
                             + fileTail, ARG_ENTRYID, entry.getId());
     }
 

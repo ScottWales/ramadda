@@ -46,7 +46,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.JobManager;
 import ucar.unidata.util.LogUtil;
@@ -721,7 +721,7 @@ public class EntryManager extends RepositoryManager {
 
         if (type == null) {
             sb.append(request.form(getRepository().URL_ENTRY_FORM,
-                                   HtmlUtil.attr("name", "entryform")));
+                                   HtmlUtils.attr("name", "entryform")));
         } else {
             String loadingMessage = ((entry == null)
                                      ? msg("Creating entry...")
@@ -729,23 +729,23 @@ public class EntryManager extends RepositoryManager {
             request.uploadFormWithAuthToken(
                 sb, getRepository().URL_ENTRY_CHANGE,
                 makeFormSubmitDialog(sb, loadingMessage)
-                + HtmlUtil.attr("name", "entryform"));
+                + HtmlUtils.attr("name", "entryform"));
         }
 
-        sb.append(HtmlUtil.formTable());
+        sb.append(HtmlUtils.formTable());
         String title = BLANK;
 
         if (type == null) {
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel("Type"),
                     getRepository().makeTypeSelect(
                         request, false, "", true, null)));
 
             sb.append(
-                HtmlUtil.formEntry(
-                    BLANK, HtmlUtil.submit(msg("Select Type to Add"))));
-            sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
+                HtmlUtils.formEntry(
+                    BLANK, HtmlUtils.submit(msg("Select Type to Add"))));
+            sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
         } else {
             TypeHandler typeHandler = ((entry == null)
                                        ? getRepository().getTypeHandler(type)
@@ -754,23 +754,24 @@ public class EntryManager extends RepositoryManager {
             title = ((entry == null)
                      ? msg("Add Entry")
                      : msg("Edit Entry"));
-            String submitButton = HtmlUtil.submit(((entry == null)
-                    ? "Add " + typeHandler.getLabel()
+            String submitButton = HtmlUtils.submit(entry == null
+                                                   ? "Add " + typeHandler.getLabel()
                                                    : msg("Save"),
-                                                   makeButtonSubmitDialog(sb, (entry==null?"Creating Entry...": "Changing Entry..."))));
+                                                   ARG_SUBMIT,
+                                                   makeButtonSubmitDialog(sb, (entry==null?msg("Creating Entry..."): msg("Changing Entry..."))));
 
             String nextButton = ((entry == null)
                                  ? ""
-                                 : HtmlUtil.submit("Save & Next",
+                                 : HtmlUtils.submit("Save & Next",
                                      ARG_SAVENEXT));
 
 
             String deleteButton = (((entry != null) && entry.isTopEntry())
                                    ? ""
-                                   : HtmlUtil.submit(msg("Delete"),
+                                   : HtmlUtils.submit(msg("Delete"),
                                                      ARG_DELETE,makeButtonSubmitDialog(sb, "Deleting Entry...")));
 
-            String cancelButton = HtmlUtil.submit(msg("Cancel"), ARG_CANCEL);
+            String cancelButton = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
             String buttons      = ((entry != null)
                                    ? RepositoryUtil.buttons(submitButton,
                                        deleteButton, cancelButton)
@@ -778,9 +779,9 @@ public class EntryManager extends RepositoryManager {
                                        cancelButton));
 
 
-            sb.append(HtmlUtil.row(HtmlUtil.colspan(buttons, 2)));
+            sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
             if (entry != null) {
-                sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
+                sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
                 if (isAnonymousUpload(entry)) {
                     List<Metadata> metadataList =
                         getMetadataManager().findMetadata(entry,
@@ -800,20 +801,20 @@ public class EntryManager extends RepositoryManager {
                                 + email + " <b>IP:</b> "
                                 + metadata.getAttr2();
                     }
-                    String msg = HtmlUtil.space(2) + msg("Make public?")
+                    String msg = HtmlUtils.space(2) + msg("Make public?")
                                  + extra;
-                    sb.append(HtmlUtil.formEntry(msgLabel("Publish"),
-                            HtmlUtil.checkbox(ARG_PUBLISH, "true", false)
+                    sb.append(HtmlUtils.formEntry(msgLabel("Publish"),
+                            HtmlUtils.checkbox(ARG_PUBLISH, "true", false)
                             + msg));
                 }
             } else {
-                sb.append(HtmlUtil.hidden(ARG_TYPE, type));
-                sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
+                sb.append(HtmlUtils.hidden(ARG_TYPE, type));
+                sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
             }
             typeHandler.addToEntryForm(request, sb, entry);
-            sb.append(HtmlUtil.row(HtmlUtil.colspan(buttons, 2)));
+            sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
         }
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
         if (entry == null) {
             return addEntryHeader(request, group, new Result(title, sb));
         }
@@ -842,7 +843,7 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb       = new StringBuffer();
 
         String       entryUrl =
-            HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                          ARG_ENTRYID, entry.getId());
 
 
@@ -860,9 +861,9 @@ public class EntryManager extends RepositoryManager {
                                     ICON_COMMENTS), "Add/View Comments",
                                         OutputType.TYPE_TOOLBAR);
 
-            String href = HtmlUtil.href(link.getUrl(),
+            String href = HtmlUtils.href(link.getUrl(),
                                         "Comments:(" + comments.size() + ")"
-                                        + HtmlUtil.img(link.getIcon(),
+                                        + HtmlUtils.img(link.getIcon(),
                                             link.getLabel(),
                                             link.getLabel()));
 
@@ -898,29 +899,29 @@ public class EntryManager extends RepositoryManager {
         if (doRatings) {
             String link = request.url(getRepository().URL_COMMENTS_SHOW,
                                       ARG_ENTRYID, entry.getId());
-            String ratings = HtmlUtil.div(
+            String ratings = HtmlUtils.div(
                                  "",
-                                 HtmlUtil.cssClass("js-kit-rating")
-                                 + HtmlUtil.attr(
-                                     HtmlUtil.ATTR_TITLE,
-                                     entry.getFullName()) + HtmlUtil.attr(
+                                 HtmlUtils.cssClass("js-kit-rating")
+                                 + HtmlUtils.attr(
+                                     HtmlUtils.ATTR_TITLE,
+                                     entry.getFullName()) + HtmlUtils.attr(
                                          "permalink",
-                                         link)) + HtmlUtil.importJS(
+                                         link)) + HtmlUtils.importJS(
                                              "http://js-kit.com/ratings.js");
 
             sb.append(
-                HtmlUtil.table(
-                    HtmlUtil.row(
-                        HtmlUtil.col(
+                HtmlUtils.table(
+                    HtmlUtils.row(
+                        HtmlUtils.col(
                             ratings,
-                            HtmlUtil.attr(
-                                HtmlUtil.ATTR_ALIGN,
-                                HtmlUtil.VALUE_RIGHT)), HtmlUtil.attr(
-                                    HtmlUtil.ATTR_VALIGN,
-                                    HtmlUtil.VALUE_TOP)), HtmlUtil.attr(
-                                        HtmlUtil.ATTR_WIDTH, "100%")));
+                            HtmlUtils.attr(
+                                HtmlUtils.ATTR_ALIGN,
+                                HtmlUtils.VALUE_RIGHT)), HtmlUtils.attr(
+                                    HtmlUtils.ATTR_VALIGN,
+                                    HtmlUtils.VALUE_TOP)), HtmlUtils.attr(
+                                        HtmlUtils.ATTR_WIDTH, "100%")));
         } else {
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
         }
 
 
@@ -953,7 +954,7 @@ public class EntryManager extends RepositoryManager {
                     Result result = doProcessEntryChange(request, false,
                                         actionId);
                     getActionManager().setContinueHtml(actionId,
-                            HtmlUtil.href(result.getRedirectUrl(),
+                            HtmlUtils.href(result.getRedirectUrl(),
                                           msg("Continue")));
                 }
             };
@@ -1665,7 +1666,7 @@ public class EntryManager extends RepositoryManager {
                     getRepository().URL_ENTRY_SHOW, entry.getParentEntry(),
                     ARG_MESSAGE,
                     entries.size()
-                    + HtmlUtil.pad(
+                    + HtmlUtils.pad(
                         getRepository().translate(
                             request, "files uploaded"))));
         } else {
@@ -1690,7 +1691,7 @@ public class EntryManager extends RepositoryManager {
         Date   toDate     = new Date(entry.getEndDate());
 
         String url        =
-            HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                          ARG_ENTRYID, entry.getId());
         //j-
         String[] macros = {
@@ -1971,9 +1972,9 @@ public class EntryManager extends RepositoryManager {
         if (entry.isGroup()) {
             inner.append(
                 msg("Are you sure you want to delete the following folder?"));
-            inner.append(HtmlUtil.p());
+            inner.append(HtmlUtils.p());
             inner.append(
-                HtmlUtil.b(
+                HtmlUtils.b(
                     msg(
                     "Note: This will also delete everything contained by this folder")));
         } else {
@@ -1985,11 +1986,11 @@ public class EntryManager extends RepositoryManager {
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
 
         getRepository().addAuthToken(request, fb);
-        fb.append(RepositoryUtil.buttons(HtmlUtil.submit(msg("OK"),
-                ARG_DELETE_CONFIRM), HtmlUtil.submit(msg("Cancel"),
+        fb.append(RepositoryUtil.buttons(HtmlUtils.submit(msg("OK"),
+                ARG_DELETE_CONFIRM), HtmlUtils.submit(msg("Cancel"),
                     ARG_CANCEL)));
-        fb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        fb.append(HtmlUtil.formClose());
+        fb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        fb.append(HtmlUtils.formClose());
         sb.append(getRepository().showDialogQuestion(inner.toString(),
                 fb.toString()));
         String bc = getBreadCrumbs(request, entry);
@@ -2086,7 +2087,7 @@ public class EntryManager extends RepositoryManager {
             "Are you sure you want to delete all of the following entries?"));
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ENTRY_DELETELIST);
-        StringBuffer hidden = new StringBuffer(HtmlUtil.hidden(ARG_ENTRYIDS,
+        StringBuffer hidden = new StringBuffer(HtmlUtils.hidden(ARG_ENTRYIDS,
                                   idBuffer.toString()));
         String form = Repository.makeOkCancelForm(request,
                           getRepository().URL_ENTRY_DELETELIST,
@@ -2131,7 +2132,7 @@ public class EntryManager extends RepositoryManager {
             }
         };
         String href =
-            HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+            HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            group), "Continue");
 
         return getActionManager().doAction(request, action, "Deleting entry",
@@ -2455,16 +2456,16 @@ public class EntryManager extends RepositoryManager {
                 new StringBuffer(
                     "A new entry has been uploaded to the RAMADDA server under the folder: ");
             String url1 =
-                HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+                HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                              ARG_ENTRYID, parentEntry.getId());
 
-            contents.append(HtmlUtil.href(url1, parentEntry.getFullName()));
+            contents.append(HtmlUtils.href(url1, parentEntry.getFullName()));
             contents.append("<p>\n\n");
             String url =
-                HtmlUtil.url(getRepository().URL_ENTRY_FORM.getFullUrl(),
+                HtmlUtils.url(getRepository().URL_ENTRY_FORM.getFullUrl(),
                              ARG_ENTRYID, entry.getId());
             contents.append("Edit to confirm: ");
-            contents.append(HtmlUtil.href(url, entry.getLabel()));
+            contents.append(HtmlUtils.href(url, entry.getLabel()));
             if (getAdmin().isEmailCapable()) {
                 getAdmin().sendEmail(parentUser.getEmail(), "Uploaded Entry",
                                      contents.toString(), true);
@@ -2501,14 +2502,14 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         if ( !request.exists(ARG_CONTRIBUTION_FROMNAME)) {
             sb.append(request.uploadForm(getRepository().URL_ENTRY_UPLOAD,
-                                         HtmlUtil.attr("name", "entryform")));
-            sb.append(HtmlUtil.submit(msg("Upload")));
-            sb.append(HtmlUtil.formTable());
-            sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
+                                         HtmlUtils.attr("name", "entryform")));
+            sb.append(HtmlUtils.submit(msg("Upload")));
+            sb.append(HtmlUtils.formTable());
+            sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
             typeHandler.addToEntryForm(request, sb, null);
-            sb.append(HtmlUtil.formTableClose());
-            sb.append(HtmlUtil.submit(msg("Upload")));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.formTableClose());
+            sb.append(HtmlUtils.submit(msg("Upload")));
+            sb.append(HtmlUtils.formClose());
         } else {
             return doProcessEntryChange(request, true, null);
         }
@@ -2530,7 +2531,7 @@ public class EntryManager extends RepositoryManager {
 
         Entry        group = findGroup(request);
         StringBuffer sb    = new StringBuffer();
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append(msgHeader("Choose entry type"));
         List<String>                    categories = new ArrayList<String>();
         Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
@@ -2557,10 +2558,10 @@ public class EntryManager extends RepositoryManager {
             String img;
             if (icon == null) {
                 icon = ICON_BLANK;
-                img  = HtmlUtil.img(typeHandler.iconUrl(icon), "",
-                                   HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "16"));
+                img  = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                                   HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "16"));
             } else {
-                img = HtmlUtil.img(typeHandler.iconUrl(icon));
+                img = HtmlUtils.img(typeHandler.iconUrl(icon));
             }
 
 
@@ -2570,21 +2571,21 @@ public class EntryManager extends RepositoryManager {
                            buffer = new StringBuffer());
                 categories.add(typeHandler.getCategory());
             }
-            buffer.append(HtmlUtil
+            buffer.append(HtmlUtils
                 .href(request
                     .url(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
                         .getId(), ARG_TYPE, typeHandler.getType()), img + " "
                             + typeHandler.getLabel()));
 
-            buffer.append(HtmlUtil.br());
+            buffer.append(HtmlUtils.br());
         }
         sb.append("<table cellpadding=10><tr valign=top>");
         int colCnt = 0;
         for (String cat : categories) {
             sb.append(
-                HtmlUtil.col(
-                    HtmlUtil.b(cat)
-                    + HtmlUtil.insetDiv(
+                HtmlUtils.col(
+                    HtmlUtils.b(cat)
+                    + HtmlUtils.insetDiv(
                         catMap.get(cat).toString(), 3, 15, 0, 0)));
             colCnt++;
             if (colCnt > 3) {
@@ -2712,7 +2713,7 @@ public class EntryManager extends RepositoryManager {
             if (request.isHeadRequest()) {
                 System.err.println("got head request");
                 Result result = new Result("", new StringBuffer());
-                result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH,
+                result.addHttpHeader(HtmlUtils.HTTP_CONTENT_LENGTH,
                                      "" + length);
                 result.addHttpHeader("Connection", "close");
                 result.setLastModified(new Date(file.lastModified()));
@@ -2723,7 +2724,7 @@ public class EntryManager extends RepositoryManager {
             InputStream inputStream =
                 getStorageManager().getFileInputStream(file);
             Result result = new Result(BLANK, inputStream, mimeType);
-            result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH, "" + length);
+            result.addHttpHeader(HtmlUtils.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
             result.setCacheOk(true);
 
@@ -2897,15 +2898,15 @@ public class EntryManager extends RepositoryManager {
                         header("Please select a destination folder from the following list:"));
                     sb.append("<ul>");
                 }
-                sb.append(HtmlUtil.img(getIconUrl(request, group)));
-                sb.append(HtmlUtil.space(1));
+                sb.append(HtmlUtils.img(getIconUrl(request, group)));
+                sb.append(HtmlUtils.space(1));
                 sb.append(
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         request.url(
                             getRepository().URL_ENTRY_COPY, ARG_FROM,
                             fromIds, ARG_TO,
                             group.getId()), group.getLabel()));
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.br());
                 didOne = true;
             }
 
@@ -2917,28 +2918,28 @@ public class EntryManager extends RepositoryManager {
             }
 
             request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_COPY);
-            sb.append(HtmlUtil.hidden(ARG_FROM, fromIds));
+            sb.append(HtmlUtils.hidden(ARG_FROM, fromIds));
             String select =
                 getRepository().getHtmlOutputHandler().getSelect(request,
                     ARG_TO,
-                    HtmlUtil.img(getRepository().iconUrl(ICON_FOLDER_OPEN))
-                    + HtmlUtil.space(1) + msg("Select"), false, "");
-            sb.append(HtmlUtil.hidden(ARG_TO + "_hidden", "",
-                                      HtmlUtil.id(ARG_TO + "_hidden")));
+                    HtmlUtils.img(getRepository().iconUrl(ICON_FOLDER_OPEN))
+                    + HtmlUtils.space(1) + msg("Select"), false, "");
+            sb.append(HtmlUtils.hidden(ARG_TO + "_hidden", "",
+                                      HtmlUtils.id(ARG_TO + "_hidden")));
 
             sb.append(select);
-            sb.append(HtmlUtil.space(1));
-            sb.append(HtmlUtil.disabledInput(ARG_TO, "",
-                                             HtmlUtil.SIZE_60
-                                             + HtmlUtil.id(ARG_TO)));
-            sb.append(HtmlUtil.submit(msg("Go")));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.space(1));
+            sb.append(HtmlUtils.disabledInput(ARG_TO, "",
+                                             HtmlUtils.SIZE_60
+                                             + HtmlUtils.id(ARG_TO)));
+            sb.append(HtmlUtils.submit(msg("Go")));
+            sb.append(HtmlUtils.formClose());
 
             /*
             if(didOne) {
                 sb.append(msgLabel("Or select one here"));
             }
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.br());
             sb.append(getTreeLink(request, getTopGroup(), ""));
             */
             return addEntryHeader(request, entries.get(0),
@@ -3013,10 +3014,10 @@ public class EntryManager extends RepositoryManager {
 
         StringBuffer fromList = new StringBuffer();
         for (Entry fromEntry : entries) {
-            fromList.append(HtmlUtil.space(3));
+            fromList.append(HtmlUtils.space(3));
             fromList.append(getEntryManager().getBreadCrumbs(request,
                     fromEntry));
-            fromList.append(HtmlUtil.br());
+            fromList.append(HtmlUtils.br());
         }
 
 
@@ -3032,37 +3033,37 @@ public class EntryManager extends RepositoryManager {
                 sb.append(
                     msg("What do you want to do with the following entry?"));
             }
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.br());
             sb.append(msgLabel("Destination"));
             sb.append(toEntry.getName());
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.br());
             StringBuffer fb = new StringBuffer();
             request.formPostWithAuthToken(fb, getRepository().URL_ENTRY_COPY);
-            fb.append(HtmlUtil.hidden(ARG_TO, toEntry.getId()));
-            fb.append(HtmlUtil.hidden(ARG_FROM, fromIds));
+            fb.append(HtmlUtils.hidden(ARG_TO, toEntry.getId()));
+            fb.append(HtmlUtils.hidden(ARG_FROM, fromIds));
 
             if (isGroup) {
-                fb.append(HtmlUtil.submit(((entries.size() > 1)
+                fb.append(HtmlUtils.submit(((entries.size() > 1)
                                            ? msg("Copy them to the folder")
                                            : msg(
                                            "Copy it to the folder")), ARG_ACTION_COPY));
-                fb.append(HtmlUtil.space(1));
-                fb.append(HtmlUtil.submit(((entries.size() > 1)
+                fb.append(HtmlUtils.space(1));
+                fb.append(HtmlUtils.submit(((entries.size() > 1)
                                            ? msg("Move them to the folder")
                                            : msg(
                                            "Move it to the folder")), ARG_ACTION_MOVE));
-                fb.append(HtmlUtil.space(1));
+                fb.append(HtmlUtils.space(1));
             }
 
             if (entries.size() == 1) {
-                fb.append(HtmlUtil.submit(msg("Link it"),
+                fb.append(HtmlUtils.submit(msg("Link it"),
                                           ARG_ACTION_ASSOCIATE));
-                fb.append(HtmlUtil.space(1));
+                fb.append(HtmlUtils.space(1));
             }
 
 
-            fb.append(HtmlUtil.submit(msg("Cancel"), ARG_CANCEL));
-            fb.append(HtmlUtil.formClose());
+            fb.append(HtmlUtils.submit(msg("Cancel"), ARG_CANCEL));
+            fb.append(HtmlUtils.formClose());
             StringBuffer contents = new StringBuffer(
                                         getRepository().showDialogQuestion(
                                             sb.toString(), fb.toString()));
@@ -3434,14 +3435,14 @@ public class EntryManager extends RepositoryManager {
                                         getRepository().URL_ENTRY_XMLCREATE,
                                         makeFormSubmitDialog(sb,
                                             msg("Importing Entries")));
-        sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msgLabel("File"),
-                                     HtmlUtil.fileInput(ARG_FILE,
-                                         HtmlUtil.SIZE_70)));
-        sb.append(HtmlUtil.formEntry("", HtmlUtil.submit("Submit")));
-        sb.append(HtmlUtil.formTableClose());
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(msgLabel("File"),
+                                     HtmlUtils.fileInput(ARG_FILE,
+                                         HtmlUtils.SIZE_70)));
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Submit")));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.formClose());
 
         return makeEntryEditResult(request, group, "Entry Import", sb);
     }
@@ -3990,7 +3991,7 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         request.appendMessage(sb);
         String entryUrl =
-            HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                          ARG_ENTRYID, entry.getId());
         String title = entry.getName();
         String share =
@@ -4007,41 +4008,41 @@ public class EntryManager extends RepositoryManager {
         if (doRatings) {
             String link = request.url(getRepository().URL_COMMENTS_SHOW,
                                       ARG_ENTRYID, entry.getId());
-            String ratings = HtmlUtil.div(
+            String ratings = HtmlUtils.div(
                                  "",
-                                 HtmlUtil.cssClass("js-kit-rating")
-                                 + HtmlUtil.attr(
-                                     HtmlUtil.ATTR_TITLE,
-                                     entry.getFullName()) + HtmlUtil.attr(
+                                 HtmlUtils.cssClass("js-kit-rating")
+                                 + HtmlUtils.attr(
+                                     HtmlUtils.ATTR_TITLE,
+                                     entry.getFullName()) + HtmlUtils.attr(
                                          "permalink",
-                                         link)) + HtmlUtil.importJS(
+                                         link)) + HtmlUtils.importJS(
                                              "http://js-kit.com/ratings.js");
 
             sb.append(
-                HtmlUtil.table(
-                    HtmlUtil.row(
-                        HtmlUtil.col(
+                HtmlUtils.table(
+                    HtmlUtils.row(
+                        HtmlUtils.col(
                             ratings,
-                            HtmlUtil.attr(
-                                HtmlUtil.ATTR_ALIGN,
-                                HtmlUtil.VALUE_RIGHT)), HtmlUtil.attr(
-                                    HtmlUtil.ATTR_VALIGN,
-                                    HtmlUtil.VALUE_TOP)), HtmlUtil.attr(
-                                        HtmlUtil.ATTR_WIDTH, "100%")));
+                            HtmlUtils.attr(
+                                HtmlUtils.ATTR_ALIGN,
+                                HtmlUtils.VALUE_RIGHT)), HtmlUtils.attr(
+                                    HtmlUtils.ATTR_VALIGN,
+                                    HtmlUtils.VALUE_TOP)), HtmlUtils.attr(
+                                        HtmlUtils.ATTR_WIDTH, "100%")));
         }
 
 
 
 
         if (haveKey) {
-            sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE,
-                                    HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                         "100%")));
             sb.append("<tr valign=\"top\"><td width=\"50%\">");
         }
 
         if ( !doRatings) {
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
         }
         sb.append(getCommentHtml(request, entry));
         if (haveKey) {
@@ -4054,7 +4055,7 @@ public class EntryManager extends RepositoryManager {
                 + "\", \"/repository/xd_receiver.htm\");\n</script>\n\n";
             sb.append(fb);
             sb.append("</td></tr>");
-            sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
         }
 
 
@@ -4200,22 +4201,22 @@ public class EntryManager extends RepositoryManager {
         //        sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
         sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
         getRepository().addAuthToken(request, sb);
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.formEntry(msgLabel("Subject"),
-                                     HtmlUtil.input(ARG_SUBJECT, subject,
-                                         HtmlUtil.SIZE_40)));
-        sb.append(HtmlUtil.formEntryTop(msgLabel("Comment"),
-                                        HtmlUtil.textArea(ARG_COMMENT,
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(msgLabel("Subject"),
+                                     HtmlUtils.input(ARG_SUBJECT, subject,
+                                         HtmlUtils.SIZE_40)));
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Comment"),
+                                        HtmlUtils.textArea(ARG_COMMENT,
                                             comment, 5, 40)));
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 BLANK,
                 RepositoryUtil.buttons(
-                    HtmlUtil.submit(msg("Add Comment")),
-                    HtmlUtil.submit(msg("Cancel"), ARG_CANCEL))));
-        sb.append(HtmlUtil.formTableClose());
-        sb.append(HtmlUtil.formClose());
+                    HtmlUtils.submit(msg("Add Comment")),
+                    HtmlUtils.submit(msg("Cancel"), ARG_CANCEL))));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.formClose());
 
         return addEntryHeader(request, entry,
                               new OutputHandler(getRepository(),
@@ -4248,7 +4249,7 @@ public class EntryManager extends RepositoryManager {
 
         if (canComment) {
             sb.append(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     request.entryUrl(
                         getRepository().URL_COMMENTS_ADD,
                         entry), "Add Comment"));
@@ -4262,52 +4263,52 @@ public class EntryManager extends RepositoryManager {
         //        sb.append("<table>");
         int rowNum = 1;
         for (Comment comment : comments) {
-            //            sb.append(HtmlUtil.formEntry(BLANK, HtmlUtil.hr()));
+            //            sb.append(HtmlUtils.formEntry(BLANK, HtmlUtils.hr()));
             //TODO: Check for access
             String deleteLink = ( !canEdit
                                   ? ""
-                                  : HtmlUtil.href(request.url(getRepository().URL_COMMENTS_EDIT,
+                                  : HtmlUtils.href(request.url(getRepository().URL_COMMENTS_EDIT,
                                       ARG_DELETE, "true", ARG_ENTRYID,
                                       entry.getId(), ARG_AUTHTOKEN,
                                       getRepository().getAuthToken(request.getSessionId()),
                                       ARG_COMMENT_ID,
-                                      comment.getId()), HtmlUtil.img(iconUrl(ICON_DELETE),
+                                      comment.getId()), HtmlUtils.img(iconUrl(ICON_DELETE),
                                           msg("Delete comment"))));
             if (canEdit) {
-                //                sb.append(HtmlUtil.formEntry(BLANK, deleteLink));
+                //                sb.append(HtmlUtils.formEntry(BLANK, deleteLink));
             }
-            //            sb.append(HtmlUtil.formEntry("Subject:", comment.getSubject()));
+            //            sb.append(HtmlUtils.formEntry("Subject:", comment.getSubject()));
 
 
-            String theClass = HtmlUtil.cssClass("listrow" + rowNum);
-            theClass = HtmlUtil.cssClass(CSS_CLASS_COMMENT_BLOCK);
+            String theClass = HtmlUtils.cssClass("listrow" + rowNum);
+            theClass = HtmlUtils.cssClass(CSS_CLASS_COMMENT_BLOCK);
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
             }
             StringBuffer content = new StringBuffer();
-            String       byLine  = HtmlUtil.span(
+            String       byLine  = HtmlUtils.span(
                                 "Posted by " + comment.getUser().getLabel(),
-                                HtmlUtil.cssClass(
+                                HtmlUtils.cssClass(
                                     CSS_CLASS_COMMENT_COMMENTER)) + " @ "
-                                        + HtmlUtil.span(
+                                        + HtmlUtils.span(
                                             formatDate(
                                                 request,
-                                                comment.getDate()), HtmlUtil.cssClass(
-                                                    CSS_CLASS_COMMENT_DATE)) + HtmlUtil.space(
+                                                comment.getDate()), HtmlUtils.cssClass(
+                                                    CSS_CLASS_COMMENT_DATE)) + HtmlUtils.space(
                                                         1) + deleteLink;
             content.append(
-                HtmlUtil.open(
-                    HtmlUtil.TAG_DIV,
-                    HtmlUtil.cssClass(CSS_CLASS_COMMENT_INNER)));
+                HtmlUtils.open(
+                    HtmlUtils.TAG_DIV,
+                    HtmlUtils.cssClass(CSS_CLASS_COMMENT_INNER)));
             content.append(comment.getComment());
-            content.append(HtmlUtil.br());
+            content.append(HtmlUtils.br());
             content.append(byLine);
-            content.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
-            sb.append(HtmlUtil
-                .div(HtmlUtil
-                    .makeShowHideBlock(HtmlUtil
-                        .span(comment.getSubject(), HtmlUtil
+            content.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            sb.append(HtmlUtils
+                .div(HtmlUtils
+                    .makeShowHideBlock(HtmlUtils
+                        .span(comment.getSubject(), HtmlUtils
                             .cssClass(CSS_CLASS_COMMENT_SUBJECT)), content
                                 .toString(), true, ""), theClass));
         }
@@ -4343,7 +4344,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryLink(Request request, Entry entry, List args) {
-        return HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+        return HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                 entry, args), entry.getLabel());
     }
 
@@ -4476,20 +4477,20 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb             = new StringBuffer();
         String       entryId        = entry.getId();
 
-        String       uid            = "link_" + HtmlUtil.blockCnt++;
+        String       uid            = "link_" + HtmlUtils.blockCnt++;
         String       output         = "inline";
         String       folderClickUrl =
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
-            + HtmlUtil.arg(ARG_OUTPUT, output) + "&"
-            + HtmlUtil.arg(ARG_SHOWLINK, "" + showLink);
+            + HtmlUtils.arg(ARG_OUTPUT, output) + "&"
+            + HtmlUtils.arg(ARG_SHOWLINK, "" + showLink);
 
-        String  targetId = "targetspan_" + HtmlUtil.blockCnt++;
+        String  targetId = "targetspan_" + HtmlUtils.blockCnt++;
 
         boolean okToMove = !request.getUser().getAnonymous();
 
 
 
-        String  compId   = "popup_" + HtmlUtil.blockCnt++;
+        String  compId   = "popup_" + HtmlUtils.blockCnt++;
         String  linkId   = "img_" + uid;
         String  prefix   = "";
 
@@ -4499,25 +4500,25 @@ public class EntryManager extends RepositoryManager {
                                 ? "Click to open folder"
                                 : "Click to view contents";
             if (showArrow) {
-                prefix = HtmlUtil.img(
+                prefix = HtmlUtils.img(
                     getRepository().iconUrl(ICON_TOGGLEARROWRIGHT),
                     msg(message),
-                    HtmlUtil.id("img_" + uid)
-                    + HtmlUtil.onMouseClick(
-                        HtmlUtil.call(
+                    HtmlUtils.id("img_" + uid)
+                    + HtmlUtils.onMouseClick(
+                        HtmlUtils.call(
                             "folderClick",
-                            HtmlUtil.comma(
-                                HtmlUtil.squote(uid),
-                                HtmlUtil.squote(folderClickUrl),
-                                HtmlUtil.squote(
+                            HtmlUtils.comma(
+                                HtmlUtils.squote(uid),
+                                HtmlUtils.squote(folderClickUrl),
+                                HtmlUtils.squote(
                                     iconUrl(ICON_TOGGLEARROWDOWN))))));
             } else {
-                prefix = HtmlUtil.img(getRepository().iconUrl(ICON_BLANK),
+                prefix = HtmlUtils.img(getRepository().iconUrl(ICON_BLANK),
                                       "",
-                                      HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+                                      HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                           "10"));
             }
-            prefix = HtmlUtil.span(prefix, HtmlUtil.cssClass("arrow"));
+            prefix = HtmlUtils.span(prefix, HtmlUtils.cssClass("arrow"));
 
         }
 
@@ -4529,40 +4530,40 @@ public class EntryManager extends RepositoryManager {
         if (okToMove) {
             if (forTreeNavigation) {
                 targetEvent.append(
-                    HtmlUtil.onMouseOver(
-                        HtmlUtil.call(
+                    HtmlUtils.onMouseOver(
+                        HtmlUtils.call(
                             "mouseOverOnEntry",
-                            HtmlUtil.comma(
-                                "event", HtmlUtil.squote(entry.getId()),
-                                HtmlUtil.squote(targetId)))));
+                            HtmlUtils.comma(
+                                "event", HtmlUtils.squote(entry.getId()),
+                                HtmlUtils.squote(targetId)))));
 
 
                 targetEvent.append(
-                    HtmlUtil.onMouseUp(
-                        HtmlUtil.call(
+                    HtmlUtils.onMouseUp(
+                        HtmlUtils.call(
                             "mouseUpOnEntry",
-                            HtmlUtil.comma(
-                                "event", HtmlUtil.squote(entry.getId()),
-                                HtmlUtil.squote(targetId)))));
+                            HtmlUtils.comma(
+                                "event", HtmlUtils.squote(entry.getId()),
+                                HtmlUtils.squote(targetId)))));
             }
             targetEvent.append(
-                HtmlUtil.onMouseOut(
-                    HtmlUtil.call(
+                HtmlUtils.onMouseOut(
+                    HtmlUtils.call(
                         "mouseOutOnEntry",
-                        HtmlUtil.comma(
-                            "event", HtmlUtil.squote(entry.getId()),
-                            HtmlUtil.squote(targetId)))));
+                        HtmlUtils.comma(
+                            "event", HtmlUtils.squote(entry.getId()),
+                            HtmlUtils.squote(targetId)))));
 
             sourceEvent.append(
-                HtmlUtil.onMouseDown(
-                    HtmlUtil.call(
+                HtmlUtils.onMouseDown(
+                    HtmlUtils.call(
                         "mouseDownOnEntry",
-                        HtmlUtil.comma(
-                            "event", HtmlUtil.squote(entry.getId()),
-                            HtmlUtil.squote(
+                        HtmlUtils.comma(
+                            "event", HtmlUtils.squote(entry.getId()),
+                            HtmlUtils.squote(
                                 entry.getLabel().replace(
-                                    "'", "")), HtmlUtil.squote(iconId),
-                                        HtmlUtil.squote(entryIcon)))));
+                                    "'", "")), HtmlUtils.squote(iconId),
+                                        HtmlUtils.squote(entryIcon)))));
 
 
 
@@ -4587,18 +4588,18 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        String img = HtmlUtil.img(entryIcon, (okToMove
+        String img = HtmlUtils.img(entryIcon, (okToMove
                 ? imgText
-                : ""), HtmlUtil.id(iconId) + sourceEvent);
+                : ""), HtmlUtils.id(iconId) + sourceEvent);
 
         if (imgUrl != null) {
-            img = HtmlUtil.href(imgUrl, img);
+            img = HtmlUtils.href(imgUrl, img);
         }
         img = prefix + img;
 
         sb.append(img);
 
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.space(1));
         if (textBeforeEntryLink != null) {
             sb.append(textBeforeEntryLink);
         }
@@ -4608,24 +4609,24 @@ public class EntryManager extends RepositoryManager {
         if (showLink) {
             sb.append(getTooltipLink(request, entry, linkText, url));
         } else {
-            sb.append(HtmlUtil.span(linkText, targetEvent.toString()));
+            sb.append(HtmlUtils.span(linkText, targetEvent.toString()));
         }
 
 
-        String link = HtmlUtil.span(sb.toString(),
-                                    HtmlUtil.id(targetId) + targetEvent);
+        String link = HtmlUtils.span(sb.toString(),
+                                    HtmlUtils.id(targetId) + targetEvent);
 
 
         String folderBlock = ( !forTreeNavigation
                                ? ""
-                               : HtmlUtil.div("",
-                                   HtmlUtil.attrs(HtmlUtil.ATTR_STYLE,
+                               : HtmlUtils.div("",
+                                   HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
                                        "display:none;visibility:hidden",
-                                       HtmlUtil.ATTR_CLASS,
+                                       HtmlUtils.ATTR_CLASS,
                                        CSS_CLASS_FOLDER_BLOCK,
-                                       HtmlUtil.ATTR_ID, uid)));
+                                       HtmlUtils.ATTR_ID, uid)));
 
-        //        link = link + HtmlUtil.br()
+        //        link = link + HtmlUtils.br()
         //        return link;
         return new EntryLink(link, folderBlock, uid);
     }
@@ -4654,23 +4655,23 @@ public class EntryManager extends RepositoryManager {
         }
 
         String elementId     = entry.getId();
-        String qid           = HtmlUtil.squote(elementId);
-        String linkId        = "link_" + (HtmlUtil.blockCnt++);
-        String qlinkId       = HtmlUtil.squote(linkId);
-        String tooltipEvents = HtmlUtil.onMouseOver(
-                                   HtmlUtil.call(
+        String qid           = HtmlUtils.squote(elementId);
+        String linkId        = "link_" + (HtmlUtils.blockCnt++);
+        String qlinkId       = HtmlUtils.squote(linkId);
+        String tooltipEvents = HtmlUtils.onMouseOver(
+                                   HtmlUtils.call(
                                        "tooltip.onMouseOver",
-                                       HtmlUtil.comma(
+                                       HtmlUtils.comma(
                                            "event", qid,
-                                           qlinkId))) + HtmlUtil.onMouseOut(
-                                               HtmlUtil.call(
+                                           qlinkId))) + HtmlUtils.onMouseOut(
+                                               HtmlUtils.call(
                                                    "tooltip.onMouseOut",
-                                                   HtmlUtil.comma(
+                                                   HtmlUtils.comma(
                                                        "event", qid,
-                                                       qlinkId))) + HtmlUtil.onMouseMove(
-                                                           HtmlUtil.call(
+                                                       qlinkId))) + HtmlUtils.onMouseMove(
+                                                           HtmlUtils.call(
                                                                "tooltip.onMouseMove",
-                                                               HtmlUtil.comma(
+                                                               HtmlUtils.comma(
                                                                    "event",
                                                                    qid,
                                                                    qlinkId)));
@@ -4679,12 +4680,12 @@ public class EntryManager extends RepositoryManager {
                              ? request.getString(ARG_TARGET, "")
                              : null);
         String targetAttr = ((target != null)
-                             ? HtmlUtil.attr(HtmlUtil.ATTR_TARGET, target)
+                             ? HtmlUtils.attr(HtmlUtils.ATTR_TARGET, target)
                              : "");
 
 
-        return HtmlUtil.href(url, linkText,
-                             HtmlUtil.id(linkId) + " " + tooltipEvents
+        return HtmlUtils.href(url, linkText,
+                             HtmlUtils.id(linkId) + " " + tooltipEvents
                              + targetAttr);
     }
 
@@ -4849,7 +4850,7 @@ public class EntryManager extends RepositoryManager {
             //Only add the hr if we have more things in the list
             if ((cnt < 2) && needToAddHr) {
                 sb.append("<tr><td colspan=2><hr "
-                          + HtmlUtil.cssClass(CSS_CLASS_MENUITEM_SEPARATOR)
+                          + HtmlUtils.cssClass(CSS_CLASS_MENUITEM_SEPARATOR)
                           + "></td></tr>");
             }
             needToAddHr = link.getHr();
@@ -4857,25 +4858,25 @@ public class EntryManager extends RepositoryManager {
                 continue;
             }
 
-            sb.append(HtmlUtil
-                .open(HtmlUtil.TAG_TR,
-                      HtmlUtil.cssClass(CSS_CLASS_MENUITEM_ROW)) + HtmlUtil
-                          .open(HtmlUtil.TAG_TD) + HtmlUtil
-                          .open(HtmlUtil.TAG_DIV,
-                                HtmlUtil.cssClass(CSS_CLASS_MENUITEM_TD)));
+            sb.append(HtmlUtils
+                .open(HtmlUtils.TAG_TR,
+                      HtmlUtils.cssClass(CSS_CLASS_MENUITEM_ROW)) + HtmlUtils
+                          .open(HtmlUtils.TAG_TD) + HtmlUtils
+                          .open(HtmlUtils.TAG_DIV,
+                                HtmlUtils.cssClass(CSS_CLASS_MENUITEM_TD)));
             if (link.getIcon() == null) {
-                sb.append(HtmlUtil.space(1));
+                sb.append(HtmlUtils.space(1));
             } else {
-                sb.append(HtmlUtil.href(link.getUrl(),
-                                        HtmlUtil.img(link.getIcon())));
+                sb.append(HtmlUtils.href(link.getUrl(),
+                                        HtmlUtils.img(link.getIcon())));
             }
-            sb.append(HtmlUtil.space(1));
+            sb.append(HtmlUtils.space(1));
             sb.append("</div></td><td><div "
-                      + HtmlUtil.cssClass(CSS_CLASS_MENUITEM_TD) + ">");
+                      + HtmlUtils.cssClass(CSS_CLASS_MENUITEM_TD) + ">");
             sb.append(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     link.getUrl(), msg(link.getLabel()),
-                    HtmlUtil.cssClass(CSS_CLASS_MENUITEM_LINK)));
+                    HtmlUtils.cssClass(CSS_CLASS_MENUITEM_LINK)));
             sb.append("</div></td></tr>");
         }
 
@@ -4886,37 +4887,37 @@ public class EntryManager extends RepositoryManager {
 
         StringBuffer menu = new StringBuffer();
         menu.append("<table cellspacing=\"0\" cellpadding=\"4\">");
-        menu.append(HtmlUtil.open(HtmlUtil.TAG_TR,
-                                  HtmlUtil.attr(HtmlUtil.ATTR_VALIGN,
+        menu.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                                  HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
                                       "top")));
         if (fileSB != null) {
             fileSB.append("</table>");
-            menu.append(HtmlUtil.tag(HtmlUtil.TAG_TD, "", fileSB.toString()));
+            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "", fileSB.toString()));
         }
         if (categorySB != null) {
             categorySB.append("</table>");
-            menu.append(HtmlUtil.tag(HtmlUtil.TAG_TD, "",
+            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                      categorySB.toString()));
         }
         if (actionSB != null) {
             actionSB.append("</table>");
-            menu.append(HtmlUtil.tag(HtmlUtil.TAG_TD, "",
+            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                      actionSB.toString()));
         }
 
         if (htmlSB != null) {
             htmlSB.append("</table>");
-            menu.append(HtmlUtil.tag(HtmlUtil.TAG_TD, "", htmlSB.toString()));
+            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "", htmlSB.toString()));
         }
 
         if (exportSB != null) {
             exportSB.append("</table>");
-            menu.append(HtmlUtil.tag(HtmlUtil.TAG_TD, "",
+            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                      exportSB.toString()));
         }
 
-        menu.append(HtmlUtil.close(HtmlUtil.TAG_TR));
-        menu.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+        menu.append(HtmlUtils.close(HtmlUtils.TAG_TR));
+        menu.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
         return menu.toString();
 
@@ -4940,11 +4941,11 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_TOOLBAR)) {
-                String href = HtmlUtil.href(link.getUrl(),
-                                            HtmlUtil.img(link.getIcon(),
+                String href = HtmlUtils.href(link.getUrl(),
+                                            HtmlUtils.img(link.getIcon(),
                                                 link.getLabel(),
                                                 link.getLabel()));
-                sb.append(HtmlUtil.inset(href, 0, 3, 0, 0));
+                sb.append(HtmlUtils.inset(href, 0, 3, 0, 0));
             }
         }
 
@@ -4978,18 +4979,18 @@ public class EntryManager extends RepositoryManager {
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
         String       sep          =
-            HtmlUtil.div("",
-                         HtmlUtil.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
+            HtmlUtils.div("",
+                         HtmlUtils.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
 
 
-        String menuClass = HtmlUtil.cssClass(CSS_CLASS_MENUBUTTON);
+        String menuClass = HtmlUtils.cssClass(CSS_CLASS_MENUBUTTON);
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_OTHER)) {
                 categoryMenu = getEntryActionsTable(request, entry,
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
                 categoryMenu = getRepository().makePopupLink(
-                    HtmlUtil.span(msg(categoryName), menuClass),
+                    HtmlUtils.span(msg(categoryName), menuClass),
                     categoryMenu.toString(), false, true);
 
                 break;
@@ -5021,7 +5022,7 @@ public class EntryManager extends RepositoryManager {
             }
             menuItems.add(
                 getRepository().makePopupLink(
-                    HtmlUtil.span(msg(menuName), menuClass), entryMenu,
+                    HtmlUtils.span(msg(menuName), menuClass), entryMenu,
                     false, true));
 
         }
@@ -5033,7 +5034,7 @@ public class EntryManager extends RepositoryManager {
             }
             menuItems.add(
                 getRepository().makePopupLink(
-                    HtmlUtil.span(msg("Edit"), menuClass), editMenu, false,
+                    HtmlUtils.span(msg("Edit"), menuClass), editMenu, false,
                     true));
         }
 
@@ -5044,7 +5045,7 @@ public class EntryManager extends RepositoryManager {
             }
             menuItems.add(
                 getRepository().makePopupLink(
-                    HtmlUtil.span(msg("Connect"), menuClass), exportMenu,
+                    HtmlUtils.span(msg("Connect"), menuClass), exportMenu,
                     false, true));
         }
 
@@ -5055,7 +5056,7 @@ public class EntryManager extends RepositoryManager {
             }
             menuItems.add(
                 getRepository().makePopupLink(
-                    HtmlUtil.span(msg("View"), menuClass), viewMenu, false,
+                    HtmlUtils.span(msg("View"), menuClass), viewMenu, false,
                     true));
         }
 
@@ -5068,9 +5069,9 @@ public class EntryManager extends RepositoryManager {
         }
 
         String leftTable;
-        leftTable = HtmlUtil.table(
-            HtmlUtil.row(
-                HtmlUtil.cols(Misc.listToStringArray(menuItems)),
+        leftTable = HtmlUtils.table(
+            HtmlUtils.row(
+                HtmlUtils.cols(Misc.listToStringArray(menuItems)),
                 " cellpadding=0 cellspacing=0 border=0 "));
 
         return leftTable;
@@ -5150,7 +5151,7 @@ public class EntryManager extends RepositoryManager {
                               ? request.getString(ARG_TARGET, "")
                               : null);
         String  targetAttr = ((target != null)
-                              ? HtmlUtil.attr(HtmlUtil.ATTR_TARGET, target)
+                              ? HtmlUtils.attr(HtmlUtils.ATTR_TARGET, target)
                               : "");
 
         for (Entry ancestor : parents) {
@@ -5166,21 +5167,21 @@ public class EntryManager extends RepositoryManager {
             length += name.length();
             String link = null;
             if (target != null) {
-                link = HtmlUtil.href(
+                link = HtmlUtils.href(
                     request.entryUrl(
                         getRepository().URL_ENTRY_SHOW, ancestor), name,
                             targetAttr);
             } else {
                 link = ((requestUrl == null)
                         ? getTooltipLink(request, ancestor, name, null)
-                        : HtmlUtil.href(request.entryUrl(requestUrl,
+                        : HtmlUtils.href(request.entryUrl(requestUrl,
                         ancestor), name, targetAttr));
             }
             breadcrumbs.add(0, link);
         }
         if (target != null) {
             breadcrumbs.add(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                     entry.getLabel(), targetAttr));
 
@@ -5189,13 +5190,13 @@ public class EntryManager extends RepositoryManager {
                 breadcrumbs.add(getTooltipLink(request, entry,
                         entry.getLabel(), null));
             } else {
-                breadcrumbs.add(HtmlUtil.href(request.entryUrl(requestUrl,
+                breadcrumbs.add(HtmlUtils.href(request.entryUrl(requestUrl,
                         entry), entry.getLabel()));
             }
         }
-        //        breadcrumbs.add(HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+        //        breadcrumbs.add(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
         //                entry), entry.getLabel()));
-        //        breadcrumbs.add(HtmlUtil.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+        //        breadcrumbs.add(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
         //                entry), entry.getLabel()));
 
         //        System.err.println("BC:" + breadcrumbs);
@@ -5204,7 +5205,7 @@ public class EntryManager extends RepositoryManager {
                                "ramadda.template.breadcrumbs.separator",
                                BREADCRUMB_SEPARATOR);
 
-        return StringUtil.join(HtmlUtil.pad(BREADCRUMB_SEPARATOR),
+        return StringUtil.join(HtmlUtils.pad(BREADCRUMB_SEPARATOR),
                                breadcrumbs);
     }
 
@@ -5304,17 +5305,17 @@ public class EntryManager extends RepositoryManager {
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
-        String entryLink = HtmlUtil.space(1)
+        String entryLink = HtmlUtils.space(1)
                            + getTooltipLink(request, entry, entry.getLabel(),
                                             null);
 
         if (makeLinkForLastGroup) {
             breadcrumbs.add(entryLink);
             nav = StringUtil.join(separator, breadcrumbs);
-            nav = HtmlUtil.div(nav, HtmlUtil.cssClass("breadcrumbs"));
+            nav = HtmlUtils.div(nav, HtmlUtils.cssClass("breadcrumbs"));
         } else {
             String img = getRepository().makePopupLink(
-                             HtmlUtil.img(getIconUrl(request, entry)), links,
+                             HtmlUtils.img(getIconUrl(request, entry)), links,
                              true, false);
 
 
@@ -5326,8 +5327,8 @@ public class EntryManager extends RepositoryManager {
 
             String  breadcrumbHtml    = "";
             if (showBreadcrumbs) {
-                breadcrumbHtml = HtmlUtil.div(StringUtil.join(separator,
-                        breadcrumbs), HtmlUtil.cssClass("breadcrumbs"));
+                breadcrumbHtml = HtmlUtils.div(StringUtil.join(separator,
+                        breadcrumbs), HtmlUtils.cssClass("breadcrumbs"));
             }
 
             String toolbar = showToolbar
@@ -5341,8 +5342,8 @@ public class EntryManager extends RepositoryManager {
 
             if (showToolbar || showMenubar) {
                 menubar =
-                    HtmlUtil.leftRight(menubar, toolbar,
-                                       HtmlUtil.cssClass(CSS_CLASS_MENUBAR));
+                    HtmlUtils.leftRight(menubar, toolbar,
+                                       HtmlUtils.cssClass(CSS_CLASS_MENUBAR));
             } else {
                 menubar = "";
             }
@@ -5356,7 +5357,7 @@ public class EntryManager extends RepositoryManager {
             if (showEntryHeader) {
                 entryHeader =
                     "<table border=0 cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
-                    + HtmlUtil.rowBottom("<td class=\"entryname\" >" + img
+                    + HtmlUtils.rowBottom("<td class=\"entryname\" >" + img
                                          + entryLink
                                          + "</td><td align=\"right\">"
                                          + (showLayoutToolbar
@@ -5365,13 +5366,13 @@ public class EntryManager extends RepositoryManager {
             }
 
             if (showEntryHeader || showToolbar || showBreadcrumbs) {
-                style = HtmlUtil.cssClass("entryheader");
+                style = HtmlUtils.cssClass("entryheader");
             }
-            nav = HtmlUtil.div(menubar + breadcrumbHtml + entryHeader, style);
+            nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader, style);
 
         }
         String title =
-            StringUtil.join(HtmlUtil.pad(Repository.BREADCRUMB_SEPARATOR),
+            StringUtil.join(HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
                             titleList);
 
         return new String[] { title, nav };
@@ -5535,7 +5536,7 @@ public class EntryManager extends RepositoryManager {
     public Entry getRemoteEntry(Request request, String server, String id)
             throws Exception {
         String remoteUrl = server + getRepository().URL_ENTRY_SHOW.getPath();
-        remoteUrl = HtmlUtil.url(remoteUrl, ARG_ENTRYID, id, ARG_OUTPUT,
+        remoteUrl = HtmlUtils.url(remoteUrl, ARG_ENTRYID, id, ARG_OUTPUT,
                                  XmlOutputHandler.OUTPUT_XMLENTRY);
         String entriesXml = getStorageManager().readSystemResource(remoteUrl);
 
@@ -6485,16 +6486,16 @@ public class EntryManager extends RepositoryManager {
         }
 
         String fileTail = getStorageManager().getFileTail(entry);
-        fileTail = HtmlUtil.urlEncodeExceptSpace(fileTail);
+        fileTail = HtmlUtils.urlEncodeExceptSpace(fileTail);
         //For now use the full entry path
         if (fileTail.equals(entry.getName())) {
             fileTail = entry.getFullName(true);
         }
         if (full) {
-            return HtmlUtil.url(getRepository().URL_ENTRY_GET.getFullUrl()
+            return HtmlUtils.url(getRepository().URL_ENTRY_GET.getFullUrl()
                                 + "/" + fileTail, ARG_ENTRYID, entry.getId());
         } else {
-            return HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET)
+            return HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET)
                                 + "/" + fileTail, ARG_ENTRYID, entry.getId());
         }
     }
@@ -6901,10 +6902,10 @@ public class EntryManager extends RepositoryManager {
                 didone = true;
             }
             sb.append(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                     entry.getName()));
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.br());
         }
         if ( !didone) {
             sb.append(
@@ -7966,7 +7967,7 @@ public class EntryManager extends RepositoryManager {
      * @param sb _more_
      */
     public void addStatusInfo(StringBuffer sb) {
-        sb.append(HtmlUtil.formEntry(msgLabel("Entry Cache"),
+        sb.append(HtmlUtils.formEntry(msgLabel("Entry Cache"),
                                      getEntryCache().size() / 2 + ""));
     }
 
@@ -8302,19 +8303,19 @@ public class EntryManager extends RepositoryManager {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {
             String first    = text.substring(0, idx);
-            String base     = "" + (HtmlUtil.blockCnt++);
+            String base     = "" + (HtmlUtils.blockCnt++);
             String divId    = "morediv_" + base;
             String linkId   = "morelink_" + base;
             String second   = text.substring(idx + "<more>".length());
-            String moreLink = "javascript:showMore(" + HtmlUtil.squote(base)
+            String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
                               + ")";
-            String lessLink = "javascript:hideMore(" + HtmlUtil.squote(base)
+            String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)
                               + ")";
-            text = first + "<br><a " + HtmlUtil.id(linkId) + " href="
-                   + HtmlUtil.quote(moreLink)
+            text = first + "<br><a " + HtmlUtils.id(linkId) + " href="
+                   + HtmlUtils.quote(moreLink)
                    + ">More...</a><div style=\"\" class=\"moreblock\" "
-                   + HtmlUtil.id(divId) + ">" + second + "<br>" + "<a href="
-                   + HtmlUtil.quote(lessLink) + ">...Less</a>" + "</div>";
+                   + HtmlUtils.id(divId) + ">" + second + "<br>" + "<a href="
+                   + HtmlUtils.quote(lessLink) + ">...Less</a>" + "</div>";
         }
         text = text.replaceAll("\r\n\r\n", "<p>");
         text = text.replace("\n\n", "<p>");

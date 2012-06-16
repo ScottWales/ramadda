@@ -36,7 +36,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.SocketConnection;
@@ -629,8 +629,8 @@ public class ChatOutputHandler extends OutputHandler {
         if (entry.getResource().isImage()) {
             String url = getEntryManager().getEntryResourceUrl(request,
                              entry);
-            params += HtmlUtil.open("PARAM",
-                                    HtmlUtil.attrs("NAME",
+            params += HtmlUtils.open("PARAM",
+                                    HtmlUtils.attrs("NAME",
                                         "whiteboard.bgimage", "VALUE", url));
 
         }

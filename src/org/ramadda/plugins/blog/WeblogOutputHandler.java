@@ -31,7 +31,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -155,15 +155,15 @@ public class WeblogOutputHandler extends OutputHandler {
                              Permission.ACTION_NEW);
 
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtil.cssLink(getRepository().getUrlBase()
+        sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                    + "/blog/blogstyle.css"));
         if (canAdd) {
-            sb.append(HtmlUtil
-                .href(HtmlUtil
+            sb.append(HtmlUtils
+                .href(HtmlUtils
                     .url(request
                         .entryUrl(getRepository().URL_ENTRY_FORM, group,
                             ARG_GROUP), ARG_TYPE,
-                                BlogEntryTypeHandler.TYPE_BLOGENTRY), HtmlUtil
+                                BlogEntryTypeHandler.TYPE_BLOGENTRY), HtmlUtils
                                     .img(getRepository().iconUrl(ICON_NEW),
                                         msg("New Weblog Entry"))));
         }
@@ -174,11 +174,11 @@ public class WeblogOutputHandler extends OutputHandler {
                 continue;
             }
             String blogEntry = getBlogEntry(request, entry);
-            blogEntries.append(HtmlUtil.div(blogEntry,
-                                            HtmlUtil.cssClass("blogentry")));
+            blogEntries.append(HtmlUtils.div(blogEntry,
+                                            HtmlUtils.cssClass("blogentry")));
         }
-        sb.append(HtmlUtil.div(blogEntries.toString(),
-                               HtmlUtil.cssClass("blogentries")));
+        sb.append(HtmlUtils.div(blogEntries.toString(),
+                               HtmlUtils.cssClass("blogentries")));
 
         return new Result("", sb);
     }
@@ -211,17 +211,17 @@ public class WeblogOutputHandler extends OutputHandler {
         StringBuffer blogEntry = new StringBuffer();
         EntryLink link = getEntryManager().getAjaxLink(request, entry,
                              entry.getName(), null, false);
-        String subject = HtmlUtil.div(link.getLink(),
-                                      HtmlUtil.cssClass("blogsubject"));
+        String subject = HtmlUtils.div(link.getLink(),
+                                      HtmlUtils.cssClass("blogsubject"));
         String postingInfo =
-            HtmlUtil.div(
+            HtmlUtils.div(
                 "by" + " " + entry.getUser().getName() + " @ "
                 + formatDate(
-                    new Date(entry.getStartDate())), HtmlUtil.cssClass(
+                    new Date(entry.getStartDate())), HtmlUtils.cssClass(
                     "blogdate"));
-        String header = HtmlUtil.leftRight(subject, postingInfo);
-        blogEntry.append(HtmlUtil.div(header,
-                                      HtmlUtil.cssClass("blogheader")));
+        String header = HtmlUtils.leftRight(subject, postingInfo);
+        blogEntry.append(HtmlUtils.div(header,
+                                      HtmlUtils.cssClass("blogheader")));
         String desc = entry.getDescription();
         if (desc.startsWith("<p>")) {
             desc = desc.substring(3);
@@ -234,18 +234,18 @@ public class WeblogOutputHandler extends OutputHandler {
         if (values[0] != null) {
             String extra = ((String) values[0]).trim();
             if (extra.length() > 0) {
-                blogBody.append(HtmlUtil.makeShowHideBlock(msg("More..."),
+                blogBody.append(HtmlUtils.makeShowHideBlock(msg("More..."),
                         extra, false));
             }
         }
         StringBuffer comments = getCommentBlock(request, entry, false);
-        String commentsBlock = HtmlUtil.makeShowHideBlock(msg("Comments"),
-                                   HtmlUtil.insetDiv(comments.toString(), 0,
+        String commentsBlock = HtmlUtils.makeShowHideBlock(msg("Comments"),
+                                   HtmlUtils.insetDiv(comments.toString(), 0,
                                        30, 0, 0), false);
 
         blogBody.append(commentsBlock);
-        blogEntry.append(HtmlUtil.div(HtmlUtil.makeToggleTable("",
-                blogBody.toString(), true), HtmlUtil.cssClass("blogbody")));
+        blogEntry.append(HtmlUtils.div(HtmlUtils.makeToggleTable("",
+                blogBody.toString(), true), HtmlUtils.cssClass("blogbody")));
 
         return blogEntry.toString();
     }

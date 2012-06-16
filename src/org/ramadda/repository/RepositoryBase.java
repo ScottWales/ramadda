@@ -21,7 +21,7 @@
 package org.ramadda.repository;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import java.text.SimpleDateFormat;
 
@@ -747,7 +747,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public static String getDialogString(String s) {
-        s = HtmlUtil.entityEncode(s);
+        s = HtmlUtils.entityEncode(s);
         s = s.replace("&#60;msg&#32;", "<msg ");
         s = s.replace("&#32;msg&#62;", " msg>");
         s = s.replace("&#32;", " ");
@@ -769,13 +769,13 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public String getMessage(String h, String icon, boolean showClose) {
         String html =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick("hide('messageblock')"),
-                            HtmlUtil.img(iconUrl(Constants.ICON_CLOSE)));
+            HtmlUtils.jsLink(HtmlUtils.onMouseClick("hide('messageblock')"),
+                            HtmlUtils.img(iconUrl(Constants.ICON_CLOSE)));
         if ( !showClose) {
             html = "&nbsp;";
         }
         h = "<div class=\"innernote\"><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td valign=\"top\">"
-            + HtmlUtil.img(iconUrl(icon)) + HtmlUtil.space(2)
+            + HtmlUtils.img(iconUrl(icon)) + HtmlUtils.space(2)
             + "</td><td valign=\"bottom\"><span class=\"notetext\">" + h
             + "</span></td></tr></table></div>";
         return "\n<table border=\"0\" id=\"messageblock\"><tr><td><div class=\"note\"><table><tr valign=top><td>"

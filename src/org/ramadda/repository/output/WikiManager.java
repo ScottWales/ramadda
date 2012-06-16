@@ -38,7 +38,7 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -589,11 +589,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                String url, Entry entry, Hashtable props)
             throws Exception {
         String width = (String) props.get(ATTR_WIDTH);
-        String alt   = (String) props.get(HtmlUtil.ATTR_ALT);
+        String alt   = (String) props.get(HtmlUtils.ATTR_ALT);
         String extra = "";
 
         if (width != null) {
-            extra = extra + HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, width);
+            extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width);
         }
 
         if (alt == null) {
@@ -604,13 +604,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         if (alt != null) {
-            extra = extra + HtmlUtil.attr(HtmlUtil.ATTR_ALT, alt);
+            extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, alt);
         }
 
         if (wikiUtil != null) {
             String imageClass = (String) wikiUtil.getProperty("image.class");
             if (imageClass != null) {
-                extra = extra + HtmlUtil.cssClass(imageClass);
+                extra = extra + HtmlUtils.cssClass(imageClass);
             }
         }
 
@@ -631,15 +631,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             extra = extra + " style=\"position:absolute; " + style + "\" ";
         }
 
-        String  img          = HtmlUtil.img(url, entry.getName(), extra);
+        String  img          = HtmlUtils.img(url, entry.getName(), extra);
         boolean link         = Misc.equals("true", props.get(ATTR_LINK));
         boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                    false);
         if (link) {
-            return HtmlUtil.href(
+            return HtmlUtils.href(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
         } else if (linkResource) {
-            return HtmlUtil.href(
+            return HtmlUtils.href(
                 entry.getTypeHandler().getEntryResourceUrl(request, entry),
                 img);
         }
@@ -883,9 +883,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         getHtmlOutputHandler().getHtmlResult(request,
                             OutputHandler.OUTPUT_HTML, child);
                     sb.append(getEntryManager().getEntryLink(request, child));
-                    sb.append(HtmlUtil.br());
+                    sb.append(HtmlUtils.br());
                     sb.append(new String(result.getContent()));
-                    sb.append(HtmlUtil.p());
+                    sb.append(HtmlUtils.p());
                 }
 
                 return sb.toString();
@@ -1013,7 +1013,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String title = child.getName();
                 if (includeIcon) {
                     title =
-                        HtmlUtil.img(getEntryManager().getIconUrl(request,
+                        HtmlUtils.img(getEntryManager().getIconUrl(request,
                             child)) + " " + title;
                 }
                 titles.add(title);
@@ -1058,12 +1058,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         url = request.entryUrl(
                             getRepository().URL_ENTRY_SHOW, child);
                     }
-                    String href = HtmlUtil.href(url, linklabel.isEmpty()
+                    String href = HtmlUtils.href(url, linklabel.isEmpty()
                             ? child.getName()
                             : linklabel);
 
-                    content = content + HtmlUtil.br()
-                              + HtmlUtil.leftRight("", href);
+                    content = content + HtmlUtils.br()
+                              + HtmlUtils.leftRight("", href);
                 }
                 contents.add(content);
 
@@ -1073,28 +1073,28 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (include.equals(WIKI_PROP_ACCORDIAN)) {
                 String accordianId = "accordion_" + (idCounter++);
                 sb.append(
-                    HtmlUtil.open(
-                        HtmlUtil.TAG_DIV,
-                        HtmlUtil.cssClass(
-                            "ui-accordion ui-widget ui-helper-reset") + HtmlUtil.id(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.cssClass(
+                            "ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
                             accordianId)));
                 for (int i = 0; i < titles.size(); i++) {
                     String title   = titles.get(i);
                     String content = contents.get(i);
                     sb.append(
-                        HtmlUtil.open(
-                            HtmlUtil.TAG_H3,
-                            HtmlUtil.cssClass(
+                        HtmlUtils.open(
+                            HtmlUtils.TAG_H3,
+                            HtmlUtils.cssClass(
                                 "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
                     sb.append("<a href=\"#\">");
                     sb.append(title);
                     sb.append("</a></h3>");
-                    sb.append(HtmlUtil.div(content, ""));
+                    sb.append(HtmlUtils.div(content, ""));
                 }
                 sb.append("</div>");
                 String args =
                     "autoHeight: false, navigation: true, collapsible: true";
-                sb.append(HtmlUtil.script("$(function() {\n$(\"#"
+                sb.append(HtmlUtils.script("$(function() {\n$(\"#"
                                           + accordianId + "\" ).accordion({"
                                           + args + "});});\n"));
 
@@ -1109,8 +1109,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String  arrowHeight = "43";
                 String  slideId     = "slides_" + (idCounter++);
 
-                sb.append(HtmlUtil.open("style",
-                                        HtmlUtil.attr("type", "text/css")));
+                sb.append(HtmlUtils.open("style",
+                                        HtmlUtils.attr("type", "text/css")));
                 // need to set the height of the div to include the nav bar
                 sb.append("#" + slideId + " { width: " + width
                           + "px; height: " + (height + 30) + "}\n");
@@ -1135,7 +1135,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                      : 0;
                 String slideParams =
                     "preload: false, preloadImage: "
-                    + HtmlUtil
+                    + HtmlUtils
                         .squote(getRepository()
                             .fileUrl("/slides/img/loading.gif")) + ", play: "
                                 + startSpeed
@@ -1144,65 +1144,65 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 StringBuffer js = new StringBuffer();
 
                 js.append(
-                    "$(function(){\n$(" + HtmlUtil.squote("#" + slideId)
+                    "$(function(){\n$(" + HtmlUtils.squote("#" + slideId)
                     + ").slides({" + slideParams
                     + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
 
-                sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                        HtmlUtil.id(slideId)));
+                sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                        HtmlUtils.id(slideId)));
 
 
 
                 String prevImage =
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         "#",
-                        HtmlUtil.img(
+                        HtmlUtils.img(
                             getRepository().fileUrl(
                                 "/slides/img/arrow-prev.png"), "Prev",
-                                    " width=18 "), HtmlUtil.cssClass("prev"));
+                                    " width=18 "), HtmlUtils.cssClass("prev"));
 
                 String nextImage =
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         "#",
-                        HtmlUtil.img(
+                        HtmlUtils.img(
                             getRepository().fileUrl(
                                 "/slides/img/arrow-next.png"), "Next",
-                                    " width=18 "), HtmlUtil.cssClass("next"));
+                                    " width=18 "), HtmlUtils.cssClass("next"));
 
 
                 sb.append(
                     "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
-                sb.append(HtmlUtil.col(prevImage, "width=1"));
-                sb.append(HtmlUtil.open(HtmlUtil.TAG_TD,
-                                        HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+                sb.append(HtmlUtils.col(prevImage, "width=1"));
+                sb.append(HtmlUtils.open(HtmlUtils.TAG_TD,
+                                        HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                             "" + width)));
                 sb.append(
-                    HtmlUtil.open(
-                        HtmlUtil.TAG_DIV,
-                        HtmlUtil.cssClass("slides_container")));
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.cssClass("slides_container")));
                 for (int i = 0; i < titles.size(); i++) {
                     String title   = titles.get(i);
                     String content = contents.get(i);
                     sb.append("\n");
-                    sb.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                            HtmlUtil.cssClass("slide")));
+                    sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                            HtmlUtils.cssClass("slide")));
                     sb.append(content);
-                    //                    sb.append(HtmlUtil.br());
+                    //                    sb.append(HtmlUtils.br());
                     //                    sb.append(title);
-                    sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slide
+                    sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // slide
                 }
-                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slides_container
-                sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
-                sb.append(HtmlUtil.col(nextImage, "width=1"));
+                sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // slides_container
+                sb.append(HtmlUtils.close(HtmlUtils.TAG_TD));
+                sb.append(HtmlUtils.col(nextImage, "width=1"));
                 sb.append("</tr></table>");
-                sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));  // slideId
+                sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // slideId
 
                 sb.append(
-                    HtmlUtil.importJS(
+                    HtmlUtils.importJS(
                         getRepository().fileUrl(
                             "/slides/slides.min.jquery.js")));
 
-                sb.append(HtmlUtil.script(js.toString()));
+                sb.append(HtmlUtils.script(js.toString()));
 
                 return sb.toString();
             } else {
@@ -1269,7 +1269,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 tmp.append("<table width=100% border=0>");
                 tmp.append(map.get(date));
                 tmp.append("</table>");
-                sb.append(HtmlUtil.makeShowHideBlock(msg, tmp.toString(),
+                sb.append(HtmlUtils.makeShowHideBlock(msg, tmp.toString(),
                         true));
             }
 
@@ -1318,19 +1318,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     colCnt = 0;
                 }
                 colCnt++;
-                String url = HtmlUtil.url(
+                String url = HtmlUtils.url(
                                  request.url(repository.URL_ENTRY_GET) + "/"
                                  + getStorageManager().getFileTail(
                                      child), ARG_ENTRYID, child.getId());
                 sb.append("<td align=\"center\">");
                 if (width <= 0) {
-                    sb.append(HtmlUtil.img(url));
+                    sb.append(HtmlUtils.img(url));
                 } else {
-                    sb.append(HtmlUtil.img(url, "",
-                                           HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+                    sb.append(HtmlUtils.img(url, "",
+                                           HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                                "" + width)));
                 }
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.br());
                 if ( !random) {
                     sb.append("<b>");
                     sb.append(msg("Figure"));
@@ -1341,8 +1341,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(getEntryManager().getAjaxLink(request, child,
                         child.getLabel()));
                 sb.append("</td>");
-                //              sb.append(HtmlUtil.br());
-                //              sb.append(HtmlUtil.makeToggleInline("...", child.getDescription(),false));
+                //              sb.append(HtmlUtils.br());
+                //              sb.append(HtmlUtils.makeToggleInline("...", child.getDescription(),false));
             }
             sb.append("</table>");
 
@@ -1426,9 +1426,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                            child);
                 }
 
-                String href = HtmlUtil.href(url, child.getName(),
-                                            HtmlUtil.cssClass(cssClass)
-                                            + HtmlUtil.style(style));
+                String href = HtmlUtils.href(url, child.getName(),
+                                            HtmlUtils.cssClass(cssClass)
+                                            + HtmlUtils.style(style));
                 links.add(tagOpen + href + tagClose);
             }
 
@@ -1442,11 +1442,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         if (doBG) {
-            return HtmlUtil.makeShowHideBlock(blockTitle, blockContent, open,
-                    HtmlUtil.cssClass("toggleblocklabel"), "");
-            //            HtmlUtil.cssClass("wiki-tocheader"),  HtmlUtil.cssClass("wiki-toc"));
+            return HtmlUtils.makeShowHideBlock(blockTitle, blockContent, open,
+                    HtmlUtils.cssClass("toggleblocklabel"), "");
+            //            HtmlUtils.cssClass("wiki-tocheader"),  HtmlUtils.cssClass("wiki-toc"));
         } else {
-            return HtmlUtil.makeShowHideBlock(blockTitle, blockContent, open);
+            return HtmlUtils.makeShowHideBlock(blockTitle, blockContent, open);
         }
 
     }
@@ -1819,9 +1819,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean open    = Misc.getProperty(props, ATTR_OPEN, true);
 
             if (inBlock && (title != null)) {
-                return HtmlUtil.makeShowHideBlock(title, propertyValue, open,
-                        HtmlUtil.cssClass(CSS_CLASS_HEADING_2), "");
-                //                        HtmlUtil.cssClass("wiki-tocheader"),   HtmlUtil.cssClass("wiki-toc"));
+                return HtmlUtils.makeShowHideBlock(title, propertyValue, open,
+                        HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "");
+                //                        HtmlUtils.cssClass("wiki-tocheader"),   HtmlUtils.cssClass("wiki-toc"));
             }
 
             return propertyValue;
@@ -1956,8 +1956,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     cnt=1;
                 }
                 String group = prop.substring(WIKI_PROP_GROUP.length());
-                importMenu.append(HtmlUtil.b(group));
-                importMenu.append(HtmlUtil.br());
+                importMenu.append(HtmlUtils.b(group));
+                importMenu.append(HtmlUtils.br());
                 continue;
             }
             String textToInsert  = prop;
@@ -1970,13 +1970,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
 
             String js2 = "javascript:insertTags("
-                         + HtmlUtil.squote(textAreaId) + ","
-                         + HtmlUtil.squote("{{" + textToInsert + " ") + ","
-                         + HtmlUtil.squote("}}") + "," + HtmlUtil.squote("")
+                         + HtmlUtils.squote(textAreaId) + ","
+                         + HtmlUtils.squote("{{" + textToInsert + " ") + ","
+                         + HtmlUtils.squote("}}") + "," + HtmlUtils.squote("")
                          + ");";
             importMenu.append(inset);
-            importMenu.append(HtmlUtil.href(js2, prop));
-            importMenu.append(HtmlUtil.br());
+            importMenu.append(HtmlUtils.href(js2, prop));
+            importMenu.append(HtmlUtils.br());
 
         }
         importMenu.append("</td><tr></table>");
@@ -1993,9 +1993,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             String prop = link.getOutputType().getId();
             String js   = "javascript:insertTags("
-                        + HtmlUtil.squote(textAreaId) + ","
-                        + HtmlUtil.squote("{{") + "," + HtmlUtil.squote("}}")
-                        + "," + HtmlUtil.squote(prop) + ");";
+                        + HtmlUtils.squote(textAreaId) + ","
+                        + HtmlUtils.squote("{{") + "," + HtmlUtils.squote("}}")
+                        + "," + HtmlUtils.squote(prop) + ");";
         }
 
 
@@ -2005,21 +2005,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 //        importMenu.append("<hr>");
                 for(OutputType type: allTypes) {
                     String prop = type.getId();
-                    String js = "javascript:insertTags(" + HtmlUtil.squote(textAreaId)+"," +
-                        HtmlUtil.squote("{{import ") +","+
-                        HtmlUtil.squote(" " + type.getId()+" }}") +","+
-                        HtmlUtil.squote("entryid")+");";
-                    importOutputMenu.append(HtmlUtil.href(js,type.getLabel()));
-                    importOutputMenu.append(HtmlUtil.br());
+                    String js = "javascript:insertTags(" + HtmlUtils.squote(textAreaId)+"," +
+                        HtmlUtils.squote("{{import ") +","+
+                        HtmlUtils.squote(" " + type.getId()+" }}") +","+
+                        HtmlUtils.squote("entryid")+");";
+                    importOutputMenu.append(HtmlUtils.href(js,type.getLabel()));
+                    importOutputMenu.append(HtmlUtils.br());
                 }
         */
 
 
         String importMenuLabel = msg("Add property");
-        //            HtmlUtil.img(iconUrl("/icons/wiki/button_import.png"),
+        //            HtmlUtils.img(iconUrl("/icons/wiki/button_import.png"),
         //                         "Import Entry Property");
         String importButton = getRepository().makePopupLink(importMenuLabel,
-                                  HtmlUtil.hbox(importMenu.toString(),
+                                  HtmlUtils.hbox(importMenu.toString(),
                                       importOutputMenu.toString()));
         String addEntry = OutputHandler.getSelect(request, textAreaId,
                               "Add entry id", true, "entryid", entry, false);
@@ -2028,11 +2028,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                              "Add entry link", true, "wikilink", entry,
                              false);
 
-        buttons.append(HtmlUtil.space(2));
+        buttons.append(HtmlUtils.space(2));
         buttons.append(importButton);
-        buttons.append(HtmlUtil.space(2));
+        buttons.append(HtmlUtils.space(2));
         buttons.append(addEntry);
-        buttons.append(HtmlUtil.space(2));
+        buttons.append(HtmlUtils.space(2));
         buttons.append(addLink);
 
         return buttons.toString();
@@ -2060,16 +2060,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String prop = prefix + example + suffix;
         String js;
         if (suffix.length() == 0) {
-            js = "javascript:insertText(" + HtmlUtil.squote(textAreaId) + ","
-                 + HtmlUtil.squote(prop) + ");";
+            js = "javascript:insertText(" + HtmlUtils.squote(textAreaId) + ","
+                 + HtmlUtils.squote(prop) + ");";
         } else {
-            js = "javascript:insertTags(" + HtmlUtil.squote(textAreaId) + ","
-                 + HtmlUtil.squote(prefix) + "," + HtmlUtil.squote(suffix)
-                 + "," + HtmlUtil.squote(example) + ");";
+            js = "javascript:insertTags(" + HtmlUtils.squote(textAreaId) + ","
+                 + HtmlUtils.squote(prefix) + "," + HtmlUtils.squote(suffix)
+                 + "," + HtmlUtils.squote(example) + ");";
         }
 
-        return HtmlUtil.href(js,
-                             HtmlUtil.img(iconUrl("/icons/wiki/" + icon),
+        return HtmlUtils.href(js,
+                             HtmlUtils.img(iconUrl("/icons/wiki/" + icon),
                                           label));
 
     }
@@ -2101,7 +2101,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         getRepository().getSearchManager().URL_ENTRY_SEARCH,
                         ARG_METADATA_TYPE + ".wikicategory", "wikicategory",
                         ARG_METADATA_ATTR1 + ".wikicategory", category);
-                wikiUtil.addCategoryLink(HtmlUtil.href(url, category));
+                wikiUtil.addCategoryLink(HtmlUtils.href(url, category));
                 List categories =
                     (List) wikiUtil.getProperty("wikicategories");
                 if (categories == null) {
@@ -2150,11 +2150,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             //If its an anonymous user then jusst show the label or the name
             if(request.isAnonymous()) {
-                String extra = HtmlUtil.cssClass("wiki-link-noexist");
+                String extra = HtmlUtils.cssClass("wiki-link-noexist");
                 if(label!=null && label.length()>0) {
-                    return HtmlUtil.span(label,   extra);
+                    return HtmlUtils.span(label,   extra);
                 }
-                return HtmlUtil.span(name,   extra);
+                return HtmlUtils.span(name,   extra);
             }
 
             String url = request.url(getRepository().URL_ENTRY_FORM,
@@ -2164,8 +2164,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                       : parent.getId()), ARG_TYPE,
                                           TYPE_WIKIPAGE);
 
-            return HtmlUtil.href(url, name,
-                                 HtmlUtil.cssClass("wiki-link-noexist"));
+            return HtmlUtils.href(url, name,
+                                 HtmlUtils.cssClass("wiki-link-noexist"));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -2264,7 +2264,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return content;
         }
 
-        return HtmlUtil.div(content, HtmlUtil.cssClass("wikicontent"));
+        return HtmlUtils.div(content, HtmlUtils.cssClass("wikicontent"));
     }
 
     /**

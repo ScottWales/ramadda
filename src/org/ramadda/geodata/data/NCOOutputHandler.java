@@ -36,11 +36,14 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 
 import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.util.IOUtil;
 
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ramadda.util.TempDir;
 
 
 
@@ -58,7 +61,12 @@ public class NCOOutputHandler extends OutputHandler {
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_NCO =
         new OutputType("NCO", "nco", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, DataOutputHandler.ICON_OPENDAP, DataOutputHandler.GROUP_DATA);
+                       OutputType.SUFFIX_NONE, "/data/nco.png", DataOutputHandler.GROUP_DATA);
+
+
+    /** _more_ */
+    private TempDir productDir;
+
 
 
     private String ncoPath;
@@ -105,11 +113,40 @@ public class NCOOutputHandler extends OutputHandler {
         if ( !haveNco()) {
             return;
         }
-
         if(state.entry!=null && state.entry.isFile() && state.entry.getResource().getPath().endsWith(".nc")) {
             links.add(makeLink(request, state.entry, OUTPUT_NCO));
         }
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private File getProductDir() throws Exception {
+        if (productDir == null) {
+            TempDir tempDir = getStorageManager().makeTempDir("ncoproducts");
+            //keep things around for 7 day  
+            tempDir.setMaxAge(1000 * 60 * 60 * 24 * 7);
+            productDir = tempDir;
+        }
+        return productDir.getDir();
+    }
+
+
+    private File getWorkDir(Object jobId) throws Exception {
+        File theProductDir = new File(IOUtil.joinDir(getProductDir(),
+                                 jobId.toString()));
+        IOUtil.makeDir(theProductDir);
+        return theProductDir;
+    }
+
+
+
 
     /**
      * _more_
@@ -125,6 +162,26 @@ public class NCOOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+
+
+        String uniqueId = getRepository().getGUID();
+        File   workDir  = getWorkDir(uniqueId);
+
+        String tail = IOUtil.getFileTail(IOUtil.stripExtension(entry.getResource().getPath()))+"_product.nc";
+        File outFile = new File(IOUtil.joinDir(workDir, tail));
+        System.err.println (outFile);
+        ProcessBuilder pb = new ProcessBuilder(ncoPath+"/ncwa", entry.getResource().getPath(),
+                                               outFile.toString());
+        pb.directory(workDir);
+        Process process = pb.start();
+        String errorMsg =
+            new String(IOUtil.readBytes(process.getErrorStream()));
+        String outMsg =
+            new String(IOUtil.readBytes(process.getInputStream()));
+        int result = process.waitFor();
+
+
+
         return new Result("test", new StringBuffer(""));
     }
 

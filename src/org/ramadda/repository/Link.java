@@ -23,7 +23,7 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.output.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 import ucar.unidata.util.IOUtil;
@@ -204,9 +204,9 @@ public class Link {
             return "<hr>";
         }
         if (icon == null) {
-            return HtmlUtil.href(url, label);
+            return HtmlUtils.href(url, label);
         }
-        return HtmlUtil.href(url, HtmlUtil.img(icon, label));
+        return HtmlUtils.href(url, HtmlUtils.img(icon, label));
     }
 
 

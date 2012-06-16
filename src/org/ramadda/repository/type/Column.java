@@ -35,7 +35,7 @@ import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -1217,13 +1217,13 @@ public class Column implements DataTypes, Constants {
             return;
         }
         String widget = getFormWidget(request, entry, values);
-        //        formBuffer.append(HtmlUtil.formEntry(getLabel() + ":",
-        //                                             HtmlUtil.hbox(widget, suffix)));
+        //        formBuffer.append(HtmlUtils.formEntry(getLabel() + ":",
+        //                                             HtmlUtils.hbox(widget, suffix)));
         if ((group != null) && (state.get(group) == null)) {
             formBuffer.append(
-                HtmlUtil.row(
-                    HtmlUtil.colspan(
-                        HtmlUtil.div(group, " class=\"formgroupheader\" "),
+                HtmlUtils.row(
+                    HtmlUtils.colspan(
+                        HtmlUtils.div(group, " class=\"formgroupheader\" "),
                         2)));
             state.put(group, group);
         }
@@ -1295,8 +1295,8 @@ public class Column implements DataTypes, Constants {
             } else {
                 value = Misc.equals(dflt, "true");
             }
-            widget = HtmlUtil.checkbox(id, "true", value);
-            //            widget = HtmlUtil.select(id, Misc.newList("True", "False"),
+            widget = HtmlUtils.checkbox(id, "true", value);
+            //            widget = HtmlUtils.select(id, Misc.newList("True", "False"),
             //                                     value);
         } else if (isType(DATATYPE_DATETIME)) {
             Date date;
@@ -1323,7 +1323,7 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = (String) toString(values, offset);
             }
-            widget = HtmlUtil.select(id, enumValues, value);
+            widget = HtmlUtils.select(id, enumValues, value);
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
                             ? dflt
@@ -1332,8 +1332,8 @@ public class Column implements DataTypes, Constants {
                 value = (String) toString(values, offset);
             }
             List enums = getEnumPlusValues(request, entry);
-            widget = HtmlUtil.select(id, enums, value) + "  or:  "
-                     + HtmlUtil.input(id + "_plus", "", HtmlUtil.SIZE_20);
+            widget = HtmlUtils.select(id, enums, value) + "  or:  "
+                     + HtmlUtils.input(id + "_plus", "", HtmlUtils.SIZE_20);
         } else if (isType(DATATYPE_INT)) {
             String value = ((dflt != null)
                             ? dflt
@@ -1341,7 +1341,7 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtil.input(id, value, HtmlUtil.SIZE_10);
+            widget = HtmlUtils.input(id, value, HtmlUtils.SIZE_10);
         } else if (isType(DATATYPE_DOUBLE)) {
             String value = ((dflt != null)
                             ? dflt
@@ -1349,7 +1349,7 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtil.input(id, value, HtmlUtil.SIZE_10);
+            widget = HtmlUtils.input(id, value, HtmlUtils.SIZE_10);
         } else if (isType(DATATYPE_PERCENTAGE)) {
             String value = ((dflt != null)
                             ? dflt
@@ -1363,7 +1363,7 @@ public class Column implements DataTypes, Constants {
             }
             double d          = new Double(value).doubleValue();
             int    percentage = (int) (d * 100);
-            widget = HtmlUtil.input(id, percentage + "", HtmlUtil.SIZE_5)
+            widget = HtmlUtils.input(id, percentage + "", HtmlUtils.SIZE_5)
                      + "%";
         } else if (isType(DATATYPE_PASSWORD)) {
             String value = ((dflt != null)
@@ -1372,7 +1372,7 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtil.password(id, value, HtmlUtil.SIZE_10);
+            widget = HtmlUtils.password(id, value, HtmlUtils.SIZE_10);
         } else if (isType(DATATYPE_FILE)) {
             String value = ((dflt != null)
                             ? dflt
@@ -1380,7 +1380,7 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtil.fileInput(id, "");
+            widget = HtmlUtils.fileInput(id, "");
         } else if (isType(DATATYPE_ENTRY)) {
             String value = "";
             if (values != null) {
@@ -1397,11 +1397,11 @@ public class Column implements DataTypes, Constants {
             String select =
                 getRepository().getHtmlOutputHandler().getSelect(request, id,
                     "Select", true, null, entry);
-            sb.append(HtmlUtil.hidden(id + "_hidden", value,
-                                      HtmlUtil.id(id + "_hidden")));
-            sb.append(HtmlUtil.disabledInput(id, ((theEntry != null)
+            sb.append(HtmlUtils.hidden(id + "_hidden", value,
+                                      HtmlUtils.id(id + "_hidden")));
+            sb.append(HtmlUtils.disabledInput(id, ((theEntry != null)
                     ? theEntry.getFullName()
-                    : ""), HtmlUtil.id(id) + HtmlUtil.SIZE_60) + select);
+                    : ""), HtmlUtils.id(id) + HtmlUtils.SIZE_60) + select);
 
             widget = sb.toString();
         } else {
@@ -1431,19 +1431,19 @@ public class Column implements DataTypes, Constants {
 
                 tfos = (List<TwoFacedObject>) Misc.sort(tfos);
                 if (tfos.size() == 0) {
-                    widget = HtmlUtil.input(id, value, " size=10 ");
+                    widget = HtmlUtils.input(id, value, " size=10 ");
                 } else {
 
-                    widget = HtmlUtil.select(id, tfos, value);
+                    widget = HtmlUtils.select(id, tfos, value);
                 }
             } else if (rows > 1) {
-                widget = HtmlUtil.textArea(id, value, rows, columns);
+                widget = HtmlUtils.textArea(id, value, rows, columns);
             } else {
-                widget = HtmlUtil.input(id, value,
+                widget = HtmlUtils.input(id, value,
                                         "size=\"" + columns + "\"");
             }
         }
-        return HtmlUtil.hbox(widget, HtmlUtil.inset(suffix, 5));
+        return HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
 
     }
 
@@ -1748,29 +1748,29 @@ public class Column implements DataTypes, Constants {
                 dateSelectValue = "none";
             }
 
-            String dateSelectInput = HtmlUtil.select(id + "_relative",
+            String dateSelectInput = HtmlUtils.select(id + "_relative",
                                          dateSelect, dateSelectValue);
 
             widget = getRepository().makeDateInput(request, id + "_fromdate",
                     "searchform", null, null,
-                    isType(DATATYPE_DATETIME)) + HtmlUtil.space(1)
-                        + HtmlUtil.img(getRepository().iconUrl(ICON_RANGE))
-                        + HtmlUtil.space(1)
+                    isType(DATATYPE_DATETIME)) + HtmlUtils.space(1)
+                        + HtmlUtils.img(getRepository().iconUrl(ICON_RANGE))
+                        + HtmlUtils.space(1)
                         + getRepository().makeDateInput(request,
                             id + "_todate", "searchform", null, null,
-                            isType(DATATYPE_DATETIME)) + HtmlUtil.space(4)
+                            isType(DATATYPE_DATETIME)) + HtmlUtils.space(4)
                                 + msgLabel("Or") + dateSelectInput;
 
 
         } else if (isType(DATATYPE_BOOLEAN)) {
-            widget = HtmlUtil.select(id,
+            widget = HtmlUtils.select(id,
                                      Misc.newList(TypeHandler.ALL_OBJECT,
                                          "True",
                                          "False"), request.getString(id, ""));
             //        } else if (isType(DATATYPE_ENUMERATION)) {
             //            List tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             //            tmpValues.addAll(enumValues);
-            //            widget = HtmlUtil.select(id, tmpValues, request.getString(id));
+            //            widget = HtmlUtils.select(id, tmpValues, request.getString(id));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
             List tmpValues   = Misc.newList(TypeHandler.ALL_OBJECT);
@@ -1792,15 +1792,15 @@ public class Column implements DataTypes, Constants {
                 valuesToUse = values;
             }
             tmpValues.addAll(valuesToUse);
-            widget = HtmlUtil.select(id, tmpValues, request.getString(id));
+            widget = HtmlUtils.select(id, tmpValues, request.getString(id));
         } else if (isNumeric()) {
-            String expr = HtmlUtil.select(id + "_expr", EXPR_ITEMS,
+            String expr = HtmlUtils.select(id + "_expr", EXPR_ITEMS,
                                           request.getString(id + "_expr",
                                               ""));
             widget = expr
-                     + HtmlUtil.input(id + "_from",
+                     + HtmlUtils.input(id + "_from",
                                       request.getString(id + "_from", ""),
-                                      "size=\"10\"") + HtmlUtil.input(id
+                                      "size=\"10\"") + HtmlUtils.input(id
                                       + "_to", request.getString(id + "_to",
                                           ""), "size=\"10\"");
         } else if (isType(DATATYPE_ENTRY)) {
@@ -1822,11 +1822,11 @@ public class Column implements DataTypes, Constants {
                 getRepository().getHtmlOutputHandler().getSelect(request, id,
                     "Select", true, null, entry);
             StringBuffer sb = new StringBuffer();
-            sb.append(HtmlUtil.hidden(id + "_hidden", entryId,
-                                      HtmlUtil.id(id + "_hidden")));
-            sb.append(HtmlUtil.disabledInput(id, ((theEntry != null)
+            sb.append(HtmlUtils.hidden(id + "_hidden", entryId,
+                                      HtmlUtils.id(id + "_hidden")));
+            sb.append(HtmlUtils.disabledInput(id, ((theEntry != null)
                     ? theEntry.getFullName()
-                    : ""), HtmlUtil.id(id) + HtmlUtil.SIZE_60) + select);
+                    : ""), HtmlUtils.id(id) + HtmlUtils.SIZE_60) + select);
 
             widget = sb.toString();
         } else {
@@ -1855,22 +1855,22 @@ public class Column implements DataTypes, Constants {
                 list.addAll(sorted);
                 if (list.size() == 1) {
                     widget =
-                        HtmlUtil.hidden(id, (String) list.get(0).getId())
+                        HtmlUtils.hidden(id, (String) list.get(0).getId())
                         + " " + list.get(0).toString();
                 } else {
                     list.add(0, TypeHandler.ALL_OBJECT);
-                    widget = HtmlUtil.select(id, list);
+                    widget = HtmlUtils.select(id, list);
                 }
                 //            } else if (rows > 1) {
-                //                widget = HtmlUtil.textArea(id, request.getString(id, ""),
+                //                widget = HtmlUtils.textArea(id, request.getString(id, ""),
                 //                                           rows, columns);
             } else {
-                widget = HtmlUtil.input(id, request.getString(id, ""),
+                widget = HtmlUtils.input(id, request.getString(id, ""),
                                         "size=\"" + columns + "\"");
             }
         }
         formBuffer.append(typeHandler.formEntry(request, getLabel() + ":",
-                "<table>" + HtmlUtil.row(HtmlUtil.cols(widget, suffix))
+                "<table>" + HtmlUtils.row(HtmlUtils.cols(widget, suffix))
                 + "</table>"));
         formBuffer.append("\n");
     }

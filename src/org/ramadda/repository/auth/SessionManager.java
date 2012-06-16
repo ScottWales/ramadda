@@ -34,7 +34,7 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -694,22 +694,22 @@ public class SessionManager extends RepositoryManager {
      */
     public StringBuffer getSessionList(Request request) throws Exception {
         List<Session> sessions    = getSessions();
-        StringBuffer  sessionHtml = new StringBuffer(HtmlUtil.formTable());
+        StringBuffer  sessionHtml = new StringBuffer(HtmlUtils.formTable());
         sessionHtml.append(
-            HtmlUtil.row(
-                HtmlUtil.cols(
-                    HtmlUtil.bold(msg("User")), HtmlUtil.bold(msg("Since")),
-                    HtmlUtil.bold(msg("Last Activity")))));
+            HtmlUtils.row(
+                HtmlUtils.cols(
+                    HtmlUtils.bold(msg("User")), HtmlUtils.bold(msg("Since")),
+                    HtmlUtils.bold(msg("Last Activity")))));
         for (Session session : sessions) {
             String url = request.url(getRepositoryBase().URL_USER_LIST,
                                      ARG_REMOVESESSIONID, session.getId());
-            sessionHtml.append(HtmlUtil.row(HtmlUtil.cols(HtmlUtil.href(url,
-                    HtmlUtil.img(iconUrl(ICON_DELETE))) + " "
+            sessionHtml.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,
+                    HtmlUtils.img(iconUrl(ICON_DELETE))) + " "
                         + session.user.getLabel(), formatDate(request,
                             session.createDate), formatDate(request,
                                 session.getLastActivity()))));
         }
-        sessionHtml.append(HtmlUtil.formTableClose());
+        sessionHtml.append(HtmlUtils.formTableClose());
         return sessionHtml;
     }
 

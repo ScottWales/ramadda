@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -189,13 +189,13 @@ public class GridAggregationHarvester extends PatternHarvester {
                                         NcmlUtil.AGG_UNION);
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Time coordinate"),
-                HtmlUtil.input(
+                HtmlUtils.input(
                     ATTR_AGGREGATIONCOORDINATE, aggregationCoordinate,
-                    HtmlUtil.SIZE_60)));
-        sb.append(HtmlUtil.formEntry(msgLabel("Aggregation type"),
-                                     HtmlUtil.select(ATTR_AGGREGATIONTYPE,
+                    HtmlUtils.SIZE_60)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Aggregation type"),
+                                     HtmlUtils.select(ATTR_AGGREGATIONTYPE,
                                          types, aggregationType)));
     }
 

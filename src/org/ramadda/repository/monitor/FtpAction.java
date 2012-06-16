@@ -26,7 +26,7 @@ import org.apache.commons.net.ftp.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -152,45 +152,45 @@ public class FtpAction extends MonitorAction {
      * @param sb _more_
      */
     public void addToEditForm(EntryMonitor monitor, StringBuffer sb) {
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.colspan("FTP Action", 2));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.colspan("FTP Action", 2));
 
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 monitor.getRepository().msgLabel("FTP Server"),
-                HtmlUtil.input(
-                    getArgId(PROP_FTP_SERVER), server, HtmlUtil.SIZE_60)));
+                HtmlUtils.input(
+                    getArgId(PROP_FTP_SERVER), server, HtmlUtils.SIZE_60)));
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 monitor.getRepository().msgLabel("FTP Directory"),
-                HtmlUtil.input(
+                HtmlUtils.input(
                     getArgId(PROP_FTP_DIRECTORY), directory,
-                    HtmlUtil.SIZE_60)));
+                    HtmlUtils.SIZE_60)));
         String tooltip =
             "macros: ${from_day}  ${from_month} ${from_year} ${from_monthname}  <br>"
             + "${to_day}  ${to_month} ${to_year} ${to_monthname} <br> "
             + "${filename}  ${fileextension} etc";
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 monitor.getRepository().msgLabel("File Name Template"),
-                HtmlUtil.input(
+                HtmlUtils.input(
                     getArgId(PROP_FTP_FILETEMPLATE), fileTemplate,
-                    HtmlUtil.SIZE_60 + HtmlUtil.title(tooltip))));
+                    HtmlUtils.SIZE_60 + HtmlUtils.title(tooltip))));
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 monitor.getRepository().msgLabel("User ID"),
-                HtmlUtil.input(
-                    getArgId(PROP_FTP_USER), user, HtmlUtil.SIZE_60)));
+                HtmlUtils.input(
+                    getArgId(PROP_FTP_USER), user, HtmlUtils.SIZE_60)));
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 monitor.getRepository().msgLabel("Password"),
-                HtmlUtil.password(
+                HtmlUtils.password(
                     getArgId(PROP_FTP_PASSWORD), password,
-                    HtmlUtil.SIZE_20)));
+                    HtmlUtils.SIZE_20)));
 
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
     }
 
 

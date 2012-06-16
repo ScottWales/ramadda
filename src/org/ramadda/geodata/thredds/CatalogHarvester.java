@@ -39,7 +39,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -245,30 +245,30 @@ public class CatalogHarvester extends Harvester {
         super.createEditForm(request, sb);
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Catalog URL"),
-                                     HtmlUtil.input(ATTR_TOPURL, topUrl,
-                                         HtmlUtil.SIZE_60)));
-        sb.append(HtmlUtil.formEntry("",
-                                     HtmlUtil.checkbox(ATTR_RECURSE, "true",
+        sb.append(HtmlUtils.formEntry(msgLabel("Catalog URL"),
+                                     HtmlUtils.input(ATTR_TOPURL, topUrl,
+                                         HtmlUtils.SIZE_60)));
+        sb.append(HtmlUtils.formEntry("",
+                                     HtmlUtils.checkbox(ATTR_RECURSE, "true",
                                          recurse) + " " + msg("Recurse")));
-        sb.append(HtmlUtil.formEntry("",
-                                     HtmlUtil.checkbox(ATTR_DOWNLOAD, "true",
+        sb.append(HtmlUtils.formEntry("",
+                                     HtmlUtils.checkbox(ATTR_DOWNLOAD, "true",
                                          download) + " "
                                              + msg("Download Files")));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Metadata"),
-                HtmlUtil.checkbox(ATTR_ADDMETADATA, "true", getAddMetadata())
-                + HtmlUtil.space(1) + msg("Add full metadata")
-                + HtmlUtil.space(4)
-                + HtmlUtil.checkbox(ATTR_ADDSHORTMETADATA, "true",
-                    getAddShortMetadata()) + HtmlUtil.space(1)
+        sb.append(HtmlUtils.formEntry(msgLabel("Metadata"),
+                HtmlUtils.checkbox(ATTR_ADDMETADATA, "true", getAddMetadata())
+                + HtmlUtils.space(1) + msg("Add full metadata")
+                + HtmlUtils.space(4)
+                + HtmlUtils.checkbox(ATTR_ADDSHORTMETADATA, "true",
+                    getAddShortMetadata()) + HtmlUtils.space(1)
                         + msg("Just add spatial/temporal metadata")));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("User"),
-                                     HtmlUtil.input(ATTR_USER,
+        sb.append(HtmlUtils.formEntry(msgLabel("User"),
+                                     HtmlUtils.input(ATTR_USER,
                                          (getUserName() != null)
                                          ? getUserName().trim()
-                                         : "", HtmlUtil.SIZE_30)));
+                                         : "", HtmlUtils.SIZE_30)));
 
     }
 
@@ -740,7 +740,7 @@ public class CatalogHarvester extends Harvester {
                 groupSB.append(groupLine);
             }
             groupSB.append("</ul></div>");
-            sb.append(HtmlUtil.makeShowHideBlock("Entries",
+            sb.append(HtmlUtils.makeShowHideBlock("Entries",
                     groupSB.toString(), false));
         }
         return sb.toString();

@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -322,39 +322,39 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         List<File> rootDirs       = getRootDirs();
         for (File rootDir : rootDirs) {
             if ( !rootDir.exists()) {
-                extraLabel = HtmlUtil.br()
-                             + HtmlUtil.span(
+                extraLabel = HtmlUtils.br()
+                             + HtmlUtils.span(
                                  msg("Directory does not exist"),
-                                 HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
-                fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
+                                 HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
+                fileFieldExtra = HtmlUtils.cssClass(CSS_CLASS_REQUIRED);
                 break;
             } else if ( !getStorageManager().isLocalFileOk(rootDir)) {
                 String adminLink =
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         getRepository().getUrlBase()
                         + "/userguide/admin.html#filesystemaccess", msg(
                             "More information"), " target=_HELP");
                 extraLabel =
-                    HtmlUtil.br()
-                    + HtmlUtil
+                    HtmlUtils.br()
+                    + HtmlUtils
                         .span(msg(
-                            "You need to add this directory to the file system access list"), HtmlUtil
-                                .cssClass(CSS_CLASS_REQUIRED_LABEL)) + HtmlUtil.space(2) + adminLink;
-                fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
+                            "You need to add this directory to the file system access list"), HtmlUtils
+                                .cssClass(CSS_CLASS_REQUIRED_LABEL)) + HtmlUtils.space(2) + adminLink;
+                fileFieldExtra = HtmlUtils.cssClass(CSS_CLASS_REQUIRED);
                 break;
             }
         }
 
         if (rootDirs.size() == 0) {
             extraLabel =
-                HtmlUtil.br()
-                + HtmlUtil.span(msg("Required"),
-                                HtmlUtil.cssClass(CSS_CLASS_REQUIRED_LABEL));
-            fileFieldExtra = HtmlUtil.cssClass(CSS_CLASS_REQUIRED);
+                HtmlUtils.br()
+                + HtmlUtils.span(msg("Required"),
+                                HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
+            fileFieldExtra = HtmlUtils.cssClass(CSS_CLASS_REQUIRED);
 
         }
 
-        sb.append(HtmlUtil.colspan(msgHeader("Look for files"), 2));
+        sb.append(HtmlUtils.colspan(msgHeader("Look for files"), 2));
 
         StringBuffer inputText = new StringBuffer();
         for (File rootDir : rootDirs) {
@@ -365,84 +365,84 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Under directories"),
-                HtmlUtil.textArea(
+                HtmlUtils.textArea(
                     ATTR_ROOTDIR, inputText.toString(), 5, 60,
                     fileFieldExtra.toString()) + extraLabel));
 
 
-        sb.append(HtmlUtil.formEntry(msgLabel("That match pattern"),
-                                     HtmlUtil.input(ATTR_FILEPATTERN,
+        sb.append(HtmlUtils.formEntry(msgLabel("That match pattern"),
+                                     HtmlUtils.input(ATTR_FILEPATTERN,
                                          filePatternString,
-                                         HtmlUtil.SIZE_60)));
+                                         HtmlUtils.SIZE_60)));
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Exclude files that match pattern"),
-                HtmlUtil.input(
+                HtmlUtils.input(
                     ATTR_NOTFILEPATTERN, notfilePatternString,
-                    HtmlUtil.SIZE_60)));
+                    HtmlUtils.SIZE_60)));
 
         sb.append(
-            HtmlUtil.colspan(
-                msgHeader("Then create an entry with") + HtmlUtil.space(2)
-                + HtmlUtil.href(
+            HtmlUtils.colspan(
+                msgHeader("Then create an entry with") + HtmlUtils.space(2)
+                + HtmlUtils.href(
                     getRepository().getUrlBase() + "/help/harvesters.html",
                     "(" + msg("Help") + ")", " target=_HELP"), 2));
 
 
         //        sb.append(
-        //HtmlUtil.formEntry("",
+        //HtmlUtils.formEntry("",
         //msgLabel("Then create an entry with")));
 
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Folder template"),
-                                     HtmlUtil.input(ATTR_GROUPTEMPLATE,
-                                         groupTemplate, HtmlUtil.SIZE_60)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Folder template"),
+                                     HtmlUtils.input(ATTR_GROUPTEMPLATE,
+                                         groupTemplate, HtmlUtils.SIZE_60)));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Name template"),
-                                     HtmlUtil.input(ATTR_NAMETEMPLATE,
-                                         nameTemplate, HtmlUtil.SIZE_60)));
-        sb.append(HtmlUtil.formEntry(msgLabel("Description template"),
-                                     HtmlUtil.input(ATTR_DESCTEMPLATE,
-                                         descTemplate, HtmlUtil.SIZE_60)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Name template"),
+                                     HtmlUtils.input(ATTR_NAMETEMPLATE,
+                                         nameTemplate, HtmlUtils.SIZE_60)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Description template"),
+                                     HtmlUtils.input(ATTR_DESCTEMPLATE,
+                                         descTemplate, HtmlUtils.SIZE_60)));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Entry type"),
+        sb.append(HtmlUtils.formEntry(msgLabel("Entry type"),
                                      makeEntryTypeSelector(request,
                                          getTypeHandler())));
 
 
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Date format"),
-                                     HtmlUtil.input(ATTR_DATEFORMAT,
-                                         dateFormat, HtmlUtil.SIZE_60)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Date format"),
+                                     HtmlUtils.input(ATTR_DATEFORMAT,
+                                         dateFormat, HtmlUtils.SIZE_60)));
 
 
         String moveNote =
             msg(
             "Note: This will move the files from their current location to RAMADDA's storage directory");
-        sb.append(HtmlUtil.formEntry(msgLabel("Move file to storage"),
-                                     HtmlUtil.checkbox(ATTR_MOVETOSTORAGE,
+        sb.append(HtmlUtils.formEntry(msgLabel("Move file to storage"),
+                                     HtmlUtils.checkbox(ATTR_MOVETOSTORAGE,
                                          "true",
-                                         moveToStorage) + HtmlUtil.space(1)
+                                         moveToStorage) + HtmlUtils.space(1)
                                              + moveNote));
 
 
-        sb.append(HtmlUtil.formEntry(msgLabel("Metadata"),
-                HtmlUtil.checkbox(ATTR_ADDMETADATA, "true", getAddMetadata())
-                + HtmlUtil.space(1) + msg("Add full metadata")
-                + HtmlUtil.space(4)
-                + HtmlUtil.checkbox(ATTR_ADDSHORTMETADATA, "true",
-                    getAddShortMetadata()) + HtmlUtil.space(1)
+        sb.append(HtmlUtils.formEntry(msgLabel("Metadata"),
+                HtmlUtils.checkbox(ATTR_ADDMETADATA, "true", getAddMetadata())
+                + HtmlUtils.space(1) + msg("Add full metadata")
+                + HtmlUtils.space(4)
+                + HtmlUtils.checkbox(ATTR_ADDSHORTMETADATA, "true",
+                    getAddShortMetadata()) + HtmlUtils.space(1)
                         + msg("Just add spatial/temporal metadata")));
 
-        sb.append(HtmlUtil.formEntry(msgLabel("User"),
-                                     HtmlUtil.input(ATTR_USER,
+        sb.append(HtmlUtils.formEntry(msgLabel("User"),
+                                     HtmlUtils.input(ATTR_USER,
                                          (getUserName() != null)
                                          ? getUserName().trim()
-                                         : "", HtmlUtil.SIZE_30)));
+                                         : "", HtmlUtils.SIZE_30)));
 
 
     }
@@ -559,9 +559,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 dirMsg = "No directories found<br>";
             } else {
                 dirMsg = "Scanning:" + dirs.size() + " directories";
-                String dirBlock = HtmlUtil.insetDiv(StringUtil.join("<br>",
+                String dirBlock = HtmlUtils.insetDiv(StringUtil.join("<br>",
                                       dirs), 0, 10, 0, 0);
-                dirMsg = HtmlUtil.makeShowHideBlock(dirMsg, dirBlock, false);
+                dirMsg = HtmlUtils.makeShowHideBlock(dirMsg, dirBlock, false);
             }
         }
 

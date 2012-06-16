@@ -36,7 +36,7 @@ import org.w3c.dom.NodeList;
 
 
 import ucar.unidata.ui.HttpFormEntry;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -418,7 +418,7 @@ public class RepositoryClient extends RepositoryBase {
             ARG_ENTRYID, entryId, ARG_OUTPUT, "xml.xml", ARG_SESSIONID,
             getSessionId()
         };
-        String url = HtmlUtil.url(URL_ENTRY_SHOW.getFullUrl(), args);
+        String url = HtmlUtils.url(URL_ENTRY_SHOW.getFullUrl(), args);
         String xml = IOUtil.readContents(url, getClass());
         return xml;
     }
@@ -472,7 +472,7 @@ public class RepositoryClient extends RepositoryBase {
     public InputStream getResourceInputStream(String entryId)
             throws Exception {
         checkSession();
-        String url = HtmlUtil.url(URL_ENTRY_GET.getFullUrl(),
+        String url = HtmlUtils.url(URL_ENTRY_GET.getFullUrl(),
                                   new String[] { ARG_ENTRYID,
                 entryId, ARG_SESSIONID, getSessionId() });
         return IOUtil.getInputStream(url, getClass());
@@ -885,7 +885,7 @@ public class RepositoryClient extends RepositoryBase {
         try {
             String url;
             if (isAnonymous()) {
-                url = HtmlUtil.url(URL_PING.getFullUrl(),
+                url = HtmlUtils.url(URL_PING.getFullUrl(),
                                    new String[] { ARG_RESPONSE,
                         RESPONSE_XML });
             } else {
@@ -893,7 +893,7 @@ public class RepositoryClient extends RepositoryBase {
                     msg[0] = "No session id";
                     return false;
                 }
-                url = HtmlUtil.url(URL_USER_HOME.getFullUrl(),
+                url = HtmlUtils.url(URL_USER_HOME.getFullUrl(),
                                    new String[] { ARG_RESPONSE,
                         RESPONSE_XML, ARG_SESSIONID, sessionId });
             }
@@ -992,7 +992,7 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     private void getInfo() throws Exception {
-        String url = HtmlUtil.url(URL_INFO.getFullUrl(),
+        String url = HtmlUtils.url(URL_INFO.getFullUrl(),
                                   new String[] { ARG_RESPONSE,
                 RESPONSE_XML });
 

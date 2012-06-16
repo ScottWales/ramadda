@@ -34,7 +34,7 @@ import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -228,7 +228,7 @@ public class KmlOutputHandler extends OutputHandler {
             if (isLatLonImage(entry)) {
                 String fileTail = getStorageManager().getFileTail(entry);
                 String url =
-                    HtmlUtil.url(request.url(getRepository().URL_ENTRY_GET)
+                    HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET)
                                  + "/" + fileTail, ARG_ENTRYID,
                                      entry.getId());
                 url = request.getAbsoluteUrl(url);
@@ -269,7 +269,7 @@ public class KmlOutputHandler extends OutputHandler {
                 } else {
                     lonlat = entry.getLocation();
                 }
-                String link = HtmlUtil.href(
+                String link = HtmlUtils.href(
                                   request.getAbsoluteUrl(
                                       request.entryUrl(
                                           getRepository().URL_ENTRY_SHOW,
@@ -279,12 +279,12 @@ public class KmlOutputHandler extends OutputHandler {
                 if (isImage) {
                     String thumbUrl =
                         request.getAbsoluteUrl(
-                            HtmlUtil.url(
+                            HtmlUtils.url(
                                 request.url(repository.URL_ENTRY_GET) + "/"
                                 + getStorageManager().getFileTail(
                                     entry), ARG_ENTRYID, entry.getId(),
                                             ARG_IMAGEWIDTH, "500"));
-                    desc = desc + "<br>" + HtmlUtil.img(thumbUrl, "", "");
+                    desc = desc + "<br>" + HtmlUtils.img(thumbUrl, "", "");
                 }
                 Element placemark = KmlUtil.placemark(folder,
                                         entry.getName(), desc, lonlat[0],
@@ -395,7 +395,7 @@ public class KmlOutputHandler extends OutputHandler {
             String fileTail =
                 request.getRepository().getStorageManager().getFileTail(
                     entry);
-            url = HtmlUtil.url(
+            url = HtmlUtils.url(
                 request.url(request.getRepository().URL_ENTRY_GET) + "/"
                 + fileTail, ARG_ENTRYID, entry.getId());
             return request.getAbsoluteUrl(url);

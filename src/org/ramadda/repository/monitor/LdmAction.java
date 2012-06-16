@@ -24,7 +24,7 @@ package org.ramadda.repository.monitor;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -153,45 +153,45 @@ public class LdmAction extends MonitorAction {
      * @param sb _more_
      */
     public void addToEditForm(EntryMonitor monitor, StringBuffer sb) {
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.colspan("LDM Action", 2));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.colspan("LDM Action", 2));
 
         String ldmExtra1 = "";
         if ((pqinsert.length() > 0) && !new File(pqinsert).exists()) {
-            ldmExtra1 = HtmlUtil.space(2)
-                        + HtmlUtil.span("File does not exist!",
-                                        HtmlUtil.cssClass("errorlabel"));
+            ldmExtra1 = HtmlUtils.space(2)
+                        + HtmlUtils.span("File does not exist!",
+                                        HtmlUtils.cssClass("errorlabel"));
         }
         String ldmExtra2 = "";
         if ((queue.length() > 0) && !new File(queue).exists()) {
-            ldmExtra2 = HtmlUtil.space(2)
-                        + HtmlUtil.span("File does not exist!",
-                                        HtmlUtil.cssClass("errorlabel"));
+            ldmExtra2 = HtmlUtils.space(2)
+                        + HtmlUtils.span("File does not exist!",
+                                        HtmlUtils.cssClass("errorlabel"));
         }
 
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "Path to pqinsert:",
-                HtmlUtil.input(
+                HtmlUtils.input(
                     getArgId(PROP_LDM_PQINSERT), pqinsert,
-                    HtmlUtil.SIZE_60) + ldmExtra1));
-        sb.append(HtmlUtil.formEntry("Queue Location:",
-                                     HtmlUtil.input(getArgId(PROP_LDM_QUEUE),
+                    HtmlUtils.SIZE_60) + ldmExtra1));
+        sb.append(HtmlUtils.formEntry("Queue Location:",
+                                     HtmlUtils.input(getArgId(PROP_LDM_QUEUE),
                                          queue,
-                                         HtmlUtil.SIZE_60) + ldmExtra2));
-        sb.append(HtmlUtil.formEntry("Feed:",
-                                     HtmlUtil.select(getArgId(PROP_LDM_FEED),
+                                         HtmlUtils.SIZE_60) + ldmExtra2));
+        sb.append(HtmlUtils.formEntry("Feed:",
+                                     HtmlUtils.select(getArgId(PROP_LDM_FEED),
                                          Misc.toList(LDM_FEED_TYPES), feed)));
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "Product ID:",
-                HtmlUtil.input(
+                HtmlUtils.input(
                     getArgId(PROP_LDM_PRODUCTID), productId,
-                    HtmlUtil.SIZE_60 + HtmlUtil.title(macroTooltip))));
+                    HtmlUtils.SIZE_60 + HtmlUtils.title(macroTooltip))));
 
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
     }
 
 

@@ -32,7 +32,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -96,7 +96,7 @@ public class Level3RadarTypeHandler extends GenericTypeHandler {
                 && (values[1] != null)) {
             links.add(
                 new Link(
-                    HtmlUtil.url(
+                    HtmlUtils.url(
                         "http://radar.weather.gov/radar.php", "rid",
                         (String) entry.getValues()[0], "product",
                         (String) entry.getValues()[1]), iconUrl(

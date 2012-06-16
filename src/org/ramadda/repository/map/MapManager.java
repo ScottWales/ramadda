@@ -37,7 +37,7 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -148,27 +148,27 @@ public class MapManager extends RepositoryManager {
 
         if (request.getExtraProperty("initmap") == null) {
             mapInfo.addHtml(
-                HtmlUtil.cssLink(
+                HtmlUtils.cssLink(
                     fileUrl("/openlayers/theme/default/style.css")));
             mapInfo.addHtml("\n");
             mapInfo.addHtml("\n");
             mapInfo.addHtml(
-                HtmlUtil.importJS(fileUrl("/openlayers/OpenLayers.js")));
+                HtmlUtils.importJS(fileUrl("/openlayers/OpenLayers.js")));
             mapInfo.addHtml("\n");
             /*
             mapInfo.addHtml(
-                HtmlUtil.importJS(
+                HtmlUtils.importJS(
                     "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
             */
             mapInfo.addHtml(
-                HtmlUtil.importJS(
+                HtmlUtils.importJS(
                     "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
             mapInfo.addHtml("\n");
-            //            mapInfo.addHtml(HtmlUtil.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
-            //            mapInfo.addHtml(HtmlUtil.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
-            mapInfo.addHtml(HtmlUtil.importJS(fileUrl("/ramaddamap.js")));
+            //            mapInfo.addHtml(HtmlUtils.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
+            //            mapInfo.addHtml(HtmlUtils.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
+            mapInfo.addHtml(HtmlUtils.importJS(fileUrl("/ramaddamap.js")));
             mapInfo.addHtml("\n");
-            mapInfo.addHtml(HtmlUtil.cssLink(fileUrl("/ramaddamap.css")));
+            mapInfo.addHtml(HtmlUtils.cssLink(fileUrl("/ramaddamap.css")));
             mapInfo.addHtml("\n");
             request.putExtraProperty("initmap", "");
         }
@@ -298,13 +298,13 @@ public class MapManager extends RepositoryManager {
         String id = "map3d" + nextNum;
 
         if (request.getExtraProperty("initgooglearth") == null) {
-            sb.append(HtmlUtil.importJS("http://www.google.com/jsapi"
+            sb.append(HtmlUtils.importJS("http://www.google.com/jsapi"
                                         + mapsKey));
-            sb.append(HtmlUtil.importJS(fileUrl("/google/googleearth.js")));
+            sb.append(HtmlUtils.importJS(fileUrl("/google/googleearth.js")));
             sb.append(
-                HtmlUtil.importJS(
+                HtmlUtils.importJS(
                     fileUrl("/google/extensions-0.2.1.pack.js")));
-            sb.append(HtmlUtil.script("google.load(\"earth\", \"1\""
+            sb.append(HtmlUtils.script("google.load(\"earth\", \"1\""
                                       + otherOpts + ");"));
             request.putExtraProperty("initgooglearth", "");
         }
@@ -321,30 +321,30 @@ public class MapManager extends RepositoryManager {
         style += "height:" + height + "px; ";
 
         String earthHtml =
-            HtmlUtil.div("",
-                         HtmlUtil.id(id) + HtmlUtil.style(style)
-                         + HtmlUtil.cssClass(CSS_CLASS_EARTH_CONTAINER));
+            HtmlUtils.div("",
+                         HtmlUtils.id(id) + HtmlUtils.style(style)
+                         + HtmlUtils.cssClass(CSS_CLASS_EARTH_CONTAINER));
         sb.append("\n");
         sb.append(earthHtml);
-        sb.append(HtmlUtil.italics(msgLabel("On click")));
-        sb.append(HtmlUtil.space(2));
-        sb.append(HtmlUtil.checkbox("tmp", "true", showdetails,
-                                    HtmlUtil.id("googleearth.showdetails")));
+        sb.append(HtmlUtils.italics(msgLabel("On click")));
+        sb.append(HtmlUtils.space(2));
+        sb.append(HtmlUtils.checkbox("tmp", "true", showdetails,
+                                    HtmlUtils.id("googleearth.showdetails")));
         sb.append("\n");
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.italics(msg("Show details")));
-        sb.append(HtmlUtil.space(2));
-        sb.append(HtmlUtil.checkbox("tmp", "true", zoomOnClick,
-                                    HtmlUtil.id("googleearth.zoomonclick")));
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.italics(msg("Zoom")));
+        sb.append(HtmlUtils.space(1));
+        sb.append(HtmlUtils.italics(msg("Show details")));
+        sb.append(HtmlUtils.space(2));
+        sb.append(HtmlUtils.checkbox("tmp", "true", zoomOnClick,
+                                    HtmlUtils.id("googleearth.zoomonclick")));
+        sb.append(HtmlUtils.space(1));
+        sb.append(HtmlUtils.italics(msg("Zoom")));
 
 
-        sb.append(HtmlUtil.script("var  " + id + " = new RamaddaEarth("
-                                  + HtmlUtil.squote(id) + ", "
+        sb.append(HtmlUtils.script("var  " + id + " = new RamaddaEarth("
+                                  + HtmlUtils.squote(id) + ", "
                                   + ((url == null)
                                      ? "null"
-                                     : HtmlUtil.squote(url)) + ");\n"));
+                                     : HtmlUtils.squote(url)) + ");\n"));
 
         return id;
     }
@@ -402,10 +402,10 @@ public class MapManager extends RepositoryManager {
                 categories.add(category);
             }
             String call = id + ".entryClicked("
-                          + HtmlUtil.squote(entry.getId()) + ");";
-            catSB.append(HtmlUtil.open(HtmlUtil.TAG_DIV,
-                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_NAV)
-                                       + "" /*HtmlUtil.onMouseClick(call)*/));
+                          + HtmlUtils.squote(entry.getId()) + ");";
+            catSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                       HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)
+                                       + "" /*HtmlUtils.onMouseClick(call)*/));
             boolean visible = true;
             //If there are lots of kmls then don't load all of them
             if (kmlUrl != null) {
@@ -413,41 +413,41 @@ public class MapManager extends RepositoryManager {
             }
             catSB.append(
                 "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
-            catSB.append(HtmlUtil.checkbox("tmp", "true", visible,
-                    HtmlUtil.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;")
-                    + HtmlUtil.id("googleearth.visibility." + entry.getId())
-                    + HtmlUtil.onMouseClick(id + ".togglePlacemarkVisible("
-                        + HtmlUtil.squote(entry.getId()) + ")")));
+            catSB.append(HtmlUtils.checkbox("tmp", "true", visible,
+                    HtmlUtils.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;")
+                    + HtmlUtils.id("googleearth.visibility." + entry.getId())
+                    + HtmlUtils.onMouseClick(id + ".togglePlacemarkVisible("
+                        + HtmlUtils.squote(entry.getId()) + ")")));
 
             String iconUrl = getEntryManager().getIconUrl(request, entry);
             catSB.append(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     getEntryManager().getEntryURL(request, entry),
-                    HtmlUtil.img(iconUrl, msg("Click to view entry details"))
+                    HtmlUtils.img(iconUrl, msg("Click to view entry details"))
                     + " " + entry.getName()));
             catSB.append("</td><td align=right>");
-            catSB.append(HtmlUtil.space(2));
+            catSB.append(HtmlUtils.space(2));
             double lat = entry.getSouth();
             double lon = entry.getEast();
             //            catSB.append("<a href=\"javascript:" + call +"\">"
             //                         + entry.getName() + "</a><br>");
-            //HtmlUtil.onMouseClick(call);
+            //HtmlUtils.onMouseClick(call);
 
             /*
             catSB.append(
-                         HtmlUtil.href(
+                         HtmlUtils.href(
                                        "javascript:" + call, entry.getName(),
-                                       HtmlUtil.cssClass(CSS_CLASS_EARTH_LINK)));
+                                       HtmlUtils.cssClass(CSS_CLASS_EARTH_LINK)));
             */
             catSB.append(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     "javascript:" + call,
-                    HtmlUtil.img(
+                    HtmlUtils.img(
                         getRepository().iconUrl(ICON_MAP_NAV),
-                        "View entry"), HtmlUtil.cssClass(
+                        "View entry"), HtmlUtils.cssClass(
                             CSS_CLASS_EARTH_LINK)));
             catSB.append("</td></tr></table>");
-            catSB.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+            catSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
             String         pointsString = "null";
             boolean        hasPolygon   = false;
@@ -501,7 +501,7 @@ public class MapManager extends RepositoryManager {
             name = name.replace("\"", "\\\"");
             name = name.replace("'", "\\'");
 
-            String desc = HtmlUtil.img(iconUrl)
+            String desc = HtmlUtils.img(iconUrl)
                           + getEntryManager().getEntryLink(request, entry);
             desc = desc.replace("\r", " ");
             desc = desc.replace("\n", " ");
@@ -511,11 +511,11 @@ public class MapManager extends RepositoryManager {
             if (kmlUrl == null) {
                 kmlUrl = "null";
             } else {
-                kmlUrl = HtmlUtil.squote(kmlUrl);
+                kmlUrl = HtmlUtils.squote(kmlUrl);
             }
 
             String detailsUrl =
-                HtmlUtil.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
+                HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
                              new String[] { ARG_ENTRYID,
                                             entry.getId(), ARG_OUTPUT,
                                             "mapinfo" });
@@ -523,24 +523,24 @@ public class MapManager extends RepositoryManager {
             String fromTime = "null";
             String toTime   = "null";
             if (entry.getCreateDate() != entry.getStartDate()) {
-                fromTime = HtmlUtil.squote(
+                fromTime = HtmlUtils.squote(
                     DateUtil.getTimeAsISO8601(entry.getStartDate()));
                 if (entry.getStartDate() != entry.getEndDate()) {
-                    toTime = HtmlUtil.squote(
+                    toTime = HtmlUtils.squote(
                         DateUtil.getTimeAsISO8601(entry.getEndDate()));
                 }
             }
 
 
             js.append(
-                HtmlUtil.call(
+                HtmlUtils.call(
                     id + ".addPlacemark",
-                    HtmlUtil.comma(
-                        HtmlUtil.squote(entry.getId()),
-                            HtmlUtil.squote(name), HtmlUtil.squote(desc),
+                    HtmlUtils.comma(
+                        HtmlUtils.squote(entry.getId()),
+                            HtmlUtils.squote(name), HtmlUtils.squote(desc),
                                 "" + lat, "" + lon) + ","
-                                    + HtmlUtil.squote(detailsUrl) + ","
-                                        + HtmlUtil.squote(
+                                    + HtmlUtils.squote(detailsUrl) + ","
+                                        + HtmlUtils.squote(
                                             request.getAbsoluteUrl(
                                                 iconUrl)) + ","
                                                     + pointsString + ","
@@ -560,10 +560,10 @@ public class MapManager extends RepositoryManager {
                 "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
             sb.append("<td width=\"250\" style=\"max-width:250px;\">");
             sb.append(
-                HtmlUtil.open(
-                    HtmlUtil.TAG_DIV,
-                    HtmlUtil.cssClass(CSS_CLASS_EARTH_ENTRIES)
-                    + HtmlUtil.style(
+                HtmlUtils.open(
+                    HtmlUtils.TAG_DIV,
+                    HtmlUtils.cssClass(CSS_CLASS_EARTH_ENTRIES)
+                    + HtmlUtils.style(
                         "max-height:" + height + "px; overflow-y: auto;")));
 
             boolean doToggle = (entries.size() > 5)
@@ -572,20 +572,20 @@ public class MapManager extends RepositoryManager {
                 String       category = categories.get(catIdx);
                 StringBuffer catSB    = catMap.get(category);
                 if (doToggle) {
-                    sb.append(HtmlUtil.makeShowHideBlock(category,
+                    sb.append(HtmlUtils.makeShowHideBlock(category,
                             catSB.toString(), catIdx == 0));
                 } else {
-                    sb.append(HtmlUtil.b(category));
-                    sb.append(HtmlUtil.br());
+                    sb.append(HtmlUtils.b(category));
+                    sb.append(HtmlUtils.br());
                     sb.append(catSB);
                 }
             }
-            sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             sb.append("</td>");
             sb.append("<td align=left>");
         }
         sb.append(mapSB);
-        sb.append(HtmlUtil.script(js.toString()));
+        sb.append(HtmlUtils.script(js.toString()));
         if (includeList) {
             sb.append("</td></tr></table>");
         }
@@ -617,47 +617,47 @@ public class MapManager extends RepositoryManager {
             int    imageWidth = request.get(ATTR_IMAGEWIDTH, width);
             String imageClass = request.getString("imageclass",
                                     (String) null);
-            String extra = HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+            String extra = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                          "" + imageWidth);
             if ((alt != null) && !alt.isEmpty()) {
-                extra += " " + HtmlUtil.attr(ATTR_ALT, alt);
+                extra += " " + HtmlUtils.attr(ATTR_ALT, alt);
             }
             //"slides_image"
             String image =
-                HtmlUtil.img(
+                HtmlUtils.img(
                     getRepository().getHtmlOutputHandler().getImageUrl(
                         request, entry), "", extra);
-            image = HtmlUtil.href(
+            image = HtmlUtils.href(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                 image);
-            image = HtmlUtil.center(image);
+            image = HtmlUtils.center(image);
             if (imageClass != null) {
-                image = HtmlUtil.div(image, HtmlUtil.cssClass(imageClass));
+                image = HtmlUtils.div(image, HtmlUtils.cssClass(imageClass));
             }
 
 
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
             String content  = entry.getDescription();
             if (position.equals(POS_NONE)) {
-                content = image + HtmlUtil.br();
+                content = image + HtmlUtils.br();
             } else if (position.equals(POS_BOTTOM)) {
-                content = image + HtmlUtil.br() + content;
+                content = image + HtmlUtils.br() + content;
             } else if (position.equals(POS_TOP)) {
-                content = content + HtmlUtil.br() + image;
+                content = content + HtmlUtils.br() + image;
             } else if (position.equals(POS_RIGHT)) {
-                content = HtmlUtil.table(
-                    HtmlUtil.row(
-                        HtmlUtil.col(image)
-                        + HtmlUtil.col(content), HtmlUtil.attr(
-                            HtmlUtil.ATTR_VALIGN, "top")), HtmlUtil.attr(
-                                HtmlUtil.ATTR_CELLPADDING, "4"));
+                content = HtmlUtils.table(
+                    HtmlUtils.row(
+                        HtmlUtils.col(image)
+                        + HtmlUtils.col(content), HtmlUtils.attr(
+                            HtmlUtils.ATTR_VALIGN, "top")), HtmlUtils.attr(
+                                HtmlUtils.ATTR_CELLPADDING, "4"));
             } else if (position.equals(POS_LEFT)) {
-                content = HtmlUtil.table(
-                    HtmlUtil.row(
-                        HtmlUtil.col(content)
-                        + HtmlUtil.col(image), HtmlUtil.attr(
-                            HtmlUtil.ATTR_VALIGN, "top")), HtmlUtil.attr(
-                                HtmlUtil.ATTR_CELLPADDING, "4"));
+                content = HtmlUtils.table(
+                    HtmlUtils.row(
+                        HtmlUtils.col(content)
+                        + HtmlUtils.col(image), HtmlUtils.attr(
+                            HtmlUtils.ATTR_VALIGN, "top")), HtmlUtils.attr(
+                                HtmlUtils.ATTR_CELLPADDING, "4"));
             } else {
                 content = "Unknown position:" + position;
             }
@@ -678,20 +678,20 @@ public class MapManager extends RepositoryManager {
         boolean isImage = entry.getResource().isImage();
         if ( !isImage && (urls.size() > 0)) {
             info.append("<tr><td colspan=2>"
-                        + HtmlUtil.img(urls.get(0), "", " width=300 ")
+                        + HtmlUtils.img(urls.get(0), "", " width=300 ")
                         + "</td></tr>");
         }
         info.append("</table>");
 
         if (isImage) {
             String thumbUrl = request.getAbsoluteUrl(
-                                  HtmlUtil.url(
+                                  HtmlUtils.url(
                                       request.url(repository.URL_ENTRY_GET)
                                       + "/"
                                       + getStorageManager().getFileTail(
                                           entry), ARG_ENTRYID, entry.getId(),
                                               ARG_IMAGEWIDTH, "300"));
-            info.append(HtmlUtil.center(HtmlUtil.img(thumbUrl, "", "")));
+            info.append(HtmlUtils.center(HtmlUtils.img(thumbUrl, "", "")));
 
         }
 
@@ -766,18 +766,18 @@ public class MapManager extends RepositoryManager {
                     String iconUrl = getEntryManager().getIconUrl(request,
                                          entry);
                     entryBuff.append(
-                        HtmlUtil.href(
+                        HtmlUtils.href(
                             getEntryManager().getEntryURL(request, entry),
-                            HtmlUtil.img(
+                            HtmlUtils.img(
                                 iconUrl,
                                 msg("Click to view entry details")) + "&nbsp;"
                                     + entry.getName()));
                     entryBuff.append("</td><td align=right>");
                     entryBuff.append(
-                        HtmlUtil.href(
+                        HtmlUtils.href(
                             "javascript:" + map.getVariableName()
                             + ".hiliteMarker(" + sqt(entry.getId())
-                            + ");", HtmlUtil.img(
+                            + ");", HtmlUtils.img(
                                 getRepository().iconUrl(
                                     ICON_MAP_NAV), "View entry")));
                     entryBuff.append("</td></tr></table>");
@@ -790,13 +790,13 @@ public class MapManager extends RepositoryManager {
                 "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
             sb.append("<td width=\"250\">");
             sb.append(
-                HtmlUtil.open(
-                    HtmlUtil.TAG_DIV,
-                    HtmlUtil.style(
+                HtmlUtils.open(
+                    HtmlUtils.TAG_DIV,
+                    HtmlUtils.style(
                         "max-width:250px; overflow-x: auto;  overflow-y: auto; max-height:"
                         + map.getHeight())));
             sb.append(entryBuff);
-            sb.append(HtmlUtil.close(HtmlUtil.TAG_DIV));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             sb.append("</td>");
             sb.append("<td>");
             sb.append(map.getHtml());

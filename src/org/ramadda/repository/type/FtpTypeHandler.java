@@ -28,7 +28,7 @@ import org.ramadda.repository.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -415,7 +415,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
                                     ftpClient.retrieveFileStream(path + "/"
                                         + files[i].getName());
                                 if (fis != null) {
-                                    String desc = HtmlUtil.entityEncode(
+                                    String desc = HtmlUtils.entityEncode(
                                                       IOUtil.readInputStream(
                                                           fis));
                                     parentEntry.setDescription("<pre>" + desc

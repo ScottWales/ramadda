@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 
 
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -382,7 +382,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
                     args = new String[] { ARG_OUTPUT, "xml.xml",
                                           ARG_SESSIONID, getSessionId() };
                 }
-                String url = HtmlUtil.url(URL_ENTRY_SHOW.getFullUrl(), args);
+                String url = HtmlUtils.url(URL_ENTRY_SHOW.getFullUrl(), args);
                 String xml = IOUtil.readContents(url, getClass());
                 removeAllChildren();
                 //                System.err.println ("URL:" + id);

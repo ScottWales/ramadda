@@ -35,7 +35,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -153,32 +153,32 @@ public class CatalogImporter extends OutputHandler {
         if ( !request.exists(ARG_CATALOG)) {
             StringBuffer sb = new StringBuffer();
             sb.append(request.form(getRepository().URL_ENTRY_SHOW, ""));
-            sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
-            sb.append(HtmlUtil.hidden(ARG_OUTPUT,
+            sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
+            sb.append(HtmlUtils.hidden(ARG_OUTPUT,
                                       OUTPUT_CATALOG_IMPORT.getId()));
             sb.append(msgHeader("Import a THREDDS catalog"));
-            sb.append(HtmlUtil.formTable());
-            sb.append(HtmlUtil.formEntry(msgLabel("URL"),
-                                         HtmlUtil.input(ARG_CATALOG, BLANK,
-                                             HtmlUtil.SIZE_70)));
+            sb.append(HtmlUtils.formTable());
+            sb.append(HtmlUtils.formEntry(msgLabel("URL"),
+                                         HtmlUtils.input(ARG_CATALOG, BLANK,
+                                             HtmlUtils.SIZE_70)));
 
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     "",
-                    HtmlUtil.checkbox(ARG_RECURSE, "true", false)
-                    + HtmlUtil.space(1) + msg("Recurse") + HtmlUtil.space(1)
-                    + HtmlUtil.checkbox(ATTR_ADDMETADATA, "true", false)
-                    + HtmlUtil.space(1) + msg("Add full metadata")
-                    + HtmlUtil.space(1)
-                    + HtmlUtil.checkbox(ATTR_ADDSHORTMETADATA, "true", false)
-                    + HtmlUtil.space(1)
+                    HtmlUtils.checkbox(ARG_RECURSE, "true", false)
+                    + HtmlUtils.space(1) + msg("Recurse") + HtmlUtils.space(1)
+                    + HtmlUtils.checkbox(ATTR_ADDMETADATA, "true", false)
+                    + HtmlUtils.space(1) + msg("Add full metadata")
+                    + HtmlUtils.space(1)
+                    + HtmlUtils.checkbox(ATTR_ADDSHORTMETADATA, "true", false)
+                    + HtmlUtils.space(1)
                     + msg("Just add spatial/temporal metadata")
-                    + HtmlUtil.space(1)
-                    + HtmlUtil.checkbox(ARG_RESOURCE_DOWNLOAD, "true", false)
-                    + HtmlUtil.space(1) + msg("Download URLs")));
-            sb.append(HtmlUtil.formEntry("", HtmlUtil.submit(msg("Go"))));
-            sb.append(HtmlUtil.formTableClose());
-            sb.append(HtmlUtil.formClose());
+                    + HtmlUtils.space(1)
+                    + HtmlUtils.checkbox(ARG_RESOURCE_DOWNLOAD, "true", false)
+                    + HtmlUtils.space(1) + msg("Download URLs")));
+            sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Go"))));
+            sb.append(HtmlUtils.formTableClose());
+            sb.append(HtmlUtils.formClose());
 
             return getEntryManager().makeEntryEditResult(request, group,
                     "Catalog Import", sb);
@@ -195,32 +195,32 @@ public class CatalogImporter extends OutputHandler {
         sb.append("<p>");
         final String catalog = request.getString(ARG_CATALOG, "").trim();
         sb.append(request.form(getRepository().URL_ENTRY_SHOW, ""));
-        sb.append(HtmlUtil.hidden(ARG_GROUP, group.getId()));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_CATALOG_IMPORT.getId()));
-        sb.append(HtmlUtil.submit(msgLabel("Import catalog")));
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.input(ARG_CATALOG, catalog, " size=\"75\""));
+        sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_CATALOG_IMPORT.getId()));
+        sb.append(HtmlUtils.submit(msgLabel("Import catalog")));
+        sb.append(HtmlUtils.space(1));
+        sb.append(HtmlUtils.input(ARG_CATALOG, catalog, " size=\"75\""));
 
-        sb.append(HtmlUtil.checkbox(ARG_RECURSE, "true", recurse));
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.checkbox(ARG_RECURSE, "true", recurse));
+        sb.append(HtmlUtils.space(1));
         sb.append(msg("Recurse"));
 
 
 
-        sb.append(HtmlUtil.checkbox(ATTR_ADDMETADATA, "true", addMetadata));
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.checkbox(ATTR_ADDMETADATA, "true", addMetadata));
+        sb.append(HtmlUtils.space(1));
         sb.append(msg("Add Metadata"));
 
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.checkbox(ATTR_ADDSHORTMETADATA, "true",
+        sb.append(HtmlUtils.space(1));
+        sb.append(HtmlUtils.checkbox(ATTR_ADDSHORTMETADATA, "true",
                                     addShortMetadata));
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.space(1));
         sb.append(msg("Just add spatial/temporal metadata"));
 
 
-        sb.append(HtmlUtil.space(1));
-        sb.append(HtmlUtil.checkbox(ARG_RESOURCE_DOWNLOAD, "true", download));
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.space(1));
+        sb.append(HtmlUtils.checkbox(ARG_RESOURCE_DOWNLOAD, "true", download));
+        sb.append(HtmlUtils.space(1));
         sb.append(msg("Download URLs"));
         sb.append("</form>");
 
@@ -243,7 +243,7 @@ public class CatalogImporter extends OutputHandler {
                     harvester.run();
                 }
             };
-            String href = HtmlUtil.href(
+            String href = HtmlUtils.href(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW,
                                   group), "Continue");

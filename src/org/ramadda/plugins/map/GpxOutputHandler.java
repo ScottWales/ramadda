@@ -29,7 +29,7 @@ import org.w3c.dom.*;
 import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 import java.text.SimpleDateFormat;

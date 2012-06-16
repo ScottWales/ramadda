@@ -31,7 +31,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -159,9 +159,9 @@ public class TripOutputHandler extends OutputHandler {
         } else {
             request.put("forprint", "true");
             sb.append(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     request.getUrl(),
-                    HtmlUtil.img(
+                    HtmlUtils.img(
                         getRepository().iconUrl("/icons/printer.png"))));
             sb.append(" ");
             handler.appendHeader(request, group, sb);
@@ -177,7 +177,7 @@ public class TripOutputHandler extends OutputHandler {
         subGroups = eventEntries;
 
 
-        sb.append(HtmlUtil.cssLink(getRepository().getUrlBase()
+        sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                    + "/trip/trip.css"));
         subGroups = getEntryManager().sortEntriesOnDate(subGroups, false);
         String currentDate = "";
@@ -189,8 +189,8 @@ public class TripOutputHandler extends OutputHandler {
                 }
                 currentDate = entryDate;
                 sb.append(
-                    HtmlUtil.div(
-                        entryDate, HtmlUtil.cssClass("itinerary-header")));
+                    HtmlUtils.div(
+                        entryDate, HtmlUtils.cssClass("itinerary-header")));
                 sb.append("<div class=itinerary-day>");
 
             }
@@ -201,7 +201,7 @@ public class TripOutputHandler extends OutputHandler {
             sb.append(url);
             StringBuffer desc = new StringBuffer(entry.getDescription());
             String       type = entry.getTypeHandler().getType();
-            desc.append(HtmlUtil.formTable());
+            desc.append(HtmlUtils.formTable());
             String entryTimezone = entry.getValue(0, null);
             if (type.equals(TripTypeHandler.TYPE_FLIGHT)
                     || type.equals(TripTypeHandler.TYPE_TRAIN)) {
@@ -220,7 +220,7 @@ public class TripOutputHandler extends OutputHandler {
                         + utcTimeSdf.format(new Date(entry.getStartDate()))
                         + ")";
                 }
-                desc.append(HtmlUtil.formEntry(msgLabel("Time"), timeHtml));
+                desc.append(HtmlUtils.formEntry(msgLabel("Time"), timeHtml));
             }
 
             if (type.equals(TripTypeHandler.TYPE_HOTEL)) {
@@ -233,17 +233,17 @@ public class TripOutputHandler extends OutputHandler {
                     "http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q="
                     + address.replaceAll("\n", " ");
                 address = address.replaceAll("\n", "<br>");
-                desc.append(HtmlUtil.formEntryTop(msgLabel("Address"),
-                        HtmlUtil.italics(address) + " "
-                        + HtmlUtil.href(mapUrl, "(map)")));
+                desc.append(HtmlUtils.formEntryTop(msgLabel("Address"),
+                        HtmlUtils.italics(address) + " "
+                        + HtmlUtils.href(mapUrl, "(map)")));
                 if (phone != null) {
-                    desc.append(HtmlUtil.formEntry(msgLabel("Phone"), phone));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Phone"), phone));
                 }
                 if (email != null) {
-                    desc.append(HtmlUtil.formEntry(msgLabel("Email"), email));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Email"), email));
                 }
                 if (confirmation != null) {
-                    desc.append(HtmlUtil.formEntry(msgLabel("Confirmation"),
+                    desc.append(HtmlUtils.formEntry(msgLabel("Confirmation"),
                             confirmation));
                 }
             }
@@ -257,21 +257,21 @@ public class TripOutputHandler extends OutputHandler {
                     "http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q="
                     + address.replaceAll("\n", " ");
                 address = address.replaceAll("\n", "<br>");
-                desc.append(HtmlUtil.formEntryTop(msgLabel("Address"),
-                        HtmlUtil.italics(address) + " "
-                        + HtmlUtil.href(mapUrl, "(map)")));
+                desc.append(HtmlUtils.formEntryTop(msgLabel("Address"),
+                        HtmlUtils.italics(address) + " "
+                        + HtmlUtils.href(mapUrl, "(map)")));
                 if (phone != null) {
-                    desc.append(HtmlUtil.formEntry(msgLabel("Phone"), phone));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Phone"), phone));
                 }
                 if (email != null) {
-                    desc.append(HtmlUtil.formEntry(msgLabel("Email"), email));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Email"), email));
                 }
             }
 
-            desc.append(HtmlUtil.formTableClose());
+            desc.append(HtmlUtils.formTableClose());
 
             if (desc.length() > 0) {
-                sb.append(HtmlUtil.div(desc.toString(), ""));
+                sb.append(HtmlUtils.div(desc.toString(), ""));
             }
         }
         if (subGroups.size() > 0) {

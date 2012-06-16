@@ -35,7 +35,7 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -202,14 +202,14 @@ public class AtomOutputHandler extends OutputHandler {
         for (Entry entry : entries) {
             List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
             String selfUrl =
-                request.getAbsoluteUrl(HtmlUtil.url(getRepository().getUrlPath(getRepository().URL_ENTRY_SHOW),
+                request.getAbsoluteUrl(HtmlUtils.url(getRepository().getUrlPath(getRepository().URL_ENTRY_SHOW),
                                                     ARG_ENTRYID, entry.getId()));
             links.add(new AtomUtil.Link(AtomUtil.REL_ALTERNATE, selfUrl,
                                         "Web page", "text/html"));
             String resource = entry.getResource().getPath();
             if (ImageUtils.isImage(resource)) {
                 String imageUrl = request.getAbsoluteUrl(
-                                      HtmlUtil.url(
+                                      HtmlUtils.url(
                                           getRepository().URL_ENTRY_GET
                                           + entry.getId()
                                           + IOUtil.getFileExtension(

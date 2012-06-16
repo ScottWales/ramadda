@@ -24,7 +24,7 @@ package org.ramadda.repository.monitor;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -127,16 +127,16 @@ public class ExecAction extends MonitorAction {
      * @param sb _more_
      */
     public void addToEditForm(EntryMonitor monitor, StringBuffer sb) {
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.colspan("Exec Action", 2));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.colspan("Exec Action", 2));
 
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "Execute:",
-                HtmlUtil.input(
+                HtmlUtils.input(
                     getArgId(PROP_EXEC_EXECLINE), execLine,
-                    HtmlUtil.SIZE_60) + HtmlUtil.title(macroTooltip)));
-        sb.append(HtmlUtil.formTableClose());
+                    HtmlUtils.SIZE_60) + HtmlUtils.title(macroTooltip)));
+        sb.append(HtmlUtils.formTableClose());
     }
 
 

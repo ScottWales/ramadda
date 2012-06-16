@@ -61,7 +61,7 @@ import ucar.unidata.util.CacheManager;
 
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -656,9 +656,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             result = sdf.format(d);
         }
 
-        return HtmlUtil.span(result,
-                             HtmlUtil.cssClass(CSS_CLASS_DATETIME)
-                             + HtmlUtil.attr(HtmlUtil.ATTR_TITLE,
+        return HtmlUtils.span(result,
+                             HtmlUtils.cssClass(CSS_CLASS_DATETIME)
+                             + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
                                              fullDate + extraAlt));
     }
 
@@ -1130,9 +1130,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             IOUtil.close(fos);
         }
 
-        HtmlUtil.setBlockHideShowImage(iconUrl(ICON_MINUS),
+        HtmlUtils.setBlockHideShowImage(iconUrl(ICON_MINUS),
                                        iconUrl(ICON_PLUS));
-        HtmlUtil.setInlineHideShowImage(iconUrl(ICON_MINUS),
+        HtmlUtils.setInlineHideShowImage(iconUrl(ICON_MINUS),
         //iconUrl(ICON_ELLIPSIS));
         iconUrl(ICON_PLUS));
 
@@ -2599,7 +2599,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         continue;
                     }
                     sb.append(resource.getTheFile().toString());
-                    sb.append(HtmlUtil.br());
+                    sb.append(HtmlUtils.br());
                     didOne = true;
                 }
                 if ( !didOne) {
@@ -2716,7 +2716,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             StringBuffer sb        = new StringBuffer();
             if ( !badAccess) {
                 sb.append(showDialogError(getPageHandler().translate(request,
-                        "An error has occurred") + ":" + HtmlUtil.p()
+                        "An error has occurred") + ":" + HtmlUtils.p()
                             + inner.getMessage()));
             } else {
                 AccessException     ae         = (AccessException) inner;
@@ -2740,7 +2740,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     String redirect = RepositoryUtil.encodeBase64(
                                           request.getUrl().getBytes());
                     sb.append(getUserManager().makeLoginForm(request,
-                            HtmlUtil.hidden(ARG_REDIRECT, redirect)));
+                            HtmlUtils.hidden(ARG_REDIRECT, redirect)));
                 } else {
                     sb.append(inner.getMessage());
                     //If the authmethod is basic http auth then, if ssl is enabled, we 
@@ -2754,12 +2754,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         */
                         String redirectUrl = RepositoryUtil.encodeBase64(
                                                  request.getUrl().getBytes());
-                        String url = HtmlUtil.url(URL_SSLREDIRECT.toString(),
+                        String url = HtmlUtils.url(URL_SSLREDIRECT.toString(),
                                          ARG_REDIRECT, redirectUrl);
                         result = new Result(url);
                     } else {
                         result = new Result("Error", sb);
-                        result.addHttpHeader(HtmlUtil.HTTP_WWW_AUTHENTICATE,
+                        result.addHttpHeader(HtmlUtils.HTTP_WWW_AUTHENTICATE,
                                              "Basic realm=\"ramadda\"");
                         result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
                     }
@@ -2770,14 +2770,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             if ((request.getUser() != null) && request.getUser().getAdmin()) {
                 sb.append(
-                    HtmlUtil.pre(
-                        HtmlUtil.entityEncode(LogUtil.getStackTrace(inner))));
+                    HtmlUtils.pre(
+                        HtmlUtils.entityEncode(LogUtil.getStackTrace(inner))));
             }
 
             result = new Result(msg("Error"), sb);
             if (badAccess) {
                 result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
-                //                result.addHttpHeader(HtmlUtil.HTTP_WWW_AUTHENTICATE,"Basic realm=\"repository\"");
+                //                result.addHttpHeader(HtmlUtils.HTTP_WWW_AUTHENTICATE,"Basic realm=\"repository\"");
             } else {
                 result.setResponseCode(Result.RESPONSE_INTERNALERROR);
                 String userAgent = request.getHeaderArg("User-Agent");
@@ -3044,7 +3044,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String sessionId = request.getSessionId();
         if (sessionId != null) {
             String authToken = getAuthToken(sessionId);
-            sb.append(HtmlUtil.hidden(ARG_AUTHTOKEN, authToken));
+            sb.append(HtmlUtils.hidden(ARG_AUTHTOKEN, authToken));
         }
     }
 
@@ -3217,7 +3217,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-        String userAgent = request.getHeaderArg(HtmlUtil.HTTP_USER_AGENT);
+        String userAgent = request.getHeaderArg(HtmlUtils.HTTP_USER_AGENT);
         if (userAgent == null) {
             userAgent = "Unknown";
         }
@@ -4155,7 +4155,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String[] url : docUrls) {
             sb.append("<li>");
             String fullUrl = getUrlBase() + url[0];
-            sb.append(HtmlUtil.href(fullUrl, url[1]));
+            sb.append(HtmlUtils.href(fullUrl, url[1]));
             sb.append("<br>&nbsp;");
         }
         sb.append("</ul>");
@@ -4247,9 +4247,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (typeList.size() > 0) {
             for (TwoFacedObject tfo : typeList) {
                 if (what.equals(tfo.getId())) {
-                    links.add(HtmlUtil.span(tfo.toString(), extra1));
+                    links.add(HtmlUtils.span(tfo.toString(), extra1));
                 } else {
-                    links.add(HtmlUtil.href(request.url(URL_LIST_SHOW,
+                    links.add(HtmlUtils.href(request.url(URL_LIST_SHOW,
                             ARG_WHAT, (String) tfo.getId(), ARG_TYPE,
                             (String) typeHandler.getType()), tfo.toString(),
                                 extra2));
@@ -4266,9 +4266,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String[] names = { "Types", "Tags", "Associations" };
         for (int i = 0; i < whats.length; i++) {
             if (what.equals(whats[i])) {
-                links.add(HtmlUtil.span(names[i], extra1));
+                links.add(HtmlUtils.span(names[i], extra1));
             } else {
-                links.add(HtmlUtil.href(request.url(URL_LIST_SHOW, ARG_WHAT,
+                links.add(HtmlUtils.href(request.url(URL_LIST_SHOW, ARG_WHAT,
                         whats[i]) + typeAttr, names[i], extra2));
             }
         }
@@ -4306,20 +4306,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             String url = request.url(requestUrl) + arg;
             if (type.endsWith(requestUrl.getPath())) {
-                links.add(HtmlUtil.span(label,
-                                        HtmlUtil.cssClass("subheader-on")));
+                links.add(HtmlUtils.span(label,
+                                        HtmlUtils.cssClass("subheader-on")));
             } else {
-                links.add(HtmlUtil.span(HtmlUtil.href(url, label),
-                                        HtmlUtil.cssClass("subheader-off")));
+                links.add(HtmlUtils.span(HtmlUtils.href(url, label),
+                                        HtmlUtils.cssClass("subheader-off")));
             }
         }
         String header =
             StringUtil.join("<span class=\"subheader-sep\">|</span>", links);
 
-        return HtmlUtil.tag(HtmlUtil.TAG_CENTER,
-                            HtmlUtil.cssClass("subheader-container"),
-                            HtmlUtil.tag(HtmlUtil.TAG_SPAN,
-                                         HtmlUtil.cssClass("subheader"),
+        return HtmlUtils.tag(HtmlUtils.TAG_CENTER,
+                            HtmlUtils.cssClass("subheader-container"),
+                            HtmlUtils.tag(HtmlUtils.TAG_SPAN,
+                                         HtmlUtils.cssClass("subheader"),
                                          header));
     }
 
@@ -4586,7 +4586,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public static String header(String h) {
-        return HtmlUtil.div(h, HtmlUtil.cssClass(CSS_CLASS_HEADING_1));
+        return HtmlUtils.div(h, HtmlUtils.cssClass(CSS_CLASS_HEADING_1));
     }
 
 
@@ -4620,72 +4620,72 @@ public class Repository extends RepositoryBase implements RequestHandler,
         next.setTime(date);
         next.add(cal.MONTH, 1);
 
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE,
-                                HtmlUtil.attrs(HtmlUtil.ATTR_BORDER, "1",
-                                    HtmlUtil.ATTR_CELLSPACING, "0",
-                                    HtmlUtil.ATTR_CELLPADDING, "0")));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
+                                HtmlUtils.attrs(HtmlUtils.ATTR_BORDER, "1",
+                                    HtmlUtils.ATTR_CELLSPACING, "0",
+                                    HtmlUtils.ATTR_CELLPADDING, "0")));
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
         String   prevUrl  =
-            HtmlUtil.space(1)
-            + HtmlUtil.href(url + "&"
+            HtmlUtils.space(1)
+            + HtmlUtils.href(url + "&"
                             + CalendarOutputHandler.getUrlArgs(prev), "&lt;");
         String nextUrl =
-            HtmlUtil.href(url + "&" + CalendarOutputHandler.getUrlArgs(next),
-                          HtmlUtil.ENTITY_GT) + HtmlUtil.space(1);
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TR,
-                                HtmlUtil.attr(HtmlUtil.ATTR_VALIGN,
-                                    HtmlUtil.VALUE_TOP)));
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TD,
-                                HtmlUtil.attrs(HtmlUtil.ATTR_COLSPAN, "7",
-                                    HtmlUtil.ATTR_ALIGN,
-                                    HtmlUtil.VALUE_CENTER,
-                                    HtmlUtil.ATTR_CLASS,
+            HtmlUtils.href(url + "&" + CalendarOutputHandler.getUrlArgs(next),
+                          HtmlUtils.ENTITY_GT) + HtmlUtils.space(1);
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                                HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
+                                    HtmlUtils.VALUE_TOP)));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TD,
+                                HtmlUtils.attrs(HtmlUtils.ATTR_COLSPAN, "7",
+                                    HtmlUtils.ATTR_ALIGN,
+                                    HtmlUtils.VALUE_CENTER,
+                                    HtmlUtils.ATTR_CLASS,
                                     "calnavmonthheader")));
 
 
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE,
-                                HtmlUtil.cssClass("calnavtable")
-                                + HtmlUtil.attrs(HtmlUtil.ATTR_CELLSPACING,
-                                    "0", HtmlUtil.ATTR_CELLPADDING, "0",
-                                    HtmlUtil.ATTR_WIDTH, "100%")));
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TR));
-        sb.append(HtmlUtil.col(prevUrl,
-                               HtmlUtil.attrs(HtmlUtil.ATTR_WIDTH, "1",
-                                   HtmlUtil.ATTR_CLASS,
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
+                                HtmlUtils.cssClass("calnavtable")
+                                + HtmlUtils.attrs(HtmlUtils.ATTR_CELLSPACING,
+                                    "0", HtmlUtils.ATTR_CELLPADDING, "0",
+                                    HtmlUtils.ATTR_WIDTH, "100%")));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
+        sb.append(HtmlUtils.col(prevUrl,
+                               HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
+                                   HtmlUtils.ATTR_CLASS,
                                    "calnavmonthheader")));
         sb.append(
-            HtmlUtil.col(
-                DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HtmlUtil.space(1)
-                + theYear, HtmlUtil.attr(
-                    HtmlUtil.ATTR_CLASS, "calnavmonthheader")));
+            HtmlUtils.col(
+                DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HtmlUtils.space(1)
+                + theYear, HtmlUtils.attr(
+                    HtmlUtils.ATTR_CLASS, "calnavmonthheader")));
 
 
 
-        sb.append(HtmlUtil.col(nextUrl,
-                               HtmlUtil.attrs(HtmlUtil.ATTR_WIDTH, "1",
-                                   HtmlUtil.ATTR_CLASS,
+        sb.append(HtmlUtils.col(nextUrl,
+                               HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
+                                   HtmlUtils.ATTR_CLASS,
                                    "calnavmonthheader")));
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TR));
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TR));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
         for (int colIdx = 0; colIdx < 7; colIdx++) {
-            sb.append(HtmlUtil.col(dayNames[colIdx],
-                                   HtmlUtil.attrs(HtmlUtil.ATTR_WIDTH, "14%",
-                                       HtmlUtil.ATTR_CLASS,
+            sb.append(HtmlUtils.col(dayNames[colIdx],
+                                   HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "14%",
+                                       HtmlUtils.ATTR_CLASS,
                                        "calnavdayheader")));
         }
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TR));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
         int startDow = cal.get(cal.DAY_OF_WEEK);
         while (startDow > 1) {
             cal.add(cal.DAY_OF_MONTH, -1);
             startDow--;
         }
         for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
-            sb.append(HtmlUtil.open(HtmlUtil.TAG_TR,
-                                    HtmlUtil.attrs(HtmlUtil.ATTR_VALIGN,
-                                        HtmlUtil.VALUE_TOP)));
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                                    HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN,
+                                        HtmlUtils.VALUE_TOP)));
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 int     thisDay    = cal.get(cal.DAY_OF_MONTH);
                 int     thisMonth  = cal.get(cal.MONTH);
@@ -4703,7 +4703,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (dayLinks != null) {
                     String key = thisYear + "/" + thisMonth + "/" + thisDay;
                     if (dayLinks.get(key) != null) {
-                        content = HtmlUtil.href(url + "&"
+                        content = HtmlUtils.href(url + "&"
                                 + CalendarOutputHandler.getUrlArgs(cal), ""
                                     + thisDay);
                         if ( !currentDay) {
@@ -4714,12 +4714,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         dayClass = "calnavday";
                     }
                 } else {
-                    content = HtmlUtil.href(
+                    content = HtmlUtils.href(
                         url + "&" + CalendarOutputHandler.getUrlArgs(cal),
                         "" + thisDay);
                 }
 
-                sb.append(HtmlUtil.col(content, HtmlUtil.cssClass(dayClass)));
+                sb.append(HtmlUtils.col(content, HtmlUtils.cssClass(dayClass)));
                 sb.append("\n");
                 cal.add(cal.DAY_OF_MONTH, 1);
             }
@@ -4730,7 +4730,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 break;
             }
         }
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
     }
 
@@ -4876,7 +4876,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                          typeHandler.getType()));
         }
 
-        return HtmlUtil.select(ARG_TYPE, items, selected);
+        return HtmlUtils.select(ARG_TYPE, items, selected);
     }
 
 
@@ -5234,23 +5234,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String getCalendarSelector(String formName, String fieldName) {
         String anchorName = "anchor." + fieldName;
         String divName    = "div." + fieldName;
-        String call       = HtmlUtil.call("selectDate",
-                                    HtmlUtil.comma(HtmlUtil.squote(divName),
+        String call       = HtmlUtils.call("selectDate",
+                                    HtmlUtils.comma(HtmlUtils.squote(divName),
         //                              "document.forms['"  + formName + "']." + fieldName, 
         "findFormElement('" + formName + "','" + fieldName
-                            + "')", HtmlUtil.squote(anchorName),
-                                    HtmlUtil.squote(
+                            + "')", HtmlUtils.squote(anchorName),
+                                    HtmlUtils.squote(
                                         "yyyy-MM-dd"))) + "return false;";
 
-        return HtmlUtil
-            .href("#", HtmlUtil
-                .img(iconUrl(ICON_CALENDAR), " Choose date", HtmlUtil
-                    .attr(HtmlUtil.ATTR_BORDER, "0")), HtmlUtil
-                        .onMouseClick(call) + HtmlUtil
-                        .attrs(HtmlUtil.ATTR_NAME, anchorName, HtmlUtil
-                            .ATTR_ID, anchorName)) + HtmlUtil
-                                .div("", HtmlUtil
-                                    .attrs(HtmlUtil.ATTR_ID, divName, HtmlUtil
+        return HtmlUtils
+            .href("#", HtmlUtils
+                .img(iconUrl(ICON_CALENDAR), " Choose date", HtmlUtils
+                    .attr(HtmlUtils.ATTR_BORDER, "0")), HtmlUtils
+                        .onMouseClick(call) + HtmlUtils
+                        .attrs(HtmlUtils.ATTR_NAME, anchorName, HtmlUtils
+                            .ATTR_ID, anchorName)) + HtmlUtils
+                                .div("", HtmlUtils
+                                    .attrs(HtmlUtils.ATTR_ID, divName, HtmlUtils
                                         .ATTR_STYLE, "position:absolute;visibility:hidden;background-color:white;layer-background-color:white;"));
     }
 
@@ -5317,25 +5317,25 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                        ? timeArg
                                        : timeFormat.format(date));
 
-        String           inputId    = "dateinput" + (HtmlUtil.blockCnt++);
+        String           inputId    = "dateinput" + (HtmlUtils.blockCnt++);
 
 
         String           js         =
-            "<script>jQuery(function() {$( " + HtmlUtil.squote("#" + inputId)
+            "<script>jQuery(function() {$( " + HtmlUtils.squote("#" + inputId)
             + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false });});</script>";
         String extra = "";
         if (includeTime) {
             extra = " T:"
-                    + HtmlUtil.input(name + ".time", timeString,
-                                     HtmlUtil.sizeAttr(6)
-                                     + HtmlUtil.attr(HtmlUtil.ATTR_TITLE,
+                    + HtmlUtils.input(name + ".time", timeString,
+                                     HtmlUtils.sizeAttr(6)
+                                     + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
                                          timeHelp));
         }
 
         return "\n" + js + "\n"
-               + HtmlUtil.input(name, dateString,
-                                HtmlUtil.SIZE_10 + HtmlUtil.id(inputId)
-                                + HtmlUtil.title(dateHelp)) + extra;
+               + HtmlUtils.input(name, dateString,
+                                HtmlUtils.SIZE_10 + HtmlUtils.id(inputId)
+                                + HtmlUtils.title(dateHelp)) + extra;
     }
 
 
@@ -5365,16 +5365,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public String makePopupLink(String link, String menuContents,
                                 boolean makeClose, boolean alignLeft) {
-        String compId   = "menu_" + HtmlUtil.blockCnt++;
-        String linkId   = "menulink_" + HtmlUtil.blockCnt++;
+        String compId   = "menu_" + HtmlUtils.blockCnt++;
+        String linkId   = "menulink_" + HtmlUtils.blockCnt++;
         String contents = makePopupDiv(menuContents, compId, makeClose);
-        String onClick  = HtmlUtil.onMouseClick(HtmlUtil.call("showPopup",
-                             HtmlUtil.comma(new String[] { "event",
-                HtmlUtil.squote(linkId), HtmlUtil.squote(compId), (alignLeft
+        String onClick  = HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
+                             HtmlUtils.comma(new String[] { "event",
+                HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
                 ? "1"
                 : "0") })));
-        String href = HtmlUtil.href("javascript:noop();", link,
-                                    onClick + HtmlUtil.id(linkId));
+        String href = HtmlUtils.href("javascript:noop();", link,
+                                    onClick + HtmlUtils.id(linkId));
 
         return href + contents;
     }
@@ -5393,17 +5393,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String makeStickyPopup(String link, String innerContents,
                                   String initCall) {
         boolean alignLeft = true;
-        String  compId    = "menu_" + HtmlUtil.blockCnt++;
-        String  linkId    = "menulink_" + HtmlUtil.blockCnt++;
+        String  compId    = "menu_" + HtmlUtils.blockCnt++;
+        String  linkId    = "menulink_" + HtmlUtils.blockCnt++;
         String  contents  = makeStickyPopupDiv(innerContents, compId);
         String  onClick   =
-            HtmlUtil.onMouseClick(HtmlUtil.call("showStickyPopup",
-                HtmlUtil.comma(new String[] { "event",
-                HtmlUtil.squote(linkId), HtmlUtil.squote(compId), (alignLeft
+            HtmlUtils.onMouseClick(HtmlUtils.call("showStickyPopup",
+                HtmlUtils.comma(new String[] { "event",
+                HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
                 ? "1"
                 : "0") })) + initCall);
-        String href = HtmlUtil.href("javascript:noop();", link,
-                                    onClick + HtmlUtil.id(linkId));
+        String href = HtmlUtils.href("javascript:noop();", link,
+                                    onClick + HtmlUtils.id(linkId));
 
         return href + contents;
     }
@@ -5420,17 +5420,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public String makeStickyPopupDiv(String contents, String compId) {
         StringBuffer menu  = new StringBuffer();
-        String       cLink = HtmlUtil.jsLink(
-                           HtmlUtil.onMouseClick(
-                               HtmlUtil.call(
+        String       cLink = HtmlUtils.jsLink(
+                           HtmlUtils.onMouseClick(
+                               HtmlUtils.call(
                                    "hideElementById",
-                                   HtmlUtil.squote(compId))), HtmlUtil.img(
+                                   HtmlUtils.squote(compId))), HtmlUtils.img(
                                        iconUrl(ICON_CLOSE)), "");
-        contents = cLink + HtmlUtil.br() + contents;
+        contents = cLink + HtmlUtils.br() + contents;
 
-        menu.append(HtmlUtil.div(contents,
-                                 HtmlUtil.id(compId)
-                                 + HtmlUtil.cssClass(CSS_CLASS_POPUP)));
+        menu.append(HtmlUtils.div(contents,
+                                 HtmlUtils.id(compId)
+                                 + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
 
         return menu.toString();
     }
@@ -5452,14 +5452,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuffer menu = new StringBuffer();
         if (makeClose) {
             String cLink =
-                HtmlUtil.jsLink(HtmlUtil.onMouseClick("hidePopupObject();"),
-                                HtmlUtil.img(iconUrl(ICON_CLOSE)), "");
-            contents = cLink + HtmlUtil.br() + contents;
+                HtmlUtils.jsLink(HtmlUtils.onMouseClick("hidePopupObject();"),
+                                HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
+            contents = cLink + HtmlUtils.br() + contents;
         }
 
-        menu.append(HtmlUtil.div(contents,
-                                 HtmlUtil.id(compId)
-                                 + HtmlUtil.cssClass(CSS_CLASS_POPUP)));
+        menu.append(HtmlUtils.div(contents,
+                                 HtmlUtils.id(compId)
+                                 + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
 
         return menu.toString();
     }
@@ -5481,11 +5481,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuffer fb = new StringBuffer();
         fb.append(request.form(url));
         fb.append(extra);
-        String okButton     = HtmlUtil.submit("OK", okArg);
-        String cancelButton = HtmlUtil.submit("Cancel", Constants.ARG_CANCEL);
+        String okButton     = HtmlUtils.submit("OK", okArg);
+        String cancelButton = HtmlUtils.submit("Cancel", Constants.ARG_CANCEL);
         String buttons      = RepositoryUtil.buttons(okButton, cancelButton);
         fb.append(buttons);
-        fb.append(HtmlUtil.formClose());
+        fb.append(HtmlUtils.formClose());
 
         return fb.toString();
     }

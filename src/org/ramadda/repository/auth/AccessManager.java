@@ -38,7 +38,7 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -695,7 +695,7 @@ public class AccessManager extends RepositoryManager {
             return;
         }
         List<Permission> permissions = getPermissions(entry);
-        String entryUrl = HtmlUtil.href(request.url(URL_ACCESS_FORM,
+        String entryUrl = HtmlUtils.href(request.url(URL_ACCESS_FORM,
                               ARG_ENTRYID, entry.getId()), entry.getName());
 
         Hashtable map = new Hashtable();
@@ -707,16 +707,16 @@ public class AccessManager extends RepositoryManager {
             roles.addAll(permission.getRoles());
         }
 
-        StringBuffer cols = new StringBuffer(HtmlUtil.cols(entryUrl));
+        StringBuffer cols = new StringBuffer(HtmlUtils.cols(entryUrl));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             List roles = (List) map.get(Permission.ACTIONS[i]);
             if (roles == null) {
-                cols.append(HtmlUtil.cols("&nbsp;"));
+                cols.append(HtmlUtils.cols("&nbsp;"));
             } else {
-                cols.append(HtmlUtil.cols(StringUtil.join("<br>", roles)));
+                cols.append(HtmlUtils.cols(StringUtil.join("<br>", roles)));
             }
         }
-        sb.append(HtmlUtil.rowTop(cols.toString()));
+        sb.append(HtmlUtils.rowTop(cols.toString()));
         listAccess(request,
                    getEntryManager().getEntry(request,
                        entry.getParentEntryId()), sb);
@@ -840,20 +840,20 @@ public class AccessManager extends RepositoryManager {
 
         StringBuffer currentAccess = new StringBuffer();
         currentAccess.append(
-            HtmlUtil.open(
-                HtmlUtil.TAG_TABLE,
+            HtmlUtils.open(
+                HtmlUtils.TAG_TABLE,
                 " cellspacing=0 ccellpadding=0 border=1 "));
         StringBuffer header =
-            new StringBuffer(HtmlUtil.cols(HtmlUtil.bold(msg("Entry"))));
+            new StringBuffer(HtmlUtils.cols(HtmlUtils.bold(msg("Entry"))));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             header.append(
-                HtmlUtil.cols(
-                    HtmlUtil.bold(msg(Permission.ACTION_NAMES[i]))));
+                HtmlUtils.cols(
+                    HtmlUtils.bold(msg(Permission.ACTION_NAMES[i]))));
         }
-        currentAccess.append(HtmlUtil.rowTop(header.toString()));
+        currentAccess.append(HtmlUtils.rowTop(header.toString()));
 
         listAccess(request, entry, currentAccess);
-        currentAccess.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+        currentAccess.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
 
 
@@ -866,22 +866,22 @@ public class AccessManager extends RepositoryManager {
         }
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
 
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.submit("Change Access"));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.submit("Change Access"));
         sb.append("<p>");
         //        sb.append("<table><tr valign=\"top\"><td>");
-        sb.append(HtmlUtil.formTable());
+        sb.append(HtmlUtils.formTable());
         sb.append("<tr valign=top>");
-        sb.append(HtmlUtil.cols(HtmlUtil.bold(msg("Action")),
-                                HtmlUtil.bold(msg("Role")) + " ("
+        sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action")),
+                                HtmlUtils.bold(msg("Role")) + " ("
                                 + msg("one per line") + ")"));
-        sb.append(HtmlUtil.cols(HtmlUtil.space(5)));
+        sb.append(HtmlUtils.cols(HtmlUtils.space(5)));
         sb.append("<td rowspan=6><b>" + msg("All Roles")
                   + "</b><i><br>user:&lt;userid&gt;<br>none<br>");
         sb.append(StringUtil.join("<br>", getUserManager().getRoles()));
         sb.append("</i></td>");
 
-        sb.append(HtmlUtil.cols(HtmlUtil.space(5)));
+        sb.append(HtmlUtils.cols(HtmlUtils.space(5)));
 
         sb.append("<td rowspan=6><b>" + msgLabel("Current settings")
                   + "</b><i><br>");
@@ -904,25 +904,25 @@ public class AccessManager extends RepositoryManager {
                     Permission.ACTION_TYPE2);
             }
             String label =
-                HtmlUtil.href(
+                HtmlUtils.href(
                     getRepository().getUrlBase() + "/userguide/access.html#"
-                    + action, HtmlUtil.img(
-                        getRepository().iconUrl(ICON_HELP)), HtmlUtil.attr(
-                        HtmlUtil.ATTR_TARGET, "_help")) + HtmlUtil.space(1)
+                    + action, HtmlUtils.img(
+                        getRepository().iconUrl(ICON_HELP)), HtmlUtils.attr(
+                        HtmlUtils.ATTR_TARGET, "_help")) + HtmlUtils.space(1)
                             + msg(actionName);
 
-            sb.append(HtmlUtil.rowTop(HtmlUtil.cols(label,
-                    HtmlUtil.textArea(ARG_ROLES + "."
+            sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
+                    HtmlUtils.textArea(ARG_ROLES + "."
                                       + Permission.ACTIONS[i], roles, 5,
                                           20))));
         }
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
         //        sb.append("</td><td>&nbsp;&nbsp;&nbsp;</td><td>");
         //        sb.append("All Roles:<br>");
         //        sb.append(StringUtil.join("<br>",getUserManager().getRoles()));
         //        sb.append("</td></tr></table>");
-        sb.append(HtmlUtil.submit(msg("Change Access")));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.submit(msg("Change Access")));
+        sb.append(HtmlUtils.formClose());
 
         return getEntryManager().makeEntryEditResult(request, entry,
                 msg("Edit Access"), sb);

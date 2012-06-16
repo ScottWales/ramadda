@@ -32,7 +32,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -244,19 +244,19 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append("<td align=center>" + msgLabel(title) + "</td>");
         }
         for (OutputType output : types) {
-            String link = HtmlUtil.href(
+            String link = HtmlUtils.href(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry,
-                                  ARG_OUTPUT, output), HtmlUtil.img(
+                                  ARG_OUTPUT, output), HtmlUtils.img(
                                       iconUrl(output.getIcon()),
                                       output.getLabel()));
             sb.append("<td align=center>");
             if (output.getId().equals(selected)) {
                 sb.append(
-                    HtmlUtil.div(
-                        link, HtmlUtil.cssClass("toolbar-selected")));
+                    HtmlUtils.div(
+                        link, HtmlUtils.cssClass("toolbar-selected")));
             } else {
-                sb.append(HtmlUtil.div(link, HtmlUtil.cssClass("toolbar")));
+                sb.append(HtmlUtils.div(link, HtmlUtils.cssClass("toolbar")));
             }
             sb.append(" ");
             sb.append("</td>");
@@ -351,14 +351,14 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         request.put(ARG_OUTPUT, OUTPUT_HTML);
         boolean didOne = false;
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
         sb.append(entry.getTypeHandler().getInnerEntryContent(entry, request,
                 OutputHandler.OUTPUT_HTML, true, true, true));
         for (TwoFacedObject tfo :
                 getMetadataHtml(request, entry, false, false)) {
             sb.append(tfo.getId().toString());
         }
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
@@ -395,10 +395,10 @@ public class HtmlOutputHandler extends OutputHandler {
                            OutputType.TYPE_ALL);
         StringBuffer inner = new StringBuffer();
         String cLink =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick("hidePopupObject();"),
-                            HtmlUtil.img(iconUrl(ICON_CLOSE)), "");
+            HtmlUtils.jsLink(HtmlUtils.onMouseClick("hidePopupObject();"),
+                            HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
         inner.append(cLink);
-        inner.append(HtmlUtil.br());
+        inner.append(HtmlUtils.br());
         inner.append(links);
         XmlUtil.appendCdata(sb, inner.toString());
         sb.append("\n</content>");
@@ -495,7 +495,7 @@ public class HtmlOutputHandler extends OutputHandler {
             addDescription(request, entry, sb, true);
             String informationBlock = getInformationTabs(request, entry,
                                           false, false);
-            //            sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
+            //            sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
             //                    informationBlock, true));
             sb.append(informationBlock);
 
@@ -522,7 +522,7 @@ public class HtmlOutputHandler extends OutputHandler {
         getMetadataManager().decorateEntry(request, entry, metadataSB, false);
         String metataDataHtml = metadataSB.toString();
         if (metataDataHtml.length() > 0) {
-            return HtmlUtil.makeShowHideBlock(msg("Attachments"),
+            return HtmlUtils.makeShowHideBlock(msg("Attachments"),
                     "<div class=\"description\">" + metadataSB + "</div>",
                     false);
         }
@@ -660,14 +660,14 @@ public class HtmlOutputHandler extends OutputHandler {
                     }
                 }
             }
-            String theClass = HtmlUtil.cssClass("listrow" + rowNum);
+            String theClass = HtmlUtils.cssClass("listrow" + rowNum);
             if (decorate && !isSimple) {
                 String row =
                     " <tr  " + theClass
                     + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
                     + html[0] + "</nobr></td><td>"
-                //                    + HtmlUtil.makeToggleInline("", html[1], false)
-                + HtmlUtil.makeToggleInline("", html[1], true) + "</td></tr>";
+                //                    + HtmlUtils.makeToggleInline("", html[1], false)
+                + HtmlUtils.makeToggleInline("", html[1], true) + "</td></tr>";
                 sb.append(row);
             } else {
                 String row =
@@ -752,18 +752,18 @@ public class HtmlOutputHandler extends OutputHandler {
         if ( !showingAll(request, subGroups, entries)) {
             sb.append(msgLabel("Showing") + " 1.."
                       + (subGroups.size() + entries.size()));
-            sb.append(HtmlUtil.space(2));
+            sb.append(HtmlUtils.space(2));
             String url = request.getEntryUrl(
                              getRepository().URL_ENTRY_SHOW.toString(),
                              parent);
-            url = HtmlUtil.url(url, ARG_ENTRYID, parent.getId());
-            sb.append(HtmlUtil.href(url, msg("More...")));
-            sb.append(HtmlUtil.br());
+            url = HtmlUtils.url(url, ARG_ENTRYID, parent.getId());
+            sb.append(HtmlUtils.href(url, msg("More...")));
+            sb.append(HtmlUtils.br());
         }
 
         for (Entry subGroup : subGroups) {
             if (cnt == 0) {
-                //                sb.append(HtmlUtil.makeToggleInline("...", tabs, false));
+                //                sb.append(HtmlUtils.makeToggleInline("...", tabs, false));
             }
             cnt++;
             addEntryCheckbox(request, subGroup, sb, jsSB);
@@ -773,7 +773,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if ( !onlyGroups) {
             for (Entry entry : entries) {
                 if (cnt == 0) {
-                    //                    sb.append(HtmlUtil.makeToggleInline("...", tabs, false));
+                    //                    sb.append(HtmlUtils.makeToggleInline("...", tabs, false));
                 }
                 cnt++;
                 addEntryCheckbox(request, entry, sb, jsSB);
@@ -790,7 +790,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     Permission.ACTION_VIEWCHILDREN)) {
                 if ( !getAccessManager().canDoAction(request, parent,
                         Permission.ACTION_VIEWCHILDREN)) {
-                    sb.append(HtmlUtil.space(1));
+                    sb.append(HtmlUtils.space(1));
                     sb.append(
                         msg(
                         "You do not have permission to view the sub-folders of this entry"));
@@ -850,7 +850,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     if (grandParent != null) {
                         sb.append(getSelectLink(request, grandParent,
                                 target));
-                        //indent = HtmlUtil.space(2);
+                        //indent = HtmlUtils.space(2);
                     }
                     sb.append(indent);
                     sb.append(getSelectLink(request, localeEntry, target));
@@ -865,8 +865,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 getUserManager().getFavorites(request, request.getUser());
             StringBuffer favorites = new StringBuffer();
             if (favoritesList.size() > 0) {
-                sb.append(HtmlUtil.b(msg("Favorites")));
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.b(msg("Favorites")));
+                sb.append(HtmlUtils.br());
                 List favoriteLinks = new ArrayList();
                 for (FavoriteEntry favorite : favoritesList) {
                     Entry favEntry = favorite.getEntry();
@@ -879,8 +879,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
             List<Entry> cartEntries = getUserManager().getCart(request);
             if (cartEntries.size() > 0) {
-                sb.append(HtmlUtil.b(msg("Cart")));
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.b(msg("Cart")));
+                sb.append(HtmlUtils.br());
                 for (Entry cartEntry : cartEntries) {
                     sb.append(getSelectLink(request, cartEntry, target));
                 }
@@ -928,10 +928,10 @@ public class HtmlOutputHandler extends OutputHandler {
             descSB.append(desc);
             descSB.append("</div>\n");
 
-            //            sb.append(HtmlUtil.makeShowHideBlock(msg("Description"),
+            //            sb.append(HtmlUtils.makeShowHideBlock(msg("Description"),
             //                    descSB.toString(), open));
 
-            //            sb.append(HtmlUtil.makeToggleInline("",
+            //            sb.append(HtmlUtils.makeToggleInline("",
             //                                                desc, true));
             sb.append(desc);
         }
@@ -1149,33 +1149,33 @@ public class HtmlOutputHandler extends OutputHandler {
                                           entry, ARG_OUTPUT, OUTPUT_GRID);
             if (urls.size() > 0) {
                 sb.append(
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         url,
-                        HtmlUtil.img(
+                        HtmlUtils.img(
                             urls.get(0), "",
-                            HtmlUtil.attr(HtmlUtil.ATTR_WIDTH, "100"))));
-                sb.append(HtmlUtil.br());
+                            HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100"))));
+                sb.append(HtmlUtils.br());
             } else if (entry.getResource().isImage()) {
-                String thumburl = HtmlUtil.url(
+                String thumburl = HtmlUtils.url(
                                       request.url(repository.URL_ENTRY_GET)
                                       + "/"
                                       + getStorageManager().getFileTail(
                                           entry), ARG_ENTRYID, entry.getId(),
                                               ARG_IMAGEWIDTH, "" + 100);
 
-                sb.append(HtmlUtil.href(url, HtmlUtil.img(thumburl)));
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.href(url, HtmlUtils.img(thumburl)));
+                sb.append(HtmlUtils.br());
             } else {
-                sb.append(HtmlUtil.br());
-                sb.append(HtmlUtil.space(1));
-                sb.append(HtmlUtil.br());
+                sb.append(HtmlUtils.br());
+                sb.append(HtmlUtils.space(1));
+                sb.append(HtmlUtils.br());
             }
             String icon = getEntryManager().getIconUrl(request, entry);
-            sb.append(HtmlUtil.href(url, HtmlUtil.img(icon)));
-            sb.append(HtmlUtil.space(1));
+            sb.append(HtmlUtils.href(url, HtmlUtils.img(icon)));
+            sb.append(HtmlUtils.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry,
                     entry.getName(), url));
-            sb.append(HtmlUtil.br());
+            sb.append(HtmlUtils.br());
             sb.append(getRepository().formatDateShort(request,
                     new Date(entry.getStartDate()),
                     getEntryManager().getTimezone(entry), ""));
@@ -1240,11 +1240,11 @@ public class HtmlOutputHandler extends OutputHandler {
             tableSB.append("<table width=100% cellspacing=2 cellpadding=2>");
             tableSB.append("<tr>");
             numCols++;
-            //            tableSB.append(HtmlUtil.col("<b>" + msg("Name") +"</b>"));
-            tableSB.append(HtmlUtil.col("&nbsp;"));
+            //            tableSB.append(HtmlUtils.col("<b>" + msg("Name") +"</b>"));
+            tableSB.append(HtmlUtils.col("&nbsp;"));
             numCols++;
-            tableSB.append(HtmlUtil.col("&nbsp;"));
-            //            tableSB.append(HtmlUtil.col("<b>" + msg("Date") +"</b>"));
+            tableSB.append(HtmlUtils.col("&nbsp;"));
+            //            tableSB.append(HtmlUtils.col("<b>" + msg("Date") +"</b>"));
 
 
             boolean isFile = false;
@@ -1256,42 +1256,42 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             if(isFile) {
                 numCols++;
-                tableSB.append(HtmlUtil.col(""));
+                tableSB.append(HtmlUtils.col(""));
                 numCols++;
-                tableSB.append(HtmlUtil.col(HtmlUtil.b(msg("Size"))," align=right "));
+                tableSB.append(HtmlUtils.col(HtmlUtils.b(msg("Size"))," align=right "));
             }
-            //            tableSB.append(HtmlUtil.col("&nbsp;"));
+            //            tableSB.append(HtmlUtils.col("&nbsp;"));
             if(columns!=null) {
                 for(Column column: columns) {
                     if(column.getCanList() && column.getCanShow()) {
                         numCols++;
-                        tableSB.append(HtmlUtil.col(HtmlUtil.b(column.getLabel())));
+                        tableSB.append(HtmlUtils.col(HtmlUtils.b(column.getLabel())));
                     }
                 }
             }
             tableSB.append("</tr>");
 
-            String blank  = HtmlUtil.img(getRepository().iconUrl(ICON_BLANK));
+            String blank  = HtmlUtils.img(getRepository().iconUrl(ICON_BLANK));
             for(Entry entry: entries) {
                 tableSB.append("<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
-                tableSB.append(HtmlUtil.col(getEntryManager().getAjaxLink(request,entry,entry.getLabel()).toString()," nowrap "));
-                tableSB.append(HtmlUtil.col(getRepository().formatDateShort(request,
+                tableSB.append(HtmlUtils.col(getEntryManager().getAjaxLink(request,entry,entry.getLabel()).toString()," nowrap "));
+                tableSB.append(HtmlUtils.col(getRepository().formatDateShort(request,
                                                                new Date(entry.getStartDate()),
                                                                             getEntryManager().getTimezone(entry), "")," width=10% align=right "));
 
                 if(entry.isFile()) {
-                    tableSB.append(HtmlUtil.col(HtmlUtil.href(entry.getTypeHandler().getEntryResourceUrl(request,
-                                                                                       entry), HtmlUtil.img(iconUrl(ICON_DOWNLOAD),
+                    tableSB.append(HtmlUtils.col(HtmlUtils.href(entry.getTypeHandler().getEntryResourceUrl(request,
+                                                                                       entry), HtmlUtils.img(iconUrl(ICON_DOWNLOAD),
                                                                                                             msg("Download"), ""))," width=2% "));
                 } else {
-                    tableSB.append(HtmlUtil.col(""));
+                    tableSB.append(HtmlUtils.col(""));
                 }
 
                 if(isFile) {
                     if(entry.isFile()) {
-                        tableSB.append(HtmlUtil.col(formatFileLength(entry.getResource().getFileSize()), " align=right nowrap "));
+                        tableSB.append(HtmlUtils.col(formatFileLength(entry.getResource().getFileSize()), " align=right nowrap "));
                     } else {
-                        tableSB.append(HtmlUtil.col("NA"," align=right nowrap "));
+                        tableSB.append(HtmlUtils.col("NA"," align=right nowrap "));
                     }
 
                 }
@@ -1302,7 +1302,7 @@ public class HtmlOutputHandler extends OutputHandler {
                         if(column.getCanList() && column.getCanShow()) {
                             String s = column.getString(values);
                             if(s==null) s = "NA";
-                            tableSB.append(HtmlUtil.col(s));
+                            tableSB.append(HtmlUtils.col(s));
                         }
                     }
                 }
@@ -1317,7 +1317,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
             tableSB.append("</div>");
             if(types.size()>1) {
-                sb.append(HtmlUtil.makeShowHideBlock(typeLabel, HtmlUtil.insetLeft(tableSB.toString(),10), true));
+                sb.append(HtmlUtils.makeShowHideBlock(typeLabel, HtmlUtils.insetLeft(tableSB.toString(),10), true));
             } else {
                 sb.append(tableSB.toString());
             }
@@ -1554,7 +1554,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                                              false, false);
 
                 if(hasChildren) {
-                  sb.append(HtmlUtil.makeShowHideBlock(msg("Information"),
+                  sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
                                                      informationBlock,
                                                      request.get(ARG_SHOW_ASSOCIATIONS, !hasChildren)));
                 } else {
@@ -1568,7 +1568,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     false);
             String metataDataHtml = metadataSB.toString();
             if (metataDataHtml.length() > 0) {
-                sb.append(HtmlUtil.makeShowHideBlock(msg("Attachments"),
+                sb.append(HtmlUtils.makeShowHideBlock(msg("Attachments"),
                         "<div class=\"description\">" + metadataSB
                         + "</div>", false));
             }
@@ -1588,12 +1588,12 @@ public class HtmlOutputHandler extends OutputHandler {
                                              group.isDummy(),
                                              group.isDummy());
                 if(!doSimpleListing) {
-                    sb.append(HtmlUtil.makeShowHideBlock(msg("Entries") + link,
+                    sb.append(HtmlUtils.makeShowHideBlock(msg("Entries") + link,
                                                          groupsSB.toString(), true));
                 } else {
-                    sb.append(HtmlUtil.br());
-                    sb.append(HtmlUtil.span(msg("Entries"), HtmlUtil.cssClass("toggleblocklabel")) + link);
-                    sb.append(HtmlUtil.br());
+                    sb.append(HtmlUtils.br());
+                    sb.append(HtmlUtils.span(msg("Entries"), HtmlUtils.cssClass("toggleblocklabel")) + link);
+                    sb.append(HtmlUtils.br());
                     sb.append(groupsSB.toString());
 
                 }

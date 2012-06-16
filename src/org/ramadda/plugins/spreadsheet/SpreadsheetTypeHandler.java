@@ -31,7 +31,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.xml.XmlUtil;
 
 
@@ -215,30 +215,30 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
         sb.append(
             "<link media=\"all\" href=\"/repository/spreadsheet/styles.css\" rel=\"stylesheet\" type=\"text/css\" />\n");
         sb.append(
-            HtmlUtil.importJS("/repository/spreadsheet/spreadsheet.js"));
+            HtmlUtils.importJS("/repository/spreadsheet/spreadsheet.js"));
         sb.append(
-            HtmlUtil.importJS("/repository/spreadsheet/myspreadsheet.js"));
+            HtmlUtils.importJS("/repository/spreadsheet/myspreadsheet.js"));
         sb.append(
             "<div class=\"data\" id=\"data\"></div><div id=\"source\" align=\"center\">");
 
 
-        //        sb.append(HtmlUtil.script(HtmlUtil.call("loadSheetFromUrl", HtmlUtil.squote(spreadsheetUrl))));
+        //        sb.append(HtmlUtils.script(HtmlUtils.call("loadSheetFromUrl", HtmlUtils.squote(spreadsheetUrl))));
         sb.append("</div>");
         sb.append(request.form(getRepository().URL_ENTRY_SHOW,
-                               HtmlUtil.attr("name", "ssform")
-                               + HtmlUtil.id("ssform")));
+                               HtmlUtils.attr("name", "ssform")
+                               + HtmlUtils.id("ssform")));
 
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_SPREADSHEET_STOREDATA, "",
-                                  HtmlUtil.id(ARG_SPREADSHEET_STOREDATA)));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_SPREADSHEET_STOREDATA, "",
+                                  HtmlUtils.id(ARG_SPREADSHEET_STOREDATA)));
+        sb.append(HtmlUtils.formClose());
 
         StringBuffer js = new StringBuffer();
-        js.append("var entryId = " + HtmlUtil.squote(entry.getId()) + ";\n");
-        js.append(HtmlUtil.call("loadFromRamadda",
-                                HtmlUtil.squote(entry.getId())));
+        js.append("var entryId = " + HtmlUtils.squote(entry.getId()) + ";\n");
+        js.append(HtmlUtils.call("loadFromRamadda",
+                                HtmlUtils.squote(entry.getId())));
 
-        sb.append(HtmlUtil.script(js.toString()));
+        sb.append(HtmlUtils.script(js.toString()));
         //        System.err.println("******\n" + sb+"\n******");
         Result result = new Result("", sb);
         return result;

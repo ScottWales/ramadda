@@ -31,7 +31,7 @@ import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -329,53 +329,53 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             monitor.applyEditForm(request);
             updateMonitor(monitor);
             return new Result(
-                HtmlUtil.url(
+                HtmlUtils.url(
                     getRepositoryBase().URL_USER_MONITORS.toString(),
                     ARG_MONITOR_ID, monitor.getId()));
         }
 
         StringBuffer sb = new StringBuffer();
         String listLink =
-            HtmlUtil.href(getRepositoryBase().URL_USER_MONITORS.toString(),
+            HtmlUtils.href(getRepositoryBase().URL_USER_MONITORS.toString(),
                           msg("Monitor List"));
-        sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.center(HtmlUtil.b(listLink)));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.center(HtmlUtils.b(listLink)));
 
         sb.append(msgLabel("Monitor"));
-        sb.append(HtmlUtil.space(1));
+        sb.append(HtmlUtils.space(1));
         sb.append(monitor.getName());
         request.formPostWithAuthToken(sb,
                                       getRepositoryBase().URL_USER_MONITORS,
-                                      HtmlUtil.attr(HtmlUtil.ATTR_NAME,
+                                      HtmlUtils.attr(HtmlUtils.ATTR_NAME,
                                           "monitorform"));
-        sb.append(HtmlUtil.hidden(ARG_MONITOR_ID, monitor.getId()));
+        sb.append(HtmlUtils.hidden(ARG_MONITOR_ID, monitor.getId()));
 
         if (request.exists(ARG_MONITOR_DELETE)) {
             StringBuffer fb = new StringBuffer();
             fb.append(
                 RepositoryUtil.buttons(
-                    HtmlUtil.submit(msg("OK"), ARG_MONITOR_DELETE_CONFIRM),
-                    HtmlUtil.submit(msg("Cancel"), ARG_CANCEL)));
+                    HtmlUtils.submit(msg("OK"), ARG_MONITOR_DELETE_CONFIRM),
+                    HtmlUtils.submit(msg("Cancel"), ARG_CANCEL)));
             sb.append(
                 getRepository().showDialogQuestion(
                     msg("Are you sure you want to delete the monitor?"),
                     fb.toString()));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.formClose());
             return getUserManager().makeResult(request,
                     msg("Monitor Delete"), sb);
         }
 
 
         StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtil.submit(msg("Edit"), ARG_MONITOR_CHANGE));
-        buttons.append(HtmlUtil.space(1));
-        buttons.append(HtmlUtil.submit(msg("Delete"), ARG_MONITOR_DELETE));
+        buttons.append(HtmlUtils.submit(msg("Edit"), ARG_MONITOR_CHANGE));
+        buttons.append(HtmlUtils.space(1));
+        buttons.append(HtmlUtils.submit(msg("Delete"), ARG_MONITOR_DELETE));
         sb.append(buttons);
-        sb.append(HtmlUtil.br());
+        sb.append(HtmlUtils.br());
         monitor.addToEditForm(request, sb);
         sb.append(buttons);
 
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.formClose());
         return getUserManager().makeResult(request,
                                            msg("Edit Entry Monitor"), sb);
     }
@@ -420,7 +420,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         monitor.addAction(action);
         addNewMonitor(monitor);
         return new Result(
-            HtmlUtil.url(
+            HtmlUtils.url(
                 getRepositoryBase().URL_USER_MONITORS.toString(),
                 ARG_MONITOR_ID, monitor.getId()));
     }
@@ -508,9 +508,9 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             return processMonitorCreate(request);
         }
 
-        sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE));
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TR));
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
 
         for(MonitorAction templateAction: actions) {
             if(!templateAction.enabled(getRepository())) {
@@ -521,75 +521,75 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             }
             String form =
                 request.form(getRepositoryBase().URL_USER_MONITORS)
-                + HtmlUtil.submit(templateAction.getActionLabel(), ARG_MONITOR_CREATE)
-                + HtmlUtil.hidden(ARG_MONITOR_TYPE, templateAction.getActionName())
-                + HtmlUtil.formClose();
-            sb.append(HtmlUtil.col(form));
+                + HtmlUtils.submit(templateAction.getActionLabel(), ARG_MONITOR_CREATE)
+                + HtmlUtils.hidden(ARG_MONITOR_TYPE, templateAction.getActionName())
+                + HtmlUtils.formClose();
+            sb.append(HtmlUtils.col(form));
         }
 
 
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TR));
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
 
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE,
-                                HtmlUtil.attrs(HtmlUtil.ATTR_CELLPADDING,
-                                    "4", HtmlUtil.ATTR_CELLSPACING, "0")));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
+                                HtmlUtils.attrs(HtmlUtils.ATTR_CELLPADDING,
+                                    "4", HtmlUtils.ATTR_CELLSPACING, "0")));
         if (monitors.size() > 0) {
-            sb.append(HtmlUtil.row(HtmlUtil.cols("", boldMsg("Monitor"),
+            sb.append(HtmlUtils.row(HtmlUtils.cols("", boldMsg("Monitor"),
                     boldMsg("User"), boldMsg("Search Criteria"),
                     boldMsg("Action"))));
         }
         for (EntryMonitor monitor : monitors) {
-            sb.append(HtmlUtil.open(HtmlUtil.TAG_TR,
-                                    HtmlUtil.attr(HtmlUtil.ATTR_VALIGN,
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                                    HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
                                         "top") + ( !monitor.isActive()
-                    ? HtmlUtil.attr(HtmlUtil.ATTR_BGCOLOR, "#cccccc")
+                    ? HtmlUtils.attr(HtmlUtils.ATTR_BGCOLOR, "#cccccc")
                     : "")));
-            sb.append(HtmlUtil.open(HtmlUtil.TAG_TD));
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_TD));
             sb.append(
-                HtmlUtil.href(
-                    HtmlUtil.url(
+                HtmlUtils.href(
+                    HtmlUtils.url(
                         getRepositoryBase().URL_USER_MONITORS.toString(),
-                        ARG_MONITOR_ID, monitor.getId()), HtmlUtil.img(
+                        ARG_MONITOR_ID, monitor.getId()), HtmlUtils.img(
                             iconUrl(ICON_EDIT))));
-            sb.append(HtmlUtil.space(1));
+            sb.append(HtmlUtils.space(1));
             sb.append(
-                HtmlUtil.href(
-                    HtmlUtil.url(
+                HtmlUtils.href(
+                    HtmlUtils.url(
                         getRepositoryBase().URL_USER_MONITORS.toString(),
                         ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
-                        monitor.getId()), HtmlUtil.img(
+                        monitor.getId()), HtmlUtils.img(
                             iconUrl(ICON_DELETE))));
             if ( !monitor.isActive()) {
-                sb.append(HtmlUtil.space(1));
+                sb.append(HtmlUtils.space(1));
                 sb.append(msg("not active"));
             }
-            sb.append(HtmlUtil.close(HtmlUtil.TAG_TD));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_TD));
 
 
-            sb.append(HtmlUtil.col(monitor.getName()));
-            sb.append(HtmlUtil.col(monitor.getUser().getLabel()));
-            sb.append(HtmlUtil.col(monitor.getSearchSummary()));
-            sb.append(HtmlUtil.col(monitor.getActionSummary()));
-            sb.append(HtmlUtil.close(HtmlUtil.TAG_TR));
+            sb.append(HtmlUtils.col(monitor.getName()));
+            sb.append(HtmlUtils.col(monitor.getUser().getLabel()));
+            sb.append(HtmlUtils.col(monitor.getSearchSummary()));
+            sb.append(HtmlUtils.col(monitor.getActionSummary()));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
 
             if ((monitor.getLastError() != null)
                     && (monitor.getLastError().length() > 0)) {
-                String msg = HtmlUtil.makeShowHideBlock(
-                                 HtmlUtil.span(
+                String msg = HtmlUtils.makeShowHideBlock(
+                                 HtmlUtils.span(
                                      msg("Error"),
-                                     HtmlUtil.cssClass(
-                                         "errorlabel")), HtmlUtil.pre(
+                                     HtmlUtils.cssClass(
+                                         "errorlabel")), HtmlUtils.pre(
                                              monitor.getLastError()), false);
-                sb.append(HtmlUtil.row(HtmlUtil.colspan(msg, 5)));
+                sb.append(HtmlUtils.row(HtmlUtils.colspan(msg, 5)));
             }
 
-            sb.append(HtmlUtil.row(HtmlUtil.colspan(HtmlUtil.hr(), 5)));
+            sb.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.hr(), 5)));
 
         }
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
         return getUserManager().makeResult(request, msg("Entry Monitors"),
                                            sb);

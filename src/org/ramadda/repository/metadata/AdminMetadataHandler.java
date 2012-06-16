@@ -29,7 +29,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -150,11 +150,11 @@ public class AdminMetadataHandler extends MetadataHandler {
         }
         String submit = (forEdit
                          ? ""
-                         : HtmlUtil.submit(msg("Add") + HtmlUtil.space(1)
+                         : HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
                                            + lbl));
         String cancel  = (forEdit
                           ? ""
-                          : HtmlUtil.submit(msg("Cancel"), ARG_CANCEL));
+                          : HtmlUtils.submit(msg("Cancel"), ARG_CANCEL));
         String arg1    = ARG_ATTR1 + suffix;
         String content = "";
         if (type.isType(TYPE_TEMPLATE)) {
@@ -168,10 +168,10 @@ public class AdminMetadataHandler extends MetadataHandler {
             value = value.replace("<", "&lt;");
             value = value.replace(">", "&gt;");
             value = value.replace("$", "&#36;");
-            String textarea = HtmlUtil.textArea(arg1, value, 20, 80);
+            String textarea = HtmlUtils.textArea(arg1, value, 20, 80);
             content =
-                HtmlUtil.row(HtmlUtil.colspan(submit, 2))
-                + HtmlUtil.formEntry(lbl,
+                HtmlUtils.row(HtmlUtils.colspan(submit, 2))
+                + HtmlUtils.formEntry(lbl,
                                      "Note: must contain macro ${content}"
                                      + "<br>" + textarea);
         }
@@ -181,9 +181,9 @@ public class AdminMetadataHandler extends MetadataHandler {
                 return null;
             }
             String value = metadata.getAttr1();
-            String input = HtmlUtil.input(arg1, value);
-            content = HtmlUtil.row(HtmlUtil.colspan(submit, 2))
-                      + HtmlUtil.formEntry(lbl, input);
+            String input = HtmlUtils.input(arg1, value);
+            content = HtmlUtils.row(HtmlUtils.colspan(submit, 2))
+                      + HtmlUtils.formEntry(lbl, input);
         }
         if (type.isType(TYPE_ANONYMOUS_UPLOAD)) {
             content = "From:" + metadata.getAttr1() + " IP: "
@@ -192,12 +192,12 @@ public class AdminMetadataHandler extends MetadataHandler {
 
 
         if ( !forEdit) {
-            content = content + HtmlUtil.row(HtmlUtil.colspan(cancel, 2));
+            content = content + HtmlUtils.row(HtmlUtils.colspan(cancel, 2));
         }
         String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
-        content = content + HtmlUtil.hidden(argtype, type.getId())
-                  + HtmlUtil.hidden(argid, metadata.getId());
+        content = content + HtmlUtils.hidden(argtype, type.getId())
+                  + HtmlUtils.hidden(argid, metadata.getId());
         return new String[] { lbl, content };
     }
 

@@ -69,7 +69,7 @@ import ucar.unidata.util.CacheManager;
 import ucar.unidata.util.ColorTable;
 import ucar.unidata.util.ContourInfo;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.Range;
@@ -414,15 +414,15 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             throws Exception {
 
         String formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
-        sb.append(HtmlUtil.form(formUrl, ""));
-        sb.append(HtmlUtil.submit(msg("Make Image"), ARG_SUBMIT));
-        sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
-        sb.append(HtmlUtil.hidden(ARG_IDV_ACTION, ACTION_MAKEPAGE));
+        sb.append(HtmlUtils.form(formUrl, ""));
+        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
+        sb.append(HtmlUtils.hidden(ARG_IDV_ACTION, ACTION_MAKEPAGE));
 
         StringBuffer basic = new StringBuffer();
-        basic.append(HtmlUtil.formTable());
+        basic.append(HtmlUtils.formTable());
         // check if we can add in GE Plugin
         List   productList = Misc.toList(products);
         String gekeys      = getProperty(PROP_GOOGLEAPIKEYS, null);
@@ -431,10 +431,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
         basic.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Product"),
                 htmlSelect(request, ARG_IDV_PRODUCT, productList)
-                + HtmlUtil.space(2)
+                + HtmlUtils.space(2)
                 + msg("Note: For Google Earth, make sure to set the view bounds")));
 
 
@@ -447,26 +447,26 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 ViewState viewState = (ViewState) vms.get(i);
                 viewPoints.add(viewState.getName());
             }
-            viewPointHtml = msgLabel("Viewpoint") + HtmlUtil.space(2)
+            viewPointHtml = msgLabel("Viewpoint") + HtmlUtils.space(2)
                             + htmlSelect(request, ARG_VIEW_VIEWPOINT,
                                          viewPoints);
         }
         String imageTrans =
-            HtmlUtil.space(3)
+            HtmlUtils.space(3)
             + htmlCheckbox(request, ARG_BACKGROUND_TRANSPARENT, false)
-            + HtmlUtil.space(2) + msg("Background Transparent");
+            + HtmlUtils.space(2) + msg("Background Transparent");
 
         basic.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Image Size"),
                 htmlInput(request, ARG_IMAGE_WIDTH, "600")
-                + HtmlUtil.space(1) + "X" + HtmlUtil.space(1)
+                + HtmlUtils.space(1) + "X" + HtmlUtils.space(1)
                 + htmlInput(request, ARG_IMAGE_HEIGHT, "400") + imageTrans));
 
 
-        basic.append(HtmlUtil.formEntry(msgLabel("Make globe"),
+        basic.append(HtmlUtils.formEntry(msgLabel("Make globe"),
                                         htmlCheckbox(request, ARG_VIEW_GLOBE,
-                                            false) + HtmlUtil.space(2)
+                                            false) + HtmlUtils.space(2)
                                                 + viewPointHtml));
 
 
@@ -494,7 +494,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 projCatMap.put(cat, tfos = new ArrayList());
                 projCats.add(cat);
             }
-            tfos.add(new TwoFacedObject(HtmlUtil.space(4) + label, name));
+            tfos.add(new TwoFacedObject(HtmlUtils.space(4) + label, name));
         }
 
         List projectionOptions = new ArrayList();
@@ -504,13 +504,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             projectionOptions.addAll(projCatMap.get(projCat));
         }
 
-        basic.append(HtmlUtil.formEntry(msgLabel("Projection"),
+        basic.append(HtmlUtils.formEntry(msgLabel("Projection"),
                                         htmlSelect(request,
                                             ARG_VIEW_PROJECTION,
                                             projectionOptions)));
 
 
-        basic.append(HtmlUtil.formEntry(msgLabel("Azimuth/Tilt"),
+        basic.append(HtmlUtils.formEntry(msgLabel("Azimuth/Tilt"),
                                         htmlInput(request, ARG_AZIMUTH, "",
                                             6) + " "
                                                 + htmlInput(request,
@@ -526,12 +526,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         viewOptions.add(new TwoFacedObject("bottom"));
         viewOptions.add(new TwoFacedObject("top"));
 
-        basic.append(HtmlUtil.formEntry(msgLabel("View"),
+        basic.append(HtmlUtils.formEntry(msgLabel("View"),
                                         htmlSelect(request, ARG_VIEWDIR,
                                             viewOptions)));
 
         /*
-          basic.append(HtmlUtil.formEntry(msgLabel("Clip image"),
+          basic.append(HtmlUtils.formEntry(msgLabel("Clip image"),
                                         htmlCheckbox(request, ARG_CLIP,
                                             false)));
         */
@@ -550,9 +550,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         basic.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Zoom Level"),
-                HtmlUtil.select(
+                HtmlUtils.select(
                     ARG_ZOOM, Misc.toList(zoomList),
                     Misc.newList(request.defined(ARG_ZOOM)
                                  ? "" + zoom
@@ -560,7 +560,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
 
-        basic.append(HtmlUtil.formTableClose());
+        basic.append(HtmlUtils.formTableClose());
 
 
         StringBuffer  mapSB = new StringBuffer();
@@ -589,28 +589,28 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         //      mapSB.append(msgHeader("Maps"));
         String mapSelect = htmlSelect(request, ARG_MAPS, mapOptions,
-                                      HtmlUtil.attrs(HtmlUtil.ATTR_MULTIPLE,
-                                          "true", HtmlUtil.ATTR_SIZE, "10"));
+                                      HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE,
+                                          "true", HtmlUtils.ATTR_SIZE, "10"));
         StringBuffer mapAttrs = new StringBuffer();
-        mapAttrs.append(HtmlUtil.formTable());
+        mapAttrs.append(HtmlUtils.formTable());
         mapAttrs.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Map Line Width"),
-                HtmlUtil.select(
+                HtmlUtils.select(
                     ARG_MAPWIDTH, Misc.newList("1", "2", "3", "4"),
                     request.getString(ARG_MAPWIDTH, "1"))));
         mapAttrs.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Map Color"),
-                HtmlUtil.colorSelect(
+                HtmlUtils.colorSelect(
                     ARG_MAPCOLOR,
                     request.getString(
                         ARG_MAPCOLOR, StringUtil.toHexString(Color.red)))));
 
         mapAttrs.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Background Color"),
-                HtmlUtil.colorSelect(
+                HtmlUtils.colorSelect(
                     ARG_VIEW_BACKGROUND,
                     request.getString(
                         ARG_VIEW_BACKGROUND,
@@ -631,21 +631,21 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
 
-        mapAttrs.append(HtmlUtil.formEntry(msgLabel("Background Image"),
+        mapAttrs.append(HtmlUtils.formEntry(msgLabel("Background Image"),
                                            htmlSelect(request,
                                                ARG_VIEW_BACKGROUNDIMAGE,
                                                    backgrounds)));
 
-        mapAttrs.append(HtmlUtil.formEntry(msgLabel("Wireframe"),
-                                           HtmlUtil.checkbox(ARG_WIREFRAME,
+        mapAttrs.append(HtmlUtils.formEntry(msgLabel("Wireframe"),
+                                           HtmlUtils.checkbox(ARG_WIREFRAME,
                                                "true",
                                                    request.get(ARG_WIREFRAME,
                                                        false))));
 
         mapAttrs.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Lat/Lon Lines"),
-                HtmlUtil.checkbox(
+                HtmlUtils.checkbox(
                     ARG_LATLON_VISIBLE, "true",
                     request.get(ARG_LATLON_VISIBLE, false)) + "  "
                         + msgLabel("Spacing") + " "
@@ -653,11 +653,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
 
-        mapAttrs.append(HtmlUtil.formTableClose());
+        mapAttrs.append(HtmlUtils.formTableClose());
 
-        mapSB.append(HtmlUtil.table(new Object[] { mapSelect, mapAttrs },
+        mapSB.append(HtmlUtils.table(new Object[] { mapSelect, mapAttrs },
                                     10));
-        //      basic =new StringBuffer(HtmlUtil.table(new Object[]{basic, mapSB},10));
+        //      basic =new StringBuffer(HtmlUtils.table(new Object[]{basic, mapSB},10));
         List<String> tabLabels   = new ArrayList<String>();
         List<String> tabContents = new ArrayList<String>();
         tabLabels.add(msg("Basic"));
@@ -672,7 +672,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                       htmlCheckbox(request,
                                           ARG_VIEW_JUSTCLIP, false) + " "
                                               + msg("Just subset data")
-                                              + HtmlUtil.space(2), "");
+                                              + HtmlUtils.space(2), "");
         bounds.append(llb);
 
 
@@ -735,28 +735,28 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
 
 
-            tab.append(HtmlUtil.hidden(ARG_PARAM, param));
+            tab.append(HtmlUtils.hidden(ARG_PARAM, param));
 
 
             List options = new ArrayList();
             options.add("");
-            tab.append(HtmlUtil.br());
+            tab.append(HtmlUtils.br());
             tab.append(msgLabel("Display Type"));
-            tab.append(HtmlUtil.space(1));
+            tab.append(HtmlUtils.space(1));
             if ((displayIdx == 0) && (displays.size() > 1)) {
                 //Set the default display for the first param
                 if (request.defined(ARG_DISPLAY + displayIdx)) {
                     tab.append(htmlSelect(request, ARG_DISPLAY + displayIdx,
                                           displays));
                 } else {
-                    tab.append(HtmlUtil.select(ARG_DISPLAY + displayIdx,
+                    tab.append(HtmlUtils.select(ARG_DISPLAY + displayIdx,
                             displays, displays.get(1).getId().toString()));
                 }
             } else {
                 tab.append(htmlSelect(request, ARG_DISPLAY + displayIdx,
                                       displays));
             }
-            tab.append(HtmlUtil.p());
+            tab.append(HtmlUtils.p());
 
             List times = choice.getAllDateTimes();
             if ((times != null) && (times.size() > 0)) {
@@ -775,8 +775,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 innerTabTitles.add(msg("Times"));
                 innerTabContents.add(htmlSelect(request,
                         ARG_TIMES + displayIdx, tfoTimes, true,
-                        HtmlUtil.attrs(HtmlUtil.ATTR_MULTIPLE, "true",
-                                       HtmlUtil.ATTR_SIZE, "5")));
+                        HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE, "true",
+                                       HtmlUtils.ATTR_SIZE, "5")));
             }
 
             List levels       = choice.getAllLevels();
@@ -792,8 +792,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 String levelWidget =
                     htmlSelect(request, ARG_LEVELS + displayIdx, tfoLevels,
                                true,
-                               HtmlUtil.attrs(HtmlUtil.ATTR_MULTIPLE,
-                                   "false", HtmlUtil.ATTR_SIZE, "5"));
+                               HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE,
+                                   "false", HtmlUtils.ATTR_SIZE, "5"));
                 spatialComps.add(msgLabel("Levels"));
                 spatialComps.add(levelWidget);
             }
@@ -806,11 +806,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                           "");
 
             if (size != null) {
-                strideComp = strideComp + HtmlUtil.br() + size;
+                strideComp = strideComp + HtmlUtils.br() + size;
             }
             spatialComps.add(strideComp);
             String spatial =
-                HtmlUtil.table(Misc.listToStringArray(spatialComps), 5);
+                HtmlUtils.table(Misc.listToStringArray(spatialComps), 5);
             innerTabTitles.add(msg("Spatial"));
             innerTabContents.add(spatial);
 
@@ -840,28 +840,28 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 String img = "<img border=0 src="
                              + getRepository().getUrlBase() + "/colortables/"
                              + icon + ">";
-                String div = HtmlUtil.div(img + " " + colorTable.getName(),
+                String div = HtmlUtils.div(img + " " + colorTable.getName(),
                                           "");
-                String call1 = HtmlUtil.call(
+                String call1 = HtmlUtils.call(
                                    "setFormValue",
-                                   HtmlUtil.squote(
+                                   HtmlUtils.squote(
                                        ARG_COLORTABLE + displayIdx) + ","
-                                           + HtmlUtil.squote(
+                                           + HtmlUtils.squote(
                                                colorTable.getName()));
                 String call2 =
-                    HtmlUtil.call("setHtml", HtmlUtil.squote(ARG_COLORTABLE
+                    HtmlUtils.call("setHtml", HtmlUtils.squote(ARG_COLORTABLE
                         + "_html" + displayIdx) + ","
-                            + HtmlUtil.squote(colorTable.getName() + " "
+                            + HtmlUtils.squote(colorTable.getName() + " "
                                 + img));
                 String call = call1 + ";" + call2;
-                catSB.append(HtmlUtil.mouseClickHref(call, div));
+                catSB.append(HtmlUtils.mouseClickHref(call, div));
             }
 
 
 
 
             StringBuffer ctsb = new StringBuffer();
-            ctsb.append(msgLabel("Range") + HtmlUtil.space(1)
+            ctsb.append(msgLabel("Range") + HtmlUtils.space(1)
                         + htmlInput(request, ARG_RANGE_MIN + displayIdx,
                                     ((range == null)
                                      ? ""
@@ -879,52 +879,52 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
 
             ctsb.append(
-                HtmlUtil.hidden(
+                HtmlUtils.hidden(
                     ARG_COLORTABLE + displayIdx,
                     request.getString(ARG_COLORTABLE + displayIdx, ""),
-                    HtmlUtil.id(ARG_COLORTABLE + displayIdx)));
-            ctsb.append(HtmlUtil.br());
+                    HtmlUtils.id(ARG_COLORTABLE + displayIdx)));
+            ctsb.append(HtmlUtils.br());
             String ctDiv = "-default-";
             if (request.defined(ARG_COLORTABLE + displayIdx)) {
                 String icon =
                     IOUtil.cleanFileName(request.getString(ARG_COLORTABLE
                         + displayIdx, "")) + ".png";
-                String img = HtmlUtil.img(getRepository().getUrlBase()
+                String img = HtmlUtils.img(getRepository().getUrlBase()
                                           + "/colortables/" + icon);
                 ctDiv = request.getString(ARG_COLORTABLE + displayIdx,
                                           "-default-") + " " + img;
 
             }
-            ctsb.append(HtmlUtil.table(new Object[] { msgLabel("Color Table"),
-                    HtmlUtil.div(ctDiv,
-                                 HtmlUtil.id(ARG_COLORTABLE + "_html"
+            ctsb.append(HtmlUtils.table(new Object[] { msgLabel("Color Table"),
+                    HtmlUtils.div(ctDiv,
+                                 HtmlUtils.id(ARG_COLORTABLE + "_html"
                                              + displayIdx)) }, 2));
 
-            String call = HtmlUtil.call("setFormValue",
+            String call = HtmlUtils.call("setFormValue",
                                         "'" + ARG_COLORTABLE + displayIdx
                                         + "','" + "" + "'") + ";"
-                                            + HtmlUtil.call("setHtml",
+                                            + HtmlUtils.call("setHtml",
                                                 "'" + ARG_COLORTABLE
                                                 + "_html" + displayIdx
                                                 + "','" + "-default-" + "'");
-            ctsb.append(HtmlUtil.mouseClickHref(call, "Use default"));
+            ctsb.append(HtmlUtils.mouseClickHref(call, "Use default"));
             for (String ctcat : ctCats) {
-                ctsb.append(HtmlUtil.makeShowHideBlock(ctcat,
+                ctsb.append(HtmlUtils.makeShowHideBlock(ctcat,
                         ctCatMap.get(ctcat).toString(), false));
 
             }
 
             StringBuffer scalesb = new StringBuffer();
             scalesb.append(msgHeader("Color Scale"));
-            scalesb.append(HtmlUtil.formTable());
-            scalesb.append(HtmlUtil.formEntry(msgLabel("Visible"),
+            scalesb.append(HtmlUtils.formTable());
+            scalesb.append(HtmlUtils.formEntry(msgLabel("Visible"),
                     htmlCheckbox(request, ARG_SCALE_VISIBLE + displayIdx,
                                  false)));
-            scalesb.append(HtmlUtil.formEntry(msgLabel("Place"),
+            scalesb.append(HtmlUtils.formEntry(msgLabel("Place"),
                     htmlSelect(request, ARG_SCALE_PLACEMENT + displayIdx,
                                Misc.newList("top", "left", "bottom",
                                             "right"))));
-            scalesb.append(HtmlUtil.formTableClose());
+            scalesb.append(HtmlUtils.formTableClose());
 
 
 
@@ -934,47 +934,47 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             ContourInfo ci =
                 idvServer.getIdv().getDisplayConventions()
                     .findDefaultContourInfo(choice.getName());
-            contoursb.append(HtmlUtil.formTable());
-            contoursb.append(HtmlUtil.formEntry(msgLabel("Interval"),
+            contoursb.append(HtmlUtils.formTable());
+            contoursb.append(HtmlUtils.formEntry(msgLabel("Interval"),
                     htmlInput(request, ARG_CONTOUR_INTERVAL + displayIdx,
                               ((ci == null)
                                ? ""
                                : ci.getInterval() + ""), 3)));
-            contoursb.append(HtmlUtil.formEntry(msgLabel("Base"),
+            contoursb.append(HtmlUtils.formEntry(msgLabel("Base"),
                     htmlInput(request, ARG_CONTOUR_BASE + displayIdx,
                               ((ci == null)
                                ? ""
                                : ci.getBase() + ""), 3)));
-            contoursb.append(HtmlUtil.formEntry(msgLabel("Min"),
+            contoursb.append(HtmlUtils.formEntry(msgLabel("Min"),
                     htmlInput(request, ARG_CONTOUR_MIN + displayIdx,
                               ((ci == null)
                                ? ""
                                : ci.getMin() + ""), 3)));
 
-            contoursb.append(HtmlUtil.formEntry(msgLabel("Max"),
+            contoursb.append(HtmlUtils.formEntry(msgLabel("Max"),
                     htmlInput(request, ARG_CONTOUR_MAX + displayIdx,
                               ((ci == null)
                                ? ""
                                : ci.getMax() + ""), 3)));
-            contoursb.append(HtmlUtil.formEntry(msgLabel("Line Width"),
+            contoursb.append(HtmlUtils.formEntry(msgLabel("Line Width"),
                     htmlSelect(request, ARG_CONTOUR_WIDTH + displayIdx,
                                Misc.newList("1", "2", "3", "4"))));
-            contoursb.append(HtmlUtil.formEntry(msgLabel("Dashed"),
+            contoursb.append(HtmlUtils.formEntry(msgLabel("Dashed"),
                     htmlCheckbox(request, ARG_CONTOUR_DASHED + displayIdx,
                                  ((ci == null)
                                   ? false
                                   : ci.getDashOn()))));
-            contoursb.append(HtmlUtil.formEntry(msgLabel("Labels"),
+            contoursb.append(HtmlUtils.formEntry(msgLabel("Labels"),
                     htmlCheckbox(request, ARG_CONTOUR_LABELS + displayIdx,
                                  ((ci == null)
                                   ? true
                                   : ci.getIsLabeled()))));
-            contoursb.append(HtmlUtil.formTableClose());
+            contoursb.append(HtmlUtils.formTableClose());
 
 
             StringBuffer misc = new StringBuffer();
-            misc.append(HtmlUtil.formTable());
-            misc.append(HtmlUtil.formEntry(msgLabel("Display List Label"),
+            misc.append(HtmlUtils.formTable());
+            misc.append(HtmlUtils.formEntry(msgLabel("Display List Label"),
                                            htmlInput(request,
                                                ARG_DISPLAYLISTLABEL
                                                    + displayIdx, "", 30)));
@@ -985,27 +985,27 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             if (displayUnit != null) {
                 unitString = displayUnit.toString();
             }
-            misc.append(HtmlUtil.formEntry(msgLabel("Display Unit"),
+            misc.append(HtmlUtils.formEntry(msgLabel("Display Unit"),
                                            htmlInput(request,
                                                ARG_DISPLAYUNIT + displayIdx,
                                                    unitString, 6)));
 
             misc.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel("Display Color"),
-                    HtmlUtil.colorSelect(
+                    HtmlUtils.colorSelect(
                         ARG_DISPLAYCOLOR + displayIdx,
                         request.getString(
                             ARG_DISPLAYCOLOR + displayIdx,
                             StringUtil.toHexString(Color.red)))));
 
 
-            misc.append(HtmlUtil.formEntry(msgLabel("Isosurface Value"),
+            misc.append(HtmlUtils.formEntry(msgLabel("Isosurface Value"),
                                            htmlInput(request,
                                                ARG_ISOSURFACEVALUE
                                                    + displayIdx, "", 3)));
             misc.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel("XS Selector"),
                     "Lat 1: "
                     + htmlInput(request, ARG_LAT1 + displayIdx, "", 6)
@@ -1017,24 +1017,24 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     + htmlInput(request, ARG_LON2 + displayIdx, "", 6)));
 
 
-            misc.append(HtmlUtil.formEntry(msgLabel("Vector/Barb Size"),
+            misc.append(HtmlUtils.formEntry(msgLabel("Vector/Barb Size"),
                                            htmlInput(request,
                                                ARG_FLOW_SCALE + displayIdx,
                                                    "4", 3)));
-            misc.append(HtmlUtil.formEntry(msgLabel("Streamline Density"),
+            misc.append(HtmlUtils.formEntry(msgLabel("Streamline Density"),
                                            htmlInput(request,
                                                ARG_FLOW_DENSITY + displayIdx,
                                                    "1", 3)));
-            misc.append(HtmlUtil.formEntry(msgLabel("Flow Skip"),
+            misc.append(HtmlUtils.formEntry(msgLabel("Flow Skip"),
                                            htmlInput(request,
                                                ARG_FLOW_SKIP + displayIdx,
                                                    "0", 3)));
 
 
-            misc.append(HtmlUtil.formTableClose());
+            misc.append(HtmlUtils.formTableClose());
 
             innerTabTitles.add(msg("Color Table"));
-            innerTabContents.add(HtmlUtil.table(new Object[] { ctsb,
+            innerTabContents.add(HtmlUtils.table(new Object[] { ctsb,
                     scalesb }, 5));
 
             innerTabTitles.add(msg("Contours"));
@@ -1047,7 +1047,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             String innerTab = OutputHandler.makeTabs(innerTabTitles,
                                   innerTabContents, true);
-            tab.append(HtmlUtil.inset(HtmlUtil.p() + innerTab, 10));
+            tab.append(HtmlUtils.inset(HtmlUtils.p() + innerTab, 10));
 
             tabLabels.add(
                 StringUtil.camelCase(
@@ -1056,35 +1056,35 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
-            publishSB.append(HtmlUtil.formTable());
+            publishSB.append(HtmlUtils.formTable());
             addPublishWidget(
                 request, entry, publishSB,
                 msg("Select a folder to publish the product to"));
-            publishSB.append(HtmlUtil.formEntry("",
-                    HtmlUtil.submit(msg("Publish image"),
+            publishSB.append(HtmlUtils.formEntry("",
+                    HtmlUtils.submit(msg("Publish image"),
                                     ARG_SUBMIT_PUBLISH)));
 
             if (getAccessManager().canDoAction(request, entry,
                     Permission.ACTION_EDIT)) {
 
-                publishSB.append(HtmlUtil.row(HtmlUtil.colspan(HtmlUtil.p(),
+                publishSB.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.p(),
                         2)));
                 publishSB.append(
-                    HtmlUtil.row(
-                        HtmlUtil.colspan(
+                    HtmlUtils.row(
+                        HtmlUtils.colspan(
                             msgHeader("Or save these settings"), 2)));
                 publishSB.append(
-                    HtmlUtil.formEntry(
+                    HtmlUtils.formEntry(
                         msgLabel("Settings name"),
-                        HtmlUtil.input(ARG_SAVE_NAME, "", 30)));
-                publishSB.append(HtmlUtil.formEntry(msg("Attach image"),
-                        HtmlUtil.checkbox(ARG_SAVE_ATTACH, "true", false)));
-                publishSB.append(HtmlUtil.formEntry("",
-                        HtmlUtil.submit(msg("Save settings"),
+                        HtmlUtils.input(ARG_SAVE_NAME, "", 30)));
+                publishSB.append(HtmlUtils.formEntry(msg("Attach image"),
+                        HtmlUtils.checkbox(ARG_SAVE_ATTACH, "true", false)));
+                publishSB.append(HtmlUtils.formEntry("",
+                        HtmlUtils.submit(msg("Save settings"),
                                         ARG_SUBMIT_SAVE)));
 
             }
-            publishSB.append(HtmlUtil.formTableClose());
+            publishSB.append(HtmlUtils.formTableClose());
 
 
             tabLabels.add(msg("Publish"));
@@ -1094,9 +1094,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         sb.append(OutputHandler.makeTabs(tabLabels, tabContents, true));
 
-        sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.submit(msg("Make Image"), ARG_SUBMIT));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.formClose());
     }
 
 
@@ -1117,10 +1117,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         StringBuffer sb      = new StringBuffer();
 
         String       formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
-        sb.append(HtmlUtil.form(formUrl, ""));
-        sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
-        sb.append(HtmlUtil.hidden(ARG_IDV_ACTION, ACTION_MAKEFORM));
+        sb.append(HtmlUtils.form(formUrl, ""));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
+        sb.append(HtmlUtils.hidden(ARG_IDV_ACTION, ACTION_MAKEFORM));
 
         List<DataChoice> choices =
             (List<DataChoice>) dataSource.getDataChoices();
@@ -1159,13 +1159,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         fields.append(htmlSelect(request, ARG_PARAM, options,
-                                 HtmlUtil.attrs(HtmlUtil.ATTR_MULTIPLE,
-                                     "true", HtmlUtil.ATTR_SIZE, "10")));
-        fields.append(HtmlUtil.p());
+                                 HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE,
+                                     "true", HtmlUtils.ATTR_SIZE, "10")));
+        fields.append(HtmlUtils.p());
 
-        sb.append(HtmlUtil.insetLeft(fields.toString(), 10));
-        sb.append(HtmlUtil.submit(msg("Select Fields"), ARG_SUBMIT));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.insetLeft(fields.toString(), 10));
+        sb.append(HtmlUtils.submit(msg("Select Fields"), ARG_SUBMIT));
+        sb.append(HtmlUtils.formClose());
 
 
 
@@ -1173,25 +1173,25 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             getMetadataManager().findMetadata(entry,
                 METADATA_TYPE_VISUALIZATION, false);
         if ((metadataList != null) && (metadataList.size() > 0)) {
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.p());
             sb.append(msgHeader("Or select a predefined visualization"));
-            sb.append(HtmlUtil.open(HtmlUtil.TAG_UL));
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_UL));
             MetadataType metadataType =
                 getMetadataManager().findType(METADATA_TYPE_VISUALIZATION);
             for (Metadata metadata : metadataList) {
                 String url =
-                    HtmlUtil.url(getRepository().URL_ENTRY_SHOW.toString(),
+                    HtmlUtils.url(getRepository().URL_ENTRY_SHOW.toString(),
                                  new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                     OUTPUT_IDV_GRID.toString(), ARG_IDV_ACTION, ACTION_MAKEPAGE,
                     ARG_PREDEFINED, metadata.getId()
                 });
-                sb.append(HtmlUtil.li(HtmlUtil.href(url,
+                sb.append(HtmlUtils.li(HtmlUtils.href(url,
                         metadata.getAttr1()), ""));
                 metadataType.decorateEntry(request, entry, sb, metadata,
                                            true, true);
             }
-            sb.append(HtmlUtil.close(HtmlUtil.TAG_UL));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_UL));
         }
 
         return new Result("Grid Displays", sb);
@@ -1358,22 +1358,22 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         boolean showForm = true;
 
         if (product.equals(PRODUCT_IMAGE)) {
-            sb.append(HtmlUtil.img(url, "Image is being processed...",
-                                   HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+            sb.append(HtmlUtils.img(url, "Image is being processed...",
+                                   HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                        request.getString(ARG_IMAGE_WIDTH,
                                            "600"))));
             showForm = false;
         } else if (product.equals(PRODUCT_MOV)) {
-            sb.append(HtmlUtil.href(url, "Click here to retrieve the movie"));
+            sb.append(HtmlUtils.href(url, "Click here to retrieve the movie"));
         } else if (product.equals(PRODUCT_KMZ)) {
-            sb.append(HtmlUtil.href(url,
+            sb.append(HtmlUtils.href(url,
                                     "Click here to retrieve the KMZ file"));
         } else if (product.equals(PRODUCT_GEPLUGIN)) {
             url = url.replace(PRODUCT_GEPLUGIN, PRODUCT_KMZ);
             String id = getMapManager().getGoogleEarthPlugin(request, sb,
                             request.get(ARG_IMAGE_WIDTH, 500),
                             request.get(ARG_IMAGE_HEIGHT, 500), url);
-            //sb.append(HtmlUtil.href(url,
+            //sb.append(HtmlUtils.href(url,
             //                        "Click here to retrieve the KMZ file"));
         }
 
@@ -1382,19 +1382,19 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         StringBuffer formSB = new StringBuffer();
         makeGridForm(request, formSB, entry, dataSource);
-        sb.append(HtmlUtil.div("",
-                               HtmlUtil.cssClass("image_edit_box")
-                               + HtmlUtil.id("image_edit_box")));
+        sb.append(HtmlUtils.div("",
+                               HtmlUtils.cssClass("image_edit_box")
+                               + HtmlUtils.id("image_edit_box")));
 
-        formSB.append(HtmlUtil.space(2));
-        formSB.append(HtmlUtil.href(jnlpUrl, msg("Launch in the IDV")));
-        formSB.append(HtmlUtil.space(2));
-        formSB.append(HtmlUtil.href(islUrl, msg("Download IDV ISL script")));
+        formSB.append(HtmlUtils.space(2));
+        formSB.append(HtmlUtils.href(jnlpUrl, msg("Launch in the IDV")));
+        formSB.append(HtmlUtils.space(2));
+        formSB.append(HtmlUtils.href(islUrl, msg("Download IDV ISL script")));
 
 
         sb.append("\n");
-        sb.append(HtmlUtil.br());
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Image Settings"),
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Image Settings"),
                                              formSB.toString(), showForm));
 
         return new Result("Grid Displays", sb);
@@ -2066,13 +2066,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String       formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
         StringBuffer formSB  = new StringBuffer();
 
-        formSB.append(HtmlUtil.form(formUrl, ""));
-        formSB.append(HtmlUtil.submit(msg("Make Image"), ARG_SUBMIT));
-        formSB.append(HtmlUtil.p());
-        formSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-        formSB.append(HtmlUtil.hidden(ARG_OUTPUT, OUTPUT_IDV_POINT));
-        formSB.append(HtmlUtil.hidden(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE));
-        formSB.append(HtmlUtil.formTable());
+        formSB.append(HtmlUtils.form(formUrl, ""));
+        formSB.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        formSB.append(HtmlUtils.p());
+        formSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        formSB.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_POINT));
+        formSB.append(HtmlUtils.hidden(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE));
+        formSB.append(HtmlUtils.formTable());
         StationModelManager smm = idvServer.getIdv().getStationModelManager();
         List                layoutModels     = smm.getStationModels();
         List                layoutModelNames = new ArrayList();
@@ -2081,27 +2081,27 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
 
-        formSB.append(HtmlUtil.formEntry(msgLabel("Layout Model"),
+        formSB.append(HtmlUtils.formEntry(msgLabel("Layout Model"),
                                          htmlSelect(request,
                                              ARG_POINT_LAYOUTMODEL,
                                              layoutModelNames)));
 
-        formSB.append(HtmlUtil.formEntry(msgLabel("Animate"),
+        formSB.append(HtmlUtils.formEntry(msgLabel("Animate"),
                                          htmlCheckbox(request,
                                              ARG_POINT_DOANIMATION, false)));
 
 
-        formSB.append(HtmlUtil.formEntry(msgLabel("Image Size"),
+        formSB.append(HtmlUtils.formEntry(msgLabel("Image Size"),
                                          htmlInput(request, ARG_IMAGE_WIDTH,
-                                             "600") + HtmlUtil.space(1) + "X"
-                                                 + HtmlUtil.space(1)
+                                             "600") + HtmlUtils.space(1) + "X"
+                                                 + HtmlUtils.space(1)
                                                      + htmlInput(request,
                                                          ARG_IMAGE_HEIGHT,
                                                              "400")));
 
 
-        formSB.append(HtmlUtil.formTableClose());
-        formSB.append(HtmlUtil.formClose());
+        formSB.append(HtmlUtils.formTableClose());
+        formSB.append(HtmlUtils.formClose());
 
 
         String url = getRepository().URL_ENTRY_SHOW.getFullUrl();
@@ -2124,15 +2124,15 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         StringBuffer imageSB = new StringBuffer();
 
-        imageSB.append(HtmlUtil.img(url, "",
-                                    HtmlUtil.attr(HtmlUtil.ATTR_WIDTH,
+        imageSB.append(HtmlUtils.img(url, "",
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                         request.getString(ARG_IMAGE_WIDTH,
                                             "400"))));
 
         if ( !request.exists(ARG_SUBMIT)) {
             sb.append(formSB);
         } else {
-            sb.append(HtmlUtil.table(new Object[] { imageSB, formSB }, 10));
+            sb.append(HtmlUtils.table(new Object[] { imageSB, formSB }, 10));
         }
 
 
@@ -2401,8 +2401,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         } else if (request.exists(arg + "_gvdflt")) {
             value = false;
         }
-        return HtmlUtil.checkbox(arg, "true", value)
-               + HtmlUtil.hidden(arg + "_gvdflt", "" + value);
+        return HtmlUtils.checkbox(arg, "true", value)
+               + HtmlUtils.hidden(arg + "_gvdflt", "" + value);
     }
 
 
@@ -2423,7 +2423,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         if ((selected.size() == 0) && selectFirstOne && (items.size() > 0)) {
             selected.add(items.get(0));
         }
-        return HtmlUtil.select(arg, items, selected, extra);
+        return HtmlUtils.select(arg, items, selected, extra);
     }
 
 

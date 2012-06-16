@@ -35,7 +35,7 @@ import ucar.unidata.sql.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -153,10 +153,10 @@ public class GraphOutputHandler extends OutputHandler {
             type = entry.getTypeHandler().getNodeType();
         }
         String html = StringUtil.replace(graphAppletTemplate, "${id}",
-                                         HtmlUtil.urlEncode(entry.getId()));
+                                         HtmlUtils.urlEncode(entry.getId()));
         html = StringUtil.replace(html, "${root}",
                                   getRepository().getUrlBase());
-        html = StringUtil.replace(html, "${type}", HtmlUtil.urlEncode(type));
+        html = StringUtil.replace(html, "${type}", HtmlUtils.urlEncode(type));
         StringBuffer sb = new StringBuffer();
         sb.append(html);
         Result result = new Result(msg("Graph"), sb);
@@ -260,7 +260,7 @@ public class GraphOutputHandler extends OutputHandler {
         String imageUrl = null;
         if (ImageUtils.isImage(entry.getResource().getPath())) {
             imageUrl =
-                HtmlUtil.url(
+                HtmlUtils.url(
                     getRepository().URL_ENTRY_GET + entry.getId()
                     + IOUtil.getFileExtension(
                         entry.getResource().getPath()), ARG_ENTRYID,

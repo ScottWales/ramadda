@@ -24,7 +24,7 @@ package org.ramadda.repository.monitor;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 import java.util.ArrayList;
@@ -104,25 +104,25 @@ public class TwitterAction extends PasswordAction {
      * @param sb _more_
      */
     public void addToEditForm(EntryMonitor monitor, StringBuffer sb) {
-        sb.append(HtmlUtil.formTable());
-        sb.append(HtmlUtil.colspan("Twitter Action", 2));
-        sb.append(HtmlUtil.formEntry("Twitter ID:",
-                                     HtmlUtil.input(getArgId(ARG_ACTION_ID),
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.colspan("Twitter Action", 2));
+        sb.append(HtmlUtils.formEntry("Twitter ID:",
+                                     HtmlUtils.input(getArgId(ARG_ACTION_ID),
                                          getRemoteUserId(),
-                                         HtmlUtil.SIZE_60)));
+                                         HtmlUtils.SIZE_60)));
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "Twitter Password:",
-                HtmlUtil.input(
+                HtmlUtils.input(
                     getArgId(ARG_ACTION_PASSWORD), getPassword(),
-                    HtmlUtil.SIZE_60)));
+                    HtmlUtils.SIZE_60)));
         sb.append(
-            HtmlUtil.formEntryTop(
+            HtmlUtils.formEntryTop(
                 "Message:",
-                HtmlUtil.textArea(
+                HtmlUtils.textArea(
                     getArgId(ARG_ACTION_MESSAGE), getMessageTemplate(), 5,
                     60)));
-        sb.append(HtmlUtil.formTableClose());
+        sb.append(HtmlUtils.formTableClose());
     }
 
 

@@ -1763,6 +1763,12 @@ public class HtmlUtils {
                          label, ATTR_CLASS, CLASS_SUBMIT));
     }
 
+    public static String submit(String label, String name, String extra) {
+        return tag(TAG_INPUT,
+                   attrs(ATTR_NAME, name, ATTR_TYPE, TYPE_SUBMIT, ATTR_VALUE,
+                         label, ATTR_CLASS, CLASS_SUBMIT)+extra);
+    }
+
     /**
      * _more_
      *

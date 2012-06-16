@@ -33,7 +33,7 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.Clause;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -168,18 +168,18 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
 
         StringBuffer sb = new StringBuffer();
         sb.append(group.getDescription());
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
 
         boolean canAdd = getAccessManager().canDoAction(request, group,
                              Permission.ACTION_NEW);
 
         if (canAdd) {
             String label =
-                HtmlUtil.img(getRepository().iconUrl(ICON_NEW),
+                HtmlUtils.img(getRepository().iconUrl(ICON_NEW),
                              msg("New Glossary Question")) + " "
                                  + msg("Create new glossary entry");
-            sb.append(HtmlUtil
-                .href(HtmlUtil
+            sb.append(HtmlUtils
+                .href(HtmlUtils
                     .url(request
                         .entryUrl(getRepository().URL_ENTRY_FORM, group,
                                   ARG_GROUP), ARG_TYPE,
@@ -194,7 +194,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         subGroups.addAll(entries);
 
 
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append("<center>");
         List<String> header    = new ArrayList<String>();
         String       theLetter = request.getString(ARG_LETTER, "");
@@ -206,9 +206,9 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         String url = request.getUrl(ARG_LETTER);
         for (String letter : ltrs) {
             if (letter.equals(theLetter)) {
-                header.add(HtmlUtil.b(letter));
+                header.add(HtmlUtils.b(letter));
             } else {
-                header.add(HtmlUtil.href(url + "&" + ARG_LETTER + "="
+                header.add(HtmlUtils.href(url + "&" + ARG_LETTER + "="
                                          + letter, letter));
             }
         }
@@ -239,7 +239,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
             String href = getEntryManager().getAjaxLink(request, entry,
                               name).toString();
             letterBuffer.append(
-                HtmlUtil.li(href, HtmlUtil.cssClass("glossary_entry")));
+                HtmlUtils.li(href, HtmlUtils.cssClass("glossary_entry")));
         }
 
         letters = (List<String>) Misc.sort(letters);
@@ -248,7 +248,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
             StringBuffer letterBuffer = letterToBuffer.get(letter);
             letterBuffer.append("</ul>");
             sb.append("<a name=\"letter_" + letter + "\"></a>");
-            sb.append(HtmlUtil.h2(letter));
+            sb.append(HtmlUtils.h2(letter));
             sb.append(letterBuffer);
         }
         return new Result(msg("Glossary"), sb);

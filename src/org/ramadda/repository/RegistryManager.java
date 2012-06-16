@@ -34,7 +34,7 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -161,7 +161,7 @@ public class RegistryManager extends RepositoryManager {
                 String url = request.getString(ARG_REGISTRY_URL, "");
                 URL fullUrl =
                     new URL(
-                        HtmlUtil.url(
+                        HtmlUtils.url(
                             url + getRepository().URL_INFO.getPath(),
                             new String[] { ARG_RESPONSE,
                                            RESPONSE_XML }));
@@ -190,20 +190,20 @@ public class RegistryManager extends RepositoryManager {
             }
 
             sb.append(request.form(URL_REGISTRY_REMOTESERVERS, ""));
-            sb.append(HtmlUtil.formTable());
-            sb.append(HtmlUtil.p());
+            sb.append(HtmlUtils.formTable());
+            sb.append(HtmlUtils.p());
 
             sb.append(
-                HtmlUtil.formEntry(
+                HtmlUtils.formEntry(
                     msgLabel("URL"),
-                    HtmlUtil.input(
+                    HtmlUtils.input(
                         ARG_REGISTRY_URL,
                         request.getString(ARG_REGISTRY_URL, ""),
-                        HtmlUtil.SIZE_60)));
-            sb.append(HtmlUtil.formTableClose());
-            sb.append(HtmlUtil.submit("Add New Server", ARG_REGISTRY_ADD));
-            sb.append(HtmlUtil.submit("Cancel", ARG_CANCEL));
-            sb.append(HtmlUtil.formClose());
+                        HtmlUtils.SIZE_60)));
+            sb.append(HtmlUtils.formTableClose());
+            sb.append(HtmlUtils.submit("Add New Server", ARG_REGISTRY_ADD));
+            sb.append(HtmlUtils.submit("Cancel", ARG_CANCEL));
+            sb.append(HtmlUtils.formClose());
             return getAdmin().makeResult(request, msg("Remote Servers"), sb);
 
         } else if (request.exists(ARG_REGISTRY_RELOAD)) {
@@ -243,59 +243,59 @@ public class RegistryManager extends RepositoryManager {
         }
 
 
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.p());
         sb.append(request.form(URL_REGISTRY_REMOTESERVERS, ""));
-        sb.append(HtmlUtil.submit(msg("Change Selected"), ARG_SUBMIT));
-        sb.append(HtmlUtil.submit(msg("Delete Selected"), ARG_DELETE));
-        sb.append(HtmlUtil.submit(msg("Add New Server"), ARG_REGISTRY_ADD));
-        sb.append(HtmlUtil.submit(msg("Reload from Registry Servers"),
+        sb.append(HtmlUtils.submit(msg("Change Selected"), ARG_SUBMIT));
+        sb.append(HtmlUtils.submit(msg("Delete Selected"), ARG_DELETE));
+        sb.append(HtmlUtils.submit(msg("Add New Server"), ARG_REGISTRY_ADD));
+        sb.append(HtmlUtils.submit(msg("Reload from Registry Servers"),
                                   ARG_REGISTRY_RELOAD));
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_UL));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_UL));
         List<ServerInfo> remoteServers = getRemoteServers();
         if (remoteServers.size() == 0) {
             sb.append(msg("No remote servers"));
         } else {
             sb.append(msg("Use selected in search"));
         }
-        sb.append(HtmlUtil.br());
+        sb.append(HtmlUtils.br());
 
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
         int idCnt = 0;
 
         for (ServerInfo serverInfo : remoteServers) {
-            sb.append(HtmlUtil.hidden(ARG_REGISTRY_SERVER,
+            sb.append(HtmlUtils.hidden(ARG_REGISTRY_SERVER,
                                       serverInfo.getId()));
             String cbxId = ARG_REGISTRY_SELECTED + "_" + (idCnt++);
-            String call = HtmlUtil.attr(
-                              HtmlUtil.ATTR_ONCLICK,
-                              HtmlUtil.call(
+            String call = HtmlUtils.attr(
+                              HtmlUtils.ATTR_ONCLICK,
+                              HtmlUtils.call(
                                   "checkboxClicked",
-                                  HtmlUtil.comma(
+                                  HtmlUtils.comma(
                                       "event",
-                                      HtmlUtil.squote(ARG_REGISTRY_SELECTED),
-                                      HtmlUtil.squote(cbxId))));
+                                      HtmlUtils.squote(ARG_REGISTRY_SELECTED),
+                                      HtmlUtils.squote(cbxId))));
 
 
             sb.append(
-                HtmlUtil.row(
-                    HtmlUtil.cols(
-                        HtmlUtil.checkbox(
+                HtmlUtils.row(
+                    HtmlUtils.cols(
+                        HtmlUtils.checkbox(
                             ARG_REGISTRY_SELECTED, serverInfo.getId(),
                             serverInfo.getSelected(),
-                            HtmlUtil.id(cbxId)
-                            + call) + serverInfo.getLabel(), HtmlUtil.space(
-                                4), HtmlUtil.href(
+                            HtmlUtils.id(cbxId)
+                            + call) + serverInfo.getLabel(), HtmlUtils.space(
+                                4), HtmlUtils.href(
                                 serverInfo.getUrl(), serverInfo.getUrl()))));
         }
 
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_UL));
-        sb.append(HtmlUtil.submit("Change Selected", ARG_SUBMIT));
-        sb.append(HtmlUtil.submit("Delete Selected", ARG_DELETE));
-        sb.append(HtmlUtil.submit("Add New Server", ARG_REGISTRY_ADD));
-        sb.append(HtmlUtil.submit("Reload from Registry Servers",
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_UL));
+        sb.append(HtmlUtils.submit("Change Selected", ARG_SUBMIT));
+        sb.append(HtmlUtils.submit("Delete Selected", ARG_DELETE));
+        sb.append(HtmlUtils.submit("Add New Server", ARG_REGISTRY_ADD));
+        sb.append(HtmlUtils.submit("Reload from Registry Servers",
                                   ARG_REGISTRY_RELOAD));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.formClose());
 
 
         return getAdmin().makeResult(request, msg("Remote Servers"), sb);
@@ -317,16 +317,16 @@ public class RegistryManager extends RepositoryManager {
             return;
         }
         String msg = msgLabel("Servers this server registers with");
-        msg = HtmlUtil.space(1)
-              + HtmlUtil.href(getRepository().getUrlBase()
+        msg = HtmlUtils.space(1)
+              + HtmlUtils.href(getRepository().getUrlBase()
                               + "/userguide/remoteservers.html", msg("Help"),
-                                  HtmlUtil.attr(HtmlUtil.ATTR_TARGET,
+                                  HtmlUtils.attr(HtmlUtils.ATTR_TARGET,
                                       "_help"));
         sb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Registry Servers"),
-                msg + HtmlUtil.br()
-                + HtmlUtil.textArea(
+                msg + HtmlUtils.br()
+                + HtmlUtils.textArea(
                     PROP_REGISTRY_SERVERS,
                     getRepository().getProperty(
                         PROP_REGISTRY_SERVERS,
@@ -444,28 +444,28 @@ public class RegistryManager extends RepositoryManager {
      */
     public void addAdminConfig(Request request, StringBuffer csb) {
         String helpLink =
-            HtmlUtil.href(getRepository().getUrlBase()
+            HtmlUtils.href(getRepository().getUrlBase()
                           + "/userguide/remoteservers.html", msg("Help"),
-                              HtmlUtil.attr(HtmlUtil.ATTR_TARGET, "_help"));
+                              HtmlUtils.attr(HtmlUtils.ATTR_TARGET, "_help"));
         csb.append(
-            HtmlUtil.row(HtmlUtil.colspan(msgHeader("Server Registry"), 2)));
+            HtmlUtils.row(HtmlUtils.colspan(msgHeader("Server Registry"), 2)));
 
         csb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "",
-                HtmlUtil.checkbox(
+                HtmlUtils.checkbox(
                     PROP_REGISTRY_ENABLED, "true", isEnabledAsServer()) + " "
                         + msg("Enable this server to be a registry for other servers")));
 
         csb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "",
                 msgLabel("Servers this server registers with")
-                + HtmlUtil.space(2) + helpLink));
+                + HtmlUtils.space(2) + helpLink));
         csb.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 "",
-                HtmlUtil.textArea(
+                HtmlUtils.textArea(
                     PROP_REGISTRY_SERVERS,
                     getRepository().getProperty(
                         PROP_REGISTRY_SERVERS,
@@ -734,7 +734,7 @@ public class RegistryManager extends RepositoryManager {
     public void registerWithServer(String url) throws Exception {
         ServerInfo serverInfo = getRepository().getServerInfo();
         url = url + getRepository().URL_REGISTRY_ADD.getPath();
-        URL theUrl = new URL(HtmlUtil.url(url, ARG_REGISTRY_CLIENT,
+        URL theUrl = new URL(HtmlUtils.url(url, ARG_REGISTRY_CLIENT,
                                           serverInfo.getUrl()));
         try {
             String  contents = getStorageManager().readSystemResource(theUrl);
@@ -886,7 +886,7 @@ public class RegistryManager extends RepositoryManager {
      */
     private void fetchRemoteServers(String serverUrl) throws Exception {
         serverUrl = serverUrl + getRepository().URL_REGISTRY_LIST.getPath();
-        serverUrl = HtmlUtil.url(serverUrl, ARG_RESPONSE, RESPONSE_XML);
+        serverUrl = HtmlUtils.url(serverUrl, ARG_RESPONSE, RESPONSE_XML);
         String contents =
             getStorageManager().readSystemResource(new URL(serverUrl));
         Element root = XmlUtil.getRoot(contents);
@@ -963,7 +963,7 @@ public class RegistryManager extends RepositoryManager {
             throws Exception {
 
         String serverUrl =
-            HtmlUtil.url(
+            HtmlUtils.url(
                 serverInfo.getUrl()
                 + getRepository().URL_REGISTRY_INFO.getPath(), new String[] {
                     ARG_RESPONSE,
@@ -1068,33 +1068,33 @@ public class RegistryManager extends RepositoryManager {
                     continue;
                 }
                 if ( !didone) {
-                    sb.append(HtmlUtil.p());
+                    sb.append(HtmlUtils.p());
                     if (i == 0) {
                         sb.append(msgHeader("Registered Servers"));
                     } else {
                         sb.append(msgHeader("Remote Servers"));
                     }
                     sb.append("<table cellspacing=\"0\" cellpadding=\"4\">");
-                    sb.append(HtmlUtil.row(HtmlUtil.headerCols(new String[] {
+                    sb.append(HtmlUtils.row(HtmlUtils.headerCols(new String[] {
                         msg("Repository"),
                         msg("URL"), msg("Is Registry?") })));
                 }
                 didone = true;
                 seen.add(serverInfo);
-                sb.append(HtmlUtil.row(HtmlUtil.cols(new String[] {
+                sb.append(HtmlUtils.row(HtmlUtils.cols(new String[] {
                     serverInfo.getLabel(),
-                    HtmlUtil.href(serverInfo.getUrl(), serverInfo.getUrl()),
+                    HtmlUtils.href(serverInfo.getUrl(), serverInfo.getUrl()),
                     (serverInfo.getIsRegistry()
                      ? msg("Yes")
-                     : msg("No")) }), HtmlUtil.cssClass(evenRow
+                     : msg("No")) }), HtmlUtils.cssClass(evenRow
                         ? "listrow1"
                         : "listrow2")));
                 String desc = serverInfo.getDescription();
                 if ((desc != null) && (desc.trim().length() > 0)) {
-                    desc = HtmlUtil.makeShowHideBlock(msg("Description"),
+                    desc = HtmlUtils.makeShowHideBlock(msg("Description"),
                             desc, false);
-                    sb.append(HtmlUtil.row(HtmlUtil.colspan(desc, 3),
-                                           HtmlUtil.cssClass(evenRow
+                    sb.append(HtmlUtils.row(HtmlUtils.colspan(desc, 3),
+                                           HtmlUtils.cssClass(evenRow
                             ? "listrow1"
                             : "listrow2")));
                 }

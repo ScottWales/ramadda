@@ -36,7 +36,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -362,9 +362,9 @@ public class StorageManager extends RepositoryManager {
      * @param sb _more_
      */
     public void addInfo(StringBuffer sb) {
-        sb.append(HtmlUtil.formEntry("Home Directory:",
+        sb.append(HtmlUtils.formEntry("Home Directory:",
                                      getRepositoryDir().toString()));
-        sb.append(HtmlUtil.formEntry("Storage Directory:",
+        sb.append(HtmlUtils.formEntry("Storage Directory:",
                                      getStorageDir().toString()));
     }
 
@@ -1213,7 +1213,7 @@ public class StorageManager extends RepositoryManager {
         }
 
         String fileName = original.getName();
-        fileName = HtmlUtil.urlEncode(fileName);
+        fileName = HtmlUtils.urlEncode(fileName);
         String targetName = prefix + fileName;
         File   newFile    = new File(IOUtil.joinDir(storageDir, targetName));
         moveFile(original, newFile);

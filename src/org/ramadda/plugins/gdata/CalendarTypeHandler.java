@@ -47,7 +47,7 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
@@ -301,7 +301,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             if (event.getContent() instanceof TextContent) {
                 TextContent content = (TextContent) event.getContent();
                 desc.append(content.getContent().getPlainText());
-                desc.append(HtmlUtil.p());
+                desc.append(HtmlUtils.p());
             }
 
 

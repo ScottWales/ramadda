@@ -99,7 +99,7 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -1012,15 +1012,15 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         } else {
             sb.append(request.uploadForm(getRepository().URL_ENTRY_SHOW));
             sb.append(msgLabel("New data file"));
-            sb.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
-            sb.append(HtmlUtil.hidden(ARG_POINT_VIEW, VIEW_UPLOAD));
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_POINT_VIEW, VIEW_UPLOAD));
 
-            sb.append(HtmlUtil.fileInput(ARG_POINT_UPLOAD_FILE,
-                                         HtmlUtil.SIZE_50));
-            sb.append(HtmlUtil.br());
-            sb.append(HtmlUtil.submit("Add new data"));
+            sb.append(HtmlUtils.fileInput(ARG_POINT_UPLOAD_FILE,
+                                         HtmlUtils.SIZE_50));
+            sb.append(HtmlUtils.br());
+            sb.append(HtmlUtils.submit("Add new data"));
             sb.append(request.uploadForm(getRepository().URL_ENTRY_SHOW));
-            sb.append(HtmlUtil.formClose());
+            sb.append(HtmlUtils.formClose());
         }
     }
 
@@ -1052,7 +1052,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                      + baseName + ".png" + "?"
                                      + request.getUrlArgs(null,
                                          getSet(OP_LT));
-                sb.append(HtmlUtil.img(redirectUrl,
+                sb.append(HtmlUtils.img(redirectUrl,
                                        "Image is being processed..."));
             } else {
                 /*
@@ -1108,7 +1108,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             }
 
             String redirectUrl = request.getRequestPath() + "/"
-                                 + HtmlUtil.urlEncode(baseName) + urlSuffix
+                                 + HtmlUtils.urlEncode(baseName) + urlSuffix
                                  + "?"
                                  + request.getUrlArgs(null, getSet(OP_LT));
             return new Result(redirectUrl);
@@ -1510,7 +1510,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null, getSet(OP_LT));
                 request.put(ARG_SKIP, skip + "");
-                toks.add(HtmlUtil.href(url, msg("Previous...")));
+                toks.add(HtmlUtils.href(url, msg("Previous...")));
             }
 
             if (numItems >= max) {
@@ -1518,7 +1518,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null, getSet(OP_LT));
                 request.put(ARG_SKIP, skip + "");
-                toks.add(HtmlUtil.href(url, msg("Next...")));
+                toks.add(HtmlUtils.href(url, msg("Next...")));
             }
 
 
@@ -1526,19 +1526,19 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 request.put(ARG_MAX, "" + (max + 100));
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null, getSet(OP_LT));
-                toks.add(HtmlUtil.href(url, msg("View More")));
+                toks.add(HtmlUtils.href(url, msg("View More")));
                 request.put(ARG_MAX, "" + (max / 2));
                 url = request.getRequestPath() + "?"
                       + request.getUrlArgs(null, getSet(OP_LT));
-                toks.add(HtmlUtil.href(url, msg("View Less")));
+                toks.add(HtmlUtils.href(url, msg("View Less")));
             }
 
             request.put(ARG_SKIP, "" + skip);
             request.put(ARG_MAX, "" + max);
             if (toks.size() > 0) {
-                cntSB.append(HtmlUtil.space(2));
-                cntSB.append(StringUtil.join(HtmlUtil.span("&nbsp;|&nbsp;",
-                        HtmlUtil.cssClass(CSS_CLASS_SEPARATOR)), toks));
+                cntSB.append(HtmlUtils.space(2));
+                cntSB.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
+                        HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)), toks));
             }
         }
 
@@ -1549,7 +1549,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         sb.append(header(msg("Point Data Search Results")));
         sb.append(cntSB);
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Search Again"),
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Search Again"),
                                              searchForm.toString(), false));
 
 
@@ -1754,7 +1754,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                         label.append("" + value);
                     }
                 }
-                info.append(HtmlUtil.b(pdm.formatName()) + ":" + value + " "
+                info.append(HtmlUtils.b(pdm.formatName()) + ":" + value + " "
                             + pdm.formatUnit() + "<br>");
             }
 
@@ -1832,11 +1832,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append("<table>");
         StringBuffer header = new StringBuffer();
         for (PointDataMetadata pdm : columnsToUse) {
-            header.append(HtmlUtil.cols(HtmlUtil.b(pdm.formatName() + " "
+            header.append(HtmlUtils.cols(HtmlUtils.b(pdm.formatName() + " "
                     + pdm.formatUnit())));
         }
-        sb.append(HtmlUtil.row(header.toString(),
-                               HtmlUtil.attr(HtmlUtil.ATTR_ALIGN, "center")));
+        sb.append(HtmlUtils.row(header.toString(),
+                               HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "center")));
 
 
 
@@ -1848,13 +1848,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 Object value = pointData.getValue(pdm);
                 if (value instanceof Double) {
                     double d = ((Double) value).doubleValue();
-                    row.append(HtmlUtil.cols("" + Misc.format(d)));
+                    row.append(HtmlUtils.cols("" + Misc.format(d)));
                 } else {
-                    row.append(HtmlUtil.cols("" + value));
+                    row.append(HtmlUtils.cols("" + value));
                 }
             }
-            sb.append(HtmlUtil.row(row.toString(),
-                                   HtmlUtil.attr(HtmlUtil.ATTR_ALIGN,
+            sb.append(HtmlUtils.row(row.toString(),
+                                   HtmlUtils.attr(HtmlUtils.ATTR_ALIGN,
                                        "right")));
         }
         sb.append("</table>");
@@ -2465,7 +2465,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 info.append("<br>");
             }
 
-            map.addMarker(HtmlUtil.quote("" + cnt), pointData.lat,
+            map.addMarker(HtmlUtils.quote("" + cnt), pointData.lat,
                           pointData.lon, icon, info.toString());
         }
         map.center();
@@ -2500,7 +2500,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         Result result =
             new Result("", getStorageManager().getFileInputStream(file),
                        "application/x-netcdf");
-        result.addHttpHeader(HtmlUtil.HTTP_CONTENT_LENGTH,
+        result.addHttpHeader(HtmlUtils.HTTP_CONTENT_LENGTH,
                              "" + file.length());
         return result;
     }
@@ -2530,12 +2530,12 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                            || request.exists(ARG_POINT_FORMAT);
 
         if ( !doSearch && view.equals(VIEW_SEARCHFORM)) {
-            headerLinks.add(HtmlUtil.b(msg("Search form")));
+            headerLinks.add(HtmlUtils.b(msg("Search form")));
         } else {
             Object tmp1 = request.remove(ARG_POINT_SEARCH);
             Object tmp2 = request.remove(ARG_POINT_FORMAT);
             headerLinks.add(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                     msg("Search form")));
 
@@ -2548,10 +2548,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         }
 
         if (view.equals(VIEW_METADATA)) {
-            headerLinks.add(HtmlUtil.b(msg("Metadata")));
+            headerLinks.add(HtmlUtils.b(msg("Metadata")));
         } else {
             headerLinks.add(
-                HtmlUtil.href(
+                HtmlUtils.href(
                     request.entryUrl(
                         getRepository().URL_ENTRY_SHOW, entry,
                         ARG_POINT_VIEW, VIEW_METADATA), msg("Metadata")));
@@ -2559,10 +2559,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         if (canEdit) {
             if (view.equals(VIEW_UPLOAD)) {
-                headerLinks.add(HtmlUtil.b(msg("Upload more data")));
+                headerLinks.add(HtmlUtils.b(msg("Upload more data")));
             } else {
                 headerLinks.add(
-                    HtmlUtil.href(
+                    HtmlUtils.href(
                         request.entryUrl(
                             getRepository().URL_ENTRY_SHOW, entry,
                             ARG_POINT_VIEW, VIEW_UPLOAD), msg(
@@ -2571,12 +2571,12 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         }
 
         headerLinks.add(
-            HtmlUtil.href(
+            HtmlUtils.href(
                 request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_POINT_VIEW,
                     VIEW_DEFAULT), msg("Show default")));
         String header = StringUtil.join("&nbsp;|&nbsp;", headerLinks);
-        return HtmlUtil.center(header);
+        return HtmlUtils.center(header);
     }
 
 
@@ -2706,22 +2706,22 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             }
         }
         sb.append("<table>");
-        sb.append(HtmlUtil.row(HtmlUtil.cols(HtmlUtil.b(msg("Short Name")),
-                                             HtmlUtil.b(msg("Long Name")),
-                                             HtmlUtil.b(msg("Unit Name")),
-                                             HtmlUtil.b(msg("Type")))));
+        sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.b(msg("Short Name")),
+                                             HtmlUtils.b(msg("Long Name")),
+                                             HtmlUtils.b(msg("Unit Name")),
+                                             HtmlUtils.b(msg("Type")))));
         for (PointDataMetadata pdm : metadata) {
             String type = pdm.varType;
             if (canEdit && pdm.isString()) {
-                type = HtmlUtil.href(
+                type = HtmlUtils.href(
                     request.entryUrl(
                         getRepository().URL_ENTRY_SHOW, entry,
                         ARG_POINT_VIEW, VIEW_METADATA, ARG_POINT_CHANGETYPE,
                         pdm.getColumnName()), type,
-                            HtmlUtil.title(msg("Change type")));
+                            HtmlUtils.title(msg("Change type")));
 
             }
-            sb.append(HtmlUtil.row(HtmlUtil.cols(pdm.shortName, pdm.longName,
+            sb.append(HtmlUtils.row(HtmlUtils.cols(pdm.shortName, pdm.longName,
                     pdm.unit, type)));
         }
         sb.append("</table>");
@@ -2796,20 +2796,20 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         StringBuffer basicSB = new StringBuffer();
 
-        basicSB.append(HtmlUtil.formTable());
-        basicSB.append(HtmlUtil.hidden(ARG_OUTPUT,
+        basicSB.append(HtmlUtils.formTable());
+        basicSB.append(HtmlUtils.hidden(ARG_OUTPUT,
                                        OutputHandler.OUTPUT_HTML));
-        basicSB.append(HtmlUtil.hidden(ARG_ENTRYID, entry.getId()));
+        basicSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 
         basicSB.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("From Date"),
                 getRepository().makeDateInput(
                     request, ARG_POINT_FROMDATE, "pointsearch", dateRange[0],
                     timezone)));
 
         basicSB.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("To Date"),
                 getRepository().makeDateInput(
                     request, ARG_POINT_TODATE, "pointsearch", dateRange[1],
@@ -2817,13 +2817,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
         basicSB.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Month"),
-                HtmlUtil.select(
+                HtmlUtils.select(
                     ARG_POINT_MONTH, months,
                     request.getString(ARG_POINT_MONTH, "")) + " "
                         + msgLabel("Hour")
-                        + HtmlUtil.select(
+                        + HtmlUtils.select(
                             ARG_POINT_HOUR, hours,
                             request.getString(ARG_POINT_HOUR, ""))));
 
@@ -2834,14 +2834,14 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         map.centerOn(entry);
 
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
-        basicSB.append(HtmlUtil.formEntryTop(msgLabel("Location"), llb));
-        basicSB.append(HtmlUtil.hidden(ARG_POINT_REDIRECT, "true"));
-        basicSB.append(HtmlUtil.formTableClose());
+        basicSB.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));
+        basicSB.append(HtmlUtils.hidden(ARG_POINT_REDIRECT, "true"));
+        basicSB.append(HtmlUtils.formTableClose());
 
 
-        String max = HtmlUtil.input(ARG_MAX,
+        String max = HtmlUtils.input(ARG_MAX,
                                     request.getString(ARG_MAX, "1000"),
-                                    HtmlUtil.SIZE_5 + HtmlUtil.id(ARG_MAX));
+                                    HtmlUtils.SIZE_5 + HtmlUtils.id(ARG_MAX));
         List formats = Misc.toList(new Object[] {
             new TwoFacedObject("Html", FORMAT_HTML),
             new TwoFacedObject("Interactive Chart", FORMAT_CHART),
@@ -2874,34 +2874,34 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                             0);
 
         StringBuffer outputSB = new StringBuffer();
-        outputSB.append(HtmlUtil.formTable());
-        String sortBy = HtmlUtil.select(ARG_POINT_SORTBY, sortByList,
+        outputSB.append(HtmlUtils.formTable());
+        String sortBy = HtmlUtils.select(ARG_POINT_SORTBY, sortByList,
                                         request.getString(ARG_POINT_SORTBY,
                                             ""));
 
 
-        outputSB.append(HtmlUtil.formEntry(msgLabel("Format"),
-                                           HtmlUtil.select(ARG_POINT_FORMAT,
+        outputSB.append(HtmlUtils.formEntry(msgLabel("Format"),
+                                           HtmlUtils.select(ARG_POINT_FORMAT,
                                                formats, format)));
 
 
-        String totalLabel = HtmlUtil.jsLink(
-                                HtmlUtil.onMouseClick("clearPointCount();"),
+        String totalLabel = HtmlUtils.jsLink(
+                                HtmlUtils.onMouseClick("clearPointCount();"),
                                 cnt + " " + msg("total"),
-                                HtmlUtil.attr(
-                                    HtmlUtil.ATTR_ALT,
+                                HtmlUtils.attr(
+                                    HtmlUtils.ATTR_ALT,
                                     msg(
-                                    "Click to clear count")) + HtmlUtil.attr(
-                                        HtmlUtil.ATTR_TITLE,
+                                    "Click to clear count")) + HtmlUtils.attr(
+                                        HtmlUtils.ATTR_TITLE,
                                         msg("Click to clear count")));
 
 
 
-        outputSB.append(HtmlUtil.formEntry(msgLabel("Max"),
-                                           max + HtmlUtil.space(1) + "("
+        outputSB.append(HtmlUtils.formEntry(msgLabel("Max"),
+                                           max + HtmlUtils.space(1) + "("
                                            + totalLabel + ")"));
         outputSB.append(
-            HtmlUtil.script(
+            HtmlUtils.script(
                 "function clearPointCount() {obj=util.getDomObject('"
                 + ARG_MAX + "');\nif(!obj)return;obj.obj.value='" + cnt
                 + "';\n}"));
@@ -2918,55 +2918,55 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         });
 
         outputSB.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Skip"),
-                HtmlUtil.select(
+                HtmlUtils.select(
                     ARG_POINT_STRIDE, skip,
                     request.getString(ARG_POINT_STRIDE, "1"))));
         outputSB.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Sort by"),
                 sortBy + " "
-                + HtmlUtil.checkbox(
+                + HtmlUtils.checkbox(
                     ARG_POINT_ASCENDING, "true",
                     request.get(ARG_POINT_ASCENDING, true)) + " "
                         + msg("ascending")));
 
         StringBuffer advOutputSB = new StringBuffer();
 
-        advOutputSB.append(HtmlUtil.formTable());
+        advOutputSB.append(HtmlUtils.formTable());
 
         advOutputSB.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Time Series"),
                 msgLabel("Chart Title")
-                + HtmlUtil.input(
+                + HtmlUtils.input(
                     ARG_POINT_TIMESERIES_TITLE,
                     request.getString(ARG_POINT_TIMESERIES_TITLE, ""),
-                    HtmlUtil.SIZE_60)));
+                    HtmlUtils.SIZE_60)));
 
 
-        advOutputSB.append(HtmlUtil.formEntry(msgLabel("Interactive Chart"),
-                HtmlUtil.checkbox(ARG_POINT_CHART_USETIMEFORNAME, "true",
+        advOutputSB.append(HtmlUtils.formEntry(msgLabel("Interactive Chart"),
+                HtmlUtils.checkbox(ARG_POINT_CHART_USETIMEFORNAME, "true",
                                   request.get(ARG_POINT_CHART_USETIMEFORNAME,
-                                      false)) + HtmlUtil.space(1)
+                                      false)) + HtmlUtils.space(1)
                                           + msg("Use time as name")));
 
-        advOutputSB.append(HtmlUtil.formTableClose());
+        advOutputSB.append(HtmlUtils.formTableClose());
 
 
         /*
         outputSB.append(
-            HtmlUtil.formEntry(
+            HtmlUtils.formEntry(
                 msgLabel("Settings"),
-                HtmlUtil.makeShowHideBlock(
+                HtmlUtils.makeShowHideBlock(
                     msg("..."), advOutputSB.toString(), false)));
         */
 
-        outputSB.append(HtmlUtil.formTableClose());
+        outputSB.append(HtmlUtils.formTableClose());
 
         StringBuffer extra = new StringBuffer();
-        extra.append(HtmlUtil.formTable());
+        extra.append(HtmlUtils.formTable());
         List ops = Misc.newList(new TwoFacedObject("&lt;", OP_LT),
                                 new TwoFacedObject("&gt;", OP_GT),
                                 new TwoFacedObject("=", OP_EQUALS));
@@ -2975,7 +2975,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (pdm.isBasic() && !pdm.getColumnName().equals(COL_ALTITUDE)) {
                 continue;
             }
-            String suffix    = HtmlUtil.space(1) + pdm.formatUnit();
+            String suffix    = HtmlUtils.space(1) + pdm.formatUnit();
             String argSuffix = "" + pdm.getColumnNumber();
             String label     = pdm.formatName() + ":";
             if (pdm.isEnumeration()) {
@@ -2993,46 +2993,46 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     pdm.enumeratedValues = values;
                 }
                 String field =
-                    HtmlUtil.select(ARG_POINT_FIELD_VALUE + argSuffix,
+                    HtmlUtils.select(ARG_POINT_FIELD_VALUE + argSuffix,
                                     values,
                                     request.getString(ARG_POINT_FIELD_VALUE
                                         + argSuffix, ""));
-                extra.append(HtmlUtil.formEntry(label, field));
+                extra.append(HtmlUtils.formEntry(label, field));
             } else if (pdm.isString()) {
                 String field =
-                    HtmlUtil.input(ARG_POINT_FIELD_VALUE + argSuffix,
+                    HtmlUtils.input(ARG_POINT_FIELD_VALUE + argSuffix,
                                    request.getString(ARG_POINT_FIELD_VALUE
-                                       + argSuffix, ""), HtmlUtil.SIZE_20);
-                String cbx = HtmlUtil.checkbox(ARG_POINT_FIELD_EXACT
+                                       + argSuffix, ""), HtmlUtils.SIZE_20);
+                String cbx = HtmlUtils.checkbox(ARG_POINT_FIELD_EXACT
                                  + argSuffix, "true",
                                      request.get(ARG_POINT_FIELD_EXACT
                                          + argSuffix, false)) + " "
                                              + msg("Exact");
-                extra.append(HtmlUtil.formEntry(label, field + " " + cbx));
+                extra.append(HtmlUtils.formEntry(label, field + " " + cbx));
             } else {
                 String op =
-                    HtmlUtil.select(ARG_POINT_FIELD_OP + argSuffix, ops,
+                    HtmlUtils.select(ARG_POINT_FIELD_OP + argSuffix, ops,
                                     request.getString(ARG_POINT_FIELD_OP
                                         + argSuffix, ""));
                 String field =
-                    HtmlUtil.input(ARG_POINT_FIELD_VALUE + argSuffix,
+                    HtmlUtils.input(ARG_POINT_FIELD_VALUE + argSuffix,
                                    request.getString(ARG_POINT_FIELD_VALUE
-                                       + argSuffix, ""), HtmlUtil.SIZE_10);
-                extra.append(HtmlUtil.formEntry(label,
+                                       + argSuffix, ""), HtmlUtils.SIZE_10);
+                extra.append(HtmlUtils.formEntry(label,
                         op + " " + field + suffix));
             }
         }
-        extra.append(HtmlUtil.formTableClose());
+        extra.append(HtmlUtils.formTableClose());
 
 
         StringBuffer params = new StringBuffer();
         params.append("<ul>");
-        params.append(HtmlUtil.checkbox(ARG_POINT_PARAM_ALL, "true",
+        params.append(HtmlUtils.checkbox(ARG_POINT_PARAM_ALL, "true",
                                         request.get(ARG_POINT_PARAM_ALL,
                                             false)));
-        params.append(HtmlUtil.space(1));
+        params.append(HtmlUtils.space(1));
         params.append(msg("All"));
-        params.append(HtmlUtil.br());
+        params.append(HtmlUtils.br());
         List list   = request.get(ARG_POINT_PARAM, new ArrayList());
         int  cbxCnt = 0;
 
@@ -3049,60 +3049,60 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                ? pdm.isBasic()
                                : list.contains(value));
             String  cbxId   = "cbx" + (cbxCnt++);
-            String cbxExtra = HtmlUtil.id(cbxId)
-                              + HtmlUtil.attr(HtmlUtil.ATTR_ONCLICK,
-                                  HtmlUtil.call("checkboxClicked",
-                                      HtmlUtil.comma("event",
-                                          HtmlUtil.squote(ARG_POINT_PARAM),
-                                          HtmlUtil.squote(cbxId))));
-            params.append(HtmlUtil.checkbox(ARG_POINT_PARAM, value, checked,
+            String cbxExtra = HtmlUtils.id(cbxId)
+                              + HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+                                  HtmlUtils.call("checkboxClicked",
+                                      HtmlUtils.comma("event",
+                                          HtmlUtils.squote(ARG_POINT_PARAM),
+                                          HtmlUtils.squote(cbxId))));
+            params.append(HtmlUtils.checkbox(ARG_POINT_PARAM, value, checked,
                                             cbxExtra));
 
 
 
-            params.append(HtmlUtil.space(1));
+            params.append(HtmlUtils.space(1));
             params.append(pdm.formatName());
-            params.append(HtmlUtil.br());
+            params.append(HtmlUtils.br());
         }
         params.append("</ul>");
 
         //        sb.append(header(msg("Point Data Search")));
         sb.append(
-            HtmlUtil.formPost(
+            HtmlUtils.formPost(
                 getRepository().URL_ENTRY_SHOW.toString(),
-                HtmlUtil.attr("name", "pointsearch")
-                + HtmlUtil.id("pointsearch")));
+                HtmlUtils.attr("name", "pointsearch")
+                + HtmlUtils.id("pointsearch")));
 
-        sb.append(HtmlUtil.submit(msg("Search"), ARG_POINT_SEARCH));
-        sb.append(HtmlUtil.p());
+        sb.append(HtmlUtils.submit(msg("Search"), ARG_POINT_SEARCH));
+        sb.append(HtmlUtils.p());
 
         sb.append(
-            HtmlUtil.table(
-                HtmlUtil.row(
-                    HtmlUtil.cols(
+            HtmlUtils.table(
+                HtmlUtils.row(
+                    HtmlUtils.cols(
                         msgHeader("Select") + basicSB.toString(),
                         msgHeader("Results")
-                        + outputSB.toString()), HtmlUtil.attr(
-                            HtmlUtil.ATTR_VALIGN, "top")), HtmlUtil.attr(
-                                HtmlUtil.ATTR_WIDTH, "100%")));
+                        + outputSB.toString()), HtmlUtils.attr(
+                            HtmlUtils.ATTR_VALIGN, "top")), HtmlUtils.attr(
+                                HtmlUtils.ATTR_WIDTH, "100%")));
 
-        /*        sb.append(HtmlUtil.makeShowHideBlock(msg("Basic"),
+        /*        sb.append(HtmlUtils.makeShowHideBlock(msg("Basic"),
                                              basicSB.toString(), true));
 
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Output"),
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Output"),
                                              outputSB.toString(), false));
         */
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Advanced Search"),
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Advanced Search"),
                                              extra.toString(), false));
 
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Parameters"),
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Parameters"),
                                              params.toString(), false));
 
-        sb.append(HtmlUtil.makeShowHideBlock(msg("Settings"),
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Settings"),
                                              advOutputSB.toString(), false));
-        sb.append(HtmlUtil.p());
-        sb.append(HtmlUtil.submit(msg("Search"), ARG_POINT_SEARCH));
-        sb.append(HtmlUtil.formClose());
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit(msg("Search"), ARG_POINT_SEARCH));
+        sb.append(HtmlUtils.formClose());
 
 
 

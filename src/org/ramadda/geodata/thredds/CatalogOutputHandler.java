@@ -36,7 +36,7 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -77,6 +77,8 @@ import java.util.zip.*;
  * @version $Revision: 1.3 $
  */
 public class CatalogOutputHandler extends OutputHandler {
+
+    public static final String ICON_OPENDAP = "/data/opendap.gif";
 
     /** _more_ */
     public static final String ICON_CATALOG = "ramadda.icon.catalog";
@@ -430,7 +432,7 @@ public class CatalogOutputHandler extends OutputHandler {
             if ( !group.isDummy()
                     && (catalogInfo.serviceMap.get(SERVICE_OPENDAP)
                         != null)) {
-                String urlPath = HtmlUtil.url("/latest", ARG_ENTRYID,
+                String urlPath = HtmlUtils.url("/latest", ARG_ENTRYID,
                                      group.getId(), ARG_LATESTOPENDAP,
                                      "true", ARG_OUTPUT, OUTPUT_CATALOG);
                 addService(catalogInfo, SERVICE_LATEST,
@@ -666,7 +668,7 @@ public class CatalogOutputHandler extends OutputHandler {
 
         if (entry.getTypeHandler().canDownload(request, entry)) {
             String urlPath =
-                HtmlUtil.url("/" + getStorageManager().getFileTail(entry),
+                HtmlUtils.url("/" + getStorageManager().getFileTail(entry),
                              ARG_ENTRYID, entry.getId());
             addService(catalogInfo, SERVICE_HTTP,
                        getRepository().URL_ENTRY_GET.getFullUrl());
