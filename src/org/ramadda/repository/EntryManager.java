@@ -756,7 +756,8 @@ public class EntryManager extends RepositoryManager {
                      : msg("Edit Entry"));
             String submitButton = HtmlUtil.submit(((entry == null)
                     ? "Add " + typeHandler.getLabel()
-                    : msg("Save")));
+                                                   : msg("Save"),
+                                                   makeButtonSubmitDialog(sb, (entry==null?"Creating Entry...": "Changing Entry..."))));
 
             String nextButton = ((entry == null)
                                  ? ""
@@ -767,7 +768,7 @@ public class EntryManager extends RepositoryManager {
             String deleteButton = (((entry != null) && entry.isTopEntry())
                                    ? ""
                                    : HtmlUtil.submit(msg("Delete"),
-                                       ARG_DELETE));
+                                                     ARG_DELETE,makeButtonSubmitDialog(sb, "Deleting Entry...")));
 
             String cancelButton = HtmlUtil.submit(msg("Cancel"), ARG_CANCEL);
             String buttons      = ((entry != null)
