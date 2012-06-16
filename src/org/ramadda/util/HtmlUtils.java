@@ -47,7 +47,7 @@ import java.util.List;
 /**
  */
 
-public class HtmlUtil {
+public class HtmlUtils {
 
     //j-
 
@@ -625,7 +625,7 @@ public class HtmlUtil {
     public static String hbox(String s1, String s2) {
         return tag(TAG_TABLE,
                    attrs(ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "0"),
-                   HtmlUtil.rowTop(HtmlUtil.cols(s1, s2)));
+                   HtmlUtils.rowTop(HtmlUtils.cols(s1, s2)));
     }
 
     /**
@@ -1393,7 +1393,7 @@ public class HtmlUtil {
     public static String headerCols(Object[] columns) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < columns.length; i++) {
-            sb.append(cols(HtmlUtil.b(columns[i].toString())));
+            sb.append(cols(HtmlUtils.b(columns[i].toString())));
         }
         return sb.toString();
     }
@@ -3000,7 +3000,7 @@ public class HtmlUtil {
                 idArray.append(",");
             }
             cnt++;
-            idArray.append(HtmlUtil.squote(tabId));
+            idArray.append(HtmlUtils.squote(tabId));
         }
         if ((cnt == 1) && skipEmpty) {
             return contents.get(0).toString();
@@ -3036,31 +3036,31 @@ public class HtmlUtil {
             if (selected && (selectedOne != null)) {
                 title = title.substring("selected:".length());
             }
-            contentSB.append(HtmlUtil.div(content,
-                                          HtmlUtil.cssClass(tabContentClass
+            contentSB.append(HtmlUtils.div(content,
+                                          HtmlUtils.cssClass(tabContentClass
                                               + (selected
                     ? "_on"
-                    : "_off")) + HtmlUtil.id("content_" + tabId)
-                               + HtmlUtil.style("display:" + (selected
+                    : "_off")) + HtmlUtils.id("content_" + tabId)
+                               + HtmlUtils.style("display:" + (selected
                     ? "block"
                     : "none") + ";visibility:" + (selected
                     ? "visible"
                     : "hidden"))));
-            String link = HtmlUtil.href("javascript:" + "tabPress("
-                                        + HtmlUtil.squote(id) + "," + idArray
-                                        + "," + HtmlUtil.squote(tabId)
+            String link = HtmlUtils.href("javascript:" + "tabPress("
+                                        + HtmlUtils.squote(id) + "," + idArray
+                                        + "," + HtmlUtils.squote(tabId)
                                         + ")", title);
-            titleSB.append(HtmlUtil.span(link, (selected
-                    ? HtmlUtil.cssClass("tab_title_on")
-                    : HtmlUtil.cssClass("tab_title_off")) + HtmlUtil.id(
+            titleSB.append(HtmlUtils.span(link, (selected
+                    ? HtmlUtils.cssClass("tab_title_on")
+                    : HtmlUtils.cssClass("tab_title_off")) + HtmlUtils.id(
                         "title_" + tabId)));
             didone = true;
         }
 
-        return HtmlUtil.div(
+        return HtmlUtils.div(
             titleSB.toString(),
-            HtmlUtil.cssClass("tab_titles")) + HtmlUtil.div(
-                contentSB.toString(), HtmlUtil.cssClass(wrapperClass));
+            HtmlUtils.cssClass("tab_titles")) + HtmlUtils.div(
+                contentSB.toString(), HtmlUtils.cssClass(wrapperClass));
     }
 
 
@@ -3132,9 +3132,9 @@ public class HtmlUtil {
     public static String makeShowHideBlock(String label, String content,
                                            boolean visible,
                                            String headerExtra) {
-        return HtmlUtil.makeShowHideBlock(label, content, visible,
+        return HtmlUtils.makeShowHideBlock(label, content, visible,
                                           headerExtra,
-                                          HtmlUtil.cssClass(CLASS_BLOCK),
+                                          HtmlUtils.cssClass(CLASS_BLOCK),
                                           blockHideImageUrl,
                                           blockShowImageUrl);
     }
@@ -3158,7 +3158,7 @@ public class HtmlUtil {
                                            boolean visible,
                                            String headerExtra,
                                            String blockExtra) {
-        return HtmlUtil.makeShowHideBlock(label, content, visible,
+        return HtmlUtils.makeShowHideBlock(label, content, visible,
                                           headerExtra, blockExtra,
                                           blockHideImageUrl,
                                           blockShowImageUrl);
@@ -3194,28 +3194,28 @@ public class HtmlUtil {
         StringBuffer sb  = new StringBuffer();
         String       img = "";
         if ((showImg != null) && (showImg.length() > 0)) {
-            img = HtmlUtil.img(visible
+            img = HtmlUtils.img(visible
                                ? hideImg
                                : showImg, "", " id='" + id + "img' ");
         }
         String link =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick("toggleBlockVisibility('"
+            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
                 + "')"), img /* + label*/,
-                         HtmlUtil.cssClass("toggleblocklabellink"));
+                         HtmlUtils.cssClass("toggleblocklabellink"));
 
         link = link + " " + label;
 
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append("<div  " + blockExtra + ">");
-        sb.append(HtmlUtil.div(link, headerExtra));
-        sb.append("<div " + HtmlUtil.cssClass("hideshowblock")
-                  + HtmlUtil.id(id)
-                  + HtmlUtil.style("display:block;visibility:visible") + ">");
+        sb.append(HtmlUtils.div(link, headerExtra));
+        sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
+                  + HtmlUtils.id(id)
+                  + HtmlUtils.style("display:block;visibility:visible") + ">");
         if ( !visible) {
-            sb.append(HtmlUtil.script(HtmlUtil.call("hide",
-                    HtmlUtil.squote(id))));
+            sb.append(HtmlUtils.script(HtmlUtils.call("hide",
+                    HtmlUtils.squote(id))));
         }
 
         sb.append(content.toString());
@@ -3253,14 +3253,14 @@ public class HtmlUtil {
     public static String[] getToggle(String label, boolean visible,
                                      String hideImg, String showImg) {
         String id  = "block_" + (blockCnt++);
-        String img = HtmlUtil.img(visible
+        String img = HtmlUtils.img(visible
                                   ? hideImg
-                                  : showImg, "", HtmlUtil.id(id + "img"));
+                                  : showImg, "", HtmlUtils.id(id + "img"));
         String link =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick("toggleBlockVisibility('"
+            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
                 + "')"), img /* + label*/,
-                         HtmlUtil.cssClass("toggleblocklabellink"));
+                         HtmlUtils.cssClass("toggleblocklabellink"));
 
         if (label.length() > 0) {
             link = link + " " + label;
@@ -3268,7 +3268,7 @@ public class HtmlUtil {
 
         String initJS = "";
         if ( !visible) {
-            initJS = HtmlUtil.call("hide", HtmlUtil.squote(id));
+            initJS = HtmlUtils.call("hide", HtmlUtils.squote(id));
         }
 
         return new String[] { id, link, initJS };
@@ -3291,15 +3291,15 @@ public class HtmlUtil {
         String       id         = "block_" + (blockCnt++);
         StringBuffer sb         = contentSB;
         String       img        = "";
-        String js = HtmlUtil.onMouseClick(call("toggleBlockVisibility",
+        String js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
                         squote(id) + "," + squote(id + "img") + ","
                         + squote("") + "," + squote("")));
-        sb.append("<div " + HtmlUtil.cssClass("hideshowblock")
-                  + HtmlUtil.id(id)
-                  + HtmlUtil.style("display:block;visibility:visible") + ">");
+        sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
+                  + HtmlUtils.id(id)
+                  + HtmlUtils.style("display:block;visibility:visible") + ">");
         if ( !visible) {
-            sb.append(HtmlUtil.script(HtmlUtil.call("hide",
-                    HtmlUtil.squote(id))));
+            sb.append(HtmlUtils.script(HtmlUtils.call("hide",
+                    HtmlUtils.squote(id))));
         }
         sb.append(content.toString());
         sb.append(close(TAG_DIV));
@@ -3334,27 +3334,27 @@ public class HtmlUtil {
         StringBuffer sb  = new StringBuffer();
         String       img = "";
         if ((showImg != null) && (showImg.length() > 0)) {
-            img = HtmlUtil.img(visible
+            img = HtmlUtils.img(visible
                                ? hideImg
                                : showImg, "",
                                           " id='" + id
-                                          + "img' ") + HtmlUtil.space(1);
+                                          + "img' ") + HtmlUtils.space(1);
         }
         String link =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick("toggleInlineVisibility('"
+            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleInlineVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
                 + "')"), img + label,
-                         HtmlUtil.cssClass("toggleblocklabellink"));
+                         HtmlUtils.cssClass("toggleblocklabellink"));
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append(link);
-        sb.append("<span " + HtmlUtil.cssClass("hideshowblock")
-                  + HtmlUtil.id(id)
-                  + HtmlUtil.style("display:inline;visibility:visible")
+        sb.append("<span " + HtmlUtils.cssClass("hideshowblock")
+                  + HtmlUtils.id(id)
+                  + HtmlUtils.style("display:inline;visibility:visible")
                   + ">");
         if ( !visible) {
-            sb.append(HtmlUtil.script(HtmlUtil.call("hide",
-                    HtmlUtil.squote(id))));
+            sb.append(HtmlUtils.script(HtmlUtils.call("hide",
+                    HtmlUtils.squote(id))));
         }
 
 
@@ -3389,29 +3389,29 @@ public class HtmlUtil {
                 "<table border=0 width=\"100%\"><tr valign=top>");
         String img = "";
         if ((showImg != null) && (showImg.length() > 0)) {
-            img = HtmlUtil.img(visible
+            img = HtmlUtils.img(visible
                                ? hideImg
                                : showImg, "",
                                           " id='" + id
-                                          + "img' ") + HtmlUtil.space(1);
+                                          + "img' ") + HtmlUtils.space(1);
         }
         String link =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick("toggleInlineVisibility('"
+            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleInlineVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
                 + "')"), img + label,
-                         HtmlUtil.cssClass("toggleblocklabellink"));
+                         HtmlUtils.cssClass("toggleblocklabellink"));
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append("<td width=1%>");
         sb.append(link);
         sb.append("</td><td>");
-        sb.append("<div " + HtmlUtil.cssClass("hideshowblock")
-                  + HtmlUtil.id(id)
-                  + HtmlUtil.style("display:inline;visibility:visible")
+        sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
+                  + HtmlUtils.id(id)
+                  + HtmlUtils.style("display:inline;visibility:visible")
                   + ">");
         if ( !visible) {
-            sb.append(HtmlUtil.script(HtmlUtil.call("hide",
-                    HtmlUtil.squote(id))));
+            sb.append(HtmlUtils.script(HtmlUtils.call("hide",
+                    HtmlUtils.squote(id))));
         }
 
         sb.append(content.toString());
@@ -3437,19 +3437,19 @@ public class HtmlUtil {
         String       id = "block_" + (blockCnt++);
         StringBuffer sb = new StringBuffer();
         String link =
-            HtmlUtil.jsLink(HtmlUtil.onMouseClick("toggleBlockVisibility('"
+            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + "" + "','" + ""
                 + "')"), clickHtml,
-                         HtmlUtil.cssClass("toggleblocklabellink")) + label;
+                         HtmlUtils.cssClass("toggleblocklabellink")) + label;
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append(link);
         sb.append(open(TAG_SPAN,
-                       HtmlUtil.cssClass("hideshowblock") + HtmlUtil.id(id)
-                       + HtmlUtil.style("display:block;visibility:visible")));
+                       HtmlUtils.cssClass("hideshowblock") + HtmlUtils.id(id)
+                       + HtmlUtils.style("display:block;visibility:visible")));
         if ( !visible) {
-            sb.append(HtmlUtil.script(HtmlUtil.call("hide",
-                    HtmlUtil.squote(id))));
+            sb.append(HtmlUtils.script(HtmlUtils.call("hide",
+                    HtmlUtils.squote(id))));
         }
 
         sb.append(content.toString());
@@ -3550,7 +3550,7 @@ public class HtmlUtil {
         }
 
 
-        Class        c  = HtmlUtil.class;
+        Class        c  = HtmlUtils.class;
         StringBuffer sb = new StringBuffer();
         sb.append(
             "//j-\n/** Do not change!!! This has been generated from HtmlUtil **/\n");
@@ -3581,7 +3581,7 @@ public class HtmlUtil {
             }
 
             sb.append(") {\n");
-            sb.append("sb.append(HtmlUtil." + m.getName() + "(" + implSb
+            sb.append("sb.append(HtmlUtils." + m.getName() + "(" + implSb
                       + "));\n");
             sb.append("}\n");
         }
