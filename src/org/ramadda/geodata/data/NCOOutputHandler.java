@@ -73,6 +73,13 @@ public class NCOOutputHandler extends OutputHandler {
    public static final String ARG_NCO_MASK_VALUE = "nco.mask.value";
 
 
+   public static final String ARG_NCO_WEIGHT = "nco.weight";
+
+
+   public static final String ARG_NCO_RDD = "nco.rdd";
+   public static final String ARG_NCO_HISTORY = "nco.history";
+
+
 
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_NCO_NCWA =
@@ -250,10 +257,13 @@ public class NCOOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer("");
         String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
-        sb.append(HtmlUtils.form(formUrl));
+        sb.append(HtmlUtils.form(formUrl,
+                                 makeFormSubmitDialog(sb,msg("Apply NCO..."))));
 
         String buttons =HtmlUtils.submit("Create Weighted Average", ARG_SUBMIT);
         sb.append(buttons);
+        sb.append(" ");
+        sb.append(HtmlUtils.href("http://nco.sourceforge.net/nco.html","NCO Documentation"," target=_external "));
 
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_NCO_NCWA));
@@ -263,6 +273,7 @@ public class NCOOutputHandler extends OutputHandler {
         addVariableWidget(request, sb, varNames);
         addDimensionWidget(request, sb, coordNames);
         addMaskWidget(request, sb, varNames);
+        addWeightWidget(request, sb, varNames);
         addFormatWidget(request, sb);
         addPublishWidget(request, entry, sb,
                          msg("Select a folder to publish the generated NetCDF file to"));
@@ -294,6 +305,14 @@ public class NCOOutputHandler extends OutputHandler {
                                       HtmlUtils.select(ARG_NCO_VARIABLE,vars,"",
                                                        " MULTIPLE SIZE=4 ")+" " + HtmlUtils.checkbox(ARG_NCO_VARIABLE_EXCLUDE,"true", false) +" " + msg("Exclude")));
     }
+
+    private void addWeightWidget(Request request, StringBuffer sb, List varNames) {
+        List vars = new ArrayList(varNames);
+        vars.add(0,new TwoFacedObject("--none--",""));
+        sb.append(HtmlUtils.formEntry(msgLabel("Weight by"),    
+                                      HtmlUtils.select(ARG_NCO_WEIGHT,vars,"")));
+    }
+
 
     private void addMaskWidget(Request request, StringBuffer sb, List varNames) {
         List vars = new ArrayList(varNames);
@@ -362,6 +381,12 @@ public class NCOOutputHandler extends OutputHandler {
                 commands.add("--average");
                 commands.add(varSB.toString());
             }
+        }
+
+
+        if(request.defined(ARG_NCO_WEIGHT)) {
+            commands.add("-w");
+            commands.add(request.getString(ARG_NCO_WEIGHT));
         }
 
 

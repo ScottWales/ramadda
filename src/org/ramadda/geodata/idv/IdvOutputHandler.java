@@ -115,7 +115,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     /** grid output id */
     public static final OutputType OUTPUT_IDV_GRID =
         new OutputType("Grid Displays", "idv.grid", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, ICON_PLANVIEW, GROUP_DATA);
+                       OutputType.SUFFIX_NONE, "/idv/grid.gif", GROUP_DATA);
 
 
     /** point output id */

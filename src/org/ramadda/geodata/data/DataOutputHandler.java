@@ -303,7 +303,7 @@ public class DataOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Subset Grid", "data.gridsubset.form",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       ICON_SUBSET, GROUP_DATA);
+                       "/data/subsetgrid.png", GROUP_DATA);
 
     /** Grid subset Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET =
