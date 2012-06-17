@@ -290,9 +290,6 @@ public interface Constants {
     public static final String ICON_SEARCH = "ramadda.icon.search";
 
     /** _more_ */
-    public static final String ICON_SUBSET = "ramadda.icon.subset";
-
-    /** _more_ */
     public static final String ICON_TEXT = "ramadda.icon.text";
 
     /** _more_ */
