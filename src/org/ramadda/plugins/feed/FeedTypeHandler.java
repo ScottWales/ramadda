@@ -46,6 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -164,14 +165,21 @@ public class FeedTypeHandler extends GenericTypeHandler {
             throw new IllegalArgumentException("No channel tag");
         }
         NodeList children = XmlUtil.getElements(channel, RssUtil.TAG_ITEM);
+        HashSet seen = new HashSet();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
             Element item = (Element) children.item(childIdx);
             String title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
                                "");
+
             String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,
                               "");
             String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,
-                              "");
+                                                    link);
+            if(seen.contains(guid)) {
+                continue;
+            }
+
+            seen.add(guid);
             String desc = XmlUtil.getGrandChildText(item,
                               RssUtil.TAG_DESCRIPTION, "");
             String pubDate = XmlUtil.getGrandChildText(item,
