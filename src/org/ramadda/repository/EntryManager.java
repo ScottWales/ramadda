@@ -728,8 +728,7 @@ public class EntryManager extends RepositoryManager {
                                      : msg("Changing entry..."));
             request.uploadFormWithAuthToken(
                 sb, getRepository().URL_ENTRY_CHANGE,
-                makeFormSubmitDialog(sb, loadingMessage)
-                + HtmlUtils.attr("name", "entryform"));
+                HtmlUtils.attr("name", "entryform"));
         }
 
         sb.append(HtmlUtils.formTable());

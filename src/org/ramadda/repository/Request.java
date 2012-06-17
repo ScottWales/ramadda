@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,10 +24,10 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -229,6 +230,7 @@ public class Request implements Constants, Cloneable {
             Request that = (Request) super.clone();
             that.parameters         = new Hashtable(this.parameters);
             that.originalParameters = new Hashtable(this.originalParameters);
+
             return that;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -276,6 +278,7 @@ public class Request implements Constants, Cloneable {
         if (defined(key)) {
             return getString(key);
         }
+
         return getSession(sessionPrefix + key, dflt);
     }
 
@@ -324,8 +327,10 @@ public class Request implements Constants, Cloneable {
             //System.err.println(is.available());
         } catch (Exception exc) {
             System.err.println("bad");
+
             return false;
         }
+
         return true;
     }
 
@@ -363,6 +368,7 @@ public class Request implements Constants, Cloneable {
         if (useFullUrl() && !url.startsWith("http")) {
             return getAbsoluteUrl(url);
         }
+
         return url;
     }
 
@@ -376,6 +382,7 @@ public class Request implements Constants, Cloneable {
         if (httpServletRequest == null) {
             return false;
         }
+
         return httpServletRequest.getMethod().equals("POST");
     }
 
@@ -419,6 +426,7 @@ public class Request implements Constants, Cloneable {
             url = url + "/" + name;
 
         }
+
         return checkUrl(url);
     }
 
@@ -440,8 +448,9 @@ public class Request implements Constants, Cloneable {
             if (id.length() == 0) {
                 return entry.getRemoteServer() + theUrl.getPath();
             }
+
             return HtmlUtils.url(entry.getRemoteServer() + theUrl.getPath(),
-                                arg, id);
+                                 arg, id);
         }
 
 
@@ -453,6 +462,7 @@ public class Request implements Constants, Cloneable {
         if (entry.getIsLocalFile()) {
             return checkUrl(HtmlUtils.url(url, arg, entry.getId()));
         }
+
         return checkUrl(HtmlUtils.url(url, arg, entry.getId()));
     }
 
@@ -515,7 +525,7 @@ public class Request implements Constants, Cloneable {
     public String entryUrl(RequestUrl theUrl, Entry entry, String arg1,
                            Object value1, String arg2, Object value2) {
         return checkUrl(HtmlUtils.url(entryUrl(theUrl, entry), arg1, value1,
-                                     arg2, value2));
+                                      arg2, value2));
     }
 
 
@@ -689,7 +699,7 @@ public class Request implements Constants, Cloneable {
     public String url(RequestUrl theUrl, String arg1, Object value1,
                       String arg2, Object value2) {
         return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2,
-                                     value2));
+                                      value2));
     }
 
     /**
@@ -708,8 +718,8 @@ public class Request implements Constants, Cloneable {
     public String url(RequestUrl theUrl, String arg1, Object value1,
                       String arg2, Object value2, String arg3,
                       Object value3) {
-        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2, value2,
-                                     arg3, value3));
+        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2,
+                                      value2, arg3, value3));
     }
 
     /**
@@ -730,8 +740,8 @@ public class Request implements Constants, Cloneable {
     public String url(RequestUrl theUrl, String arg1, Object value1,
                       String arg2, Object value2, String arg3, Object value3,
                       String arg4, Object value4) {
-        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2, value2,
-                                     arg3, value3, arg4, value4));
+        return checkUrl(HtmlUtils.url(url(theUrl), arg1, value1, arg2,
+                                      value2, arg3, value3, arg4, value4));
     }
 
 
@@ -777,6 +787,7 @@ public class Request implements Constants, Cloneable {
         if (fileUploads == null) {
             return null;
         }
+
         return (String) fileUploads.get(arg);
     }
 
@@ -878,6 +889,7 @@ public class Request implements Constants, Cloneable {
     public String getUrlArgs(String except) {
         HashSet<String> tmp = new HashSet<String>();
         tmp.add(except);
+
         return getUrlArgs(tmp);
     }
 
@@ -955,6 +967,7 @@ public class Request implements Constants, Cloneable {
                     }
                     sb.append(arg + "=" + svalue);
                 }
+
                 continue;
             }
             String svalue = value.toString();
@@ -970,6 +983,7 @@ public class Request implements Constants, Cloneable {
             }
             sb.append(arg + "=" + svalue);
         }
+
         return sb.toString();
     }
 
@@ -1012,6 +1026,7 @@ public class Request implements Constants, Cloneable {
                         }
                         sb.append(arg + ":" + encodeEmbedded(svalue));
                     }
+
                     continue;
                 }
                 String svalue = value.toString();
@@ -1023,6 +1038,7 @@ public class Request implements Constants, Cloneable {
                 }
                 sb.append(arg + ":" + encodeEmbedded(svalue));
             }
+
             return sb.toString();
         } catch (Exception exc) {
             throw new WrapperException(exc);
@@ -1044,6 +1060,7 @@ public class Request implements Constants, Cloneable {
             if (s.indexOf("/") >= 0) {
                 s = "b64:" + RepositoryUtil.encodeBase64(s.getBytes()).trim();
             }
+
             //            s = java.net.URLEncoder.encode(s, "UTF-8");
             return s;
         } catch (Exception exc) {
@@ -1066,6 +1083,7 @@ public class Request implements Constants, Cloneable {
                 //s = java.net.URLDecoder.decode(s, "UTF-8");     
                 s = new String(RepositoryUtil.decodeBase64(s));
             }
+
             return s;
         } catch (Exception exc) {
             throw new WrapperException(exc);
@@ -1097,8 +1115,10 @@ public class Request implements Constants, Cloneable {
             } catch (Exception exc) {
                 throw new WrapperException(exc);
             }
+
             return value;
         }
+
         return null;
     }
 
@@ -1118,6 +1138,7 @@ public class Request implements Constants, Cloneable {
                     continue;
                 }
                 props.put(arg, value);
+
                 continue;
             }
             if (value.toString().length() == 0) {
@@ -1125,6 +1146,7 @@ public class Request implements Constants, Cloneable {
             }
             props.put(arg, value);
         }
+
         return props;
     }
 
@@ -1150,6 +1172,7 @@ public class Request implements Constants, Cloneable {
             return false;
         }
         Request that = (Request) o;
+
         return this.type.equals(that.type)
                && Misc.equals(this.user, that.user)
                && this.originalParameters.equals(that.originalParameters);
@@ -1188,9 +1211,15 @@ public class Request implements Constants, Cloneable {
     public Object remove(Object key) {
         Object v = parameters.get(key);
         parameters.remove(key);
+
         return v;
     }
 
+    /**
+     * _more_
+     *
+     * @param props _more_
+     */
     public void putAll(Hashtable props) {
         parameters.putAll(props);
     }
@@ -1216,6 +1245,7 @@ public class Request implements Constants, Cloneable {
      */
     public boolean exists(Object key) {
         Object result = getValue(key, (Object) null);
+
         return result != null;
     }
 
@@ -1245,6 +1275,7 @@ public class Request implements Constants, Cloneable {
         if (sresult.equals("${" + key + "}")) {
             return false;
         }
+
         return true;
     }
 
@@ -1261,6 +1292,7 @@ public class Request implements Constants, Cloneable {
         if (result == null) {
             return false;
         }
+
         return (result instanceof List);
     }
 
@@ -1285,6 +1317,7 @@ public class Request implements Constants, Cloneable {
         }
         List tmp = new ArrayList();
         tmp.add(result);
+
         return tmp;
     }
 
@@ -1302,6 +1335,7 @@ public class Request implements Constants, Cloneable {
         if (result == null) {
             return dflt;
         }
+
         return result;
     }
 
@@ -1338,6 +1372,7 @@ public class Request implements Constants, Cloneable {
             //            s = RepositoryUtil.encodeInput(s);
             s = HtmlUtils.entityEncode(s);
         }
+
         return s;
     }
 
@@ -1354,6 +1389,7 @@ public class Request implements Constants, Cloneable {
         if ( !isAnonymous()) {
             return getString(key, dflt);
         }
+
         return getEncodedString(key, dflt);
     }
 
@@ -1457,6 +1493,7 @@ public class Request implements Constants, Cloneable {
                 return;
             }
         }
+
         throw new IllegalArgumentException("Bad authentication token");
     }
 
@@ -1474,6 +1511,7 @@ public class Request implements Constants, Cloneable {
             checker =
                 Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
+
         return getCheckedString(key, dflt, checker);
     }
 
@@ -1493,6 +1531,7 @@ public class Request implements Constants, Cloneable {
         if (result == null) {
             return dflt;
         }
+
         return result;
     }
 
@@ -1518,6 +1557,7 @@ public class Request implements Constants, Cloneable {
             if (l.size() == 0) {
                 return dflt;
             }
+
             return (String) l.get(0);
         }
         String s = result.toString();
@@ -1528,6 +1568,7 @@ public class Request implements Constants, Cloneable {
                 s = extra;
             }
         }
+
         return s;
     }
 
@@ -1554,6 +1595,7 @@ public class Request implements Constants, Cloneable {
         if (outputType != null) {
             return outputType;
         }
+
         return new OutputType(typeId, OutputType.TYPE_FEEDS);
     }
 
@@ -1619,6 +1661,7 @@ public class Request implements Constants, Cloneable {
         if ((llString == null) || (llString.length() == 0)) {
             return dflt;
         }
+
         return Misc.decodeLatLon(llString);
     }
 
@@ -1656,6 +1699,7 @@ public class Request implements Constants, Cloneable {
         if ((result == null) || (result.trim().length() == 0)) {
             return dflt;
         }
+
         return new Integer(result).intValue();
     }
 
@@ -1673,6 +1717,7 @@ public class Request implements Constants, Cloneable {
         if ((result == null) || (result.trim().length() == 0)) {
             return dflt;
         }
+
         return new Long(result).longValue();
     }
 
@@ -1689,6 +1734,7 @@ public class Request implements Constants, Cloneable {
         if ((result == null) || (result.trim().length() == 0)) {
             return dflt;
         }
+
         return new Double(result).doubleValue();
     }
 
@@ -1708,6 +1754,7 @@ public class Request implements Constants, Cloneable {
         if ((result == null) || (result.trim().length() == 0)) {
             return dflt;
         }
+
         return DateUtil.parse(result);
     }
 
@@ -1726,6 +1773,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
         String dateString = (String) getDateSelect(from, "").trim();
+
         return repository.parseDate(dateString);
     }
 
@@ -1784,6 +1832,7 @@ public class Request implements Constants, Cloneable {
             dflt = new Date();
         }
         Date[] range = DateUtil.getDateRange(fromDate, toDate, dflt);
+
         //        System.err.println("dateRange:" + fromDate + " date:" + range[0]);
         return range;
     }
@@ -1804,8 +1853,10 @@ public class Request implements Constants, Cloneable {
             if (singleValue == null) {
                 return false;
             }
+
             return singleValue.equals(value);
         }
+
         return list.contains(value);
     }
 
@@ -1823,6 +1874,7 @@ public class Request implements Constants, Cloneable {
         if ((result == null) || (result.trim().length() == 0)) {
             return dflt;
         }
+
         return new Boolean(result).booleanValue();
     }
 
@@ -1913,6 +1965,7 @@ public class Request implements Constants, Cloneable {
         if (arg == null) {
             arg = (String) httpHeaderArgs.get(name.toLowerCase());
         }
+
         return arg;
     }
 
@@ -1995,6 +2048,7 @@ public class Request implements Constants, Cloneable {
         if ((user == null) || user.getAnonymous()) {
             return true;
         }
+
         return false;
     }
 
@@ -2013,9 +2067,10 @@ public class Request implements Constants, Cloneable {
      * @return The Ip
      */
     public String getIp() {
-        if (ip == null && repository != null) {
+        if ((ip == null) && (repository != null)) {
             return repository.getIpAddress();
         }
+
         return ip;
     }
 
@@ -2051,6 +2106,7 @@ public class Request implements Constants, Cloneable {
             //            System.err.println("no user agent");
             return dflt;
         }
+
         return value;
     }
 
@@ -2065,6 +2121,7 @@ public class Request implements Constants, Cloneable {
             return false;
         }
         userAgent = userAgent.toLowerCase();
+
         return ((userAgent.indexOf("googlebot") >= 0)
                 || (userAgent.indexOf("slurp") >= 0)
                 || (userAgent.indexOf("spider") >= 0)
@@ -2083,6 +2140,7 @@ public class Request implements Constants, Cloneable {
         if (httpServletRequest != null) {
             return httpServletRequest.getMethod().equals("HEAD");
         }
+
         return false;
     }
 
@@ -2100,6 +2158,7 @@ public class Request implements Constants, Cloneable {
         if ((serverName == null) || (serverName.trim().length() == 0)) {
             serverName = repository.getHostname();
         }
+
         return serverName;
     }
 
@@ -2112,6 +2171,7 @@ public class Request implements Constants, Cloneable {
         if (httpServletRequest != null) {
             httpServletRequest.getServerPort();
         }
+
         return repository.getPort();
     }
 
@@ -2173,6 +2233,11 @@ public class Request implements Constants, Cloneable {
         extraProperties.put(key, value);
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     */
     public void removeExtraProperty(Object key) {
         extraProperties.remove(key);
     }
@@ -2272,6 +2337,11 @@ public class Request implements Constants, Cloneable {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean responseInText() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_TEXT);
     }
@@ -2294,6 +2364,7 @@ public class Request implements Constants, Cloneable {
         if (htmlTemplateId != null) {
             return htmlTemplateId;
         }
+
         return getString(ARG_TEMPLATE, "");
     }
 
@@ -2309,6 +2380,7 @@ public class Request implements Constants, Cloneable {
         }
         User   user     = getUser();
         String language = user.getLanguage();
+
         return language;
     }
 
@@ -2332,7 +2404,33 @@ public class Request implements Constants, Cloneable {
         if (pageStyle == null) {
             pageStyle = repository.doMakePageStyle(this, entry);
         }
+
         return pageStyle;
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param filename _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result returnFile(File file, String filename) throws Exception {
+        setReturnFilename(filename);
+        Result result = new Result();
+        result.setNeedToWrite(false);
+        OutputStream os  = getHttpServletResponse().getOutputStream();
+        InputStream  fis =
+            getRepository().getStorageManager().getFileInputStream(
+                file.toString());
+        IOUtil.writeTo(fis, os);
+        IOUtil.close(os);
+        IOUtil.close(fis);
+
+        return result;
     }
 
 

@@ -2061,7 +2061,8 @@ public class HtmlUtils {
     public static String select(String name, List values, String selected,
                                 String extra, int maxLength) {
         List selectedList = null;
-        if ((selected != null) && (selected.length() > 0)) {
+        //        if ((selected != null) && (selected.length() > 0)) {
+        if (selected != null) {
             selectedList = Misc.newList(selected);
         }
         return select(name, values, selectedList, extra, maxLength);
