@@ -23,6 +23,8 @@ package org.ramadda.geodata.data;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
+
 
 
 import org.w3c.dom.*;
@@ -37,6 +39,8 @@ import ucar.nc2.dt.grid.GridDataset;
 
 import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
 
 
 import java.io.*;
@@ -56,12 +60,72 @@ import org.ramadda.util.TempDir;
 public class NCOOutputHandler extends OutputHandler {
 
 
-    public static final String PROP_NCO = "nco.path";
+   public static final String PROP_NCWA_PATH = "nco.ncwa.path";
+
+   public static final String ARG_NCO_FORMAT = "nco.format";
+   public static final String ARG_NCO_OPERATION = "nco.operation";
+   public static final String ARG_NCO_VARIABLE = "nco.variable";
+   public static final String ARG_NCO_VARIABLE_EXCLUDE = "nco.variable.exclude";
+   public static final String ARG_NCO_COORD = "nco.coord";
+
+   public static final String ARG_NCO_MASK_VARIABLE = "nco.mask.variable";
+   public static final String ARG_NCO_MASK_COMP = "nco.mask.comp";
+   public static final String ARG_NCO_MASK_VALUE = "nco.mask.value";
+
+
 
     /** OPeNDAP Output Type */
-    public static final OutputType OUTPUT_NCO =
-        new OutputType("NCO", "nco", OutputType.TYPE_OTHER,
+    public static final OutputType OUTPUT_NCO_NCWA =
+        new OutputType("NCO- Weighted Average", "nco.ncwa", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE, "/data/nco.png", DataOutputHandler.GROUP_DATA);
+
+
+
+    public static final String OP_AVG = "avg";
+    public static final String OP_SQRAVG = "sqravg";
+    public static final String OP_AVGSQR = "avgsqr";
+    public static final String OP_MAX = "max";
+    public static final String OP_MIN = "min";
+    public static final String OP_RMS = "rms";
+    public static final String OP_RMSSDN = "rmssdn";
+    public static final String OP_SQRT = "sqrt";
+    public static final String OP_TTL = "ttl";
+
+
+
+
+
+
+
+    List<TwoFacedObject>OPERATION_TYPES = Misc.toList(new Object[]{
+        new TwoFacedObject("Mean value", OP_AVG),
+        new TwoFacedObject("Square of the mean", OP_SQRAVG),
+        new TwoFacedObject("Mean of sum of squares", OP_AVGSQR),
+        new TwoFacedObject("Maximium value", OP_MAX),
+        new TwoFacedObject("Minimium value", OP_MIN),
+        new TwoFacedObject("Root-mean-square (normalized by N)", OP_RMS),
+        new TwoFacedObject("Root-mean square (normalized by N-1)", OP_RMSSDN),
+        new TwoFacedObject("Square root of the mean", OP_SQRT),
+        new TwoFacedObject("Sum of values ", OP_TTL),
+        });
+
+
+    public static final String COMP_EQ = "eq";
+    public static final String COMP_NE="ne";
+    public static final String COMP_GT = "gt";
+    public static final String COMP_LT = "lt";
+    public static final String COMP_GE="ge";
+    public static final String COMP_LE = "LE";
+
+    List<TwoFacedObject>COMPARATORS = Misc.toList(new Object[]{
+            new TwoFacedObject("&lt;", COMP_LT),
+            new TwoFacedObject("&lt;=",COMP_LE),
+            new TwoFacedObject("&gt;",COMP_GT),
+            new TwoFacedObject("&gt;=",COMP_GE),
+            new TwoFacedObject("==",COMP_EQ),
+            new TwoFacedObject("!=", COMP_NE),
+        });
+
 
 
     /** _more_ */
@@ -69,7 +133,7 @@ public class NCOOutputHandler extends OutputHandler {
 
 
 
-    private String ncoPath;
+    private String ncwaPath;
 
     /**
      * ctor
@@ -81,8 +145,8 @@ public class NCOOutputHandler extends OutputHandler {
     public NCOOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(OUTPUT_NCO);
-        ncoPath = getProperty(PROP_NCO, "/opt/local/bin");
+        addType(OUTPUT_NCO_NCWA);
+        ncwaPath = getProperty(PROP_NCWA_PATH, null);
     }
 
 
@@ -92,7 +156,7 @@ public class NCOOutputHandler extends OutputHandler {
      * @return _more_
      */
     public boolean haveNco() {
-        return ncoPath != null;
+        return ncwaPath != null;
     }
 
 
@@ -114,7 +178,7 @@ public class NCOOutputHandler extends OutputHandler {
             return;
         }
         if(state.entry!=null && state.entry.isFile() && state.entry.getResource().getPath().endsWith(".nc")) {
-            links.add(makeLink(request, state.entry, OUTPUT_NCO));
+            links.add(makeLink(request, state.entry, OUTPUT_NCO_NCWA));
         }
     }
 
@@ -130,19 +194,20 @@ public class NCOOutputHandler extends OutputHandler {
     private File getProductDir() throws Exception {
         if (productDir == null) {
             TempDir tempDir = getStorageManager().makeTempDir("ncoproducts");
-            //keep things around for 7 day  
-            tempDir.setMaxAge(1000 * 60 * 60 * 24 * 7);
+            //keep things around for 1 hour
+            tempDir.setMaxAge(1000 * 60 * 60 * 1);
             productDir = tempDir;
         }
         return productDir.getDir();
     }
 
 
-    private File getWorkDir(Object jobId) throws Exception {
-        File theProductDir = new File(IOUtil.joinDir(getProductDir(),
-                                 jobId.toString()));
-        IOUtil.makeDir(theProductDir);
-        return theProductDir;
+
+
+
+    public DataOutputHandler getDataOutputHandler() throws Exception {
+        return (DataOutputHandler) getRepository().getOutputHandler(
+            DataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
@@ -164,25 +229,186 @@ public class NCOOutputHandler extends OutputHandler {
             throws Exception {
 
 
-        String uniqueId = getRepository().getGUID();
-        File   workDir  = getWorkDir(uniqueId);
+        if(request.defined(ARG_SUBMIT)) {
+            return outputNCO(request, entry);
+        }
 
-        String tail = IOUtil.getFileTail(IOUtil.stripExtension(entry.getResource().getPath()))+"_product.nc";
-        File outFile = new File(IOUtil.joinDir(workDir, tail));
-        System.err.println (outFile);
-        ProcessBuilder pb = new ProcessBuilder(ncoPath+"/ncwa", entry.getResource().getPath(),
-                                               outFile.toString());
-        pb.directory(workDir);
+        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        NetcdfDataset dataset = NetcdfDataset.openDataset(entry.getResource().getPath());
+        List<Variable> variables = dataset.getVariables();
+        List<TwoFacedObject> coordNames = new ArrayList<TwoFacedObject>();
+        List<TwoFacedObject> varNames = new ArrayList<TwoFacedObject>();
+        for (Variable var : variables) {
+            if (var instanceof CoordinateAxis) {
+                coordNames.add(new TwoFacedObject(var.getName(),var.getShortName()));
+            }
+            varNames.add(new TwoFacedObject(var.getName(),var.getShortName()));
+        }
+
+        dataset.close();
+
+
+        StringBuffer sb = new StringBuffer("");
+        String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
+        sb.append(HtmlUtils.form(formUrl));
+
+        String buttons =HtmlUtils.submit("Create Weighted Average", ARG_SUBMIT);
+        sb.append(buttons);
+
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_NCO_NCWA));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+
+        addOperationWidget(request, sb);
+        addVariableWidget(request, sb, varNames);
+        addDimensionWidget(request, sb, coordNames);
+        addMaskWidget(request, sb, varNames);
+        addFormatWidget(request, sb);
+        addPublishWidget(request, entry, sb,
+                         msg("Select a folder to publish the generated NetCDF file to"));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(buttons);
+
+        return new Result("NCO Form", sb);
+    }
+
+
+    private void         addOperationWidget(Request request, StringBuffer sb) {
+        sb.append(HtmlUtils.formEntry(msgLabel("Operation"),    
+                                      HtmlUtils.select(ARG_NCO_OPERATION,OPERATION_TYPES)));
+    }
+
+
+    private void addDimensionWidget(Request request, StringBuffer sb, List coordNames) {
+        List vars = new ArrayList(coordNames);
+        vars.add(0,new TwoFacedObject("--all--",""));
+        sb.append(HtmlUtils.formEntry(msgLabel("Averaging Dimensions"),    
+                                      HtmlUtils.select(ARG_NCO_COORD,vars,""," MULTIPLE SIZE=4 ")));
+    }
+
+
+    private void addVariableWidget(Request request, StringBuffer sb, List varNames) {
+        List vars = new ArrayList(varNames);
+        vars.add(0,new TwoFacedObject("--all--",""));
+        sb.append(HtmlUtils.formEntry(msgLabel("Variables"),    
+                                      HtmlUtils.select(ARG_NCO_VARIABLE,vars,"",
+                                                       " MULTIPLE SIZE=4 ")+" " + HtmlUtils.checkbox(ARG_NCO_VARIABLE_EXCLUDE,"true", false) +" " + msg("Exclude")));
+    }
+
+    private void addMaskWidget(Request request, StringBuffer sb, List varNames) {
+        List vars = new ArrayList(varNames);
+        vars.add(0,new TwoFacedObject("--none--",""));
+        sb.append(HtmlUtils.formEntry(msgLabel("Mask"),    
+                                      HtmlUtils.select(ARG_NCO_MASK_VARIABLE,vars,"")+" "+ 
+                                      HtmlUtils.select(ARG_NCO_MASK_COMP, COMPARATORS,COMP_LT)+" " +
+                                      HtmlUtils.input(ARG_NCO_MASK_VALUE,"1.0")));
+    }
+
+
+    private void addFormatWidget(Request request, StringBuffer sb) {
+        List formats = new ArrayList();
+        formats.add(new TwoFacedObject(msg("Classic Format"), "3"));
+        formats.add(new TwoFacedObject(msg("NetCDF 4 Format"), "4"));
+        formats.add(new TwoFacedObject(msg("NetCDF 3 64-bit Format"), "6"));
+        sb.append(HtmlUtils.formEntry(msgLabel("NetCDF Format"),    
+                                      HtmlUtils.select(ARG_NCO_FORMAT,formats)));
+    }
+
+    public Result outputNCO(Request request,  Entry entry)
+            throws Exception {
+
+        String tail = getStorageManager().getFileTail(entry);
+        String newName = IOUtil.stripExtension(tail)+"_product.nc";
+        tail = tail;
+        tail = getStorageManager().getStorageFileName(tail);
+        File outFile = new File(IOUtil.joinDir(getProductDir(), tail));
+        List<String> commands = new ArrayList<String>();
+        commands.add(ncwaPath);
+        commands.add("-"+ request.get(ARG_NCO_FORMAT,3)); 
+        //        commands.add("--history");
+        commands.add("--operation");
+        commands.add(request.getString(ARG_NCO_OPERATION, OP_AVG));
+
+
+        List<String> vars = (List<String>)request.get(ARG_NCO_VARIABLE,new ArrayList<String>());
+        if(vars.size()>0) {
+            StringBuffer varSB = new StringBuffer();
+            for(String var: vars) {
+                if(var.length()>0) {
+                    if(varSB.length()>0) varSB.append(",");
+                    varSB.append(var);
+                }
+            }
+            if(varSB.length()>0) {
+                commands.add("--variable");
+                commands.add(varSB.toString());
+                if(request.get(ARG_NCO_VARIABLE_EXCLUDE,false)) {
+                    commands.add("--exclude");
+                }
+            }
+        }
+
+
+        vars = (List<String>)request.get(ARG_NCO_COORD,new ArrayList<String>());
+        if(vars.size()>0) {
+            StringBuffer varSB = new StringBuffer();
+            for(String var: vars) {
+                if(var.length()>0) {
+                    if(varSB.length()>0) varSB.append(",");
+                    varSB.append(var);
+                }
+            }
+            if(varSB.length()>0) {
+                commands.add("--average");
+                commands.add(varSB.toString());
+            }
+        }
+
+
+        if(request.defined(ARG_NCO_MASK_VARIABLE)) {
+            commands.add("--mask_variable");
+            commands.add(request.getString(ARG_NCO_MASK_VARIABLE));
+
+            commands.add("--mask_comparator");
+            commands.add(request.getString(ARG_NCO_MASK_COMP));
+
+            commands.add("--mask_value");
+            commands.add(""+request.get(ARG_NCO_MASK_VALUE,1.0));
+        }
+
+        System.err.println("cmds:" + commands);
+
+        commands.add(entry.getResource().getPath());
+        commands.add(outFile.toString());
+        ProcessBuilder pb = new ProcessBuilder(commands);
+
+
+        pb.directory(getProductDir());
         Process process = pb.start();
         String errorMsg =
             new String(IOUtil.readBytes(process.getErrorStream()));
         String outMsg =
             new String(IOUtil.readBytes(process.getInputStream()));
         int result = process.waitFor();
+        if(errorMsg.length()>0) {
+            return new Result("NCO-Error", new StringBuffer(getRepository().showDialogError("An error occurred:<br>" + errorMsg)));
+        }
+        if(outMsg.length()>0) {
+            return new Result("NCO-Error", new StringBuffer(getRepository().showDialogError("An error occurred:<br>" + outMsg)));
+        }
 
+        if(!outFile.exists()) {
+            return new Result("NCO-Error", new StringBuffer(getRepository().showDialogError("Humm, the NCO generation failed for some reason")));
+        }
 
-
-        return new Result("test", new StringBuffer(""));
+        if(doingPublish(request)) {
+            if(!request.defined(ARG_PUBLISH_NAME)) {
+                request.put(ARG_PUBLISH_NAME,newName);
+            }
+            return getEntryManager().processEntryPublish(request, outFile, null, entry,
+                                                         "generated from");
+        }
+        return request.returnFile(outFile,getStorageManager().getFileTail(outFile.toString()));
     }
 
 }

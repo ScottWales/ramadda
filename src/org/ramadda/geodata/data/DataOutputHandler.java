@@ -273,7 +273,7 @@ public class DataOutputHandler extends OutputHandler {
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL =
         new OutputType("File Metadata", "data.cdl", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, ICON_DATA, GROUP_DATA);
+                       OutputType.SUFFIX_NONE, "/data/page_white_text.png", GROUP_DATA);
 
     /** WCS Output Type */
     public static final OutputType OUTPUT_WCS = new OutputType("WCS",
@@ -313,7 +313,7 @@ public class DataOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
         new OutputType("Extract Time Series", "data.gridaspoint.form",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       ICON_SUBSET, GROUP_DATA);
+                       "/data/chart_line.png", GROUP_DATA);
 
     /** Grid as point Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT =
@@ -2625,7 +2625,6 @@ public class DataOutputHandler extends OutputHandler {
         pw.close();
         Result result = new Result();
         result.setNeedToWrite(false);
-
         return result;
     }
 
