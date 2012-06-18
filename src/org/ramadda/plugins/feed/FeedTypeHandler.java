@@ -173,6 +173,9 @@ public class FeedTypeHandler extends GenericTypeHandler {
 
             String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,
                               "");
+
+
+            
             String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,
                                                     link);
             if(seen.contains(guid)) {
@@ -225,6 +228,77 @@ public class FeedTypeHandler extends GenericTypeHandler {
         }
     }
 
+
+
+    public void processAtom(Request request, Entry mainEntry,
+                           List<Entry> items, Element root)
+            throws Exception {
+        //        Thu, 14 Jun 2012 14:50:14 -05:00
+        SimpleDateFormat []sdfs = new SimpleDateFormat[]{
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
+        };
+        NodeList children = XmlUtil.getElements(root, AtomUtil.TAG_ENTRY);
+        HashSet seen = new HashSet();
+        for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
+            Element item = (Element) children.item(childIdx);
+            String title = XmlUtil.getGrandChildText(item, AtomUtil.TAG_TITLE,
+                               "");
+            String guid = XmlUtil.getGrandChildText(item, AtomUtil.TAG_ID,
+                                                    ""+childIdx);
+            if(seen.contains(guid)) {
+                continue;
+            }
+            seen.add(guid);
+            String desc = XmlUtil.getGrandChildText(item,
+                              AtomUtil.TAG_CONTENT, "");
+            String pubDate = XmlUtil.getGrandChildText(item,
+                                 AtomUtil.TAG_PUBLISHED, "").trim();
+
+            String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,
+                             "").trim();
+            if (lat.length() == 0) {
+                lat = XmlUtil.getGrandChildText(item, "lat", "").trim();
+            }
+            String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,
+                             "").trim();
+            if (lon.length() == 0) {
+                lon = XmlUtil.getGrandChildText(item, "long", "").trim();
+            }
+
+            Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
+            Date  dttm  = null;
+            Date  changeDate  = null;
+            for(SimpleDateFormat sdf: sdfs) {
+                try {
+                    //                    dttm = sdf.parse(pubDate);
+                    break;
+                } catch (Exception exc) {
+                }
+            }
+
+            
+            if(dttm == null) {
+                dttm = DateUtil.parse(pubDate);
+            }
+
+            if ((lat.length() > 0) && (lon.length() > 0)) {
+                entry.setLocation(Double.parseDouble(lat),
+                                  Double.parseDouble(lon), 0);
+            }
+            String link = XmlUtil.getGrandChildText(item, "feedburner:origLink",
+                              "");
+            //TODO: look through the link tags 
+            Resource resource = new Resource(link);
+            entry.initEntry(title, desc, mainEntry, mainEntry.getUser(),
+                            resource, "", dttm.getTime(), dttm.getTime(),
+                            dttm.getTime(), dttm.getTime(), null);
+
+            items.add(entry);
+            getEntryManager().cacheEntry(entry);
+        }
+    }
+
     /**
      * _more_
      *
@@ -246,6 +320,11 @@ public class FeedTypeHandler extends GenericTypeHandler {
         Element root = XmlUtil.getRoot(url, getClass());
         if (root.getTagName().equals(RssUtil.TAG_RSS)) {
             processRss(request, mainEntry, items, root);
+        } else if (root.getTagName().equals(AtomUtil.TAG_FEED)) {
+            processAtom(request, mainEntry, items, root);
+        } else {
+            throw new IllegalArgumentException("Unknown feed type:" + root.getTagName()); 
+            //            getRepository().getLogManager().logError("Unknown feed type:" + root.getTagName()); 
         }
 
         return items;
