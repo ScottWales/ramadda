@@ -262,9 +262,6 @@ public class GpxTypeHandler extends GenericTypeHandler {
                     }
                 }
             }
-
-
-
         } catch(Exception exc) {
             throw new RuntimeException(exc);
         }
