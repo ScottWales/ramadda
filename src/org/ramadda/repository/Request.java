@@ -161,7 +161,16 @@ public class Request implements Constants, Cloneable {
      * @param user _more_
      */
     public Request(Repository repository, User user) {
-        this(repository, user, "");
+        this.repository         = repository;
+        this.user               = user;
+        this.type               = "";
+    }
+
+
+    public Request(Repository repository, User user, String path) {
+        this.repository         = repository;
+        this.user               = user;
+        this.type               = path;
     }
 
 
@@ -172,12 +181,17 @@ public class Request implements Constants, Cloneable {
      * @param user _more_
      * @param path _more_
      */
-    public Request(Repository repository, User user, String path) {
-        this.repository         = repository;
-        this.user               = user;
+    public Request(Request that, String path) {
+        this.repository         = that.getRepository();
+        this.user               = that.getUser();
         this.type               = path;
         this.parameters         = new Hashtable();
         this.originalParameters = new Hashtable();
+        this.isMobile = that.isMobile;
+        this.ip  = that.ip;
+        this.httpServletRequest = that.httpServletRequest;
+        this.httpServletResponse = that.httpServletResponse;
+        this.httpHeaderArgs = that.httpHeaderArgs;
     }
 
 

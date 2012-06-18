@@ -831,7 +831,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
             if (wikify) {
-                desc = new WikiUtil(false).wikify(desc, null);
+                desc = makeWikiUtil(request, false).wikify(desc, null);
             }
 
             return desc;
@@ -1032,7 +1032,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     } else {
                         content = child.getDescription();
                         if (wikify) {
-                            content = new WikiUtil(false).wikify(content,
+                            content = makeWikiUtil(request, false).wikify(content,
                                     null);
                         }
                     }
@@ -1451,6 +1451,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     }
 
+    private WikiUtil makeWikiUtil(Request request, boolean makeHeadings) {
+        WikiUtil wikiUtil = new WikiUtil();
+        wikiUtil.setMakeHeadings(makeHeadings);
+        wikiUtil.setMobile(request.isMobile());
+        return wikiUtil;
+    }
+
+
     /**
      * Make entry tabs html
      *
@@ -1758,7 +1766,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             String  originalId = request.getString(ARG_ENTRYID, (String) "");
 
             Request myRequest  =
-                new Request(getRepository(), request.getUser(),
+                new Request(request, 
                             getRepository().URL_ENTRY_SHOW.toString()) {
                 public void putExtraProperty(Object key, Object value) {
                     request.putExtraProperty(key, value);
@@ -1766,7 +1774,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 public Object getExtraProperty(Object key) {
                     return request.getExtraProperty(key);
                 }
-
             };
 
 
@@ -2213,6 +2220,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                 ATTR_REQUEST,
                                 request, ATTR_ENTRY, entry }));
 
+        wikiUtil.setMobile(request.isMobile());
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
                            subGroups, subEntries);
     }
