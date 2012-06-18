@@ -21,7 +21,7 @@
 package org.ramadda.util;
 
 
-import ucar.unidata.util.HtmlUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -50,6 +50,15 @@ import java.util.regex.*;
  */
 public class WikiUtil {
 
+    public static final String ATTR_OPEN ="open";
+    public static final String ATTR_DECORATE =   "decorate";
+    public static final String ATTR_TITLE ="title";
+    public static final String ATTR_SHOW ="show";
+
+
+
+
+
     public static final String PROP_NOHEADING = "noheading";
     public static final String PROP_HEADING = "heading";
 
@@ -72,17 +81,12 @@ public class WikiUtil {
     /** _more_          */
     private boolean replaceNewlineWithP = true;
 
+    private boolean mobile = false;
 
     /**
      * _more_
      */
     public WikiUtil() {}
-
-
-    public WikiUtil(boolean makeHeadings) {
-        this.makeHeadings = makeHeadings;
-    }
-
 
     /**
      * _more_
@@ -205,7 +209,7 @@ public class WikiUtil {
           | standard =
           }}
         */
-        sb.append(HtmlUtil.open(HtmlUtil.TAG_TABLE));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
         String title = "";
         for (String line : toks) {
             String[] toks2 = StringUtil.split(line, "=", 2);
@@ -220,21 +224,21 @@ public class WikiUtil {
                 title = toks2[1].trim();
             } else if (toks2[1].trim().length() > 0) {
                 sb.append(
-                    HtmlUtil.rowTop(
-                        HtmlUtil.col(
+                    HtmlUtils.rowTop(
+                        HtmlUtils.col(
                             name,
-                            HtmlUtil.cssClass(
-                                "wiki-infobox-entry-title")) + HtmlUtil.col(
+                            HtmlUtils.cssClass(
+                                "wiki-infobox-entry-title")) + HtmlUtils.col(
                                     toks2[1],
-                                    HtmlUtil.cssClass(
+                                    HtmlUtils.cssClass(
                                         "wiki-infobox-entry"))));
 
             }
         }
-        sb.append(HtmlUtil.close(HtmlUtil.TAG_TABLE));
-        String div = HtmlUtil.makeShowHideBlock(title, sb.toString(), true,
-                         HtmlUtil.cssClass("wiki-infobox-title"),
-                         HtmlUtil.cssClass("wiki-infobox"));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        String div = HtmlUtils.makeShowHideBlock(title, sb.toString(), true,
+                         HtmlUtils.cssClass("wiki-infobox-title"),
+                         HtmlUtils.cssClass("wiki-infobox"));
         div = wikify(div, null);
         floatBoxes.add(div);
         return "";
@@ -514,18 +518,38 @@ public class WikiUtil {
             String    inner = s.substring(idx2 + 1, idx3);
             Hashtable props = StringUtil.parseHtmlProperties(attrs);
 
-            boolean   open  = Misc.getProperty(props, "open", true);
-            String    title = Misc.getProperty(props, "title", "");
+
+            boolean   open  = Misc.getProperty(props, ATTR_OPEN, true);
+            boolean   decorate  = Misc.getProperty(props, ATTR_DECORATE, true);
+            String    title = Misc.getProperty(props, ATTR_TITLE, "");
             sb.append(first);
-            sb.append(HtmlUtil.makeShowHideBlock(title, inner, open,
-                    HtmlUtil.cssClass("wiki-blockheader"),
-                    HtmlUtil.cssClass("wiki-block")));
+
+            //<block show="ismobile"
+            String show =  Misc.getProperty(props, ATTR_SHOW, (String) null);
+            boolean shouldShow = true;
+
+            if(show!=null) {
+                if(show.equals("mobile")) {
+                    if(!getMobile()) shouldShow = false;
+                } else if(show.equals("!mobile")) {
+                    if(getMobile()) shouldShow = false;
+                }
+            }
+
+
+            if(shouldShow) {
+                if(decorate) {
+                    sb.append(HtmlUtils.makeShowHideBlock(title, inner, open,
+                                                          HtmlUtils.cssClass("wiki-blockheader"),
+                                                          HtmlUtils.cssClass("wiki-block")));
+                } else {
+                    sb.append(inner);
+                }
+            }
             s = s.substring(idx3 + "</block>".length());
         }
         sb.append(s);
         s = sb.toString();
-
-
         s = s.replace("_BRACKETOPEN_", "[");
         s = s.replace("_BRACKETCLOSE_", "]");
         //        s = s.replaceAll("(\n\r)+","<br>\n");
@@ -535,10 +559,10 @@ public class WikiUtil {
             if (headings.size() >= 2) {
                 StringBuffer toc = new StringBuffer();
                 makeHeadings(headings, toc, -1, "");
-                String block = HtmlUtil.makeShowHideBlock("Contents",
+                String block = HtmlUtils.makeShowHideBlock("Contents",
                                    toc.toString(), true,
-                                   HtmlUtil.cssClass("wiki-tocheader"),
-                                   HtmlUtil.cssClass("wiki-toc"));
+                                   HtmlUtils.cssClass("wiki-tocheader"),
+                                   HtmlUtils.cssClass("wiki-toc"));
                 floatBoxes.add(block);
 
                 String blocks =
@@ -550,10 +574,10 @@ public class WikiUtil {
         }
 
         if (categoryLinks.size() > 0) {
-            s = s + HtmlUtil.div(
+            s = s + HtmlUtils.div(
                 "<b>Categories:</b> "
                 + StringUtil.join(
-                    "&nbsp;|&nbsp; ", categoryLinks), HtmlUtil.cssClass(
+                    "&nbsp;|&nbsp; ", categoryLinks), HtmlUtils.cssClass(
                     "wiki-categories"));
         }
 
@@ -600,7 +624,7 @@ public class WikiUtil {
             toc.append(StringUtil.repeat("&nbsp;&nbsp;", level - 1));
             toc.append("<a href=\"#" + label + "\">");
             toc.append(prefix);
-            toc.append(HtmlUtil.space(1));
+            toc.append(HtmlUtils.space(1));
             toc.append(label);
             toc.append("</a><br>\n");
             currentLevel = level;
@@ -659,6 +683,24 @@ public class WikiUtil {
      */
     public boolean getReplaceNewlineWithP() {
         return this.replaceNewlineWithP;
+    }
+
+    /**
+       Set the Mobile property.
+
+       @param value The new value for Mobile
+    **/
+    public void setMobile (boolean value) {
+	mobile = value;
+    }
+
+    /**
+       Get the Mobile property.
+
+       @return The Mobile
+    **/
+    public boolean getMobile () {
+	return mobile;
     }
 
 
