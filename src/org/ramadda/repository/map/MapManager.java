@@ -846,10 +846,11 @@ public class MapManager extends RepositoryManager {
             if (makeRectangles) {
                 boolean didMetadata = map.addSpatialMetadata(entry,
                                           metadataList);
+                boolean rectOK  = true;
                 if (detailed) {
-                    entry.getTypeHandler().addToMap(request, entry, map);
+                    rectOK =  entry.getTypeHandler().addToMap(request, entry, map);
                 }
-                if (entry.hasAreaDefined() && !didMetadata) {
+                if (rectOK && entry.hasAreaDefined() && !didMetadata) {
                     if ( !screenBigRects
                             || (Math.abs(entry.getEast() - entry.getWest())
                                 < 90)) {

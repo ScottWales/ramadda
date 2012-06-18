@@ -231,7 +231,8 @@ public class GpxTypeHandler extends GenericTypeHandler {
         return result;
     }
 
-    public void addToMap(Request request, Entry entry, MapInfo map)     {
+    @Override
+    public boolean addToMap(Request request, Entry entry, MapInfo map)     {
         try {
             Element root =readXml(entry);
             int cnt = 0;
@@ -267,8 +268,7 @@ public class GpxTypeHandler extends GenericTypeHandler {
         } catch(Exception exc) {
             throw new RuntimeException(exc);
         }
-        
-         
+        return false;
     }
 
 

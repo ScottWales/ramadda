@@ -531,7 +531,9 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      * @param map _more_
      */
-    public void addToMap(Request request, Entry entry, MapInfo map) {}
+    public boolean addToMap(Request request, Entry entry, MapInfo map) {
+        return true;
+    }
 
     /**
      * _more_
