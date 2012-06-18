@@ -3200,6 +3200,7 @@ public class HtmlUtils {
         String       id  = "block_" + (blockCnt++);
         StringBuffer sb  = new StringBuffer();
         String       img = "";
+        //        System.err.println ("show image:" + showImg);
         if ((showImg != null) && (showImg.length() > 0)) {
             img = HtmlUtils.img(visible
                                ? hideImg
@@ -3208,10 +3209,10 @@ public class HtmlUtils {
         String link =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
-                + "')"), img /* + label*/,
+                + "')"), img  + label,
                          HtmlUtils.cssClass("toggleblocklabellink"));
 
-        link = link + " " + label;
+        //        link = link + " " + label;
 
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
