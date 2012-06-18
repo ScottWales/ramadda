@@ -24,7 +24,7 @@
            <argument>-oneinstanceport</argument>
            <argument>14445</argument>
            <argument>-installplugin</argument>
-           <argument>http://ramadda.psd.esrl.noaa.gov/psd/repository/entry/get/noaapsd.jar?entryid=be105b2f-ff5a-4f38-af36-3fb5fd3b5359</argument>
+           <argument>http://www.esrl.noaa.gov/psd/repository/entry/get/noaapsd.jar?entryid=be105b2f-ff5a-4f38-af36-3fb5fd3b5359</argument>
            ${args}
         </application-desc>
        <security>
