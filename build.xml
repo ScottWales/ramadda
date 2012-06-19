@@ -24,6 +24,11 @@
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
     </target>
 
+    <target name="sourceforge" depends="init">
+      <antcall target="release"/>
+   </target>
+
+
     <target name="client" depends="init">
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="client"/>
     </target>
