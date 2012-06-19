@@ -1,0 +1,6 @@
+Files:
+repository.war -- war file for Tomcat or Glassfish
+ramadda1.4b.zip -- stand-alone RAMADDA
+allplugins.zip - All of the plugins in one file
+repositoryclient.jar -- library for building Java-based RAMADDA clients
+repositoryclient.zip -- Java-based command line client
