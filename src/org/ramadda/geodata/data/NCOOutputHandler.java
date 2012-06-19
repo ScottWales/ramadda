@@ -30,12 +30,8 @@ import org.ramadda.util.HtmlUtils;
 import org.w3c.dom.*;
 
 import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GridDataset;
 
 import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.IOUtil;
@@ -53,9 +49,7 @@ import org.ramadda.util.TempDir;
 
 /**
  *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author Jeff McWhirter/ramadda.org
  */
 public class NCOOutputHandler extends OutputHandler {
 
@@ -97,8 +91,6 @@ public class NCOOutputHandler extends OutputHandler {
     public static final String OP_RMSSDN = "rmssdn";
     public static final String OP_SQRT = "sqrt";
     public static final String OP_TTL = "ttl";
-
-
 
 
 
@@ -338,7 +330,6 @@ public class NCOOutputHandler extends OutputHandler {
 
         String tail = getStorageManager().getFileTail(entry);
         String newName = IOUtil.stripExtension(tail)+"_product.nc";
-        tail = tail;
         tail = getStorageManager().getStorageFileName(tail);
         File outFile = new File(IOUtil.joinDir(getProductDir(), tail));
         List<String> commands = new ArrayList<String>();
