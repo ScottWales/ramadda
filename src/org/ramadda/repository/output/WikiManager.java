@@ -399,6 +399,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC,"")), 
         WIKI_PROP_GALLERY, 
         prop(WIKI_PROP_SLIDESHOW,  ATTRS_LAYOUT +attrs(ATTR_WIDTH, "400",ATTR_HEIGHT,"270")),
+        WIKI_PROP_PLAYER,
         WIKI_PROP_GROUP+"Misc",
         prop(WIKI_PROP_LINKS, attrs(ATTR_SEPARATOR," | ",ATTR_TAGOPEN,"",ATTR_TAGCLOSE,"")), 
         WIKI_PROP_COMMENTS, 
