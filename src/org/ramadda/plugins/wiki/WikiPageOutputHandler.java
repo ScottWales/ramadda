@@ -154,14 +154,20 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         if (state.entry == null) {
             return;
         }
-        if (state.entry.getType().equals(WikiPageTypeHandler.TYPE_WIKIPAGE)) {
-            links.add(makeLink(request, state.entry, OUTPUT_WIKI));
-            links.add(makeLink(request, state.entry, OUTPUT_WIKI_HISTORY));
-            links.add(makeLink(request, state.entry, OUTPUT_WIKI_DETAILS));
-            links.add(makeLink(request, state.entry, OUTPUT_WIKI_TEXT));
+        if(canAccessDetails(request)) {
+            if (state.entry.getType().equals(WikiPageTypeHandler.TYPE_WIKIPAGE)) {
+                links.add(makeLink(request, state.entry, OUTPUT_WIKI));
+                links.add(makeLink(request, state.entry, OUTPUT_WIKI_DETAILS));
+                links.add(makeLink(request, state.entry, OUTPUT_WIKI_HISTORY));
+                links.add(makeLink(request, state.entry, OUTPUT_WIKI_TEXT));
+            }
         }
     }
 
+
+    private boolean canAccessDetails(Request request) {
+        return !request.isAnonymous();
+    }
 
 
     /**
@@ -179,25 +185,32 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                               Entry entry)
             throws Exception {
 
-        if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
-            return super.getHtmlResult(request, outputType, entry);
-        }
+        boolean okToAccessWiki = canAccessDetails(request);
 
-        if (outputType.equals(OUTPUT_WIKI_HISTORY)) {
-            return outputWikiHistory(request, entry);
-        }
+        if(okToAccessWiki) {
+            if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
+                return super.getHtmlResult(request, outputType, entry, false);
+            }
+            
+            if (outputType.equals(OUTPUT_WIKI_HISTORY)) {
+                return outputWikiHistory(request, entry);
+            }
+            
+            if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
+                request.put(ARG_WIKI_DETAILS,"true");
+            }
 
-        if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
-            request.put(ARG_WIKI_DETAILS,"true");
-        }
-
-        if (outputType.equals(OUTPUT_WIKI_TEXT)) {
-            request.put(ARG_WIKI_RAW,"true");
+            if (outputType.equals(OUTPUT_WIKI_TEXT)) {
+                request.put(ARG_WIKI_RAW,"true");
+            }
         }
 
         String wikiText = "";
         String header   = "";
         if (request.defined(ARG_WIKI_VERSION)) {
+            if(!okToAccessWiki) {
+                throw new AccessException("Not allowed", request);
+            }
             Date dttm = new Date((long) request.get(ARG_WIKI_VERSION, 0.0));
             WikiPageHistory wph =
                 ((WikiPageTypeHandler) entry.getTypeHandler()).getHistory(
@@ -218,14 +231,16 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             }
         }
 
-        if (request.get(ARG_WIKI_RAW, false)) {
-            StringBuffer sb = new StringBuffer();
-            sb.append(HtmlUtils.form(""));
-            sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 250, 60,
-                                        HtmlUtils.id(ARG_WIKI_TEXT)));
-            sb.append(HtmlUtils.formClose());
-            return makeLinksResult(request, msg("Wiki"), sb,
-                                   new State(entry));
+        if(okToAccessWiki) {
+            if (request.get(ARG_WIKI_RAW, false)) {
+                StringBuffer sb = new StringBuffer();
+                sb.append(HtmlUtils.form(""));
+                sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 250, 60,
+                                             HtmlUtils.id(ARG_WIKI_TEXT)));
+                sb.append(HtmlUtils.formClose());
+                return makeLinksResult(request, msg("Wiki"), sb,
+                                       new State(entry));
+            }
         }
 
 
