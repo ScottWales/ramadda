@@ -213,9 +213,19 @@ function RepositoryMap(mapId, params) {
 
         //this.vectors = new OpenLayers.Layer.Vector("Drawing");
         //this.map.addLayer(this.vectors);
-        var mousecontrols = new OpenLayers.Control.Navigation();
-        this.map.addControl(mousecontrols);
+
+        
+
+        this.map.addControl(new OpenLayers.Control.Navigation({
+                    dragPanOptions: {
+                        enableKinetic: true
+                            }
+        }));
+        this.map.addControl(new OpenLayers.Control.ScaleLine());
+        this.map.addControl(new OpenLayers.Control.OverviewMap());
+        this.map.addControl(new OpenLayers.Control.KeyboardDefaults());
         this.map.addControl(new OpenLayers.Control.LayerSwitcher());
+
         var latLonReadout = util.getDomObject(this.latlonReadout);
         if(latLonReadout) {
             this.map.addControl(new OpenLayers.Control.MousePosition( {
