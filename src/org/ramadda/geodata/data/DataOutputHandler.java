@@ -55,6 +55,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ObjectPool;
 
 
@@ -131,7 +132,6 @@ import ucar.unidata.util.Counter;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -178,7 +178,7 @@ import javax.servlet.http.*;
  */
 public class DataOutputHandler extends OutputHandler {
 
-    /** _more_ */
+    /** OPeNDAP icon */
     public static final String ICON_OPENDAP = "/data/opendap.gif";
 
     /** CSV format */
@@ -253,7 +253,7 @@ public class DataOutputHandler extends OutputHandler {
     /** POINT_TYPE */
     public static final String TYPE_POINT = "point";
 
-    /** GrADS type*/
+    /** GrADS type */
     public static final String TYPE_GRADS = "gradsbinary";
 
     /** set of suffixes */
@@ -273,7 +273,8 @@ public class DataOutputHandler extends OutputHandler {
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL =
         new OutputType("File Metadata", "data.cdl", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, "/data/page_white_text.png", GROUP_DATA);
+                       OutputType.SUFFIX_NONE, "/data/page_white_text.png",
+                       GROUP_DATA);
 
     /** WCS Output Type */
     public static final OutputType OUTPUT_WCS = new OutputType("WCS",
@@ -1284,18 +1285,21 @@ public class DataOutputHandler extends OutputHandler {
      */
     public Result outputCdl(final Request request, Entry entry)
             throws Exception {
-        String path = getPath(request, entry);
+        String path     = getPath(request, entry);
+        String dodspath = getAbsoluteOpendapUrl(request, entry);
         if (request.getString(ARG_FORMAT, "").equals(FORMAT_NCML)) {
 
             /**
              *  This gets hung up calling back into the repository
              *  so for now don't do it and just use the file
+             * path = getAbsoluteOpendapUrl(request, entry);
              */
-            path = getAbsoluteOpendapUrl(request, entry);
 
             NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
             NcMLWriter writer = new NcMLWriter();
             String     xml    = writer.writeXML(ncFile);
+            xml = xml.replace("file:" + path, dodspath).replace(path,
+                              dodspath);
             Result result = new Result("", new StringBuffer(xml), "text/xml");
             ncFile.close();
 
@@ -1333,20 +1337,23 @@ public class DataOutputHandler extends OutputHandler {
                     request.getUrl() + "&"
                     + HtmlUtils.arg(ARG_SHORT, HtmlUtils.VALUE_TRUE), msg(
                         "Add temporal and spatial properties")));
-            sb.append(HtmlUtils.span("&nbsp;|&nbsp;",
-                                    HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
+            sb.append(
+                HtmlUtils.span(
+                    "&nbsp;|&nbsp;",
+                    HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
 
             sb.append(HtmlUtils.href(request.getUrl(),
-                                    msg("Add full properties")));
-            sb.append(HtmlUtils.span("&nbsp;|&nbsp;",
-                                    HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
+                                     msg("Add full properties")));
+            sb.append(
+                HtmlUtils.span(
+                    "&nbsp;|&nbsp;",
+                    HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
         }
         String tail =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry));
 
         sb.append(HtmlUtils.href(HtmlUtils.url(getRepository().URL_ENTRY_SHOW
-                                             + "/" + tail
-                                             + SUFFIX_NCML, new String[] {
+                + "/" + tail + SUFFIX_NCML, new String[] {
             ARG_ENTRYID, entry.getId(), ARG_OUTPUT, OUTPUT_CDL.getId(),
             ARG_FORMAT, FORMAT_NCML
         }), "NCML"));
@@ -1358,7 +1365,9 @@ public class DataOutputHandler extends OutputHandler {
         } else {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ucar.nc2.NCdump.print(dataset, "", bos, null);
-            sb.append("<pre>" + bos.toString() + "</pre>");
+            String cdl = bos.toString();
+            cdl = cdl.replace(path, dodspath);
+            sb.append("<pre>" + cdl + "</pre>");
             ncDatasetPool.put(path, dataset);
         }
 
@@ -1743,8 +1752,8 @@ public class DataOutputHandler extends OutputHandler {
         String format = request.getString(ARG_FORMAT, QueryParams.NETCDF);
 
         sb.append(HtmlUtils.formEntry(msgLabel("Format"),
-                                     HtmlUtils.select(ARG_FORMAT, formats,
-                                         format)));
+                                      HtmlUtils.select(ARG_FORMAT, formats,
+                                          format)));
 
 
         addPublishWidget(request, entry, sb,
@@ -1754,8 +1763,8 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(msgLabel("Select Variables"));
         sb.append(HtmlUtils.insetDiv(HtmlUtils.table(varSB.toString(),
                 HtmlUtils.attrs(HtmlUtils.ATTR_CELLPADDING, "5",
-                               HtmlUtils.ATTR_CELLSPACING, "0")), 0, 30, 0,
-                                   0));
+                                HtmlUtils.ATTR_CELLSPACING, "0")), 0, 30, 0,
+                                    0));
 
         sb.append(HtmlUtils.submit("Get Point"));
         //sb.append(submitExtra);
@@ -1818,13 +1827,12 @@ public class DataOutputHandler extends OutputHandler {
 
         for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
-            String call  = HtmlUtils.attr(
-                              HtmlUtils.ATTR_ONCLICK,
-                              HtmlUtils.call(
-                                  "checkboxClicked",
-                                  HtmlUtils.comma(
-                                      "event", HtmlUtils.squote(ARG_VARIABLE),
-                                      HtmlUtils.squote(cbxId))));
+            String call  =
+                HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+                               HtmlUtils.call("checkboxClicked",
+                                   HtmlUtils.comma("event",
+                                       HtmlUtils.squote(ARG_VARIABLE),
+                                       HtmlUtils.squote(cbxId))));
             VariableEnhanced var     = grid.getVariable();
             StringBuffer     sbToUse = (grid.getZDimension() == null)
                                        ? varSB2D
@@ -1846,8 +1854,9 @@ public class DataOutputHandler extends OutputHandler {
         }
         if (varSB2D.length() > 0) {
             if (varSB3D.length() > 0) {
-                varSB.append(HtmlUtils.row(HtmlUtils.headerCols(new Object[] {
-                    "2D Grids" })));
+                varSB.append(
+                    HtmlUtils.row(
+                        HtmlUtils.headerCols(new Object[] { "2D Grids" })));
             }
             varSB.append(varSB2D);
         }
@@ -1859,8 +1868,9 @@ public class DataOutputHandler extends OutputHandler {
                               + HtmlUtils.space(1)
                               + HtmlUtils.input(ARG_LEVEL, "");
                 }
-                varSB.append(HtmlUtils.row(HtmlUtils.headerCols(new Object[] {
-                    header })));
+                varSB.append(
+                    HtmlUtils.row(
+                        HtmlUtils.headerCols(new Object[] { header })));
             }
             varSB.append(varSB3D);
         }
@@ -2048,9 +2058,9 @@ public class DataOutputHandler extends OutputHandler {
 
 
         sb.append(HtmlUtils.formEntry(msgLabel("Horizontal Stride"),
-                                     HtmlUtils.input(ARG_HSTRIDE,
-                                         request.getString(ARG_HSTRIDE, "1"),
-                                         HtmlUtils.SIZE_3)));
+                                      HtmlUtils.input(ARG_HSTRIDE,
+                                          request.getString(ARG_HSTRIDE,
+                                              "1"), HtmlUtils.SIZE_3)));
 
         GridDataset  dataset   = getGridDataset(entry, path);
         Date[]       dateRange = null;
@@ -2068,11 +2078,11 @@ public class DataOutputHandler extends OutputHandler {
 
             for (int i = 0; i < points.length; i++) {
                 sb.append(HtmlUtils.hidden(SPATIALARGS[i] + ".original",
-                                          points[i]));
+                                           points[i]));
             }
             String llb = map.makeSelector(ARG_AREA, true, points);
             sb.append(HtmlUtils.formEntryTop(msgLabel("Subset Spatially"),
-                                            llb));
+                                             llb));
         }
 
         if ((dates != null) && (dates.size() > 0)) {
@@ -2101,9 +2111,9 @@ public class DataOutputHandler extends OutputHandler {
         }
 
         sb.append(HtmlUtils.formEntry(msgLabel("Add Lat/Lon Variables"),
-                                     HtmlUtils.checkbox(ARG_ADDLATLON,
-                                         HtmlUtils.VALUE_TRUE,
-                                         request.get(ARG_ADDLATLON, true))));
+                                      HtmlUtils.checkbox(ARG_ADDLATLON,
+                                          HtmlUtils.VALUE_TRUE,
+                                          request.get(ARG_ADDLATLON, true))));
 
         addPublishWidget(request, entry, sb,
                          msg("Select a folder to publish the results to"));
@@ -2284,8 +2294,8 @@ public class DataOutputHandler extends OutputHandler {
             String label = var.getDescription();
             //            if(label.trim().length()==0)
             label = var.getName();
-            columnDefs.add("{key:" + HtmlUtils.quote(var.getShortName()) + ","
-                           + "sortable:true," + "label:"
+            columnDefs.add("{key:" + HtmlUtils.quote(var.getShortName())
+                           + "," + "sortable:true," + "label:"
                            + HtmlUtils.quote(label) + "}");
         }
 
@@ -2555,7 +2565,7 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.form(formUrl + suffix));
         sb.append(HtmlUtils.submit("Subset Point Data", ARG_SUBMIT));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                  request.getString(ARG_OUTPUT, "")));
+                                   request.getString(ARG_OUTPUT, "")));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.formTable());
         List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
@@ -2563,8 +2573,8 @@ public class DataOutputHandler extends OutputHandler {
         formats.add(new TwoFacedObject("KML", FORMAT_KML));
         String format = request.getString(ARG_FORMAT, FORMAT_CSV);
         sb.append(HtmlUtils.formEntry(msgLabel("Format"),
-                                     HtmlUtils.select(ARG_FORMAT, formats,
-                                         format)));
+                                      HtmlUtils.select(ARG_FORMAT, formats,
+                                          format)));
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
@@ -2625,6 +2635,7 @@ public class DataOutputHandler extends OutputHandler {
         pw.close();
         Result result = new Result();
         result.setNeedToWrite(false);
+
         return result;
     }
 
