@@ -477,13 +477,21 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getHtmlResult(Request request, OutputType outputType,
                                 Entry entry)
             throws Exception {
+        return getHtmlResult(request, outputType, entry, true);
+    }
+
+
+    public Result getHtmlResult(Request request, OutputType outputType,
+                                Entry entry, boolean checkType)
+            throws Exception {
 
         TypeHandler typeHandler = entry.getTypeHandler();
-        Result typeResult = typeHandler.getHtmlDisplay(request, entry);
-        if (typeResult != null) {
-            return typeResult;
+        if(checkType) {
+            Result typeResult = typeHandler.getHtmlDisplay(request, entry);
+            if (typeResult != null) {
+                return typeResult;
+            }
         }
-
 
         StringBuffer sb           = new StringBuffer();
 
