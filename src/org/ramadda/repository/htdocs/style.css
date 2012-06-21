@@ -400,6 +400,35 @@ a.ramadda-menuitem-link {
    padding-left:12px;
 }
 
+.image-outer {
+  border: 1px solid #aaa;
+  margin:10px;
+  padding:10px;
+  margin-bottom:20px;
+  -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray')";
+}
+
+.image-inner {
+   background-color:#F2F0F0;
+   maring:5px;
+}
+
+.image-caption {
+     font-size: 10pt;
+     color: #666;
+}
+
+a.image-link {
+     font-size: 10pt;
+     color: #999;
+}
+
 .inline {
    max-height: 300px; 
    overflow-y: auto;

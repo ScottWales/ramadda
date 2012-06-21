@@ -701,6 +701,7 @@ public class ImageOutputHandler extends OutputHandler {
                 //                String imgExtra = XmlUtil.attr(ARG_WIDTH, "400");
                 String imageUrl = url + "&imagewidth="
                                   + request.get(ARG_IMAGEWIDTH, 400);
+                sb.append("<div class=\"image-outer\">");
                 sb.append(HtmlUtils.href(url,
                                         (HtmlUtils.img(imageUrl, "",
                                             imgExtra))));
@@ -709,6 +710,7 @@ public class ImageOutputHandler extends OutputHandler {
                 String dttm = formatDate(request,entry);
                 sb.append(" ");
                 sb.append(dttm);
+                sb.append("</div>");
                 sb.append("<p></td>");
             }
         }

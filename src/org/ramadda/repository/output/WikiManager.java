@@ -1339,23 +1339,24 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
 
+            StringBuffer [] colsSB = new StringBuffer[columns];
+            for(int i=0;i<columns;i++) {
+                colsSB[i] = new StringBuffer();
+            }
             int num    = 0;
             int colCnt = 0;
-            sb.append("<table cellspacing=4>");
-            sb.append("<tr valign=\"bottom\">");
+
             for (Entry child : children) {
                 num++;
                 if (colCnt >= columns) {
-                    sb.append("</tr>");
-                    sb.append("<tr valign=\"bottom\">");
                     colCnt = 0;
                 }
+                StringBuffer buff = colsSB[colCnt];
                 colCnt++;
                 String url = HtmlUtils.url(
                                  request.url(repository.URL_ENTRY_GET) + "/"
                                  + getStorageManager().getFileTail(
                                      child), ARG_ENTRYID, child.getId());
-                sb.append("<td align=\"center\">");
                 String extra = "";
                 if (width > 0) {
                     extra = extra
@@ -1367,31 +1368,39 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
                 }
                 String img = HtmlUtils.img(url, "", extra);
+                buff.append("<div class=\"image-outer\">");
+                buff.append("<div class=\"image-inner\">");
                 if (popup) {
-                    sb.append(
+                    buff.append(
                         HtmlUtils.href(
                             child.getTypeHandler().getEntryResourceUrl(
                                 request, child), img,
                                     HtmlUtils.id("single_image")));
                 } else {
-                    sb.append(img);
+                    buff.append(img);
                 }
-                sb.append(HtmlUtils.br());
+                buff.append("</div>");
+                buff.append("<div class=image-caption>");
                 if ( !random) {
-                    sb.append("<b>");
-                    sb.append(msg("Figure"));
-                    sb.append(" " + num);
-                    sb.append(" - ");
-                    sb.append("</b>");
+                    buff.append(msg("Figure"));
+                    buff.append(" " + num);
+                    buff.append(": ");
                 }
-                sb.append(getEntryManager().getAjaxLink(request, child,
-                        child.getLabel()));
-                sb.append("</td>");
-                //              sb.append(HtmlUtils.br());
-                //              sb.append(HtmlUtils.makeToggleInline("...", child.getDescription(),false));
+                String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                                   child);
+                buff.append(HtmlUtils.href(entryUrl, child.getLabel(), HtmlUtils.style("color:#666;font-size:10pt;")));
+                buff.append("</div>");
+                buff.append("</div>");
             }
+            sb.append("<table cellspacing=4>");
+            sb.append("<tr valign=\"top\">");
+            for(StringBuffer buff: colsSB) {
+                sb.append("<td>");
+                sb.append(buff);
+                sb.append("</td>");
+            }
+            sb.append("</tr>");
             sb.append("</table>");
-
             return sb.toString();
         } else if (include.equals(WIKI_PROP_CHILDREN_GROUPS)) {
             if ( !hasOpenProperty) {
