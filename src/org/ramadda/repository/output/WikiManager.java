@@ -1362,6 +1362,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                              "" + width);
                 }
+                String name = child.getName();
+                if ((name != null) && !name.isEmpty()) {
+                    extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
+                }
                 String img = HtmlUtils.img(url, "", extra);
                 if (popup) {
                     sb.append(
