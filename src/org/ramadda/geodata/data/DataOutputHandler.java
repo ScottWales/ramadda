@@ -1366,7 +1366,8 @@ public class DataOutputHandler extends OutputHandler {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ucar.nc2.NCdump.print(dataset, "", bos, null);
             String cdl = bos.toString();
-            cdl = cdl.replace(path, dodspath);
+            cdl = cdl.replace("file:" + path, dodspath).replace(path,
+                              dodspath);
             sb.append("<pre>" + cdl + "</pre>");
             ncDatasetPool.put(path, dataset);
         }
