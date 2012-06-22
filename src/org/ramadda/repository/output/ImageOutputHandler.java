@@ -608,8 +608,12 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         if (output.equals(OUTPUT_GALLERY)) {
-            sb.append("<table>");
-        } else if (output.equals(OUTPUT_PLAYER)) {
+            getWikiManager().makeGallery(request, getWikiManager().getImageEntries(entries), new Hashtable(), sb);
+            return new Result(group.getName(), sb, getMimeType(output));
+
+        } 
+
+        if (output.equals(OUTPUT_PLAYER)) {
             if ( !request.exists(ARG_ASCENDING)) {
                 entries = getEntryManager().sortEntriesOnDate(entries, true);
             }
@@ -669,56 +673,10 @@ public class ImageOutputHandler extends OutputHandler {
                           + HtmlUtils.quote(title) + ");\n");
 
             }
-        } else {
-            int cnt = 0;
-            for (Entry entry : entries) {
-                String url = getImageUrl(request, entry);
-                if (url == null) {
-                    continue;
-                }
-                /*
-                if(cnt==0) {
-                    sb.append(HtmlUtils.href(url,"View Gallery","  rel=\"shadowbox[gallery]\" "));
-                } else {
-                    sb.append(HtmlUtils.href(url,entry.getName(),"  rel=\"shadowbox[gallery]\" class=\"hidden\" "));
-                }
-                cnt++;
-                sb.append(HtmlUtils.br());
-                if(true)
-                    continue;
-                */
-                if (col >= 2) {
-                    sb.append("</tr>");
-                    col = 0;
-                }
-                if (col == 0) {
-                    sb.append("<tr valign=\"bottom\">");
-                }
-                col++;
-
-                sb.append("<td>");
-                String imgExtra = "";
-                //                String imgExtra = XmlUtil.attr(ARG_WIDTH, "400");
-                String imageUrl = url + "&imagewidth="
-                                  + request.get(ARG_IMAGEWIDTH, 400);
-                sb.append("<div class=\"image-outer\">");
-                sb.append(HtmlUtils.href(url,
-                                        (HtmlUtils.img(imageUrl, "",
-                                            imgExtra))));
-                sb.append("<br>\n");
-                sb.append(getEntryLink(request, entry));
-                String dttm = formatDate(request,entry);
-                sb.append(" ");
-                sb.append(dttm);
-                sb.append("</div>");
-                sb.append("<p></td>");
-            }
         }
 
 
-        if (output.equals(OUTPUT_GALLERY)) {
-            sb.append("</table>\n");
-        } else if (output.equals(OUTPUT_PLAYER)) {
+        if (output.equals(OUTPUT_PLAYER)) {
             String playerTemplate =
                 repository.getResource(PROP_HTML_IMAGEPLAYER);
             String widthAttr = "";

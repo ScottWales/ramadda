@@ -95,7 +95,7 @@ public class JpegMetadataHandler extends MetadataHandler {
             Image image = ImageUtils.readImage(path, false);
             System.err.print("JpegMetadataHandler: wait...");
             ImageUtils.waitOnImage(image);
-            Image newImage = ImageUtils.resize(image, 100, -1);
+            Image newImage = ImageUtils.resize(image, 150, -1);
             ImageUtils.waitOnImage(newImage);
             System.err.println("done");
 

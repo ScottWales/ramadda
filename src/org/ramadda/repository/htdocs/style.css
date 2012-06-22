@@ -416,7 +416,8 @@ a.ramadda-menuitem-link {
 
 .image-inner {
    background-color:#F2F0F0;
-   maring:5px;
+   margin:2px;
+   text-align:center;
 }
 
 .image-caption {

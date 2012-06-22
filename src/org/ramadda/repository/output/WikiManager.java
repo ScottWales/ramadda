@@ -165,6 +165,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ATTR_TYPE = "type";
 
     public static final String ATTR_THUMBNAIL = "thumbnail";
+    public static final String ATTR_CAPTION = "caption";
 
     /** attribute in import tag */
     public static final String ATTR_SEPARATOR = "separator";
@@ -415,7 +416,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_CALENDAR, attrs(ATTR_DAY, "false")),
         prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
         WIKI_PROP_GROUP + "Images",
-        prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "")), WIKI_PROP_GALLERY,
+        prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "")), 
+        prop(WIKI_PROP_GALLERY,attrs(ATTR_WIDTH,"200",ATTR_COLUMNS,"3",ATTR_POPUP, "true", ATTR_THUMBNAIL,"true", ATTR_CAPTION,"Figure ${count}:${name}")),
         prop(WIKI_PROP_SLIDESHOW,
              ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
         WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc",
@@ -1317,105 +1319,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
         } else if (include.equals(WIKI_PROP_GALLERY)) {
-            int width = Misc.getProperty(props, ATTR_WIDTH, -1);
-            if (width < 0) {
-                width = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
-            }
-            int     columns = Misc.getProperty(props, ATTR_COLUMNS, 1);
-            boolean random  = Misc.getProperty(props, ATTR_RANDOM, false);
-            boolean popup   = Misc.getProperty(props, ATTR_POPUP, true);
-            boolean thumbnail   = Misc.getProperty(props, ATTR_THUMBNAIL, true);
-            if (popup) {
-                addImagePopupJS(request, sb);
-            }
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props, true);
-            int size = children.size();
-            if (random && (size > 1)) {
-                int randomIdx = (int) (Math.random() * size);
-                if (randomIdx >= size) {
-                    randomIdx = size;
-                }
-                Entry randomEntry = children.get(randomIdx);
-                children = new ArrayList<Entry>();
-                children.add(randomEntry);
-            }
-
-
-            StringBuffer [] colsSB = new StringBuffer[columns];
-            for(int i=0;i<columns;i++) {
-                colsSB[i] = new StringBuffer();
-            }
-            int num    = 0;
-            int colCnt = 0;
-
-            for (Entry child : children) {
-                num++;
-                if (colCnt >= columns) {
-                    colCnt = 0;
-                }
-                StringBuffer buff = colsSB[colCnt];
-                colCnt++;
-                String url = null;
-
-                if(thumbnail) {
-                    List<String> urls = new ArrayList<String>();
-                    getMetadataManager().getThumbnailUrls(request, child, urls);
-                    if (urls.size() > 0) {
-                        url = urls.get(0);
-                    }
-                }
-
-                if(url == null) 
-                    url = HtmlUtils.url(
-                                        request.url(repository.URL_ENTRY_GET) + "/"
-                                        + getStorageManager().getFileTail(
-                                                                          child), ARG_ENTRYID, child.getId());
-
-                String extra = "";
-                if (width > 0) {
-                    extra = extra
-                            + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                             "" + width);
-                }
-                String name = child.getName();
-                if ((name != null) && !name.isEmpty()) {
-                    extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
-                }
-                String img = HtmlUtils.img(url, "", extra);
-                buff.append("<div class=\"image-outer\">");
-                buff.append("<div class=\"image-inner\">");
-                if (popup) {
-                    buff.append(
-                        HtmlUtils.href(
-                            child.getTypeHandler().getEntryResourceUrl(
-                                request, child), img,
-                                    HtmlUtils.id("single_image")));
-                } else {
-                    buff.append(img);
-                }
-                buff.append("</div>");
-                buff.append("<div class=image-caption>");
-                if ( !random) {
-                    buff.append(msg("Figure"));
-                    buff.append(" " + num);
-                    buff.append(": ");
-                }
-                String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                                   child);
-                buff.append(HtmlUtils.href(entryUrl, child.getLabel(), HtmlUtils.style("color:#666;font-size:10pt;")));
-                buff.append("</div>");
-                buff.append("</div>");
-            }
-            sb.append("<table cellspacing=4>");
-            sb.append("<tr valign=\"top\">");
-            for(StringBuffer buff: colsSB) {
-                sb.append("<td>");
-                sb.append(buff);
-                sb.append("</td>");
-            }
-            sb.append("</tr>");
-            sb.append("</table>");
+            makeGallery(request, children, props, sb);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_CHILDREN_GROUPS)) {
             if ( !hasOpenProperty) {
@@ -1808,6 +1714,106 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         return entries;
+    }
+
+
+    public void makeGallery(Request request, List<Entry> imageEntries, Hashtable props, StringBuffer sb) throws Exception {
+        int width = Misc.getProperty(props, ATTR_WIDTH, -1);
+        if (width < 0) {
+            width = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
+        }
+        int     columns = Misc.getProperty(props, ATTR_COLUMNS, 3);
+        boolean random  = Misc.getProperty(props, ATTR_RANDOM, false);
+        boolean popup   = Misc.getProperty(props, ATTR_POPUP, true);
+        boolean thumbnail   = Misc.getProperty(props, ATTR_THUMBNAIL, true);
+        String caption =  Misc.getProperty(props, ATTR_CAPTION,"${name}");
+        if (popup) {
+            addImagePopupJS(request, sb);
+        }
+        int size = imageEntries.size();
+        if (random && (size > 1)) {
+            int randomIdx = (int) (Math.random() * size);
+            if (randomIdx >= size) {
+                randomIdx = size;
+            }
+            Entry randomEntry = imageEntries.get(randomIdx);
+            imageEntries = new ArrayList<Entry>();
+            imageEntries.add(randomEntry);
+        }
+
+
+        StringBuffer [] colsSB = new StringBuffer[columns];
+        for(int i=0;i<columns;i++) {
+            colsSB[i] = new StringBuffer();
+        }
+        int num    = 0;
+        int colCnt = 0;
+
+        for (Entry child : imageEntries) {
+            num++;
+            if (colCnt >= columns) {
+                colCnt = 0;
+            }
+            StringBuffer buff = colsSB[colCnt];
+            colCnt++;
+            String url = null;
+
+            if(thumbnail) {
+                List<String> urls = new ArrayList<String>();
+                getMetadataManager().getThumbnailUrls(request, child, urls);
+                if (urls.size() > 0) {
+                    url = urls.get(0);
+                }
+            }
+
+            if(url == null) 
+                url = HtmlUtils.url(
+                                    request.url(repository.URL_ENTRY_GET) + "/"
+                                    + getStorageManager().getFileTail(
+                                                                      child), ARG_ENTRYID, child.getId());
+
+            String extra = "";
+            if (width > 0) {
+                extra = extra
+                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                     "" + width);
+            }
+            String name = child.getName();
+            if ((name != null) && !name.isEmpty()) {
+                extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
+            }
+            String img = HtmlUtils.img(url, "", extra);
+            buff.append("<div class=\"image-outer\">");
+            buff.append("<div class=\"image-inner\">");
+            if (popup) {
+                buff.append(
+                            HtmlUtils.href(
+                                           child.getTypeHandler().getEntryResourceUrl(
+                                                                                      request, child), img,
+                                           HtmlUtils.id("single_image")));
+            } else {
+                buff.append(img);
+            }
+            buff.append("</div>");
+            String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                               child);
+            String theCaption = caption;
+            theCaption=theCaption.replace("${count}", ""+num);
+            theCaption=theCaption.replace("${date}", formatDate(request, new Date(child.getStartDate())));
+            theCaption=theCaption.replace("${name}", HtmlUtils.href(entryUrl, child.getLabel(), HtmlUtils.style("color:#666;font-size:10pt;")));
+
+            buff.append(HtmlUtils.div(theCaption,HtmlUtils.cssClass("image-caption")));
+            buff.append("</div>");
+        }
+        sb.append("<table cellspacing=4>");
+        sb.append("<tr valign=\"top\">");
+        for(StringBuffer buff: colsSB) {
+            sb.append("<td>");
+            sb.append(buff);
+            sb.append("</td>");
+        }
+        sb.append("</tr>");
+        sb.append("</table>");
     }
 
 
