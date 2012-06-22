@@ -164,7 +164,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_TYPE = "type";
 
+    /** thumbnail attribute */
     public static final String ATTR_THUMBNAIL = "thumbnail";
+
+    /** caption attribute */
     public static final String ATTR_CAPTION = "caption";
 
     /** attribute in import tag */
@@ -210,7 +213,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_POPUP = "popup";
 
-
+    /** attribute in import tag */
+    public static final String ATTR_POPUPCAPTION = "popupcaption";
 
     /** attribute in import tag */
     public static final String ATTR_LEVEL = "level";
@@ -416,8 +420,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_CALENDAR, attrs(ATTR_DAY, "false")),
         prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
         WIKI_PROP_GROUP + "Images",
-        prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "")), 
-        prop(WIKI_PROP_GALLERY,attrs(ATTR_WIDTH,"200",ATTR_COLUMNS,"3",ATTR_POPUP, "true", ATTR_THUMBNAIL,"true", ATTR_CAPTION,"Figure ${count}:${name}")),
+        prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "")),
+        prop(WIKI_PROP_GALLERY,
+             attrs(ATTR_WIDTH, "200", ATTR_COLUMNS, "3", ATTR_POPUP, "true",
+                   ATTR_THUMBNAIL, "true", ATTR_CAPTION,
+                   "Figure ${count}: ${name}", ATTR_POPUPCAPTION, "over")),
         prop(WIKI_PROP_SLIDESHOW,
              ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
         WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc",
@@ -663,7 +670,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 img);
         } else if (popup) {
             StringBuffer buf = new StringBuffer();
-            addImagePopupJS(request, buf);
+            addImagePopupJS(request, buf, props);
             buf.append(
                 HtmlUtils.href(
                     entry.getTypeHandler().getEntryResourceUrl(
@@ -1322,6 +1329,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props, true);
             makeGallery(request, children, props, sb);
+
             return sb.toString();
         } else if (include.equals(WIKI_PROP_CHILDREN_GROUPS)) {
             if ( !hasOpenProperty) {
@@ -1433,9 +1441,31 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      *
      * @param request  the Request
      * @param buf      the page StringBuffer
+     * @param props    the properties
      */
-    private void addImagePopupJS(Request request, StringBuffer buf) {
+    private void addImagePopupJS(Request request, StringBuffer buf,
+                                 Hashtable props) {
         if (request.getExtraProperty("added fancybox") == null) {
+            String captionpos = Misc.getProperty(props, ATTR_POPUPCAPTION,
+                                    "none");
+            StringBuffer options = new StringBuffer("{");
+            if ( !captionpos.equals("none")) {
+                options.append(HtmlUtils.squote("titlePosition"));
+                options.append(" : ");
+                if (captionpos.equals("inside")) {
+                    options.append(HtmlUtils.squote("inside"));
+                } else if (captionpos.equals("over")) {
+                    options.append(HtmlUtils.squote("over"));
+                } else {
+                    options.append(HtmlUtils.squote("outside"));
+                }
+            } else {
+                options.append(HtmlUtils.squote("titleShow"));
+                options.append(" : ");
+                options.append("false");
+            }
+            options.append("}");
+
             buf.append(
                 HtmlUtils.importJS(
                     getRepository().fileUrl(
@@ -1449,7 +1479,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             buf.append("\n");
             buf.append(
                 HtmlUtils.script(
-                    "$(document).ready(function() {\n $(\"a#single_image\").fancybox();\n });\n"));
+                    "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
+                    + options.toString() + ");\n });\n"));
 
             request.putExtraProperty("added fancybox", "yes");
         }
@@ -1717,18 +1748,34 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     }
 
 
-    public void makeGallery(Request request, List<Entry> imageEntries, Hashtable props, StringBuffer sb) throws Exception {
+    /**
+     * Make the gallery
+     *
+     * @param request   the request
+     * @param imageEntries  the list of image entries
+     * @param props         the tag properties
+     * @param sb            the string buffer to add to
+     *
+     * @throws Exception  problem making the gallery
+     */
+    public void makeGallery(Request request, List<Entry> imageEntries,
+                            Hashtable props, StringBuffer sb)
+            throws Exception {
+
         int width = Misc.getProperty(props, ATTR_WIDTH, -1);
         if (width < 0) {
             width = Misc.getProperty(props, ATTR_IMAGEWIDTH, 200);
         }
-        int     columns = Misc.getProperty(props, ATTR_COLUMNS, 2);
-        boolean random  = Misc.getProperty(props, ATTR_RANDOM, false);
-        boolean popup   = Misc.getProperty(props, ATTR_POPUP, true);
-        boolean thumbnail   = Misc.getProperty(props, ATTR_THUMBNAIL, true);
-        String caption =  Misc.getProperty(props, ATTR_CAPTION,"${name}");
+        int     columns    = Misc.getProperty(props, ATTR_COLUMNS, 2);
+        boolean random     = Misc.getProperty(props, ATTR_RANDOM, false);
+        boolean popup      = Misc.getProperty(props, ATTR_POPUP, true);
+        boolean thumbnail  = Misc.getProperty(props, ATTR_THUMBNAIL, true);
+        String  caption    = Misc.getProperty(props, ATTR_CAPTION, "${name}");
+        String  captionPos = Misc.getProperty(props, ATTR_POPUPCAPTION,
+                                             "none");
+
         if (popup) {
-            addImagePopupJS(request, sb);
+            addImagePopupJS(request, sb, props);
         }
         int size = imageEntries.size();
         if (random && (size > 1)) {
@@ -1742,8 +1789,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        StringBuffer [] colsSB = new StringBuffer[columns];
-        for(int i=0;i<columns;i++) {
+        StringBuffer[] colsSB = new StringBuffer[columns];
+        for (int i = 0; i < columns; i++) {
             colsSB[i] = new StringBuffer();
         }
         int num    = 0;
@@ -1758,7 +1805,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             colCnt++;
             String url = null;
 
-            if(thumbnail) {
+            if (thumbnail) {
                 List<String> urls = new ArrayList<String>();
                 getMetadataManager().getThumbnailUrls(request, child, urls);
                 if (urls.size() > 0) {
@@ -1766,54 +1813,69 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
             }
 
-            if(url == null) 
+            if (url == null) {
                 url = HtmlUtils.url(
-                                    request.url(repository.URL_ENTRY_GET) + "/"
-                                    + getStorageManager().getFileTail(
-                                                                      child), ARG_ENTRYID, child.getId());
+                    request.url(repository.URL_ENTRY_GET) + "/"
+                    + getStorageManager().getFileTail(child), ARG_ENTRYID,
+                        child.getId());
+            }
 
             String extra = "";
             if (width > 0) {
                 extra = extra
-                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                     "" + width);
+                        + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
             }
             String name = child.getName();
             if ((name != null) && !name.isEmpty()) {
                 extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
             }
-            String img = HtmlUtils.img(url, "", extra);
+            String img      = HtmlUtils.img(url, "", extra);
+
+            String entryUrl =
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
             buff.append("<div class=\"image-outer\">");
             buff.append("<div class=\"image-inner\">");
+            String theCaption = caption;
+            theCaption = theCaption.replace("${count}", "" + num);
+            theCaption =
+                theCaption.replace("${date}",
+                                   formatDate(request,
+                                       new Date(child.getStartDate())));
+            theCaption = theCaption.replace("${name}", child.getLabel());
+            theCaption = theCaption.replace("${description}",
+                                            child.getDescription());
             if (popup) {
+                String popupExtras = HtmlUtils.cssClass("popup_image");
+                if ( !captionPos.equals("none")) {
+                    popupExtras += HtmlUtils.attr("title", theCaption);
+                }
                 buff.append(
-                            HtmlUtils.href(
-                                           child.getTypeHandler().getEntryResourceUrl(
-                                                                                      request, child), img,
-                                           HtmlUtils.id("single_image")));
+                    HtmlUtils.href(
+                        child.getTypeHandler().getEntryResourceUrl(
+                            request, child), img, popupExtras));
             } else {
                 buff.append(img);
             }
             buff.append("</div>");
-            String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                               child);
-            String theCaption = caption;
-            theCaption=theCaption.replace("${count}", ""+num);
-            theCaption=theCaption.replace("${date}", formatDate(request, new Date(child.getStartDate())));
-            theCaption=theCaption.replace("${name}", HtmlUtils.href(entryUrl, child.getLabel(), HtmlUtils.style("color:#666;font-size:10pt;")));
 
-            buff.append(HtmlUtils.div(theCaption,HtmlUtils.cssClass("image-caption")));
+            theCaption =
+                HtmlUtils.href(entryUrl, theCaption,
+                               HtmlUtils.style("color:#666;font-size:10pt;"));
+
+            buff.append(HtmlUtils.div(theCaption,
+                                      HtmlUtils.cssClass("image-caption")));
             buff.append("</div>");
         }
         sb.append("<table cellspacing=4>");
         sb.append("<tr valign=\"top\">");
-        for(StringBuffer buff: colsSB) {
+        for (StringBuffer buff : colsSB) {
             sb.append("<td>");
             sb.append(buff);
             sb.append("</td>");
         }
         sb.append("</tr>");
         sb.append("</table>");
+
     }
 
 
