@@ -1720,9 +1720,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public void makeGallery(Request request, List<Entry> imageEntries, Hashtable props, StringBuffer sb) throws Exception {
         int width = Misc.getProperty(props, ATTR_WIDTH, -1);
         if (width < 0) {
-            width = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
+            width = Misc.getProperty(props, ATTR_IMAGEWIDTH, 200);
         }
-        int     columns = Misc.getProperty(props, ATTR_COLUMNS, 3);
+        int     columns = Misc.getProperty(props, ATTR_COLUMNS, 2);
         boolean random  = Misc.getProperty(props, ATTR_RANDOM, false);
         boolean popup   = Misc.getProperty(props, ATTR_POPUP, true);
         boolean thumbnail   = Misc.getProperty(props, ATTR_THUMBNAIL, true);
