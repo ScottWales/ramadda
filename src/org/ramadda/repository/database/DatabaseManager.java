@@ -135,6 +135,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private static final String DB_MYSQL = "mysql";
 
+    private static final String DB_H2 = "h2";
     /** _more_ */
     private static final String DB_DERBY = "derby";
 
@@ -285,8 +286,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                   PROP_DB_USER.replace("${db}", db));
             String password = (String) getRepository().getProperty(
                                   PROP_DB_PASSWORD.replace("${db}", db));
-            String connectionURL = (String) getRepository().getProperty(
-                                       PROP_DB_URL.replace("${db}", db));
+            String connectionURL = getStorageManager().localizePath((String) getRepository().getProperty(
+                                                                                                          PROP_DB_URL.replace("${db}", db)));
+
+
 
             String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}",
                                                  db);
@@ -1934,6 +1937,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return (db.equals(DB_MYSQL));
     }
 
+    public boolean isDatabaseH2() {
+        return (db.equals(DB_H2));
+    }
+
     /**
      * _more_
      *
@@ -1976,6 +1983,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "clob");
             sql = sql.replace("ramadda.bigclob", "clob");
+            sql = sql.replace("ramadda.bigint", "bigint");
+        } else if (db.equals(DB_H2)) {
+            sql = sql.replace("ramadda.double", "float8");
+            sql = sql.replace("ramadda.datetime", "timestamp");
+            sql = sql.replace("ramadda.clob", "text");
+            sql = sql.replace("ramadda.bigclob", "text");
             sql = sql.replace("ramadda.bigint", "bigint");
         }
 
@@ -2095,7 +2108,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             if (db.equals(DB_POSTGRES)) {
                 return "text";
             }
-
         }
         if (type.equals("double")) {
             if (db.equals(DB_POSTGRES)) {
@@ -2105,7 +2117,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             if (db.equals(DB_MYSQL) || db.equals(DB_DERBY)) {
                 return "double";
             }
-
         }
 
         return type;
@@ -2133,6 +2144,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             return " OFFSET " + skip + " ROWS ";
         } else if (db.equals(DB_POSTGRES)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
+
+        } else if (db.equals(DB_H2)) {
+            return " LIMIT " + max + " OFFSET " + skip + " ";
         }
 
         return "";
@@ -2150,8 +2164,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             return true;
         } else if (db.equals(DB_POSTGRES)) {
             return true;
+        } else if (db.equals(DB_H2)) {
+            return true;
         }
-
         return false;
     }
 
