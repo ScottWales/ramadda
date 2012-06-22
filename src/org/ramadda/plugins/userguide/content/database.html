@@ -6,7 +6,7 @@
 
 <body>
 By default RAMADDA uses a built in Java Derby relational database. 
-RAMADDA also runs using mysql and postgres (and possibly Oracle but has not been tested).
+RAMADDA also runs using MySQL, PostgresSQL, Oracle and H2.
 Derby works pretty well though there are some performance issues with search and doing many deletes.
 If you are planning on really using RAMADDA and foresee a large amount of content stored in the
 repository (by large we don't mean  file size but rather we mean the number of entries in the repository)
@@ -21,15 +21,24 @@ To define the database just uncomment the appropriate  ramadda.db properties in 
 ramadda.db=derby
 #ramadda.db=mysql
 #ramadda.db=postgres
+#ramadda.db=h2
 </pre>
 
 
+And then specify the jdbc url and the login credentials.
 
-And then specify the jdbc url and the login credentials:
+e..g, for MySQL:
 <pre>
 ramadda.db.mysql.url=jdbc:mysql://localhost:3306/repository?zeroDateTimeBehavior=convertToNull
 ramadda.db.mysql.user=the database user
 ramadda.db.mysql.password=the database password
+</pre>
+
+For H2 the default is to store the database in the RAMADDA home directory:
+<pre>
+ramadda.db.h2.url=jdbc:h2:%repositorydir%/h2db
+ramadda.db.h2.user=
+ramadda.db.h2.password=
 </pre>
 
 
