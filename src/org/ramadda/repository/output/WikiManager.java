@@ -164,6 +164,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_TYPE = "type";
 
+    public static final String ATTR_THUMBNAIL = "thumbnail";
+
     /** attribute in import tag */
     public static final String ATTR_SEPARATOR = "separator";
 
@@ -1321,7 +1323,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             int     columns = Misc.getProperty(props, ATTR_COLUMNS, 1);
             boolean random  = Misc.getProperty(props, ATTR_RANDOM, false);
-            boolean popup   = Misc.getProperty(props, ATTR_POPUP, false);
+            boolean popup   = Misc.getProperty(props, ATTR_POPUP, true);
+            boolean thumbnail   = Misc.getProperty(props, ATTR_THUMBNAIL, true);
             if (popup) {
                 addImagePopupJS(request, sb);
             }
@@ -1353,10 +1356,22 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
                 StringBuffer buff = colsSB[colCnt];
                 colCnt++;
-                String url = HtmlUtils.url(
-                                 request.url(repository.URL_ENTRY_GET) + "/"
-                                 + getStorageManager().getFileTail(
-                                     child), ARG_ENTRYID, child.getId());
+                String url = null;
+
+                if(thumbnail) {
+                    List<String> urls = new ArrayList<String>();
+                    getMetadataManager().getThumbnailUrls(request, child, urls);
+                    if (urls.size() > 0) {
+                        url = urls.get(0);
+                    }
+                }
+
+                if(url == null) 
+                    url = HtmlUtils.url(
+                                        request.url(repository.URL_ENTRY_GET) + "/"
+                                        + getStorageManager().getFileTail(
+                                                                          child), ARG_ENTRYID, child.getId());
+
                 String extra = "";
                 if (width > 0) {
                     extra = extra
