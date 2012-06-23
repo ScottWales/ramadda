@@ -222,7 +222,7 @@ function RepositoryMap(mapId, params) {
                             }
         }));
         this.map.addControl(new OpenLayers.Control.ScaleLine());
-        this.map.addControl(new OpenLayers.Control.OverviewMap());
+        //        this.map.addControl(new OpenLayers.Control.OverviewMap());
         this.map.addControl(new OpenLayers.Control.KeyboardDefaults());
         this.map.addControl(new OpenLayers.Control.LayerSwitcher());
 
