@@ -267,7 +267,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** OPeNDAP Output Type */
     public static final OutputType OUTPUT_OPENDAP =
-        new OutputType("OPeNDAP", "data.opendap", OutputType.TYPE_OTHER,
+        new OutputType("OPeNDAP", "data.opendap", OutputType.TYPE_FEEDS,
                        OutputType.SUFFIX_NONE, ICON_OPENDAP, GROUP_DATA);
 
     /** CDL Output Type */
