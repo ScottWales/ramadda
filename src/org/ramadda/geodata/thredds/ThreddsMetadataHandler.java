@@ -416,10 +416,10 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                      shortForm);
 
 
-            if ( !dataOutputHandler.canLoadAsCdm(entry)) {
+            if ( !dataOutputHandler.getCdmManager().canLoadAsCdm(entry)) {
                 return;
             }
-            String path = dataOutputHandler.getPath(entry);
+            String path = dataOutputHandler.getCdmManager().getPath(entry);
             dataset = NetcdfDataset.openDataset(path);
             boolean         haveBounds = false;
             List<Attribute> attrs      = dataset.getGlobalAttributes();

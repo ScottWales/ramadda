@@ -113,15 +113,6 @@ public class CatalogOutputHandler extends OutputHandler {
 
 
 
-
-
-
-
-    /** _more_ */
-    private DataOutputHandler dataOutputHandler;
-
-
-
     /** _more_ */
     public static final String ARG_PATHS = "catalogoutputhandler.paths";
 
@@ -523,6 +514,18 @@ public class CatalogOutputHandler extends OutputHandler {
     }
 
 
+    public CdmManager getCdmManager() throws Exception {
+        return getDataOutputHandler().getCdmManager();
+    }
+
+    public DataOutputHandler getDataOutputHandler() throws Exception {
+        return (DataOutputHandler) getRepository().getOutputHandler(
+                                                                    DataOutputHandler.OUTPUT_OPENDAP.toString());
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -535,25 +538,9 @@ public class CatalogOutputHandler extends OutputHandler {
      */
     private boolean canDataLoad(Request request, Entry entry)
             throws Exception {
-        return getDataOutputHandler().canLoadAsCdm(entry);
+        return getCdmManager().canLoadAsCdm(entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public DataOutputHandler getDataOutputHandler() throws Exception {
-        if (dataOutputHandler == null) {
-            dataOutputHandler =
-                (DataOutputHandler) getRepository().getOutputHandler(
-                    DataOutputHandler.OUTPUT_OPENDAP.toString());
-        }
-        return dataOutputHandler;
-    }
 
 
 
@@ -620,7 +607,7 @@ public class CatalogOutputHandler extends OutputHandler {
             addService(catalogInfo, SERVICE_OPENDAP,getDataOutputHandler().getOpendapHandler().getOpendapPrefix(entry));
             Element opendapDataDataset = dataset;
             cnt++;
-            if (getDataOutputHandler().isAggregation(entry)) {
+            if (getCdmManager().isAggregation(entry)) {
                 opendapDataDataset = XmlUtil.create(catalogInfo.doc,
                         CatalogUtil.TAG_DATASET, opendapDataDataset,
                         new String[] { CatalogUtil.ATTR_NAME,

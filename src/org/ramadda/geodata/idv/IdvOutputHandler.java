@@ -220,9 +220,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      *
      * @throws Exception On badness
      */
-    public OutputHandler getDataOutputHandler() throws Exception {
-        return getRepository().getOutputHandler(
-            DataOutputHandler.OUTPUT_OPENDAP.toString());
+    public CdmManager getCdmManager() throws Exception {
+        return getDataOutputHandler().getCdmManager();
+    }
+
+    public DataOutputHandler getDataOutputHandler() throws Exception {
+        return (DataOutputHandler) getRepository().getOutputHandler(
+                                                                    DataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
     /**
@@ -261,10 +265,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
         if (entry != null) {
-            if ( !((DataOutputHandler) getDataOutputHandler()).canLoadAsGrid(
-                    entry)) {
-                if (((DataOutputHandler) getDataOutputHandler())
-                        .canLoadAsPoint(entry)) {
+            if ( !getCdmManager().canLoadAsGrid(entry)) {
+                if (getCdmManager().canLoadAsPoint(entry)) {
                     links.add(makeLink(request, entry, OUTPUT_IDV_POINT));
                 }
                 return;
@@ -339,12 +341,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      */
     public Result outputGrid(final Request request, Entry entry)
             throws Exception {
-        DataOutputHandler dataOutputHandler =
-            (DataOutputHandler) getDataOutputHandler();
-
-
         //Check the data file path
-        String path   = dataOutputHandler.getPath(request, entry);
+        String path   = getCdmManager().getPath(request, entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load grid");
@@ -354,7 +352,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String action = request.getString(ARG_IDV_ACTION, ACTION_MAKEINITFORM);
 
         //Get the dataset and create the data source
-        GridDataset dataset = dataOutputHandler.getGridDataset(entry, path);
+        GridDataset dataset = getCdmManager().getGridDataset(entry, path);
         DataSourceDescriptor descriptor =
             idvServer.getIdv().getDataManager().getDescriptor("File.Grid");
         DataSource dataSource = new GeoGridDataSource(descriptor, dataset,
@@ -372,7 +370,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 return outputGridImage(request, entry, dataSource);
             }
         } finally {
-            dataOutputHandler.returnGridDataset(path, dataset);
+            getCdmManager().returnGridDataset(path, dataset);
         }
 
     }
@@ -1444,9 +1442,6 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                      DataSource dataSource)
             throws Exception {
 
-        DataOutputHandler dataOutputHandler =
-            (DataOutputHandler) getDataOutputHandler();
-
         String  id      = entry.getId();
         String  product = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
         boolean forIsl  = request.getString(ARG_IDV_TARGET,
@@ -1675,7 +1670,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                         "id", "datasource", "url",
                         request.getAbsoluteUrl(
                             getRepository().URL_ENTRY_SHOW
-                            + dataOutputHandler.getOpendapUrl(entry)))));
+                            + getDataOutputHandler().getOpendapUrl(entry)))));
         } else {
             isl.append(XmlUtil.openTag(ImageGenerator.TAG_DATASOURCE,
                                        XmlUtil.attrs("id", "datasource",
@@ -2165,10 +2160,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
 
-        DataOutputHandler dataOutputHandler =
-            (DataOutputHandler) getDataOutputHandler();
         String action = request.getString(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE);
-        String path   = dataOutputHandler.getPath(entry);
+        String path   = getCdmManager().getPath(entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load point data");
@@ -2180,7 +2173,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         FeatureDatasetPoint dataset =
-            dataOutputHandler.getPointDataset(entry, path);
+            getCdmManager().getPointDataset(entry, path);
         DataSourceDescriptor descriptor =
             idvServer.getIdv().getDataManager().getDescriptor("NetCDF.POINT");
         NetcdfPointDataSource dataSource = new NetcdfPointDataSource(dataset,
@@ -2259,7 +2252,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                             "id", "datasource", "url",
                             request.getAbsoluteUrl(
                                 getRepository().URL_ENTRY_SHOW
-                                + dataOutputHandler.getOpendapUrl(entry)))));
+                                + getDataOutputHandler().getOpendapUrl(entry)))));
             } else {
                 isl.append(XmlUtil.openTag(ImageGenerator.TAG_DATASOURCE,
                                            XmlUtil.attrs("id",
@@ -2328,7 +2321,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                               getStorageManager().getFileInputStream(image),
                               "image/gif");
         } finally {
-            dataOutputHandler.returnPointDataset(path, dataset);
+            getCdmManager().returnPointDataset(path, dataset);
         }
     }
 

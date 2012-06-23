@@ -21,7 +21,9 @@
 package org.ramadda.geodata.idv;
 
 
+
 import org.ramadda.geodata.data.DataOutputHandler;
+import org.ramadda.geodata.data.CdmManager;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
@@ -104,6 +106,16 @@ public class IdvWebstartOutputHandler extends OutputHandler {
         addType(OUTPUT_WEBSTART);
     }
 
+    public CdmManager getCdmManager() throws Exception {
+        return getDataOutputHandler().getCdmManager();
+    }
+
+    public DataOutputHandler getDataOutputHandler() throws Exception {
+        return (DataOutputHandler) getRepository().getOutputHandler(
+                                                                    DataOutputHandler.OUTPUT_OPENDAP.toString());
+    }
+
+
 
     /**
      * _more_
@@ -129,15 +141,10 @@ public class IdvWebstartOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_WEBSTART,
                                suffix));
         } else {
-            DataOutputHandler data =
-                (DataOutputHandler) getRepository().getOutputHandler(
-                    DataOutputHandler.OUTPUT_OPENDAP);
-            if (data != null) {
-                if (data.canLoadAsCdm(entry)) {
-                    String suffix = "/" + entry.getId() + ".jnlp";
-                    links.add(makeLink(request, state.getEntry(),
-                                       OUTPUT_WEBSTART, suffix));
-                }
+            if (getCdmManager().canLoadAsCdm(entry)) {
+                String suffix = "/" + entry.getId() + ".jnlp";
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_WEBSTART, suffix));
             }
 
         }
@@ -243,12 +250,9 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                 getMetadataManager().findMetadata(entry,
                     ContentMetadataHandler.TYPE_ATTACHMENT, true);
 
-            DataOutputHandler dataOutputHandler =
-                (DataOutputHandler) getRepository().getOutputHandler(
-                    DataOutputHandler.OUTPUT_OPENDAP);
-            if ((dataOutputHandler != null) && dataOutputHandler.canLoadAsCdm(entry)) {
+            if (getCdmManager().canLoadAsCdm(entry)) {
                 String embeddedBundle = null;
-                String opendapUrl     = dataOutputHandler.getAbsoluteOpendapUrl(request, entry);
+                String opendapUrl     = getDataOutputHandler().getAbsoluteOpendapUrl(request, entry);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         if (metadata.getAttr1().endsWith(".xidv")) {
