@@ -25,12 +25,12 @@ package org.ramadda.geodata.data;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -161,7 +161,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
-        super.doFinalInitialization(request,  entry);
+        super.doFinalInitialization(request, entry);
     }
 
 
@@ -261,8 +261,9 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 File file = new File(f);
                 if (file.isDirectory()) {
                     PatternFileFilter filter = null;
-                    if(pattern!=null && pattern.length()>0) {
-                        filter =  new PatternFileFilter(StringUtil.wildcardToRegexp(pattern));
+                    if ((pattern != null) && (pattern.length() > 0)) {
+                        filter = new PatternFileFilter(
+                            StringUtil.wildcardToRegexp(pattern));
                     }
                     List<File> childFiles = IOUtil.getFiles(new ArrayList(),
                                                 file, false, filter);
@@ -314,11 +315,9 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                 try {
                                     List<Entry> entries =
                                         (List<Entry>) Misc.newList(entry);
-                                    getEntryManager()
-                                        .addInitialMetadata(
-                                            finalRequest, entries,
-                                            true,
-                                            !harvestFullMetadata);
+                                    getEntryManager().addInitialMetadata(
+                                        finalRequest, entries, true,
+                                        !harvestFullMetadata);
                                 } catch (Exception exc) {
                                     throw new RuntimeException(exc);
                                 }

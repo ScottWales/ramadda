@@ -345,9 +345,6 @@ public class DataOutputHandler extends OutputHandler {
     private TempDir dataCacheDir;
 
 
-    //TODO: When we close a ncfile some thread might be using it
-    //Do we have to actually close it??
-
     /** nc counter */
     Counter ncCounter = new Counter();
 
@@ -382,267 +379,26 @@ public class DataOutputHandler extends OutputHandler {
     /** point close counter */
     Counter pointCloseCounter = new Counter();
 
-    /** nc dataset pool */
-    private ObjectPool<String, NetcdfDataset> ncDatasetPool =
-        new ObjectPool<String, NetcdfDataset>(10) {
-        protected void removeValue(String key, NetcdfDataset dataset) {
-            try {
-                super.removeValue(key, dataset);
-                ncRemoveCounter.incr();
-                dataset.close();
-            } catch (Exception exc) {
-                System.err.println("Error closing:" + key);
-                exc.printStackTrace();
-            }
-        }
-
-        /*
-          public synchronized void put(String key, NetcdfDataset file) {
-            ncPutCounter.incr();
-            super.put(key, file);
-            }*/
-
-        protected NetcdfDataset getFromPool(List<NetcdfDataset> list) {
-            NetcdfDataset dataset = super.getFromPool(list);
-            ncGetCounter.incr();
-            try {
-                dataset.sync();
-
-                return dataset;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-
-
-        protected NetcdfDataset createValue(String path) {
-            try {
-                getStorageManager().dirTouched(nj22Dir, null);
-                NetcdfDataset dataset = NetcdfDataset.openDataset(path);
-                //                NetcdfDataset dataset = NetcdfDataset.openFile(path);
-                ncCreateCounter.incr();
-
-                return dataset;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-    };
-
-
-    /** nc file pool */
-    private ObjectPool<String, NetcdfFile> ncFilePool =
-        new ObjectPool<String, NetcdfFile>(10) {
-        protected void removeValue(String key, NetcdfFile ncFile) {
-            try {
-                super.removeValue(key, ncFile);
-                ncRemoveCounter.incr();
-                ncFile.close();
-            } catch (Exception exc) {
-                System.err.println("Error closing:" + key);
-                exc.printStackTrace();
-            }
-        }
-
-        /*
-        public synchronized void put(String key, NetcdfFile ncFile) {
-            ncPutCounter.incr();
-            super.put(key, ncFile);
-            }*/
-
-        protected NetcdfFile getFromPool(List<NetcdfFile> list) {
-            NetcdfFile ncFile = super.getFromPool(list);
-            ncGetCounter.incr();
-            try {
-                ncFile.sync();
-
-                return ncFile;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-
-        protected NetcdfFile createValue(String path) {
-            try {
-                getStorageManager().dirTouched(nj22Dir, null);
-                //                NetcdfDataset dataset = NetcdfDataset.openDataset(path);
-                long       t1     = System.currentTimeMillis();
-                NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
-                long       t2     = System.currentTimeMillis();
-                System.err.println("NetcdfDataset.openFile: time:"
-                                   + (t2 - t1));
-
-
-
-
-                ncCreateCounter.incr();
-
-                return ncFile;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-    };
-
-    /** grid pool flag */
-    private boolean doGridPool = true;
-
-    /** grid pool */
-    private ObjectPool<String, GridDataset> gridPool = new ObjectPool<String,
-                                                           GridDataset>(10) {
-        protected void removeValue(String key, GridDataset dataset) {
-            try {
-                super.removeValue(key, dataset);
-                gridCloseCounter.incr();
-                dataset.close();
-            } catch (Exception exc) {}
-        }
-
-        protected GridDataset getFromPool(List<GridDataset> list) {
-            GridDataset dataset = super.getFromPool(list);
-            try {
-                dataset.sync();
-
-                return dataset;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-
-        }
-
-
-        protected GridDataset createValue(String path) {
-            try {
-                getStorageManager().dirTouched(nj22Dir, null);
-                gridOpenCounter.incr();
-                long        t1  = System.currentTimeMillis();
-                GridDataset gds = GridDataset.open(path);
-                long        t2  = System.currentTimeMillis();
-                System.err.println("GridDataset.open  time:" + (t2 - t1));
-                if (gds.getGrids().iterator().hasNext()) {
-                    return gds;
-                } else {
-                    gridCloseCounter.incr();
-                    gds.close();
-
-                    return null;
-                }
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-    };
-
+    /** _more_          */
+    private static CdmManager cdmManager;
 
     /**
-     * Create the GridDataset from the file
+     * _more_
      *
-     * @param path file path
-     *
-     * @return  the GridDataset
+     * @return _more_
      */
-    private GridDataset createGrid(String path) {
-        try {
-            getStorageManager().dirTouched(nj22Dir, null);
-            //            gridOpenCounter.incr();
-
-            GridDataset gds = GridDataset.open(path);
-            if (gds.getGrids().iterator().hasNext()) {
-                return gds;
-            } else {
-                //                gridCloseCounter.incr();
-                gds.close();
-
-                return null;
+    public CdmManager getCdmManager() {
+        if (cdmManager == null) {
+            try {
+                getRepository().addRepositoryManager(cdmManager =
+                    new CdmManager(getRepository()));
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
             }
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
         }
+
+        return cdmManager;
     }
-
-
-
-    /** point pool */
-    private ObjectPool<String, FeatureDatasetPoint> pointPool =
-        new ObjectPool<String, FeatureDatasetPoint>(10) {
-        protected void removeValue(String key, FeatureDatasetPoint dataset) {
-            try {
-                super.removeValue(key, dataset);
-                dataset.close();
-            } catch (Exception exc) {}
-        }
-
-        /*
-        protected  FeatureDatasetPoint getFromPool(List<FeatureDatasetPoint> list) {
-            FeatureDatasetPoint dataset = super.getFromPool(list);
-            dataset.sync();
-            return dataset;
-            }*/
-
-        protected FeatureDatasetPoint createValue(String path) {
-            try {
-                Formatter buf = new Formatter();
-                getStorageManager().dirTouched(nj22Dir, null);
-
-                FeatureDatasetPoint pods =
-                    (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                        ucar.nc2.constants.FeatureType.POINT, path, null,
-                        buf);
-                if (pods == null) {  // try as ANY_POINT
-                    pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
-                        .open(ucar.nc2.constants.FeatureType.ANY_POINT, path,
-                              null, buf);
-                }
-
-                return pods;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-
-
-    };
-
-
-    /** trajectory pool */
-    private ObjectPool<String, TrajectoryObsDataset> trajectoryPool =
-        new ObjectPool<String, TrajectoryObsDataset>(10) {
-        protected void removeValue(String key, TrajectoryObsDataset dataset) {
-            try {
-                super.removeValue(key, dataset);
-                dataset.close();
-            } catch (Exception exc) {}
-        }
-
-        /*
-        protected  TrajectoryObsDataset getFromPool(List<TrajectoryObsDataset> list) {
-            TrajectoryObsDataset dataset = super.getFromPool(list);
-            dataset.sync();
-            return dataset;
-            }*/
-
-        protected TrajectoryObsDataset createValue(String path) {
-            try {
-                getStorageManager().dirTouched(nj22Dir, null);
-
-                //                System.err.println("track:" + path);
-                TrajectoryObsDataset dataset =
-                    (TrajectoryObsDataset) TypedDatasetFactory.open(
-                        FeatureType.TRAJECTORY, path, null,
-                        new StringBuilder());
-
-                //                System.err.println("Create trajectoryPool: " + path);
-                //                System.err.println("got it? " + (dataset!=null));
-                return dataset;
-            } catch (Exception exc) {
-                //                System.err.println("oops");
-                throw new RuntimeException(exc);
-            }
-        }
-
-
-    };
-
 
 
 
@@ -669,37 +425,7 @@ public class DataOutputHandler extends OutputHandler {
     public DataOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-
-        //TODO: what other global configuration should be done?
-        nj22Dir = getRepository().getStorageManager().makeTempDir("nj22");
-        nj22Dir.setMaxFiles(500);
-
-        // Apply settings for the NetcdfDataset
-        //        ucar.nc2.dataset.NetcdfDataset.setHttpClient(getRepository().getHttpClient());
-
-
-        // Apply settings for the opendap.dap
-        //        opendap.dap.DConnect2.setHttpClient(getRepository().getHttpClient());
-
-        //Set the temp file and the cache policy
-        ucar.nc2.util.DiskCache.setRootDirectory(nj22Dir.getDir().toString());
-        ucar.nc2.util.DiskCache.setCachePolicy(true);
-        //        ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache(true);
-        ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache(true);
-
-        dataCacheDir =
-            getRepository().getStorageManager().makeTempDir("visaddatacache");
-        dataCacheDir.setMaxFiles(2000);
-
-        NetcdfDataset.disableNetcdfFileCache();
-
-
-        visad.SampledSet.setCacheSizeThreshold(10000);
-        visad.util.ThreadManager.setGlobalMaxThreads(4);
-        visad.data.DataCacheManager.getCacheManager().setCacheDir(
-            dataCacheDir.getDir());
-        visad.data.DataCacheManager.getCacheManager().setMemoryPercent(0.1);
-
+        getCdmManager();
         addType(OUTPUT_OPENDAP);
         addType(OUTPUT_CDL);
         addType(OUTPUT_WCS);
@@ -720,26 +446,7 @@ public class DataOutputHandler extends OutputHandler {
      */
     public void getSystemStats(StringBuffer sb) {
         super.getSystemStats(sb);
-        StringBuffer poolStats = new StringBuffer("<pre>");
-        ncFilePool.getStats(poolStats);
-        ncDatasetPool.getStats(poolStats);
-        poolStats.append("</pre>");
-        sb.append(
-            HtmlUtils.formEntryTop(
-                "Data Cache Size:",
-                "NC File Pool:" + ncFilePool.getSize()
-                + " have ncfile cache:"
-                + (NetcdfDataset.getNetcdfFileCache() != null) + " "
-                + " Count:  Create:" + ncCreateCounter.getCount()
-                + " Remove:" + ncRemoveCounter.getCount() + "<br>" + " Get:"
-                + ncGetCounter.getCount() + " Put:" + ncPutCounter.getCount()
-                + "<br>" + " Ext Count:" + extCounter.getCount()
-                + " Dap Count:" + opendapCounter.getCount() + poolStats
-                + HtmlUtils.br() + "Grid Pool:" + gridPool.getSize()
-                + HtmlUtils.br() + "Point Pool:" + pointPool.getSize()
-                + HtmlUtils.br() + "Trajectory Pool:"
-                + trajectoryPool.getSize() + HtmlUtils.br()));
-
+        getCdmManager().getSystemStats(sb);
     }
 
 
@@ -748,18 +455,8 @@ public class DataOutputHandler extends OutputHandler {
      */
     public void clearCache() {
         super.clearCache();
-        ncFilePool.clear();
-        ncDatasetPool.clear();
-        gridPool.clear();
-        pointPool.clear();
-        trajectoryPool.clear();
-
-        cdmEntries.clear();
-        gridEntries.clear();
-        pointEntries.clear();
-        trajectoryEntries.clear();
+        getCdmManager().clearCache();
     }
-
 
 
     /**
@@ -774,7 +471,7 @@ public class DataOutputHandler extends OutputHandler {
     public void addToEntryNode(Request request, Entry entry, Element node)
             throws Exception {
         super.addToEntryNode(request, entry, node);
-        if ( !canLoadAsCdm(entry)) {
+        if ( !getCdmManager().canLoadAsCdm(entry)) {
             return;
         }
         if ( !getRepository().getAccessManager().canAccessFile(request,
@@ -790,18 +487,6 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * Check to see if an Entry is an aggregation
-     *
-     * @param entry  the Entry
-     *
-     * @return  true if an aggregation
-     */
-    public boolean isAggregation(Entry entry) {
-        return entry.getType().equals(
-            GridAggregationTypeHandler.TYPE_GRIDAGGREGATION);
-    }
-
-    /**
      * Get the Entry links
      *
      * @param request  the request
@@ -815,7 +500,8 @@ public class DataOutputHandler extends OutputHandler {
 
         Entry entry = state.entry;
 
-        if ((state.group != null) && isAggregation(state.group)) {
+        if ((state.group != null)
+                && getCdmManager().isAggregation(state.group)) {
             entry = state.group;
         }
 
@@ -830,7 +516,7 @@ public class DataOutputHandler extends OutputHandler {
         }
 
         long    t1           = System.currentTimeMillis();
-        boolean canLoadAsCdm = canLoadAsCdm(entry);
+        boolean canLoadAsCdm = getCdmManager().canLoadAsCdm(entry);
 
         if ( !canLoadAsCdm) {
             long t2 = System.currentTimeMillis();
@@ -842,12 +528,12 @@ public class DataOutputHandler extends OutputHandler {
             return;
         }
 
-        if (canLoadAsGrid(entry)) {
+        if (getCdmManager().canLoadAsGrid(entry)) {
             addOutputLink(request, entry, links, OUTPUT_GRIDSUBSET_FORM);
             addOutputLink(request, entry, links, OUTPUT_GRIDASPOINT_FORM);
-        } else if (canLoadAsTrajectory(entry)) {
+        } else if (getCdmManager().canLoadAsTrajectory(entry)) {
             addOutputLink(request, entry, links, OUTPUT_TRAJECTORY_MAP);
-        } else if (canLoadAsPoint(entry)) {
+        } else if (getCdmManager().canLoadAsPoint(entry)) {
             addOutputLink(request, entry, links, OUTPUT_POINT_MAP);
             addOutputLink(request, entry, links, OUTPUT_POINT_SUBSET);
         }
@@ -939,338 +625,6 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * Can the given entry be served by the tds
-     *
-     *
-     * @param entry The entry
-     *
-     * @return Can the given entry be served by the tds
-     */
-    public boolean canLoadAsCdm(Entry entry) {
-        if (entry.isType(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
-            return true;
-        }
-
-        if (isGrads(entry)) {
-            return true;
-        }
-
-        if (isAggregation(entry)) {
-            return true;
-        }
-        if ( !entry.isFile()) {
-            return false;
-        }
-        if (excludedByPattern(entry, TYPE_CDM)) {
-            return false;
-        }
-
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
-        for (int i = 0; i < types.length; i++) {
-            if (includedByPattern(entry, types[i])) {
-                return true;
-            }
-        }
-
-        if (entry.getResource().isRemoteFile()) {
-            String path = entry.getResource().getPath();
-            if (path.endsWith(".nc")) {
-                return true;
-            }
-        }
-
-        Boolean b = (Boolean) cdmEntries.get(entry.getId());
-        if (b == null) {
-            boolean ok = false;
-            if (canLoadEntry(entry)) {
-                try {
-                    String path = entry.getFile().toString();
-                    //Exclude zip files becase canOpen tries to unzip them (?)
-                    if ( !(path.endsWith(".zip"))) {
-                        ok = NetcdfDataset.canOpen(path);
-                    }
-                } catch (Exception ignoreThis) {
-                    //                    System.err.println("   error:" + ignoreThis);
-                    //                    System.err.println("error:" + ignoreThis);
-                }
-            }
-            b = new Boolean(ok);
-            cdmEntries.put(entry.getId(), b);
-        }
-
-        return b.booleanValue();
-    }
-
-    /**
-     *  Is this a GrADS entry
-     *
-     * @param e the Entry
-     *
-     * @return true if GrADS type
-     */
-    private boolean isGrads(Entry e) {
-        return e.getType().equals(TYPE_GRADS);
-    }
-
-    /**
-     * Can the Entry be loaded a point data?
-     *
-     * @param entry  the Entry
-     *
-     * @return true if can load as point
-     */
-    public boolean canLoadAsPoint(Entry entry) {
-        if (excludedByPattern(entry, TYPE_POINT)) {
-            return false;
-        }
-        if (includedByPattern(entry, TYPE_POINT)) {
-            return true;
-        }
-        if ( !canLoadAsCdm(entry)) {
-            return false;
-        }
-
-        Boolean b = (Boolean) pointEntries.get(entry.getId());
-        if (b == null) {
-            boolean ok = false;
-            if ( !canLoadEntry(entry)) {
-                ok = false;
-            } else {
-                try {
-                    ok = pointPool.containsOrCreate(getPath(entry));
-                } catch (Exception ignore) {}
-            }
-            pointEntries.put(entry.getId(), b = new Boolean(ok));
-        }
-
-        return b.booleanValue();
-    }
-
-
-    /**
-     * Can the Entry be loaded as a trajectory?
-     *
-     * @param entry  the Entry
-     *
-     * @return  true if trajectory supported
-     */
-    public boolean canLoadAsTrajectory(Entry entry) {
-        if (excludedByPattern(entry, TYPE_TRAJECTORY)) {
-            return false;
-        }
-        if (includedByPattern(entry, TYPE_TRAJECTORY)) {
-            return true;
-        }
-
-        if ( !canLoadAsCdm(entry)) {
-            return false;
-        }
-
-        Boolean b = (Boolean) trajectoryEntries.get(entry.getId());
-        if (b == null) {
-            boolean ok = false;
-            if (canLoadEntry(entry)) {
-                try {
-                    ok = trajectoryPool.containsOrCreate(getPath(entry));
-                } catch (Exception ignoreThis) {}
-            }
-            trajectoryEntries.put(entry.getId(), b = new Boolean(ok));
-        }
-
-        return b.booleanValue();
-    }
-
-
-
-    /**
-     * See if an Entry is excluded by pattern for a type
-     *
-     * @param entry   the Entry
-     * @param type    the type to check
-     *
-     * @return true if excluded
-     */
-    private boolean excludedByPattern(Entry entry, String type) {
-        return hasSuffixForType(entry, type, true);
-    }
-
-    /**
-     * See if an Entry is included by pattern for a type
-     *
-     * @param entry   the Entry
-     * @param type    the type to check
-     *
-     * @return true if included
-     */
-    private boolean includedByPattern(Entry entry, String type) {
-        return hasSuffixForType(entry, type, false);
-    }
-
-    /**
-     * See if the Entry has a suffix for this type
-     *
-     * @param entry  the Entry
-     * @param type   the type
-     * @param forNot true if not for that type
-     *
-     * @return  true if has suffix
-     */
-    private boolean hasSuffixForType(Entry entry, String type,
-                                     boolean forNot) {
-        String url = entry.getResource().getPath();
-        if (url == null) {
-            return false;
-        }
-
-        return hasSuffixForType(url, type, forNot);
-    }
-
-    /**
-     * See if the URL has a suffix for this type
-     *
-     * @param url    the URL
-     * @param type   the type
-     * @param forNot true if not for that type
-     *
-     * @return  true if has suffix
-     */
-    private boolean hasSuffixForType(String url, String type,
-                                     boolean forNot) {
-        if (suffixSet == null) {
-            HashSet<String> tmpSuffixSet = new HashSet<String>();
-
-            Hashtable<String, List<Pattern>> tmpPatterns =
-                new Hashtable<String, List<Pattern>>();
-            Hashtable<String, List<Pattern>> tmpNotPatterns =
-                new Hashtable<String, List<Pattern>>();
-
-
-
-
-            String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY,
-                               TYPE_POINT };
-            for (int i = 0; i < types.length; i++) {
-                List toks = StringUtil.split(
-                                getRepository().getProperty(
-                                    "ramadda.data." + types[i] + ".suffixes",
-                                    ""), ",", true, true);
-                for (String tok : (List<String>) toks) {
-                    if ((tok.length() == 0) || tok.equals("!")) {
-                        continue;
-                    }
-                    String key = types[i] + "." + tok;
-                    tmpSuffixSet.add(key);
-                }
-            }
-
-
-
-            for (int i = 0; i < types.length; i++) {
-                tmpPatterns.put(types[i], new ArrayList<Pattern>());
-                tmpNotPatterns.put(types[i], new ArrayList<Pattern>());
-                List patterns = StringUtil.split(
-                                    getRepository().getProperty(
-                                        "ramadda.data." + types[i]
-                                        + ".patterns", ""), ",", true, true);
-                for (String pattern : (List<String>) patterns) {
-                    if ((pattern.length() == 0) || pattern.equals("!")) {
-                        continue;
-                    }
-                    Hashtable<String, List<Pattern>> tmp;
-                    if (pattern.startsWith("!")) {
-                        tmp     = tmpNotPatterns;
-                        pattern = pattern.substring(1);
-                    } else {
-                        tmp = tmpPatterns;
-                    }
-                    tmp.get(types[i]).add(Pattern.compile(pattern));
-                }
-            }
-
-            patterns    = tmpPatterns;
-            notPatterns = tmpNotPatterns;
-            suffixSet   = tmpSuffixSet;
-
-        }
-
-        url = url.toLowerCase();
-
-
-
-        //First check the patterns
-        List<Pattern> patternList = (forNot
-                                     ? notPatterns.get(type)
-                                     : patterns.get(type));
-        for (Pattern pattern : patternList) {
-            if (pattern.matcher(url).find()) {
-                return true;
-            }
-        }
-
-
-        String ext    = IOUtil.getFileExtension(url);
-        String key    = type + "." + ext;
-        String notKey = type + ".!" + ext;
-        if (forNot) {
-            if (suffixSet.contains(notKey)) {
-                return true;
-            }
-        } else {
-            if (suffixSet.contains(key)) {
-                return true;
-            }
-        }
-
-
-        return false;
-    }
-
-    /**
-     * Check if this Entry can load as a grid
-     *
-     * @param entry  the Entry
-     *
-     * @return true if grid is supported
-     */
-    public boolean canLoadAsGrid(Entry entry) {
-        if (isAggregation(entry)) {
-            return true;
-        }
-        if (isGrads(entry)) {
-            return true;
-        }
-        if (excludedByPattern(entry, TYPE_GRID)) {
-            return false;
-        }
-        if (includedByPattern(entry, TYPE_GRID)) {
-            return true;
-        }
-        if ( !canLoadAsCdm(entry)) {
-            return false;
-        }
-
-
-        Boolean b = (Boolean) gridEntries.get(entry.getId());
-        if (b == null) {
-            boolean ok = false;
-            if ( !canLoadEntry(entry)) {
-                ok = false;
-            } else {
-                try {
-                    if (doGridPool) {
-                        ok = gridPool.containsOrCreate(getPath(entry));
-                    } else {
-                        ok = (createGrid(getPath(entry)) != null);
-                    }
-                } catch (Exception ignoreThis) {}
-            }
-            b = new Boolean(ok);
-            gridEntries.put(entry.getId(), b);
-        }
-
-        return b.booleanValue();
-    }
 
 
     /**
@@ -1359,7 +713,7 @@ public class DataOutputHandler extends OutputHandler {
         }), "NCML"));
 
 
-        NetcdfDataset dataset = ncDatasetPool.get(path);
+        NetcdfDataset dataset = getCdmManager().createNetcdfDataset(path);
         if (dataset == null) {
             sb.append("Could not open dataset");
         } else {
@@ -1369,107 +723,14 @@ public class DataOutputHandler extends OutputHandler {
             cdl = cdl.replace("file:" + path, dodspath).replace(path,
                               dodspath);
             sb.append("<pre>" + cdl + "</pre>");
-            ncDatasetPool.put(path, dataset);
+            getCdmManager().returnNetcdfDataset(path, dataset);
         }
 
         return makeLinksResult(request, "CDL", sb, new State(entry));
     }
 
-    /**
-     * Get the NetcdfDataset for the Entry
-     *
-     * @param entry  the Entry
-     * @param path   the path
-     *
-     * @return  the NetcdfDataset
-     */
-    public NetcdfDataset getNetcdfDataset(Entry entry, String path) {
-        if ( !canLoadAsCdm(entry)) {
-            return null;
-        }
-        extCounter.incr();
-
-        return ncDatasetPool.get(path);
-    }
-
-    /**
-     * Return the NetcdfDataset
-     *
-     * @param path  the path
-     * @param ncd   the NetcdfDataset
-     */
-    public void returnNetcdfDataset(String path, NetcdfDataset ncd) {
-        extCounter.decr();
-        ncDatasetPool.put(path, ncd);
-    }
 
 
-    /**
-     * Get the Entry as a GridDataset
-     *
-     * @param entry  the Entry
-     * @param path   the path
-     *
-     * @return  the GridDataset
-     *
-     * @throws Exception problems making GridDataset
-     */
-    public GridDataset getGridDataset(Entry entry, String path)
-            throws Exception {
-        if ( !canLoadAsGrid(entry)) {
-            return null;
-        }
-        //Don't cache the aggregations
-        //Not now...
-        //        if (isAggregation(entry)) {
-        //            return GridDataset.open(path);
-        //        }
-        if (doGridPool) {
-            return gridPool.get(path);
-        } else {
-            return createGrid(path);
-        }
-    }
-
-    /**
-     * Return the GridDataset back to the pool
-     *
-     * @param path  the path
-     * @param ncd   The GridDataset
-     */
-    public void returnGridDataset(String path, GridDataset ncd) {
-        if (doGridPool) {
-            gridPool.put(path, ncd);
-        }
-    }
-
-
-
-    /**
-     * Get the Entry as a point dataset
-     *
-     * @param entry  the Entry
-     * @param path   the path
-     *
-     * @return  the point dataset
-     */
-    public FeatureDatasetPoint getPointDataset(Entry entry, String path) {
-        if ( !canLoadAsPoint(entry)) {
-            return null;
-        }
-
-        return pointPool.get(path);
-    }
-
-    /**
-     * Return the point dataset to the pool
-     *
-     * @param path  the path
-     * @param ncd   the point dataset
-     */
-    public void returnPointDataset(String path, FeatureDatasetPoint ncd) {
-        pointPool.put(path, ncd);
-    }
 
     /**
      * Output the Entry as a WCS result
@@ -1905,7 +1166,7 @@ public class DataOutputHandler extends OutputHandler {
         StringBuffer sb     = new StringBuffer();
         String       path   = getPath(request, entry);
 
-        GridDataset  gds    = getGridDataset(entry, path);
+        GridDataset  gds    = getCdmManager().getGridDataset(entry, path);
         OutputType   output = request.getOutput();
         try {
             if (output.equals(OUTPUT_GRIDASPOINT)) {
@@ -1918,8 +1179,7 @@ public class DataOutputHandler extends OutputHandler {
 
             return outputGridAsPointForm(request, entry, gds, sb);
         } finally {
-            returnGridDataset(path, gds);
-            //gridPool.put(path, gds);
+            getCdmManager().returnGridDataset(path, gds);
         }
     }
 
@@ -2017,15 +1277,14 @@ public class DataOutputHandler extends OutputHandler {
                 File           f      =
                     getRepository().getStorageManager().getTmpFile(request,
                         "subset.nc");
-                GridDataset gds = getGridDataset(entry, path);
+                GridDataset gds = getCdmManager().getGridDataset(entry, path);
                 writer.makeFile(f.toString(), gds, varNames, llr,
                                 ((dates[0] == null)
                                  ? null
                                  : new ucar.nc2.units.DateRange(dates[0],
                                  dates[1])), includeLatLon, hStride, zStride,
                                              timeStride);
-                returnGridDataset(path, gds);
-                //                gridPool.put(path, gds);
+                getCdmManager().returnGridDataset(path, gds);
 
                 if (doingPublish(request)) {
                     TypeHandler typeHandler =
@@ -2063,7 +1322,7 @@ public class DataOutputHandler extends OutputHandler {
                                           request.getString(ARG_HSTRIDE,
                                               "1"), HtmlUtils.SIZE_3)));
 
-        GridDataset  dataset   = getGridDataset(entry, path);
+        GridDataset  dataset   = getCdmManager().getGridDataset(entry, path);
         Date[]       dateRange = null;
         List<Date>   dates     = getGridDates(dataset);
         StringBuffer varSB     = getVariableForm(dataset, false);
@@ -2129,9 +1388,8 @@ public class DataOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.submit(msg("Subset Grid")));
         sb.append(HtmlUtils.formClose());
-        returnGridDataset(path, dataset);
+        getCdmManager().returnGridDataset(path, dataset);
 
-        //        gridPool.put(path, dataset);
         return makeLinksResult(request, msg("Grid Subset"), sb,
                                new State(entry));
     }
@@ -2218,8 +1476,9 @@ public class DataOutputHandler extends OutputHandler {
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           false);
-        String               path           = getPath(request, entry);
-        FeatureDatasetPoint  pod            = pointPool.get(path);
+        String              path = getPath(request, entry);
+        FeatureDatasetPoint pod  = getCdmManager().getPointDataset(entry,
+                                      path);
 
         StringBuffer         sb             = new StringBuffer();
         List                 vars           = pod.getDataVariables();
@@ -2344,7 +1603,7 @@ public class DataOutputHandler extends OutputHandler {
         }
         map.center();
         sb.append(map.getHtml());
-        pointPool.put(path, pod);
+        getCdmManager().returnPointDataset(path, pod);
 
         return new Result(msg("Point Data Map"), sb);
     }
@@ -2422,7 +1681,7 @@ public class DataOutputHandler extends OutputHandler {
     public Result outputTrajectoryMap(Request request, Entry entry)
             throws Exception {
         String               path = getPath(request, entry);
-        TrajectoryObsDataset tod  = trajectoryPool.get(path);
+        TrajectoryObsDataset tod  = getCdmManager().getTrajectoryDataset(path);
         StringBuffer         sb   = new StringBuffer();
 
         MapInfo map = getRepository().getMapManager().createMap(request, 800,
@@ -2433,22 +1692,27 @@ public class DataOutputHandler extends OutputHandler {
             List                  allVariables = tod.getDataVariables();
             TrajectoryObsDatatype todt         =
                 (TrajectoryObsDatatype) trajectories.get(i);
-            float[] lats = toFloatArray(todt.getLatitude(null));
-            float[] lons = toFloatArray(todt.getLongitude(null));
-            for (int ptIdx = 0; ptIdx < lats.length; ptIdx++) {
+            float[] lats    = toFloatArray(todt.getLatitude(null));
+            float[] lons    = toFloatArray(todt.getLongitude(null));
+            float   lastLat = 0,
+                    lastLon = 0;
+            int     stride  = lats.length / 500;
+            for (int ptIdx = 0; ptIdx < lats.length; ptIdx += stride) {
+                float lat = lats[ptIdx];
+                float lon = lons[ptIdx];
                 if (ptIdx > 0) {
-                    if (ptIdx == lats.length - 1) {
-                        map.addMarker("", lats[ptIdx], lons[ptIdx], null,
+                    if (ptIdx + stride >= lats.length) {
+                        map.addMarker("", lat, lon, null,
                                       "End time:" + todt.getEndDate());
                     }
                     //#FF0000
-                    map.addLine("", lats[ptIdx - 1], lons[ptIdx - 1],
-                                lats[ptIdx], lons[ptIdx]);
+                    map.addLine("", lastLat, lastLon, lat, lon);
                 } else {
-                    map.addMarker("", lats[ptIdx], lons[ptIdx], null,
+                    map.addMarker("", lat, lon, null,
                                   "Start time:" + todt.getEndDate());
                 }
-
+                lastLat = lat;
+                lastLon = lon;
             }
             StructureData    structure = todt.getData(0);
             VariableSimpleIF theVar    = null;
@@ -2467,9 +1731,9 @@ public class DataOutputHandler extends OutputHandler {
             }
         }
 
-        map.center();
+        map.centerOn(entry);
         sb.append(map.getHtml());
-        trajectoryPool.put(path, tod);
+        getCdmManager().returnTrajectoryDataset(path, tod);
 
         return new Result(msg("Trajectory Map"), sb);
 
@@ -2537,18 +1801,6 @@ public class DataOutputHandler extends OutputHandler {
 
 
 
-
-    /**
-     * Create a LatLonPoint string
-     *
-     * @param lat  the latitude
-     * @param lon  the longitude
-     *
-     * @return  the string
-     */
-    public static String llp(double lat, double lon) {
-        return "new LatLonPoint(" + lat + "," + lon + ")";
-    }
 
     /**
      * Make the Point Subset form
@@ -2653,8 +1905,9 @@ public class DataOutputHandler extends OutputHandler {
      */
     private void outputPointCsv(Request request, Entry entry, PrintWriter pw)
             throws Exception {
-        String               path         = getPath(request, entry);
-        FeatureDatasetPoint  pod          = pointPool.get(path);
+        String              path = getPath(request, entry);
+        FeatureDatasetPoint pod  = getCdmManager().getPointDataset(entry,
+                                      path);;
         List                 vars         = pod.getDataVariables();
         PointFeatureIterator dataIterator = getPointIterator(pod);
         int                  cnt          = 0;
@@ -2709,7 +1962,7 @@ public class DataOutputHandler extends OutputHandler {
             }
             pw.print("\n");
         }
-        pointPool.put(path, pod);
+        getCdmManager().returnPointDataset(path, pod);
 
     }
 
@@ -2726,8 +1979,9 @@ public class DataOutputHandler extends OutputHandler {
      */
     private void outputPointKml(Request request, Entry entry, PrintWriter pw)
             throws Exception {
-        String               path         = getPath(request, entry);
-        FeatureDatasetPoint  pod          = pointPool.get(path);
+        String              path = getPath(request, entry);
+        FeatureDatasetPoint pod  = getCdmManager().getPointDataset(entry,
+                                      path);
         List                 vars         = pod.getDataVariables();
         PointFeatureIterator dataIterator = getPointIterator(pod);
 
@@ -2768,7 +2022,7 @@ public class DataOutputHandler extends OutputHandler {
                               info.toString(), lat, lon, alt, null);
         }
         pw.print(XmlUtil.toString(root));
-        pointPool.put(path, pod);
+        getCdmManager().returnPointDataset(path, pod);
     }
 
 
@@ -2808,7 +2062,7 @@ public class DataOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        if (isAggregation(group)) {
+        if (getCdmManager().isAggregation(group)) {
             return outputEntry(request, outputType, group);
         }
 
@@ -2923,7 +2177,7 @@ public class DataOutputHandler extends OutputHandler {
                     || ext.equals(".dds")) {
                 location = IOUtil.stripExtension(location);
             }
-        } else if (isAggregation(entry)) {
+        } else if (getCdmManager().isAggregation(entry)) {
             GridAggregationTypeHandler gridAggregation =
                 (GridAggregationTypeHandler) entry.getTypeHandler();
             long[] timestamp = { 0 };
@@ -3019,7 +2273,7 @@ public class DataOutputHandler extends OutputHandler {
 
         //Get the ncFile from the pool
 
-        NetcdfFile ncFile = ncFilePool.get(location);
+        NetcdfFile ncFile = getCdmManager().createNetcdfFile(location);
         opendapCounter.incr();
 
         //Bridge the ramadda servlet to the opendap servlet
@@ -3051,7 +2305,7 @@ public class DataOutputHandler extends OutputHandler {
         Result result = new Result("");
         result.setNeedToWrite(false);
         opendapCounter.decr();
-        ncFilePool.put(location, ncFile);
+        getCdmManager().returnNetcdfFile(location, ncFile);
 
         return result;
     }
@@ -3119,35 +2373,6 @@ public class DataOutputHandler extends OutputHandler {
          */
         public String getServerVersion() {
             return "opendap/3.7";
-        }
-    }
-
-
-    /**
-     * Main for testing
-     *
-     * @param args  arguments for testing
-     *
-     * @throws Exception  problems
-     */
-    public static void main(String[] args) throws Exception {
-        Repository repository = new Repository(new String[] {}, 8080);
-        repository.initProperties(null);
-
-        DataOutputHandler dop = new DataOutputHandler(repository, "test");
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
-        for (String f : args) {
-            System.err.println("file:" + f);
-            for (String type : types) {
-                boolean ok      = dop.hasSuffixForType(f, type, false);
-                boolean exclude = dop.hasSuffixForType(f, type, true);
-                if ( !ok && !exclude) {
-                    System.err.println("\t" + type + ": " + "unknown");
-                } else {
-                    System.err.println("\t" + type + ": " + "ok? " + ok
-                                       + " exclude:" + exclude);
-                }
-            }
         }
     }
 

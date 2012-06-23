@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,6 +28,7 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -34,7 +36,6 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -78,17 +79,17 @@ import java.util.regex.*;
  */
 public class GridAggregationHarvester extends PatternHarvester {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_AGGREGATIONTYPE = "aggregationtype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_AGGREGATIONCOORDINATE =
         "aggregationcoordinate";
 
-    /** _more_          */
+    /** _more_ */
     private String aggregationType = NcmlUtil.AGG_JOINEXISTING;
 
-    /** _more_          */
+    /** _more_ */
     private String aggregationCoordinate = "time";
 
     /**
@@ -195,8 +196,8 @@ public class GridAggregationHarvester extends PatternHarvester {
                     ATTR_AGGREGATIONCOORDINATE, aggregationCoordinate,
                     HtmlUtils.SIZE_60)));
         sb.append(HtmlUtils.formEntry(msgLabel("Aggregation type"),
-                                     HtmlUtils.select(ATTR_AGGREGATIONTYPE,
-                                         types, aggregationType)));
+                                      HtmlUtils.select(ATTR_AGGREGATIONTYPE,
+                                          types, aggregationType)));
     }
 
 

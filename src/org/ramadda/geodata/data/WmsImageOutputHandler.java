@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.geodata.data;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -31,7 +33,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -133,6 +134,7 @@ public class WmsImageOutputHandler extends OutputHandler {
         for (Entry entry : entries) {
             if (isLatLonImage(entry)) {
                 ok = true;
+
                 break;
             }
         }
@@ -169,9 +171,11 @@ public class WmsImageOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_WMS_CAPABILITIES)) {
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
+
             return outputCapabilities(request, entry, entries);
         }
         StringBuffer sb = new StringBuffer();
+
         return makeLinksResult(request, msg("WMS"), sb, new State(entry));
     }
 
@@ -199,6 +203,7 @@ public class WmsImageOutputHandler extends OutputHandler {
             return outputMap(request, group);
         }
         StringBuffer sb = new StringBuffer();
+
         return outputCapabilities(request, group, entries);
     }
 
@@ -225,6 +230,7 @@ public class WmsImageOutputHandler extends OutputHandler {
         //Pull out the first layer id (which is the entry id)
         List toks = StringUtil.split(layers, ",", true, true);
         request.put(ARG_ENTRYID, (String) toks.get(0));
+
         return getEntryManager().processEntryGet(request);
     }
 
@@ -293,6 +299,7 @@ public class WmsImageOutputHandler extends OutputHandler {
             layers.append("\n");
         }
         wms = wms.replace("${layers}", layers.toString());
+
         return new Result("", new StringBuffer(wms), "text/xml");
     }
 

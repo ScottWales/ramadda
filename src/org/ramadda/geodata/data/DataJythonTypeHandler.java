@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -33,6 +34,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
@@ -42,8 +45,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.data.DataSource;
 
 import ucar.unidata.data.grid.GeoGridDataSource;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -125,19 +126,21 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
         DataOutputHandler dataOutputHandler = getDataOutputHandler();
         DataProcessInfo   dataProcessInfo   = (DataProcessInfo) processInfo;
 
-        String            path = dataOutputHandler.getPath(theEntry);
+        String path = dataOutputHandler.getCdmManager().getPath(theEntry);
         if (path != null) {
             //Try it as grid first
-            GridDataset gds = dataOutputHandler.getGridDataset(theEntry,
-                                  path);
+            GridDataset gds =
+                dataOutputHandler.getCdmManager().getGridDataset(theEntry,
+                    path);
             NetcdfDataset     ncDataset  = null;
             GeoGridDataSource dataSource = null;
             interp.set(info.id + "_griddataset", gds);
             processInfo.variables.add(info.id + "_griddataset");
             if (gds == null) {
                 //Else try it as a ncdataset
-                ncDataset = dataOutputHandler.getNetcdfDataset(theEntry,
-                        path);
+                ncDataset =
+                    dataOutputHandler.getCdmManager().getNetcdfDataset(
+                        theEntry, path);
             } else {
                 dataSource = new GeoGridDataSource(gds);
                 dataProcessInfo.dataSources.add(dataSource);
@@ -175,12 +178,12 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
             dataSource.doRemove();
         }
         for (int i = 0; i < dataProcessInfo.ncPaths.size(); i++) {
-            dataOutputHandler.returnNetcdfDataset(
+            dataOutputHandler.getCdmManager().returnNetcdfDataset(
                 dataProcessInfo.ncPaths.get(i),
                 dataProcessInfo.ncData.get(i));
         }
         for (int i = 0; i < dataProcessInfo.gridPaths.size(); i++) {
-            dataOutputHandler.returnGridDataset(
+            dataOutputHandler.getCdmManager().returnGridDataset(
                 dataProcessInfo.gridPaths.get(i),
                 dataProcessInfo.gridData.get(i));
         }

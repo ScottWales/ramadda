@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -43,6 +44,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -99,7 +101,6 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -378,6 +379,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         if (tableName.startsWith("pt_")) {
             return false;
         }
+
         return super.shouldExportTable(tableName);
     }
 
@@ -442,6 +444,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
      */
     protected String getTableName(String id) {
         id = id.replace("-", "_");
+
         return "pt_" + id;
     }
 
@@ -493,6 +496,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             try {
                 deleteFromDatabase(getTableName(entry));
             } catch (Exception ignore) {}
+
             throw exc;
         } finally {
             getDatabaseManager().closeConnection(connection);
@@ -538,6 +542,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             try {
                 deleteFromDatabase(getTableName(newEntry));
             } catch (Exception ignore) {}
+
             throw exc;
         } finally {
             getDatabaseManager().closeConnection(connection);
@@ -561,7 +566,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                   Connection connection)
             throws Exception {
 
-        String                  tableName = getTableName(entry);
+        String                  tableName      = getTableName(entry);
         List<PointDataMetadata> metadata = new ArrayList<PointDataMetadata>();
         List<PointDataMetadata> stringMetadata =
             new ArrayList<PointDataMetadata>();
@@ -726,6 +731,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         if (v == Double.NEGATIVE_INFINITY) {
             return -Double.MAX_VALUE;
         }
+
         return v;
     }
 
@@ -741,6 +747,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         if (v == MISSING) {
             return Double.NaN;
         }
+
         return v;
     }
 
@@ -775,22 +782,22 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                   SqlUtil.getQuestionMarks(ARRAY.length));
 
 
-        double north   = 0,
-               south   = 0,
-               east    = 0,
-               west    = 0;
+        double            north      = 0,
+                          south      = 0,
+                          east       = 0,
+                          west       = 0;
 
-        long   minTime = (newEntry
-                          ? Long.MAX_VALUE
-                          : entry.getStartDate());
-        long   maxTime = (newEntry
-                          ? Long.MIN_VALUE
-                          : entry.getEndDate());
+        long              minTime    = (newEntry
+                                        ? Long.MAX_VALUE
+                                        : entry.getStartDate());
+        long              maxTime    = (newEntry
+                                        ? Long.MIN_VALUE
+                                        : entry.getEndDate());
         PreparedStatement insertStmt =
             connection.prepareStatement(insertString);
-        Object[] values   = new Object[metadata.size()];
-        int      cnt      = 0;
-        int      batchCnt = 0;
+        Object[]          values   = new Object[metadata.size()];
+        int               cnt      = 0;
+        int               batchCnt = 0;
         GregorianCalendar calendar =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         boolean   didone     = false;
@@ -1016,7 +1023,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             sb.append(HtmlUtils.hidden(ARG_POINT_VIEW, VIEW_UPLOAD));
 
             sb.append(HtmlUtils.fileInput(ARG_POINT_UPLOAD_FILE,
-                                         HtmlUtils.SIZE_50));
+                                          HtmlUtils.SIZE_50));
             sb.append(HtmlUtils.br());
             sb.append(HtmlUtils.submit("Add new data"));
             sb.append(request.uploadForm(getRepository().URL_ENTRY_SHOW));
@@ -1053,7 +1060,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                      + request.getUrlArgs(null,
                                          getSet(OP_LT));
                 sb.append(HtmlUtils.img(redirectUrl,
-                                       "Image is being processed..."));
+                                        "Image is being processed..."));
             } else {
                 /*
                 //  for amcharts flash
@@ -1091,6 +1098,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
                 sb.append(html);
             }
+
             return new Result("Search Results", sb);
         }
 
@@ -1111,6 +1119,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                  + HtmlUtils.urlEncode(baseName) + urlSuffix
                                  + "?"
                                  + request.getUrlArgs(null, getSet(OP_LT));
+
             return new Result(redirectUrl);
         }
 
@@ -1234,7 +1243,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         }
 
 
-        StringBuffer cols = null;
+        StringBuffer            cols         = null;
         List<PointDataMetadata> queryColumns =
             new ArrayList<PointDataMetadata>();
 
@@ -1275,6 +1284,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         for (PointDataMetadata pdm : metadata) {
             if (pdm.getColumnName().equals(sortByArg)) {
                 sortByCol = sortByArg;
+
                 break;
             }
         }
@@ -1301,12 +1311,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         while ((results = iter.getNext()) != null) {
             if (skipHowMany > 0) {
                 skipHowMany--;
+
                 continue;
             }
             if (stride > 1) {
                 skipHowMany = stride - 1;
             }
-            int col = 1;
+            int       col       = 1;
             PointData pointData =
                 new PointData(results.getInt(col++),
                               getDatabaseManager().getDate(results, col++),
@@ -1353,6 +1364,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                    || format.equals(FORMAT_CSVHEADER)
                    || format.equals(FORMAT_XLS)) {
             ensureMinimalParameters(columnsToUse, metadata);
+
             return makeSearchResultsCsv(request, entry, columnsToUse,
                                         pointDataList, format);
         } else if (format.equals(FORMAT_CHART)) {
@@ -1374,6 +1386,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                         pointDataList);
         } else {
             ensureMinimalParameters(columnsToUse, metadata);
+
             return makeSearchResultsNetcdf(request, entry, columnsToUse,
                                            pointDataList);
         }
@@ -1391,6 +1404,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
     private HashSet<String> getSet(String s) {
         HashSet h = new HashSet();
         h.add(s);
+
         return h;
     }
 
@@ -1550,7 +1564,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append(header(msg("Point Data Search Results")));
         sb.append(cntSB);
         sb.append(HtmlUtils.makeShowHideBlock(msg("Search Again"),
-                                             searchForm.toString(), false));
+                searchForm.toString(), false));
 
 
 
@@ -1582,6 +1596,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         if (list.size() == 0) {
             sb.append(msg("No results found"));
+
             return new Result("Point Search Results", sb);
         }
         sb.append(
@@ -1593,9 +1608,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append("data.addColumn('string', 'Location');\n");
         sb.append("data.addColumn('date', 'Date');\n");
 
-        int    baseCnt   = 2;
+        int     baseCnt        = 2;
 
-        String entityCol = null;
+        String  entityCol      = null;
         boolean useTimeForName = request.get(ARG_POINT_CHART_USETIMEFORNAME,
                                              false);
         String           dateFormat = "yyyy/MM/dd HH:mm:ss";
@@ -1611,11 +1626,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                         || pdmName.equals("region") || pdmName.equals("id")
                         || pdmName.equals("idn")) {
                     entityCol = pdm.getColumnName();
+
                     continue;
                 }
             }
             if (pdmName.indexOf("name") >= 0) {
                 entityCol = pdm.getColumnName();
+
                 break;
             }
         }
@@ -1705,6 +1722,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append("</script>\n");
         sb.append(
             "<div id=\"chart_div\" style=\"width: 800px; height: 500px;\"></div>\n");
+
         return new Result("Point Search Results", sb);
     }
 
@@ -1801,6 +1819,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         if (list.size() == 0) {
             sb.append(msg("No results found"));
+
             return new Result("Point Search Results", sb);
         }
 
@@ -1836,7 +1855,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     + pdm.formatUnit())));
         }
         sb.append(HtmlUtils.row(header.toString(),
-                               HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "center")));
+                                HtmlUtils.attr(HtmlUtils.ATTR_ALIGN,
+                                    "center")));
 
 
 
@@ -1854,10 +1874,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 }
             }
             sb.append(HtmlUtils.row(row.toString(),
-                                   HtmlUtils.attr(HtmlUtils.ATTR_ALIGN,
-                                       "right")));
+                                    HtmlUtils.attr(HtmlUtils.ATTR_ALIGN,
+                                        "right")));
         }
         sb.append("</table>");
+
         return new Result("Point Search Results", sb);
     }
 
@@ -1885,20 +1906,21 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         sb.append(header(msg("Point Data Search Results")));
         if (list.size() == 0) {
             sb.append(msg("No results found"));
+
             return new Result("Point Search Results", sb);
         }
 
-        TimeSeriesCollection dummy  = new TimeSeriesCollection();
+        TimeSeriesCollection            dummy     = new TimeSeriesCollection();
         JFreeChart chart = createChart(request, entry, dummy);
-        XYPlot               xyPlot = (XYPlot) chart.getPlot();
+        XYPlot                          xyPlot    = (XYPlot) chart.getPlot();
 
         Hashtable<String, MyTimeSeries> seriesMap = new Hashtable<String,
                                                         MyTimeSeries>();
         List<MyTimeSeries> allSeries = new ArrayList<MyTimeSeries>();
-        int     paramCount = 0;
-        int     colorCount = 0;
-        boolean axisLeft   = true;
-        Hashtable<String, List<ValueAxis>> axisMap = new Hashtable<String,
+        int                                paramCount = 0;
+        int                                colorCount = 0;
+        boolean                            axisLeft   = true;
+        Hashtable<String, List<ValueAxis>> axisMap    = new Hashtable<String,
                                                          List<ValueAxis>>();
         Hashtable<String, double[]> rangeMap = new Hashtable<String,
                                                    double[]>();
@@ -1988,7 +2010,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         }
 
 
-        long t2 = System.currentTimeMillis();
+        long          t2       = System.currentTimeMillis();
 
         BufferedImage newImage =
             chart.createBufferedImage(request.get(ARG_POINT_IMAGE_WIDTH,
@@ -2001,6 +2023,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         ImageUtils.writeImageToFile(newImage, file);
         InputStream is     = getStorageManager().getFileInputStream(file);
         Result      result = new Result("", is, "image/png");
+
         return result;
 
     }
@@ -2164,6 +2187,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                         List<PointData> list, String format)
             throws Exception {
         StringBuffer sb = getCsv(columnsToUse, list, format);
+
         return new Result("", sb, "text/csv");
     }
 
@@ -2188,6 +2212,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             List<PointData> list)
             throws Exception {
         StringBuffer sb = getXml(columnsToUse, list);
+
         return new Result("", sb, "text/csv");
     }
 
@@ -2208,6 +2233,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             List<PointData> list)
             throws Exception {
         StringBuffer sb = getCsv(columnsToUse, list, FORMAT_TIMESERIES_DATA);
+
         return new Result("", sb, "text/csv");
     }
 
@@ -2256,7 +2282,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                 List<PointData> list, String format)
             throws Exception {
         boolean addMetadata = format.equals(FORMAT_CSVIDV);
-        boolean addHeader = format.equals(FORMAT_CSVHEADER)
+        boolean addHeader   = format.equals(FORMAT_CSVHEADER)
                             || format.equals(FORMAT_TIMESERIES_DATA);
         boolean          xls        = format.equals(FORMAT_XLS);
 
@@ -2331,6 +2357,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             }
             sb.append("\n");
         }
+
         return sb;
     }
 
@@ -2426,6 +2453,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             }
             sb.append("\n");
         }
+
         return sb;
     }
 
@@ -2448,8 +2476,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(getHeader(request, entry));
-        String icon = iconUrl("/icons/pointdata.gif");
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        String  icon = iconUrl("/icons/pointdata.gif");
+        MapInfo map  = getRepository().getMapManager().createMap(request,
                           request.get(ARG_WIDTH, 800),
                           request.get(ARG_HEIGHT, 500), false);
         int cnt = 0;
@@ -2470,6 +2498,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         }
         map.center();
         sb.append(map.getHtml());
+
         return new Result("Point Search Results", sb);
     }
 
@@ -2502,6 +2531,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                        "application/x-netcdf");
         result.addHttpHeader(HtmlUtils.HTTP_CONTENT_LENGTH,
                              "" + file.length());
+
         return result;
     }
 
@@ -2522,11 +2552,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         boolean canEdit = getAccessManager().canDoAction(request, entry,
                               Permission.ACTION_EDIT);
 
-        List   headerLinks = new ArrayList();
-        String view = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
+        List    headerLinks = new ArrayList();
+        String  view = request.getString(ARG_POINT_VIEW, VIEW_SEARCHFORM);
 
 
-        boolean doSearch = request.exists(ARG_POINT_SEARCH)
+        boolean doSearch    = request.exists(ARG_POINT_SEARCH)
                            || request.exists(ARG_POINT_FORMAT);
 
         if ( !doSearch && view.equals(VIEW_SEARCHFORM)) {
@@ -2576,6 +2606,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     getRepository().URL_ENTRY_SHOW, entry, ARG_POINT_VIEW,
                     VIEW_DEFAULT), msg("Show default")));
         String header = StringUtil.join("&nbsp;|&nbsp;", headerLinks);
+
         return HtmlUtils.center(header);
     }
 
@@ -2623,6 +2654,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             sb.append(entry.getDescription());
             createSearchForm(sb, request, entry);
         }
+
         return new Result("Point Data", sb);
     }
 
@@ -2673,8 +2705,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             throws Exception {
 
 
-        String tableName = getTableName(entry);
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
+        String  tableName = getTableName(entry);
+        boolean canEdit   = getAccessManager().canDoAction(request, entry,
                               Permission.ACTION_EDIT);
 
         List<PointDataMetadata> metadata = getMetadata(getTableName(entry));
@@ -2701,15 +2733,19 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                                 Tables.POINTDATAMETADATA
                                                     .COL_VARTYPE }, new String[] {
                                                         pdm.varType });
+
                     break;
                 }
             }
         }
         sb.append("<table>");
-        sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.b(msg("Short Name")),
-                                             HtmlUtils.b(msg("Long Name")),
-                                             HtmlUtils.b(msg("Unit Name")),
-                                             HtmlUtils.b(msg("Type")))));
+        sb.append(
+            HtmlUtils.row(
+                HtmlUtils.cols(
+                    HtmlUtils.b(msg("Short Name")),
+                    HtmlUtils.b(msg("Long Name")),
+                    HtmlUtils.b(msg("Unit Name")),
+                    HtmlUtils.b(msg("Type")))));
         for (PointDataMetadata pdm : metadata) {
             String type = pdm.varType;
             if (canEdit && pdm.isString()) {
@@ -2721,8 +2757,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                             HtmlUtils.title(msg("Change type")));
 
             }
-            sb.append(HtmlUtils.row(HtmlUtils.cols(pdm.shortName, pdm.longName,
-                    pdm.unit, type)));
+            sb.append(HtmlUtils.row(HtmlUtils.cols(pdm.shortName,
+                    pdm.longName, pdm.unit, type)));
         }
         sb.append("</table>");
     }
@@ -2744,8 +2780,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         String                  tableName = getTableName(entry);
         List<PointDataMetadata> metadata  = getMetadata(getTableName(entry));
         Document                doc       = XmlUtil.makeDocument();
-        Element                 root      =
-            doc.createElement("pointmetadata");
+        Element                 root      = doc.createElement("pointmetadata");
         StringBuffer            xml       = new StringBuffer();
         for (PointDataMetadata pdm : metadata) {
             String  type    = pdm.varType;
@@ -2758,6 +2793,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             XmlUtil.create(doc, "unit", colNode, pdm.unit, null);
             XmlUtil.create(doc, "type", colNode, pdm.varType, null);
         }
+
         return new Result("", new StringBuffer(XmlUtil.toString(root)),
                           "text/xml");
     }
@@ -2798,7 +2834,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         basicSB.append(HtmlUtils.formTable());
         basicSB.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                       OutputHandler.OUTPUT_HTML));
+                                        OutputHandler.OUTPUT_HTML));
         basicSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 
         basicSB.append(
@@ -2840,8 +2876,9 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
         String max = HtmlUtils.input(ARG_MAX,
-                                    request.getString(ARG_MAX, "1000"),
-                                    HtmlUtils.SIZE_5 + HtmlUtils.id(ARG_MAX));
+                                     request.getString(ARG_MAX, "1000"),
+                                     HtmlUtils.SIZE_5
+                                     + HtmlUtils.id(ARG_MAX));
         List formats = Misc.toList(new Object[] {
             new TwoFacedObject("Html", FORMAT_HTML),
             new TwoFacedObject("Interactive Chart", FORMAT_CHART),
@@ -2870,19 +2907,19 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     pdm.getColumnName()));
         }
 
-        int          cnt = Misc.getProperty(getProperties(entry), PROP_CNT,
-                                            0);
+        int          cnt = Misc.getProperty(getProperties(entry), PROP_CNT, 0);
 
         StringBuffer outputSB = new StringBuffer();
         outputSB.append(HtmlUtils.formTable());
         String sortBy = HtmlUtils.select(ARG_POINT_SORTBY, sortByList,
-                                        request.getString(ARG_POINT_SORTBY,
-                                            ""));
+                                         request.getString(ARG_POINT_SORTBY,
+                                             ""));
 
 
-        outputSB.append(HtmlUtils.formEntry(msgLabel("Format"),
-                                           HtmlUtils.select(ARG_POINT_FORMAT,
-                                               formats, format)));
+        outputSB.append(
+            HtmlUtils.formEntry(
+                msgLabel("Format"),
+                HtmlUtils.select(ARG_POINT_FORMAT, formats, format)));
 
 
         String totalLabel = HtmlUtils.jsLink(
@@ -2898,8 +2935,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
         outputSB.append(HtmlUtils.formEntry(msgLabel("Max"),
-                                           max + HtmlUtils.space(1) + "("
-                                           + totalLabel + ")"));
+                                            max + HtmlUtils.space(1) + "("
+                                            + totalLabel + ")"));
         outputSB.append(
             HtmlUtils.script(
                 "function clearPointCount() {obj=util.getDomObject('"
@@ -2946,11 +2983,15 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     HtmlUtils.SIZE_60)));
 
 
-        advOutputSB.append(HtmlUtils.formEntry(msgLabel("Interactive Chart"),
-                HtmlUtils.checkbox(ARG_POINT_CHART_USETIMEFORNAME, "true",
-                                  request.get(ARG_POINT_CHART_USETIMEFORNAME,
-                                      false)) + HtmlUtils.space(1)
-                                          + msg("Use time as name")));
+        advOutputSB.append(
+            HtmlUtils.formEntry(
+                msgLabel("Interactive Chart"),
+                HtmlUtils.checkbox(
+                    ARG_POINT_CHART_USETIMEFORNAME, "true",
+                    request.get(
+                        ARG_POINT_CHART_USETIMEFORNAME,
+                        false)) + HtmlUtils.space(1)
+                                + msg("Use time as name")));
 
         advOutputSB.append(HtmlUtils.formTableClose());
 
@@ -2994,15 +3035,15 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 }
                 String field =
                     HtmlUtils.select(ARG_POINT_FIELD_VALUE + argSuffix,
-                                    values,
-                                    request.getString(ARG_POINT_FIELD_VALUE
-                                        + argSuffix, ""));
+                                     values,
+                                     request.getString(ARG_POINT_FIELD_VALUE
+                                         + argSuffix, ""));
                 extra.append(HtmlUtils.formEntry(label, field));
             } else if (pdm.isString()) {
                 String field =
                     HtmlUtils.input(ARG_POINT_FIELD_VALUE + argSuffix,
-                                   request.getString(ARG_POINT_FIELD_VALUE
-                                       + argSuffix, ""), HtmlUtils.SIZE_20);
+                                    request.getString(ARG_POINT_FIELD_VALUE
+                                        + argSuffix, ""), HtmlUtils.SIZE_20);
                 String cbx = HtmlUtils.checkbox(ARG_POINT_FIELD_EXACT
                                  + argSuffix, "true",
                                      request.get(ARG_POINT_FIELD_EXACT
@@ -3012,12 +3053,12 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             } else {
                 String op =
                     HtmlUtils.select(ARG_POINT_FIELD_OP + argSuffix, ops,
-                                    request.getString(ARG_POINT_FIELD_OP
-                                        + argSuffix, ""));
+                                     request.getString(ARG_POINT_FIELD_OP
+                                         + argSuffix, ""));
                 String field =
                     HtmlUtils.input(ARG_POINT_FIELD_VALUE + argSuffix,
-                                   request.getString(ARG_POINT_FIELD_VALUE
-                                       + argSuffix, ""), HtmlUtils.SIZE_10);
+                                    request.getString(ARG_POINT_FIELD_VALUE
+                                        + argSuffix, ""), HtmlUtils.SIZE_10);
                 extra.append(HtmlUtils.formEntry(label,
                         op + " " + field + suffix));
             }
@@ -3028,8 +3069,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         StringBuffer params = new StringBuffer();
         params.append("<ul>");
         params.append(HtmlUtils.checkbox(ARG_POINT_PARAM_ALL, "true",
-                                        request.get(ARG_POINT_PARAM_ALL,
-                                            false)));
+                                         request.get(ARG_POINT_PARAM_ALL,
+                                             false)));
         params.append(HtmlUtils.space(1));
         params.append(msg("All"));
         params.append(HtmlUtils.br());
@@ -3043,20 +3084,20 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (pdm.isBasic()) {
                 //                continue;
             }
-            String  value   = "" + pdm.getColumnNumber();
+            String  value    = "" + pdm.getColumnNumber();
 
-            boolean checked = ((list.size() == 0)
-                               ? pdm.isBasic()
-                               : list.contains(value));
-            String  cbxId   = "cbx" + (cbxCnt++);
-            String cbxExtra = HtmlUtils.id(cbxId)
+            boolean checked  = ((list.size() == 0)
+                                ? pdm.isBasic()
+                                : list.contains(value));
+            String  cbxId    = "cbx" + (cbxCnt++);
+            String  cbxExtra = HtmlUtils.id(cbxId)
                               + HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
                                   HtmlUtils.call("checkboxClicked",
                                       HtmlUtils.comma("event",
                                           HtmlUtils.squote(ARG_POINT_PARAM),
                                           HtmlUtils.squote(cbxId))));
             params.append(HtmlUtils.checkbox(ARG_POINT_PARAM, value, checked,
-                                            cbxExtra));
+                                             cbxExtra));
 
 
 
@@ -3093,13 +3134,13 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                                              outputSB.toString(), false));
         */
         sb.append(HtmlUtils.makeShowHideBlock(msg("Advanced Search"),
-                                             extra.toString(), false));
+                extra.toString(), false));
 
         sb.append(HtmlUtils.makeShowHideBlock(msg("Parameters"),
-                                             params.toString(), false));
+                params.toString(), false));
 
         sb.append(HtmlUtils.makeShowHideBlock(msg("Settings"),
-                                             advOutputSB.toString(), false));
+                advOutputSB.toString(), false));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit(msg("Search"), ARG_POINT_SEARCH));
         sb.append(HtmlUtils.formClose());
@@ -3175,6 +3216,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 metadataCache.put(tableName, metadata);
             }
         }
+
         return metadata;
     }
 
@@ -3262,8 +3304,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         if (file.toString().toLowerCase().endsWith(".csv")) {
             TextPointDataSource dataSource =
                 new TextPointDataSource("dummy.csv");
-            String contents = getStorageManager().readSystemResource(file);
-            FieldImpl field = dataSource.makeObs(contents, ",", null, null,
+            String    contents = getStorageManager().readSystemResource(file);
+            FieldImpl field    = dataSource.makeObs(contents, ",", null, null,
                                   null, false, false);
             file = getStorageManager().getTmpFile(null, "test.nc");
             PointObFactory.writeToNetcdf(file, field);
@@ -3302,6 +3344,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                             + "_" + metadata.getId() + ".ncml");
                     IOUtil.writeBytes(ncmlFile, ncml.getBytes());
                     file = new File(ncmlFile.toString());
+
                     break;
                 }
             }
@@ -3317,6 +3360,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 ucar.nc2.constants.FeatureType.ANY_POINT, file.toString(),
                 null, buf);
         }
+
         return pods;
     }
 
@@ -3421,6 +3465,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             } else if (varType.equals(TYPE_DATE)) {
                 return "ramadda.datetime";
             }
+
             return "varchar(1000)";
         }
 
@@ -3472,6 +3517,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -3490,6 +3536,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     return pdm;
                 }
             }
+
             return null;
         }
 
@@ -3523,6 +3570,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
          */
         public String varName() {
             String n = shortName.replace(" ", "_");
+
             return n;
         }
 
@@ -3536,6 +3584,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if ((unit == null) || (unit.length() == 0)) {
                 return "";
             }
+
             return "[" + unit + "]";
 
         }
@@ -3549,6 +3598,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if ((unit == null) || (unit.length() == 0)) {
                 return false;
             }
+
             return true;
         }
 
@@ -3761,6 +3811,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             if (col.equals(COL_HOUR)) {
                 return new Double(hour);
             }
+
             return values.get(col);
         }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.monitor.LdmAction;
 
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -34,7 +36,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -114,11 +115,12 @@ public class LdmOutputHandler extends OutputHandler {
             throws Exception {
 
         //Are we configured to do the LDM
-        if (getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT, "").length()
-                == 0) {
+        if (getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT,
+                                        "").length() == 0) {
             return;
         }
-        if (getRepository().getProperty(LdmAction.PROP_LDM_QUEUE, "").length() == 0) {
+        if (getRepository().getProperty(LdmAction.PROP_LDM_QUEUE,
+                                        "").length() == 0) {
             return;
         }
 
@@ -135,6 +137,7 @@ public class LdmOutputHandler extends OutputHandler {
             for (Entry entry : state.getAllEntries()) {
                 if (entry.getResource().isFile()) {
                     anyFiles = true;
+
                     break;
                 }
             }
@@ -225,7 +228,7 @@ public class LdmOutputHandler extends OutputHandler {
                 formUrl = request.url(getRepository().URL_ENTRY_GETENTRIES);
                 sb.append(HtmlUtils.form(formUrl));
                 sb.append(HtmlUtils.hidden(ARG_ENTRYIDS,
-                                          StringUtil.join(",", ids)));
+                                           StringUtil.join(",", ids)));
             } else {
                 formUrl = request.url(getRepository().URL_ENTRY_SHOW);
                 sb.append(HtmlUtils.form(formUrl));
@@ -235,7 +238,7 @@ public class LdmOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.formTable());
 
             if (fileEntries.size() == 1) {
-                File f = fileEntries.get(0).getFile();
+                File   f        = fileEntries.get(0).getFile();
                 String fileTail =
                     getStorageManager().getFileTail(fileEntries.get(0));
                 String size = " (" + f.length() + " bytes)";
@@ -246,24 +249,26 @@ public class LdmOutputHandler extends OutputHandler {
                     size += entry.getFile().length();
                 }
                 sb.append(HtmlUtils.formEntry("Files:",
-                                             fileEntries.size()
-                                             + " files. Total size:" + size));
+                        fileEntries.size() + " files. Total size:" + size));
             }
 
 
-            sb.append(HtmlUtils.formEntry("Feed:",
-                                         HtmlUtils.select(LdmAction.PROP_LDM_FEED,
-                                             Misc.toList(LdmAction.LDM_FEED_TYPES),
-                                             feed)));
+            sb.append(
+                HtmlUtils.formEntry(
+                    "Feed:",
+                    HtmlUtils.select(
+                        LdmAction.PROP_LDM_FEED,
+                        Misc.toList(LdmAction.LDM_FEED_TYPES), feed)));
             String tooltip =
                 "macros: ${fromday}  ${frommonth} ${fromyear} ${frommonthname}  <br>"
                 + "${today}  ${tomonth} ${toyear} ${tomonthname} <br> "
                 + "${filename}  ${fileextension}";
-            sb.append(HtmlUtils.formEntry("Product ID:",
-                                         HtmlUtils.input(LdmAction.PROP_LDM_PRODUCTID,
-                                             productId,
-                                             HtmlUtils.SIZE_60
-                                             + HtmlUtils.title(tooltip))));
+            sb.append(
+                HtmlUtils.formEntry(
+                    "Product ID:",
+                    HtmlUtils.input(
+                        LdmAction.PROP_LDM_PRODUCTID, productId,
+                        HtmlUtils.SIZE_60 + HtmlUtils.title(tooltip))));
 
             sb.append(HtmlUtils.formTableClose());
             if (fileEntries.size() > 1) {
@@ -272,9 +277,10 @@ public class LdmOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.submit(msg("Insert file into LDM")));
             }
         } else {
-            String queue = getRepository().getProperty(LdmAction.PROP_LDM_QUEUE, "");
-            String pqinsert = getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT,
-                                  "");
+            String queue =
+                getRepository().getProperty(LdmAction.PROP_LDM_QUEUE, "");
+            String pqinsert =
+                getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT, "");
             for (Entry entry : fileEntries) {
                 String id =
                     getRepository().getEntryManager().replaceMacros(entry,

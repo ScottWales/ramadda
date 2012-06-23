@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -180,15 +181,17 @@ public class LasOutputHandler extends OutputHandler {
                     continue;
                 }
 
-                if (dataOutputHandler.canLoadAsGrid(child)) {
+                if (dataOutputHandler.getCdmManager().canLoadAsGrid(child)) {
                     links.add(makeLink(request, state.group, OUTPUT_LAS_XML));
+
                     break;
                 }
             }
         } else if (state.entry != null) {
             if ( !state.entry.getType().equals(
                     OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
-                if (dataOutputHandler.canLoadAsGrid(state.entry)) {
+                if (dataOutputHandler.getCdmManager().canLoadAsGrid(
+                        state.entry)) {
                     links.add(makeLink(request, state.entry, OUTPUT_LAS_XML));
                 }
             }
@@ -210,6 +213,7 @@ public class LasOutputHandler extends OutputHandler {
         s = s.replace(":", "_");
         s = s.replace("=", "_");
         s = s.replace("=", "_");
+
         return s;
     }
 
@@ -251,6 +255,7 @@ public class LasOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return outputLas(request, entries);
     }
 
@@ -282,7 +287,7 @@ public class LasOutputHandler extends OutputHandler {
 
         //Loop on the entries
         for (Entry entry : entries) {
-            if ( !dataOutputHandler.canLoadAsGrid(entry)) {
+            if ( !dataOutputHandler.getCdmManager().canLoadAsGrid(entry)) {
                 //not a grid
                 continue;
             }
@@ -311,9 +316,10 @@ public class LasOutputHandler extends OutputHandler {
             Element variablesNode = XmlUtil.create(TAG_VARIABLES, entryNode);
 
             //Get the netcdf dataset from the dataoutputhandler
-            String path = dataOutputHandler.getPath(entry);
-            NetcdfDataset dataset = dataOutputHandler.getNetcdfDataset(entry,
-                                        path);
+            String path = dataOutputHandler.getCdmManager().getPath(entry);
+            NetcdfDataset dataset =
+                dataOutputHandler.getCdmManager().getNetcdfDataset(entry,
+                    path);
             try {
                 //TODO: determine which variables are the actual data variables
                 //and add in the axis information
@@ -330,13 +336,14 @@ public class LasOutputHandler extends OutputHandler {
                         else {
                             // System.err.println("unknown axis:" + axisType + " for var:" + var.getName());
                         }
+
                         continue;
                     }
 
 
                     //<variables>     <airt name="Air Temperature" units="DEG C">
-                    String varName = var.getShortName();
-                    ucar.nc2.Attribute att =
+                    String             varName = var.getShortName();
+                    ucar.nc2.Attribute att     =
                         var.findAttribute(NCATTR_STANDARD_NAME);
                     if (att != null) {
                         varName = att.getStringValue();
@@ -347,7 +354,8 @@ public class LasOutputHandler extends OutputHandler {
                             var.getUnitsString() });
                 }
             } finally {
-                dataOutputHandler.returnNetcdfDataset(path, dataset);
+                dataOutputHandler.getCdmManager().returnNetcdfDataset(path,
+                        dataset);
             }
         }
 
@@ -355,6 +363,7 @@ public class LasOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root));
+
         return new Result("dif", sb, "text/xml");
     }
 
