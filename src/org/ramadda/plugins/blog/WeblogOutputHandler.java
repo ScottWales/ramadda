@@ -157,7 +157,7 @@ public class WeblogOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                    + "/blog/blogstyle.css"));
-        if (canAdd) {
+        if (canAdd && !request.get(ARG_EMBEDDED,false)) {
             sb.append(HtmlUtils
                 .href(HtmlUtils
                     .url(request
