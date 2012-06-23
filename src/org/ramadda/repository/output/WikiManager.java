@@ -1165,7 +1165,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append("#" + slideId + " { width: " + width
                           + "px; height: " + (height + 30) + "}\n");
                 sb.append(".slides_image {max-height: " + maxImageHeight
-                          + "px; overflow-x: none; overflow-y: auto;}\n");
+                          + "px; overflow-x: none; overflow-y: none;}\n");
 
                 int    border      = Misc.getProperty(props, "border", 1);
                 String borderColor = Misc.getProperty(props, "bordercolor",
