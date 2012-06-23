@@ -345,6 +345,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_LINKS = "links";
 
+    public static final String WIKI_PROP_LIST = "list";
+
     /** wiki import */
     public static final String WIKI_PROP_ENTRYID = "entryid";
 
@@ -420,10 +422,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_GROUP + "Information", WIKI_PROP_INFORMATION,
         WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_DATE_FROM,
         WIKI_PROP_DATE_TO, WIKI_PROP_HTML, WIKI_PROP_GROUP + "Layout",
-        prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
+        prop(WIKI_PROP_LINKS,
+             attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
+                   "")),
+        WIKI_PROP_LIST,
         prop(WIKI_PROP_TABS, ATTRS_LAYOUT),
+        WIKI_PROP_TREE,
         prop(WIKI_PROP_ACCORDIAN, ATTRS_LAYOUT), WIKI_PROP_GRID,
-        WIKI_PROP_TREE, WIKI_PROP_TABLE, WIKI_PROP_GROUP + "Earth",
+        WIKI_PROP_TABLE, 
+        prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
+        WIKI_PROP_GROUP + "Earth",
         prop(WIKI_PROP_MAP,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
                    "false")),
@@ -443,9 +451,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_SLIDESHOW,
              ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
         WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc",
-        prop(WIKI_PROP_LINKS,
-             attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
-                   "")),
         WIKI_PROP_COMMENTS, WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS,
         WIKI_PROP_FIELD, WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU,
         WIKI_PROP_ENTRYID
@@ -1395,7 +1400,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             blockContent = sb.toString();
             blockTitle   = Misc.getProperty(props, ATTR_TITLE, msg("Links"))
                          + link;
-        } else if (include.equals(WIKI_PROP_LINKS)) {
+        } else if (include.equals(WIKI_PROP_LINKS) || include.equals(WIKI_PROP_LIST)) {
+            boolean isList = include.equals(WIKI_PROP_LIST);
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
@@ -1404,12 +1410,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
-            String separator = Misc.getProperty(props, ATTR_SEPARATOR,
-                                   "&nbsp;|&nbsp;");
+            String separator = (isList?"":Misc.getProperty(props, ATTR_SEPARATOR,
+                                                           ""));
             String       cssClass = Misc.getProperty(props, ATTR_CLASS, "");
             String       style = Misc.getProperty(props, ATTR_STYLE, "style");
-            String       tagOpen  = Misc.getProperty(props, ATTR_TAGOPEN, "");
-            String       tagClose = Misc.getProperty(props, ATTR_TAGCLOSE, "");
+            String       tagOpen  = (isList?"<li>": Misc.getProperty(props, ATTR_TAGOPEN, "<li>"));
+            String       tagClose = (isList?"":Misc.getProperty(props, ATTR_TAGCLOSE, ""));
 
             List<String> links    = new ArrayList<String>();
             for (Entry child : children) {
