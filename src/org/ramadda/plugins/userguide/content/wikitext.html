@@ -205,22 +205,26 @@ other groups of entries with:
                type="entries of a specific type" level="1 or 2" 
                associations="true|false" 
                entries="entryid1,entryid2,entryid3.." 
-               except="entryid1,entryid2,entryid3.."  
-               images="true" count="number of entries to use"}}}]
+               exclude="entryid1,entryid2,entryid3.."  
+               first="entryid1,entryid2,entryid3.."  
+               sort="name|date"  sortorder="up|down"
+               images="true" count="number of entries to use" }}}]
 </ul>
 <ul>
 <ul>
-<li>If <i>folders</i> is set then only show folder like entries.
-<li>If <i>files</i> is set then only show non folders.
-<li>If <i>type</i> is set then only show entries of  that type.
-<li>The attribute <i>level</i> can be set to "1" (the default) or "2". 
+<li> If <i>folders</i> is set then only show folder like entries.
+<li> If <i>files</i> is set then only show non folders.
+<li> If <i>type</i> is set then only show entries of  that type.
+<li> The attribute <i>level</i> can be set to "1" (the default) or "2". 
 Level 1 refers to the immediate children
 entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).
-<li>If <i> associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
+<li> If <i>associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
 and typed links between arbitrary entries.
-<li>If <i>entries</i> is set to a list of comma separated entry ids, then only those entrys are included.
-<li>Exclude any entries in the <i>except</i> comma separated list of entry ids.
-<li>If <i>images</i> is set to true then only entries that are image files are included
+<li> If <i>entries</i> is set to a list of comma separated entry ids, then only those entrys are included.
+<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
+<li> Place any entries specified by <i>first</i> at the beginning of the list.
+<li> Sort entries by name or date with <i>sort</i>
+<li> If <i>images</i> is set to true then only entries that are image files are included
 </ul>
 </ul>
 

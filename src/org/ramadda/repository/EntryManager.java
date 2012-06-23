@@ -6783,6 +6783,31 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+    public List<Entry> sortEntriesOnName(List<Entry> entries,
+                                         final boolean descending) {
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Entry e1 = (Entry) o1;
+                Entry e2 = (Entry) o2;
+                int result = e1.getName().compareToIgnoreCase(e2.getName());
+                if(descending) {
+                    if(result >= 1) return -1;
+                    else if (result<=-1) return 1;
+                    return 0;
+                }
+                return result;
+            }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+        Object[] array = entries.toArray();
+        Arrays.sort(array, comp);
+        return (List<Entry>) Misc.toList(array);
+    }
+
+
     /**
      * _more_
      *

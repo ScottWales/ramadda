@@ -125,6 +125,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** exclude attribute */
     public static final String ATTR_EXCLUDE = "exclude";
 
+    /** _more_          */
+    public static final String ATTR_FIRST = "first";
+
+    /** _more_          */
+    public static final String ATTR_SORT = "sort";
+
+    /** _more_          */
+    public static final String ATTR_SORT_ORDER = "sortorder";
+
+    /** _more_          */
+    public static final String SORT_DATE = "date";
+
+    /** _more_          */
+    public static final String SORT_NAME = "name";
+
     /** the message attribute */
     public static final String ATTR_MESSAGE = "message";
 
@@ -1704,6 +1719,40 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             children = okEntries;
         }
 
+
+        String sort = Misc.getProperty(props, ATTR_SORT, (String) null);
+        if (sort != null) {
+            boolean ascending = Misc.getProperty(props, ATTR_SORT_ORDER,
+                                    "up").equals("up");
+            if (sort.equals(SORT_DATE)) {
+                children = getEntryManager().sortEntriesOnDate(children,
+                        !ascending);
+            } else if (sort.equals(SORT_NAME)) {
+                children = getEntryManager().sortEntriesOnName(children,
+                        !ascending);
+            } else {
+                throw new IllegalArgumentException("Unknown sort:" + sort);
+            }
+        }
+
+        String firstEntries = Misc.getProperty(props, ATTR_FIRST,
+                                  (String) null);
+
+        if (firstEntries != null) {
+            Hashtable<String, Entry> map = new Hashtable<String, Entry>();
+            for (Entry child : children) {
+                map.put(child.getId(), child);
+            }
+            List<String> ids = StringUtil.split(firstEntries, ",");
+            for (int i = ids.size() - 1; i >= 0; i--) {
+                Entry firstEntry = map.get(ids.get(i));
+                if (firstEntry == null) {
+                    continue;
+                }
+                children.remove(firstEntry);
+                children.add(0, firstEntry);
+            }
+        }
 
 
         int count = Misc.getProperty(props, ATTR_COUNT, -1);
