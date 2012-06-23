@@ -2450,6 +2450,18 @@ public class HtmlUtils {
                                         VALUE_TOP)));
     }
 
+
+    public static String leftRightBottom(String left, String right, String attrs) {
+        return tag(TAG_TABLE,
+                   attrs(ATTR_WIDTH, "100%", ATTR_CELLPADDING, "0",
+                         ATTR_CELLSPACING,
+                         "0") + attrs, row(col(left)
+                         + col(right,
+                               attr(ATTR_ALIGN,
+                                    VALUE_RIGHT)), attr(ATTR_VALIGN,
+                                        VALUE_BOTTOM)));
+    }
+
     /**
      * _more_
      *

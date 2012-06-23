@@ -173,7 +173,7 @@ public class WeblogOutputHandler extends OutputHandler {
             if ( !entry.getType().equals("blogentry")) {
                 continue;
             }
-            String blogEntry = getBlogEntry(request, entry);
+            String blogEntry = getBlogEntry(request, entry, false);
             blogEntries.append(HtmlUtils.div(blogEntry,
                                             HtmlUtils.cssClass("blogentry")));
         }
@@ -206,20 +206,26 @@ public class WeblogOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public String getBlogEntry(Request request, Entry entry)
+    public String getBlogEntry(Request request, Entry entry, boolean single)
             throws Exception {
         StringBuffer blogEntry = new StringBuffer();
-        EntryLink link = getEntryManager().getAjaxLink(request, entry,
-                             entry.getName(), null, false);
-        String subject = HtmlUtils.div(link.getLink(),
+        String entryUrl =  request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        String subject;
+        if(single) {
+            subject = HtmlUtils.div(entry.getLabel(),
+                          HtmlUtils.cssClass("blogsubject"));
+        } else {
+            subject =  HtmlUtils.div(HtmlUtils.href(entryUrl, entry.getLabel(), HtmlUtils.cssClass("blogsubject")),
                                       HtmlUtils.cssClass("blogsubject"));
+        }
         String postingInfo =
             HtmlUtils.div(
                 "by" + " " + entry.getUser().getName() + " @ "
                 + formatDate(
                     new Date(entry.getStartDate())), HtmlUtils.cssClass(
                     "blogdate"));
-        String header = HtmlUtils.leftRight(subject, postingInfo);
+
+        String header = HtmlUtils.leftRightBottom(subject, postingInfo,"");
         blogEntry.append(HtmlUtils.div(header,
                                       HtmlUtils.cssClass("blogheader")));
         String desc = entry.getDescription();
@@ -229,11 +235,15 @@ public class WeblogOutputHandler extends OutputHandler {
                 desc = desc.substring(0, desc.length() - 4);
             }
         }
+        desc  = getWikiManager().wikifyEntry(request,  entry, desc);
+
+
         StringBuffer blogBody = new StringBuffer(desc);
         Object[]     values   = entry.getValues();
         if (values[0] != null) {
             String extra = ((String) values[0]).trim();
             if (extra.length() > 0) {
+                extra  = getWikiManager().wikifyEntry(request,  entry, extra);
                 blogBody.append(HtmlUtils.makeShowHideBlock(msg("More..."),
                         extra, false));
             }
@@ -244,9 +254,7 @@ public class WeblogOutputHandler extends OutputHandler {
                                        30, 0, 0), false);
 
         blogBody.append(commentsBlock);
-        blogEntry.append(HtmlUtils.div(HtmlUtils.makeToggleTable("",
-                blogBody.toString(), true), HtmlUtils.cssClass("blogbody")));
-
+        blogEntry.append(HtmlUtils.div(blogBody.toString(), HtmlUtils.cssClass("blogbody")));
         return blogEntry.toString();
     }
 

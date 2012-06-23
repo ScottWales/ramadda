@@ -127,7 +127,7 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(
             HtmlUtils.cssLink(getRepository().fileUrl("/blog/blogstyle.css")));
-        sb.append(weblogOutputHandler.getBlogEntry(request, entry));
+        sb.append(weblogOutputHandler.getBlogEntry(request, entry, true));
         return new Result("", sb);
     }
 
