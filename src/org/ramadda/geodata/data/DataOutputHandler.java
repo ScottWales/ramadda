@@ -296,7 +296,7 @@ public class DataOutputHandler extends OutputHandler {
 
     /** Trajectory map Output Type */
     public static final OutputType OUTPUT_TRAJECTORY_MAP =
-        new OutputType("Trajectory as Map", "data.trajectory.map",
+        new OutputType("Show track on Map", "data.trajectory.map",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_MAP, GROUP_DATA);
 

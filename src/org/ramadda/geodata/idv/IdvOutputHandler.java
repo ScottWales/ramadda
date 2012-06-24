@@ -2169,17 +2169,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
 
-        path = "/Users/jeffmc/point.nc";
-
-
         FeatureDatasetPoint dataset =
             getCdmManager().getPointDataset(entry, path);
         DataSourceDescriptor descriptor =
             idvServer.getIdv().getDataManager().getDescriptor("NetCDF.POINT");
         NetcdfPointDataSource dataSource = new NetcdfPointDataSource(dataset,
                                                descriptor, new Hashtable());
-        //      NetcdfPointDataSource dataSource = new NetcdfPointDataSource(descriptor, "/Users/jeffmc/point.nc",new Hashtable());
-
         try {
 
 

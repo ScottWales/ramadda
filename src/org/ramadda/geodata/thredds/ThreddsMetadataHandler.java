@@ -122,6 +122,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
 
+
+
     /** _more_ */
     public static final String TYPE_CREATOR = "thredds.creator";
 
@@ -379,6 +381,11 @@ public class ThreddsMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String ATTR_KEYWORDS = "keywords";
 
+    public static final String ATTR_TITLE = "title";
+
+    public static final String ATTR_DESCRIPTION = "description";
+    public static final String ATTR_ABSTRACT = "abstract";
+
 
     /**
      * _more_
@@ -410,6 +417,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         String        varName  = null;
         NetcdfDataset dataset  = null;
         boolean       haveDate = false;
+        StringBuffer descriptionAttr = new StringBuffer();
         try {
             DataOutputHandler dataOutputHandler = getDataOutputHandler();
             super.getInitialMetadata(request, entry, metadataList, extra,
@@ -482,11 +490,29 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     continue;
                 }
 
-                if (ATTR_KEYWORDS.equals(name)) {
-                    for (String keyword :
-                            (List<String>) StringUtil.split(value, ";", true,
-                                true)) {
 
+                if(entry.getDescription().length()==0) {
+                    if(ATTR_ABSTRACT.equals(name)) {
+                        descriptionAttr.append(value);
+                        continue;
+                    } else if(ATTR_DESCRIPTION.equals(name)) {
+                        descriptionAttr.append(value);
+                        continue;
+                    }
+                }
+
+                //Only set the name if its not different from the file name
+                if(ATTR_TITLE.equals(name) && getStorageManager().getFileTail(entry).equals(entry.getName())) {
+                    entry.setName(value);
+                    continue;
+                }
+
+                if (ATTR_KEYWORDS.equals(name)) {
+                    List<String> keywords = (List<String>) StringUtil.split(value, ";", true,true);
+                    if(keywords.size()==1) {
+                        keywords.addAll((List<String>) StringUtil.split(value, ",", true,true));
+                    }
+                    for (String keyword : keywords) {
                         try {
                             metadata =
                                 new Metadata(getRepository().getGUID(),
@@ -502,8 +528,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                 + keyword);
                             continue;
                         }
-
-
                         if ( !entry.hasMetadata(metadata)) {
                             metadataList.add(metadata);
                         }
@@ -721,7 +745,13 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
             } catch (Exception ignore) {}
         }
+
+        //Set the description
+        if(entry.getDescription().length()==0 && descriptionAttr.length()>0) {
+            entry.setDescription(descriptionAttr.toString());
+        }
     }
+
 
 
     /**
