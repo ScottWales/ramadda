@@ -1300,7 +1300,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                 Element node = (Element) children.item(i);
                                 //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
                                 Entry entry =
-                                    getEntryManager().processEntryXml(
+                                    getEntryManager().createEntryFromXml(
                                         request, node, parentEntry,
                                         new Hashtable(), false, false);
 

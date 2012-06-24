@@ -405,6 +405,14 @@ public class ZipOutputHandler extends OutputHandler {
                 Misc.sleep(10);
             }
             */
+
+            //Don't get big files
+            if(request.defined(ARG_MAXFILESIZE)  && entry.isFile()) {
+                if(entry.getFile().length()>=request.get(ARG_MAXFILESIZE,0)) {
+                    continue;
+                }
+            }
+
             Element entryNode = null;
             if (forExport && (entriesRoot != null)) {
                 entryNode =

@@ -1,5 +1,6 @@
 /*
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -342,6 +343,8 @@ public interface Constants {
 
 
 
+
+
     /** _more_ */
     public static final String ATTR_ADDSHORTMETADATA = "addshortmetadata";
 
@@ -387,6 +390,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_DESCRIPTION = "description";
 
+    /** _more_          */
     public static final String ATTR_CATEGORY = "category";
 
     /** _more_ */
@@ -736,7 +740,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_EXACT = "exact";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ISREGEXP = "isregexp";
 
     /** _more_ */
@@ -753,6 +757,9 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_FILESUFFIX = "filesuffix";
+
+    /** _more_          */
+    public static final String ARG_MAXFILESIZE = "maxfilesize";
 
     /** _more_ */
     public static final String ARG_FILE_UNZIP = "file.unzip";
@@ -957,7 +964,11 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_SERVERFILE = "serverfile";
-    public static final String ARG_SERVERFILE_HARVEST= "serverfile_harvest";
+
+    /** _more_          */
+    public static final String ARG_SERVERFILE_HARVEST = "serverfile_harvest";
+
+    /** _more_          */
     public static final String ARG_SERVERFILE_PATTERN = "serverfile_pattern";
 
     /** _more_ */
@@ -1310,6 +1321,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_TYPE = "type";
 
+    /** _more_          */
     public static final String ARG_TYPE_GUESS = "type.guess";
 
     /** _more_ */

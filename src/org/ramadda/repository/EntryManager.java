@@ -3680,9 +3680,11 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        List<String[]> idList = new ArrayList<String[]>();
         for (Element node : entryNodes) {
-            Entry entry = processEntryXml(request, node, entries,
-                                          origFileToStorage, true, false);
+            Entry entry = createEntryFromXml(request, node, entries,
+                                             origFileToStorage, true, false);
+
             //System.err.println("entry:" + entry.getFullName() + " " + entry.getId());
             if (resultRoot != null) {
                 XmlUtil.create(resultRoot.getOwnerDocument(), TAG_ENTRY,
@@ -3690,6 +3692,12 @@ public class EntryManager extends RepositoryManager {
                         entry.getId() });
             }
             newEntries.add(entry);
+            if (XmlUtil.hasAttribute(node, ATTR_ID)) {
+                idList.add(new String[] {
+                    XmlUtil.getAttribute(node, ATTR_ID, ""),
+                    entry.getId() });
+            }
+
             if (XmlUtil.getAttribute(node, ATTR_ADDMETADATA, false)) {
                 addInitialMetadata(request,
                                    (List<Entry>) Misc.newList(entry), true,
@@ -3714,6 +3722,21 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
+        //Replace any entry re
+        for (Entry newEntry : newEntries) {
+            for (String[] tuple : idList) {
+                String oldId = tuple[0];
+                if (oldId.length() == 0) {
+                    continue;
+                }
+                String newId = tuple[1];
+                newEntry.setDescription(
+                    newEntry.getDescription().replaceAll(oldId, newId));
+            }
+        }
+
+
         insertEntries(newEntries, true);
 
         return newEntries;
@@ -3733,10 +3756,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry processEntryXml(Request request, Element node,
-                                 Hashtable<String, Entry> entries,
-                                 Hashtable<String, String> files,
-                                 boolean checkAccess, boolean internal)
+    public Entry createEntryFromXml(Request request, Element node,
+                                    Hashtable<String, Entry> entries,
+                                    Hashtable<String, String> files,
+                                    boolean checkAccess, boolean internal)
             throws Exception {
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
         Entry  parentEntry = (Entry) entries.get(parentId);
@@ -3751,8 +3774,8 @@ public class EntryManager extends RepositoryManager {
                     "Could not find parent:" + parentId);
             }
         }
-        Entry entry = processEntryXml(request, node, parentEntry, files,
-                                      checkAccess, internal);
+        Entry entry = createEntryFromXml(request, node, parentEntry, files,
+                                         checkAccess, internal);
         String tmpid = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
         if (tmpid != null) {
             entries.put(tmpid, entry);
@@ -3777,10 +3800,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Entry processEntryXml(Request request, Element node,
-                                 Entry parentEntry,
-                                 Hashtable<String, String> files,
-                                 boolean checkAccess, boolean internal)
+    public Entry createEntryFromXml(Request request, Element node,
+                                    Entry parentEntry,
+                                    Hashtable<String, String> files,
+                                    boolean checkAccess, boolean internal)
             throws Exception {
 
         boolean doAnonymousUpload = false;
@@ -6784,18 +6807,31 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
     public List<Entry> sortEntriesOnName(List<Entry> entries,
                                          final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                int result = e1.getName().compareToIgnoreCase(e2.getName());
-                if(descending) {
-                    if(result >= 1) return -1;
-                    else if (result<=-1) return 1;
+                Entry e1     = (Entry) o1;
+                Entry e2     = (Entry) o2;
+                int   result = e1.getName().compareToIgnoreCase(e2.getName());
+                if (descending) {
+                    if (result >= 1) {
+                        return -1;
+                    } else if (result <= -1) {
+                        return 1;
+                    }
+
                     return 0;
                 }
+
                 return result;
             }
             public boolean equals(Object obj) {
@@ -6804,6 +6840,7 @@ public class EntryManager extends RepositoryManager {
         };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
+
         return (List<Entry>) Misc.toList(array);
     }
 
@@ -7077,9 +7114,9 @@ public class EntryManager extends RepositoryManager {
         Element root =
             XmlUtil.getRoot(getStorageManager().readSystemResource(xmlFile));
 
-        return processEntryXml(
-            new Request(getRepository(), getUserManager().getDefaultUser()),
-            root, new Hashtable(), new Hashtable(), false, internal);
+        return createEntryFromXml(new Request(getRepository(),
+                getUserManager().getDefaultUser()), root, new Hashtable(),
+                    new Hashtable(), false, internal);
     }
 
     /**
