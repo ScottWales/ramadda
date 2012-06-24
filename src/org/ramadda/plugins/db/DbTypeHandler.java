@@ -2215,10 +2215,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                                   "/" + entry.getName() + ".csv"));
             }
         }
-        addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
-                      fromSearch, StringUtil.join("&nbsp;|&nbsp;", links));
+        if(!request.get(ARG_EMBEDDED, false)) {
+            addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
+                          fromSearch, StringUtil.join("&nbsp;|&nbsp;", links));
+        }
         makeTable(request, entry, valueList, fromSearch, sb, true,
-                  showHeaderLinks);
+                  showHeaderLinks && !request.get(ARG_EMBEDDED, false));
         return new Result(getTitle(), sb);
     }
 
