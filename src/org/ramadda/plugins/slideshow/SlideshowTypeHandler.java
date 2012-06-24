@@ -690,7 +690,8 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         template = template.replace("${title}", entry.getName());
         template = template.replace("${header}", header);
         template = template.replace("${footer}", footer);
-        String jsContent = getRepository().getTemplateJavascriptContent();
+        String jsContent = "";
+        //TODO:        String jsContent = getRepository().getTemplateJavascriptContent();
         template = template.replace("${content}", sb.toString() + jsContent);
 
         template = getRepository().translate(request, template);
