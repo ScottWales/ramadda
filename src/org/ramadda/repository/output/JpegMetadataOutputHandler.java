@@ -68,7 +68,7 @@ public class JpegMetadataOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_JPEG_METADATA =
         new OutputType("JPEG Metadata", "jpeg.metadata",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_VIEW , "",
                        ICON_IMAGES);
 
     /**
