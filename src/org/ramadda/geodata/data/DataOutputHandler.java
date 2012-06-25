@@ -1845,6 +1845,16 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
+    @Override
+    public  void getServices(Request request, Entry entry, List<Service> services) {
+        super.getServices(request, entry, services);
+        if ( !getCdmManager().canLoadAsCdm(entry)) {
+            return;
+        }
+        String  url         = getAbsoluteOpendapUrl(request, entry);
+        services.add(new Service("opendap","OpenDAP Link", url));
+    }
+
 
     /**
      * Output a point subset

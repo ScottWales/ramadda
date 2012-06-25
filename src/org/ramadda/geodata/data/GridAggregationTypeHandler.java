@@ -419,8 +419,9 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @return  the List of services
      */
-    public List<Service> getServices(Request request, Entry entry) {
-        List<Service> services = super.getServices(request, entry);
+    @Override
+    public void getServices(Request request, Entry entry, List<Service> services) {
+        super.getServices(request, entry, services);
 
         /*
         String url =
@@ -435,7 +436,6 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                  request.getAbsoluteUrl(url),
                                  getIconUrl(LidarOutputHandler.ICON_POINTS)));
         */
-        return services;
     }
 
 

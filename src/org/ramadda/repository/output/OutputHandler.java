@@ -561,6 +561,10 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
+    public  void getServices(Request request, Entry entry, List<Service> services) {
+    }
+
+
     /**
      * _more_
      *

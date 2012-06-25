@@ -218,8 +218,10 @@ public class AtomOutputHandler extends OutputHandler {
                 links.add(new AtomUtil.Link(AtomUtil.REL_IMAGE, imageUrl,
                                             "Image"));
             }
+            
             TypeHandler   typeHandler = entry.getTypeHandler();
-            List<Service> services = typeHandler.getServices(request, entry);
+            List<Service> services = new ArrayList<Service>();
+            typeHandler.getServices(request, entry, services);
             for (Service service : services) {
                 String url      = service.getUrl();
                 String relType  = service.getType();

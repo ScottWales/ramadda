@@ -1418,8 +1418,10 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Service> getServices(Request request, Entry entry) {
-        return new ArrayList<Service>();
+    public void  getServices(Request request, Entry entry,  List<Service> services) {
+        for(OutputHandler handler: getRepository().getOutputHandlers()) {
+            handler.getServices(request, entry, services);
+        }
     }
 
 

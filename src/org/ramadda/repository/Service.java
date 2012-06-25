@@ -38,6 +38,9 @@ public class Service {
     /** _more_ */
     public static final String TYPE_GRID = "grid";
 
+
+    public static final String TYPE_NA = "na";
+
     /** _more_ */
     private String type;
 

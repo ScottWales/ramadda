@@ -98,8 +98,9 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @return _more_
      */
-    public List<Service> getServices(Request request, Entry entry) {
-        List<Service> services = super.getServices(request, entry);
+    @Override
+    public void getServices(Request request, Entry entry, List<Service> services) {
+        super.getServices(request, entry, services);
         /*
         String url =
             HtmlUtils.url(request.entryUrl(getRepository().URL_ENTRY_SHOW,
@@ -113,7 +114,6 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
         request.getAbsoluteUrl(url),
                                  getIconUrl(LidarOutputHandler.ICON_POINTS)));
         */
-        return services;
     }
 
 
