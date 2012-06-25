@@ -83,6 +83,8 @@ public class WikiUtil {
 
     private boolean mobile = false;
 
+    private String user;
+
     /**
      * _more_
      */
@@ -533,6 +535,13 @@ public class WikiUtil {
                     if(!getMobile()) shouldShow = false;
                 } else if(show.equals("!mobile")) {
                     if(getMobile()) shouldShow = false;
+                } else if(show.equals("none")) {
+                    shouldShow = false;
+                } else if(show.startsWith("user")) {
+                    if(user == null)
+                        shouldShow = false;
+                    else 
+                        shouldShow = true;
                 }
             }
 
@@ -702,6 +711,24 @@ public class WikiUtil {
     public boolean getMobile () {
 	return mobile;
     }
+
+/**
+Set the User property.
+
+@param value The new value for User
+**/
+public void setUser (String value) {
+	user = value;
+}
+
+/**
+Get the User property.
+
+@return The User
+**/
+public String getUser () {
+	return user;
+}
 
 
 
