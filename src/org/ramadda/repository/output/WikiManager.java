@@ -93,6 +93,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
 
+    public static final String ATTR_MAX = "max";
+
 
     /** linkresource attribute */
     public static final String ATTR_LINKRESOURCE = "linkresource";
@@ -1519,7 +1521,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WikiUtil wikiUtil = new WikiUtil();
         wikiUtil.setMakeHeadings(makeHeadings);
         wikiUtil.setMobile(request.isMobile());
-
+        if(!request.isAnonymous()) {
+            wikiUtil.setUser(request.getUser().getId());
+        }
         return wikiUtil;
     }
 
@@ -1643,14 +1647,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return linkedEntries;
         }
 
-        String      type     = (String) props.get(ATTR_TYPE);
-        int         level    = Misc.getProperty(props, ATTR_LEVEL, 1);
-        List<Entry> children =
-            (List<Entry>) wikiUtil.getProperty(entry.getId() + "_children");
-        if (children == null) {
-            children = getEntryManager().getChildren(request, entry);
+        //If there is a max property then clone the request and set the max
+        int max = Misc.getProperty(props, ATTR_MAX, -1);
+        if(max>0) {
+            request = request.cloneMe();
+            request.put(ARG_MAX, ""+max);
         }
 
+        String      type     = (String) props.get(ATTR_TYPE);
+        int         level    = Misc.getProperty(props, ATTR_LEVEL, 1);
+        List<Entry>  children = getEntryManager().getChildren(request, entry);
 
         String userDefinedEntries = Misc.getProperty(props, ATTR_ENTRIES,
                                         (String) null);
@@ -1760,7 +1766,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
         }
 
-
         int count = Misc.getProperty(props, ATTR_COUNT, -1);
         if (count > 0) {
             List<Entry> tmp = new ArrayList<Entry>();
@@ -1772,7 +1777,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             children = tmp;
         }
-
 
         return children;
 
@@ -2495,11 +2499,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             wikiUtil.putProperty(entry.getId() + "_subentries", subEntries);
             children.addAll(subEntries);
         }
-
-        wikiUtil.putProperty(entry.getId() + "_children", children);
-        wikiUtil.putProperty(entry.getId() + "_haschildren",
-                             "" + hasChildren);
-
 
         //TODO: We need to keep track of what is getting called so we prevent
         //infinite loops
