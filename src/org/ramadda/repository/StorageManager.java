@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,257 +22,223 @@
 package org.ramadda.repository;
 
 
+import org.python.util.PythonInterpreter;
 
-import org.python.core.*;
-import org.python.util.*;
-
-import org.ramadda.repository.auth.*;
+import org.ramadda.repository.auth.AccessException;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 
-
-import org.w3c.dom.*;
-
-
-
-import ucar.unidata.sql.SqlUtil;
-
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 
-import ucar.unidata.util.StringUtil;
-
-import ucar.unidata.xml.XmlUtil;
-
-
-
-import java.io.*;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 
-
-
-import java.lang.reflect.*;
-
-import java.net.*;
-
-
+import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
-
-import java.util.zip.*;
-
-
 
 
 /**
- *
- *
+ *  A class to manage the storage needs of the repository
  *
  * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
 public class StorageManager extends RepositoryManager {
 
 
-    /** _more_ */
+    /** file separator */
     public static final String FILE_SEPARATOR = "_file_";
 
-    /** _more_ */
+    /** the full log file */
     public static final String FILE_FULLLOG = "fullrepository.log";
 
-    /** _more_ */
+    /** the repository log file */
     public static final String FILE_LOG = "repository.log";
 
-    /** _more_ */
+    /** the repository directory */
     public static final String DIR_REPOSITORY = "repository";
 
-    /** _more_ */
+    /** the users directory */
     public static final String DIR_USERS = "users";
 
-    /** _more_ */
+    /** the backups directory */
     public static final String DIR_BACKUPS = "backups";
 
-    /** _more_ */
+    /** the resources directory */
     public static final String DIR_RESOURCES = "resources";
 
-    /** _more_ */
+    /** the htdocs directory */
     public static final String DIR_HTDOCS = "htdocs";
 
-    /** _more_ */
+    /** anonymouse upload directory */
     public static final String DIR_ANONYMOUSUPLOAD = "anonymousupload";
 
-    /** _more_ */
+    /** index flag */
     public static final String DIR_INDEX = "index";
 
-    /** _more_ */
+    /** cache directory */
     public static final String DIR_CACHE = "cache";
 
-    /** _more_ */
+    /** icons directory */
     public static final String DIR_ICONS = "icons";
 
-    /** _more_ */
+    /** scratch directory */
     public static final String DIR_SCRATCH = "scratch";
 
-    /** _more_ */
+    /** thumbnails directory */
     public static final String DIR_THUMBNAILS = "thumbnails";
 
-
-    /** _more_ */
+    /** the directory depth property */
     public static final String PROP_DIRDEPTH = "ramadda.storage.dirdepth";
 
-    /** _more_ */
+    /** the fast directory property */
     public static final String PROP_FASTDIR = "ramadda.storage.fastdir";
 
-    /** _more_ */
+    /** the fast directory size property */
     public static final String PROP_FASTDIRSIZE =
         "ramadda.storage.fastdirsize";
 
-    /** _more_ */
+    /** the deranged property */
     public static final String PROP_DIRRANGE = "ramadda.storage.dirrange";
 
-    /** _more_ */
+    /** the temporary directory property */
     public static final String PROP_TMPDIR = "ramadda.storage.tmpdir";
 
-    /** _more_ */
+    /** the log directory property */
     public static final String PROP_LOGDIR = "ramadda.storage.logdir";
 
-    /** _more_ */
+    /** the storage directory property */
     public static final String PROP_STORAGEDIR = "ramadda.storage.storagedir";
 
-    /** _more_ */
+    /** the entries directory property */
     public static final String PROP_ENTRIESDIR = "ramadda.storage.entriesdir";
 
-    /** _more_ */
+    /** the upload directory property */
     public static final String PROP_UPLOADDIR = "ramadda.storage.uploaddir";
 
-    /** _more_ */
+    /** the plugins directory property */
     public static final String PROP_PLUGINSDIR = "ramadda.storage.pluginsdir";
 
-    /** _more_ */
+    /** the default directory depth */
     private int dirDepth = 2;
 
-    /** _more_ */
+    /** the default directory range */
     private int dirRange = 10;
 
-
-    /** _more_ */
+    /** the repository directory */
     private File repositoryDir;
 
-    /** _more_ */
+    /** the temporary directory */
     private File tmpDir;
 
-
-    /** _more_ */
+    /** the htdocs directory */
     private String htdocsDir;
 
-    /** _more_ */
+    /** the icons directory */
     private String iconsDir;
 
-    /** _more_ */
+    /** the list of temporary directories to scour */
     private List<TempDir> tmpDirs = new ArrayList<TempDir>();
 
-    /** _more_ */
+    /** the scratch directory */
     private TempDir scratchDir;
 
-
-    /** _more_ */
+    /** the anonymous directory */
     private String anonymousDir;
 
-    /** _more_ */
+    /** the cache directory */
     private TempDir cacheDir;
 
-    /** _more_ */
+    /** the log directory */
     private File logDir;
 
-    /** _more_ */
+    /** the cache directory size */
     private long cacheDirSize = -1;
 
-    /** _more_ */
+    /** the upload directory */
     private File uploadDir;
 
-    /** _more_ */
+    /** the plugins directory */
     private File pluginsDir;
 
-    /** _more_ */
+    /** the entries directory */
     private File entriesDir;
 
-    /** _more_ */
+    /** the users directory */
     private String usersDir;
 
-    /** _more_ */
+    /** the storage directory */
     private File storageDir;
 
-    /** _more_ */
+    /** the index directory */
     private File indexDir;
 
-    /** _more_ */
+    /** the thumbnail directory */
     private TempDir thumbDir;
 
-    /** _more_ */
+    /** list of directories that are okay to read from */
     private List<File> okToReadFromDirs = new ArrayList<File>();
 
-    /** _more_ */
+    /** list of directories that are okay to write to */
     private List<File> okToWriteToDirs = new ArrayList<File>();
 
 
-
     /**
-     * _more_
+     * Construct a new StorageManager for the repository
      *
-     * @param repository _more_
+     * @param repository  the repository
      */
     public StorageManager(Repository repository) {
         super(repository);
     }
 
     /**
-     * _more_
+     * Convert a resource to the actual location
      *
-     * @param resource _more_
+     * @param resource  the resource
      *
-     * @return _more_
+     * @return  the resource
      */
     public String resourceFromDB(String resource) {
         if (resource != null) {
             resource = resource.replace("${ramadda.storagedir}",
                                         getStorageDir().toString());
         }
+
         return resource;
     }
 
     /**
-     * _more_
+     * Convert a resource to the database location
      *
-     * @param resource _more_
+     * @param resource the resource
      *
-     * @return _more_
+     * @return the converted String
      */
     public String resourceToDB(String resource) {
         if (resource != null) {
             resource = resource.replace(getStorageDir().toString(),
                                         "${ramadda.storagedir}");
         }
+
         return resource;
     }
 
 
-    /** _more_ */
+    /** flag for python initialization */
     private boolean haveInitializedPython = false;
 
 
     /**
-     * _more_
+     * Initialize python
      */
     public void initPython() {
         if (haveInitializedPython) {
@@ -287,7 +254,7 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Do the final initialization
      */
     protected void doFinalInitialization() {
         getUploadDir();
@@ -304,8 +271,7 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
-     *
+     * Initialize the manager
      */
     protected void init() {
         String repositoryDirProperty =
@@ -331,6 +297,7 @@ public class StorageManager extends RepositoryManager {
         if ( !repositoryDir.exists()) {
             System.err.println(
                 "RAMADDA: error: home directory does not exist");
+
             throw new IllegalStateException(
                 "RAMADDA: error: home directory does not exist");
         }
@@ -338,6 +305,7 @@ public class StorageManager extends RepositoryManager {
         if ( !repositoryDir.canWrite()) {
             System.err.println(
                 "RAMADDA: error: home directory is not writable");
+
             throw new IllegalStateException(
                 "RAMADDA: error: home directory is not writable");
         }
@@ -357,23 +325,22 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Add repository info to the StringBuffer
      *
-     * @param sb _more_
+     * @param sb the StringBuffer
      */
     public void addInfo(StringBuffer sb) {
         sb.append(HtmlUtils.formEntry("Home Directory:",
-                                     getRepositoryDir().toString()));
+                                      getRepositoryDir().toString()));
         sb.append(HtmlUtils.formEntry("Storage Directory:",
-                                     getStorageDir().toString()));
+                                      getStorageDir().toString()));
     }
 
 
     /**
-     * _more_
+     * Add a directory to the okay to read from list
      *
-     *
-     * @param dir _more_
+     * @param dir  the directory
      */
     public void addOkToReadFromDirectory(File dir) {
         if ( !okToReadFromDirs.contains(dir)) {
@@ -384,10 +351,9 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Add a directory to the okay to write to list
      *
-     *
-     * @param dir _more_
+     * @param dir  the directory
      */
     public void addOkToWriteToDirectory(File dir) {
         if ( !okToWriteToDirs.contains(dir)) {
@@ -399,11 +365,11 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Localize the path
      *
-     * @param path _more_
+     * @param path  the path
      *
-     * @return _more_
+     * @return  the localized path
      */
     public String localizePath(String path) {
         String repositoryDir = getRepositoryDir().toString();
@@ -411,13 +377,14 @@ public class StorageManager extends RepositoryManager {
         path = path.replace("${repositorydir}", repositoryDir);
         path = path.replace("%resourcedir%",
                             "/org/ramadda/repository/resources");
+
         return path;
     }
 
     /**
-     * _more_
+     * Get the system resource path
      *
-     * @return _more_
+     * @return  the path
      */
     public String getSystemResourcePath() {
         return "/org/ramadda/repository/resources";
@@ -426,20 +393,21 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the upload directory
      *
-     * @return _more_
+     * @return  the upload directory
      */
     public File getUploadDir() {
         if (uploadDir == null) {
             uploadDir = getFileFromProperty(PROP_UPLOADDIR);
             addOkToWriteToDirectory(uploadDir);
         }
+
         return uploadDir;
     }
 
     /**
-     * _more_
+     * Get the repository directory
      *
      * @return _more_
      */
@@ -449,9 +417,9 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Add a temporary directory to the list of scourable directories
      *
-     * @param storageDir _more_
+     * @param storageDir the directory to add
      */
     public void addTempDir(final TempDir storageDir) {
         tmpDirs.add(storageDir);
@@ -463,11 +431,11 @@ public class StorageManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Make a temporary directory
      *
-     * @param dir _more_
+     * @param dir  the path
      *
-     * @return _more_
+     * @return  the directory
      */
     public TempDir makeTempDir(String dir) {
         return makeTempDir(dir, true);
@@ -479,7 +447,7 @@ public class StorageManager extends RepositoryManager {
      * @param dir dir name
      * @param shouldScour should we scour this directory of old files
      *
-     * @return _more_
+     * @return  the temporary directory
      */
     public TempDir makeTempDir(String dir, boolean shouldScour) {
         TempDir tmpDir = new TempDir(IOUtil.joinDir(getTmpDir(), dir));
@@ -487,31 +455,33 @@ public class StorageManager extends RepositoryManager {
         if (shouldScour) {
             addTempDir(tmpDir);
         }
+
         return tmpDir;
     }
 
 
     /**
-     * _more_
+     * Get the temporary directory file
      *
-     * @param tmpDir _more_
-     * @param file _more_
+     * @param tmpDir  the direcgtory
+     * @param file    the file name
      *
-     * @return _more_
+     * @return  the file
      */
     public File getTmpDirFile(TempDir tmpDir, String file) {
         File f = new File(IOUtil.joinDir(tmpDir.getDir(), file));
         dirTouched(tmpDir, f);
+
         return checkReadFile(f);
     }
 
 
     /**
-     * _more_
+     * Get the icons directory file
      *
-     * @param file _more_
+     * @param file  the filename
      *
-     * @return _more_
+     * @return  the file
      */
     public File getIconsDirFile(String file) {
         return new File(IOUtil.joinDir(getIconsDir(), file));
@@ -519,15 +489,16 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the icons directory
      *
-     * @return _more_
+     * @return  the directory
      */
     private String getIconsDir() {
         if (iconsDir == null) {
             iconsDir = IOUtil.joinDir(htdocsDir, DIR_ICONS);
             IOUtil.makeDirRecursive(new File(iconsDir));
         }
+
         return iconsDir;
     }
 
@@ -536,53 +507,56 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the temporary directory
      *
-     * @return _more_
+     * @return  the directory
      */
     public File getTmpDir() {
         if (tmpDir == null) {
             tmpDir = getFileFromProperty(PROP_TMPDIR);
             addOkToWriteToDirectory(tmpDir);
         }
+
         return tmpDir;
     }
 
     /**
-     * _more_
+     * Get the scratch directory
      *
-     * @return _more_
+     * @return  the directory
      */
-    private TempDir getScratchDir() {
+    public TempDir getScratchDir() {
         if (scratchDir == null) {
             scratchDir = makeTempDir(DIR_SCRATCH);
             scratchDir.setMaxAge(DateUtil.hoursToMillis(1));
         }
+
         return scratchDir;
     }
 
     /**
-     * _more_
+     * Get a unique scratch file
      *
-     * @param file _more_
+     * @param file  the file name
      *
-     * @return _more_
+     * @return  a unique file
      */
     public File getUniqueScratchFile(String file) {
         File f = getScratchFile(file);
         while (f.exists()) {
             f = getScratchFile(getRepository().getGUID() + "_" + file);
         }
+
         return f;
     }
 
 
     /**
-     * _more_
+     * Get a scratch file
      *
-     * @param file _more_
+     * @param file  the file suffix
      *
-     * @return _more_
+     * @return  a unique file
      */
     public File getScratchFile(String file) {
         return getTmpDirFile(getScratchDir(), file);
@@ -590,9 +564,9 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the thumbnail directory
      *
-     * @return _more_
+     * @return  the directory
      */
     private TempDir getThumbDir() {
         if (thumbDir == null) {
@@ -600,15 +574,16 @@ public class StorageManager extends RepositoryManager {
             thumbDir.setMaxFiles(1000);
             thumbDir.setMaxSize(1000 * 1000 * 1000);
         }
+
         return thumbDir;
     }
 
     /**
-     * _more_
+     * Get a file in the thumbnail directory
      *
-     * @param file _more_
+     * @param file  the file name
      *
-     * @return _more_
+     * @return  the file
      */
     public File getThumbFile(String file) {
         return getTmpDirFile(getThumbDir(), file);
@@ -616,26 +591,27 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the thumbnail directory
      *
-     * @param file _more_
+     * @param file  the filename
      *
-     * @return _more_
+     * @return  the directory
      */
     public File getThumbDir(String file) {
         File f = getTmpDirFile(getThumbDir(), file);
         IOUtil.makeDirRecursive(f);
+
         return f;
     }
 
 
 
     /**
-     * _more_
+     * Get an icon file
      *
-     * @param file _more_
+     * @param file the file name
      *
-     * @return _more_
+     * @return  the File
      */
     public File getIconFile(String file) {
         return getTmpDirFile(getThumbDir(), file);
@@ -643,25 +619,26 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the cache directory
      *
-     * @return _more_
+     * @return  the directory
      */
     private TempDir getCacheDir() {
         if (cacheDir == null) {
             cacheDir = makeTempDir(DIR_CACHE);
             cacheDir.setMaxSize(1000 * 1000 * 1000);
         }
+
         return cacheDir;
     }
 
 
     /**
-     * _more_
+     * Get a cache file
      *
-     * @param file _more_
+     * @param file  the file name
      *
-     * @return _more_
+     * @return  the File
      */
     public File getCacheFile(String file) {
         return getTmpDirFile(getCacheDir(), file);
@@ -669,15 +646,16 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the log directory
      *
-     * @return _more_
+     * @return  the log directory
      */
     public File getLogDir() {
         if (logDir == null) {
             logDir = getFileFromProperty(PROP_LOGDIR);
             if (getRepository().isReadOnly()) {
                 System.err.println("RAMADDA: skipping log4j");
+
                 return logDir;
             }
 
@@ -707,15 +685,16 @@ public class StorageManager extends RepositoryManager {
                 exc.printStackTrace();
             }
         }
+
         return logDir;
     }
 
 
     /**
-     * _more_
+     * Touch the temporary directory
      *
-     * @param tmpDir _more_
-     * @param f _more_
+     * @param tmpDir  the temporary directory location
+     * @param f  the file
      */
     public void dirTouched(final TempDir tmpDir, File f) {
         if (f != null) {
@@ -739,7 +718,7 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Scour the temporary directories
      */
     private void scourTmpDirs() {
         //Scour once an hour
@@ -754,19 +733,19 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Scour a temporary directory
      *
-     * @param tmpDir _more_
+     * @param tmpDir  the temporary directory
      */
     protected void scourTmpDir(final TempDir tmpDir) {
         scourTmpDir(tmpDir, false);
     }
 
     /**
-     * _more_
+     * Force the scouring of the temporary directory
      *
-     * @param tmpDir _more_
-     * @param force _more_
+     * @param tmpDir  the directory
+     * @param force   true to force scouring
      */
     protected void scourTmpDir(final TempDir tmpDir, boolean force) {
         synchronized (tmpDir) {
@@ -802,9 +781,9 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the Anonymous uploads directory
      *
-     * @return _more_
+     * @return  the directory
      */
     public String getAnonymousDir() {
         if (anonymousDir == null) {
@@ -812,16 +791,17 @@ public class StorageManager extends RepositoryManager {
                                           DIR_ANONYMOUSUPLOAD);
             IOUtil.makeDirRecursive(new File(anonymousDir));
         }
+
         return anonymousDir;
     }
 
 
     /**
-     * _more_
+     * Get a file location from a property
      *
-     * @param property _more_
+     * @param property  the property
      *
-     * @return _more_
+     * @return  the location as a File
      */
     private File getFileFromProperty(String property) {
         String path = getProperty(property, null);
@@ -831,27 +811,29 @@ public class StorageManager extends RepositoryManager {
         }
         File f = new File(localizePath(path));
         IOUtil.makeDirRecursive(f);
+
         return f;
     }
 
 
     /**
-     * _more_
+     * Get the storage directory
      *
-     * @return _more_
+     * @return the storage directory path
      */
     public String getStorageDir() {
         if (storageDir == null) {
             storageDir = getFileFromProperty(PROP_STORAGEDIR);
             addOkToWriteToDirectory(storageDir);
         }
+
         return storageDir.toString();
     }
 
     /**
-     * _more_
+     * Get the index directory
      *
-     * @return _more_
+     * @return the index directory path
      */
     public String getIndexDir() {
         if (indexDir == null) {
@@ -859,42 +841,46 @@ public class StorageManager extends RepositoryManager {
                     DIR_INDEX));
             IOUtil.makeDirRecursive(indexDir);
         }
+
         return indexDir.toString();
     }
 
     /**
-     * _more_
+     * Get the plugins directory
      *
-     * @return _more_
+     * @return  the directory
      */
     public File getPluginsDir() {
         if (pluginsDir == null) {
             pluginsDir = getFileFromProperty(PROP_PLUGINSDIR);
         }
+
         return pluginsDir;
     }
 
     /**
-     * _more_
+     * Get the backups directory
      *
-     * @return _more_
+     * @return  the directory
      */
     public String getBackupsDir() {
         String dir = IOUtil.joinDir(getRepositoryDir(), DIR_BACKUPS);
         IOUtil.makeDirRecursive(new File(dir));
+
         return dir;
     }
 
     /**
-     * _more_
+     * Get a directory
      *
-     * @param name _more_
+     * @param name the name
      *
-     * @return _more_
+     * @return  the path
      */
     public String getDir(String name) {
         String dir = IOUtil.joinDir(getRepositoryDir(), name);
         IOUtil.makeDirRecursive(new File(dir));
+
         return dir;
     }
 
@@ -904,12 +890,12 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get a tmp file for the request
      *
-     * @param request _more_
-     * @param name _more_
+     * @param request  the Request
+     * @param name     the file name
      *
-     * @return _more_
+     * @return  a unique file
      */
     public File getTmpFile(Request request, String name) {
         return getTmpDirFile(getScratchDir(),
@@ -919,14 +905,14 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Move a file to storage
      *
-     * @param request _more_
-     * @param original _more_
+     * @param request  the Request
+     * @param original the original file
      *
-     * @return _more_
+     * @return  the new File location
      *
-     * @throws Exception _more_
+     * @throws Exception  problem moving file
      */
     public File moveToStorage(Request request, File original)
             throws Exception {
@@ -936,23 +922,22 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Clean an entry id
      *
-     * @param id _more_
+     * @param id  the id
      *
-     * @return _more_
+     * @return the cleaned name
      */
     private String cleanEntryId(String id) {
         return IOUtil.cleanFileName(id);
     }
 
     /**
-     * _more_
+     * Get the entry directory
      *
-     *
-     * @param id _more_
-     * @param createIfNeeded _more_
-     * @return _more_
+     * @param id   the entry id
+     * @param createIfNeeded  true if we want to create a new one
+     * @return  the directory
      */
     public File getEntryDir(String id, boolean createIfNeeded) {
         id = cleanEntryId(id);
@@ -979,17 +964,18 @@ public class StorageManager extends RepositoryManager {
         if (createIfNeeded) {
             IOUtil.makeDirRecursive(entryDir);
         }
+
         return entryDir;
     }
 
 
     /**
-     * _more_
+     * Get the user directory
      *
-     * @param id _more_
-     * @param createIfNeeded _more_
+     * @param id  the entry id
+     * @param createIfNeeded true to create if necessary
      *
-     * @return _more_
+     * @return  the directory
      */
     public File getUserDir(String id, boolean createIfNeeded) {
         id = IOUtil.cleanFileName(id);
@@ -998,26 +984,27 @@ public class StorageManager extends RepositoryManager {
             IOUtil.makeDirRecursive(new File(usersDir));
         }
 
-        String dir1 = "user_" + ((id.length() >= 2)
-                                 ? id.substring(0, 2)
-                                 : "");
-        String dir2 = "user_" + ((id.length() >= 4)
-                                 ? id.substring(2, 4)
-                                 : "");
-        File userDir = new File(IOUtil.joinDir(usersDir,
+        String dir1    = "user_" + ((id.length() >= 2)
+                                    ? id.substring(0, 2)
+                                    : "");
+        String dir2    = "user_" + ((id.length() >= 4)
+                                    ? id.substring(2, 4)
+                                    : "");
+        File   userDir = new File(IOUtil.joinDir(usersDir,
                            IOUtil.joinDir(dir1, IOUtil.joinDir(dir2, id))));
         if (createIfNeeded) {
             IOUtil.makeDirRecursive(userDir);
         }
+
         return userDir;
     }
 
 
 
     /**
-     * _more_
+     * Delete an entry directory
      *
-     * @param id _more_
+     * @param id  the entry id
      */
     public void deleteEntryDir(final String id) {
         Misc.run(new Runnable() {
@@ -1032,65 +1019,67 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Move to a new entry directory
      *
-     * @param entry _more_
-     * @param original _more_
+     * @param entry    the Entry
+     * @param original the original directory
      *
-     * @return _more_
+     * @return  the new directory
      *
-     * @throws Exception _more_
+     * @throws Exception  problem moving
      */
     public File moveToEntryDir(Entry entry, File original) throws Exception {
         File newFile = new File(IOUtil.joinDir(getEntryDir(entry.getId(),
                            true), original.getName()));
         moveFile(original, newFile);
+
         return newFile;
     }
 
     /**
-     * _more_
+     * Copy to a new entry directory
      *
-     * @param entry _more_
-     * @param original _more_
+     * @param entry    the Entry
+     * @param original the original directory
      *
-     * @return _more_
+     * @return  the new directory
      *
-     * @throws Exception _more_
+     * @throws Exception  problem copying
      */
     public File copyToEntryDir(Entry entry, File original) throws Exception {
         return copyToEntryDir(entry, original, original.getName());
     }
 
     /**
-     * _more_
+     * Copy to an entry directory
      *
-     * @param entry _more_
-     * @param original _more_
-     * @param newName _more_
+     * @param entry    the Entry
+     * @param original the original directory
+     * @param newName  the new name
      *
-     * @return _more_
+     * @return  the new location
      *
-     * @throws Exception _more_
+     * @throws Exception  problem copying
      */
     public File copyToEntryDir(Entry entry, File original, String newName)
             throws Exception {
         File newFile = new File(IOUtil.joinDir(getEntryDir(entry.getId(),
                            true), newName));
         copyFile(original, newFile);
+
         return newFile;
     }
 
     /**
-     * _more_
+     * Copy from one entry to another
      *
-     * @param oldEntry _more_
-     * @param newEntry _more_
-     * @param filename _more_
+     * @param oldEntry  the old Entry
+     * @param newEntry  the new Entry
+     * @param filename  the filename
      *
-     * @return _more_
+     * @return  the new location
      *
-     * @throws Exception _more_
+     * @throws Exception  problem copying
      */
     public String copyToEntryDir(Entry oldEntry, Entry newEntry,
                                  String filename)
@@ -1114,21 +1103,23 @@ public class StorageManager extends RepositoryManager {
             IOUtil.writeTo(fromStream, toStream);
             IOUtil.close(fromStream);
             IOUtil.close(toStream);
+
             return newFile.getName();
         }
 
 
         copyFile(oldFile, newFile);
+
         return newFile.getName();
     }
 
     /**
-     * _more_
+     * Copy a file
      *
-     * @param oldFile _more_
-     * @param newFile _more_
+     * @param oldFile  old file
+     * @param newFile  new file
      *
-     * @throws Exception _more_
+     * @throws Exception  problem with copy
      */
     private void copyFile(File oldFile, File newFile) throws Exception {
         checkLocalFile(oldFile);
@@ -1139,15 +1130,15 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Move a file to storage
      *
-     * @param request _more_
-     * @param original _more_
-     * @param targetName _more_
+     * @param request   the Request
+     * @param original  the original file
+     * @param targetName  the target name
      *
-     * @return _more_
+     * @return  the new location
      *
-     * @throws Exception _more_
+     * @throws Exception  problem moving
      */
     public File moveToStorage(Request request, File original,
                               String targetName)
@@ -1155,8 +1146,8 @@ public class StorageManager extends RepositoryManager {
         if (targetName == null) {
             targetName = original.getName();
         }
-        String storageDir = getStorageDir();
-        GregorianCalendar cal =
+        String            storageDir = getStorageDir();
+        GregorianCalendar cal        =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         cal.setTime(new Date());
         storageDir = IOUtil.joinDir(storageDir, "y" + cal.get(cal.YEAR));
@@ -1176,21 +1167,22 @@ public class StorageManager extends RepositoryManager {
 
         File newFile = new File(IOUtil.joinDir(storageDir, targetName));
         moveFile(original, newFile);
+
         return newFile;
     }
 
 
 
     /**
-     * _more_
+     * Move to anonymous storage
      *
-     * @param request _more_
-     * @param original _more_
-     * @param prefix _more_
+     * @param request    the Request
+     * @param original   the original file
+     * @param prefix     a prefix
      *
-     * @return _more_
+     * @return the new location
      *
-     * @throws Exception _more_
+     * @throws Exception  problem moving to storage
      */
     public File moveToAnonymousStorage(Request request, File original,
                                        String prefix)
@@ -1217,20 +1209,21 @@ public class StorageManager extends RepositoryManager {
         String targetName = prefix + fileName;
         File   newFile    = new File(IOUtil.joinDir(storageDir, targetName));
         moveFile(original, newFile);
+
         return newFile;
     }
 
 
     /**
-     * _more_
+     * Copy a file to storage
      *
-     * @param request _more_
-     * @param original _more_
-     * @param newName _more_
+     * @param request   the Request
+     * @param original  the original file
+     * @param newName   the new name
      *
-     * @return _more_
+     * @return  the new location
      *
-     * @throws Exception _more_
+     * @throws Exception  problem copying to storage
      */
     public File copyToStorage(Request request, File original, String newName)
             throws Exception {
@@ -1238,23 +1231,23 @@ public class StorageManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Copy a file to storage
      *
-     * @param request _more_
-     * @param original _more_
-     * @param newName _more_
+     * @param request   the Request
+     * @param original  the original file input stream
+     * @param newName   the new name
      *
-     * @return _more_
+     * @return  the new location
      *
-     * @throws Exception _more_
+     * @throws Exception  problem copying to storage
      */
     public File copyToStorage(Request request, InputStream original,
                               String newName)
             throws Exception {
-        String targetName = newName;
-        String storageDir = getStorageDir();
+        String            targetName = newName;
+        String            storageDir = getStorageDir();
 
-        GregorianCalendar cal =
+        GregorianCalendar cal        =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         cal.setTime(new Date());
 
@@ -1277,15 +1270,16 @@ public class StorageManager extends RepositoryManager {
         File newFile = new File(IOUtil.joinDir(storageDir, targetName));
         IOUtil.copyFile(original, newFile);
         IOUtil.close(original);
+
         return newFile;
     }
 
     /**
-     * _more_
+     * Get the upload file path
      *
-     * @param fileName _more_
+     * @param fileName  the filename
      *
-     * @return _more_
+     * @return  the new file
      */
     public File getUploadFilePath(String fileName) {
         return checkReadFile(new File(IOUtil.joinDir(getUploadDir(),
@@ -1294,11 +1288,11 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get a storage filename
      *
-     * @param fileName _more_
+     * @param fileName  the name
      *
-     * @return _more_
+     * @return  the storage filename
      */
     public String getStorageFileName(String fileName) {
         return repository.getGUID() + FILE_SEPARATOR + fileName;
@@ -1306,11 +1300,11 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the filetail of an Entry
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return  the file tail
      */
     public String getFileTail(Entry entry) {
         String tail;
@@ -1324,25 +1318,25 @@ public class StorageManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Get the filetail of a filename
      *
-     * @param fileName _more_
+     * @param fileName  the filename
      *
-     * @return _more_
+     * @return  the file tail
      */
     public static String getFileTail(String fileName) {
         return RepositoryUtil.getFileTail(fileName);
     }
 
     /**
-     * _more_
+     * Can the Entry be downloaded
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the Request
+     * @param entry    the Entry
      *
-     * @return _more_
+     * @return  true if it can be downloaded
      *
-     * @throws Exception _more_
+     * @throws Exception  problem accessing the Entry
      */
     public boolean canDownload(Request request, Entry entry)
             throws Exception {
@@ -1373,11 +1367,11 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the fast resource path
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return  the path
      */
     public String getFastResourcePath(Entry entry) {
         String fastDir = getRepository().getProperty(PROP_FASTDIR,
@@ -1398,18 +1392,18 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Remove a file associated with an entry
      *
-     * @param entry _more_
+     * @param entry  the Entry
      */
     public void removeFile(Entry entry) {
         removeFile(entry.getResource());
     }
 
     /**
-     * _more_
+     * Remove a resource
      *
-     * @param resource _more_
+     * @param resource the resource
      */
     public void removeFile(Resource resource) {
         if (resource.isStoredFile()) {
@@ -1419,9 +1413,9 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Delete a file
      *
-     * @param f _more_
+     * @param f  the file
      */
     public void deleteFile(File f) {
         f.delete();
@@ -1430,14 +1424,11 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Is the file in a downloadable area?
      *
+     * @param file  the file
      *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
+     * @return true if in downloadable area
      */
     public boolean isInDownloadArea(File file) {
         for (File dir : okToReadFromDirs) {
@@ -1445,20 +1436,22 @@ public class StorageManager extends RepositoryManager {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * _more_
+     * Check the local file
      *
-     * @param file _more_
+     * @param file  the file
      *
-     * @throws Exception _more_
+     * @throws Exception  problem accessing file
      */
     public void checkLocalFile(File file) throws Exception {
         if ( !isLocalFileOk(file)) {
             System.err.println(
                 "StorageManager.checkLocalFile bad file location:" + file);
+
             throw new AccessException(
                 "The specified file is not under one of the allowable file system directories<br>These need to be set by the site administrator",
                 null);
@@ -1467,11 +1460,11 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Is the local file okay?
      *
-     * @param file _more_
+     * @param file  the file
      *
-     * @return _more_
+     * @return  true if ok
      */
     public boolean isLocalFileOk(File file) {
         boolean ok = false;
@@ -1483,6 +1476,7 @@ public class StorageManager extends RepositoryManager {
                 return true;
             }
         }
+
         //        System.err.println ("      NOT OK");
         return false;
     }
@@ -1490,9 +1484,9 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Throw a bad file Exception
      *
-     * @param f _more_
+     * @param f  the file
      */
     private void throwBadFile(File f) {
         throw new IllegalArgumentException(
@@ -1501,11 +1495,11 @@ public class StorageManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Check if a file is writeable
      *
-     * @param file _more_
+     * @param file  the file
      *
-     * @return _more_
+     * @return  the File if writable, else null
      */
     public File checkWriteFile(File file) {
         if (getRepository().isReadOnly()) {
@@ -1520,16 +1514,17 @@ public class StorageManager extends RepositoryManager {
             }
         }
         throwBadFile(file);
+
         return null;
     }
 
 
     /**
-     * _more_
+     * Check if a file is readable
      *
-     * @param file _more_
+     * @param file  the file
      *
-     * @return _more_
+     * @return  the file if readable, else null
      */
     public File checkReadFile(File file) {
         //check if its in an allowable area for access
@@ -1547,27 +1542,31 @@ public class StorageManager extends RepositoryManager {
         }
 
         throwBadFile(file);
+
         return null;
     }
 
 
     /**
+     * check the path
      *
-     * @param path _more_
+     * @param path  the path
      *
-     * @throws Exception _more_
+     * @throws Exception if bad file or not readable
      */
     public void checkPath(String path) throws Exception {
         //Path can be a file, a URL, a file URL or a system resource
         File f = new File(path);
         if (f.exists()) {
             checkReadFile(f);
+
             return;
         }
 
         if (path.toLowerCase().trim().startsWith("file:")) {
             f = new File(path.substring("file:".length()));
             checkReadFile(f);
+
             return;
         }
 
@@ -1577,13 +1576,13 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Read a system resource without checking permissions
      *
-     * @param path _more_
+     * @param path  the resource path
      *
-     * @return _more_
+     * @return  the resource as a String
      *
-     * @throws Exception _more_
+     * @throws Exception  problem reading the resource
      */
     public String readUncheckedSystemResource(String path) throws Exception {
         //        checkPath(path);
@@ -1591,12 +1590,12 @@ public class StorageManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Move a file
      *
-     * @param from _more_
-     * @param to _more_
+     * @param from  from File
+     * @param to    to File
      *
-     * @throws Exception _more_
+     * @throws Exception problem moving
      */
     public void moveFile(File from, File to) throws Exception {
         checkReadFile(from);
@@ -1618,14 +1617,14 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Read an unchecked system resource
      *
-     * @param path _more_
-     * @param dflt _more_
+     * @param path  the resource path
+     * @param dflt  the default return if resource not availalble
      *
-     * @return _more_
+     * @return  the resource or dflt
      *
-     * @throws Exception _more_
+     * @throws Exception  problem reading resource
      */
     public String readUncheckedSystemResource(String path, String dflt)
             throws Exception {
@@ -1635,28 +1634,29 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Read a system resource, checking permissions
      *
-     * @param url _more_
+     * @param url  the URL of the resource
      *
-     * @return _more_
+     * @return  the resource
      *
-     * @throws Exception _more_
+     * @throws Exception  problem reading
      */
     public String readSystemResource(URL url) throws Exception {
         checkPath(url.toString());
+
         return IOUtil.readContents(url.toString(), getClass());
     }
 
 
     /**
-     * _more_
+     * Read a system resource from the file
      *
-     * @param file _more_
+     * @param file  the File location
      *
-     * @return _more_
+     * @return  the resource
      *
-     * @throws Exception _more_
+     * @throws Exception  problem reading
      */
     public String readSystemResource(File file) throws Exception {
         return IOUtil.readInputStream(getFileInputStream(file));
@@ -1664,13 +1664,13 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Read a system resource from the path
      *
-     * @param path _more_
+     * @param path  the path
      *
-     * @return _more_
+     * @return  the resource
      *
-     * @throws Exception _more_
+     * @throws Exception  problem reading
      */
     public String readSystemResource(String path) throws Exception {
         InputStream stream = getInputStream(path);
@@ -1683,27 +1683,28 @@ public class StorageManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get an InputStream for the path
      *
-     * @param path _more_
+     * @param path  the path
      *
-     * @return _more_
+     * @return  the InputStream
      *
-     * @throws Exception _more_
+     * @throws Exception  problem getting stream
      */
     public InputStream getInputStream(String path) throws Exception {
         checkPath(path);
+
         return IOUtil.getInputStream(path, getClass());
     }
 
     /**
-     * _more_
+     * Get a FileInputStream for the path
      *
-     * @param path _more_
+     * @param path  the path
      *
-     * @return _more_
+     * @return  the FileInputStream
      *
-     * @throws Exception _more_
+     * @throws Exception  problem opening stream
      */
     public FileInputStream getFileInputStream(String path) throws Exception {
         return getFileInputStream(new File(path));
@@ -1721,14 +1722,16 @@ public class StorageManager extends RepositoryManager {
      */
     public FileInputStream getFileInputStream(File file) throws Exception {
         checkReadFile(file);
+
         return new FileInputStream(file);
     }
 
     /**
-     * This checks to ensure that the given file is under one of the allowable places to
-     * write to. This includes the storage dir, the entries dir, uploads dir and the tmp dir.
-     * In general a server process should be configured to only be allowed to have write access
-     * to limited directories
+     * This checks to ensure that the given file is under one of the
+     * allowable places to write to. This includes the storage dir,
+     * the entries dir, uploads dir and the tmp dir.  In general a server
+     * process should be configured to only be allowed to have write access
+     * to limited directories.
      *
      * @param file to check
      *
@@ -1738,6 +1741,7 @@ public class StorageManager extends RepositoryManager {
      */
     public FileOutputStream getFileOutputStream(File file) throws Exception {
         checkWriteFile(file);
+
         return getUncheckedFileOutputStream(file);
     }
 

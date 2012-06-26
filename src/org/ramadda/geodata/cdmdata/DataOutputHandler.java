@@ -27,109 +27,81 @@ import opendap.dap.DAP2Exception;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
-//import ucar.nc2.dt.PointObsDataset;
-//import ucar.nc2.dt.PointObsDatatype;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYAreaRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.ui.RectangleInsets;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.*;
-
-import org.jfree.chart.*;
-import org.jfree.chart.annotations.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.entity.*;
-import org.jfree.chart.event.*;
-import org.jfree.chart.labels.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.data.*;
-import org.jfree.data.general.*;
-import org.jfree.data.time.*;
-import org.jfree.data.xy.*;
-import org.jfree.ui.*;
-
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Link;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Resource;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.Service;
+import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.auth.AuthorizationMethod;
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.map.MapInfo;
+import org.ramadda.repository.map.MapProperties;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputHandler.State;
+import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.ObjectPool;
-
-
-
 import org.ramadda.util.TempDir;
 
-import org.w3c.dom.*;
-
-
+import org.w3c.dom.Element;
 
 import thredds.server.ncSubset.GridPointWriter;
 import thredds.server.ncSubset.QueryParams;
-
 import thredds.server.opendap.GuardedDatasetImpl;
-
-
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 
-import ucar.nc2.Attribute;
-
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
-
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
-
-
-
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.nc2.dt.TypedDatasetFactory;
-
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
-import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
-
 import ucar.nc2.ft.FeatureCollection;
-
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.NestedPointFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.point.*;
-
 import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateType;
 import ucar.nc2.util.DiskCache2;
 
 import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.ui.ImageUtils;
-
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
@@ -139,42 +111,34 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
 
-import ucar.visad.Util;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import java.io.*;
-
-import java.net.*;
-
-import java.text.SimpleDateFormat;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
-import javax.servlet.*;
-
-import javax.servlet.http.*;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * A class for handling CDM data output
  */
 public class DataOutputHandler extends OutputHandler {
 
@@ -379,13 +343,13 @@ public class DataOutputHandler extends OutputHandler {
     /** point close counter */
     Counter pointCloseCounter = new Counter();
 
-    /** _more_          */
+    /** the CDM manager */
     private static CdmManager cdmManager;
 
     /**
-     * _more_
+     * Get the CdmManager
      *
-     * @return _more_
+     * @return  the CDM data manager
      */
     public CdmManager getCdmManager() {
         if (cdmManager == null) {
@@ -894,7 +858,7 @@ public class DataOutputHandler extends OutputHandler {
             GridPointWriter writer =
                 new GridPointWriter(gds,
                                     new DiskCache2(getRepository()
-                                        .getStorageManager().getTmpDir()
+                                        .getStorageManager().getScratchDir().getDir()
                                         .toString(), false, 0, 0));
             OutputStream outStream =
                 (qp.acceptType.equals(QueryParams.NETCDF))
@@ -1007,7 +971,7 @@ public class DataOutputHandler extends OutputHandler {
                                FORMAT_TIMESERIES),
         // Comment out until it works better to handled dates
         //new TwoFacedObject("Interactive Time Series",
-        //    FORMAT_TIMESERIES_CHART),
+        //                   FORMAT_TIMESERIES_CHART),
         new TwoFacedObject("Comma Separated Values (CSV)",
                            QueryParams.CSV) });
 
@@ -1845,14 +1809,22 @@ public class DataOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * Get the services for the request
+     *
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param services  the list of services
+     */
     @Override
-    public  void getServices(Request request, Entry entry, List<Service> services) {
+    public void getServices(Request request, Entry entry,
+                            List<Service> services) {
         super.getServices(request, entry, services);
         if ( !getCdmManager().canLoadAsCdm(entry)) {
             return;
         }
-        String  url         = getAbsoluteOpendapUrl(request, entry);
-        services.add(new Service("opendap","OpenDAP Link", url));
+        String url = getAbsoluteOpendapUrl(request, entry);
+        services.add(new Service("opendap", "OpenDAP Link", url));
     }
 
 
