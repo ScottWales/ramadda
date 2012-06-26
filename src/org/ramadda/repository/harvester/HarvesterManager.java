@@ -215,10 +215,17 @@ public class HarvesterManager extends RepositoryManager {
 
             Class  c         = null;
 
+            //Hack, hack... 
+            //handle package changes 
             className = className.replace("ucar.unidata.repository",
                                           "org.ramadda.repository");
             className = className.replace("ucar/unidata/repository",
                                           "org/ramadda/repository");
+
+            className = className.replace("org.ramadda.geodata.data",
+                                          "org.ramadda.geodata.cdmdata");
+            className = className.replace("org/ramadda/geodata/data",
+                                          "org/ramadda/geodata/cdmdata");
             try {
                 c = Misc.findClass(className);
             } catch (ClassNotFoundException cnfe1) {
