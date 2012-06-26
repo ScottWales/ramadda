@@ -49,7 +49,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
     public static final String OPENDAP_SUFFIX = "dodsC/entry.das";
 
     /** the output handler to pass opendap calls to */
-    private DataOutputHandler dataOutputHandler;
+    private CdmDataOutputHandler dataOutputHandler;
 
     /**
      * ctor
@@ -115,7 +115,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
         //Always use the full /entry/show/... url
         //        if(getEntryManager().isSynthEntry(entry.getId())) {
         url = "/" + ARG_OUTPUT + ":"
-              + Request.encodeEmbedded(DataOutputHandler.OUTPUT_OPENDAP)
+              + Request.encodeEmbedded(CdmDataOutputHandler.OUTPUT_OPENDAP)
               + "/" + ARG_ENTRYID + ":"
               + Request.encodeEmbedded(entry.getId()) + "/"
               + getStorageManager().getFileTail(entry) + "/" + OPENDAP_SUFFIX;
@@ -141,8 +141,8 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
     public Result processOpendapRequest(Request request) throws Exception {
         if (dataOutputHandler == null) {
             dataOutputHandler =
-                (DataOutputHandler) getRepository().getOutputHandler(
-                    DataOutputHandler.OUTPUT_OPENDAP);
+                (CdmDataOutputHandler) getRepository().getOutputHandler(
+                    CdmDataOutputHandler.OUTPUT_OPENDAP);
         }
         //Find the entry path
         String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;

@@ -22,7 +22,7 @@ package org.ramadda.geodata.idv;
 
 
 
-import org.ramadda.geodata.cdmdata.DataOutputHandler;
+import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.geodata.cdmdata.CdmManager;
 
 import org.ramadda.repository.*;
@@ -110,9 +110,9 @@ public class IdvWebstartOutputHandler extends OutputHandler {
         return getDataOutputHandler().getCdmManager();
     }
 
-    public DataOutputHandler getDataOutputHandler() throws Exception {
-        return (DataOutputHandler) getRepository().getOutputHandler(
-                                                                    DataOutputHandler.OUTPUT_OPENDAP.toString());
+    public CdmDataOutputHandler getDataOutputHandler() throws Exception {
+        return (CdmDataOutputHandler) getRepository().getOutputHandler(
+                                                                    CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 

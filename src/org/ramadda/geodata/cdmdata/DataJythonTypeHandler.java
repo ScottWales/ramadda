@@ -91,9 +91,9 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
      *
      * @throws Exception _more_
      */
-    public DataOutputHandler getDataOutputHandler() throws Exception {
-        return (DataOutputHandler) getRepository().getOutputHandler(
-            DataOutputHandler.OUTPUT_OPENDAP.toString());
+    public CdmDataOutputHandler getDataOutputHandler() throws Exception {
+        return (CdmDataOutputHandler) getRepository().getOutputHandler(
+            CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
@@ -123,7 +123,7 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
                                 Entry theEntry)
             throws Exception {
         super.processEntry(request, interp, info, processInfo, theEntry);
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         DataProcessInfo   dataProcessInfo   = (DataProcessInfo) processInfo;
 
         String path = dataOutputHandler.getCdmManager().getPath(theEntry);
@@ -172,7 +172,7 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
                            JythonTypeHandler.ProcessInfo processInfo)
             throws Exception {
         super.cleanup(request, entry, interp, processInfo);
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         DataProcessInfo   dataProcessInfo   = (DataProcessInfo) processInfo;
         for (DataSource dataSource : dataProcessInfo.dataSources) {
             dataSource.doRemove();

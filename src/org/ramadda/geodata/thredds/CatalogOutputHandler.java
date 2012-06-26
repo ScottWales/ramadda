@@ -518,9 +518,9 @@ public class CatalogOutputHandler extends OutputHandler {
         return getDataOutputHandler().getCdmManager();
     }
 
-    public DataOutputHandler getDataOutputHandler() throws Exception {
-        return (DataOutputHandler) getRepository().getOutputHandler(
-                                                                    DataOutputHandler.OUTPUT_OPENDAP.toString());
+    public CdmDataOutputHandler getDataOutputHandler() throws Exception {
+        return (CdmDataOutputHandler) getRepository().getOutputHandler(
+                                                                    CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 

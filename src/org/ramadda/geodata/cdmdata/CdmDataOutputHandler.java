@@ -140,7 +140,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A class for handling CDM data output
  */
-public class DataOutputHandler extends OutputHandler {
+public class CdmDataOutputHandler extends OutputHandler {
 
     /** OPeNDAP icon */
     public static final String ICON_OPENDAP = "/data/opendap.gif";
@@ -367,26 +367,26 @@ public class DataOutputHandler extends OutputHandler {
 
 
     /**
-     * Create a new DataOutputHandler
+     * Create a new CdmDataOutputHandler
      *
      * @param repository  the repository
      * @param name        the name of this handler
      *
      * @throws Exception problem creating class
      */
-    public DataOutputHandler(Repository repository, String name)
+    public CdmDataOutputHandler(Repository repository, String name)
             throws Exception {
         super(repository, name);
     }
 
     /**
-     *     Create a DataOutputHandler
+     *     Create a CdmDataOutputHandler
      *
      *     @param repository  the repository
      *     @param element     the element
      *     @throws Exception On badness
      */
-    public DataOutputHandler(Repository repository, Element element)
+    public CdmDataOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         getCdmManager();
@@ -485,7 +485,7 @@ public class DataOutputHandler extends OutputHandler {
         if ( !canLoadAsCdm) {
             long t2 = System.currentTimeMillis();
             if ((t2 - t1) > 1) {
-                //                System.err.println("DataOutputHandler (cdm) getEntryLinks  "
+                //                System.err.println("CdmDataOutputHandler (cdm) getEntryLinks  "
                 //                                   + entry.getName() + " time:" + (t2 - t1));
             }
 
@@ -515,7 +515,7 @@ public class DataOutputHandler extends OutputHandler {
         links.add(cdlLink);
         long t2 = System.currentTimeMillis();
         if ((t2 - t1) > 1) {
-            //            System.err.println("DataOutputHandler  getEntryLinks  "
+            //            System.err.println("CdmDataOutputHandler  getEntryLinks  "
             //                               + entry.getName() + " time:" + (t2 - t1));
         }
     }

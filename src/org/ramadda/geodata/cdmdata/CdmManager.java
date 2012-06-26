@@ -279,7 +279,7 @@ public class CdmManager extends RepositoryManager {
 
 
     /**
-     * Create a new DataOutputHandler
+     * Create a new CdmManager
      *
      * @param repository  the repository
      * @param name        the name of this handler
@@ -1280,7 +1280,7 @@ public class CdmManager extends RepositoryManager {
     public static void main(String[] args) throws Exception {
         Repository repository = new Repository(new String[] {}, 8080);
         repository.initProperties(null);
-        DataOutputHandler dop = new DataOutputHandler(repository, "test");
+        CdmDataOutputHandler dop = new CdmDataOutputHandler(repository, "test");
         CdmManager        cdmManager = new CdmManager(repository);
         String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
         for (String f : args) {

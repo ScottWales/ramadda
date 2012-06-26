@@ -153,9 +153,9 @@ public class LasOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public DataOutputHandler getDataOutputHandler() throws Exception {
-        return (DataOutputHandler) getRepository().getOutputHandler(
-            DataOutputHandler.OUTPUT_OPENDAP.toString());
+    public CdmDataOutputHandler getDataOutputHandler() throws Exception {
+        return (CdmDataOutputHandler) getRepository().getOutputHandler(
+            CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
@@ -173,7 +173,7 @@ public class LasOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         if (state.group != null) {
             for (Entry child : state.getAllEntries()) {
                 if (child.getType().equals(
@@ -272,7 +272,7 @@ public class LasOutputHandler extends OutputHandler {
     public Result outputLas(Request request, List<Entry> entries)
             throws Exception {
 
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         Document          doc               = XmlUtil.makeDocument();
 
         //create the root element

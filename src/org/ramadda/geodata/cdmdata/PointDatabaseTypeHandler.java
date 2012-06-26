@@ -810,7 +810,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         long      tt1        = System.currentTimeMillis();
         //        for(int i=0;i<200;i++) {
 
-        PointFeatureIterator pfi = DataOutputHandler.getPointIterator(fdp);
+        PointFeatureIterator pfi = CdmDataOutputHandler.getPointIterator(fdp);
         while (pfi.hasNext()) {
             PointFeature                      po = (PointFeature) pfi.next();
             ucar.unidata.geoloc.EarthLocation el = po.getLocation();

@@ -102,7 +102,7 @@ public class NCOOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_NCO_NCWA =
         new OutputType("NCO- Weighted Average", "nco.ncwa",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/data/nco.png", DataOutputHandler.GROUP_DATA);
+                       "/data/nco.png", CdmDataOutputHandler.GROUP_DATA);
 
 
 
@@ -267,9 +267,9 @@ public class NCOOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public DataOutputHandler getDataOutputHandler() throws Exception {
-        return (DataOutputHandler) getRepository().getOutputHandler(
-            DataOutputHandler.OUTPUT_OPENDAP.toString());
+    public CdmDataOutputHandler getDataOutputHandler() throws Exception {
+        return (CdmDataOutputHandler) getRepository().getOutputHandler(
+            CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
@@ -295,7 +295,7 @@ public class NCOOutputHandler extends OutputHandler {
             return outputNCO(request, entry);
         }
 
-        DataOutputHandler dataOutputHandler = getDataOutputHandler();
+        CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         NetcdfDataset     dataset           =
             NetcdfDataset.openDataset(entry.getResource().getPath());
         List<Variable>       variables  = dataset.getVariables();

@@ -3,7 +3,7 @@
 <!--
   <outputhandler class="org.ramadda.geodata.cdmdata.LasOutputHandler" name="LAS XML"/>
 -->
-  <outputhandler class="org.ramadda.geodata.cdmdata.DataOutputHandler" name="Data" required="true"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.CdmDataOutputHandler" name="CDM Data" required="true"/>
   <outputhandler class="org.ramadda.geodata.cdmdata.LdmOutputHandler" name="LDM Insert"/>
   <outputhandler class="org.ramadda.geodata.cdmdata.NCOOutputHandler" name="NetCDF Operators"/>
 </outputhandlers>
