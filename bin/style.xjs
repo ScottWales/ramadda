@@ -5496,7 +5496,7 @@
     <object class="jindent.settings.StringSetting"> 
      <string>environment.conventionName</string> 
      <void property="value"> 
-      <string>IDV Convention</string> 
+      <string>RAMADDA Convention</string> 
      </void> 
     </object> 
    </void> 
