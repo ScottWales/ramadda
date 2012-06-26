@@ -244,9 +244,10 @@ public class MultiJarClassLoader extends ClassLoader {
      * @return The class.
      */
     private Class loadClassFromJar(String entryName) {
+        MyJarEntry jarEntry = null;
         try {
             //            System.err.println("   entry:" + entryName);
-            MyJarEntry jarEntry = findJarEntry(entryName);
+            jarEntry = findJarEntry(entryName);
             Class      c        = loadedClasses.get(entryName);
             if (c != null) {
                 return c;
@@ -262,6 +263,7 @@ public class MultiJarClassLoader extends ClassLoader {
             checkClass(c);
             return c;
         } catch (Exception exc) {
+            System.err.println ("RAMADDA: Error loading class from:" +jarEntry.jarFile +" class:" + entryName);
             exc.printStackTrace();
             throw new IllegalArgumentException("Could not load class:"
                     + entryName + "\n" + exc);
