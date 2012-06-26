@@ -53,7 +53,8 @@ import java.util.List;
 import java.util.Date;
 
 
-import ucar.unidata.gis.shapefile.EsriShapefile;
+import ucar.unidata.gis.*;
+import ucar.unidata.gis.shapefile.*;
 
 /**
  */
@@ -72,20 +73,31 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
         super(repository, node);
     }
 
+    private static final int IDX_LON = 0;
+    private static final int IDX_LAT = 1;
 
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
         throws Exception {
         if(!entry.isFile()) return;
-        /*
         EsriShapefile shapefile = new EsriShapefile(entry.getFile().toString());
         Rectangle2D bounds = shapefile.getBoundingBox();
-        entry.setNorth(bounds.getY()+bounds.getHeight());
-        entry.setSouth(bounds.getY());
-        entry.setWest(bounds.getX());
-        entry.setEast(bounds.getX()+bounds.getWidth());
-        */
+        double[][] lonlat = new double[][]{{bounds.getX()},
+                                           {bounds.getY()+bounds.getHeight()}};
+        ProjFile projFile  = shapefile.getProjFile();
+        if(projFile!=null)
+            lonlat = projFile.convertToLonLat(lonlat);
+        entry.setNorth(lonlat[IDX_LAT][0]);
+        entry.setWest(lonlat[IDX_LON][0]);
+        lonlat[IDX_LAT][0] = bounds.getY();
+        lonlat[IDX_LON][0] = bounds.getX()+bounds.getWidth();
+        if(projFile!=null)
+            lonlat = projFile.convertToLonLat(lonlat);
+        entry.setSouth(lonlat[IDX_LAT][0]);
+        entry.setEast(lonlat[IDX_LON][0]);
     }
+
+
 
 
 
@@ -106,35 +118,35 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     */
     @Override
-    public boolean addToMap(Request request, Entry entry, MapInfo map)     {
-            /*
+        public boolean addToMap(Request request, Entry entry, MapInfo map)     {
         try {
+            if(!entry.isFile()) return true;
+            //TODO: stream through the shapes
+            EsriShapefile shapefile = new EsriShapefile(entry.getFile().toString());
+            List features = shapefile.getFeatures();
 
-            Element root =readXml(entry);
-            int cnt = 0;
-            for(Element child: ((List<Element>)XmlUtil.findChildren(root, GpxUtil.TAG_WPT))) {
-                if(cnt++>500) break;
-                String name = XmlUtil.getGrandChildText(child, GpxUtil.TAG_NAME,"");
-                String desc = XmlUtil.getGrandChildText(child, GpxUtil.TAG_DESC,"");
-                String sym = XmlUtil.getGrandChildText(child, GpxUtil.TAG_SYM,"");
-                double lat = XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,0.0);
-                double lon = XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,0.0);
-                String info = name+"<br>" + desc;
-                info = info.replaceAll("\n","<br>");
-                info = info.replaceAll("'","\\'");
-                map.addMarker("id", lat, lon, null, info);
-            }
-
-            for(Element track: ((List<Element>)XmlUtil.findChildren(root, GpxUtil.TAG_TRK))) {
-                for(Element trackSeg: ((List<Element>)XmlUtil.findChildren(track, GpxUtil.TAG_TRKSEG))) {
+            for(int i=0;i<features.size();i++) {
+                EsriShapefile.EsriFeature gf =
+                    (EsriShapefile.EsriFeature) features.get(i);
+                java.util.Iterator pi = gf.getGisParts();
+                while (pi.hasNext()) {
+                    GisPart   gp   = (GisPart) pi.next();
+                    int       np   = gp.getNumPoints();
+                    double[]  xx   = gp.getX();
+                    double[]  yy   = gp.getY();
+                    //              map.addMarker("id", lat, lon, null, info);
                     List<double[]> points = new ArrayList<double[]>();
-                    for(Element trackPoint: ((List<Element>)XmlUtil.findChildren(trackSeg, GpxUtil.TAG_TRKPT))) {
-                        double lat = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LAT,0.0);
-                        double lon = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LON,0.0);
-                        points.add(new double[]{lat,lon});
+                    for(int ptIdx=0;ptIdx<xx.length;ptIdx++) {
+                        points.add(new double[]{yy[ptIdx],xx[ptIdx]});
                     }
+                    //                double lat = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LAT,0.0);
+                    //                double lon = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LON,0.0);
+                    //                points.add(new double[]{lat,lon});
                     if(points.size()>1) {
+                        System.err.println("points:" + points.size());
                         map.addLines("", points);
                     }
                 }
@@ -143,9 +155,8 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
             throw new RuntimeException(exc);
         }
         return false;
-            */
-            return true;
     }
+
 
 
 

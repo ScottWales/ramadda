@@ -46,8 +46,6 @@ import     ucar.unidata.gis.shapefile.EsriShapefile;
 public class GpxOutputHandler extends OutputHandler {
 
 
-    private EsriShapefile shapefile;
-
     /** Map output type */
     public static final OutputType OUTPUT_GPX =
         new OutputType("GPS GPX File", "gpx",
