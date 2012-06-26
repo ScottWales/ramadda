@@ -1,6 +1,13 @@
 <types>
 
+
+
   <type name="geo_gpx"  description="GPX GPS File"  category="Geo Data" handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
+     <property name="icon" value="/map/tracklog.gif"/>
+   </type>
+
+
+  <type name="geo_shapefile"  description="Shapefile"  category="Geo Data" handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)">
      <property name="icon" value="/icons/map.png"/>
    </type>
 

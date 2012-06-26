@@ -37,7 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import     ucar.unidata.gis.shapefile.EsriShapefile;
 
 /**
  *
@@ -46,11 +46,16 @@ import java.util.List;
 public class GpxOutputHandler extends OutputHandler {
 
 
+    private EsriShapefile shapefile;
+
     /** Map output type */
     public static final OutputType OUTPUT_GPX =
         new OutputType("GPS GPX File", "gpx",
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
+
+
+
 
 
     /**
