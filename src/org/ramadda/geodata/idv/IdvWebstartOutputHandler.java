@@ -22,8 +22,8 @@ package org.ramadda.geodata.idv;
 
 
 
-import org.ramadda.geodata.data.DataOutputHandler;
-import org.ramadda.geodata.data.CdmManager;
+import org.ramadda.geodata.cdmdata.DataOutputHandler;
+import org.ramadda.geodata.cdmdata.CdmManager;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;

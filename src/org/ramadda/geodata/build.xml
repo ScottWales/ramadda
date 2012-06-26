@@ -43,7 +43,7 @@
       <echo message="Building RAMADDA plugins"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/dif/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/thredds/build.xml" inheritAll="false"/>
-      <ant antfile="${srcdir}/org/ramadda/geodata/data/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/cdmdata/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/idv/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/publisher/build.xml" inheritAll="false"/>
     </target>

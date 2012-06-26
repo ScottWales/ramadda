@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.data;
+package org.ramadda.geodata.cdmdata;
 
 
 import org.jfree.chart.*;

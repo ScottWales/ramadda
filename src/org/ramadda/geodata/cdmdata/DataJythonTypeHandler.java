@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.data;
+package org.ramadda.geodata.cdmdata;
 
 
 import org.apache.commons.net.ftp.*;
@@ -27,7 +27,7 @@ import org.apache.commons.net.ftp.*;
 import org.python.core.*;
 import org.python.util.*;
 
-import org.ramadda.geodata.data.*;
+import org.ramadda.geodata.cdmdata.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 

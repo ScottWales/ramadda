@@ -21,7 +21,7 @@
 package org.ramadda.geodata.thredds;
 
 
-import org.ramadda.geodata.data.*;
+import org.ramadda.geodata.cdmdata.*;
 
 
 

@@ -1,7 +1,7 @@
 <types>
 
 
-  <type name="opendaplink"  description="OpenDAP Link" handler="org.ramadda.geodata.data.OpendapLinkTypeHandler" category="Geo Data">
+  <type name="opendaplink"  description="OpenDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geo Data">
      <property name="icon" value="/data/opendap.gif"/>
      <property name="form.date.show" value="false"/>
      <property name="form.file.show" value="false"/>
@@ -9,7 +9,7 @@
   </type>
 
 
-  <type name="gridaggregation"  description="Grid Aggregation" handler="org.ramadda.geodata.data.GridAggregationTypeHandler" category="Geo Data">
+  <type name="gridaggregation"  description="Grid Aggregation" handler="org.ramadda.geodata.cdmdata.GridAggregationTypeHandler" category="Geo Data">
      <column name="type" type="enumeration" values="JoinExisting,Union"  label="Aggregation type" cansearch="false" showinhtml="true"/>
      <column name="coordinate" type="string" default="time"  label="Time Coordinate" cansearch="false" showinhtml="true"/>
      <column name="fields" rows="5" type="string"  label="Ensemble Fields" cansearch="false" showinhtml="true" suffix="Not implemented yet"/>
@@ -48,7 +48,7 @@
   </type>
 -->
 
-  <type name="pointdatabase"  description="Point Database" handler="org.ramadda.geodata.data.PointDatabaseTypeHandler" category="Geo Data">
+  <type name="pointdatabase"  description="Point Database" handler="org.ramadda.geodata.cdmdata.PointDatabaseTypeHandler" category="Geo Data">
      <property name="icon" value="/icons/database.png"/>
      <property name="form.date.show" value="false"/>
 <!--     <property name="form.area.show" value="false"/> -->
@@ -69,11 +69,11 @@
 
 
 <!--
-  <type name="level3radar" datatype="radar" description="Level 3 Radar File" handler="org.ramadda.geodata.data.Level3RadarTypeHandler">
+  <type name="level3radar" datatype="radar" description="Level 3 Radar File" handler="org.ramadda.geodata.cdmdata.Level3RadarTypeHandler">
 	<column name="station" group="Level 3 Things" type="string" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station" 
-                properties="/org/ramadda/geodata/data/resources/resources/level3radar.station.properties"/>
+                properties="/org.ramadda.geodata.cdmdata/resources/resources/level3radar.station.properties"/>
 	<column name="product" type="string" group="Level 3 Things"  isindex="true" cansearch="true" canlist="true" searchtype="select" label="Product"  
-                properties="/org/ramadda/geodata/data/resources/level3radar.product.properties"/>
+                properties="/org.ramadda.geodata.cdmdata/resources/level3radar.product.properties"/>
   </type>
 
 

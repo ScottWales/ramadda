@@ -20,7 +20,7 @@
 
 package org.ramadda.geodata.idv;
 
-import org.ramadda.geodata.data.*;
+import org.ramadda.geodata.cdmdata.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;

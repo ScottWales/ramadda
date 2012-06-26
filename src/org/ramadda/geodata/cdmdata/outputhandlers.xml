@@ -1,9 +1,9 @@
 <outputhandlers>
-  <outputhandler class="org.ramadda.geodata.data.WmsImageOutputHandler" name="WMS"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.WmsImageOutputHandler" name="WMS"/>
 <!--
-  <outputhandler class="org.ramadda.geodata.data.LasOutputHandler" name="LAS XML"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.LasOutputHandler" name="LAS XML"/>
 -->
-  <outputhandler class="org.ramadda.geodata.data.DataOutputHandler" name="Data" required="true"/>
-  <outputhandler class="org.ramadda.geodata.data.LdmOutputHandler" name="LDM Insert"/>
-  <outputhandler class="org.ramadda.geodata.data.NCOOutputHandler" name="NetCDF Operators"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.DataOutputHandler" name="Data" required="true"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.LdmOutputHandler" name="LDM Insert"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.NCOOutputHandler" name="NetCDF Operators"/>
 </outputhandlers>

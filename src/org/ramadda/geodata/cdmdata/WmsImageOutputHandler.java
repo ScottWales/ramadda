@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.data;
+package org.ramadda.geodata.cdmdata;
 
 
 import org.ramadda.repository.*;
@@ -259,7 +259,7 @@ public class WmsImageOutputHandler extends OutputHandler {
             throws Exception {
         if (wmsTemplate == null) {
             wmsTemplate = getRepository().getResource(
-                "/org/ramadda/geodata/data/resources/wmstemplate.xml");
+                "/org.ramadda.geodata.cdmdata/resources/wmstemplate.xml");
         }
         String url = request.getAbsoluteUrl(
                          request.entryUrl(
