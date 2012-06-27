@@ -53,6 +53,12 @@ public class IdvBundlesOutputHandler extends OutputHandler {
     /** depth in stack to go */
     private int depth = 0;
 
+    /** Default top level category */
+    private final static String DEFAULT_TOPCATEGORY = "Toolbar";
+
+    /** Default top level category */
+    private final static String ARG_TOP = "top";
+
     /** Map output type */
     public static final OutputType OUTPUT_BUNDLES =
         new OutputType("IDV Bundles XML", "idv.bundles",
@@ -122,24 +128,26 @@ public class IdvBundlesOutputHandler extends OutputHandler {
                                && (subGroups.size() == 0);
         depth = request.get(ARG_DEPTH, 2);  //get grandChildren
 
-        String   title = (justOneEntry
-                          ? entries.get(0).getName()
-                          : group.getName());
-        Document doc   = XmlUtil.makeDocument();
-        Element  root  = XmlUtil.create(doc, TAG_BUNDLES, null,
+        // can't use category since that is the data type
+        String   topCategory = request.getString(ARG_TOP, DEFAULT_TOPCATEGORY);
+
+        String   title       = (justOneEntry
+                                ? entries.get(0).getName()
+                                : group.getName());
+        Document doc         = XmlUtil.makeDocument();
+        Element  root        = XmlUtil.create(doc, TAG_BUNDLES, null,
                                       new String[] { ATTR_NAME,
                 title });
-        String category = "Toolbar" + (justOneEntry
-                                       ? ""
-                                       : ">" + title);
+
         if (justOneEntry) {
-            addEntryToXml(request, group, root, category, 1);
+            addEntryToXml(request, group, root, topCategory, 1);
         } else {
+            topCategory += ">" + title;
             for (Entry entry : entries) {
-                addEntryToXml(request, entry, root, category, 1);
+                addEntryToXml(request, entry, root, topCategory, 1);
             }
             for (Entry sg : subGroups) {
-                addEntryToXml(request, sg, root, category, 1);
+                addEntryToXml(request, sg, root, topCategory, 1);
             }
         }
 
