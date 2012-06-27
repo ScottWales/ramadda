@@ -46,10 +46,15 @@
           <zipfileset dir="${dist_dir}/plugins" includes="*"/>
       </zip>
       <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
+      <antcall target="allplugins.zip"/>
+   </target>
+
+
+    <target name="allplugins.zip" depends="init">
       <zip destfile="${allplugins}">
           <zipfileset dir="${dist_dir}/plugins" includes="*"/>
       </zip>
-   </target>
+    </target>
 
 
     <target name="allplugins" depends="init,purgeplugins">
