@@ -149,7 +149,7 @@ public class ShapefileOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root));
         Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
-        result.setReturnFilename(getStorageManager().getFileTail(entry) +".kml");
+        result.setReturnFilename(IOUtil.stripExtension(getStorageManager().getFileTail(entry)) +".kml");
         return result;
     }
 
