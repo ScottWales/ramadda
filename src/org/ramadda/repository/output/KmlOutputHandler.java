@@ -29,7 +29,7 @@ import org.ramadda.repository.metadata.Metadata;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.data.gis.KmlUtil;
+
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -39,6 +39,8 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.data.gis.KmlUtil;
+
 
 import java.awt.Color;
 
@@ -64,6 +66,9 @@ import java.util.Properties;
  * @version $Revision: 1.3 $
  */
 public class KmlOutputHandler extends OutputHandler {
+
+    public static final String MIME_KML = "application/vnd.google-earth.kml+xml";
+
 
     /** _more_ */
     public static final String KML_ATTRS =
@@ -330,7 +335,7 @@ public class KmlOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root));
-        return new Result(title, sb, "application/vnd.google-earth.kml+xml");
+        return new Result(title, sb, MIME_KML);
 
     }
 
