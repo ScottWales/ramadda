@@ -60,6 +60,9 @@ import ucar.unidata.gis.shapefile.*;
  */
 public class ShapefileTypeHandler extends GenericTypeHandler {
 
+    private static final int IDX_LON = 0;
+    private static final int IDX_LAT = 1;
+
 
     /**
      * _more_
@@ -73,8 +76,6 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
         super(repository, node);
     }
 
-    private static final int IDX_LON = 0;
-    private static final int IDX_LAT = 1;
 
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
@@ -99,55 +100,36 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
 
 
 
-
-
-    public void getEntryLinks(Request request, Entry entry, List<Link> links)
-            throws Exception {
-        super.getEntryLinks(request, entry, links);
-        /*        links.add(
-                  new Link(
-                           request.entryUrl(getRepository().URL_ENTRY_ACCESS, entry,"type","kml"),
-                           getRepository().iconUrl(ICON_KML), "Convert Shapefile to KML",
-                           OutputType.TYPE_FILE));
-        */
-    }
-
-
-    public Result processEntryAccess(Request request, Entry entry) throws Exception {
-        return null;
-    }
-
-
     /**
      */
     @Override
-        public boolean addToMap(Request request, Entry entry, MapInfo map)     {
+    public boolean addToMap(Request request, Entry entry, MapInfo map)     {
         try {
             if(!entry.isFile()) return true;
             //TODO: stream through the shapes
             EsriShapefile shapefile = new EsriShapefile(entry.getFile().toString());
             List features = shapefile.getFeatures();
-
+            int totalPoints = 0;
+            int MAX_POINTS = 10000;
             for(int i=0;i<features.size();i++) {
+                if(totalPoints>MAX_POINTS) break;
                 EsriShapefile.EsriFeature gf =
                     (EsriShapefile.EsriFeature) features.get(i);
                 java.util.Iterator pi = gf.getGisParts();
                 while (pi.hasNext()) {
+                    if(totalPoints>MAX_POINTS) break;
                     GisPart   gp   = (GisPart) pi.next();
-                    int       np   = gp.getNumPoints();
                     double[]  xx   = gp.getX();
                     double[]  yy   = gp.getY();
-                    //              map.addMarker("id", lat, lon, null, info);
                     List<double[]> points = new ArrayList<double[]>();
                     for(int ptIdx=0;ptIdx<xx.length;ptIdx++) {
                         points.add(new double[]{yy[ptIdx],xx[ptIdx]});
                     }
-                    //                double lat = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LAT,0.0);
-                    //                double lon = XmlUtil.getAttribute(trackPoint, GpxUtil.ATTR_LON,0.0);
-                    //                points.add(new double[]{lat,lon});
+                    totalPoints += points.size();
                     if(points.size()>1) {
-                        System.err.println("points:" + points.size());
                         map.addLines("", points);
+                    } else if(points.size()==1) {
+                        map.addMarker("id", points.get(0)[0],points.get(0)[1], null, "");
                     }
                 }
             }
