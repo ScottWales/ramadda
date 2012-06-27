@@ -22,39 +22,41 @@
 package org.ramadda.geodata.idv;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.output.*;
-import org.w3c.dom.*;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Link;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import ucar.unidata.xml.XmlUtil;
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import org.ramadda.util.HtmlUtils;
 
 
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import     ucar.unidata.gis.shapefile.EsriShapefile;
+
 
 /**
  * A class to output the IDV bundles XML
  */
 public class IdvBundlesOutputHandler extends OutputHandler {
 
-    private static final String ATTR_CATEGORY = "category";
-    private static final String ATTR_NAME = "name";
-    private static final String ATTR_URL = "url";
+    /** bundles XML tag */
     private static final String TAG_BUNDLES = "bundles";
+
+    /** bundle XML tag */
     private static final String TAG_BUNDLE = "bundle";
+
+    /** depth in stack to go */
+    private int depth = 0;
 
     /** Map output type */
     public static final OutputType OUTPUT_BUNDLES =
         new OutputType("IDV Bundles XML", "idv.bundles",
-                       OutputType.TYPE_FEEDS, "",
-                       "/idv/idv.gif");
+                       OutputType.TYPE_FEEDS, "", "/idv/idv.gif");
 
 
 
@@ -79,38 +81,22 @@ public class IdvBundlesOutputHandler extends OutputHandler {
      *
      * @param request  the Request
      * @param state    the repository State
-     * @param links    the links
+     * @param links    the links to add to
      *
      * @throws Exception  problem creating links
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        for (Entry entry : state.getAllEntries()) {
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                links.add(makeLink(request, state.getEntry(), OUTPUT_BUNDLES));
-                break;
+        if (state.getEntry() != null) {
+            for (Entry entry : state.getAllEntries()) {
+                if (isBundle(entry)) {
+                    links.add(makeLink(request, state.getEntry(),
+                                       OUTPUT_BUNDLES));
+
+                    break;
+                }
             }
         }
-    }
-
-
-    /**
-     * Output the entry
-     *
-     * @param request      the Request
-     * @param outputType   the type of output
-     * @param entry        the Entry to output
-     *
-     * @return  the Result
-     *
-     * @throws Exception  problem outputting entry
-     */
-    public Result outputEntry(Request request, OutputType outputType,
-                              Entry entry)
-            throws Exception {
-        List<Entry> entriesToUse = new ArrayList<Entry>();
-        entriesToUse.add(entry);
-        return outputBundlesXml(request, entry, entriesToUse);
     }
 
 
@@ -131,37 +117,89 @@ public class IdvBundlesOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        List<Entry> entriesToUse = new ArrayList<Entry>(subGroups);
-        entriesToUse.addAll(entries);
 
-        return outputBundlesXml(request, group, entriesToUse);
-    }
+        boolean justOneEntry = group.isDummy() && (entries.size() == 1)
+                               && (subGroups.size() == 0);
+        depth = request.get(ARG_DEPTH, 2);  //get grandChildren
 
-    public Result outputBundlesXml(Request request, Entry entry,
-                            List<Entry> entries)
-            throws Exception {
-        StringBuffer sb  = new StringBuffer();
-        sb.append(XmlUtil.openTag(TAG_BUNDLES));
-
-        for (Entry child : entries) {
-            if (!isBundle(child)) {
-                continue;
+        String   title = (justOneEntry
+                          ? entries.get(0).getName()
+                          : group.getName());
+        Document doc   = XmlUtil.makeDocument();
+        Element  root  = XmlUtil.create(doc, TAG_BUNDLES, null,
+                                      new String[] { ATTR_NAME,
+                title });
+        String category = "Toolbar" + (justOneEntry
+                                       ? ""
+                                       : ">" + title);
+        if (justOneEntry) {
+            addEntryToXml(request, group, root, category, 1);
+        } else {
+            for (Entry entry : entries) {
+                addEntryToXml(request, entry, root, category, 1);
             }
-            String name = child.getName();
-            String group = "foo";
-            sb.append(XmlUtil.tag(TAG_BUNDLE, 
-                    XmlUtil.attrs(
-                       new String[]{ATTR_CATEGORY, group, 
-                                    ATTR_NAME, name, 
-                                    ATTR_URL, child.getTypeHandler().getEntryResourceUrl(request, child)})));
+            for (Entry sg : subGroups) {
+                addEntryToXml(request, sg, root, category, 1);
+            }
         }
-        sb.append(XmlUtil.closeTag(TAG_BUNDLES));
 
-        Result result = new Result("bundles", sb, "text/xml");
-        result.setReturnFilename(IOUtil.stripExtension(entry.getName())+".bundles.xml");
+        StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
+        sb.append(XmlUtil.toString(root));
+        Result result = new Result(title, sb, "text/xml");
+        result.setReturnFilename(title + ".bundles.xml");
+
         return result;
+
+
     }
 
+    /**
+     * Add the entry to the root XML
+     *
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param root      the XML root node
+     * @param category  the bundle category
+     * @param level     the bundle level in the heirarchy (depth) from top
+     *
+     * @throws Exception  problem adding
+     */
+    public void addEntryToXml(Request request, Entry entry, Element root,
+                              String category, int level)
+            throws Exception {
+
+        if (level > depth) {
+            return;
+        }
+        if (entry.isGroup()) {
+            String      subCat   = category + ">" + entry.getName();
+            List<Entry> children = getEntryManager().getChildren(request,
+                                       entry);
+            for (Entry child : children) {
+                addEntryToXml(request, child, root, subCat, level + 1);
+            }
+        } else {
+            if ( !isBundle(entry)) {
+                return;
+            }
+            String name = entry.getName();
+            String url  = request.getAbsoluteUrl(
+                             entry.getTypeHandler().getEntryResourceUrl(
+                                 request, entry));
+            XmlUtil.create(TAG_BUNDLE, root, new String[] {
+                ATTR_CATEGORY, category, ATTR_NAME, name, ATTR_URL, url
+            });
+        }
+
+    }
+
+    /**
+     * Is this entry a bundle?
+     *
+     * @param entry  the Entry
+     *
+     * @return  true if a bundle
+     */
     private boolean isBundle(Entry entry) {
         return (entry.getResource().getPath().endsWith(".xidv")
                 || entry.getResource().getPath().endsWith(".zidv"));
