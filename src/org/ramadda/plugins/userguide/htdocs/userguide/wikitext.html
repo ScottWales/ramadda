@@ -1,0 +1,436 @@
+<html>
+<head>
+<title>Wiki Text</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="wiki.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Wikis" title="Previous: Wikis"></a> <a href="pagestyle.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Page Styles" title="Next: Page Styles"></a>  <a href="toc.html#wikitext.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">10.4 Wiki Text</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+
+
+There is always some repository entry associated with wiki text. This might
+be a specific <a href="wiki.html#wikipage">Wiki Entry</a>, 
+we might be treating
+the description of some arbitrary entry as wiki text 
+using the <a href="wiki.html#wikidesc">&lt;wiki&gt; tag</a>,
+or the wiki text might be coming from a <a href="pagestyle.html">Page Style</a>.
+
+
+<a name="editor"></a><div class="pagesubtitle">10.4.0 Wiki Editor</div> 
+In any of these cases RAMADDA provides a wiki text editor:
+<a name="image1"></a><div class="cimg"><a href="images/wikiedit.png"><img  src="images/wikiedit.png" border=0 width=600 alt="Wiki Text Editor" ></a><br><span class="caption">Image 1: Wiki Text Editor</span></div>
+<ul>
+<li>
+The  buttons allow you to add basic wiki markup.
+<li>
+The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
+(e.g., name, description, children entries, etc).
+<li>
+The Add entry id menu allows you to specify the entry to use in properties (see below).
+<li>
+The Add entry link menu adds wiki links to other entries.
+</ul>
+
+<a name="markup"></a><div class="pagesubtitle">10.4.1 Basic Markup</div> 
+
+The RAMADDA Wiki facility generally follows the format
+that Wikipedia follows. For example:
+<blockquote><pre>
+==Section Heading 1==
+===Section Heading 2===
+</pre></blockquote>
+
+A horizontal line:
+<blockquote><pre>
+----
+</pre></blockquote>
+
+Lists:
+<blockquote><pre>
+* bullet 1
+* bullet 2
+** sub bullet 1
+** sub bullet 2
+* bullet 3
+</pre></blockquote>
+
+
+See the 
+<a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
+Note: RAMADDA does not support the Wikipedia HTML table format. 
+For tables its best just to use HTML table markup.
+
+<a name="links"></a><div class="pagesubtitle">10.4.2 Linking to other entries</div> 
+Normally in a wiki a link to another page is of the form:
+<blockquote><pre>
+[[Page name]]
+</pre></blockquote>
+
+In RAMADDA you can use the name of another entry to create the link.
+You can use the Add entry link menu to select an entry. 
+This produces wiki text of the form:
+<blockquote><pre>
+[[entry id|Label to show for link]]
+</pre></blockquote>
+
+e.g.:
+<blockquote><pre>
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
+</pre></blockquote>
+
+You can also just specify an entry by name. Either an absolute path:
+<blockquote><pre>
+[[Top entry/Some other entry]]
+</pre></blockquote>
+
+Or relative to the wiki entry:
+<blockquote><pre>
+[[Some entry]]
+</pre></blockquote>
+
+
+If the entry with the given name does not exist then the link will take one to the
+create entry form.
+
+
+
+<a name="propertiesg"></a><div class="pagesubtitle">10.4.3 Wiki Properties</div> 
+You can also import content from the current Wiki Page entry or any other entry with the import  
+syntax:
+<blockquote><pre>{{property}}</pre></blockquote>
+
+e.g., if we wanted to show the information tabs for an entry we'd do:
+<blockquote><pre>{{information}}</pre></blockquote>
+
+
+For example, if we want to import the information block with it open:
+<blockquote><pre>{{information <i>open="true"</i>}}</pre></blockquote>
+
+This would give us:
+<div class="cimg"><a href="images/wikiinformation.png"><img  src="images/wikiinformation.png" border=0 alt="images/wikiinformation.png" ></a></div>
+
+
+Normally, all property tags refer to the relevant entry. However, you can specify another entry:
+<blockquote><pre>{{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre></blockquote>
+
+
+The entry value can be the ID of an entry, its name (or full path) or "parent" or "grandparent" to denote
+the parent entry (or its parent) of the current entry.
+The Add entry id menu in the editor toolbar allows you to select the entry to use. As a convenience this
+adds both the ID of the entry as well as its name. 
+
+<p>
+Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
+
+<blockquote><pre>{{someproperty <i>message="some message"</i>}}</pre></blockquote>
+
+
+<a name="basic"></a><div class="pagesubtitle">10.4.4 Basic Wiki Properties</div> 
+
+The first set of property tags show some information for the entry. Note: the attributes are all optional.
+
+<ul>
+<li> <a name="name"></a>{{name}}:  Entry name
+<li> <a name="entryid"></a>{{entryid}}:  Entry ID
+<li> <a name="description"></a>{{description}}: Entry description
+<li> <a name="fromdate"></a>{{fromdate <i>format="date time format"</i>}}, <a name="todate"></a>{{todate <i>format="date time format"</i>}}: 
+From date/to date of entry. 
+If specified, format the date with the given date time format.
+This follows the
+Java <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
+
+
+
+<li> <a name="information"></a>{{information}}: The information tabs.
+<li> <a name="properties"></a>{{properties}}: Show the properties listing.
+<li> <a name="html"></a>{{html}}: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<li> <a name="map"></a>{{map <i>width="width of map" height="height of map"</i>}}: Display a map. If the entry is a folder then display the children entries of the folder.
+<li> <a name="mapentry"></a>{{mapentry <i>width="width of map" height="height of map"</i>}}:
+Display a map just for a group.
+If you used the map tag with a folder then the children get mapped. The mapentry tag
+says to make a map for just the entry.
+<li> <a name="earth"></a>{{earth <i>width="width of map" height="height of map"</i>}}: 
+If enabled, display the Google Earth plugin. To enable the Google Earth see the
+<a href="admin.html#display">Admin help</a>. 
+<li> <a name="comments"></a>{{comments}}: Show the comments.
+<li> <a name="breadcrumbs"></a>{{breadcrumbs}}: Show the breadcrumb path.
+<li> <a name="layout"></a>{{layout}}: This shows the "Layout:" toolbar bar for an entry.
+<li> <a name="toolbar"></a>{{toolbar}}: Show the entry toolbar.
+<li> <a name="image"></a>{{image <i>src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"</i>}}: Include an image. If src is not given then this shows the image (if there is one) 
+from the entry.  If src is specified it can take on the form: 
+<pre>
+src="entry name"
+</pre>
+to show an entry. This is equivalent to using entry="...". You can also specify the name of a file attachment with:
+
+<pre>
+src="::attachment name"
+</pre>
+
+Or any attachment with:
+<pre>
+src="::*"
+</pre>
+
+If link is true, the image displayed will be linked to the entry page, if 
+linkresource is true, it will be linked to the full sized image (the entry
+resource).  height and width can be used to scale the image, the alt 
+attribute will be used in place of the entry id as a label on the image
+for accessibility.
+
+<li> <a name="menu"></a>{{menu <i>popup="true|false" title="title to use" menus="file,edit,feeds,view,other"</i>}}: 
+Show the menu actions. If menus is not specified
+show all of the menus. If menus is specified only show those menus listed.
+Show all menus in a toggle block:
+<pre>
+{{menu}}
+</pre>
+
+
+You can specify which menus to show with a comma separated list of menu names. Only show the
+file and view menu:
+<pre>
+{{menu menus="file,view"}}
+</pre>
+
+
+Show the menu actions in a popup:
+<pre>
+{{menu popup="true" title="Click here"}}
+</pre>
+
+</ul>
+
+
+<a name="collection"></a><div class="pagesubtitle">10.4.5 Collection Wiki Properties</div> 
+
+The following properties display a collection of entries. By default they
+are the children entries of the wiki entry but you can specify
+other groups of entries with:
+<blockquote><pre>{{property entry="some other entry" folders="true" files="true" 
+               type="entries of a specific type" level="1 or 2" 
+               associations="true|false" 
+               entries="entryid1,entryid2,entryid3.." 
+               exclude="entryid1,entryid2,entryid3.."  
+               first="entryid1,entryid2,entryid3.."  
+               sort="name|date"  sortorder="up|down"
+               images="true" count="number of entries to use" }}</pre></blockquote>
+</ul>
+<ul>
+<ul>
+<li> If <i>folders</i> is set then only show folder like entries.
+<li> If <i>files</i> is set then only show non folders.
+<li> If <i>type</i> is set then only show entries of  that type.
+<li> The attribute <i>level</i> can be set to "1" (the default) or "2". 
+Level 1 refers to the immediate children
+entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).
+<li> If <i>associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
+and typed links between arbitrary entries.
+<li> If <i>entries</i> is set to a list of comma separated entry ids, then only those entrys are included.
+<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
+<li> Place any entries specified by <i>first</i> at the beginning of the list.
+<li> Sort entries by name or date with <i>sort</i>
+<li> If <i>images</i> is set to true then only entries that are image files are included
+</ul>
+</ul>
+
+
+<ul>
+
+<li> <a name="tree"></a>{{tree}}:
+The <a name="tree"></a>{{tree}} tag is used to display the children entries of a folder.
+It can take the form:
+<blockquote><pre><a name="tree"></a>{{tree <i>title="Links" showtoggle="false" open="true"</i>}}</pre></blockquote>
+
+The title attribute is used in place of "Children". 
+If showtoggle="false" then the show/hide toggle link is not shown.
+
+<li> <a name="grid"></a>{{grid}}: Show the children in a grid. e.g., show 
+the grandchildren as a grid:
+<blockquote><pre>{{grid level="2"}}</pre></blockquote>
+
+<li> <a name="recent"></a>{{recent <i>days="number of days to show"</i>}}:
+Show the most recent N days in a list organized by day.
+
+<li> <a name="imageplayer"></a>{{imageplayer <i>width="image width"</i>}}:
+Show images in an image player, e.g.
+<blockquote><pre>{{imageplayer}}</pre></blockquote> </pre>
+
+
+<li> <a name="gallery"></a>{{gallery <i>width="image width" count="max number to show"</i>}}:
+Show a vertical listing of the children entry images, e.g.
+<blockquote><pre>{{gallery}}</pre></blockquote> </pre>
+
+Show a vertical listing of the grandchildren entry images:
+<blockquote><pre>{{gallery level="2"}}</pre></blockquote> </pre>
+
+Set the image width and only show up to 5 images:
+<blockquote><pre>{{gallery  width="300" count="5"}}</pre></blockquote> </pre>
+
+<li> <a name="tabs"></a>{{tabs}}: Show the children as tabs:
+<blockquote><pre>{{tabs}}</pre></blockquote> </pre>
+
+Show only the 3 specified entries in tabs:
+<blockquote><pre>{{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
+                 83539d5c-e9d9-408e-b0af-35f480000ae6,
+                 49684d25-6af1-4188-a0ae-4d5302d22f2a" }}</pre></blockquote> </pre>
+
+Show only the children of type wikipage in tabs:
+<blockquote><pre>{{tabs type="wikipage"}}</pre></blockquote></pre>
+
+Additional arguments:
+
+<ul>
+<li>usedescription="true|false" - show the description instead of the entry
+<li>wikify="true|false" - convert any wiki tags in the description (default: true)
+<li>showlink="true|false" - show a link to the entry (default: true)
+<li>linklabel="label" - if showlink is true, use label in place of the entry
+    name
+<li>imagewidth="width" - width of images
+<li>maximageheight="max height" - maximum height of images
+<li>linkresource="true|false" - if true, link to the entry resource
+<li>includeicon="true|false" - if true, include the appropriate icon in the tab
+</ul>
+
+<li> <a name="accordian"></a>{{accordian}}: Show the children in an accordian:
+<blockquote><pre>{{accordian}}</pre></blockquote> </pre>
+Uses the same arguments as tabs.
+
+<li> <a name="slideshow"></a>{{slideshow}}: Show the children in a slideshow:
+<blockquote><pre>{{slideshow}}</pre></blockquote> </pre>
+<p>
+Uses the same arguments as tabs, plus:
+<ul>
+<li>autoplay="true|false" - if true, start the slideshow (default: false)
+<li>speed="secs" - number of seconds to pause on each entry in slideshow
+<li>border="pixs" - border size in pixels
+<li>bordercolor="color" - border color (name or hexadecimal value)
+<li>width="width" - width of the display 
+<li>height="height" - height of the display
+</ul>
+
+<p>
+
+<li> <a name="links"></a>{{links <i>separator="separator text to use" 
+                          style="inline css style for the link"
+                          class="css class for the link"
+                          tagopen="html to prepend to the link" 
+                          tagclose="close html"</i>}}: Layout links to the entries.<br>
+This produces a set of links to the entries. You can create a header with wiki text like:
+<blockquote><pre>
+&lt;center&gt;
+{{links separator="&amp;nbsp;|&amp;nbsp"}}
+&lt;/center&gt;
+</pre></blockquote>
+
+If you wanted to make a vertical list do:
+<blockquote><pre>
+{{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
+</pre></blockquote>
+
+A bulleted list:
+<blockquote><pre>
+&lt;ul&gt;
+{{links tagopen="&lt;li&gt;" }}
+&lt;/ul&gt;
+</pre></blockquote>
+
+A bulleted list with the links to the entry's file:
+<blockquote><pre>
+&lt;ul&gt;
+{{links linkresource="true" tagopen="&lt;li&gt;" }}
+&lt;/ul&gt;
+</pre></blockquote>
+
+
+
+
+</ul>
+
+
+
+<a name="block"></a><div class="pagesubtitle">10.4.6 Hiding and showing content</div> 
+
+The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
+based on the user's device.
+
+To show a simple toggle block just do:
+<blockquote><pre>
+&lt;block&gt;
+ any content here
+&lt;/block&gt;
+</pre></blockquote>
+
+You can specify the toggle label title with:
+<blockquote><pre>
+&lt;block <span class="xmlattr">title</span>="Click here to open&quot;&gt;
+ any content here
+&lt;/block&gt;
+</pre></blockquote>
+
+
+You can specify whether the block is open or closed:
+<blockquote><pre>
+&lt;block <span class="xmlattr">open</span>="false&quot;&gt;
+ any content here
+&lt;/block&gt;
+</pre></blockquote>
+
+You can specify whether to show the content or not:
+<blockquote><pre>
+&lt;block <span class="xmlattr">show</span>="mobile&quot; <span class="xmlattr">decorate</span>="false&quot;&gt;
+  this will only show for mobile users
+&lt;/block&gt;
+&lt;block <span class="xmlattr">show</span>="!mobile&quot; <span class="xmlattr">decorate</span>="false&quot;&gt;
+  this will only show for non-mobile users
+&lt;/block&gt;
+</pre></blockquote>
+
+
+
+<a name="import"></a><div class="pagesubtitle">10.4.7 Importing any page</div> 
+
+
+You can also import any of the views of an entry, e.g., the map view, 
+the OPeNDAP view, the calendar view, etc., with the  
+{{import}} tag:<br>
+<a name="import"></a>{{import <i>output="<any of the output types>"</i>}}
+<p>
+
+So, if you wanted to show the calendar view of an entry you would do:
+<blockquote><pre>{{import <i>output="calendar.calendar"</i>}}</pre></blockquote>
+
+To find the correct output identifier just navigate to the page you 
+want to include and look at the url for the output=... url argument 
+and use that.
+
+
+
+<p>
+
+<p>&nbsp;<p>
+<a href="wiki.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Wikis" title="Previous: Wikis"></a> <a href="pagestyle.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Page Styles" title="Next: Page Styles"></a>  <a href="toc.html#wikitext.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+
+</body>
+</html>
+
