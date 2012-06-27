@@ -1156,6 +1156,21 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    public void initializeEntryFromDatabase(Entry entry) throws Exception {
+        if (parent != null) {
+            parent.initializeEntryFromDatabase(entry);
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param request _more_
      * @param entry _more_
      */
@@ -1259,18 +1274,6 @@ public class TypeHandler extends RepositoryManager {
         return entry;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
-    public void initializeEntryFromDatabase(Entry entry) throws Exception {
-        if (parent != null) {
-            parent.initializeEntryFromDatabase(entry);
-        }
-    }
 
 
     /**

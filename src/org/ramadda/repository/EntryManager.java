@@ -5380,7 +5380,7 @@ public class EntryManager extends RepositoryManager {
 
 
             if (showToolbar || showMenubar) {
-                menubar = HtmlUtils.leftRight(menubar, toolbar,
+                menubar = HtmlUtils.leftRightBottom(menubar, toolbar,
                         HtmlUtils.cssClass(CSS_CLASS_MENUBAR));
             } else {
                 menubar = "";
@@ -5399,15 +5399,21 @@ public class EntryManager extends RepositoryManager {
                                           + entryLink
                                           + "</td><td align=\"right\">"
                                           + (showLayoutToolbar
-                                             ? htmlViewLinks
+                                             ? HtmlUtils.div(htmlViewLinks,
+                                                             HtmlUtils.cssClass("ramadda-header-layoutbar"))
                                              : "") + "</td>") + "</table>";
             }
 
             if (showEntryHeader || showToolbar || showBreadcrumbs) {
                 style = HtmlUtils.cssClass("entryheader");
             }
-            nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
-                                style);
+            if(getRepository().getProperty("ramadda.html.menubarontop", true)) {
+                nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
+                                    style);
+            } else {
+                nav = HtmlUtils.div(breadcrumbHtml + entryHeader + menubar,
+                                    style);
+            }
 
         }
         String title =

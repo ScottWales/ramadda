@@ -273,7 +273,8 @@ a..ramadda-heading-2-link:visited {
    padding-top:5px;
    padding-bottom:1px;
    margin-bottom:2px;
-   border-bottom: 1px #aaa solid; 
+//   border-bottom: 1px #aaa solid; 
+   border-top: 1px #aaa solid; 
 }
 
 .ramadda-menubutton {
@@ -834,6 +835,9 @@ a.image-link {
   padding-right:1px;
 }
 
+.ramadda-header-layoutbar {
+     border:0px solid;
+}
 
 .tooltip-inner {
    padding:2px;
