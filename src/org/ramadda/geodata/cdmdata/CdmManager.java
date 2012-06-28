@@ -274,7 +274,7 @@ public class CdmManager extends RepositoryManager {
     /** point close counter */
     Counter pointCloseCounter = new Counter();
 
-    /** _more_          */
+    /** _more_ */
     public static final String CDMMANAGER_ID = "cdmmanager";
 
 
@@ -1248,8 +1248,11 @@ public class CdmManager extends RepositoryManager {
                     if (dsetIdx >= 0) {
                         ncml = ncml.replace("${location}", location);
                     } else {
-                        ncml = ncml.replaceAll("\n(dset|DSET).*\n",
-                                "\nDSET " + location + "\n");
+                        ncml = Pattern.compile(
+                            "^dset.*$",
+                            Pattern.MULTILINE
+                            | Pattern.CASE_INSENSITIVE).matcher(
+                                ncml).replaceAll("DSET " + location);
                     }
                 }
                 //                System.err.println("ncml:" + ncml);
@@ -1280,8 +1283,9 @@ public class CdmManager extends RepositoryManager {
     public static void main(String[] args) throws Exception {
         Repository repository = new Repository(new String[] {}, 8080);
         repository.initProperties(null);
-        CdmDataOutputHandler dop = new CdmDataOutputHandler(repository, "test");
-        CdmManager        cdmManager = new CdmManager(repository);
+        CdmDataOutputHandler dop = new CdmDataOutputHandler(repository,
+                                       "test");
+        CdmManager cdmManager = new CdmManager(repository);
         String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
         for (String f : args) {
             System.err.println("file:" + f);

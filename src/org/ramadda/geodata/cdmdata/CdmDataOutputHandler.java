@@ -858,8 +858,8 @@ public class CdmDataOutputHandler extends OutputHandler {
             GridPointWriter writer =
                 new GridPointWriter(gds,
                                     new DiskCache2(getRepository()
-                                        .getStorageManager().getScratchDir().getDir()
-                                        .toString(), false, 0, 0));
+                                        .getStorageManager().getScratchDir()
+                                        .getDir().toString(), false, 0, 0));
             OutputStream outStream =
                 (qp.acceptType.equals(QueryParams.NETCDF))
                 ? System.out
@@ -2150,6 +2150,8 @@ public class CdmDataOutputHandler extends OutputHandler {
      * @throws Exception problem getting the path
      */
     public String getPath(Request request, Entry entry) throws Exception {
+        return getCdmManager().getPath(request, entry);
+        /*
         String location;
         if (entry.getType().equals(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             Resource resource = entry.getResource();
@@ -2199,8 +2201,13 @@ public class CdmDataOutputHandler extends OutputHandler {
                     if (dsetIdx >= 0) {
                         ncml = ncml.replace("${location}", location);
                     } else {
-                        ncml = ncml.replaceAll("\n(dset|DSET).*\n",
-                                "\nDSET " + location + "\n");
+                        //ncml = ncml.replaceAll("(dset|DSET).*\n",
+                        //        "nDSET " + location + "\n");
+                        ncml = Pattern.compile(
+                            "^dset.*$",
+                            Pattern.MULTILINE
+                            | Pattern.CASE_INSENSITIVE).matcher(
+                                ncml).replaceAll("DSET " + location);
                     }
                 }
                 //                System.err.println("ncml:" + ncml);
@@ -2219,6 +2226,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         }
 
         return location;
+        */
     }
 
 
