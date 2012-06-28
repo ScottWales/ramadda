@@ -1007,8 +1007,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 boolean[] haveBearingLines = { false };
                 //Request   newRequest       = request.cloneMe();
                 //newRequest.putAll(props);
+                boolean     details = Misc.getProperty(props, ATTR_DETAILS, false);
                 MapInfo map = getMapManager().getMap(newRequest, children,
-                                  sb, width, height, false, haveBearingLines,
+                                  sb, width, height, details, haveBearingLines,
                                   listEntries);
             }
 
