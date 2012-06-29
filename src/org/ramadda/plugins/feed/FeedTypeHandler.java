@@ -317,7 +317,13 @@ public class FeedTypeHandler extends GenericTypeHandler {
             return items;
         }
 
-        Element root = XmlUtil.getRoot(url, getClass());
+        Element root;
+        try {
+            root = XmlUtil.getRoot(url, getClass());
+        } catch(Exception exc) {
+            logError("Error reading feed:" + url, exc);
+            return items;
+        }
         if (root.getTagName().equals(RssUtil.TAG_RSS)) {
             processRss(request, mainEntry, items, root);
         } else if (root.getTagName().equals(AtomUtil.TAG_FEED)) {
