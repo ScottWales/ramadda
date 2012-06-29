@@ -1,7 +1,7 @@
 <types>
 
 
-  <type name="feed"  description="RSS/ATOM Feed"   handler="org.ramadda.plugins.feed.FeedTypeHandler" foruser="true">  
+  <type name="feed"  description="RSS/ATOM Feed"   handler="org.ramadda.plugins.feed.FeedTypeHandler" foruser="true" category="Events">  
      <property name="icon" value="/feed/blog_icon.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
