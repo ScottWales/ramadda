@@ -93,6 +93,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
 
+    /** _more_          */
     public static final String ATTR_MAX = "max";
 
 
@@ -127,19 +128,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** exclude attribute */
     public static final String ATTR_EXCLUDE = "exclude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FIRST = "first";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SORT = "sort";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SORT_ORDER = "sortorder";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SORT_DATE = "date";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SORT_NAME = "name";
 
     /** the message attribute */
@@ -347,6 +348,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_LINKS = "links";
 
+    /** _more_          */
     public static final String WIKI_PROP_LIST = "list";
 
     /** wiki import */
@@ -427,12 +429,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_LINKS,
              attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
                    "")),
-        WIKI_PROP_LIST,
-        prop(WIKI_PROP_TABS, ATTRS_LAYOUT),
-        WIKI_PROP_TREE,
+        WIKI_PROP_LIST, prop(WIKI_PROP_TABS, ATTRS_LAYOUT), WIKI_PROP_TREE,
         prop(WIKI_PROP_ACCORDIAN, ATTRS_LAYOUT), WIKI_PROP_GRID,
-        WIKI_PROP_TABLE, 
-        prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
+        WIKI_PROP_TABLE, prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
         WIKI_PROP_GROUP + "Earth",
         prop(WIKI_PROP_MAP,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
@@ -452,10 +451,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                    "Figure ${count}: ${name}", ATTR_POPUPCAPTION, "over")),
         prop(WIKI_PROP_SLIDESHOW,
              ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
-        WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc",
-        WIKI_PROP_COMMENTS, WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS,
-        WIKI_PROP_FIELD, WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU,
-        WIKI_PROP_ENTRYID
+        WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc", WIKI_PROP_COMMENTS,
+        WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
+        WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU, WIKI_PROP_ENTRYID
     };
 
 
@@ -987,7 +985,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 && getMapManager().isGoogleEarthEnabled(request);
 
             List<Entry> children = getEntries(request, wikiUtil, entry,
-                                       props);
+                                       props, false, true);
 
             Request newRequest = request.cloneMe();
             newRequest.putAll(props);
@@ -1007,10 +1005,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 boolean[] haveBearingLines = { false };
                 //Request   newRequest       = request.cloneMe();
                 //newRequest.putAll(props);
-                boolean     details = Misc.getProperty(props, ATTR_DETAILS, false);
+                boolean details = Misc.getProperty(props, ATTR_DETAILS,
+                                      false);
                 MapInfo map = getMapManager().getMap(newRequest, children,
-                                  sb, width, height, details, haveBearingLines,
-                                  listEntries);
+                                  sb, width, height, details,
+                                  haveBearingLines, listEntries);
             }
 
             return sb.toString();
@@ -1403,8 +1402,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             blockContent = sb.toString();
             blockTitle   = Misc.getProperty(props, ATTR_TITLE, msg("Links"))
                          + link;
-        } else if (include.equals(WIKI_PROP_LINKS) || include.equals(WIKI_PROP_LIST)) {
-            boolean isList = include.equals(WIKI_PROP_LIST);
+        } else if (include.equals(WIKI_PROP_LINKS)
+                   || include.equals(WIKI_PROP_LIST)) {
+            boolean     isList   = include.equals(WIKI_PROP_LIST);
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
@@ -1413,12 +1413,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
-            String separator = (isList?"":Misc.getProperty(props, ATTR_SEPARATOR,
-                                                           ""));
-            String       cssClass = Misc.getProperty(props, ATTR_CLASS, "");
-            String       style = Misc.getProperty(props, ATTR_STYLE, "style");
-            String       tagOpen  = (isList?"<li>": Misc.getProperty(props, ATTR_TAGOPEN, "<li>"));
-            String       tagClose = (isList?"":Misc.getProperty(props, ATTR_TAGCLOSE, ""));
+            String separator = (isList
+                                ? ""
+                                : Misc.getProperty(props, ATTR_SEPARATOR,
+                                    ""));
+            String cssClass = Misc.getProperty(props, ATTR_CLASS, "");
+            String style    = Misc.getProperty(props, ATTR_STYLE, "style");
+            String tagOpen  = (isList
+                               ? "<li>"
+                               : Misc.getProperty(props, ATTR_TAGOPEN,
+                                   "<li>"));
+            String       tagClose = (isList
+                                     ? ""
+                                     : Misc.getProperty(props, ATTR_TAGCLOSE, ""));
 
             List<String> links    = new ArrayList<String>();
             for (Entry child : children) {
@@ -1522,9 +1529,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WikiUtil wikiUtil = new WikiUtil();
         wikiUtil.setMakeHeadings(makeHeadings);
         wikiUtil.setMobile(request.isMobile());
-        if(!request.isAnonymous()) {
+        if ( !request.isAnonymous()) {
             wikiUtil.setUser(request.getUser().getId());
         }
+
         return wikiUtil;
     }
 
@@ -1597,7 +1605,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         return imageEntries;
     }
 
-
     /**
      * Get the entries for the request
      *
@@ -1614,6 +1621,28 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry entry, Hashtable props,
                                   boolean onlyImages)
+            throws Exception {
+        return getEntries(request, wikiUtil, entry, props, onlyImages, false);
+    }
+
+
+    /**
+     * Get the entries for the request
+     *
+     * @param request  the request
+     * @param wikiUtil the WikiUtil
+     * @param entry    the entry
+     * @param props    properties
+     * @param onlyImages  true to only show images
+     * @param includeEntry  true to include the entry in the list
+     *
+     * @return the list of Entry's
+     *
+     * @throws Exception  problems making list
+     */
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry entry, Hashtable props,
+                                  boolean onlyImages, boolean includeEntry)
             throws Exception {
 
         if ( !onlyImages) {
@@ -1650,14 +1679,17 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         //If there is a max property then clone the request and set the max
         int max = Misc.getProperty(props, ATTR_MAX, -1);
-        if(max>0) {
+        if (max > 0) {
             request = request.cloneMe();
-            request.put(ARG_MAX, ""+max);
+            request.put(ARG_MAX, "" + max);
         }
 
         String      type     = (String) props.get(ATTR_TYPE);
         int         level    = Misc.getProperty(props, ATTR_LEVEL, 1);
-        List<Entry>  children = getEntryManager().getChildren(request, entry);
+        List<Entry> children = getEntryManager().getChildren(request, entry);
+        if (children.isEmpty() && !entry.isGroup() && includeEntry) {
+            children.add(entry);
+        }
 
         String userDefinedEntries = Misc.getProperty(props, ATTR_ENTRIES,
                                         (String) null);
