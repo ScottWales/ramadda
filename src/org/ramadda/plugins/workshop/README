@@ -2,14 +2,20 @@
 This uses the IDV generate.tcl script to create the workshop 
 content and places it in htdocs/workshop directory. 
 
-From the content directory do:
+The ant script calls tclsh. See the top level README to see how to set
+the path to tclsh.  To generate the docs, run:
 
-   tclsh <where your idv install is>/auxdata/docs/build/generate.tcl here 
+   ant workshop
 
-(see content/make.sh)
+To install the userguide plugin, run:
 
-Then from this directory just run ant. This builds the plugin and copies
-it to your .ramadda/plugins directory.
+   ant 
+
+(default target)
+
+To generate and install the workshop plugin, run:
+
+   ant all
 
 To view the content in RAMADDA just go to:
 http://localhost:8080/repository/workshop/index.html

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="../../../../../" default="plugin" name="ramadda plugin">
+
+    <target name="all" depends="userguide,plugin"/>
+
     <target name="plugin">
       <property name="plugin" value="userguide"/>
       <property file="${basedir}/build.properties"/>
