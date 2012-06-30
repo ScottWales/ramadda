@@ -4604,6 +4604,10 @@ public class TypeHandler extends RepositoryManager {
         */
     }
 
+    public boolean entryHasDefaultName(Entry entry)  {
+        return Misc.equals(getStorageManager().getFileTail(entry),entry.getName());
+    }
+
 
 
 }

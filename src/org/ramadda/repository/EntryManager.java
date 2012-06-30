@@ -6812,6 +6812,36 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
+                                         final boolean descending) {
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Entry e1 = (Entry) o1;
+                Entry e2 = (Entry) o2;
+                if (e1.getChangeDate() < e2.getChangeDate()) {
+                    return (descending
+                            ? 1
+                            : -1);
+                }
+                if (e1.getChangeDate() > e2.getChangeDate()) {
+                    return (descending
+                            ? -1
+                            : 1);
+                }
+
+                return 0;
+            }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+        Object[] array = entries.toArray();
+        Arrays.sort(array, comp);
+
+        return (List<Entry>) Misc.toList(array);
+    }
+
+
 
     /**
      * _more_

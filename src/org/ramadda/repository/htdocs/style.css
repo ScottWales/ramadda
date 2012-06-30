@@ -686,6 +686,16 @@ a.image-link {
 
 
 
+.kml-description {
+  border: 1px #ccc solid;
+  max-height: 150px; 
+  overflow-y: auto;
+  padding:4px;
+  margin:5px;
+  margin-top:2px;
+}
+
+
 .calendartable,  .dategrid {
     border-color: #666;
     border-width: 0px 0px 1px 1px;
