@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Jeff McWhirter, Don Murray & ramadda.org
+ * Copyright 2010-2012 Jeff McWhirter, Don Murray & ramadda.org
  */
 
 var mapLayers = null;
@@ -93,6 +93,21 @@ function RepositoryMap(mapId, params) {
         layer.isBaseLayer = false;
         layer.visibility = false;
         layer.reproject = true;
+        this.map.addLayer(layer);
+    }
+
+
+    this.addKMLLayer = function(name, kmlUrl) {
+        var layer = new OpenLayers.Layer.Vector(name, {
+                strategies: [new OpenLayers.Strategy.Fixed()],
+                protocol: new OpenLayers.Protocol.HTTP({
+                        url: kmlUrl,
+                        format: new OpenLayers.Format.KML({
+                                extractStyles: true, 
+                                extractAttributes: true,
+                                maxDepth: 2
+                            })
+                    })});
         this.map.addLayer(layer);
     }
 

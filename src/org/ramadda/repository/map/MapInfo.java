@@ -548,6 +548,15 @@ public class MapInfo {
     }
 
 
+    public void addKmlUrl(String url) {
+        //TODO:
+        //This doesn't work now in the js
+        //        getJS().append(mapVarName + ".addKMLLayer(" + HtmlUtils.squote("TEST")+","+ HtmlUtils.squote(url)+");\n");
+    }
+
+
+
+
     /**
      * Center the map on the bounds
      *
