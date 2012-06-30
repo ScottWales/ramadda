@@ -1,22 +1,22 @@
 /**
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-* software and associated documentation files (the "Software"), to deal in the Software 
-* without restriction, including without limitation the rights to use, copy, modify, 
-* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-* permit persons to whom the Software is furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in all copies 
-* or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-* DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+ * software and associated documentation files (the "Software"), to deal in the Software 
+ * without restriction, including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies 
+ * or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ */
 
 package org.ramadda.plugins.map;
 
@@ -84,10 +84,46 @@ public class KmlTypeHandler extends GenericTypeHandler {
                                         Entry parent, boolean newEntry)
         throws Exception {
         if(!entry.isFile()) return;
-        String path = entry.getFile().toString();
+        Element kmlRoot = readKml(getRepository(), entry);
+        if(kmlRoot==null) return;
+        double[] nwse = new double[]{
+            Entry.NONGEO,
+            Entry.NONGEO,
+            Entry.NONGEO,
+            Entry.NONGEO,
+        };
+
+        List<Element> lats  = ( List<Element>)XmlUtil.findDescendants(kmlRoot, KmlUtil.TAG_LATITUDE);
+        for(Element latNode: lats) {
+            setLat(nwse,Double.parseDouble(XmlUtil.getChildText(latNode)));
+        }
+        List<Element> lons  = ( List<Element>)XmlUtil.findDescendants(kmlRoot, KmlUtil.TAG_LONGITUDE);
+        for(Element lonNode: lons) {
+            setLon(nwse,Double.parseDouble(XmlUtil.getChildText(lonNode)));
+        }
+
+
+
+        initializeEntry(entry, kmlRoot, nwse);
+
+
+        if(nwse[0] != Entry.NONGEO)
+            entry.setNorth(nwse[0]);
+        if(nwse[1] != Entry.NONGEO)
+            entry.setWest(nwse[1]);
+        if(nwse[2] != Entry.NONGEO)
+            entry.setSouth(nwse[2]);
+        if(nwse[3] != Entry.NONGEO)
+            entry.setEast(nwse[3]);
+    }
+
+
+    public static Element readKml(Repository repository, Entry entry) 
+        throws Exception {
         Element kmlRoot = null;
+        String path = entry.getFile().toString();
         if (path.toLowerCase().endsWith(".kmz")) {
-            ZipInputStream zin = new ZipInputStream(getStorageManager().getFileInputStream(path));
+            ZipInputStream zin = new ZipInputStream(repository.getStorageManager().getFileInputStream(path));
             ZipEntry       ze  = null;
             while ((ze = zin.getNextEntry()) != null) {
                 String name = ze.getName().toLowerCase();
@@ -98,25 +134,10 @@ public class KmlTypeHandler extends GenericTypeHandler {
             }
             IOUtil.close(zin);
         } else {
-            kmlRoot = XmlUtil.getRoot(getStorageManager().readSystemResource(entry.getFile()));
+            kmlRoot = XmlUtil.getRoot(repository.getStorageManager().readSystemResource(entry.getFile()));
         }
-        if(kmlRoot==null) return;
-        double[] nwse = new double[]{
-            Entry.NONGEO,
-            Entry.NONGEO,
-            Entry.NONGEO,
-            Entry.NONGEO,
-        };
-        initializeEntry(entry, kmlRoot, nwse);
-        if(nwse[0] != Entry.NONGEO)
-            entry.setNorth(nwse[0]);
-        if(nwse[1] != Entry.NONGEO)
-            entry.setWest(nwse[1]);
-        if(nwse[2] != Entry.NONGEO)
-            entry.setSouth(nwse[2]);
-        if(nwse[3] != Entry.NONGEO)
-            entry.setEast(nwse[3]);
-    }
+        return kmlRoot;
+    } 
 
 
     private void initializeEntry(Entry entry, Element node, double[]nwse) {
@@ -153,7 +174,8 @@ public class KmlTypeHandler extends GenericTypeHandler {
             System.err.println("no  coords:" + XmlUtil.toString(node));
             return;
         } 
-        System.err.println("Unknown:" + tagName);
+
+        //        System.err.println("Unknown:" + tagName);
     }
 
     private void setBounds(double[]nwse, String coordString) {
@@ -169,23 +191,35 @@ public class KmlTypeHandler extends GenericTypeHandler {
 
 
 
-private double convert(String value, double dflt) {
-    if(value == null) return dflt;
-    return Double.parseDouble(value);
-}
+    private double convert(String value, double dflt) {
+        if(value == null) return dflt;
+        return Double.parseDouble(value);
+    }
 
-     private void setBounds(double[]nwse, double lat, double lon) {
-         nwse[0] = nwse[0]==Entry.NONGEO?lat:Math.max(nwse[0],lat);
-         nwse[2] = nwse[2]==Entry.NONGEO?lat:Math.min(nwse[2],lat);
+    private void setBounds(double[]nwse, double lat, double lon) {
+        setLat(nwse,lat);
+        setLon(nwse,lon);
+    }
 
-         nwse[1] = nwse[1]==Entry.NONGEO?lon:Math.min(nwse[1],lon);
-         nwse[3] = nwse[3]==Entry.NONGEO?lon:Math.max(nwse[3],lon);
-     }
+    private void setLon(double[]nwse, double lon) {
+        nwse[1] = nwse[1]==Entry.NONGEO?lon:Math.min(nwse[1],lon);
+        nwse[3] = nwse[3]==Entry.NONGEO?lon:Math.max(nwse[3],lon);
+    }
+
+
+    private void setLat(double[]nwse, double lat) {
+        nwse[0] = nwse[0]==Entry.NONGEO?lat:Math.max(nwse[0],lat);
+        nwse[2] = nwse[2]==Entry.NONGEO?lat:Math.min(nwse[2],lat);
+    }
+
+
+
 
     /**
      */
     @Override
-    public boolean addToMap(Request request, Entry entry, MapInfo map)     {
+        public boolean addToMap(Request request, Entry entry, MapInfo map)     {
+        map.addKmlUrl(getEntryManager().getEntryResourceUrl(request, entry, false));
         return true;
     }
 
