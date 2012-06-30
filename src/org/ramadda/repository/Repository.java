@@ -3115,15 +3115,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         //        System.err.println("path:" + path);
         /*
-        //Some hackery so we can reload applets when developing
-        if ((path.indexOf("/graph") >= 0) && path.endsWith(".jar")) {
-            path = "/repository/applets/graph.jar";
-        }
-
        if ((path.indexOf("/gantt") >= 0) && path.endsWith(".jar")) {
             path = "/repository/applets/gantt/gantt.jar";
         }
         */
+
+        //Some hackery so we can reload applets when developing
+        if ((path.indexOf("/graph") >= 0) && path.endsWith(".jar")) {
+            path = "/repository/applets/graph.jar";
+        }
 
         if ((path.indexOf("/chat") >= 0) && path.endsWith(".jar")) {
             path = "/repository/collab/chat.jar";
