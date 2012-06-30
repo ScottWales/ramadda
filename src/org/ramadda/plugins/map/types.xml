@@ -1,6 +1,10 @@
 <types>
 
 
+  <type name="geo_kml"  description="KML/KMZ File"  category="Geo Data" handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
+     <property name="icon" value="/icons/kml.png"/>
+   </type>
+
 
   <type name="geo_gpx"  description="GPX GPS File"  category="Geo Data" handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
      <property name="icon" value="/map/tracklog.gif"/>
