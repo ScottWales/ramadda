@@ -658,6 +658,7 @@ public class PageHandler extends RepositoryManager {
     private List<HtmlTemplate> getTemplates() {
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if (theTemplates == null) {
+            //            System.err.println ("Loading templates");
             String imports = "";
             try {
                 imports = getStorageManager().readSystemResource(

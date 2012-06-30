@@ -270,11 +270,11 @@ a..ramadda-heading-2-link:visited {
    background-image:url(${urlroot}/images/gradient.jpg);
    padding-left:10px;
    padding-right:10px;
-   padding-top:5px;
-   padding-bottom:1px;
-   margin-bottom:2px;
+//   padding-top:5px;
+//   padding-bottom:1px;
+//   margin-bottom:2px;
 //   border-bottom: 1px #aaa solid; 
-   border-top: 1px #aaa solid; 
+//   border-top: 1px #aaa solid; 
 }
 
 .ramadda-menubutton {

@@ -80,6 +80,8 @@ import java.util.zip.*;
  */
 public class ChatOutputHandler extends OutputHandler {
 
+    public static final String PROP_CHAT_PORT = "ramadda.chat.port";
+
     /** _more_          */
     public static final int DEFAULT_PORT = -1;
 
@@ -127,8 +129,6 @@ public class ChatOutputHandler extends OutputHandler {
 
     /** _more_ */
     List<ChatConnection> connections = new ArrayList<ChatConnection>();
-
-
 
 
 
@@ -309,7 +309,8 @@ public class ChatOutputHandler extends OutputHandler {
                 handleMessage(type, node, s);
             } catch (Exception exc) {
                 try {
-                    //                    LOG.error("Error handling chat message", exc);
+                    getLogManager().logError("Error handling chat message", exc);
+                    exc.printStackTrace();
                     writeError("An error has occurred:" + exc);
                 } catch (Exception ignore) {}
             }
@@ -355,8 +356,10 @@ public class ChatOutputHandler extends OutputHandler {
                     entries.addAll(getEntryManager().getChildren(request,
                             entry));
                 }
-                entries.addAll(getEntryManager().getChildren(request,
-                        entry.getParentEntry()));
+                if(entry.getParentEntry()!=null) {
+                    entries.addAll(getEntryManager().getChildren(request,
+                                                                 entry.getParentEntry()));
+                }
                 for (Entry entry : entries) {
                     if (entry.isGroup()) {
                         continue;
@@ -366,7 +369,7 @@ public class ChatOutputHandler extends OutputHandler {
                     if (entry.getResource().isImage()) {
                         entryType = "image";
                         url = getEntryManager().getEntryResourceUrl(request,
-                                entry);
+                                                                    entry, true, false);
                     } else {
                         entryType = "url";
                         url = request.entryUrl(
@@ -510,7 +513,7 @@ public class ChatOutputHandler extends OutputHandler {
      * @return _more_
      */
     public int getChatPort() {
-        return getRepository().getProperty("ramadda.chat.port", DEFAULT_PORT);
+        return getRepository().getProperty(PROP_CHAT_PORT, DEFAULT_PORT);
     }
 
 
@@ -529,10 +532,11 @@ public class ChatOutputHandler extends OutputHandler {
     public void run() {
         try {
             int port = getChatPort();
+            getLogManager().logInfoAndPrint("Chat server on port:" + port);
             if (port < 0) {
                 return;
             }
-            ServerSocket serverSocket = new ServerSocket();
+            ServerSocket serverSocket = new ServerSocket(port);
             while (getActive()) {
                 Socket         socket     = serverSocket.accept();
                 ChatConnection connection = new ChatConnection(socket);
@@ -562,6 +566,10 @@ public class ChatOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+
+        if (getChatPort() <= 0) {
+            return;
+        }
 
         Entry entry = state.getEntry();
         if (entry != null) {
@@ -628,7 +636,7 @@ public class ChatOutputHandler extends OutputHandler {
                 "" + System.currentTimeMillis());
         if (entry.getResource().isImage()) {
             String url = getEntryManager().getEntryResourceUrl(request,
-                             entry);
+                                                               entry, true, false);
             params += HtmlUtils.open("PARAM",
                                     HtmlUtils.attrs("NAME",
                                         "whiteboard.bgimage", "VALUE", url));

@@ -57,6 +57,21 @@ public class ChatTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    private ChatOutputHandler getChatOutputHandler()  {
+        if(chatOutputHandler == null) {
+            try {
+                chatOutputHandler =
+                    (ChatOutputHandler) getRepository().getOutputHandler(
+                                                                         ChatOutputHandler.OUTPUT_CHATROOM);
+            } catch(Exception exc) {
+                throw new RuntimeException(exc);
+
+            }
+        }
+        return chatOutputHandler;
+    }
+
+
     /**
      * _more_
      *
@@ -73,13 +88,17 @@ public class ChatTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
-        if (chatOutputHandler == null) {
-            chatOutputHandler =
-                (ChatOutputHandler) getRepository().getOutputHandler(
-                    ChatOutputHandler.OUTPUT_CHATROOM);
-        }
-        return chatOutputHandler.outputEntry(
+        return getChatOutputHandler().outputEntry(
             request, chatOutputHandler.OUTPUT_CHATROOM, entry);
+    }
+
+    @Override
+    public boolean getForUser() {
+        if(getChatOutputHandler()==null) return false;
+        if(getChatOutputHandler().getChatPort()>0) {
+            return true;
+        }
+        return false;
     }
 
 

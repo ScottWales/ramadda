@@ -110,7 +110,7 @@ public class IfcApplet extends Applet {
      */
     public void initInner() {}
 
-    public static String getStackTrace(Exception exc) {
+    public static String getStackTrace(Throwable exc) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         exc.printStackTrace(new PrintStream(baos));
         return baos.toString();
@@ -159,7 +159,7 @@ public class IfcApplet extends Applet {
             if(debugText==null) {
                 debugText = new JTextArea("",25,50);
                 debugText.setEditable(false);
-                JFrame f = new JFrame("debug");
+                JFrame f = new JFrame("Chat debug");
                 f.getContentPane().add(new JScrollPane(debugText));
                 f.pack();
                 f.show();
@@ -181,7 +181,9 @@ public class IfcApplet extends Applet {
      */
     public static void errorMsg(String l1, Throwable exc) {
         errorMsg(l1 + " " + exc);
+        debug(l1+" " + exc);
         exc.printStackTrace();
+        debug(getStackTrace(exc));
     }
 
 
@@ -227,6 +229,8 @@ public class IfcApplet extends Applet {
                                           false);
         }
 
+        //        debug("MESSAGE");
+        //        debug(getStackTrace(new RuntimeException()));
         Component       theMessage;
         StringTokenizer st       = new StringTokenizer(l1, "\n");
         int             maxWidth = 50;
@@ -280,12 +284,19 @@ public class IfcApplet extends Applet {
                 image = GuiUtils.getImageResource(imagePath.substring(9),
                         IfcApplet.class);
             } else {
-                URL url = new URL(ifcApplet.getFullUrl(imagePath));
+                String urlPath = ifcApplet.getFullUrl(imagePath);
+                urlPath = urlPath.replaceAll(" ","+");
+                URL url = new URL(urlPath);
+                debug("reading image:" + urlPath);
                 byte[] bytes =
                     GuiUtils.readResource(ifcApplet.getFullUrl(imagePath),
                                           IfcApplet.class, true);
+                if(bytes==null) {
+                    errorMsg("Failed to read image: " + urlPath);
+                    debug("Failed to read image: " + urlPath);
+                    return null;
+                } 
                 image = Toolkit.getDefaultToolkit().createImage(bytes);
-                //          image =  ifcApplet.getImage (url) ;
             }
             if (image != null) {
                 pathToImage.put(imagePath, image);
@@ -295,7 +306,7 @@ public class IfcApplet extends Applet {
         } catch (MalformedURLException mfue) {
             debug("IfcApplet.getImage: failed to read:" + imagePath);
         } catch (Exception exc) {
-            errorMsg("Error getting image: " + imagePath + "\n" + exc);
+            errorMsg("Error reading image: " + imagePath, exc);
         }
         return null;
     }

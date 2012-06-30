@@ -30,7 +30,9 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 
@@ -5338,9 +5340,11 @@ public class EntryManager extends RepositoryManager {
         }
         titleList.add(entry.getLabel());
         String nav;
-        String separator = getPageHandler().getTemplateProperty(request,
-                               "ramadda.template.breadcrumbs.separator",
-                               BREADCRUMB_SEPARATOR);
+        HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
+
+        String separator = htmlTemplate.getTemplateProperty("ramadda.template.breadcrumbs.separator",
+                                                            BREADCRUMB_SEPARATOR);
+
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
@@ -5407,7 +5411,10 @@ public class EntryManager extends RepositoryManager {
             if (showEntryHeader || showToolbar || showBreadcrumbs) {
                 style = HtmlUtils.cssClass("entryheader");
             }
-            if(getRepository().getProperty("ramadda.html.menubarontop", true)) {
+
+            //getRepository().getProperty("ramadda.html.menubarontop", true)
+            boolean menuBarOnTop = htmlTemplate.getTemplateProperty("menubar.position","top").equals("top");
+            if(menuBarOnTop) {
                 nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
                                     style);
             } else {
@@ -6526,14 +6533,20 @@ public class EntryManager extends RepositoryManager {
      */
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean full) {
+        return getEntryResourceUrl(request, entry, full, true);
+    }
+
+
+    public String getEntryResourceUrl(Request request, Entry entry,
+                                      boolean full, boolean addPath) {
         if (entry.getResource().isUrl()) {
             return entry.getResource().getPath();
         }
 
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HtmlUtils.urlEncodeExceptSpace(fileTail);
-        //For now use the full entry path
-        if (fileTail.equals(entry.getName())) {
+        //For now use the full entry path ???? why though ???
+        if (addPath && fileTail.equals(entry.getName())) {
             fileTail = entry.getFullName(true);
         }
         if (full) {

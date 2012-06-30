@@ -575,7 +575,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         if (type.equals(MSG_STATE)) {
             processState(message);
         } else if (type.equals(MSG_ERROR)) {
-            errorMsg(message.getChildValue());
+            errorMsg("Error from server:" + message.getChildValue());
         } else if (type.equals(MSG_MESSAGE)) {
             message(message.getChildValue());
         } else {
@@ -665,7 +665,9 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
                 runThread = new Thread(this);
                 runThread.start();
             } catch (Exception exc) {
-                errorMsg("An error has occurred:\n" + exc);
+                errorMsg("An error has occurred on start up:\n" + exc);
+                errorMsg(getStackTrace(exc));
+                exc.printStackTrace();
                 runThread = null;
                 socket    = null;
             }
@@ -793,7 +795,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
     public void write(String type, String attrs, String body) {
         String message = "<message " + attr("type", type) + attrs + ">"
                          + body + "</message>";
-        debug("write:" + message);
+        debug("Write:" + message);
 
         if (polling) {
             writePolling(message);

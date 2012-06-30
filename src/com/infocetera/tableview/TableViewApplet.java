@@ -62,7 +62,7 @@ public class TableViewApplet extends IfcApplet {
             return tableView.doMakeContents();
         } catch (Exception e) {
             e.printStackTrace();
-            return new Label("An error has occurred:" + e);
+            return new Label("An error has occurred (234):" + e);
         }
     }
 

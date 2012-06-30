@@ -3724,7 +3724,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
               "X" +i2.getHeight (null));
           g.drawImage (i2, 0, 0, Color.red, null);
         } catch (Exception exc) {
-          System.err.println ("An error has occurred:" + exc);
+          System.err.println ("An error has occurred (345):" + exc);
           exc.printStackTrace ();
         }
       }

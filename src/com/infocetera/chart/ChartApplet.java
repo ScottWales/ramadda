@@ -136,7 +136,7 @@ public class ChartApplet extends Applet {
               System.err.println ("Got:" + bytes.length + " w:" + i2.getWidth (null) +
                   "X" +i2.getHeight (null));
             } catch (Exception exc) {
-              System.err.println ("An error has occurred:");
+              System.err.println ("An error has occurred - xxx:");
               exc.printStackTrace ();
             }
         */

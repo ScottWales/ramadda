@@ -164,6 +164,7 @@ public class Request implements Constants, Cloneable {
         this.repository         = repository;
         this.user               = user;
         this.type               = "";
+        this.parameters         = new Hashtable();
     }
 
 
@@ -171,6 +172,7 @@ public class Request implements Constants, Cloneable {
         this.repository         = repository;
         this.user               = user;
         this.type               = path;
+        this.parameters         = new Hashtable();
     }
 
 
@@ -1538,6 +1540,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     private Object getValue(Object key, Object dflt) {
+        if(parameters==null) return dflt;
         Object result = parameters.get(key);
         if (result == null) {
             result = getFromPath(key.toString());

@@ -3120,15 +3120,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = "/repository/applets/graph.jar";
         }
 
+       if ((path.indexOf("/gantt") >= 0) && path.endsWith(".jar")) {
+            path = "/repository/applets/gantt/gantt.jar";
+        }
+        */
+
         if ((path.indexOf("/chat") >= 0) && path.endsWith(".jar")) {
             path = "/repository/collab/chat.jar";
             //            System.err.println ("new path:" + path);
         }
 
-        if ((path.indexOf("/gantt") >= 0) && path.endsWith(".jar")) {
-            path = "/repository/applets/gantt/gantt.jar";
-        }
-        */
+
+
 
         path = path.replaceAll("//", "/");
         //        System.err.println("path:" + path);
@@ -3253,6 +3256,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean cacheResources() {
+        //DEBUG
+        //        if(true) return false;
         if (cacheResources == null) {
             String test = (String) cmdLineProperties.get(PROP_CACHERESOURCES);
 

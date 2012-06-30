@@ -2,11 +2,11 @@
 <head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-
 <properties>
 name=Map Header
 id=mapheader
 
+menubar.position=top
 ramadda.template.link.wrapper =<a href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
 
@@ -56,9 +56,12 @@ body {
 }
 
 .ramadda-menubar {
-   margin-top:5px;
+   border-bottom: 1px #aaa solid; 
+   margin-top:2px;
+   margin-bottom:2px;
    background-image:none;
-   padding-top:0px;
+//   padding-top:2px;
+//   padding-bottom:2px;
 }
 
 .content {
