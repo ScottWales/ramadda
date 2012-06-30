@@ -139,6 +139,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** _more_ */
     public static final String SORT_DATE = "date";
+    public static final String SORT_CHANGEDATE = "changedate";
 
     /** _more_ */
     public static final String SORT_NAME = "name";
@@ -1771,6 +1772,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                     "up").equals("up");
             if (sort.equals(SORT_DATE)) {
                 children = getEntryManager().sortEntriesOnDate(children,
+                        !ascending);
+            } else if (sort.equals(SORT_CHANGEDATE)) {
+                children = getEntryManager().sortEntriesOnChangeDate(children,
                         !ascending);
             } else if (sort.equals(SORT_NAME)) {
                 children = getEntryManager().sortEntriesOnName(children,
