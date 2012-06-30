@@ -502,7 +502,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
 
                 //Only set the name if its not different from the file name
-                if(ATTR_TITLE.equals(name) && getStorageManager().getFileTail(entry).equals(entry.getName())) {
+                if(ATTR_TITLE.equals(name) && entryHasDefaultName(entry)) {
                     entry.setName(value);
                     continue;
                 }
