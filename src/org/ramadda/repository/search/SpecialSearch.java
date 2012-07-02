@@ -225,7 +225,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         if (request.exists("timelinexml")) {
             Entry group = getRepository().getEntryManager().getDummyGroup();
-            return getRepository().getHtmlOutputHandler().outputTimelineXml(
+            return getRepository().getCalendarOutputHandler().outputTimelineXml(
                 request, group, entries);
         }
 
@@ -352,7 +352,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         makeEntryList(request, listSB, entries);
 
         String head =
-            getRepository().getHtmlOutputHandler().makeTimeline(request,
+            getRepository().getCalendarOutputHandler().makeTimeline(request,
                 entries, timelineSB,
                 "width:" + contentsWidth + "px; height: " + contentsHeight
                 + "px;");

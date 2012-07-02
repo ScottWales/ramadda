@@ -1353,7 +1353,7 @@ public class TypeHandler extends RepositoryManager {
                 return new StringBuffer(processDisplayTemplate(request,
                         entry, html));
             }
-            sb.append("<table cellspacing=\"0\" cellpadding=\"2\">");
+            sb.append(HtmlUtils.formTable());
             sb.append(getInnerEntryContent(entry, request, output,
                                            showDescription, showResource,
                                            true));
@@ -1382,7 +1382,7 @@ public class TypeHandler extends RepositoryManager {
             }
             */
 
-            sb.append("</table>\n");
+            sb.append(HtmlUtils.formTableClose());
 
 
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
@@ -1540,7 +1540,7 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
                     getRepository().iconUrl(ICON_EDIT), "Edit Entry",
-                    OutputType.TYPE_EDIT | OutputType.TYPE_TOOLBAR));
+                    OutputType.TYPE_EDIT/* | OutputType.TYPE_TOOLBAR*/));
 
             if (getEntryManager().isAnonymousUpload(entry)) {
                 links.add(
@@ -1550,7 +1550,7 @@ public class TypeHandler extends RepositoryManager {
                             ARG_JUSTPUBLISH, "true"), getRepository().iconUrl(
                                 ICON_PUBLISH), "Make Entry Public",
                                     OutputType.TYPE_EDIT
-                                    | OutputType.TYPE_TOOLBAR));
+                        /*| OutputType.TYPE_TOOLBAR*/));
             }
 
             links.add(
@@ -1582,7 +1582,7 @@ public class TypeHandler extends RepositoryManager {
                         entry), getRepository().iconUrl(ICON_DELETE),
                                 "Delete Entry",
                                 OutputType.TYPE_EDIT
-                                | OutputType.TYPE_TOOLBAR));
+                    /*| OutputType.TYPE_TOOLBAR*/));
 
         }
 

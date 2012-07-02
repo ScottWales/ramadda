@@ -850,11 +850,10 @@ public class MetadataType extends MetadataTypeBase {
 
             List<MetadataElement> children = getChildren();
             if (children.size() > 1) {
-                content.append(
-                    "<table border=0 cellpadding=2 cellspacing=2>");
+                content.append(HtmlUtils.formTable());
             } else {
-                content.append(
-                    "<table border=0 cellpadding=0 cellspacing=0>");
+                content.append(HtmlUtils.formTable());
+            //??                    "<table border=0 cellpadding=0 cellspacing=0>");
             }
             for (MetadataElement element : children) {
                 MetadataElement.FormInfo formInfo =
@@ -866,7 +865,7 @@ public class MetadataType extends MetadataTypeBase {
                             HtmlUtils.row(
                                 HtmlUtils.colspan(formInfo.content, 2)));
                     } else {
-                        content.append(HtmlUtils.formEntryTop(formInfo.label,
+                        content.append(HtmlUtils.formEntry(formInfo.label,
                                 formInfo.content));
                     }
                     didOne = true;
@@ -957,7 +956,7 @@ public class MetadataType extends MetadataTypeBase {
                     suffixLabel = "";
                 }
 
-                sb.append(HtmlUtils.formEntryTop(elementLbl,
+                sb.append(HtmlUtils.formEntry(elementLbl,
                         widget + suffixLabel));
             }
         }

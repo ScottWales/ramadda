@@ -2451,6 +2451,17 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public Result returnStream(InputStream is) throws Exception {
+        Result result = new Result();
+        result.setNeedToWrite(false);
+        OutputStream os  = getHttpServletResponse().getOutputStream();
+        IOUtil.writeTo(is, os);
+        IOUtil.close(os);
+        IOUtil.close(is);
+        return result;
+    }
+
+
 
 
 }

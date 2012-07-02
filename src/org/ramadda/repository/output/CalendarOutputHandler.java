@@ -77,9 +77,47 @@ import java.util.zip.*;
 public class CalendarOutputHandler extends OutputHandler {
 
 
+    /** _more_ */
+    public static final String TAG_DATA = "data";
 
     /** _more_ */
-    public static final OutputType OUTPUT_GRID =
+    public static final String TAG_EVENT = "event";
+
+    /** _more_ */
+    public static final String ATTR_IMAGE = "image";
+
+    /** _more_ */
+    public static final String ATTR_LINK = "link";
+
+    /** _more_ */
+    public static final String ATTR_START = "start";
+
+    /** _more_ */
+    public static final String ATTR_TITLE = "title";
+
+
+    /** _more_ */
+    public static final String ATTR_END = "end";
+
+    /** _more_ */
+    public static final String ATTR_EARLIESTEND = "earliestEnd";
+
+    /** _more_ */
+    public static final String ATTR_ISDURATION = "isDuration";
+
+    /** _more_ */
+    public static final String ATTR_LATESTSTART = "latestStart";
+
+    /** _more_ */
+    public static final String ATTR_ICON = "icon";
+
+    /** _more_ */
+    public static final String ATTR_COLOR = "color";
+
+
+
+    /** _more_ */
+    public static final OutputType OUTPUT_DATE_GRID =
         new OutputType("Date Grid", "calendar.grid",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_DATEGRID);
@@ -89,6 +127,13 @@ public class CalendarOutputHandler extends OutputHandler {
         new OutputType("Calendar", "calendar.calendar",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_CALENDAR);
+
+
+    /** _more_ */
+    public static final OutputType OUTPUT_TIMELINE =
+        new OutputType("Timeline", "default.timeline",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, 
+                       "", ICON_TIMELINE);
 
 
     /**
@@ -101,8 +146,9 @@ public class CalendarOutputHandler extends OutputHandler {
     public CalendarOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(OUTPUT_GRID);
         addType(OUTPUT_CALENDAR);
+        addType(OUTPUT_TIMELINE);
+        addType(OUTPUT_DATE_GRID);
     }
 
 
@@ -127,7 +173,10 @@ public class CalendarOutputHandler extends OutputHandler {
         }
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_CALENDAR));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
+            if(state.getAllEntries().size() > 1) {
+                links.add(makeLink(request, state.getEntry(), OUTPUT_TIMELINE));
+                links.add(makeLink(request, state.getEntry(), OUTPUT_DATE_GRID));
+            }            
         }
     }
 
@@ -150,19 +199,164 @@ public class CalendarOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
+        if (request.get("timelinexml", false)) {
+            List<Entry> allEntries = new ArrayList<Entry>();
+            allEntries.addAll(subGroups);
+            allEntries.addAll(entries);
+            return outputTimelineXml(request, group, allEntries);
+        }
+
+
         StringBuffer sb = new StringBuffer();
         //        sb.append(getRepository().getHtmlOutputHandler().getHtmlHeader(request, group));
         showNext(request, subGroups, entries, sb);
         entries.addAll(subGroups);
         Result result;
-        if (outputType.equals(OUTPUT_GRID)) {
+        if (outputType.equals(OUTPUT_DATE_GRID)) {
             result = outputDateGrid(request, group, entries, sb);
+        } else if (outputType.equals(OUTPUT_TIMELINE)) {
+            //            sb.append(getHtmlHeader(request,  group));
+            List allEntries = new ArrayList(entries);
+            allEntries.addAll(subGroups);
+            String head = makeTimeline(request, allEntries, sb, "height: 300px;");
+            result = makeLinksResult(request, msg("Timeline"), sb,
+                                            new State(group, subGroups,
+                                                entries));
+            if (head != null) {
+                result.putProperty(PROP_HTML_HEAD, head);
+            }
+            return result;
         } else {
             result = outputCalendar(request, group, entries, sb);
         }
         addLinks(request, result, new State(group, subGroups, entries));
         return result;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     * @param allEntries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result outputTimelineXml(Request request, Entry group,
+                                    List<Entry> allEntries)
+            throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
+        StringBuffer     sb  = new StringBuffer();
+        sb.append(XmlUtil.openTag(TAG_DATA));
+
+
+        for (Entry entry : allEntries) {
+            String icon = getEntryManager().getIconUrl(request, entry);
+            StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE,
+                                     " " + entry.getName(), ATTR_ICON, icon));
+
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
+            if (urls.size() > 0) {
+                attrs.append(XmlUtil.attrs(ATTR_IMAGE, urls.get(0)));
+            }
+            String entryUrl =
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+            attrs.append(XmlUtil.attrs(ATTR_LINK, entryUrl));
+
+            attrs.append(
+                XmlUtil.attrs(
+                    ATTR_START, sdf.format(new Date(entry.getStartDate()))));
+            if (entry.getStartDate() != entry.getEndDate()) {
+                attrs.append(
+                    XmlUtil.attrs(
+                        ATTR_END, sdf.format(new Date(entry.getEndDate()))));
+            }
+            sb.append(XmlUtil.openTag(TAG_EVENT, attrs.toString()));
+            if (entry.getDescription().length() > 0) {
+                sb.append(XmlUtil.getCdata(entry.getDescription()));
+            }
+            sb.append(XmlUtil.closeTag(TAG_EVENT));
+            sb.append("\n");
+        }
+
+        sb.append(XmlUtil.closeTag(TAG_DATA));
+        //        System.err.println(sb);
+        return new Result("", sb, "text/xml");
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entries _more_
+     * @param sb _more_
+     * @param style _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String makeTimeline(Request request, List<Entry> entries,
+                               StringBuffer sb, String style)
+            throws Exception {
+        String           head    = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
+        long             minDate = 0;
+        long             maxDate = 0;
+        for (Entry entry : (List<Entry>) entries) {
+            if ((minDate == 0) || (entry.getStartDate() < minDate)) {
+                minDate = entry.getStartDate();
+            }
+            if ((maxDate == 0) || (entry.getEndDate() > maxDate)) {
+                maxDate = entry.getEndDate();
+            }
+        }
+        long diffDays = (maxDate - minDate) / 1000 / 3600 / 24;
+        //            System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
+        String interval = "Timeline.DateTime.MONTH";
+        if (diffDays < 3) {
+            interval = "Timeline.DateTime.HOUR";
+        } else if (diffDays < 7) {
+            interval = "Timeline.DateTime.DAY";
+        } else if (diffDays < 30) {
+            interval = "Timeline.DateTime.WEEK";
+        } else if (diffDays < 150) {
+            interval = "Timeline.DateTime.MONTH";
+        } else if (diffDays < 10 * 365) {
+            interval = "Timeline.DateTime.YEAR";
+        } else {
+            interval = "Timeline.DateTime.DECADE";
+        }
+
+
+        //        System.err.println(diffDays+ " " + interval+" min date:" +sdf.format(new Date(minDate)));
+
+        //            sb.append(getTimelineApplet(request, allEntries));
+        head = "<script>var Timeline_urlPrefix='${root}/timeline/timeline_js/';\nvar Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';\nTimeline_parameters='bundle=true';\n</script>\n<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>\n<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />";
+        head = head.replace("${root}", getRepository().getUrlBase());
+        String timelineApplet =
+            getRepository().getResource(
+                "/org/ramadda/repository/resources/timeline.html");
+        String url = request.getUrl();
+        url = url + "&timelinexml=true";
+        //            timelineApplet = timelineApplet.replace("${timelineurl}", "${root}/monet.xml");
+
+        timelineApplet = timelineApplet.replace("${timelineurl}", url);
+        timelineApplet = timelineApplet.replace("${basedate}",
+                sdf.format(new Date(minDate)));
+        timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
+        timelineApplet = timelineApplet.replace("${style}", style);
+
+
+        sb.append(timelineApplet);
+        return head;
+
+    }
+
 
 
 

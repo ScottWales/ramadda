@@ -973,7 +973,7 @@ public class MetadataManager extends RepositoryManager {
                 tuples.add(new Object[] { new Integer(cnt[i]), values[i] });
             }
             tuples = Misc.sortTuples(tuples, false);
-            sb.append("<table>");
+            sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.b("Count"),
                     HtmlUtils.b(type.getLabel()))));
             for (int i = 0; i < tuples.size(); i++) {
@@ -986,7 +986,7 @@ public class MetadataManager extends RepositoryManager {
                         value), value));
                 sb.append("</td></tr>");
             }
-            sb.append("</table>");
+            sb.append(HtmlUtils.formTableClose());
         } else {
             for (int i = 0; i < values.length; i++) {
                 if (cnt[i] == 0) {

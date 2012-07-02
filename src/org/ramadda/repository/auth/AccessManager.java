@@ -857,7 +857,6 @@ public class AccessManager extends RepositoryManager {
 
 
 
-
         Hashtable        map         = new Hashtable();
         List<Permission> permissions = getPermissions(entry);
         for (Permission permission : permissions) {
@@ -870,7 +869,8 @@ public class AccessManager extends RepositoryManager {
         sb.append(HtmlUtils.submit("Change Access"));
         sb.append("<p>");
         //        sb.append("<table><tr valign=\"top\"><td>");
-        sb.append(HtmlUtils.formTable());
+        //        sb.append(HtmlUtils.formTable());
+        sb.append("<table>");
         sb.append("<tr valign=top>");
         sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action")),
                                 HtmlUtils.bold(msg("Role")) + " ("

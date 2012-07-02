@@ -1,3 +1,45 @@
+/*
+reset
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+//      margin: 0;
+//      padding: 0;
+      font-size: 100%;
+      font: inherit;
+//      vertical-align: baseline;
+}
+
+/*
+body {
+     line-height: 1.2; 
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+          content: '';
+          content: none;
+}
+xxxtable {
+      border-collapse: collapse;
+      border-spacing: 0;
+}
+*/
+
 
 body {
    font-family:  Arial, Helvetica, sans-serif;
@@ -5,8 +47,13 @@ body {
    margin: 0px;
 }
 
-body, a, td {
+body {
    font-size: 11pt;
+}
+
+
+body, a, td {
+//   font-size: 11pt;
 }
 
 a {
@@ -265,16 +312,36 @@ a..ramadda-heading-2-link:visited {
    color:red;
 }
 
+.entryheader {
+   border-bottom : 1px #ccc solid;
+   margin-bottom:5px;
+}
+
+.entryname {
+   font-size: 130%;
+   padding-left:15px;
+//   font-weight: bold;
+   vertical-align: bottom;
+}
+
+.entryname a:hover {
+   text-decoration: underline;
+   color:red;
+}
+
+.entryname a {
+   color: #000000;
+}
+
+
+
 .ramadda-menubar {
    background-repeat: repeat-x;
-   background-image:url(${urlroot}/images/gradient.jpg);
+//   background-image:url(${urlroot}/images/gradient.jpg);
    padding-left:10px;
-   padding-right:10px;
-//   padding-top:5px;
-//   padding-bottom:1px;
-//   margin-bottom:2px;
-//   border-bottom: 1px #aaa solid; 
-//   border-top: 1px #aaa solid; 
+   padding-top:2px;
+   padding-bottom:2px;
+   border-top: 1px #ccc solid; 
 }
 
 .ramadda-menubutton {
@@ -969,25 +1036,22 @@ a.image-link {
 }
 
 .breadcrumbs {
-   font-size: 12pt;
+//   font-size: 12pt;
    text-decoration: none;
-   margin-bottom:1px;
 }
 
 .breadcrumbs a {
    text-decoration: none;
    color: #000;
-   //color: #cb6811;
 }
-
 
 .breadcrumbs a:hover {
    text-decoration: underline;
    color: red;
 }
 
+
 .content {
-  border: 1px #aaa solid;
   min-height:800px;
   margin:0px;
   margin-right:5px;
@@ -998,28 +1062,6 @@ a.image-link {
 .entrymenuarrow {
   padding-left:5px;
   padding-right:5px;
-}
-
-
-.entryheader {
-   border-bottom : 1px #ddd solid;
-   margin-bottom:5px;
-}
-
-.entryname {
-   font-size: 12pt;
-   padding-left:10px;
-   font-weight: bold;
-   vertical-align: bottom;
-}
-
-.entryname a:hover {
-   text-decoration: underline;
-   color:red;
-}
-
-.entryname a {
-   color: #000000;
 }
 
 
@@ -1069,14 +1111,19 @@ a.toggleblocklabellink:visited {
   font-weight: bold;
 }
 
+
+.formtable td {
+      vertical-align: middle;
+      padding-top: 5;
+      padding-left: 4;
+      padding-right: 4;
+}
+
 .formlabel, .formlabeltop {
   font-weight: bold;
   text-align:right;
 }
 
-.formlabeltop {
-   padding-top:6px;
-}
 
 .innernote {
    padding-top:10px;

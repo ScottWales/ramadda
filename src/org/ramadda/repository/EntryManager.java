@@ -5399,9 +5399,9 @@ public class EntryManager extends RepositoryManager {
             if (showEntryHeader) {
                 entryHeader =
                     "<table border=0 cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
-                    + HtmlUtils.rowBottom("<td class=\"entryname\" >" + img
+                    + HtmlUtils.rowBottom("<td><div class=\"entryname\" >" + img
                                           + entryLink
-                                          + "</td><td align=\"right\">"
+                                          + "</div></td><td align=\"right\">"
                                           + (showLayoutToolbar
                                              ? HtmlUtils.div(htmlViewLinks,
                                                              HtmlUtils.cssClass("ramadda-header-layoutbar"))
@@ -5413,7 +5413,9 @@ public class EntryManager extends RepositoryManager {
             }
 
             //getRepository().getProperty("ramadda.html.menubarontop", true)
-            boolean menuBarOnTop = htmlTemplate.getTemplateProperty("menubar.position","top").equals("top");
+            boolean menuBarOnTop = htmlTemplate.getTemplateProperty("menubar.position",
+                                                                    getProperty("ramadda.html.menubar.position",
+                                                                                "bottom")).equals("top");
             if(menuBarOnTop) {
                 nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
                                     style);

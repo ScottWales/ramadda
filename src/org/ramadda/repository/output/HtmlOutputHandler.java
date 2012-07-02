@@ -77,18 +77,12 @@ import java.util.zip.*;
 public class HtmlOutputHandler extends OutputHandler {
 
 
-    /** _more_ */
-    public static final OutputType OUTPUT_TIMELINE =
-        new OutputType("Timeline", "default.timeline",
-    //OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, 
-    OutputType.TYPE_FORSEARCH, "", ICON_TIMELINE);
 
     /** _more_ */
     public static final OutputType OUTPUT_GRID =
         new OutputType("Grid Layout", "html.grid",
-    //                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
-    OutputType.TYPE_FORSEARCH, "", ICON_DATA);
-
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       ICON_DATA);
 
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH =
@@ -131,46 +125,12 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
     /** _more_ */
-    public static final String TAG_DATA = "data";
-
-    /** _more_ */
-    public static final String TAG_EVENT = "event";
-
-    /** _more_ */
     public static final String ATTR_WIKI_SECTION = "wiki-section";
 
     /** _more_ */
     public static final String ATTR_WIKI_URL = "wiki-url";
 
-    /** _more_ */
-    public static final String ATTR_IMAGE = "image";
 
-    /** _more_ */
-    public static final String ATTR_LINK = "link";
-
-    /** _more_ */
-    public static final String ATTR_START = "start";
-
-    /** _more_ */
-    public static final String ATTR_TITLE = "title";
-
-    /** _more_ */
-    public static final String ATTR_END = "end";
-
-    /** _more_ */
-    public static final String ATTR_EARLIESTEND = "earliestEnd";
-
-    /** _more_ */
-    public static final String ATTR_ISDURATION = "isDuration";
-
-    /** _more_ */
-    public static final String ATTR_LATESTSTART = "latestStart";
-
-    /** _more_ */
-    public static final String ATTR_ICON = "icon";
-
-    /** _more_ */
-    public static final String ATTR_COLOR = "color";
 
 
 
@@ -187,7 +147,6 @@ public class HtmlOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_HTML);
         addType(OUTPUT_TREE);
-        addType(OUTPUT_TIMELINE);
         addType(OUTPUT_TABLE);
         addType(OUTPUT_GRID);
         addType(OUTPUT_GRAPH);
@@ -236,7 +195,7 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
         OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE, OUTPUT_GRID,
-                OUTPUT_TIMELINE, CalendarOutputHandler.OUTPUT_CALENDAR };
+                                                CalendarOutputHandler.OUTPUT_TIMELINE, CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
             new StringBuffer("<table border=0 cellspacing=0 cellpadding=0><tr>");
         String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
@@ -283,12 +242,8 @@ public class HtmlOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_HTML));
             if (entries.size() > 1) {
-                links.add(makeLink(request, state.getEntry(),
-                                   OUTPUT_TIMELINE));
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
-
-
             }
         }
     }
@@ -564,9 +519,6 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_TIMELINE)) {
-            return getRepository().getMimeTypeFromSuffix(".html");
-        }
         if (output.equals(OUTPUT_GRID)||output.equals(OUTPUT_TABLE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
@@ -1026,59 +978,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param allEntries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result outputTimelineXml(Request request, Entry group,
-                                    List<Entry> allEntries)
-            throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
-        StringBuffer     sb  = new StringBuffer();
-        sb.append(XmlUtil.openTag(TAG_DATA));
-
-
-        for (Entry entry : allEntries) {
-            String icon = getEntryManager().getIconUrl(request, entry);
-            StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE,
-                                     " " + entry.getName(), ATTR_ICON, icon));
-
-            List<String> urls = new ArrayList<String>();
-            getMetadataManager().getThumbnailUrls(request, entry, urls);
-            if (urls.size() > 0) {
-                attrs.append(XmlUtil.attrs(ATTR_IMAGE, urls.get(0)));
-            }
-            String entryUrl =
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-            attrs.append(XmlUtil.attrs(ATTR_LINK, entryUrl));
-
-            attrs.append(
-                XmlUtil.attrs(
-                    ATTR_START, sdf.format(new Date(entry.getStartDate()))));
-            if (entry.getStartDate() != entry.getEndDate()) {
-                attrs.append(
-                    XmlUtil.attrs(
-                        ATTR_END, sdf.format(new Date(entry.getEndDate()))));
-            }
-            sb.append(XmlUtil.openTag(TAG_EVENT, attrs.toString()));
-            if (entry.getDescription().length() > 0) {
-                sb.append(XmlUtil.getCdata(entry.getDescription()));
-            }
-            sb.append(XmlUtil.closeTag(TAG_EVENT));
-            sb.append("\n");
-        }
-
-        sb.append(XmlUtil.closeTag(TAG_DATA));
-        //        System.err.println(sb);
-        return new Result("", sb, "text/xml");
-    }
 
 
 
@@ -1333,76 +1232,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param sb _more_
-     * @param style _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String makeTimeline(Request request, List<Entry> entries,
-                               StringBuffer sb, String style)
-            throws Exception {
-        String           head    = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
-        long             minDate = 0;
-        long             maxDate = 0;
-        for (Entry entry : (List<Entry>) entries) {
-            if ((minDate == 0) || (entry.getStartDate() < minDate)) {
-                minDate = entry.getStartDate();
-            }
-            if ((maxDate == 0) || (entry.getEndDate() > maxDate)) {
-                maxDate = entry.getEndDate();
-            }
-        }
-        long diffDays = (maxDate - minDate) / 1000 / 3600 / 24;
-        //            System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
-        String interval = "Timeline.DateTime.MONTH";
-        if (diffDays < 3) {
-            interval = "Timeline.DateTime.HOUR";
-        } else if (diffDays < 7) {
-            interval = "Timeline.DateTime.DAY";
-        } else if (diffDays < 30) {
-            interval = "Timeline.DateTime.WEEK";
-        } else if (diffDays < 150) {
-            interval = "Timeline.DateTime.MONTH";
-        } else if (diffDays < 10 * 365) {
-            interval = "Timeline.DateTime.YEAR";
-        } else {
-            interval = "Timeline.DateTime.DECADE";
-        }
-
-
-        //        System.err.println(diffDays+ " " + interval+" min date:" +sdf.format(new Date(minDate)));
-
-        //            sb.append(getTimelineApplet(request, allEntries));
-        head = "<script>var Timeline_urlPrefix='${root}/timeline/timeline_js/';\nvar Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';\nTimeline_parameters='bundle=true';\n</script>\n<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>\n<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />";
-        head = head.replace("${root}", getRepository().getUrlBase());
-        String timelineApplet =
-            getRepository().getResource(
-                "/org/ramadda/repository/resources/timeline.html");
-        String url = request.getUrl();
-        url = url + "&timelinexml=true";
-        //            timelineApplet = timelineApplet.replace("${timelineurl}", "${root}/monet.xml");
-
-        timelineApplet = timelineApplet.replace("${timelineurl}", url);
-        timelineApplet = timelineApplet.replace("${basedate}",
-                sdf.format(new Date(minDate)));
-        timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
-        timelineApplet = timelineApplet.replace("${style}", style);
-
-
-        sb.append(timelineApplet);
-        return head;
-
-    }
-
-
 
     /**
      * _more_
@@ -1466,12 +1295,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return outputTable(request, group, subGroups, entries);
         }
 
-        if (request.get("timelinexml", false)) {
-            List<Entry> allEntries = new ArrayList<Entry>();
-            allEntries.addAll(subGroups);
-            allEntries.addAll(entries);
-            return outputTimelineXml(request, group, allEntries);
-        }
+
 
         //        Result typeResult = typeHandler.getHtmlDisplay(request, group, subGroups, entries);
         //        if (typeResult != null) {
@@ -1487,8 +1311,8 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        boolean showTimeline = outputType.equals(OUTPUT_TIMELINE);
-        if ( !showTimeline && (typeHandler != null)) {
+
+        if (typeHandler != null) {
             Result typeResult = typeHandler.getHtmlDisplay(request, group,
                                     subGroups, entries);
 
@@ -1535,24 +1359,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String head = null;
 
-        if (showTimeline) {
-
-            //            sb.append(getHtmlHeader(request,  group));
-            List allEntries = new ArrayList(entries);
-            allEntries.addAll(subGroups);
-
-
-            head = makeTimeline(request, allEntries, sb, "height: 300px;");
-
-            Result result = makeLinksResult(request, msg("Timeline"), sb,
-                                            new State(group, subGroups,
-                                                entries));
-            if (head != null) {
-                result.putProperty(PROP_HTML_HEAD, head);
-            }
-            return result;
-
-        } else if ((wikiTemplate == null) && !group.isDummy()) {
+        if ((wikiTemplate == null) && !group.isDummy()) {
 
             //            sb.append(getHtmlHeader(request,  group));
             addDescription(request, group, sb, !hasChildren);

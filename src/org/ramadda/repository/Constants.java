@@ -1048,7 +1048,7 @@ public interface Constants {
     public static final String PROP_MONITOR_ENABLE_EXEC =
         "ramadda.monitor.enable.exec";
 
-
+    public static final String PROP_PROXY_WHITELIST = "ramadda.proxy.whitelist";
     /** _more_ */
     public static final String PROP_READ_ONLY = "ramadda.readonly";
 

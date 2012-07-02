@@ -790,6 +790,7 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     protected void loadLanguagePacks() throws Exception {
+        //        getLogManager().logInfoAndPrint("RAMADDA: loadLanguagePacks");
         List sourcePaths =
             Misc.newList(
                 getStorageManager().getSystemResourcePath() + "/languages",
@@ -798,6 +799,7 @@ public class PageHandler extends RepositoryManager {
             String       dir     = (String) sourcePaths.get(i);
             List<String> listing = getRepository().getListing(dir,
                                        getClass());
+            //            getLogManager().logInfoAndPrint("RAMADDA: language packs:" + listing);
             for (String path : listing) {
                 if ( !path.endsWith(".pack")) {
                     continue;

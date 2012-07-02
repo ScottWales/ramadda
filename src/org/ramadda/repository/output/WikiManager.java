@@ -967,7 +967,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             int    height = Misc.getProperty(props, ATTR_HEIGHT, 150);
             String style  = "height: " + height + "px;";
-            String head   = getHtmlOutputHandler().makeTimeline(request,
+            String head   = getCalendarOutputHandler().makeTimeline(request,
                               children, sb, style);
             if (head != null) {
                 request.putExtraProperty(PROP_HTML_HEAD, head);

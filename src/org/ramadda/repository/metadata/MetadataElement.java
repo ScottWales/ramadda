@@ -382,7 +382,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                             //                            subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
                         }
                         subEntrySB.append(
-                            HtmlUtils.formEntryTop(
+                            HtmlUtils.formEntry(
                                 formInfo.label, formInfo.content));
                         if (formInfo.isGroup) {
                             //                            subEntrySB.append("</td></tr>\n");
@@ -399,18 +399,16 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 entryCnt++;
                 if (anyChildrenGroups || (children.size() > 1)) {
                     StringBuffer tmp = new StringBuffer();
-                    tmp.append(
-                        "<table border=0 cellpadding=2 cellspacing=2>");
+                    tmp.append(HtmlUtils.formTable());
                     tmp.append(subEntrySB);
-                    tmp.append("</table>");
+                    tmp.append(HtmlUtils.formTableClose());
                     entriesSB.append(HtmlUtils.makeToggleInline(entryCnt
                             + ") " + subName, tmp.toString(), true));
                     entriesSB.append("<br>");
                 } else {
-                    entriesSB.append(
-                        "<table border=0 cellpadding=2 cellspacing=2>");
+                    entriesSB.append(HtmlUtils.formTable());
                     entriesSB.append(subEntrySB);
-                    entriesSB.append("</table>");
+                    entriesSB.append(HtmlUtils.formTableClose());
                 }
             }
             if (haveSubEntries) {
@@ -419,13 +417,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 String       link   = toggle[1];
                 String       initJS = toggle[2];
                 StringBuffer tmp    = new StringBuffer();
-                tmp.append(
-                    "<table cellspacing=0 celladding=0 border=0><tr valign=top><td width=1%>"
+                tmp.append(HtmlUtils.formTable());
+                tmp.append("<tr valign=top><td width=1%>"
                     + link + "</td><td>"
                     + HtmlUtils.div(
                         entriesSB.toString(),
                         HtmlUtils.id(id)
-                        + HtmlUtils.cssClass("metadatagroup")) + "</td></tr></table>");
+                        + HtmlUtils.cssClass("metadatagroup")) + "</td></tr>");
+                tmp.append(HtmlUtils.formTableClose());
                 if (initJS.length() > 0) {
                     tmp.append(HtmlUtils.script(initJS));
                 }
@@ -453,7 +452,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             } else {
                 name = HtmlUtils.space(1);
             }
-            //            sb.append(HtmlUtils.formEntryTop(name, html));
+            //            sb.append(HtmlUtils.formEntry(name, html));
             return new FormInfo(name, html);
         }
         return null;
@@ -861,7 +860,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                     if ((widget == null) || (widget.length() == 0)) {
                         continue;
                     }
-                    groupSB.append(HtmlUtils.formEntryTop(elementLbl, widget));
+                    groupSB.append(HtmlUtils.formEntry(elementLbl, widget));
                     groupSB.append(HtmlUtils.hidden(subArg + ".group",
                             "true"));
                 }
