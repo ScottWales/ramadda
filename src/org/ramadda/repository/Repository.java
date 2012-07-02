@@ -1936,9 +1936,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         (String) null);
             if (contents == null) {
                 contents = IOUtil.readContents(path, c, (String) null);
-                getLogManager().logInfoAndPrint("RAMADDA: resourceList (2):" + contents);
+                getLogManager().logInfoAndPrint("RAMADDA: resourceList (2):" + (contents == null?"NULL":contents.replaceAll("\n"," ")));
             } else {
-                getLogManager().logInfoAndPrint("RAMADDA: resourceList (1):" + contents);
+                getLogManager().logInfoAndPrint("RAMADDA: resourceList (1):" + (contents == null?"NULL":contents.replaceAll("\n"," ")));
             }
 
             if (contents != null) {
