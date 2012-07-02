@@ -2494,7 +2494,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String table(Object[] columns) {
-        return table(row(cols(columns), attr(ATTR_VALIGN, VALUE_TOP)));
+        return table(row(cols(columns), "" /*attr(ATTR_VALIGN, VALUE_TOP)*/));
     }
 
 
@@ -2507,7 +2507,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String table(Object[] columns, int spacing) {
-        return table(row(cols(columns), attr(ATTR_VALIGN, VALUE_TOP)),
+        return table(row(cols(columns), ""/*attr(ATTR_VALIGN, VALUE_TOP)*/),
                      attrs(ATTR_CELLSPACING, "" + spacing));
     }
 
@@ -2556,7 +2556,7 @@ public class HtmlUtils {
      */
     public static String formTable() {
         return open(TAG_TABLE,
-                    attrs(ATTR_CELLPADDING, "3", ATTR_CELLSPACING, "3"));
+                    cssClass("formtable") +attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
     }
 
 
@@ -2637,8 +2637,9 @@ public class HtmlUtils {
                                       String trExtra, boolean dummy) {
         left = div(left, cssClass(CLASS_FORMLABEL_TOP));
         String label = tag(TAG_TD,
-                           attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_VALIGN, VALUE_TOP), left);
-        return tag(TAG_TR, attrs(ATTR_VALIGN, VALUE_TOP) + " " + trExtra,
+                           attrs(ATTR_ALIGN, VALUE_RIGHT), left);
+        // attrs(ATTR_VALIGN, VALUE_TOP)
+        return tag(TAG_TR, trExtra,
                    label+ tag(TAG_TD, "", right));
     }
 
@@ -2653,10 +2654,10 @@ public class HtmlUtils {
      */
     public static String formEntryTop(String col1, String left,
                                       String right) {
-        return tag(TAG_TR, attrs(ATTR_VALIGN, VALUE_TOP),
-                   col(col1, attr(ATTR_VALIGN, VALUE_TOP))
+        return tag(TAG_TR, /*attrs(ATTR_VALIGN, VALUE_TOP)*/ "",
+                   col(col1, ""/*attr(ATTR_VALIGN, VALUE_TOP)*/)
                    + col(left,
-                         attrs(ATTR_VALIGN, VALUE_TOP, ATTR_ALIGN,
+                         attrs(ATTR_ALIGN,
                                VALUE_RIGHT, ATTR_CLASS,
                                CLASS_FORMLABEL_TOP)) + col(right));
     }
