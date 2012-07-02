@@ -1931,14 +1931,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         } else {
             //try it as a java resource
-            String contents = IOUtil.readContents(path, c, (String) null);
-            if (contents == null) {
-                contents = IOUtil.readContents(path + "/files.txt", c,
+            String contents = null;
+            contents = IOUtil.readContents(path + "/files.txt", c,
                         (String) null);
-                //                getLogManager().logInfoAndPrint("RAMADDA: resourceList (2):" + contents);
+            if (contents == null) {
+                contents = IOUtil.readContents(path, c, (String) null);
+                getLogManager().logInfoAndPrint("RAMADDA: resourceList (2):" + contents);
             } else {
-                //                getLogManager().logInfoAndPrint("RAMADDA: resourceList (1):" + contents);
+                getLogManager().logInfoAndPrint("RAMADDA: resourceList (1):" + contents);
             }
+
             if (contents != null) {
                 List<String> lines = StringUtil.split(contents, "\n", true,
                                          true);
