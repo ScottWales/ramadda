@@ -66,6 +66,7 @@ import java.util.zip.*;
 public class GpsOutputHandler extends OutputHandler {
 
     public static final String PROP_TEQC = "fieldproject.teqc";
+    public static final String PROP_RUNPKR = "fieldproject.runpkr";
 
     /** _more_ */
     private static final String TEQC_FLAG_QC = "+qcq";
@@ -148,6 +149,9 @@ public class GpsOutputHandler extends OutputHandler {
     /** file path to the teqc executable */
     private String teqcPath;
 
+    /** file path to the teqc executable */
+    private String runPkrPath;
+
     /** _more_ */
     private TempDir productDir;
 
@@ -200,6 +204,7 @@ public class GpsOutputHandler extends OutputHandler {
         addType(OUTPUT_GPS_OPUS);
         addType(OUTPUT_GPS_CONTROLPOINTS);
         teqcPath = getProperty(PROP_TEQC, null);
+        runPkrPath = getProperty(PROP_RUNPKR, null);
     }
 
 
@@ -281,6 +286,10 @@ public class GpsOutputHandler extends OutputHandler {
         return teqcPath != null;
     }
 
+    public boolean haveRunPkr() {
+        return runPkrPath != null;
+    }
+
 
     /**
      * This method gets called to determine if the given entry or entries can be displays as las xml
@@ -294,7 +303,7 @@ public class GpsOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if (teqcPath == null) {
+        if (!haveTeqc()) {
             return;
         }
         if (state.group != null) {
@@ -637,10 +646,12 @@ public class GpsOutputHandler extends OutputHandler {
                 continue;
             }
 
-            File f = rawEntry.getFile();
-            if ( !f.exists()) {
-                throw new IllegalStateException("File does not exist:" + f);
+            File rawFile = rawEntry.getFile();
+            if ( !rawFile.exists()) {
+                throw new IllegalStateException("File does not exist:" + rawFile);
             }
+
+            String inputFile = getRawFile(rawFile.toString());
 
             GregorianCalendar cal =
                 new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
@@ -659,7 +670,7 @@ public class GpsOutputHandler extends OutputHandler {
             fileToEntryMap.put(rinexFile.toString(), rawEntry);
 
             ProcessBuilder pb = new ProcessBuilder(teqcPath, "+out",
-                                    rinexFile.toString(), f.toString());
+                                                   rinexFile.toString(), inputFile);
             pb.directory(workDir);
             Process process = pb.start();
             String errorMsg =
@@ -971,6 +982,34 @@ public class GpsOutputHandler extends OutputHandler {
 
 
 
+    private boolean isTrimble(String file) {
+        return file.endsWith(".t00") ||file.endsWith(".t01");
+    }
+
+
+
+    private String getRawFile(String inputFile) 
+            throws Exception {
+        if(isTrimble(inputFile)) {
+            if(!haveRunPkr()) {
+                return null;
+            }
+            File datFile = getStorageManager().getTmpFile(getRepository().getTmpRequest(), IOUtil.getFileTail(IOUtil.stripExtension(inputFile))+".dat");
+            ProcessBuilder pb1 = new ProcessBuilder(runPkrPath, "-d", "-g",
+                                                    inputFile, datFile.toString());
+            Process process1 = pb1.start();
+            String errorMsg =
+                new String(IOUtil.readBytes(process1.getErrorStream()));
+            String outMsg =
+                new String(IOUtil.readBytes(process1.getInputStream()));
+            process1.waitFor();
+            inputFile = datFile.toString();
+        }
+        return inputFile;
+    }
+
+
+
     /**
      * _more_
      *
@@ -983,8 +1022,14 @@ public class GpsOutputHandler extends OutputHandler {
      */
     private String extractGpsMetadata(File rinexFile, String flag)
             throws Exception {
+        String inputFile = getRawFile(rinexFile.toString());
+        if(inputFile == null) {
+            //If its a trimble file and we don't have runpkr installed
+            return "none";
+        }
+
         ProcessBuilder pb = new ProcessBuilder(teqcPath, flag,
-                                rinexFile.toString());
+                                               inputFile);
         Process process = pb.start();
         String errorMsg =
             new String(IOUtil.readBytes(process.getErrorStream()));
