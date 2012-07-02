@@ -1920,9 +1920,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public static List<String> getListing(String path, Class c) {
+    public  List<String> getListing(String path, Class c) {
         List<String> listing = new ArrayList<String>();
         File         f       = new File(path);
+        //        getLogManager().logInfoAndPrint("RAMADDA: getListing:" + path);
         if (f.exists()) {
             File[] files = f.listFiles();
             for (int i = 0; i < files.length; i++) {
@@ -1934,6 +1935,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (contents == null) {
                 contents = IOUtil.readContents(path + "/files.txt", c,
                         (String) null);
+                //                getLogManager().logInfoAndPrint("RAMADDA: resourceList (2):" + contents);
+            } else {
+                //                getLogManager().logInfoAndPrint("RAMADDA: resourceList (1):" + contents);
             }
             if (contents != null) {
                 List<String> lines = StringUtil.split(contents, "\n", true,
@@ -3759,6 +3763,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    public CalendarOutputHandler getCalendarOutputHandler() {
+        try {
+            return (CalendarOutputHandler) getOutputHandler(
+                OutputHandler.OUTPUT_HTML);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
     /**
      * _more_
      *
@@ -4045,6 +4059,36 @@ public class Repository extends RepositoryBase implements RequestHandler,
             BLANK, new BufferedInputStream(new ByteArrayInputStream(buffer)),
             "application/x-binary");
     }
+
+
+
+    public Result processProxy(Request request) throws Exception {
+        String url = request.getString(ARG_URL,"");
+        getLogManager().logInfo("RAMADDA: processing proxy request:" + url);
+        if(!url.startsWith("http:") && !url.startsWith("https:")) {
+            throw new IllegalArgumentException("Bad URL:" + url);
+        }
+        //        System.err.println("url:" + url);
+
+        //Check the whitelist
+        boolean ok = false;
+        for(String pattern: StringUtil.split(getProperty(PROP_PROXY_WHITELIST,""),",",true,true)) {
+            //            System.err.println("pattern:" + pattern);
+            if(url.matches(pattern)) {
+                ok = true;
+                break;
+            }
+        }
+        if(!ok) {
+            throw new IllegalArgumentException("URL not in whitelist:" + url);
+        }
+
+        URLConnection connection = new URL(url).openConnection();
+        InputStream   is         = connection.getInputStream();
+        return request.returnStream(is);
+    }
+
+
 
     /**
      * _more_

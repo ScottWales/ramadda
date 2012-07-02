@@ -59,6 +59,7 @@
       <api request="/dummy"                  method="processDummy"/>
       <api request="/install"                method="processDummy"/>
       <api request="/test/memory"            method="processTestMemory"/>
+      <api request="/proxy"                  method="processProxy"/>
   </group>
 
   <group handler="accessmanager">
