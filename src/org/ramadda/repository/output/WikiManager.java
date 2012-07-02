@@ -695,7 +695,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             buf.append(
                 HtmlUtils.href(
                     entry.getTypeHandler().getEntryResourceUrl(
-                        request, entry), img, HtmlUtils.id("single_image")));
+                        request, entry), img, HtmlUtils.cssClass("popup_image")));
 
             return buf.toString();
         }
