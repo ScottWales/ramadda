@@ -318,15 +318,17 @@ a..ramadda-heading-2-link:visited {
 }
 
 .entryname {
-   font-size: 130%;
+//   font-size: 130%;
+   margin-top:3px;
    padding-left:15px;
-//   font-weight: bold;
+   font-weight: bold;
    vertical-align: bottom;
 }
 
 .entryname a:hover {
    text-decoration: underline;
-   color:red;
+   color:#0000ff;
+   color:#ff0000;
 }
 
 .entryname a {
@@ -345,22 +347,31 @@ a..ramadda-heading-2-link:visited {
 }
 
 .ramadda-menubutton {
-    margin:1px;
-    padding:5px;
+    margin:0px;
+    margin-left:2px;
+    margin-right:2px;
+    padding:0px;
+    padding-left:3px;
+    padding-right:3px;
     color: #000000;
-    font-weight: bold;
+//    font-weight: bold;
     text-decoration: none;
-}
-
-.ramadda-menubutton:hover {
-  text-decoration: none;
-  color: #000000;
 }
 
 .ramadda-menubutton:link {
   text-decoration: none;
   color: #000000;
 }
+
+.ramadda-menubutton:hover {
+  text-decoration: none;
+  color: #000000;
+  background-color: #eee;
+  text-decoration: underline;
+}
+
+
+
 
 .ramadda-menubutton-separator {
     padding:0px;

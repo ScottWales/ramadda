@@ -5414,6 +5414,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public String makePopupLink(String link, String menuContents,
                                 boolean makeClose, boolean alignLeft) {
+        return makePopupLink(link, menuContents, "", makeClose, alignLeft);
+    }
+
+
+    public String makePopupLink(String link, String menuContents, String linkAttributes) {
+        return makePopupLink(link, menuContents, linkAttributes, false, false);
+    }
+
+    public String makePopupLink(String link, String menuContents, String linkAttributes,
+                                boolean makeClose, boolean alignLeft) {
         String compId   = "menu_" + HtmlUtils.blockCnt++;
         String linkId   = "menulink_" + HtmlUtils.blockCnt++;
         String contents = makePopupDiv(menuContents, compId, makeClose);
@@ -5423,7 +5433,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 ? "1"
                 : "0") })));
         String href = HtmlUtils.href("javascript:noop();", link,
-                                    onClick + HtmlUtils.id(linkId));
+                                    onClick + HtmlUtils.id(linkId) + linkAttributes);
 
         return href + contents;
     }

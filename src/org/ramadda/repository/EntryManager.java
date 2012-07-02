@@ -5030,9 +5030,10 @@ public class EntryManager extends RepositoryManager {
                 categoryMenu = getEntryActionsTable(request, entry,
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
+                //HtmlUtils.span(msg(categoryName), menuClass),
                 categoryMenu = getRepository().makePopupLink(
-                    HtmlUtils.span(msg(categoryName), menuClass),
-                    categoryMenu.toString(), false, true);
+                                                             msg(categoryName), 
+                                                             categoryMenu.toString(), menuClass, false, true);
 
                 break;
             }
@@ -5061,10 +5062,11 @@ public class EntryManager extends RepositoryManager {
             if (entry.isGroup()) {
                 //                menuName="Folder";
             }
+            //HtmlUtils.span(msg(menuName), menuClass), 
             menuItems.add(
-                getRepository().makePopupLink(
-                    HtmlUtils.span(msg(menuName), menuClass), entryMenu,
-                    false, true));
+                getRepository().makePopupLink(msg(menuName),  entryMenu,
+                                              menuClass,
+                                              false, true));
 
         }
 
@@ -5075,7 +5077,7 @@ public class EntryManager extends RepositoryManager {
             }
             menuItems.add(
                 getRepository().makePopupLink(
-                    HtmlUtils.span(msg("Edit"), menuClass), editMenu, false,
+                                              msg("Edit"), editMenu, menuClass,  false,
                     true));
         }
 
@@ -5086,7 +5088,7 @@ public class EntryManager extends RepositoryManager {
             }
             menuItems.add(
                 getRepository().makePopupLink(
-                    HtmlUtils.span(msg("Connect"), menuClass), exportMenu,
+                                              msg("Connect"),  exportMenu,menuClass, 
                     false, true));
         }
 
@@ -5097,7 +5099,7 @@ public class EntryManager extends RepositoryManager {
             }
             menuItems.add(
                 getRepository().makePopupLink(
-                    HtmlUtils.span(msg("View"), menuClass), viewMenu, false,
+                                              msg("View"),  viewMenu, menuClass, false,
                     true));
         }
 
