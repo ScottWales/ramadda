@@ -87,6 +87,8 @@
             srcdir="${src_dir}"
             fork="true"
             memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
         >
         <include name="${ramadda_relpath}/client/InteractiveRepositoryClient.java"/>
         </javac>
@@ -140,6 +142,9 @@
             failonerror="${javac.failonerror}" 
             nowarn="true"
             srcdir="${src_dir}"
+            source="${javac.version}"
+            target="${javac.version}"
+
 	    fork="true"
             memoryMaximumSize="${javac.maxmemory}"
         >
@@ -366,6 +371,8 @@
             classpath="${classpath}:/upc/share/junit/junit.jar"
             destdir="${docs_javadoc_dest}"
             maxmemory="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
             sourcepath="${src_dir}">
             <link href="http://java.sun.com/j2se/1.5.0/docs/api"/>
             <package name="org.ramadda.repository.*"/>
@@ -385,6 +392,8 @@
             srcdir="${src_dir}"
 	    fork="true"
             memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
         >
         <include name="${ramadda_dir}/auth/TestUserAuthenticator.java"/>
         </javac>
@@ -399,39 +408,6 @@
         <echo message="Copy the jar to &lt;ramadda home&gt;/plugins"/>
 
      </target>
-
-
-    <target name="ldapplugin" depends="init">
-        <javac
-            verbose="false"
-            classpath="${classpath}"
-            debug="true"
-            deprecation="false" 
-            destdir="${compile_dir}"
-            failonerror="${javac.failonerror}" 
-            nowarn="true"
-            srcdir="${src_dir}"
-            fork="true"
-            memoryMaximumSize="${javac.maxmemory}"
-        >
-        <include name="${ramadda_dir}/auth/ldap/*.java"/>
-        </javac>
-        <jar 
-            basedir="${compile_dir}"
-            update="false"
-            compress="true"
-            jarfile="${dist_dir}/ldapplugin.jar">
-            <include name="${ramadda_dir}/auth/ldap/*.class"/> 
-         </jar>
-    </target>
-
-
-    <target name="ldapplugininstall" depends="ldapplugin">
-        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
-             <fileset file="${dist_dir}/ldapplugin.jar"/>
-        </copy>
-    </target>
-
 
 
 </project>
