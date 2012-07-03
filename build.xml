@@ -94,7 +94,9 @@
             failonerror="${javac.failonerror}"
             fork="${javac.fork}"
             memoryMaximumSize="${javac.maxmemory}"
-            target="1.6">
+            source="${javac.version}"
+            target="${javac.version}"
+>
         <include name="${plugin_dir}/*.java"/>
         </javac>
 
