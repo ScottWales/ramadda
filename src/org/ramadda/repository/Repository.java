@@ -1945,7 +1945,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 List<String> lines = StringUtil.split(contents, "\n", true,
                                          true);
                 for (String file : lines) {
-                    listing.add(IOUtil.joinDir(path, file));
+                    listing.add(path+"/" + file);
                 }
             }
         }
