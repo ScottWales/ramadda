@@ -103,7 +103,7 @@ features
      <column name="antenna_height" label="Antenna Height"  type="double" suffix="meters"/>
    </type>
 
-  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern="(.*\.obs|.*\.rinex)"
+  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern="(.*\.obs|.*\.rinex|.*\.\d\do)"
         super="project_gps">
      <property name="icon" value="/fieldproject/unavco.png"/>
    </type>
