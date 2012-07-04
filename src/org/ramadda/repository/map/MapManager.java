@@ -203,7 +203,9 @@ public class MapManager extends RepositoryManager {
             return false;
         }
 
-        return getGoogleMapsKey(request) != null;
+        //LOOK: We don't need the maps API key anymore
+        //        return getGoogleMapsKey(request) != null;
+        return true;
     }
 
     /**
@@ -273,21 +275,22 @@ public class MapManager extends RepositoryManager {
             throws Exception {
 
         String[] keyAndOther = getGoogleMapsKey(request);
-        if (keyAndOther == null) {
-            sb.append("Google Earth is not enabled");
-
-            return null;
-        }
+        //        if (keyAndOther == null) {
+        //            sb.append("Google Earth is not enabled");
+        //            return null;
+        //       }
         boolean zoomOnClick = request.get("zoom", true);
         boolean showdetails = request.get("showdetails", true);
 
         String  otherOpts   = "";
         String  mapsKey     = "";
-        if ( !keyAndOther[0].isEmpty()) {
-            mapsKey = "?key=" + keyAndOther[0];
-        }
-        if (keyAndOther[1] != null) {
-            otherOpts = ", {\"other_params\":\"" + keyAndOther[1] + "\"}";
+        if(keyAndOther!=null) {
+            if ( !keyAndOther[0].isEmpty()) {
+                mapsKey = "?key=" + keyAndOther[0];
+            }
+            if (keyAndOther[1] != null) {
+                otherOpts = ", {\"other_params\":\"" + keyAndOther[1] + "\"}";
+            }
         }
         Integer currentId = (Integer) request.getExtraProperty("ge.id");
         int     nextNum   = 1;
@@ -296,19 +299,17 @@ public class MapManager extends RepositoryManager {
         }
         request.putExtraProperty("ge.id", new Integer(nextNum));
         String id = "map3d" + nextNum;
-
-        if (request.getExtraProperty("initgooglearth") == null) {
+        if (request.getExtraProperty("ge.inited") == null) {
             sb.append(HtmlUtils.importJS("http://www.google.com/jsapi"
-                                        + mapsKey));
+                                         + mapsKey));
             sb.append(HtmlUtils.importJS(fileUrl("/google/googleearth.js")));
             sb.append(
                 HtmlUtils.importJS(
                     fileUrl("/google/extensions-0.2.1.pack.js")));
             sb.append(HtmlUtils.script("google.load(\"earth\", \"1\""
                                       + otherOpts + ");"));
-            request.putExtraProperty("initgooglearth", "");
+            request.putExtraProperty("ge.inited", "true");
         }
-
 
 
         String style = "";
