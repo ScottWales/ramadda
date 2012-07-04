@@ -797,8 +797,6 @@ public class PageHandler extends RepositoryManager {
             String       dir     = (String) sourcePaths.get(i);
             List<String> listing = getRepository().getListing(dir,
                                        getClass());
-            if(i==0)
-                getLogManager().logInfoAndPrint("RAMADDA: language packs:" + listing);
             for (String path : listing) {
                 if ( !path.endsWith(".pack")) {
                     if(i==0)
@@ -806,7 +804,6 @@ public class PageHandler extends RepositoryManager {
                     continue;
                 }
                 if (seenPack.contains(path)) {
-                    getLogManager().logInfoAndPrint("RAMADDA: seen:" + path);
                     continue;
                 }
                 seenPack.add(path);
@@ -825,12 +822,10 @@ public class PageHandler extends RepositoryManager {
                     if (name == null) {
                         name = type;
                     }
-                    getLogManager().logInfoAndPrint("RAMADDA: adding language:" + path);
                     languages.add(new TwoFacedObject(name, type));
                     languageMap.put(type, properties);
                 } else {
                     getLogManager().logError("No _type_ found in: " + path);
-                    getLogManager().logInfoAndPrint("RAMADDA: no _type_ found in:" + path);
                 }
             }
         }
