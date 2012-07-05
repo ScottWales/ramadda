@@ -766,19 +766,23 @@ public class MapManager extends RepositoryManager {
                         "<table cellspacing=0 cellpadding=0  width=100%><tr><td nowrap=true>");
                     String iconUrl = getEntryManager().getIconUrl(request,
                                          entry);
+                    String navUrl = "javascript:" + map.getVariableName()
+                            + ".hiliteMarker(" + sqt(entry.getId())
+                        + ");";
                     entryBuff.append(
                         HtmlUtils.href(
                             getEntryManager().getEntryURL(request, entry),
                             HtmlUtils.img(
                                 iconUrl,
-                                msg("Click to view entry details")) + "&nbsp;"
-                                    + entry.getName()));
+                                msg("Click to view entry details"))));
+                    entryBuff.append("&nbsp;");
+                    entryBuff.append(
+                                     HtmlUtils.href(navUrl,
+                                                    entry.getName()));
                     entryBuff.append("</td><td align=right>");
                     entryBuff.append(
                         HtmlUtils.href(
-                            "javascript:" + map.getVariableName()
-                            + ".hiliteMarker(" + sqt(entry.getId())
-                            + ");", HtmlUtils.img(
+                                       navUrl, HtmlUtils.img(
                                 getRepository().iconUrl(
                                     ICON_MAP_NAV), "View entry")));
                     entryBuff.append("</td></tr></table>");
