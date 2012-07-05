@@ -583,10 +583,12 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     public void addThumbnail(Element node, String filename) throws Exception {
-        XmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
-                       new String[] { ATTR_TYPE,
-                                      "content.thumbnail", ATTR_ATTR1,
-                                      filename });
+        Element metadataNode = XmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
+                                              new String[] { ATTR_TYPE,
+                                                             "content.thumbnail", ATTR_ATTR1,
+                                                             filename });
+        XmlUtil.create(node.getOwnerDocument(), "attr1", metadataNode,
+                                              new String[] {"fileid", filename });
     }
 
     /**
