@@ -3218,11 +3218,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (alias.endsWith("/")) {
                 alias = alias.substring(0, alias.length() - 1);
             }
-            Entry entry = getEntryManager().getEntryFromAlias(request, alias);
-            if (entry != null) {
-                return new Result(request.url(URL_ENTRY_SHOW, ARG_ENTRYID,
-                        entry.getId()));
+            String childPath=null;
+            List<String> toks = StringUtil.splitUpTo(alias,"/",2);
+            Entry entry = getEntryManager().getEntryFromAlias(request, toks.get(0));
+            if(toks.size()==2) {
+                entry = getEntryManager().findEntryFromName(request, entry.getFullName() +Entry.PATHDELIMITER+ toks.get(1), request.getUser(), false);
             }
+            if(entry==null) {
+                throw new RepositoryUtil.MissingEntryException(
+                                                               "Could not find aliased entry:" + alias);
+                
+            }
+            return new Result(request.url(URL_ENTRY_SHOW, ARG_ENTRYID,
+                                          entry.getId()));
         }
 
 

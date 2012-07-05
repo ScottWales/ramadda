@@ -131,20 +131,20 @@ public class AccessManager extends RepositoryManager {
      */
     public void initTopEntry(Entry mainEntry) throws Exception {
         mainEntry.addPermission(new Permission(Permission.ACTION_VIEW,
-                getUserManager().ROLE_ANY));
+                UserManager.ROLE_ANY));
         mainEntry.addPermission(
             new Permission(
-                Permission.ACTION_VIEWCHILDREN, getUserManager().ROLE_ANY));
+                Permission.ACTION_VIEWCHILDREN, UserManager.ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_FILE,
-                getUserManager().ROLE_ANY));
+                UserManager.ROLE_ANY));
         mainEntry.addPermission(new Permission(Permission.ACTION_EDIT,
-                getUserManager().ROLE_NONE));
+                UserManager.ROLE_NONE));
         mainEntry.addPermission(new Permission(Permission.ACTION_NEW,
-                getUserManager().ROLE_NONE));
+                UserManager.ROLE_NONE));
         mainEntry.addPermission(new Permission(Permission.ACTION_DELETE,
-                getUserManager().ROLE_NONE));
+                UserManager.ROLE_NONE));
         mainEntry.addPermission(new Permission(Permission.ACTION_COMMENT,
-                getUserManager().ROLE_ANY));
+                                               UserManager.ROLE_ANY));
         insertPermissions(null, mainEntry, mainEntry.getPermissions());
     }
 
@@ -281,7 +281,6 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, Entry entry, String action,
                                boolean log)
             throws Exception {
-
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
                    || action.equals(Permission.ACTION_VIEWCHILDREN)
@@ -315,7 +314,6 @@ public class AccessManager extends RepositoryManager {
                 logInfo("Upload:action isn't view. view permission="
                         + okToView);
             }
-            //            System.err.println("action isn't view viwe ok:"+ okToView);
             if ( !okToView) {
                 return false;
             }
@@ -404,10 +402,9 @@ public class AccessManager extends RepositoryManager {
                                      String action, User user,
                                      String requestIp)
             throws Exception {
-
-        //        System.err.println ("checking entry:" + entry);
+        //System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry);
         while (entry != null) {
-            List         permissions = getPermissions(entry);
+            boolean hadAccessGrant = false;
             List<String> roles       = (List<String>) getRoles(entry, action);
             if (roles != null) {
                 if (requestIp != null) {
@@ -421,31 +418,19 @@ public class AccessManager extends RepositoryManager {
                         if ( !role.startsWith("ip:")) {
                             continue;
                         }
-                        //                        logInfo("action:" + action +" checking IP:" + requestIp + " against:" + (negated?"!":"") +role);
-                        if ( !negated) {
+                        if (!negated) {
                             hadIp = true;
                         }
                         String ip = role.substring(3);
                         if (requestIp.startsWith(ip)) {
-                            if (negated) {
-                                //                                logInfo ("   returning  false");
-                                return false;
-
-                            } else {
-                                //                                logInfo ("   returning  true");
-                                return true;
-                            }
+                            return !negated;
                         }
                     }
                     if (hadIp) {
-                        //                        logInfo ("   returning  false hadIp");
                         return false;
                     }
                 }
 
-                boolean hadRole = false;
-
-                //                Misc.printStack ("can do: " +action + " "  + entry,15,null);
                 for (String role : roles) {
                     boolean negated = false;
                     if (role.startsWith("!")) {
@@ -455,27 +440,29 @@ public class AccessManager extends RepositoryManager {
                     if (role.startsWith("ip:")) {
                         continue;
                     }
-                    hadRole = true;
-                    //                    System.err.println ("    role:" + role +" user.isRole:" + user.isRole(role));
+                    if(!negated) {
+                        hadAccessGrant = true;
+                    }
+                    if(UserManager.ROLE_ANY.equals(role)) {
+                        return true;
+                    }
+                    if(UserManager.ROLE_NONE.equals(role)) {
+                        return false;
+                    }
                     if (user.isRole(role)) {
-                        //                        logInfo ("    OK " + (!negated));
                         return !negated;
                     }
                 }
-                //If there were any roles 
-                if (hadRole) {
-                    //                    logInfo ("   hadRole:" + hadRole);
+                //If we had an access grant here (i.e., a non negated role)
+                //and the user did not fall under that role then block access
+                if(hadAccessGrant) {
                     return false;
                 }
             }
             //LOOK: make sure we pass in false here which says do not check for access control
-            //            logInfo ("  Entry = " + entry.getName() +"  parent id:" + entry.getParentEntryId());
             entry = getEntryManager().getEntry(request,
                     entry.getParentEntryId(), false);
-            //            logInfo ("  new entry " + entry);
         }
-
-        //        logInfo ("  default false");
         return false;
     }
 
