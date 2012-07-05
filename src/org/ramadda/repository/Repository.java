@@ -3776,7 +3776,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public CalendarOutputHandler getCalendarOutputHandler() {
         try {
             return (CalendarOutputHandler) getOutputHandler(
-                OutputHandler.OUTPUT_HTML);
+                                                            CalendarOutputHandler.OUTPUT_CALENDAR);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
