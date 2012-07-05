@@ -405,15 +405,19 @@ public class MetadataType extends MetadataTypeBase {
             if (!element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
+            String fileArg = null;
             Element attrNode = XmlUtil.findElement(elements,
                                                    Metadata.ATTR_INDEX, ""+ element.getIndex());
             if(attrNode==null) {
-                System.err.println("Could not find attr node:" + XmlUtil.toString(node));
-                continue;
+                fileArg = XmlUtil.getAttribute(node, "attr"+ element.getIndex(), (String)null);
+                if(fileArg == null) {
+                    System.err.println("Could not find attr node:" + XmlUtil.toString(node));
+                    continue;
+                }
+            } else {
+                fileArg = XmlUtil.getAttribute(attrNode,
+                                               "fileid", (String)null);
             }
-
-            String fileArg = XmlUtil.getAttribute(attrNode,
-                                                  "fileid", (String)null);
             if(fileArg==null) {
                 System.err.println("Could not find fileid:" + XmlUtil.toString(attrNode));
                 continue;
