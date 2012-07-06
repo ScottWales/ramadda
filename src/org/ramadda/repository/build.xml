@@ -321,7 +321,11 @@
         <unjar src="${lib_dir}/commons-pool-1.5.5.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-fileupload-1.2.2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-httpclient-3.1.jar" dest="${tmpjar_dir}"/>
+<!--
         <unjar src="${lib_dir}/metadata-extractor-2.5.0.jar" dest="${tmpjar_dir}"/>
+-->
+        <unjar src="${lib_dir}/metadata-extractor-2.6.2.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/xmpcore.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jfreechart.jar" dest="${tmpjar_dir}"/>
 
         <unjar src="${lib_dir}/ftplet-api-1.0.3.jar" dest="${tmpjar_dir}"/>

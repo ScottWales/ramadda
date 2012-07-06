@@ -17,3 +17,7 @@ The slideshow javascript is the S5 slideshow:
 http://meyerweb.com/eric/tools/s5/
 
 
+The JPEG metadata extractor used is from Drew Noake's metadataxtractor:
+http://code.google.com/p/metadata-extractor/
+
+
