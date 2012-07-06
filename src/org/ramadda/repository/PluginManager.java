@@ -458,7 +458,7 @@ public class PluginManager extends RepositoryManager {
                 pluginStat("Template", file);
             }
             templateFiles.add(file);
-        } else if (file.endsWith(".properties")) {
+        } else if (file.endsWith(".properties") && file.indexOf("htdocs")<0) {
             if (fromPlugin) {
                 pluginStat("Properties", file);
                 propertyFiles.add(file);
