@@ -655,14 +655,13 @@ public class StorageManager extends RepositoryManager {
             logDir = getFileFromProperty(PROP_LOGDIR);
             if (getRepository().isReadOnly()) {
                 System.err.println("RAMADDA: skipping log4j");
-
                 return logDir;
             }
 
             File log4JFile = new File(logDir + "/" + "log4j.properties");
             //For now always write out the log from the jar
-            //System.err.println("log4j file=" + log4JFile);
-
+            //            System.err.println("log4j file=" + log4JFile);
+            
             if (true || !log4JFile.exists()) {
                 try {
                     String c =
@@ -670,6 +669,7 @@ public class StorageManager extends RepositoryManager {
                             "/org/ramadda/repository/resources/log4j.properties",
                             getClass());
                     c = c.replace("${ramadda.logdir}", logDir.toString());
+                    c = c.replace("${file.separator}", File.separator);
                     IOUtil.writeFile(log4JFile, c);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
