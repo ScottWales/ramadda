@@ -50,9 +50,6 @@ public class IdvBundlesOutputHandler extends OutputHandler {
     /** bundle XML tag */
     private static final String TAG_BUNDLE = "bundle";
 
-    /** depth in stack to go */
-    private int depth = 0;
-
     /** Default top level category */
     private final static String DEFAULT_TOPCATEGORY = "Toolbar";
 
@@ -126,7 +123,6 @@ public class IdvBundlesOutputHandler extends OutputHandler {
 
         boolean justOneEntry = group.isDummy() && (entries.size() == 1)
                                && (subGroups.size() == 0);
-        depth = request.get(ARG_DEPTH, 2);  //get grandChildren
 
         // can't use category since that is the data type
         String   topCategory = request.getString(ARG_TOP, DEFAULT_TOPCATEGORY);
@@ -176,6 +172,7 @@ public class IdvBundlesOutputHandler extends OutputHandler {
                               String category, int level)
             throws Exception {
 
+        int depth = request.get(ARG_DEPTH, 2);  //get grandChildren
         if (level > depth) {
             return;
         }
