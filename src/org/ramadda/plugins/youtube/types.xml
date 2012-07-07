@@ -1,0 +1,23 @@
+<types>
+
+  <type name="youtubevideo"  
+        description="YouTube Video" 
+        handler="org.ramadda.plugins.youtube.YouTubeVideoTypeHandler" 
+        category="Information" 
+        pattern="^http://www.youtube.com/watch\?v=.*">
+     <property name="icon" value="/youtube/youtube.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.label" value="YouTube Video URL"/>
+     <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
+     <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
+     <column name="video_start" type="double" label="Start"  suffix="(minutes)" default="0" showinhtml="false"/>
+     <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
+</type>
+
+
+
+
+</types>
