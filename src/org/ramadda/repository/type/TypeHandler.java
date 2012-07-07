@@ -1205,22 +1205,26 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return is this one of my files
      */
-    public boolean canHarvestFile(File f) {
+    public boolean canHandleResource(String fullPath, String name) {
         if (harvestPattern != null) {
             //If the pattern has file delimiters then use the whole path
             if (harvestPattern.indexOf("/") >= 0) {
-                if (f.toString().matches(harvestPattern)) {
+                if (fullPath.matches(harvestPattern)) {
                     return true;
                 }
             } else {
                 //Else, just use the name
-                if (f.getName().matches(harvestPattern)) {
+                if (name.matches(harvestPattern)) {
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    public String getDefaultEntryName(String path) {
+        return IOUtil.getFileTail(path);
     }
 
     /**

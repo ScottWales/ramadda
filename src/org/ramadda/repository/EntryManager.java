@@ -1448,9 +1448,7 @@ public class EntryManager extends RepositoryManager {
                 }
 
 
-                if (name.trim().length() == 0) {
-                    name = IOUtil.getFileTail(resourceName);
-                }
+
 
                 Date[] theDateRange = { dateRange[0], dateRange[1] };
 
@@ -1492,24 +1490,23 @@ public class EntryManager extends RepositoryManager {
                         new URL(theResource);
                         resourceType = Resource.TYPE_URL;
                     } catch (Exception exc) {}
-
                 }
 
                 TypeHandler typeHandlerToUse = typeHandler;
                 //See if we can figure out the type 
                 if (figureOutType) {
                     File newFile = new File(theResource);
-                    if (newFile.exists()) {
-                        for (TypeHandler otherTypeHandler :
-                                getRepository().getTypeHandlers()) {
-                            if (otherTypeHandler.canHarvestFile(newFile)) {
-                                typeHandlerToUse = otherTypeHandler;
-
-                                break;
-                            }
+                    String shortName = newFile.getName();
+                    for (TypeHandler otherTypeHandler :
+                             getRepository().getTypeHandlers()) {
+                        if (otherTypeHandler.canHandleResource(theResource, shortName)) {
+                            typeHandlerToUse = otherTypeHandler;
+                            break;
                         }
                     }
                 }
+
+
 
 
                 if ( !canBeCreatedBy(request, typeHandlerToUse)) {
@@ -1518,7 +1515,9 @@ public class EntryManager extends RepositoryManager {
                                + typeHandlerToUse.getDescription());
                 }
 
-
+                if (name.trim().length() == 0) {
+                    name = typeHandlerToUse.getDefaultEntryName(resourceName);
+                }
                 entry = typeHandlerToUse.createEntry(id);
                 entry.initEntry(name, description, parent, request.getUser(),
                                 new Resource(theResource, resourceType),

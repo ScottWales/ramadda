@@ -1072,9 +1072,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         if ((typeHandlerToUse == null)
                 && typeHandler.getType().equals(TYPE_FINDMATCH)) {
+            String path = f.toString();
+            String shortName = f.getName();
             for (TypeHandler otherTypeHandler :
                     getRepository().getTypeHandlers()) {
-                if (otherTypeHandler.canHarvestFile(f)) {
+                if (otherTypeHandler.canHandleResource(path, shortName)) {
                     typeHandlerToUse = otherTypeHandler;
                     break;
                 }

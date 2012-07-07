@@ -689,6 +689,12 @@ public class Entry implements Cloneable {
         return values[index].toString();
     }
 
+    public double getValue(int index, double dflt) {
+        String sValue = getValue(index, "");
+        if(sValue.length()==0) return dflt;
+        return Double.parseDouble(sValue);
+    }
+
 
     /**
      * _more_
