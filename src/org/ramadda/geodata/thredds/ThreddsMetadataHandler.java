@@ -502,10 +502,10 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
 
                 //Only set the name if its not different from the file name
-                if(ATTR_TITLE.equals(name) && entry.getTypeHandler().entryHasDefaultName(entry)) {
-                    entry.setName(value);
-                    continue;
-                }
+                //                if(ATTR_TITLE.equals(name) && entry.getTypeHandler().entryHasDefaultName(entry)) {
+                    //                    entry.setName(value);
+                    //                    continue;
+                //                }
 
                 if (ATTR_KEYWORDS.equals(name)) {
                     List<String> keywords = (List<String>) StringUtil.split(value, ";", true,true);
