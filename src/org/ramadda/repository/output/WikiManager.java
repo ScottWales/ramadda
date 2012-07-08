@@ -443,7 +443,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
                    "false")),
         prop(WIKI_PROP_CALENDAR, attrs(ATTR_DAY, "false")),
-        prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
+        //        prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
         WIKI_PROP_GROUP + "Images",
         prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "")),
         prop(WIKI_PROP_GALLERY,
@@ -962,13 +962,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
         } else if (include.equals(WIKI_PROP_TIMELINE)) {
+            if(true) return "Timeline not available";
             List<Entry> children = getEntries(request, wikiUtil, entry,
-                                       props);
-
+                                              props);
             int    height = Misc.getProperty(props, ATTR_HEIGHT, 150);
             String style  = "height: " + height + "px;";
             String head   = getCalendarOutputHandler().makeTimeline(request,
-                              children, sb, style);
+                                                                    children, sb, style);
             if (head != null) {
                 request.putExtraProperty(PROP_HTML_HEAD, head);
             }
