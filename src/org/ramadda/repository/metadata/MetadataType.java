@@ -95,6 +95,7 @@ public class MetadataType extends MetadataTypeBase {
 
     /** _more_ */
     public static final String ATTR_FORUSER = "foruser";
+    public static final String ATTR_ENTRYTYPE = "entrytype";
 
 
 
@@ -146,7 +147,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     private boolean forUser = true;
 
-
+    private String entryType = null;
 
     /**
      * _more_
@@ -159,6 +160,14 @@ public class MetadataType extends MetadataTypeBase {
         super(handler);
         this.id = id;
     }
+
+    public boolean isForEntry(Entry entry) {
+        if(entryType!=null) {
+            return entry.isType(entryType);
+        }
+        return getHandler().isForEntry(entry);
+    }
+
 
 
     /**
@@ -266,6 +275,8 @@ public class MetadataType extends MetadataTypeBase {
                 false));
 
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
+        entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,(String)null);
+
 
         setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,
                 false));
@@ -1111,6 +1122,10 @@ public class MetadataType extends MetadataTypeBase {
     public boolean getForUser() {
         return this.forUser;
     }
+
+
+
+
 
     /**
      * _more_

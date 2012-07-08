@@ -1247,6 +1247,9 @@ public class MetadataManager extends RepositoryManager {
             if ( !type.getForUser()) {
                 continue;
             }
+            if(!type.isForEntry(entry)) {
+                continue;
+            }
             String       name    = type.getCategory();
             StringBuffer groupSB = (StringBuffer) groupMap.get(name);
             if (groupSB == null) {

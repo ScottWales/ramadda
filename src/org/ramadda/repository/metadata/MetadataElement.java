@@ -776,6 +776,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return HtmlUtils.checkbox(arg, "true", Misc.equals(value, "true"));
         } else if (dataType.equals(DATATYPE_INT)) {
             return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
+        } else if (dataType.equals(DATATYPE_DOUBLE)) {
+            return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
         } else if (dataType.equals(DATATYPE_DATETIME)) {
             Date date;
             if (value != null) {

@@ -122,6 +122,15 @@ public class MetadataHandler extends RepositoryManager {
     }
 
 
+
+
+
+
+    public boolean isForEntry(Entry entry) {
+        return true;
+    }
+
+
     /**
      * _more_
      *
