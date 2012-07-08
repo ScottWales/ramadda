@@ -88,7 +88,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_WEBSTART =
-        new OutputType("Open data in IDV", "idv.webstart", OutputType.TYPE_FEEDS,
+        new OutputType("Open in IDV", "idv.webstart", OutputType.TYPE_OTHER,
                        "", "/idv/idv.gif", IdvOutputHandler.GROUP_DATA);
 
 
@@ -112,7 +112,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
     public CdmDataOutputHandler getDataOutputHandler() throws Exception {
         return (CdmDataOutputHandler) getRepository().getOutputHandler(
-                                                                    CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
+                                                                    CdmDataOutputHandler.OUTPUT_CDL.toString());
     }
 
 
