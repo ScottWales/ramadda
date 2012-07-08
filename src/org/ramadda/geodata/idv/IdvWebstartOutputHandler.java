@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,72 +22,41 @@
 package org.ramadda.geodata.idv;
 
 
-
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.geodata.cdmdata.CdmManager;
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-
-
-import org.w3c.dom.*;
-
-
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.DateUtil;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Link;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.RepositoryUtil;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
+
+import org.w3c.dom.Element;
+
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringBufferCollection;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
 
 
-import java.io.*;
 
 import java.io.File;
-import java.io.InputStream;
 
-
-
-import java.net.*;
-
-
-
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
-
-
-
-import java.util.regex.*;
-
-import java.util.zip.*;
 
 
 /**
- * Class SqlUtil _more_
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * OutputHandler for loading IDV through webstart
  */
 public class IdvWebstartOutputHandler extends OutputHandler {
 
-    /** _more_ */
+    /** the JNLP template */
     private static String jnlpTemplate;
 
 
-
-    /** _more_ */
+    /** The OutputType definition */
     public static final OutputType OUTPUT_WEBSTART =
         new OutputType("Open in IDV", "idv.webstart", OutputType.TYPE_OTHER,
                        "", "/idv/idv.gif", IdvOutputHandler.GROUP_DATA);
@@ -94,11 +64,11 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create an IdvWebstartOutputHandler
      *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
+     * @param repository  the repository
+     * @param element     the Entry to serve
+     * @throws Exception  problem creating handler
      */
     public IdvWebstartOutputHandler(Repository repository, Element element)
             throws Exception {
@@ -106,25 +76,39 @@ public class IdvWebstartOutputHandler extends OutputHandler {
         addType(OUTPUT_WEBSTART);
     }
 
+    /**
+     * Get the CdmManager for this
+     *
+     * @return the CdmManager for this
+     *
+     * @throws Exception problems getting the CdmManager
+     */
     public CdmManager getCdmManager() throws Exception {
         return getDataOutputHandler().getCdmManager();
     }
 
+    /**
+     * Get the CdmDataOutputHandler
+     *
+     * @return  the output handler
+     *
+     * @throws Exception  problems getting it
+     */
     public CdmDataOutputHandler getDataOutputHandler() throws Exception {
         return (CdmDataOutputHandler) getRepository().getOutputHandler(
-                                                                    CdmDataOutputHandler.OUTPUT_CDL.toString());
+            CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
 
     /**
-     * _more_
+     * Get the entry links
      *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
+     * @param request  the Request
+     * @param state    the Entry
+     * @param links    the list of links to add to
      *
-     * @throws Exception _more_
+     * @throws Exception  problems
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -152,17 +136,17 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output a group
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request     the Request
+     * @param outputType  the OutputType
+     * @param group       the group to output
+     * @param subGroups   subgroups
+     * @param entries     list of Entrys
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception  problems
      */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
@@ -173,13 +157,13 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the JNLP template from the Repository
      *
-     * @param repository _more_
+     * @param repository  the Repository
      *
-     * @return _more_
+     * @return  the template
      *
-     * @throws Exception _more_
+     * @throws Exception problems retreiving JNLP
      */
     public static String getJnlpTemplate(Repository repository)
             throws Exception {
@@ -212,20 +196,21 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                             ""));
             }
         }
+
         return jnlpTemplate;
     }
 
 
     /**
-     * _more_
+     * Output an Entry
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request     the Request
+     * @param outputType  type of Output
+     * @param entry       the Entry
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception problems
      */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
@@ -238,9 +223,9 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                 || entry.getResource().getPath().endsWith(".zidv")) {
 
             String fileTail = getStorageManager().getFileTail(entry);
-            String url =
-                HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET) + "/"
-                             + fileTail, ARG_ENTRYID, entry.getId());
+            String url      =
+                HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET)
+                              + "/" + fileTail, ARG_ENTRYID, entry.getId());
             url = request.getAbsoluteUrl(url);
             args.append("<argument>-bundle</argument>");
             args.append("<argument>" + url + "</argument>");
@@ -252,7 +237,9 @@ public class IdvWebstartOutputHandler extends OutputHandler {
 
             if (getCdmManager().canLoadAsCdm(entry)) {
                 String embeddedBundle = null;
-                String opendapUrl     = getDataOutputHandler().getAbsoluteOpendapUrl(request, entry);
+                String opendapUrl     =
+                    getDataOutputHandler().getAbsoluteOpendapUrl(request,
+                        entry);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         if (metadata.getAttr1().endsWith(".xidv")) {
@@ -270,6 +257,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                                     opendapUrl);
                             embeddedBundle = RepositoryUtil.encodeBase64(
                                 embeddedBundle.getBytes());
+
                             break;
                         }
                     }
