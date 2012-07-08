@@ -1,7 +1,7 @@
 <types>
 
 
-  <type name="opendaplink"  description="OpenDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geo Data">
+  <type name="opendaplink"  description="OPeNDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geo Data">
      <property name="icon" value="/data/opendap.gif"/>
      <property name="form.date.show" value="false"/>
      <property name="form.file.show" value="false"/>

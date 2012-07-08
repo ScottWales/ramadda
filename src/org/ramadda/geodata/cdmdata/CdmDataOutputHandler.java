@@ -1824,7 +1824,7 @@ public class CdmDataOutputHandler extends OutputHandler {
             return;
         }
         String url = getAbsoluteOpendapUrl(request, entry);
-        services.add(new Service("opendap", "OpenDAP Link", url));
+        services.add(new Service("opendap", "OPeNDAP Link", url));
     }
 
 
