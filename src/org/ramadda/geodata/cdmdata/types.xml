@@ -2,7 +2,7 @@
 
 
   <type name="opendaplink"  description="OPeNDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geo Data">
-     <property name="icon" value="/data/opendap.gif"/>
+     <property name="icon" value="/cdmdata/opendap.gif"/>
      <property name="form.date.show" value="false"/>
      <property name="form.file.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -20,7 +20,7 @@
      <column name="addmetadata" default="false"  type="boolean"  label="All Metadata" suffix="Add all metadata of the ingested files"  />
 
 
-     <property name="icon" value="/data/aggregation.png"/>
+     <property name="icon" value="/cdmdata/aggregation.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="true"/>
      <property name="form.datatype.show" value="false"/>
@@ -59,7 +59,7 @@
 
   <type name="gradsbinary"  description="GrADS Binary File" handler="org.ramadda.repository.type.GenericTypeHandler" category="Geo Data">
      <metadata id="content.attachment" label="GrADS Data Descriptor File"/>
-     <property name="icon" value="/data/cola.gif"/>
+     <property name="icon" value="/cdmdata/cola.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="true"/>
      <property name="form.date.show" value="false"/>

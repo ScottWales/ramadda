@@ -143,7 +143,7 @@ import javax.servlet.http.HttpServletRequest;
 public class CdmDataOutputHandler extends OutputHandler {
 
     /** OPeNDAP icon */
-    public static final String ICON_OPENDAP = "/data/opendap.gif";
+    public static final String ICON_OPENDAP = "/cdmdata/opendap.gif";
 
     /** CSV format */
     public static final String FORMAT_CSV = "csv";
@@ -237,7 +237,7 @@ public class CdmDataOutputHandler extends OutputHandler {
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL =
         new OutputType("File Metadata", "data.cdl", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, "/data/page_white_text.png",
+                       OutputType.SUFFIX_NONE, "/cdmdata/page_white_text.png",
                        GROUP_DATA);
 
     /** WCS Output Type */
@@ -268,7 +268,7 @@ public class CdmDataOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Subset Grid", "data.gridsubset.form",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/data/subsetgrid.png", GROUP_DATA);
+                       "/cdmdata/subsetgrid.png", GROUP_DATA);
 
     /** Grid subset Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET =
@@ -278,7 +278,7 @@ public class CdmDataOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_GRIDASPOINT_FORM =
         new OutputType("Extract Time Series", "data.gridaspoint.form",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/data/chart_line.png", GROUP_DATA);
+                       "/cdmdata/chart_line.png", GROUP_DATA);
 
     /** Grid as point Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT =
