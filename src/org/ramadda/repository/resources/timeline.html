@@ -1,11 +1,14 @@
 
 
-
-
 <div id="timeline" class="timeline-default" style="${style}   overflow-x:hidden; overflow-y:scroll;"></div>
 
-    <script>
-        function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
+<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>
+<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />
+<script>
+      var Timeline_urlPrefix='${root}/timeline/timeline_js/';
+      var Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';
+      Timeline_parameters='bundle=true';
+      function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
             if(!timelineIntervalUnit) {
                  timelineIntervalUnit = SimileAjax.DateTime.DECADE;
             }            
@@ -27,30 +30,6 @@
             theme1.ether.backgroundColors[1] = theme1.ether.backgroundColors[0];
             theme1.mouseWheel='zoom'; 
             var bandInfos = [
-/*
-                Timeline.createBandInfo({
-                    width:          "25%", 
-                    intervalUnit:   nextInterval,
-                    intervalPixels: 100,
-                    date:           baseDate,
-                    showEventText:  true,
-                    eventSource:    eventSource,
-                    theme:          theme1,
-                   zoomIndex:      10,
-                   zoomSteps:      new Array(
-              {pixelsPerInterval: 1000,  unit: nextInterval},
-              {pixelsPerInterval: 900,  unit: nextInterval},
-              {pixelsPerInterval:  800,  unit: nextInterval},
-              {pixelsPerInterval:  700,  unit: nextInterval},
-              {pixelsPerInterval: 600,  unit: nextInterval},
-              {pixelsPerInterval: 500,  unit: nextInterval},
-              {pixelsPerInterval: 400,  unit: nextInterval},
-              {pixelsPerInterval: 300,  unit: nextInterval},
-              {pixelsPerInterval: 200,  unit: nextInterval},
-              {pixelsPerInterval: 100,  unit: nextInterval},
-              {pixelsPerInterval: 50,  unit: nextInterval} // DEFAULT zoomIndex
-            )
-                }),*/
                 Timeline.createBandInfo({
                     width:          "100%", 
                     intervalUnit:   timelineIntervalUnit, 
@@ -76,31 +55,15 @@
 
             ];
 
-/*
-            bandInfos[0].etherPainter = new Timeline.YearCountEtherPainter({
-                startDate:  "Nov 14 1840 00:00:00 GMT",
-                multiple:   5,
-                theme:      theme1
-            });
-
-*/
-/*
-            bandInfos[0].syncWith = 1;
-            bandInfos[0].highlight = false;
-            bandInfos[0].decorators = [
-                new Timeline.SpanHighlightDecorator({
-                    startDate:  "Nov 14 1840 00:00:00 GMT",
-                    endDate:    "Dec 05 1926 00:00:00 GMT",
-                    startLabel: "birth",
-                    endLabel:   "death",
-                    color:      "red",
-                    opacity:    50,
-                    theme:      theme1
-                })
-            ];
-*/
-            
         timeline = Timeline.create(document.getElementById("timeline"), bandInfos, Timeline.HORIZONTAL);
+
+/*
+      var dttm = "Jun 28 2006 00:00:00 GMT";
+        var dateParser = timeline._events.getUnit().getParser();
+        var event =new Timeline.DefaultEventSource.Event({id:"id",start:dateParser(dttm),end:dateParser(dttm),text:"hello",description:"desc"});
+      timeline._events.add(event);
+*/
+
         timeline.loadXML(dataUrl, function(xml, url) {
                 eventSource.loadXML(xml, url);
             });
@@ -119,11 +82,22 @@
         }
 
 //MILLISECOND,SECOND,MINUTE,HOUR,DAY,WEEK,MONTH,YEAR,DECADE,CENTURY,MILLENNIUM,EPOCH,ERA
+    function waitForTimeline() {
+      var isDefined = typeof Timeline;
+      if(isDefined == 'undefined') {
+         setTimeout(waitForTimeline, 100);
+         return;
+     }
+     setTimeout(initTimeline, 750);
+   }
+
+    function initTimeline() {
      var url = "${timelineurl}";
      var baseDate = "${basedate}";
      var intervalUnit = ${intervalUnit};
      var timeline = createTimeline(url, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit);
      timeline.getBand(0).zoom(true);
+    }
 
      function timelineZoom(inOrOut, timeline,evt) {
         for(var i=0;i<1;i++) {
@@ -132,7 +106,12 @@
              timeline.getBand(i).zoom(inOrOut, loc.x, loc.y);
         }
    }
-    </script>
+
+$(document).ready(function() {
+   waitForTimeline();
+});
+
+</script>
   
 
 

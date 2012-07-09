@@ -351,11 +351,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         makeEntryList(request, listSB, entries);
 
-        String head =
-            getRepository().getCalendarOutputHandler().makeTimeline(request,
-                entries, timelineSB,
-                "width:" + contentsWidth + "px; height: " + contentsHeight
-                + "px;");
+        getRepository().getCalendarOutputHandler().makeTimeline(request,
+                                                                entries, timelineSB,
+                                                                "width:" + contentsWidth + "px; height: " + contentsHeight
+                                                                + "px;");
 
 
         StringBuffer mapSB = new StringBuffer(
@@ -440,11 +439,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         for (Entry entry : entries) {}
 
         Result result = new Result("Search", sb);
-        result.putProperty(PROP_HTML_HEAD, head);
-
         return getRepository().getEntryManager().addEntryHeader(request,
                 getRepository().getEntryManager().getTopGroup(), result);
-
     }
 
 

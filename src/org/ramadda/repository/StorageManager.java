@@ -658,10 +658,9 @@ public class StorageManager extends RepositoryManager {
                 return logDir;
             }
 
-            File log4JFile = new File(logDir + "/" + "log4j.properties");
+            File log4JFile = new File(logDir + File.separator + "log4j.properties");
             //For now always write out the log from the jar
-            //            System.err.println("log4j file=" + log4JFile);
-            
+            //            System.err.println("RAMADDA: log4j file=" + log4JFile);
             if (true || !log4JFile.exists()) {
                 try {
                     String c =
@@ -677,7 +676,7 @@ public class StorageManager extends RepositoryManager {
             }
             try {
                 System.err.println(
-                    "RAMADDA: Configuring log4j. Note: this may print out a stack trace.");
+                    "RAMADDA: Configuring log4j with:" + log4JFile +" (this may print out a stack trace)");
                 org.apache.log4j.PropertyConfigurator.configure(
                     log4JFile.toString());
             } catch (Exception exc) {

@@ -218,13 +218,10 @@ public class CalendarOutputHandler extends OutputHandler {
             //            sb.append(getHtmlHeader(request,  group));
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
-            String head = makeTimeline(request, allEntries, sb, "height: 300px;");
+            makeTimeline(request, allEntries, sb, "height: 300px;");
             result = makeLinksResult(request, msg("Timeline"), sb,
-                                            new State(group, subGroups,
-                                                entries));
-            if (head != null) {
-                result.putProperty(PROP_HTML_HEAD, head);
-            }
+                                     new State(group, subGroups,
+                                               entries));
             return result;
         } else {
             result = outputCalendar(request, group, entries, sb);
@@ -300,10 +297,9 @@ public class CalendarOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public String makeTimeline(Request request, List<Entry> entries,
+    public void makeTimeline(Request request, List<Entry> entries,
                                StringBuffer sb, String style)
             throws Exception {
-        String           head    = "";
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         long             minDate = 0;
         long             maxDate = 0;
@@ -332,29 +328,18 @@ public class CalendarOutputHandler extends OutputHandler {
             interval = "Timeline.DateTime.DECADE";
         }
 
-
-        //        System.err.println(diffDays+ " " + interval+" min date:" +sdf.format(new Date(minDate)));
-
-        //            sb.append(getTimelineApplet(request, allEntries));
-        head = "<script>var Timeline_urlPrefix='${root}/timeline/timeline_js/';\nvar Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';\nTimeline_parameters='bundle=true';\n</script>\n<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>\n<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />";
-        head = head.replace("${root}", getRepository().getUrlBase());
         String timelineApplet =
             getRepository().getResource(
                 "/org/ramadda/repository/resources/timeline.html");
         String url = request.getUrl();
         url = url + "&timelinexml=true";
-        //            timelineApplet = timelineApplet.replace("${timelineurl}", "${root}/monet.xml");
-
         timelineApplet = timelineApplet.replace("${timelineurl}", url);
         timelineApplet = timelineApplet.replace("${basedate}",
-                sdf.format(new Date(minDate)));
+                                                sdf.format(new Date(minDate)));
         timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
         timelineApplet = timelineApplet.replace("${style}", style);
-
-
+        System.out.println(timelineApplet);
         sb.append(timelineApplet);
-        return head;
-
     }
 
 

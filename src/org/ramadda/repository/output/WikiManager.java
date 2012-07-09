@@ -967,12 +967,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                               props);
             int    height = Misc.getProperty(props, ATTR_HEIGHT, 150);
             String style  = "height: " + height + "px;";
-            String head   = getCalendarOutputHandler().makeTimeline(request,
-                                                                    children, sb, style);
-            if (head != null) {
-                request.putExtraProperty(PROP_HTML_HEAD, head);
-            }
-
+            getCalendarOutputHandler().makeTimeline(request,
+                                                    children, sb, style);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_MAP)
                    || include.equals(WIKI_PROP_EARTH)) {
