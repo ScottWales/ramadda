@@ -1,59 +1,13 @@
-/*
-reset
-*/
-
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-//      margin: 0;
-//      padding: 0;
+table, tr, th, td {
       font-size: 100%;
       font: inherit;
-//      vertical-align: baseline;
 }
-
-/*
-body {
-     line-height: 1.2; 
-}
-blockquote, q {
-    quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-          content: '';
-          content: none;
-}
-xxxtable {
-      border-collapse: collapse;
-      border-spacing: 0;
-}
-*/
-
 
 body {
    font-family:  Arial, Helvetica, sans-serif;
    color: black;
    margin: 0px;
-}
-
-body {
    font-size: 11pt;
-}
-
-
-body, a, td {
-//   font-size: 11pt;
 }
 
 a {
@@ -74,12 +28,10 @@ ul {
    margin-top:5px;
 }
 
-
 form {
     margin:0px;
     padding: 0px;
 }
-
 
 .input, .password, .fileinput,.textarea,.select {
   border : 1px #888888 solid;
@@ -147,13 +99,6 @@ form {
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
-i {
-   font-style:italic;
-}
-
-b {
-   font-style:bold;
-}
 
 .ramadda-popup a:hover {
    text-decoration: underline;
@@ -1148,7 +1093,7 @@ a.toggleblocklabellink:visited {
 
 
 .formtable td {
-      vertical-align: middle;
+//vertical-align: middle;
       padding-top: 5;
       padding-left: 4;
       padding-right: 4;

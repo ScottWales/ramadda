@@ -2219,14 +2219,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         StringBuffer importMenu = new StringBuffer();
         String       inset      = "&nbsp;&nbsp;";
         int          cnt        = 0;
-        importMenu.append("<table><tr valign=top><td>");
+        importMenu.append("<table><tr valign=top><td valign=top>");
         for (int i = 0; i < WIKIPROPS.length; i++) {
             String prop = WIKIPROPS[i];
 
             if (prop.startsWith(WIKI_PROP_GROUP)) {
                 cnt++;
                 if (cnt > 2) {
-                    importMenu.append("</td><td>&nbsp;</td><td>");
+                    importMenu.append("</td><td>&nbsp;</td><td valign=top>");
                     cnt = 1;
                 }
                 String group = prop.substring(WIKI_PROP_GROUP.length());
