@@ -3,7 +3,7 @@
 
   <handler  category="Incidents">
 
-    <type name="Fire Situation" id="incident.fire.situation"  searchable="false" browsable="true">
+    <type name="Fire Situation" id="incident.fire.situation"  searchable="false" browsable="true" entrytype="incident">
       <element id="personnel" name="Total Personnel"  datatype="int"/>
       <element id="size" name="Size"  datatype="int"/>
       <element id="percentcontained" name="Percent Contained"  datatype="int"/>
@@ -13,7 +13,7 @@
     </type>
 
 
-    <type name="Fire Outlook" id="incident.fire.outlook"  searchable="false" browsable="true">
+    <type name="Fire Outlook" id="incident.fire.outlook"  searchable="false" browsable="true" entrytype="incident">
       <element id="actions" name="Planned Actions"  datatype="string" rows="5"/>
       <element id="growth" name="Growth Potential"  datatype="enumeration" values="Low,Medium,High,Extreme" searchable="true"/>
       <element id="terrain" name="Terrain Difficulty"  datatype="enumeration" values="Low,Medium,High,Extreme" searchable="true"/>
