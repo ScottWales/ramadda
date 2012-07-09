@@ -37,6 +37,8 @@ exec jar -xvf ../../../unidatacommon.jar
 
 puts "Unjarring ncIdv.jar"
 exec jar -xvf ../../../ncIdv.jar
+file delete -force org/slf4j
+
 
 puts "Making ramaddatds.jar"
 puts "pwd: [pwd]"
