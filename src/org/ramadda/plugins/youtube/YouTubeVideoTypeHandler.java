@@ -22,6 +22,7 @@ package org.ramadda.plugins.youtube;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 
@@ -42,7 +43,7 @@ import java.util.List;
  */
 public class YouTubeVideoTypeHandler extends GenericTypeHandler {
 
-
+    private int idCnt = 0;
 
     /**
      * _more_
@@ -78,13 +79,6 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        String width = entry.getValue(0,"640");
-        String height = entry.getValue(1,"390");
-        double start = entry.getValue(2, 0.0);
-        double end = entry.getValue(3, -1);
-        sb.append("<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
-        sb.append(XmlUtil.attr("width",width));
-        sb.append(XmlUtil.attr("height",height));
         String url = entry.getResource().getPath();
         String id = StringUtil.findPattern(url,"v=([^&]+)&");
         if(id == null) {
@@ -95,17 +89,65 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
             return new Result(msg("YouTube Video"), sb);
         }
 
+
+        String width = entry.getValue(0,"640");
+        String height = entry.getValue(1,"390");
+        double start = entry.getValue(2, 0.0);
+        double end = entry.getValue(3, -1);
+        sb.append("\n");
+        sb.append("<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
+        sb.append(XmlUtil.attr("width",width));
+        sb.append(XmlUtil.attr("height",height));
+        String playerId = "video_" +(idCnt++);
         String embedUrl = "http://www.youtube.com/embed/" + id;
         embedUrl += "?enablejsapi=1";
         embedUrl += "&autoplay=0";
+        embedUrl += "&playerapiid=" +playerId;
         if(start>0) {
             embedUrl += "&start=" + ((int)(start*60));
         }
         if(end>0) {
             embedUrl += "&end=" + ((int)(end*60));
         }
-        sb.append(XmlUtil.attr("src",embedUrl));
-        sb.append("/>\n");
+
+        sb.append("\n");
+        sb.append("src=\""+embedUrl+"\"");
+        sb.append(">\n");
+        sb.append("</iframe>\n");
+
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(entry,
+                                              "video_cue", false);
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            StringBuffer links = new StringBuffer();
+            for(Metadata metadata: metadataList) {
+                String name = metadata.getAttr1();
+                String offset = metadata.getAttr2().trim();
+                if(offset.length()==0) continue;
+                links.append(HtmlUtils.href("javascript:cueVideo(" +
+                                            HtmlUtils.squote(playerId) +"," +
+                                            offset+");", name +" -- " +offset +" minutes" ));
+                links.append(HtmlUtils.br());
+            }
+            StringBuffer embed=sb;
+            sb = new StringBuffer();
+
+            sb.append(HtmlUtils.importJS("http://www.youtube.com/player_api"));
+            StringBuffer js = new StringBuffer("\n");
+            js.append("function onYouTubePlayerAPIReady(id) {/*alert(id);*/}\n");
+            js.append("function cueVideo (id,minutes) {\n");
+            js.append("player = document.getElementById('ytplayer');");
+            js.append("alert(player.playVideo);");
+            js.append("player.playVideo();");
+            js.append("}\n");
+            sb.append("\n");
+            sb.append(HtmlUtils.script(js.toString()));
+            sb.append("<table cellspacing=5><tr valign=top><td>");
+            sb.append(embed);
+            sb.append("</td><td>");
+            sb.append(links);
+            sb.append("</td></tr></table>");
+        }
 
 
         return new Result(msg("YouTube Video"), sb);
