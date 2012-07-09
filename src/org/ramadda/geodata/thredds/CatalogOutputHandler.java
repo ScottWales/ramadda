@@ -866,7 +866,9 @@ public class CatalogOutputHandler extends OutputHandler {
             Entry entry = (Entry) entryList.get(i);
             if (entry.getType().equals(
                     GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
-                entries.add(entry);
+                //Do we stop here and don't open up the children?
+                //                entries.add(entry);
+                groups.add(entry);
             } else {
                 if ( !embedGroups && entry.isGroup()) {
                     groups.add((Entry) entry);
@@ -875,6 +877,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 }
             }
         }
+
         for (Entry group : groups) {
             if (depth > 1) {
                 Element datasetNode = XmlUtil.create(catalogInfo.doc,
