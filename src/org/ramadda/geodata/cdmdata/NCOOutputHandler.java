@@ -102,7 +102,7 @@ public class NCOOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_NCO_NCWA =
         new OutputType("NCO- Weighted Average", "nco.ncwa",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/data/nco.png", CdmDataOutputHandler.GROUP_DATA);
+                       "/cdmdata/nco.png", CdmDataOutputHandler.GROUP_DATA);
 
 
 
