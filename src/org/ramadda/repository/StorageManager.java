@@ -667,19 +667,23 @@ public class StorageManager extends RepositoryManager {
                 return logDir;
             }
 
-            System.err.println ("RAMADDA: created log dir:" + tmpLogDir +" exists=" + tmpLogDir.exists());
+            System.err.println ("RAMADDA: log directory:" + tmpLogDir);
 
             File log4JFile = new File(tmpLogDir + "/" + "log4j.properties");
             //For now always write out the log from the jar
             //            System.err.println("RAMADDA: log4j file=" + log4JFile);
-            if (!log4JFile.exists()) {
+            if (true || !log4JFile.exists()) {
                 try {
                     System.err.println ("RAMADDA: writing out log4j.properties:" + log4JFile);
                     String c =
                         IOUtil.readContents(
                                             "/org/ramadda/repository/resources/log4j.properties",
                                             getClass());
-                    c = c.replace("${ramadda.logdir}", tmpLogDir.toString());
+                    String logDirPath = tmpLogDir.toString();
+                    //Replace for windows
+                    logDirPath = logDirPath.replace("\\","/");
+                    System.err.println("RAMADDA: log directory path:" + logDirPath);
+                    c = c.replace("${ramadda.logdir}", logDirPath);
                     c = c.replace("${file.separator}", File.separator);
                     IOUtil.writeFile(log4JFile, c);
                 } catch (Exception exc) {
@@ -688,9 +692,10 @@ public class StorageManager extends RepositoryManager {
                 }
             }
             try {
-                System.setProperty("log4j.debug","");
+                //                System.err.println("RAMADDA: turning on log4j.debug");
+                //                System.setProperty("log4j.debug","");
                 System.err.println(
-                                   "RAMADDA: Configuring log4j with:" + log4JFile + " (this may print out a stack trace)");
+                                   "RAMADDA: Configuring log4j with properties:" + log4JFile + " (this may print out a stack trace)");
                 org.apache.log4j.PropertyConfigurator.configure(
                                                                 log4JFile.toString());
             } catch (Exception exc) {
