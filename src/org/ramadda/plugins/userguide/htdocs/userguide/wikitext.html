@@ -27,6 +27,9 @@ pre {
 
 
 
+The <a href="ramadda.org/repository/alias/wikis">ramadda.org site</a> has many 
+examples of the wiki facility.
+
 There is always some repository entry associated with wiki text. This might
 be a specific <a href="wiki.html#wikipage">Wiki Entry</a>, 
 we might be treating
@@ -112,8 +115,7 @@ If the entry with the given name does not exist then the link will take one to t
 create entry form.
 
 
-
-<a name="propertiesg"></a><div class="pagesubtitle">10.4.3 Wiki Properties</div> 
+<a name="properties"></a><div class="pagesubtitle">10.4.3 Wiki Properties</div> 
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 <blockquote><pre>{{property}}</pre></blockquote>
@@ -276,12 +278,12 @@ Show images in an image player, e.g.
 <blockquote><pre>{{imageplayer}}</pre></blockquote> </pre>
 
 
-<li> <a name="gallery"></a>{{gallery <i>width="image width" count="max number to show"</i>}}:
-Show a vertical listing of the children entry images, e.g.
-<blockquote><pre>{{gallery}}</pre></blockquote> </pre>
+<li> <a name="gallery"></a>{{gallery <i>width="image width" columns="number of columns" </i>}}:
+Show a 3 column gallery:
+<blockquote><pre>{{gallery columns="3"}}</pre></blockquote> </pre>
 
 Show a vertical listing of the grandchildren entry images:
-<blockquote><pre>{{gallery level="2"}}</pre></blockquote> </pre>
+<blockquote><pre>{{gallery level="2" columns="1"}}</pre></blockquote> </pre>
 
 Set the image width and only show up to 5 images:
 <blockquote><pre>{{gallery  width="300" count="5"}}</pre></blockquote> </pre>
@@ -333,13 +335,23 @@ Uses the same arguments as tabs, plus:
 <li> <a name="links"></a>{{links <i>separator="separator text to use" 
                           style="inline css style for the link"
                           class="css class for the link"
-                          tagopen="html to prepend to the link" 
-                          tagclose="close html"</i>}}: Layout links to the entries.<br>
-This produces a set of links to the entries. You can create a header with wiki text like:
+                          tagopen="html to prepend to the link - default is li" 
+                          tagclose="close html"
+                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"</i>}}: Layout links to the entries.<br>
+This produces a set of links to the entries. 
+
+A bulleted list:
 <blockquote><pre>
-&lt;center&gt;
-{{links separator="&amp;nbsp;|&amp;nbsp"}}
-&lt;/center&gt;
+&lt;ul&gt;
+{{links}}
+&lt;/ul&gt;
+</pre></blockquote>
+
+A bulleted list with the links to the entry's file:
+<blockquote><pre>
+&lt;ul&gt;
+{{links linkresource="true"}}
+&lt;/ul&gt;
 </pre></blockquote>
 
 If you wanted to make a vertical list do:
@@ -347,19 +359,15 @@ If you wanted to make a vertical list do:
 {{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
 </pre></blockquote>
 
-A bulleted list:
+You can create a header with wiki text like:
 <blockquote><pre>
-&lt;ul&gt;
-{{links tagopen="&lt;li&gt;" }}
-&lt;/ul&gt;
+&lt;center&gt;
+{{links separator="&amp;nbsp;|&amp;nbsp" tagopen=""}}
+&lt;/center&gt;
 </pre></blockquote>
 
-A bulleted list with the links to the entry's file:
-<blockquote><pre>
-&lt;ul&gt;
-{{links linkresource="true" tagopen="&lt;li&gt;" }}
-&lt;/ul&gt;
-</pre></blockquote>
+
+
 
 
 

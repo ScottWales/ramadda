@@ -19,7 +19,6 @@
       <property file="${basedir}/build.properties"/>
       <exec dir="${basedir}/src/org/ramadda/plugins/userguide/content" executable="${tclsh}">
           <arg value="${basedir}/bin/idvdocgen/generate.tcl"/> 
-          <arg value="-clean"/> 
       </exec>
     </target>
 

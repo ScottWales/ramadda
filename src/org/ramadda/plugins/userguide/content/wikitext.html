@@ -2,6 +2,9 @@
 
 <%nochildlist%>
 
+The <a href="ramadda.org/repository/alias/wikis">ramadda.org site</a> has many 
+examples of the wiki facility.
+
 There is always some repository entry associated with wiki text. This might
 be a specific <a href="wiki.html#wikipage">Wiki Entry</a>, 
 we might be treating
@@ -87,8 +90,7 @@ If the entry with the given name does not exist then the link will take one to t
 create entry form.
 
 
-
-<subhead intoc="false" id="propertiesg">Wiki Properties</subhead>
+<subhead intoc="false" id="properties">Wiki Properties</subhead>
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 [wiki::text [wiki::tag property]]
@@ -251,12 +253,12 @@ Show images in an image player, e.g.
 [wiki::text {{{imageplayer}}}] </pre>
 
 
-<li> [wiki::tagdef gallery {width="image width" count="max number to show"}]:
-Show a vertical listing of the children entry images, e.g.
-[wiki::text {{{gallery}}}] </pre>
+<li> [wiki::tagdef gallery {width="image width" columns="number of columns" }]:
+Show a 3 column gallery:
+[wiki::text {{{gallery columns="3"}}}] </pre>
 
 Show a vertical listing of the grandchildren entry images:
-[wiki::text {{{gallery level="2"}}}] </pre>
+[wiki::text {{{gallery level="2" columns="1"}}}] </pre>
 
 Set the image width and only show up to 5 images:
 [wiki::text {{{gallery  width="300" count="5"}}}] </pre>
@@ -308,13 +310,23 @@ Uses the same arguments as tabs, plus:
 <li> [wiki::tagdef links {separator="separator text to use" 
                           style="inline css style for the link"
                           class="css class for the link"
-                          tagopen="html to prepend to the link" 
-                          tagclose="close html"}]: Layout links to the entries.<br>
-This produces a set of links to the entries. You can create a header with wiki text like:
+                          tagopen="html to prepend to the link - default is li" 
+                          tagclose="close html"
+                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"}]: Layout links to the entries.<br>
+This produces a set of links to the entries. 
+
+A bulleted list:
 [wiki::text {
-&lt;center&gt;
-{{links separator="&amp;nbsp;|&amp;nbsp"}}
-&lt;/center&gt;
+&lt;ul&gt;
+{{links}}
+&lt;/ul&gt;
+}]
+
+A bulleted list with the links to the entry's file:
+[wiki::text {
+&lt;ul&gt;
+{{links linkresource="true"}}
+&lt;/ul&gt;
 }]
 
 If you wanted to make a vertical list do:
@@ -322,19 +334,15 @@ If you wanted to make a vertical list do:
 {{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
 }]
 
-A bulleted list:
+You can create a header with wiki text like:
 [wiki::text {
-&lt;ul&gt;
-{{links tagopen="&lt;li&gt;" }}
-&lt;/ul&gt;
+&lt;center&gt;
+{{links separator="&amp;nbsp;|&amp;nbsp" tagopen=""}}
+&lt;/center&gt;
 }]
 
-A bulleted list with the links to the entry's file:
-[wiki::text {
-&lt;ul&gt;
-{{links linkresource="true" tagopen="&lt;li&gt;" }}
-&lt;/ul&gt;
-}]
+
+
 
 
 
