@@ -20,7 +20,6 @@
       <echo message="Generating workshop content"/>
       <exec dir="${basedir}/src/org/ramadda/plugins/workshop/content" executable="${tclsh}">
           <arg value="${basedir}/bin/idvdocgen/generate.tcl"/> 
-          <arg value="-clean"/> 
       </exec>
     </target>
 </project>
