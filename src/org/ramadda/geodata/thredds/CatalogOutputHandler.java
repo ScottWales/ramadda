@@ -78,7 +78,7 @@ import java.util.zip.*;
  */
 public class CatalogOutputHandler extends OutputHandler {
 
-    public static final String ICON_OPENDAP = "/data/opendap.gif";
+    public static final String ICON_OPENDAP = "/cdmdata/opendap.gif";
 
     /** _more_ */
     public static final String ICON_CATALOG = "ramadda.icon.catalog";
