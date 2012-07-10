@@ -2547,7 +2547,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         OutputHandler fileListingHandler = new OutputHandler(getRepository(),
-                                               "Entry Copier") {
+                                               "File Listing") {
             public boolean canHandleOutput(OutputType output) {
                 return output.equals(OUTPUT_FILELISTING);
             }
