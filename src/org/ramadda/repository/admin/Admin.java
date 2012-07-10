@@ -446,10 +446,10 @@ public class Admin extends RepositoryManager {
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
                             topEntry.getName()));
                     topEntry.setDescription(
-                        "<wiki>\nWelcome to your RAMADDA server.\n\nYou should \n<a href=\""
+                                            "<wiki>\nWelcome to your RAMADDA server.\n\nNext steps:\n*Join the <a href=\"https://lists.sourceforge.net/lists/listinfo/ramadda-users\">RAMADDA mailing list</a>\n*<a href=\""
                         + getRepository().URL_ENTRY_FORM + "?entryid="
                         + topEntry.getId()
-                        + "\">edit this page</a>\n\n<p>\n\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
+                        + "\">Edit</a> this page\n\n<p>\n\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
                     getEntryManager().storeEntry(topEntry);
 
 
