@@ -1,26 +1,43 @@
 #!/bin/sh
 
-RAMADDADIR=`dirname $0`
-JAVA=java
+RAMADDA_DIR=`dirname $0`
 
-MEM=1024m
-echo 'RAMADDA: running at http://localhost:8080/repository'
+#RAMADDA home directory
+if [ -z "$RAMADDA_HOME" ]; then
+    RAMADDA_HOME=${HOME}/.ramadda
+fi
 
-${JAVA} -Xmx${MEM} -XX:MaxPermSize=256m -Dfile.encoding=utf-8 -jar ${RAMADDADIR}/lib/ramadda.jar -port 8080 $*
+#Port RAMADDA runs on
+if [ -z "$RAMADDA_PORT" ]; then
+    RAMADDA_PORT=8080
+fi
+
+#Java settings
+if [ -z "$JAVA" ]; then
+    JAVA=java
+fi
+
+JAVA_MEMORY=1024m
+JAVA_PERMGEN=256m
 
 
-##RAMADDA will create a home directory under ~/.ramadda to store content 
-##and the database. To change the directory do:
-##${JAVA} -Xmx{MEM} -XX:MaxPermSize=256m -jar lib/ramadda.jar -port 8080 -Dramadda_home=/some/other/directory
+
+##See if there is one in the release dir
+RAMADDA_ENV_FILE=${RAMADDA_DIR}/ramaddaenv.sh
+if test  ${RAMADDA_ENV_FILE} ; then 
+    . ${RAMADDA_ENV_FILE}
+fi
+
+##See if there is one in the cwd
+if test  ramaddaenv.sh ; then 
+    . ramaddaenv.sh
+fi
 
 
-#The default above is to use Java Derby as the database
-#To run with mysql you do:
-#${JAVA} -Xmx{MEM} -XX:MaxPermSize=256m -jar ramadda.jar -Dramadda.db=mysql
+${JAVA} -Xmx${JAVA_MEMORY} -XX:MaxPermSize=${JAVA_PERMGEN} -Dfile.encoding=utf-8 -jar ${RAMADDA_DIR}/lib/ramadda.jar -port ${RAMADDA_PORT} -Dramadda_home=${RAMADDA_HOME} $* 
 
 
-#For more information see:
-#http://facdev.unavco.org/repository/userguide/installing.html
+
 
 
 

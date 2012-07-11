@@ -1,22 +1,35 @@
-
-RAMADDA  Stand-alone
+###################################################################
+Running RAMADDA  stand-alone
+###################################################################
 
 To run RAMADDA stand-alone just do:
    sh ramadda.sh
 
-This will run RAMADDA on port 8080.  To change the port edit ramadda.sh
+By default this  will run RAMADDA on port 8080 with the RAMADDA home 
+directory (where it stores everything) set to ~/.ramadda.
 
-This uses the default java runtime in your path. To change this edit ramadda.sh
+See the Configuration section below on how to change these settings.
 
-When you first start up ramadda you can complete the initialization and configuration at:
+When you first start up ramadda you need to complete the initialization and 
+configuration at:
 http://localhost:8080/repository
 
-Once logged in go to:
-http://localhost:8080/repository/admin/settings
-to do any further configurations
+For more information see:
+http://ramadda.org/repository/userguide/installing.html
 
-By default RAMADDA will use ~/.ramadda as its home directory. To change this use:
-   sh ramadda.sh -Dramadda_home=/some/other/directory
 
-For further information see the docs at:
-http://facdev.unavco.org/repository/userguide/installing.html
+###################################################################
+Configuration
+###################################################################
+
+The ramadda.sh script runs the stand-alone version of RAMADDA.
+
+If not set by the calling process the script sets the RAMADDA_HOME 
+and RAMADDA_PORT variables then execs the ramaddaenv.sh in the 
+release directory.  Then, if it exists, the script execs ramaddaenv.sh
+in the current working directory (where you are running RAMADDA from).
+
+If you want to override the location of the RAMADDA home dir or the port 
+used then  set the environment variables or edit ramaddaenv.sh in place 
+or copy it to where you'll be running RAMADDA from and edit it there
+
