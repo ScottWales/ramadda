@@ -1839,6 +1839,7 @@ public class TypeHandler extends RepositoryManager {
 
             Resource resource      = entry.getResource();
             String   resourceLink  = resource.getPath();
+
             String   resourceLabel = msgLabel("Resource");
             if (resourceLink.length() > 0) {
                 if (entry.getResource().isUrl()) {
@@ -1847,8 +1848,9 @@ public class TypeHandler extends RepositoryManager {
                 } else if (entry.getResource().isFile()) {
                     resourceLink =
                         getStorageManager().getFileTail(resourceLink);
-                    resourceLink =
-                        HtmlUtils.urlEncodeExceptSpace(resourceLink);
+                    //Not sure why we were doing this but it screws up chinese characters
+                    //                    resourceLink =
+                    //                        HtmlUtils.urlEncodeExceptSpace(resourceLink);
                     if (getAccessManager().canDownload(request, entry)) {
                         resourceLabel = msgLabel("File");
                         resourceLink  =
