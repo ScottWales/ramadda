@@ -19,7 +19,7 @@
 */
 
 /*
- * Originally written by Kristian Sebastia¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
+ * Originally written by Kristian SebastiaÂ¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  */
 
 package org.ramadda.plugins.ldap;
@@ -47,7 +47,7 @@ import javax.naming.NamingException;
  * This is a user authenticator to implement LDAP authentication
  *
  *
- * @author Kristian Sebastia¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
+ * @author Kristian SebastiaÂ¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  * @author Jeff McWhirter ramadda.org
  */
 public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
@@ -141,8 +141,9 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      *
      * @return has valid manager
      */
-    public boolean hasManager() {
-        return getManager() != null;
+    public boolean isEnabled() {
+        if(getManager() == null) return false;
+        return getManager().isEnabled();
     }
 
     /**
@@ -162,7 +163,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
                                  String password) {
         if(userId.length()==0) return null;
         debug("authenticate user: " + userId);
-        if ( !hasManager()) {
+        if ( !isEnabled()) {
             return null;
         }
 
@@ -185,7 +186,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      */
     @Override
     public User findUser(Repository repository, String userId) {
-        if ( !hasManager()) {
+        if ( !isEnabled()) {
             return null;
         }
         if(userId.length()==0) return null;
@@ -268,7 +269,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      */
     @Override
     public List<String> getAllRoles() {
-        if ( !hasManager()) {
+        if ( !isEnabled()) {
             return null;
         }
         try {

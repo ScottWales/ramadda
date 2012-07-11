@@ -88,7 +88,16 @@ public class LDAPManager {
         this.username = username;
         this.password = password;
         //Try it
-        getContext();
+        if(ldapUrl!=null) {
+            getContext();
+        } else {
+            System.err.println ("RAMADDA: No ldap properties defined");
+        }
+    }
+
+    public boolean isEnabled() {
+        if(ldapUrl == null) return false;
+        return true;
     }
 
     private DirContext getContext() throws NamingException {
