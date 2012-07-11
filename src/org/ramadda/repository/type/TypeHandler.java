@@ -1035,6 +1035,24 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public String convertIdsFromImport(String s, List<String[]>idList) {
+        for (String[] tuple : idList) {
+            String oldId = tuple[0];
+            if (oldId.length() == 0) {
+                continue;
+            }
+            String newId = tuple[1];
+            s = s.replaceAll(oldId,newId);
+        }
+        return s;
+    }
+
+    public void convertIdsFromImport(Entry newEntry, List<String[]>idList) {
+        newEntry.setDescription(convertIdsFromImport(newEntry.getDescription(), idList));
+    }
+
+
+
     /**
      * _more_
      *

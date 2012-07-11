@@ -1130,6 +1130,7 @@ public class EntryManager extends RepositoryManager {
 
         File serverFile = null;
         if (request.defined(ARG_SERVERFILE)) {
+            //IMPORTANT:
             request.ensureAdmin();
             serverFile = new File(request.getString(ARG_SERVERFILE,
                     (String) null));
@@ -3726,15 +3727,7 @@ public class EntryManager extends RepositoryManager {
 
         //Replace any entry re
         for (Entry newEntry : newEntries) {
-            for (String[] tuple : idList) {
-                String oldId = tuple[0];
-                if (oldId.length() == 0) {
-                    continue;
-                }
-                String newId = tuple[1];
-                newEntry.setDescription(
-                    newEntry.getDescription().replaceAll(oldId, newId));
-            }
+            newEntry.getTypeHandler().convertIdsFromImport(newEntry, idList);
         }
 
 

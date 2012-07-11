@@ -149,6 +149,19 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
     }
 
 
+    @Override
+    public void convertIdsFromImport(Entry newEntry, List<String[]>idList) {
+        super.convertIdsFromImport(newEntry, idList);
+        Object[] values       = newEntry.getValues();
+        if (values != null) {
+            String wikiText = (String) values[0];
+            wikiText = convertIdsFromImport(wikiText, idList);
+            values[0] = wikiText;
+        }
+    }
+
+
+
     /**
      * _more_
      *
