@@ -2,13 +2,18 @@
 Running RAMADDA  stand-alone
 ###################################################################
 
+RAMADDA requires Java 1.6 or above to run.
+
 To run RAMADDA stand-alone just do:
+
    sh ramadda.sh
 
 By default this  will run RAMADDA on port 8080 with the RAMADDA home 
-directory (where it stores everything) set to ~/.ramadda.
+directory (where it stores everything) set to ~/.ramadda and will use
+the Java Derby database.
 
 See the Configuration section below on how to change these settings.
+See the Database section below on how to change the database
 
 When you first start up ramadda you need to complete the initialization and 
 configuration at:
@@ -24,12 +29,60 @@ Configuration
 
 The ramadda.sh script runs the stand-alone version of RAMADDA.
 
-If not set by the calling process the script sets the RAMADDA_HOME 
-and RAMADDA_PORT variables then execs the ramaddaenv.sh in the 
+The script uses the environment variables:
+RAMADDA_HOME - The directory RAMADDA stores everything in. 
+Defaults to ~/.ramadda
+
+RAMADDA_PORT - The port that RAMADDA runs on. Defaults to 8080
+
+JAVA - Path to the Java executable. Defaults to "java"
+
+If not set by the calling process the script sets the RAMADDA_HOME, 
+RAMADDA_PORT  and JAVA variables then execs the ramaddaenv.sh in the 
 release directory.  Then, if it exists, the script execs ramaddaenv.sh
 in the current working directory (where you are running RAMADDA from).
 
 If you want to override the location of the RAMADDA home dir or the port 
 used then  set the environment variables or edit ramaddaenv.sh in place 
 or copy it to where you'll be running RAMADDA from and edit it there
+
+Note: If you edit ramaddaenv.sh in place you will lose those settings when you 
+reinstall RAMADDA
+
+###################################################################
+Database
+###################################################################
+By default this uses the built-in Java Derby database. Derby is quite 
+capable but it lacks certain features and might not be as performant
+as other databases.
+
+If you want to use a different database (e.g., mysql, postgres, oracle, H2) see:
+http://ramadda.org/repository/userguide/database.html
+
+
+###################################################################
+Shutting down RAMADDA
+###################################################################
+Right now there isn't a clean way to shutdown RAMADDA. What I do is:
+    
+    ps -eaf | grep java
+
+This lists out the RAMADDA Java process. Then do:
+
+    kill -9 <ramadda pid>
+
+
+###################################################################
+Running in the background
+###################################################################
+If you want to run ramadda in the background then do:
+
+   nohup sh runramadda.sh &
+
+the runramadda.sh script just runs ramadda.sh but redirects stdout and
+stderr to ramadda.out and ramadda.err files
+
+Note: You should also add the runramadda.sh call to any server initialization
+scripts if you want to have ramadda run on machine reboot
+
 

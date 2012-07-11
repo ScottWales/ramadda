@@ -221,25 +221,13 @@
         <copy  file="${lib_dir}/idv.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/ramaddalib.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${tika_jar}" todir="${release_dir}/lib" overwrite="true" />
-        <copy  file="${ramadda_dir}/release/ramadda.sh" todir="${release_dir}" overwrite="true">
-            <filterset>
-                <filter token="REPOSITORYJAR" value="${ramadda_jar}"/>
-            </filterset>
-
+        <copy  todir="${release_dir}" overwrite="true">
+          <fileset dir="${ramadda_dir}/release/standalone">
+          </fileset>
+          <filterset>
+              <filter token="REPOSITORYJAR" value="${ramadda_jar}"/>
+          </filterset>
         </copy>
-        <copy  file="${ramadda_dir}/release/ramadda.bat" todir="${release_dir}" overwrite="true">
-            <filterset>
-                <filter token="REPOSITORYJAR" value="${ramadda_jar}"/>
-            </filterset>
-
-        </copy>
-        <copy  file="${ramadda_dir}/release/ramaddamysql.sh" todir="${release_dir}" overwrite="true" >
-            <filterset>
-                <filter token="REPOSITORYJAR" value="${ramadda_jar}"/>
-            </filterset>
-
-        </copy>
-        <copy  file="${ramadda_dir}/release/README" todir="${release_dir}" overwrite="true" />
         <copy  file="${lib_dir}/ramaddatds.jar" todir="${release_dir}/lib" overwrite="true" />
         <copy  file="${lib_dir}/servlet-api.jar" todir="${release_dir}/lib" overwrite="true" />
         <delete file="${lib_dir}/repository.tar"/>
