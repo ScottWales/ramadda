@@ -76,14 +76,17 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     /** Pattern index for GUI */
     public static final int INDEX_PATTERN = 4;
 
+    public static final int INDEX_RECURSE = 5;
+
+
     /** Ingest files index for GUI */
-    public static final int INDEX_INGEST = 5;
+    public static final int INDEX_INGEST = 6;
 
     /** Add short metadata index for GUI */
-    public static final int INDEX_ADDSHORTMETADATA = 6;
+    public static final int INDEX_ADDSHORTMETADATA = 7;
 
     /** Add full metadata index for GUI */
-    public static final int INDEX_ADDFULLMETADATA = 7;
+    public static final int INDEX_ADDFULLMETADATA = 8;
 
     /** GridAggregation type */
     public static final String TYPE_GRIDAGGREGATION = "gridaggregation";
@@ -176,6 +179,11 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         return Misc.equals(entry.getValue(INDEX_INGEST, ""), "true");
     }
 
+    private boolean getRecurse(Entry entry) {
+        Object [] values  = entry.getValues();
+        return Misc.equals(entry.getValue(INDEX_RECURSE, ""), "true");
+    }
+
 
     /**
      * Get the NcML as a String
@@ -203,6 +211,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         String        files           = entry.getValue(INDEX_FILES, "").trim();
         String        pattern = entry.getValue(INDEX_PATTERN, "").trim();
         boolean       ingest          = getIngest(entry);
+        boolean       recurse          = getRecurse(entry);
         final boolean harvestMetadata =
             Misc.equals(entry.getValue(INDEX_ADDSHORTMETADATA, ""), "true");
         final boolean harvestFullMetadata =
@@ -257,21 +266,20 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             }
             List<Entry> dummyEntries = new ArrayList<Entry>();
             List<File>  filesToUse   = new ArrayList<File>();
+            PatternFileFilter filter = null;
+            if ((pattern != null) && (pattern.length() > 0)) {
+                filter = new PatternFileFilter(
+                                               StringUtil.wildcardToRegexp(pattern));
+            }
+
             for (String f : StringUtil.split(files, "\n", true, true)) {
                 File file = new File(f);
                 if (file.isDirectory()) {
-                    PatternFileFilter filter = null;
-                    if ((pattern != null) && (pattern.length() > 0)) {
-                        filter = new PatternFileFilter(
-                            StringUtil.wildcardToRegexp(pattern));
-                    }
                     List<File> childFiles = IOUtil.getFiles(new ArrayList(),
-                                                file, false, filter);
-
+                                                            file, recurse, filter);
                     for (File child : childFiles) {
                         if (child.isDirectory()) {
-                            //TODO: Do we recurse
-                        } else {
+                        } else if (child.isFile()) {
                             filesToUse.add(child);
                         }
                     }
@@ -297,6 +305,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
             if (ingest) {
+                
                 //See if we have all of the files
                 HashSet seen = new HashSet();
                 for (Entry existingEntry : childrenEntries) {
@@ -388,6 +397,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     }
+
+
 
 
     /**

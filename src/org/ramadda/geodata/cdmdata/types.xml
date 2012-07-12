@@ -15,7 +15,8 @@
      <column name="fields" rows="5" type="string"  label="Ensemble Fields" cansearch="false" showinhtml="true" suffix="Not implemented yet"/>
      <column name="files" rows="5" type="string"  label="Files" cansearch="false" showinhtml="true" suffix="Only allowed for admin"/>
      <column name="pattern"  type="string"  label="File Pattern" cansearch="false" showinhtml="true" suffix=""/>
-     <column name="ingest"  type="boolean"  label="Ingest Files" suffix="Ingest any files found to the repository"  />
+     <column name="recurse"  type="boolean"  default="false" label="Recurse" suffix="Recurse down any directories"  />
+     <column name="ingest"  type="boolean"  default="false"  label="Ingest Files" suffix="Ingest any files found to the repository"  />
      <column name="addshortmetadata"  type="boolean"  label="Spatial/Temporal Metadata" suffix="Add just the spatial/temporal metadata of the ingested files"  />
      <column name="addmetadata" default="false"  type="boolean"  label="All Metadata" suffix="Add all metadata of the ingested files"  />
 
