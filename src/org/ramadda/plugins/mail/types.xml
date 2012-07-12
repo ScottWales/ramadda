@@ -1,0 +1,15 @@
+<types>
+
+  <type name="mail_message"  
+        description="Mail Message" 
+        handler="org.ramadda.plugins.mail.MailTypeHandler" 
+        category="Information" 
+        pattern=".*\.eml$">
+     <property name="icon" value="/mail/email.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="message_from" type="string" label="From" />
+     <column name="message_to" type="string" label="To"  rows="5"/>
+</type>
+
+</types>
