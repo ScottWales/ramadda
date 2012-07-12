@@ -251,6 +251,28 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
 
         if (by.equals("name")) {
             files = IOUtil.sortFilesOnName(files, descending);
+        } else if (by.equals("mixed")) {
+            List<File> filesByDate = new ArrayList<File>();
+            List<File> filesByName = new ArrayList<File>();
+            for(File f: files) {
+                String name = f.getName();
+                if(name.matches(".*(\\d\\d\\d\\d\\d\\d|\\d\\d\\d\\d_\\d\\d).*")){
+                    filesByDate.add(f);
+                } else {
+                    filesByName.add(f);
+                }
+            }
+            //            System.err.println ("by date:" + filesByDate);
+            //            System.err.println ("by name:" + filesByName);
+            File[] byDate = IOUtil.sortFilesOnAge(toArray(filesByDate), descending);
+            File[] byName = IOUtil.sortFilesOnAge(toArray(filesByName), descending);
+            int cnt=0;
+            for(int i=0;i<byName.length;i++) {
+                files[cnt++] = byName[i];
+            }
+            for(int i=0;i<byDate.length;i++) {
+                files[cnt++] = byDate[i];
+            }
         } else {
             files = IOUtil.sortFilesOnAge(files, descending);
         }
@@ -299,6 +321,13 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         return ids;
 
 
+    }
+
+    private File[] toArray(List<File> files) {
+        File[]a = new File[files.size()];
+        for(int i=0;i<a.length;i++)
+            a[i] = files.get(i);
+        return a;
     }
 
 
