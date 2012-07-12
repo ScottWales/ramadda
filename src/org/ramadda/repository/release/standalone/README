@@ -50,6 +50,21 @@ Note: If you edit ramaddaenv.sh in place you will lose those settings when you
 reinstall RAMADDA
 
 ###################################################################
+Plugins
+###################################################################
+When you start RAMADDA it will create a plugins directory under the RAMADDA
+home directory. During the web-based initialization you can choose (on
+by default) to install the "allplugins.zip" file. This contains the majority
+of the RAMADDA plugins.
+
+There are some other plugin files available via SourceForge which you can
+install in the plugins directory.
+
+When you re-install a new version of RAMADDA make sure to also download and install
+the latest version of the allplugins.zip
+
+
+###################################################################
 Database
 ###################################################################
 By default this uses the built-in Java Derby database. Derby is quite 
