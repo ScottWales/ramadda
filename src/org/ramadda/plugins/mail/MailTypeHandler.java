@@ -71,16 +71,8 @@ public class MailTypeHandler extends GenericTypeHandler {
         if(entryHasDefaultName(entry)) {
             entry.setName(message.getSubject());
         }
-        StringBuffer from = new StringBuffer();
-        for(Address address: message.getFrom()) {
-            from.append(address.toString());
-            from.append("\n");
-        }
-        StringBuffer to = new StringBuffer();
-        for(Address address: message.getAllRecipients()) {
-            to.append(address.toString());
-            to.append("\n");
-        }
+        String from = InternetAddress.toString(message.getFrom());
+        String to = InternetAddress.toString(message.getAllRecipients()); 
         StringBuffer desc = new StringBuffer();
         Object content = message.getContent();
         Date fromDttm = message.getSentDate();
@@ -93,6 +85,18 @@ public class MailTypeHandler extends GenericTypeHandler {
             entry.setEndDate(toDttm.getTime());
         }
 
+        processContent(request, entry, content, desc);
+        Object[] values = getEntryValues(entry);
+        values[0] = from.toString();
+        values[1] = to.toString();
+
+        if(entry.getDescription().length()==0) {
+            entry.setDescription(desc.toString());
+        }
+    }
+
+
+    private void processContent(Request request, Entry entry, Object content, StringBuffer desc)  throws Exception {
         if(content instanceof MimeMultipart){
             MimeMultipart multipart= (MimeMultipart) content;
             for(int i=0;i<multipart.getCount();i++) {
@@ -100,8 +104,13 @@ public class MailTypeHandler extends GenericTypeHandler {
                 String disposition = part.getDisposition();
                 if (disposition == null) {
                     Object partContent = part.getContent();
-                    desc.append(partContent);
-                    desc.append("\n");
+                    if(partContent instanceof MimeMultipart){
+                        processContent(request, entry, partContent, desc);
+                    } else {
+                        //                        System.err.println ("part content:" + partContent.getClass().getName());
+                        desc.append(partContent);
+                        desc.append("\n");
+                    }
                     continue;
                 }
                 if (disposition.equals(Part.ATTACHMENT) || 
@@ -127,20 +136,12 @@ public class MailTypeHandler extends GenericTypeHandler {
             //TODO
             Part part= (Part) content;
         } else {
+            //            System.err.println ("xxx content:" + content.getClass().getName());
             String contents = content.toString();
             desc.append(contents);
             desc.append("\n");
         }
-        Object[] values = getEntryValues(entry);
-        values[0] = from.toString();
-        values[1] = to.toString();
-
-        if(entry.getDescription().length()==0) {
-            entry.setDescription(desc.toString());
-        }
     }
-
-
 
 
 @Override
@@ -149,12 +150,13 @@ public class MailTypeHandler extends GenericTypeHandler {
         String from = entry.getValue(0,"");
         String to = entry.getValue(1,"");
         sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("From"),
-                                      StringUtil.join(" ,",
-                                                      StringUtil.split(from,"\n", true, true))));
-        sb.append(HtmlUtils.formEntry(msgLabel("To"),
-                                      StringUtil.join(" ,",
-                                                      StringUtil.split(to,"\n", true, true))));
+        from  = from.replace("<","&lt;");
+        from  = from.replace(">","&gt;");
+        to  = to.replace("<","&lt;");
+        to  = to.replace(">","&gt;");
+        sb.append(HtmlUtils.formEntry(msgLabel("From"), from));
+        sb.append(HtmlUtils.formEntry(msgLabel("To"), to));
+
 
 
         sb.append(HtmlUtils.formEntry(msgLabel("Date"),
