@@ -60,6 +60,8 @@ public class MailTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
+
+    @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
         throws Exception {
@@ -142,44 +144,40 @@ public class MailTypeHandler extends GenericTypeHandler {
 
 
 
-    public static void main(String[]args) throws Exception {
-        for(String arg: args) {
-            System.err.println("file:" + arg);
-            MimeMessage message  = new MimeMessage(null, new FileInputStream(arg));
+@Override
+    public Result getHtmlDisplay(Request request, Entry entry) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        String from = entry.getValue(0,"");
+        String to = entry.getValue(1,"");
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(msgLabel("From"),
+                                      StringUtil.join(" ,",
+                                                      StringUtil.split(from,"\n", true, true))));
+        sb.append(HtmlUtils.formEntry(msgLabel("To"),
+                                      StringUtil.join(" ,",
+                                                      StringUtil.split(to,"\n", true, true))));
 
-            System.err.println("Subject:" + message.getSubject());
-            for(Address address: message.getFrom()) {
-                System.err.println("from:"+address);
-            }
-            for(Address address: message.getAllRecipients()) {
-                System.err.println("to:"+address);
-            }
-            Object content = message.getContent();
-            if(content instanceof MimeMultipart){
-                MimeMultipart multipart= (MimeMultipart) content;
-                for(int i=0;i<multipart.getCount();i++) {
-                    MimeBodyPart part = (MimeBodyPart)multipart.getBodyPart(i);
-                    String disposition = part.getDisposition();
 
-                    if (disposition == null) {
-                        System.err.println(disposition);
-                        Object partContent = part.getContent();
-                        System.err.println("******\nbody:\n" + partContent);
-                        continue;
-                    }
-                    if (disposition.equals(Part.ATTACHMENT) || 
-                        disposition.equals(Part.INLINE)) {
-                        System.err.println("attachment:" +part.getFileName());
-                    }
-                }
-            } else if(content instanceof Part) {
-                Part part= (Part) content;
-            } else {
-                String contents = content.toString();
-                System.err.println("******\nbody(2):");
-                System.err.println(contents);
-            }
+        sb.append(HtmlUtils.formEntry(msgLabel("Date"),
+                                      getRepository().formatDate(request, new Date(entry.getStartDate()),null)));
+        StringBuffer attachmentsSB = new StringBuffer();
+        getMetadataManager().decorateEntry(request, entry, attachmentsSB, false);
+
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.hr());
+        String desc = entry.getDescription();
+        desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
+        sb.append(HtmlUtils.div(desc,HtmlUtils.cssClass("mail-body")));
+        if(attachmentsSB.length()>0) {
+            sb.append(HtmlUtils.hr());
+            sb.append(HtmlUtils.makeShowHideBlock(msg("Attachments"),
+                                                  "<div class=\"description\">" + attachmentsSB
+                                                  + "</div>", false));
         }
+
+
+        return new Result(msg("Email Message"), sb);
     }
+
 
 }
