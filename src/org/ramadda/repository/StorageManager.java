@@ -289,13 +289,13 @@ public class StorageManager extends RepositoryManager {
             } else {}
         }
         repositoryDir = new File(repositoryDirProperty);
-        System.err.println("RAMADDA: home directory: " + repositoryDir);
+        System.out.println("RAMADDA: home directory: " + repositoryDir);
         if ( !repositoryDir.exists()) {
             IOUtil.makeDirRecursive(repositoryDir);
         }
 
         if ( !repositoryDir.exists()) {
-            System.err.println(
+            System.out.println(
                 "RAMADDA: error: home directory does not exist");
 
             throw new IllegalStateException(
@@ -303,7 +303,7 @@ public class StorageManager extends RepositoryManager {
         }
 
         if ( !repositoryDir.canWrite()) {
-            System.err.println(
+            System.out.println(
                 "RAMADDA: error: home directory is not writable");
 
             throw new IllegalStateException(
@@ -662,19 +662,19 @@ public class StorageManager extends RepositoryManager {
             }
             File tmpLogDir =  getFileFromProperty(PROP_LOGDIR);
             if (getRepository().isReadOnly()) {
-                System.err.println("RAMADDA: skipping log4j");
+                System.out.println("RAMADDA: skipping log4j");
                 logDir = tmpLogDir;
                 return logDir;
             }
 
-            System.err.println ("RAMADDA: log directory:" + tmpLogDir);
+            System.out.println ("RAMADDA: log directory:" + tmpLogDir);
 
             File log4JFile = new File(tmpLogDir + "/" + "log4j.properties");
             //For now always write out the log from the jar
-            //            System.err.println("RAMADDA: log4j file=" + log4JFile);
+            //            System.out.println("RAMADDA: log4j file=" + log4JFile);
             if (true || !log4JFile.exists()) {
                 try {
-                    System.err.println ("RAMADDA: writing out log4j.properties:" + log4JFile);
+                    System.out.println ("RAMADDA: writing out log4j.properties:" + log4JFile);
                     String c =
                         IOUtil.readContents(
                                             "/org/ramadda/repository/resources/log4j.properties",
@@ -682,7 +682,7 @@ public class StorageManager extends RepositoryManager {
                     String logDirPath = tmpLogDir.toString();
                     //Replace for windows
                     logDirPath = logDirPath.replace("\\","/");
-                    System.err.println("RAMADDA: log directory path:" + logDirPath);
+                    System.out.println("RAMADDA: log directory path:" + logDirPath);
                     c = c.replace("${ramadda.logdir}", logDirPath);
                     c = c.replace("${file.separator}", File.separator);
                     IOUtil.writeFile(log4JFile, c);
@@ -694,7 +694,7 @@ public class StorageManager extends RepositoryManager {
             try {
                 //                System.err.println("RAMADDA: turning on log4j.debug");
                 //                System.setProperty("log4j.debug","");
-                System.err.println(
+                System.out.println(
                                    "RAMADDA: Configuring log4j with properties:" + log4JFile + " (this may print out a stack trace)");
                 org.apache.log4j.PropertyConfigurator.configure(
                                                                 log4JFile.toString());
@@ -774,7 +774,7 @@ public class StorageManager extends RepositoryManager {
             if (filesToScour.size() > 0) {
                 logInfo("StorageManager: scouring " + filesToScour.size()
                         + " files from:" + tmpDir.getDir().getName());
-                System.err.println("StorageManager: scouring "
+                System.out.println("StorageManager: scouring "
                                    + filesToScour.size() + " files from:"
                                    + tmpDir);
             }
