@@ -42,9 +42,6 @@
       <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
 <!-- build wms plugin to get it into geoplugins -->
       <ant antfile="${src_dir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
-      <zip destfile="${dist_dir}/geodataplugins.zip">
-          <zipfileset dir="${dist_dir}/plugins" includes="*"/>
-      </zip>
       <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
       <antcall target="allplugins.zip"/>
    </target>
