@@ -24,12 +24,13 @@ JAVA_PERMGEN=256m
 
 ##See if there is one in the release dir
 RAMADDA_ENV_FILE=${RAMADDA_DIR}/ramaddaenv.sh
-if test  ${RAMADDA_ENV_FILE} ; then 
+if test -e  ${RAMADDA_ENV_FILE} ; then 
     . ${RAMADDA_ENV_FILE}
 fi
 
 ##See if there is one in the cwd
-if test  ramaddaenv.sh ; then 
+if test  -e ramaddaenv.sh ; then 
+   echo "env exists"
     . ramaddaenv.sh
 fi
 
