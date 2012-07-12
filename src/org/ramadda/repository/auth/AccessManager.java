@@ -105,6 +105,8 @@ public class AccessManager extends RepositoryManager {
     private TTLCache<String, Object[]> recentPermissions= new TTLCache<String,Object[]>(5*60*1000);
 
 
+    public static final String PROP_STOPATFIRSTROLE = "ramadda.auth.stopatfirstrole";
+
 
     /**
      * _more_
@@ -402,6 +404,7 @@ public class AccessManager extends RepositoryManager {
                                      String action, User user,
                                      String requestIp)
             throws Exception {
+        boolean stop = getProperty(PROP_STOPATFIRSTROLE,true);
         //System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry);
         while (entry != null) {
             boolean hadAccessGrant = false;
@@ -455,8 +458,10 @@ public class AccessManager extends RepositoryManager {
                 }
                 //If we had an access grant here (i.e., a non negated role)
                 //and the user did not fall under that role then block access
-                if(hadAccessGrant) {
-                    return false;
+                if(stop) {
+                    if(hadAccessGrant) {
+                        return false;
+                    }
                 }
             }
             //LOOK: make sure we pass in false here which says do not check for access control
