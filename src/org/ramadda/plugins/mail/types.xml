@@ -3,6 +3,7 @@
   <type name="mail_message"  
         description="Mail Message" 
         handler="org.ramadda.plugins.mail.MailTypeHandler" 
+        foruser="false"
         category="Information" 
         pattern=".*\.eml$">
      <property name="icon" value="/mail/email.png"/>

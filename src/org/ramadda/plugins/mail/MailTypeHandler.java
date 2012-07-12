@@ -107,7 +107,6 @@ public class MailTypeHandler extends GenericTypeHandler {
                 if (disposition.equals(Part.ATTACHMENT) || 
                         disposition.equals(Part.INLINE)) {
                     if(part.getFileName()!=null) {
-                        System.err.println("attachment:" +part.getFileName());
                         InputStream inputStream = part.getInputStream();
                         File f = getStorageManager().getTmpFile(request, part.getFileName());
                         OutputStream outputStream = getStorageManager().getFileOutputStream(f);
