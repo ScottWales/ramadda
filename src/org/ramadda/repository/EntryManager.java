@@ -1500,7 +1500,7 @@ public class EntryManager extends RepositoryManager {
                     String shortName = newFile.getName();
                     for (TypeHandler otherTypeHandler :
                              getRepository().getTypeHandlers()) {
-                        if (otherTypeHandler.canHandleResource(theResource, shortName)) {
+                        if (otherTypeHandler.canHandleResource(theResource.toLowerCase(), shortName.toLowerCase())) {
                             typeHandlerToUse = otherTypeHandler;
                             break;
                         }
