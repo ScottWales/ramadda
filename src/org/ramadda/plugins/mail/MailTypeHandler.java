@@ -107,9 +107,13 @@ public class MailTypeHandler extends GenericTypeHandler {
                     if(partContent instanceof MimeMultipart){
                         processContent(request, entry, partContent, desc);
                     } else {
-                        //                        System.err.println ("part content:" + partContent.getClass().getName());
-                        desc.append(partContent);
-                        desc.append("\n");
+                        String contentType = part.getContentType();
+                        //Only ingest the text
+                        if(contentType.indexOf("text/plain")>=0) {
+                            //                        System.err.println ("part content:" + partContent.getClass().getName());
+                            desc.append(partContent);
+                            desc.append("\n");
+                        }
                     }
                     continue;
                 }
