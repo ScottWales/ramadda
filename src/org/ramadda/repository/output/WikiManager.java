@@ -579,6 +579,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     }
                 }
 
+
                 if (theEntry == null) {
                     theEntry = getEntryManager().getEntry(request, entryId);
                 }
@@ -1651,6 +1652,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         boolean doAssociations = Misc.getProperty(props, ATTR_ASSOCIATIONS,
                                      false);
 
+
+
+
         if (doAssociations) {
             List<Association> associations =
                 getRepository().getAssociationManager().getAssociations(
@@ -1798,6 +1802,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 children.add(0, firstEntry);
             }
         }
+
+        String name = Misc.getProperty(props, ATTR_NAME, (String) null);
+        String pattern = name==null?null:getPattern(name);
+        if(name!=null) {
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : children) {
+                if(entryMatches(child, pattern, name)) {
+                    tmp.add(child);
+                }
+            }
+            children = tmp;
+        }
+
 
         int count = Misc.getProperty(props, ATTR_COUNT, -1);
         if (count > 0) {
@@ -2120,13 +2137,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public Entry findWikiEntry(Request request, WikiUtil wikiUtil,
                                String name, Entry parent)
             throws Exception {
-        name = name.trim();
         Entry theEntry = null;
         if ((parent != null  /* top group */
                 ) && parent.isGroup()) {
+            String pattern= getPattern(name);
             for (Entry child :
                     getEntryManager().getChildren(request, (Entry) parent)) {
-                if (child.getName().trim().equalsIgnoreCase(name)) {
+                if(entryMatches(child, pattern, name)) {
                     return child;
                 }
             }
@@ -2140,7 +2157,36 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     }
 
 
+    private boolean entryMatches(Entry child, String pattern, String name) {
+        String entryName = child.getName().trim().toLowerCase();
+        if(pattern!=null) {
+            if(entryName.matches(pattern)) {
+                return true;
+            }
+            String path  = child.getResource().getPath();
+            if(path!=null) {
+                path =path.toLowerCase();
+                if(path.matches(pattern)) {
+                    return true;
+                }
+            }
+        } else if (name.startsWith("type:")) {
+            if(child.getTypeHandler().isType(name.substring("type:".length()))) {
+                return true;
+            }
+        } else if (entryName.equalsIgnoreCase(name)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    private String getPattern(String name) {
+        return  (name.indexOf("*")>=0? StringUtil.wildcardToRegexp(name):null);
+    }
+
     /**
+
      * Make the wiki edit bar
      *
      * @param request The request
