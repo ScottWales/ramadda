@@ -532,6 +532,15 @@ public class User {
         if (role.equals(UserManager.ROLE_ANY)) {
             return true;
         }
+        if (role.equals(UserManager.ROLE_USER)) {
+            return !getAnonymous();
+        }
+        if (role.equals(UserManager.ROLE_ANONYMOUS)) {
+            return getAnonymous();
+        }
+        if (role.equals(UserManager.ROLE_GUEST)) {
+            return getIsGuest();
+        }
         if (role.equals("user:" + getId())) {
             return true;
         }

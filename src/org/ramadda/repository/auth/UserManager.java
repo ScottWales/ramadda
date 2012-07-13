@@ -81,6 +81,10 @@ public class UserManager extends RepositoryManager {
     /** role */
     public static final String ROLE_NONE = "none";
 
+    public static final String ROLE_USER = "user";
+    public static final String ROLE_ANONYMOUS = "anonymous";
+    public static final String ROLE_GUEST = "guest";
+
 
     /** _more_ */
     public static final String PROP_LOGIN_ALLOWEDIPS =
@@ -2796,8 +2800,12 @@ public class UserManager extends RepositoryManager {
                 roles.addAll(authenticatorRoles);
             }
         }
-
+        roles.add(0, ROLE_GUEST);
+        roles.add(0, ROLE_ANONYMOUS);
+        roles.add(0, ROLE_NONE);
         roles.add(0, ROLE_ANY);
+        roles.add(0, ROLE_USER);
+
         return roles;
     }
 

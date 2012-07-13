@@ -869,7 +869,7 @@ public class AccessManager extends RepositoryManager {
                                 + msg("one per line") + ")"));
         sb.append(HtmlUtils.cols(HtmlUtils.space(5)));
         sb.append("<td rowspan=6><b>" + msg("All Roles")
-                  + "</b><i><br>user:&lt;userid&gt;<br>none<br>");
+                  + "</b><i><br>user:&lt;userid&gt;<br>");
         sb.append(StringUtil.join("<br>", getUserManager().getRoles()));
         sb.append("</i></td>");
 
