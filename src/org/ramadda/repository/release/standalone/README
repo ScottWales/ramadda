@@ -96,12 +96,12 @@ Running in the background
 ###################################################################
 If you want to run ramadda in the background then do:
 
-   nohup sh runramadda.sh &
+   nohup sh nohupramadda.sh &
 
-the runramadda.sh script just runs ramadda.sh but redirects stdout and
-stderr to ramadda.out and ramadda.err files
+the nohupramadda.sh script just runs ramadda.sh but redirects stdout and
+stderr to a ramadda.out.
 
-Note: You should also add the runramadda.sh call to any server initialization
+Note: You should also add the nohupramadda.sh call to any server initialization
 scripts if you want to have ramadda run on machine reboot
 
 
