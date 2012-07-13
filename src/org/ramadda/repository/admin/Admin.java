@@ -2046,6 +2046,13 @@ public class Admin extends RepositoryManager {
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
+        } else if(request.defined(ACTION_SHUTDOWN)) {
+            if(getRepository().getShutdownEnabled()) {
+                if(request.get(ARG_SHUTDOWN_CONFIRM,false)) {
+                    getRepository().shutdown();
+                    System.exit(0);
+                }
+            }
         }
         String status = cleanupStatus.toString();
         if (runningCleanup) {
@@ -2072,6 +2079,19 @@ public class Admin extends RepositoryManager {
                 HtmlUtils.submit(
                     msg("Reinitialize Database Connection"), ACTION_NEWDB));
             */
+
+            if(getRepository().getShutdownEnabled()) {
+                sb.append("<p>");
+                sb.append(msg("Shutdown the server"));
+                sb.append("<br>");
+                sb.append(HtmlUtils.submit(msg("Shutdown server"), ACTION_SHUTDOWN));
+                sb.append(HtmlUtils.space(2));
+                sb.append(HtmlUtils.checkbox(ARG_SHUTDOWN_CONFIRM,"true",false));
+                sb.append(HtmlUtils.space(1));
+                sb.append(msg("Yes, I really want to shutdown the server"));
+            }
+
+            /*
             sb.append("<p>");
             sb.append(
                 msg(
@@ -2079,7 +2099,7 @@ public class Admin extends RepositoryManager {
             sb.append("<p>");
             sb.append(HtmlUtils.submit(msg("Export the database"),
                                       ACTION_DUMPDB));
-
+            */
         }
         sb.append("</form>");
         if (status.length() > 0) {

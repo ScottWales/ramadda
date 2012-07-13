@@ -1542,6 +1542,8 @@ public interface Constants {
     public static final String PROP_ADMIN_INCLUDESQL =
         "ramadda.admin.includesql";
 
+    public static final String ARG_SHUTDOWN_CONFIRM = "shutdown.confirm";
+
     /** _more_ */
     public static final String PROP_REGISTRY_DEFAULTSERVER =
         "ramadda.registry.defaultserver";
@@ -1843,6 +1845,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String ACTION_ADD = "action.add";
+
+    public static final String ACTION_SHUTDOWN = "action.shutdown";
 
     /** _more_ */
     public static final String ACTION_CLEAR = "action.clear";

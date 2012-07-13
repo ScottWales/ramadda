@@ -706,6 +706,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         shutdown();
     }
 
+    private boolean shutdownEnabled = false;
+
+    public void setShutdownEnabled(boolean v) {
+        shutdownEnabled = true;
+    } 
+    public boolean getShutdownEnabled() {
+        return shutdownEnabled;
+    }
+
     /**
      * _more_
      */

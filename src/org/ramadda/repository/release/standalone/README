@@ -78,11 +78,15 @@ http://ramadda.org/repository/userguide/database.html
 ###################################################################
 Shutting down RAMADDA
 ###################################################################
-Right now there isn't a clean way to shutdown RAMADDA. What I do is:
-    
+To cleanly shutdown RAMADDA go to the Admin->Maintenance page. There should be a
+"Shutdown server" with a confirmation checkbox. When you do this RAMADDA will exit 
+shutdown and exit the Java JVM.
+
+Another way is to just kill the process.
+You can do:    
     ps -eaf | grep java
 
-This lists out the RAMADDA Java process. Then do:
+to get a listing of the processes running Java Then do:
 
     kill -9 <ramadda pid>
 
