@@ -1,5 +1,7 @@
 #!/bin/sh
 
+CWD=`pwd`
+
 RAMADDA_DIR=`dirname $0`
 
 #RAMADDA home directory
@@ -29,9 +31,8 @@ if test -e  ${RAMADDA_ENV_FILE} ; then
 fi
 
 ##See if there is one in the cwd
-if test  -e ramaddaenv.sh ; then 
-   echo "env exists"
-    . ramaddaenv.sh
+if test  -e ${CWD}/ramaddaenv.sh ; then 
+    . ${CWD}/ramaddaenv.sh
 fi
 
 
