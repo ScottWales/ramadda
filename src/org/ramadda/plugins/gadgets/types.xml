@@ -1,18 +1,18 @@
 <types>
 
-  <type name="time_countdown"  description="Countdown" handler="org.ramadda.plugins.time.CountdownTypeHandler" category="Information">
-     <property name="icon" value="/time/hourglass.png"/>
+  <type name="gadget_countdown"  description="Countdown" handler="org.ramadda.plugins.gadget.CountdownTypeHandler" category="Information">
+     <property name="icon" value="/gadget/hourglass.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.todate.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <column name="orientation" type="enumeration" values="horizontal,vertical" label="Orientation"  default="horizontal" showinhtml="false"/>
-     <column name="howmany" type="enumeration" values="file:/org/ramadda/plugins/time/howmany.txt" label="Show"  default="4" showinhtml="false"/>
+     <column name="howmany" type="enumeration" values="file:/org/ramadda/plugins/gadget/howmany.txt" label="Show"  default="4" showinhtml="false"/>
 </type>
 
 
-  <type name="time_clock"  description="Clock" handler="org.ramadda.plugins.time.ClockTypeHandler" category="Information">
-     <property name="icon" value="/time/clock.png"/>
+  <type name="gadget_clock"  description="Clock" handler="org.ramadda.plugins.gadget.ClockTypeHandler" category="Information">
+     <property name="icon" value="/gadget/clock.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>

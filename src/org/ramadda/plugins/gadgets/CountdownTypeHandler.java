@@ -18,7 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.plugins.time;
+package org.ramadda.plugins.gadget;
 
 
 import org.ramadda.repository.*;
@@ -76,7 +76,7 @@ public class CountdownTypeHandler extends GenericTypeHandler {
             throws Exception {
         if(countdownHtml==null) {
             countdownHtml = getRepository().getResource(
-                                                        "/org/ramadda/plugins/time/countdown.html");
+                                                        "/org/ramadda/plugins/gadget/countdown.html");
         }
         String orient = entry.getValue(0,"");
         String howMany = entry.getValue(1,"");
