@@ -40,7 +40,7 @@ import java.util.List;
  *
  *
  */
-public class CountdownTypeHandler extends GenericTypeHandler {
+public class ClockTypeHandler extends GenericTypeHandler {
 
 
     /**
@@ -51,13 +51,11 @@ public class CountdownTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public CountdownTypeHandler(Repository repository, Element entryNode)
+    public ClockTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    private int countdownCnt =0;
-    private String countdownHtml;
 
     /**
      * _more_
@@ -74,25 +72,11 @@ public class CountdownTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        if(countdownHtml==null) {
-            countdownHtml = getRepository().getResource(
-                                                        "/org/ramadda/plugins/time/countdown.html");
-        }
-        String orient = entry.getValue(0,"");
-        String howMany = entry.getValue(1,"");
-        if(howMany.length()==0) howMany = "4";
-        StringBuffer sb = new StringBuffer(countdownHtml);
-        sb.append("<table><tr><td><center>");
-        sb.append(getRepository().formatDate(request,entry.getStartDate(),
-                                             getEntryManager().getTimezone(entry)));
-        Date to  = new Date(entry.getStartDate());
-        String id = "countdownid_" + (countdownCnt++);
-        //        sb.append(HtmlUtils.cssBlock(".countdown-clock {font-size: 150%;}\n.countdown-number {color:#A94DEA;\n.countdown-label {color:#000;}\n"));
-        String inner = HtmlUtils.div("", HtmlUtils.id(id)+HtmlUtils.cssClass("countdown-clock"));
-        sb.append("<table><td><td>" +HtmlUtils.div(inner,HtmlUtils.cssClass("countdown"))+"</td></tr></table>");
-        sb.append(HtmlUtils.script("$(document).ready(function() {countdownStart(" + HtmlUtils.squote(entry.getName())+","+HtmlUtils.squote(id)+"," + (to.getTime()/1000)+"," + HtmlUtils.squote(orient) +"," +howMany +");});\n"));
-        sb.append("</center></td></tr></table>");
-        return new Result("Countdown", sb);
+        //        String orient = entry.getValue(0,"");
+        StringBuffer sb = new StringBuffer();
+        String title =entry.getName();
+        sb.append("<script src=\"//www.gmodules.com/ig/ifr?url=http://www.gstatic.com/ig/modules/datetime_v3/datetime_v3.xml&amp;up_color=grey&amp;up_dateFormat=wmd&amp;up_firstDay=0&amp;up_clocks=%5B%5D&amp;up_mainClock=&amp;up_mainClockTimeZoneOffset=&amp;up_mainClockDSTOffset=&amp;up_24hourClock=true&amp;up_showWorldClocks=true&amp;up_useServerTime=false&amp;synd=open&amp;w=320&amp;h=160&amp;" + HtmlUtils.arg("title", title,true)  +"&amp;lang=en&amp;country=ALL&amp;border=http%3A%2F%2Fwww.gmodules.com%2Fig%2Fimages%2F&amp;output=js\"></script>");
+        return new Result("Clock", sb);
     }
 
 
