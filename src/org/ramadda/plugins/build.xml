@@ -39,6 +39,7 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/gdata/build.xml" inheritAll="false"/>
 -->
       <ant antfile="${src_dir}/org/ramadda/plugins/glossary/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/incident/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/multisearch/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/notes/build.xml" inheritAll="false"/>

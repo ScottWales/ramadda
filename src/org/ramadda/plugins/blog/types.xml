@@ -11,7 +11,7 @@
 
 
 
-  <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.plugins.blog.BlogEntryTypeHandler" category="Collaboration">
+  <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.plugins.blog.BlogEntryTypeHandler" category="Collaboration" foruser="false">
      <property name="icon" value="/blog/blog_icon.png"/>
 
      <property name="form.name.label" value="Subject"/>

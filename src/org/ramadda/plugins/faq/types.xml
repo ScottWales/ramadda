@@ -10,7 +10,7 @@
 </type>
 
 
-  <type name="faqentry"  description="Faq Entry" handler="org.ramadda.plugins.faq.FaqEntryTypeHandler" category="Information">
+  <type name="faqentry"  description="Faq Entry" handler="org.ramadda.plugins.faq.FaqEntryTypeHandler" category="Information" foruser="false">
      <property name="icon" value="/faq/question-mark.jpg"/>
      <property name="form.name.label" value="Question"/>
      <property name="form.description.label" value="Answer"/>
