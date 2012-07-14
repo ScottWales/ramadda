@@ -18,7 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.plugins.countdown;
+package org.ramadda.plugins.time;
 
 
 import org.ramadda.repository.*;
