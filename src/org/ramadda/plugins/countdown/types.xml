@@ -1,0 +1,16 @@
+<types>
+
+  <type name="countdown"  description="Countdown" handler="org.ramadda.plugins.countdown.CountdownTypeHandler" category="Information">
+     <property name="icon" value="/countdown/clock.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="orientation" type="enumeration" values="horizontal,vertical" label="Orientation"  default="horizontal" showinhtml="false"/>
+     <column name="howmany" type="enumeration" values="file:/org/ramadda/plugins/countdown/howmany.txt" label="Show"  default="4" showinhtml="false"/>
+</type>
+
+
+
+
+</types>
