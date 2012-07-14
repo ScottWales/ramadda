@@ -1,8 +1,19 @@
 <style type="text/css">
-.countdown {border:1px #000 solid; padding:2px;}
-.countdown-clock {font-size: 150%;}
-.countdown-number {color:#041593;}
-.countdown-label {color:#000;padding:3px;}
+.countdown {
+   border:1px #999 solid; 
+   padding:2px;
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+}
+.countdown-clock {}
+.countdown-number {font-size: 200%;color:#041593;color:#1205BF;}
+.countdown-label {   font-weight:bold;color:#000;padding:3px;}
+
 </style>
 
 <script>
