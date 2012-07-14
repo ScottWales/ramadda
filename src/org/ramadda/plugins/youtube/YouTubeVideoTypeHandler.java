@@ -30,8 +30,10 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.xml.XmlUtil;
+
 import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.Misc;
 
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,12 @@ import java.util.List;
  *
  */
 public class YouTubeVideoTypeHandler extends GenericTypeHandler {
+
+    public static final int IDX_WIDTH=0;
+    public static final int IDX_HEIGHT=1;
+    public static final int IDX_START=2;
+    public static final int IDX_END = 3;
+    public static final int IDX_DISPLAY=4;
 
     private int idCnt = 0;
 
@@ -78,6 +86,9 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
+        boolean display = Misc.equals("true", entry.getValue(IDX_DISPLAY, "true"));
+        if(!display) return null;
+
         StringBuffer sb = new StringBuffer();
         String url = entry.getResource().getPath();
         String id = StringUtil.findPattern(url,"v=([^&]+)&");
@@ -90,10 +101,11 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         }
 
 
-        String width = entry.getValue(0,"640");
-        String height = entry.getValue(1,"390");
-        double start = entry.getValue(2, 0.0);
-        double end = entry.getValue(3, -1);
+
+        String width = entry.getValue(IDX_WIDTH,"640");
+        String height = entry.getValue(IDX_HEIGHT,"390");
+        double start = entry.getValue(IDX_START, 0.0);
+        double end = entry.getValue(IDX_END, -1);
         sb.append("\n");
         sb.append("<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
         sb.append(XmlUtil.attr("width",width));
