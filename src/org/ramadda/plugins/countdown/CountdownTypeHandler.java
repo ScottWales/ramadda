@@ -57,6 +57,7 @@ public class CountdownTypeHandler extends GenericTypeHandler {
     }
 
     private int countdownCnt =0;
+    private String countdownHtml;
 
     /**
      * _more_
@@ -73,18 +74,24 @@ public class CountdownTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
+        if(countdownHtml==null) {
+            countdownHtml = getRepository().getResource(
+                                                        "/org/ramadda/plugins/countdown/countdown.html");
+        }
         String orient = entry.getValue(0,"");
         String howMany = entry.getValue(1,"");
         if(howMany.length()==0) howMany = "4";
-        StringBuffer sb = new StringBuffer();
-        Date now = new Date();
+        StringBuffer sb = new StringBuffer(countdownHtml);
+        sb.append("<table><tr><td><center>");
+        sb.append(getRepository().formatDate(request,entry.getStartDate(),
+                                             getEntryManager().getTimezone(entry)));
         Date to  = new Date(entry.getStartDate());
-        long diff = to.getTime()-now.getTime()/1000;
         String id = "countdownid_" + (countdownCnt++);
         //        sb.append(HtmlUtils.cssBlock(".countdown-clock {font-size: 150%;}\n.countdown-number {color:#A94DEA;\n.countdown-label {color:#000;}\n"));
         String inner = HtmlUtils.div("", HtmlUtils.id(id)+HtmlUtils.cssClass("countdown-clock"));
         sb.append("<table><td><td>" +HtmlUtils.div(inner,HtmlUtils.cssClass("countdown"))+"</td></tr></table>");
         sb.append(HtmlUtils.script("$(document).ready(function() {countdownStart(" + HtmlUtils.squote(entry.getName())+","+HtmlUtils.squote(id)+"," + (to.getTime()/1000)+"," + HtmlUtils.squote(orient) +"," +howMany +");});\n"));
+        sb.append("</center></td></tr></table>");
         return new Result("Countdown", sb);
     }
 

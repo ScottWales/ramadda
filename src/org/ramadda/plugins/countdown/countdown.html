@@ -1,0 +1,56 @@
+<style type="text/css">
+.countdown {border:1px #000 solid; padding:2px;}
+.countdown-clock {font-size: 150%;}
+.countdown-number {color:#041593;}
+.countdown-label {color:#000;padding:3px;}
+</style>
+
+<script>
+
+function countdownStart(name, id, base, orientation, howMany) {
+    if(!howMany) howMany=4;
+    var now = parseInt(new Date().getTime()/1000);
+    var diff = base-now;
+    var label = "Time until: ";
+    if(diff<0) {
+        diff = -diff;
+        label="Time since: ";
+    }
+    label+=name;
+    //    var years = parseInt(diff/(3600*24*365));
+    //    diff -= (years*3600*24*365);
+    var days = parseInt(diff/(3600*24));
+    diff -= (days*3600*24);
+    var hours = parseInt(diff/(3600));
+    diff -= (hours*3600);
+    var minutes = parseInt(diff/(60));
+    diff -= (minutes*60);
+    var seconds = diff;
+    var count = 0;
+    var width = "25%";
+    var clock = label+"<br><table><tr valign=bottom>";
+    var cnt=0;
+    if(cnt++<howMany)
+        clock+= countdownEntry(days, "Days", width, orientation);
+    if(cnt++<howMany)
+        clock+= countdownEntry(hours, "Hours", width, orientation);
+    if(cnt++<howMany)
+        clock+= countdownEntry(minutes, "Minutes", width, orientation);
+    if(cnt++<howMany)
+        clock+= countdownEntry(seconds, "Seconds", width, orientation);
+    clock+="</table>";
+    $("#"+id).html(clock);
+    setTimeout("countdownStart('" + name +"','" + id +"'," + base+",'"+orientation+"'," + howMany+")", 1000);
+}
+
+
+function countdownEntry (num, label, width, orientation) {
+    var content = "<div class=countdown-number>" + num+"</div><div class=countdown-label>"+ label+"</div>";
+    var col = "<td align=center width=" + width+">" + content+"</td>";
+    if(orientation =='vertical') {
+        return col+"</tr><tr>";    
+    }
+    return   col;
+}
+
+</script>
