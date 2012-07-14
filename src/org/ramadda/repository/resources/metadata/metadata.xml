@@ -115,6 +115,7 @@
       <element name="apply_to_this" label="Apply to this entry" datatype="boolean" default="true"
                suffix=""/>
       <element name="wikitemplate" label="Wiki Template" datatype="wiki" rows="20"/>
+      <element name="namepattern" label="Name Pattern" datatype="string" suffix="Only apply to entries that match this pattern"/>
     </type>
 
     <type
