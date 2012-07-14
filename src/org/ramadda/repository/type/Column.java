@@ -1560,9 +1560,11 @@ public class Column implements DataTypes, Constants {
         } else if (isDate()) {
             values[offset] = request.getDate(id, new Date());
         } else if (isType(DATATYPE_BOOLEAN)) {
-            String value = request.getString(id, (StringUtil.notEmpty(dflt)
-                    ? dflt
-                    : "true")).toLowerCase();
+            //??? If we have a default value then we can never set this to false
+            //            String value = request.getString(id, (StringUtil.notEmpty(dflt)
+            //                    ? dflt
+            //                    : "true")).toLowerCase();
+            String value = request.getString(id, "false");
             values[offset] = new Boolean(value);
         } else if (isType(DATATYPE_ENUMERATION)) {
             if (request.exists(id)) {
