@@ -196,6 +196,7 @@ public class HtmlUtils {
 
     /** _more_ */
     public static final String TAG_SCRIPT = "script";
+    public static final String TAG_STYLE = "style";
 
     /** _more_ */
     public static final String TAG_SPAN = "span";
@@ -2954,6 +2955,10 @@ public class HtmlUtils {
                          "text/css"));
     }
 
+
+    public static String cssBlock(String css) {
+        return tag(TAG_STYLE, "", css);
+    }
 
     /** _more_ */
     static int tabCnt = 0;
