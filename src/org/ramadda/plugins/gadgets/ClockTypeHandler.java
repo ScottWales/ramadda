@@ -30,7 +30,10 @@ import org.w3c.dom.*;
 import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
+
+
 import java.util.ArrayList;
+import java.util.TimeZone;
 import java.util.Date;
 
 import java.util.List;
@@ -73,9 +76,16 @@ public class ClockTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         //        String orient = entry.getValue(0,"");
+        String timezone = entry.getValue(0,"");
+        int timezoneOffset = 0;
+        if(timezone.length()>0) {
+            TimeZone t = TimeZone.getTimeZone(timezone);
+            timezoneOffset = t.getOffset(new Date().getTime())/1000/3600;
+            System.err.println ("offset:" + timezoneOffset);
+        }
         StringBuffer sb = new StringBuffer();
         String title =entry.getName();
-        sb.append("<script src=\"//www.gmodules.com/ig/ifr?url=http://www.gstatic.com/ig/modules/datetime_v3/datetime_v3.xml&amp;up_color=grey&amp;up_dateFormat=wmd&amp;up_firstDay=0&amp;up_clocks=%5B%5D&amp;up_mainClock=&amp;up_mainClockTimeZoneOffset=&amp;up_mainClockDSTOffset=&amp;up_24hourClock=true&amp;up_showWorldClocks=true&amp;up_useServerTime=false&amp;synd=open&amp;w=320&amp;h=160&amp;" + HtmlUtils.arg("title", title,true)  +"&amp;lang=en&amp;country=ALL&amp;border=http%3A%2F%2Fwww.gmodules.com%2Fig%2Fimages%2F&amp;output=js\"></script>");
+        sb.append("<script src=\"//www.gmodules.com/ig/ifr?url=http://www.gstatic.com/ig/modules/datetime_v3/datetime_v3.xml&amp;up_color=grey&amp;up_dateFormat=wmd&amp;up_firstDay=0&amp;up_clocks=%5B%5D&amp;up_mainClock=&amp;up_mainClockDSTOffset=&amp;up_24hourClock=true&amp;up_showWorldClocks=true&amp;up_useServerTime=false&amp;synd=open&amp;w=320&amp;h=2000&amp;" + HtmlUtils.arg("title", title,true)  +"&amp;up_mainClockTimeZoneOffset="+ timezoneOffset + "&amp;lang=en&amp;country=ALL&amp;border=http%3A%2F%2Fwww.gmodules.com%2Fig%2Fimages%2F&amp;output=js\"></script>");
         return new Result("Clock", sb);
     }
 

@@ -33,6 +33,7 @@
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
+     <column name="timezone" type="string" label="Timezone"  />
 </type>
 
 
