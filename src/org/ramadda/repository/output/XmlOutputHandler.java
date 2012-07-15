@@ -249,10 +249,10 @@ public class XmlOutputHandler extends OutputHandler {
             node.setAttribute(ATTR_WEST, "" + entry.getWest());
         }
 
-        if ( !entry.isGroup() && entry.getResource().isDefined()) {
-            if (forExport) {}
+        if (entry.getResource().isDefined()) {
+            Resource resource = entry.getResource();
+            if (forExport && resource.isFile()) {}
             else {
-                Resource resource = entry.getResource();
                 XmlUtil.setAttributes(node, new String[] { ATTR_RESOURCE,
                         resource.getPath(), ATTR_RESOURCE_TYPE,
                         resource.getType() });
