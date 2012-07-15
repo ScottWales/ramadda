@@ -394,6 +394,7 @@ public class ZipOutputHandler extends OutputHandler {
                             2000);
         }
         for (Entry entry : entries) {
+            if(getEntryManager().isSynthEntry(entry.getId())) continue;
             counter[0]++;
             //We are getting some weirdness in the database connections so lets
             //sleep a bit every 100 entries we see
