@@ -251,8 +251,12 @@ public class XmlOutputHandler extends OutputHandler {
 
         if (entry.getResource().isDefined()) {
             Resource resource = entry.getResource();
-            if (forExport && resource.isFile()) {}
-            else {
+            if (forExport)   {
+                if(resource.isUrl()) {
+                    XmlUtil.setAttributes(node, new String[] { ATTR_URL,
+                                                               resource.getPath()});
+                }
+            } else {
                 XmlUtil.setAttributes(node, new String[] { ATTR_RESOURCE,
                         resource.getPath(), ATTR_RESOURCE_TYPE,
                         resource.getType() });
