@@ -30,21 +30,23 @@ Configuration
 The ramadda.sh script runs the stand-alone version of RAMADDA.
 
 The script uses the environment variables:
-RAMADDA_HOME - The directory RAMADDA stores everything in. 
-Defaults to ~/.ramadda
+RAMADDA_HOME - The directory RAMADDA stores everything in.  Defaults to <user home>/.ramadda
 
 RAMADDA_PORT - The port that RAMADDA runs on. Defaults to 8080
 
 JAVA - Path to the Java executable. Defaults to "java"
 
 If not set by the calling process the script sets the RAMADDA_HOME, 
-RAMADDA_PORT  and JAVA variables then execs the ramaddaenv.sh in the 
-release directory.  Then, if it exists, the script execs ramaddaenv.sh
+RAMADDA_PORT  and JAVA variables to the defaults then runs the ramaddaenv.sh 
+in the release directory.  Then, if it exists, the script execs ramaddaenv.sh
 in the current working directory (where you are running RAMADDA from).
 
 If you want to override the location of the RAMADDA home dir or the port 
-used then  set the environment variables or edit ramaddaenv.sh in place 
-or copy it to where you'll be running RAMADDA from and edit it there
+used then  set the environment variables or copy ramadda1.4/ramaddaenv.sh to where 
+you'll be running RAMADDA from and edit it there. You can also pass in the arguments 
+from the command line, e.g.:
+
+    sh ramadda.sh -port 8081 -Dramadda_home=/some/directory
 
 Note: If you edit ramaddaenv.sh in place you will lose those settings when you 
 reinstall RAMADDA
@@ -84,6 +86,7 @@ shutdown and exit the Java JVM.
 
 Another way is to just kill the process.
 You can do:    
+
     ps -eaf | grep java
 
 to get a listing of the processes running Java Then do:
@@ -94,14 +97,14 @@ to get a listing of the processes running Java Then do:
 ###################################################################
 Running in the background
 ###################################################################
+The backgroundramadda.sh script is used to run RAMADDA in the background.
+It simply redirects the output to a ramadda.out file.
+
 If you want to run ramadda in the background then do:
 
-   nohup sh nohupramadda.sh &
+   nohup sh backgroundramadda.sh &
 
-the nohupramadda.sh script just runs ramadda.sh but redirects stdout and
-stderr to a ramadda.out.
-
-Note: You should also add the nohupramadda.sh call to any server initialization
-scripts if you want to have ramadda run on machine reboot
+Note: You should also add the backgroundramadda.sh call to any server 
+initialization scripts if you want to have ramadda run on machine reboot
 
 
