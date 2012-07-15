@@ -18,7 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.plugins.weather;
+package org.ramadda.plugins.gadgets;
 
 
 import org.ramadda.repository.*;
@@ -77,7 +77,7 @@ public class WeatherTypeHandler extends GenericTypeHandler {
         String       orientation = entry.getValue(3, "horizontal");
 
         String template = getRepository().getResource(
-                              "/org/ramadda/plugins/weather/template.html");
+                              "/org/ramadda/plugins/gadgets/weathertemplate.html");
 
         if (orientation.equals("horizontal")) {
             sb.append("<table><tr valign=top>");

@@ -1,5 +1,21 @@
 <types>
 
+  <type name="weather"  description="Weather" handler="org.ramadda.plugins.gadgets.WeatherTypeHandler" category="Gadgets">
+     <property name="icon" value="/gadgets/weather.png"/>
+     <property name="form.description.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="zipcodes" type="string" label="Zip Code"  showinhtml="true" suffix="Please enter your zip code" />
+<!--
+     <column name="orientation" type="enumeration" label="Orientation"  values="vertical,horizontal" default="horizontal" showinhtml="false"/>
+-->
+
+</type>
+
+
+
   <type name="gadgets_countdown"  description="Countdown" handler="org.ramadda.plugins.gadgets.CountdownTypeHandler" category="Gadgets">
      <property name="icon" value="/gadgets/hourglass.png"/>
      <property name="form.area.show" value="false"/>
