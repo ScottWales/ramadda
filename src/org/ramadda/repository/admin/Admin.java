@@ -446,10 +446,10 @@ public class Admin extends RepositoryManager {
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
                             topEntry.getName()));
                     topEntry.setDescription(
-                                            "<wiki>\nWelcome to your RAMADDA server.\n\nNext steps:\n*Join the <a href=\"https://lists.sourceforge.net/lists/listinfo/ramadda-users\">RAMADDA mailing list</a>\n*<a href=\""
+                                            "<wiki>\nWelcome to your RAMADDA server.\n\n===Next steps===\n*Join the <a href=\"https://lists.sourceforge.net/lists/listinfo/ramadda-users\" target=_other>RAMADDA mailing list</a>\n*<a href=\""
                         + getRepository().URL_ENTRY_FORM + "?entryid="
                         + topEntry.getId()
-                        + "\">Edit</a> this page\n\n<p>\n\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
+                        + "\">Edit</a> this page\n*Send any questions or requests to <a href=\"mailto:support@ramadda.org\">support@ramadda.org</a>\n\n<p>\n\n===Content===\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
                     getEntryManager().storeEntry(topEntry);
 
 
@@ -574,6 +574,7 @@ public class Admin extends RepositoryManager {
 
 
 
+            sb.append(HtmlUtils.colspan(msgHeader("Registry"), 2));
             getRegistryManager().addToInstallForm(request, sb);
 
             sb.append(HtmlUtils.formTableClose());

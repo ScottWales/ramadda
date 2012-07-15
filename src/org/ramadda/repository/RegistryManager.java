@@ -313,12 +313,9 @@ public class RegistryManager extends RepositoryManager {
      */
     public void addToInstallForm(Request request, StringBuffer sb)
             throws Exception {
-        if (true) {
-            return;
-        }
         String msg = msgLabel("Servers this server registers with");
         msg = HtmlUtils.space(1)
-              + HtmlUtils.href(getRepository().getUrlBase()
+              + HtmlUtils.href(HELP_ROOT
                               + "/userguide/remoteservers.html", msg("Help"),
                                   HtmlUtils.attr(HtmlUtils.ATTR_TARGET,
                                       "_help"));
@@ -332,7 +329,7 @@ public class RegistryManager extends RepositoryManager {
                         PROP_REGISTRY_SERVERS,
                         getRepository().getProperty(
                             PROP_REGISTRY_DEFAULTSERVER,
-                            "http://motherlode.ucar.edu/repository")), 5,
+                            "http://ramadda.org/repository")), 5,
                                 60)));
     }
 

@@ -90,7 +90,7 @@ public class RepositoryManager implements RepositorySource, Constants,
 
     /** _more_ */
     public static final String HELP_ROOT =
-        "http://facdev.unavco.org/repository";
+        "http://ramadda.org/repository";
 
 
     /** _more_ */
