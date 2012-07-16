@@ -86,7 +86,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        boolean display = Misc.equals("true", entry.getValue(IDX_DISPLAY, "true"));
+        String sdisplay = entry.getValue(IDX_DISPLAY, "true");
+        boolean display = sdisplay.length()==0?true:Misc.equals("true", sdisplay);
         if(!display) return null;
 
         StringBuffer sb = new StringBuffer();
@@ -107,6 +108,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         double start = entry.getValue(IDX_START, 0.0);
         double end = entry.getValue(IDX_END, -1);
         sb.append("\n");
+        sb.append(HtmlUtils.href(url,url));
+        sb.append(HtmlUtils.br());
         sb.append("<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
         sb.append(XmlUtil.attr("width",width));
         sb.append(XmlUtil.attr("height",height));

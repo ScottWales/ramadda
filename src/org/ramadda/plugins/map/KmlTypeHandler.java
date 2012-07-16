@@ -155,10 +155,10 @@ public class KmlTypeHandler extends GenericTypeHandler {
         if(tagName.equals(KmlUtil.TAG_GROUNDOVERLAY)) {
             Element llbox  = XmlUtil.findChild(node, KmlUtil.TAG_LATLONBOX);
             if(llbox!=null) {
-                entry.setNorth(convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_NORTH,null), entry.getNorth()));
-                entry.setWest(convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_WEST,null), entry.getWest()));
-                entry.setSouth(convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_SOUTH,null), entry.getSouth()));
-                entry.setEast(convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_EAST,null), entry.getEast()));
+                setNorth(nwse,convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_NORTH,null),Entry.NONGEO));
+                setWest(nwse, convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_WEST,null),Entry.NONGEO));
+                setSouth(nwse, convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_SOUTH,null),Entry.NONGEO));
+                setEast(nwse,convert(XmlUtil.getGrandChildText(llbox, KmlUtil.TAG_EAST,null),Entry.NONGEO));
             } else {
                 System.err.println("no  latlonbox:" + XmlUtil.toString(node));
             }
@@ -213,7 +213,22 @@ public class KmlTypeHandler extends GenericTypeHandler {
     }
 
 
+    private void setNorth(double[]nwse, double lat) {
+        nwse[0] = nwse[0]==Entry.NONGEO?lat:Math.max(nwse[0],lat);
+    }
 
+    private void setSouth(double[]nwse, double lat) {
+        nwse[2] = nwse[2]==Entry.NONGEO?lat:Math.min(nwse[2],lat);
+    }
+
+
+    private void setWest(double[]nwse, double lon) {
+        nwse[1] = nwse[1]==Entry.NONGEO?lon:Math.min(nwse[1],lon);
+    }
+
+    private void setEast(double[]nwse, double lon) {
+        nwse[3] = nwse[3]==Entry.NONGEO?lon:Math.max(nwse[3],lon);
+    }
 
     /**
      */

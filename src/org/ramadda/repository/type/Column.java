@@ -1295,9 +1295,11 @@ public class Column implements DataTypes, Constants {
             } else {
                 value = Misc.equals(dflt, "true");
             }
-            widget = HtmlUtils.checkbox(id, "true", value);
-            //            widget = HtmlUtils.select(id, Misc.newList("True", "False"),
-            //                                     value);
+            //            widget = HtmlUtils.checkbox(id, "true", value);
+            List<TwoFacedObject> items = new ArrayList<TwoFacedObject>();
+            items.add(new TwoFacedObject("Yes", "true"));
+            items.add(new TwoFacedObject("No", "false"));
+            widget = HtmlUtils.select(id, items, value?"true":"false");
         } else if (isType(DATATYPE_DATETIME)) {
             Date date;
             if (values != null) {
@@ -1560,11 +1562,12 @@ public class Column implements DataTypes, Constants {
         } else if (isDate()) {
             values[offset] = request.getDate(id, new Date());
         } else if (isType(DATATYPE_BOOLEAN)) {
-            //??? If we have a default value then we can never set this to false
-            //            String value = request.getString(id, (StringUtil.notEmpty(dflt)
-            //                    ? dflt
-            //                    : "true")).toLowerCase();
-            String value = request.getString(id, "false");
+            //Note: using the default will not work if we use checkboxes for the widget
+            //For now we are using a yes/no combobox
+            String value = request.getString(id, (StringUtil.notEmpty(dflt)
+                                                  ? dflt
+                                                  : "true")).toLowerCase();
+            //            String value = request.getString(id, "false");
             values[offset] = new Boolean(value);
         } else if (isType(DATATYPE_ENUMERATION)) {
             if (request.exists(id)) {
