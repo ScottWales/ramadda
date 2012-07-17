@@ -46,6 +46,7 @@ import org.ramadda.repository.util.*;
 import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.util.HtmlTemplate;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.PropertyProvider;
 
 import org.ramadda.util.TempDir;
@@ -61,7 +62,6 @@ import ucar.unidata.util.CacheManager;
 
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -119,11 +119,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private static final org.ramadda.util.HttpFormField dummyField1ToForceCompile =
         null;
 
-    /** _more_          */
+    /** _more_ */
     private static final org.ramadda.util.ObjectPool dummyField2ToForceCompile =
         null;
 
-    /** _more_          */
+    /** _more_ */
     private static final org.ramadda.util.EntryGroup dummyField3ToForceCompile =
         null;
 
@@ -657,9 +657,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return HtmlUtils.span(result,
-                             HtmlUtils.cssClass(CSS_CLASS_DATETIME)
-                             + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
-                                             fullDate + extraAlt));
+                              HtmlUtils.cssClass(CSS_CLASS_DATETIME)
+                              + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
+                                  fullDate + extraAlt));
     }
 
 
@@ -706,11 +706,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
         shutdown();
     }
 
+    /** _more_          */
     private boolean shutdownEnabled = false;
 
+    /**
+     * _more_
+     *
+     * @param v _more_
+     */
     public void setShutdownEnabled(boolean v) {
         shutdownEnabled = true;
-    } 
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean getShutdownEnabled() {
         return shutdownEnabled;
     }
@@ -1140,7 +1152,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         HtmlUtils.setBlockHideShowImage(iconUrl(ICON_MINUS),
-                                       iconUrl(ICON_PLUS));
+                                        iconUrl(ICON_PLUS));
         HtmlUtils.setInlineHideShowImage(iconUrl(ICON_MINUS),
         //iconUrl(ICON_ELLIPSIS));
         iconUrl(ICON_PLUS));
@@ -1929,7 +1941,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public  List<String> getListing(String path, Class c) {
+    public List<String> getListing(String path, Class c) {
         List<String> listing = new ArrayList<String>();
         File         f       = new File(path);
         //        getLogManager().logInfoAndPrint("RAMADDA: getListing:" + path);
@@ -1942,7 +1954,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //try it as a java resource
             String contents = null;
             contents = IOUtil.readContents(path + "/files.txt", c,
-                        (String) null);
+                                           (String) null);
             if (contents == null) {
                 contents = IOUtil.readContents(path, c, (String) null);
                 //                getLogManager().logInfoAndPrint("RAMADDA: resourceList (2):" + (contents == null?"NULL":contents.replaceAll("\n"," ")));
@@ -1954,7 +1966,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 List<String> lines = StringUtil.split(contents, "\n", true,
                                          true);
                 for (String file : lines) {
-                    listing.add(path+"/" + file);
+                    listing.add(path + "/" + file);
                 }
             }
         }
@@ -2769,8 +2781,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         */
                         String redirectUrl = RepositoryUtil.encodeBase64(
                                                  request.getUrl().getBytes());
-                        String url = HtmlUtils.url(URL_SSLREDIRECT.toString(),
-                                         ARG_REDIRECT, redirectUrl);
+                        String url =
+                            HtmlUtils.url(URL_SSLREDIRECT.toString(),
+                                          ARG_REDIRECT, redirectUrl);
                         result = new Result(url);
                     } else {
                         result = new Result("Error", sb);
@@ -2786,7 +2799,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if ((request.getUser() != null) && request.getUser().getAdmin()) {
                 sb.append(
                     HtmlUtils.pre(
-                        HtmlUtils.entityEncode(LogUtil.getStackTrace(inner))));
+                        HtmlUtils.entityEncode(
+                            LogUtil.getStackTrace(inner))));
             }
 
             result = new Result(msg("Error"), sb);
@@ -3227,17 +3241,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (alias.endsWith("/")) {
                 alias = alias.substring(0, alias.length() - 1);
             }
-            String childPath=null;
-            List<String> toks = StringUtil.splitUpTo(alias,"/",2);
-            Entry entry = getEntryManager().getEntryFromAlias(request, toks.get(0));
-            if(toks.size()==2) {
-                entry = getEntryManager().findEntryFromName(request, entry.getFullName() +Entry.PATHDELIMITER+ toks.get(1), request.getUser(), false);
+            String       childPath = null;
+            List<String> toks      = StringUtil.splitUpTo(alias, "/", 2);
+            Entry        entry = getEntryManager().getEntryFromAlias(request,
+                              toks.get(0));
+            if (toks.size() == 2) {
+                entry = getEntryManager().findEntryFromName(request,
+                        entry.getFullName() + Entry.PATHDELIMITER
+                        + toks.get(1), request.getUser(), false);
             }
-            if(entry==null) {
+            if (entry == null) {
                 throw new RepositoryUtil.MissingEntryException(
-                                                               "Could not find aliased entry:" + alias);
-                
+                    "Could not find aliased entry:" + alias);
+
             }
+
             return new Result(request.url(URL_ENTRY_SHOW, ARG_ENTRYID,
                                           entry.getId()));
         }
@@ -3782,10 +3800,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public CalendarOutputHandler getCalendarOutputHandler() {
         try {
             return (CalendarOutputHandler) getOutputHandler(
-                                                            CalendarOutputHandler.OUTPUT_CALENDAR);
+                CalendarOutputHandler.OUTPUT_CALENDAR);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -4081,29 +4104,42 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processProxy(Request request) throws Exception {
-        String url = request.getString(ARG_URL,"");
+        String url = request.getString(ARG_URL, "");
         getLogManager().logInfo("RAMADDA: processing proxy request:" + url);
-        if(!url.startsWith("http:") && !url.startsWith("https:")) {
+        if ( !url.startsWith("http:") && !url.startsWith("https:")) {
             throw new IllegalArgumentException("Bad URL:" + url);
         }
         //        System.err.println("url:" + url);
 
         //Check the whitelist
         boolean ok = false;
-        for(String pattern: StringUtil.split(getProperty(PROP_PROXY_WHITELIST,""),",",true,true)) {
+        for (String pattern :
+                StringUtil.split(getProperty(PROP_PROXY_WHITELIST, ""), ",",
+                                 true, true)) {
             //            System.err.println("pattern:" + pattern);
-            if(url.matches(pattern)) {
+            if (url.matches(pattern)) {
                 ok = true;
+
                 break;
             }
         }
-        if(!ok) {
+        if ( !ok) {
             throw new IllegalArgumentException("URL not in whitelist:" + url);
         }
 
         URLConnection connection = new URL(url).openConnection();
         InputStream   is         = connection.getInputStream();
+
         return request.returnStream(is);
     }
 
@@ -4375,20 +4411,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String url = request.url(requestUrl) + arg;
             if (type.endsWith(requestUrl.getPath())) {
                 links.add(HtmlUtils.span(label,
-                                        HtmlUtils.cssClass("subheader-on")));
+                                         HtmlUtils.cssClass("subheader-on")));
             } else {
-                links.add(HtmlUtils.span(HtmlUtils.href(url, label),
-                                        HtmlUtils.cssClass("subheader-off")));
+                links.add(
+                    HtmlUtils.span(
+                        HtmlUtils.href(url, label),
+                        HtmlUtils.cssClass("subheader-off")));
             }
         }
         String header =
             StringUtil.join("<span class=\"subheader-sep\">|</span>", links);
 
         return HtmlUtils.tag(HtmlUtils.TAG_CENTER,
-                            HtmlUtils.cssClass("subheader-container"),
-                            HtmlUtils.tag(HtmlUtils.TAG_SPAN,
-                                         HtmlUtils.cssClass("subheader"),
-                                         header));
+                             HtmlUtils.cssClass("subheader-container"),
+                             HtmlUtils.tag(HtmlUtils.TAG_SPAN,
+                                           HtmlUtils.cssClass("subheader"),
+                                           header));
     }
 
 
@@ -4689,40 +4727,45 @@ public class Repository extends RepositoryBase implements RequestHandler,
         next.add(cal.MONTH, 1);
 
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
-                                HtmlUtils.attrs(HtmlUtils.ATTR_BORDER, "1",
-                                    HtmlUtils.ATTR_CELLSPACING, "0",
-                                    HtmlUtils.ATTR_CELLPADDING, "0")));
+                                 HtmlUtils.attrs(HtmlUtils.ATTR_BORDER, "1",
+                                     HtmlUtils.ATTR_CELLSPACING, "0",
+                                     HtmlUtils.ATTR_CELLPADDING, "0")));
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
-        String   prevUrl  =
-            HtmlUtils.space(1)
-            + HtmlUtils.href(url + "&"
-                            + CalendarOutputHandler.getUrlArgs(prev), "&lt;");
+        String   prevUrl  = HtmlUtils.space(1)
+                         + HtmlUtils.href(
+                             url + "&"
+                             + CalendarOutputHandler.getUrlArgs(
+                                 prev), "&lt;");
         String nextUrl =
-            HtmlUtils.href(url + "&" + CalendarOutputHandler.getUrlArgs(next),
-                          HtmlUtils.ENTITY_GT) + HtmlUtils.space(1);
+            HtmlUtils.href(
+                url + "&" + CalendarOutputHandler.getUrlArgs(next),
+                HtmlUtils.ENTITY_GT) + HtmlUtils.space(1);
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
-                                HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
-                                    HtmlUtils.VALUE_TOP)));
+                                 HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
+                                     HtmlUtils.VALUE_TOP)));
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TD,
-                                HtmlUtils.attrs(HtmlUtils.ATTR_COLSPAN, "7",
-                                    HtmlUtils.ATTR_ALIGN,
-                                    HtmlUtils.VALUE_CENTER,
-                                    HtmlUtils.ATTR_CLASS,
-                                    "calnavmonthheader")));
+                                 HtmlUtils.attrs(HtmlUtils.ATTR_COLSPAN, "7",
+                                     HtmlUtils.ATTR_ALIGN,
+                                     HtmlUtils.VALUE_CENTER,
+                                     HtmlUtils.ATTR_CLASS,
+                                     "calnavmonthheader")));
 
 
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
-                                HtmlUtils.cssClass("calnavtable")
-                                + HtmlUtils.attrs(HtmlUtils.ATTR_CELLSPACING,
-                                    "0", HtmlUtils.ATTR_CELLPADDING, "0",
-                                    HtmlUtils.ATTR_WIDTH, "100%")));
+        sb.append(
+            HtmlUtils.open(
+                HtmlUtils.TAG_TABLE,
+                HtmlUtils.cssClass("calnavtable")
+                + HtmlUtils.attrs(
+                    HtmlUtils.ATTR_CELLSPACING, "0",
+                    HtmlUtils.ATTR_CELLPADDING, "0", HtmlUtils.ATTR_WIDTH,
+                    "100%")));
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
         sb.append(HtmlUtils.col(prevUrl,
-                               HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
-                                   HtmlUtils.ATTR_CLASS,
-                                   "calnavmonthheader")));
+                                HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
+                                    HtmlUtils.ATTR_CLASS,
+                                    "calnavmonthheader")));
         sb.append(
             HtmlUtils.col(
                 DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HtmlUtils.space(1)
@@ -4732,17 +4775,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         sb.append(HtmlUtils.col(nextUrl,
-                               HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
-                                   HtmlUtils.ATTR_CLASS,
-                                   "calnavmonthheader")));
+                                HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
+                                    HtmlUtils.ATTR_CLASS,
+                                    "calnavmonthheader")));
         sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
         sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
         for (int colIdx = 0; colIdx < 7; colIdx++) {
             sb.append(HtmlUtils.col(dayNames[colIdx],
-                                   HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "14%",
-                                       HtmlUtils.ATTR_CLASS,
-                                       "calnavdayheader")));
+                                    HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH,
+                                        "14%", HtmlUtils.ATTR_CLASS,
+                                        "calnavdayheader")));
         }
         sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
         int startDow = cal.get(cal.DAY_OF_WEEK);
@@ -4752,8 +4795,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
-                                    HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN,
-                                        HtmlUtils.VALUE_TOP)));
+                                     HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN,
+                                         HtmlUtils.VALUE_TOP)));
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 int     thisDay    = cal.get(cal.DAY_OF_MONTH);
                 int     thisMonth  = cal.get(cal.MONTH);
@@ -4787,7 +4830,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         "" + thisDay);
                 }
 
-                sb.append(HtmlUtils.col(content, HtmlUtils.cssClass(dayClass)));
+                sb.append(HtmlUtils.col(content,
+                                        HtmlUtils.cssClass(dayClass)));
                 sb.append("\n");
                 cal.add(cal.DAY_OF_MONTH, 1);
             }
@@ -5302,8 +5346,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String getCalendarSelector(String formName, String fieldName) {
         String anchorName = "anchor." + fieldName;
         String divName    = "div." + fieldName;
-        String call       = HtmlUtils.call("selectDate",
-                                    HtmlUtils.comma(HtmlUtils.squote(divName),
+        String call       =
+            HtmlUtils.call("selectDate",
+                           HtmlUtils.comma(HtmlUtils.squote(divName),
         //                              "document.forms['"  + formName + "']." + fieldName, 
         "findFormElement('" + formName + "','" + fieldName
                             + "')", HtmlUtils.squote(anchorName),
@@ -5318,7 +5363,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         .attrs(HtmlUtils.ATTR_NAME, anchorName, HtmlUtils
                             .ATTR_ID, anchorName)) + HtmlUtils
                                 .div("", HtmlUtils
-                                    .attrs(HtmlUtils.ATTR_ID, divName, HtmlUtils
+                                    .attrs(HtmlUtils
+                                        .ATTR_ID, divName, HtmlUtils
                                         .ATTR_STYLE, "position:absolute;visibility:hidden;background-color:white;layer-background-color:white;"));
     }
 
@@ -5356,16 +5402,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     /**
-     * _more_
+     * Make the HTML for a date input widget
      *
      * @param request The request
-     * @param name _more_
-     * @param formName _more_
-     * @param date _more_
-     * @param timezone _more_
-     * @param includeTime _more_
+     * @param name    the name
+     * @param formName  the form name
+     * @param date      the default date
+     * @param timezone  the timezone
+     * @param includeTime  true to include a time box
      *
-     * @return _more_
+     * @return  the widget html
      */
     public String makeDateInput(Request request, String name,
                                 String formName, Date date, String timezone,
@@ -5389,21 +5435,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
         String           js         =
-            "<script>jQuery(function() {$( " + HtmlUtils.squote("#" + inputId)
-            + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false });});</script>";
+            "<script>jQuery(function() {$( "
+            + HtmlUtils.squote("#" + inputId)
+            + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100' });});</script>";
         String extra = "";
         if (includeTime) {
             extra = " T:"
                     + HtmlUtils.input(name + ".time", timeString,
-                                     HtmlUtils.sizeAttr(6)
-                                     + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
-                                         timeHelp));
+                                      HtmlUtils.sizeAttr(6)
+                                      + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
+                                          timeHelp));
         }
 
         return "\n" + js + "\n"
                + HtmlUtils.input(name, dateString,
-                                HtmlUtils.SIZE_10 + HtmlUtils.id(inputId)
-                                + HtmlUtils.title(dateHelp)) + extra;
+                                 HtmlUtils.SIZE_10 + HtmlUtils.id(inputId)
+                                 + HtmlUtils.title(dateHelp)) + extra;
     }
 
 
@@ -5437,12 +5484,35 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    public String makePopupLink(String link, String menuContents, String linkAttributes) {
-        return makePopupLink(link, menuContents, linkAttributes, false, false);
+    /**
+     * _more_
+     *
+     * @param link _more_
+     * @param menuContents _more_
+     * @param linkAttributes _more_
+     *
+     * @return _more_
+     */
+    public String makePopupLink(String link, String menuContents,
+                                String linkAttributes) {
+        return makePopupLink(link, menuContents, linkAttributes, false,
+                             false);
     }
 
-    public String makePopupLink(String link, String menuContents, String linkAttributes,
-                                boolean makeClose, boolean alignLeft) {
+    /**
+     * _more_
+     *
+     * @param link _more_
+     * @param menuContents _more_
+     * @param linkAttributes _more_
+     * @param makeClose _more_
+     * @param alignLeft _more_
+     *
+     * @return _more_
+     */
+    public String makePopupLink(String link, String menuContents,
+                                String linkAttributes, boolean makeClose,
+                                boolean alignLeft) {
         String compId   = "menu_" + HtmlUtils.blockCnt++;
         String linkId   = "menulink_" + HtmlUtils.blockCnt++;
         String contents = makePopupDiv(menuContents, compId, makeClose);
@@ -5452,7 +5522,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 ? "1"
                 : "0") })));
         String href = HtmlUtils.href("javascript:noop();", link,
-                                    onClick + HtmlUtils.id(linkId) + linkAttributes);
+                                     onClick + HtmlUtils.id(linkId)
+                                     + linkAttributes);
 
         return href + contents;
     }
@@ -5481,7 +5552,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 ? "1"
                 : "0") })) + initCall);
         String href = HtmlUtils.href("javascript:noop();", link,
-                                    onClick + HtmlUtils.id(linkId));
+                                     onClick + HtmlUtils.id(linkId));
 
         return href + contents;
     }
@@ -5507,8 +5578,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         contents = cLink + HtmlUtils.br() + contents;
 
         menu.append(HtmlUtils.div(contents,
-                                 HtmlUtils.id(compId)
-                                 + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+                                  HtmlUtils.id(compId)
+                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
 
         return menu.toString();
     }
@@ -5529,15 +5600,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                boolean makeClose) {
         StringBuffer menu = new StringBuffer();
         if (makeClose) {
-            String cLink =
-                HtmlUtils.jsLink(HtmlUtils.onMouseClick("hidePopupObject();"),
-                                HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
+            String cLink = HtmlUtils.jsLink(
+                               HtmlUtils.onMouseClick("hidePopupObject();"),
+                               HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
             contents = cLink + HtmlUtils.br() + contents;
         }
 
         menu.append(HtmlUtils.div(contents,
-                                 HtmlUtils.id(compId)
-                                 + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+                                  HtmlUtils.id(compId)
+                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
 
         return menu.toString();
     }
@@ -5560,8 +5631,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         fb.append(request.form(url));
         fb.append(extra);
         String okButton     = HtmlUtils.submit("OK", okArg);
-        String cancelButton = HtmlUtils.submit("Cancel", Constants.ARG_CANCEL);
-        String buttons      = RepositoryUtil.buttons(okButton, cancelButton);
+        String cancelButton = HtmlUtils.submit("Cancel",
+                                  Constants.ARG_CANCEL);
+        String buttons = RepositoryUtil.buttons(okButton, cancelButton);
         fb.append(buttons);
         fb.append(HtmlUtils.formClose());
 
