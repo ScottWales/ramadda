@@ -1800,7 +1800,6 @@ public class OutputHandler extends RepositoryManager {
     private static int tabCnt = 0;
 
 
-
     /**
      * _more_
      *
@@ -1811,6 +1810,19 @@ public class OutputHandler extends RepositoryManager {
      * @return _more_
      */
     public static String makeTabs(List titles, List tabs, boolean skipEmpty) {
+        return makeTabs(titles, tabs, skipEmpty, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param titles _more_
+     * @param tabs _more_
+     * @param skipEmpty _more_
+     *
+     * @return _more_
+     */
+    public static String makeTabs(List titles, List tabs, boolean skipEmpty, boolean useCookies) {
         StringBuffer tabHtml = new StringBuffer();
         String       tabId   = "tabId" + (tabCnt++);
         tabHtml.append("\n\n");
@@ -1845,7 +1857,9 @@ public class OutputHandler extends RepositoryManager {
         tabHtml.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         tabHtml.append("\n");
         tabHtml.append(HtmlUtils.script("\njQuery(function(){\njQuery('#"
-                                       + tabId + "').tabs();\n});\n"));
+                                       + tabId + "').tabs(" + 
+                (useCookies ? "{cookie: {expires:1}}":"") + 
+                ");\n});\n"));
         tabHtml.append("\n\n");
         return tabHtml.toString();
     }

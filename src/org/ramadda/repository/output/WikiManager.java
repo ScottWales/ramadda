@@ -1055,6 +1055,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean showLink    = Misc.getProperty(props, ATTR_SHOWLINK, true);
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
                                       false);
+            boolean useCookies = Misc.getProperty(props, "cookie", false);
             String linklabel   = Misc.getProperty(props, ATTR_LINKLABEL, "");
             int    width       = Misc.getProperty(props, ATTR_WIDTH, 400);
             int    height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
@@ -1263,7 +1264,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 return sb.toString();
             } else {
-                return OutputHandler.makeTabs(titles, contents, true);
+                return OutputHandler.makeTabs(titles, contents, true, useCookies);
             }
         } else if (include.equals(WIKI_PROP_GRID)) {
             getHtmlOutputHandler().makeGrid(request,
