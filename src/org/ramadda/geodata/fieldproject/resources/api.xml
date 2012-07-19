@@ -20,9 +20,6 @@
 <!-- None of the API entry points defined below require admin privileges -->
       <property name="admin" value="false"/>
 
-<!--The Browse LiDAR search form -->
-      <api request="/fieldproject/addopus"    method="processAddOpus"  name="Add OPUS"/>
-
       <api request="/fieldproject/search"    method="processSearchRequest" toplevel="false" name="Browse Projects"/>
 
 

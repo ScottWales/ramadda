@@ -67,20 +67,5 @@ public class FieldProjectApiHandler extends SpecialSearch implements RequestHand
 
 
 
-    /**
-     * handle the request
-     *
-     * @param request request
-     *
-     * @return result
-     *
-     * @throws Exception on badness
-     */
-    public Result processAddOpus(Request request) throws Exception {
-        GpsOutputHandler gpsOutputHandler =
-            (GpsOutputHandler) getRepository().getOutputHandler(
-                GpsOutputHandler.OUTPUT_GPS_TORINEX);
-        return gpsOutputHandler.processAddOpus(request);
-    }
 
 }

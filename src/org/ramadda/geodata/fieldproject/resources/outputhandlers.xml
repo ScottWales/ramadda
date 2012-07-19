@@ -1,3 +1,2 @@
 <outputhandlers>
-  <outputhandler class="org.ramadda.geodata.fieldproject.GpsOutputHandler" name="GPS"/>
 </outputhandlers>

@@ -46,6 +46,7 @@
       <ant antfile="${srcdir}/org/ramadda/geodata/cdmdata/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/idv/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/fieldproject/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/gps/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/publisher/build.xml" inheritAll="false"/>
     </target>
 

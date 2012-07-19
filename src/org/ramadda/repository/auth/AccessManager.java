@@ -903,10 +903,11 @@ public class AccessManager extends RepositoryManager {
                         HtmlUtils.ATTR_TARGET, "_help")) + HtmlUtils.space(1)
                             + msg(actionName);
 
+            String message = "";
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
                     HtmlUtils.textArea(ARG_ROLES + "."
                                       + Permission.ACTIONS[i], roles, 5,
-                                          20))));
+                                       20), message)));
         }
         sb.append(HtmlUtils.formTableClose());
         //        sb.append("</td><td>&nbsp;&nbsp;&nbsp;</td><td>");
