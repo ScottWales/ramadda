@@ -90,14 +90,17 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
+    /** border attribute */
     public static final String ATTR_BORDER = "border";
+
+    /** border color */
+    public static final String ATTR_BORDERCOLOR = "bordercolor";
 
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
 
-    /** _more_          */
+    /** maximum attribute */
     public static final String ATTR_MAX = "max";
-
 
     /** linkresource attribute */
     public static final String ATTR_LINKRESOURCE = "linkresource";
@@ -130,20 +133,22 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** exclude attribute */
     public static final String ATTR_EXCLUDE = "exclude";
 
-    /** _more_ */
+    /** first attribute */
     public static final String ATTR_FIRST = "first";
 
-    /** _more_ */
+    /** sort attribute */
     public static final String ATTR_SORT = "sort";
 
-    /** _more_ */
+    /** sort order attribute */
     public static final String ATTR_SORT_ORDER = "sortorder";
 
-    /** _more_ */
+    /** sort date attribute */
     public static final String SORT_DATE = "date";
+
+    /** change date attribute */
     public static final String SORT_CHANGEDATE = "changedate";
 
-    /** _more_ */
+    /** sort name attribute */
     public static final String SORT_NAME = "name";
 
     /** the message attribute */
@@ -351,9 +356,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_LINKS = "links";
 
+    /** link property */
     public static final String WIKI_PROP_LINK = "link";
 
-    /** _more_          */
+    /** list property */
     public static final String WIKI_PROP_LIST = "list";
 
     /** wiki import */
@@ -430,14 +436,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String[] WIKIPROPS = {
         WIKI_PROP_GROUP + "Information", WIKI_PROP_INFORMATION,
         WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_DATE_FROM,
-        WIKI_PROP_DATE_TO, 
-        WIKI_PROP_LINK,
-        WIKI_PROP_HTML, 
+        WIKI_PROP_DATE_TO, WIKI_PROP_LINK, WIKI_PROP_HTML,
         WIKI_PROP_GROUP + "Layout",
         prop(WIKI_PROP_LINKS,
              attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
                    "")),
-
         WIKI_PROP_LIST, prop(WIKI_PROP_TABS, ATTRS_LAYOUT), WIKI_PROP_TREE,
         prop(WIKI_PROP_ACCORDIAN, ATTRS_LAYOUT), WIKI_PROP_GRID,
         WIKI_PROP_TABLE, prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
@@ -650,8 +653,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         //imagewidth says to resize and cache the image on the server
         //If its defined then add it to the URL
         int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
-        if(imageWidth>0) {
-            url = url +"&" + ARG_IMAGEWIDTH +  "="+imageWidth;
+        if (imageWidth > 0) {
+            url = url + "&" + ARG_IMAGEWIDTH + "=" + imageWidth;
         }
         if (width != null) {
             extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width);
@@ -676,13 +679,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        String style = Misc.getProperty(props, ATTR_STYLE, "");
-        int border =  Misc.getProperty(props, ATTR_BORDER, -1);
+        String style       = Misc.getProperty(props, ATTR_STYLE, "");
+        int    border      = Misc.getProperty(props, ATTR_BORDER, -1);
+        String bordercolor = Misc.getProperty(props, ATTR_BORDERCOLOR,
+                                 "#000");
 
-        if(border>0) {
-            style += " border: " + border +"px solid #000;";
+        if (border > 0) {
+            style += " border: " + border + "px solid " + bordercolor + ";";
         }
-        String left  = (String) props.get("left");
+        String left = (String) props.get("left");
         if (left != null) {
             style += " position:absolute; left: " + left + ";";
         }
@@ -715,7 +720,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             buf.append(
                 HtmlUtils.href(
                     entry.getTypeHandler().getEntryResourceUrl(
-                        request, entry), img, HtmlUtils.cssClass("popup_image")));
+                        request, entry), img,
+                                         HtmlUtils.cssClass("popup_image")));
 
             return buf.toString();
         }
@@ -905,19 +911,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getEntryManager().getBreadCrumbs(request, entry);
         } else if (include.equals(WIKI_PROP_LINK)) {
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
-                                                    false);
-            String title  = Misc.getProperty(props, ATTR_TITLE, entry.getName());
+                                       false);
+            String title = Misc.getProperty(props, ATTR_TITLE,
+                                            entry.getName());
             String url;
             if (linkResource
-                && (entry.getTypeHandler().isType("link")
-                    || entry.isFile()
-                    || entry.getResource().isUrl())) {
+                    && (entry.getTypeHandler().isType("link")
+                        || entry.isFile() || entry.getResource().isUrl())) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
-                                                                 entry);
+                        entry);
             } else {
-                url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                       entry);
+                url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
             }
+
             return HtmlUtils.href(url, title);
 
         } else if (include.equals(WIKI_PROP_DESCRIPTION)) {
@@ -999,13 +1005,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
         } else if (include.equals(WIKI_PROP_TIMELINE)) {
-            if(true) return "Timeline not available";
+            if (true) {
+                return "Timeline not available";
+            }
             List<Entry> children = getEntries(request, wikiUtil, entry,
-                                              props);
+                                       props);
             int    height = Misc.getProperty(props, ATTR_HEIGHT, 150);
             String style  = "height: " + height + "px;";
-            getCalendarOutputHandler().makeTimeline(request,
-                                                    children, sb, style);
+            getCalendarOutputHandler().makeTimeline(request, children, sb,
+                    style);
+
             return sb.toString();
         } else if (include.equals(WIKI_PROP_MAP)
                    || include.equals(WIKI_PROP_EARTH)) {
@@ -1092,9 +1101,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
                                       false);
             boolean useCookies = Misc.getProperty(props, "cookie", false);
-            String linklabel   = Misc.getProperty(props, ATTR_LINKLABEL, "");
-            int    width       = Misc.getProperty(props, ATTR_WIDTH, 400);
-            int    height      = Misc.getProperty(props, ATTR_HEIGHT, 270);
+            String  linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
+            int     width      = Misc.getProperty(props, ATTR_WIDTH, 400);
+            int     height     = Misc.getProperty(props, ATTR_HEIGHT, 270);
             int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, width);
             int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT,
                                      height - 40);
@@ -1209,9 +1218,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(".slides_image {max-height: " + maxImageHeight
                           + "px; overflow-x: none; overflow-y: none;}\n");
 
-                int    border      = Misc.getProperty(props, "border", 1);
-                String borderColor = Misc.getProperty(props, "bordercolor",
-                                         "#aaa");
+                int    border      = Misc.getProperty(props, ATTR_BORDER, 1);
+                String borderColor = Misc.getProperty(props,
+                                         ATTR_BORDERCOLOR, "#aaa");
                 sb.append(
                     "#" + slideId + " .slides_container {border: " + border
                     + "px solid " + borderColor + "; width:" + width
@@ -1300,7 +1309,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 return sb.toString();
             } else {
-                return OutputHandler.makeTabs(titles, contents, true, useCookies);
+                return OutputHandler.makeTabs(titles, contents, true,
+                        useCookies);
             }
         } else if (include.equals(WIKI_PROP_GRID)) {
             getHtmlOutputHandler().makeGrid(request,
@@ -1811,7 +1821,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 children = getEntryManager().sortEntriesOnDate(children,
                         !ascending);
             } else if (sort.equals(SORT_CHANGEDATE)) {
-                children = getEntryManager().sortEntriesOnChangeDate(children,
+                children =
+                    getEntryManager().sortEntriesOnChangeDate(children,
                         !ascending);
             } else if (sort.equals(SORT_NAME)) {
                 children = getEntryManager().sortEntriesOnName(children,
@@ -1840,12 +1851,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
         }
 
-        String name = Misc.getProperty(props, ATTR_NAME, (String) null);
-        String pattern = name==null?null:getPattern(name);
-        if(name!=null) {
+        String name    = Misc.getProperty(props, ATTR_NAME, (String) null);
+        String pattern = (name == null)
+                         ? null
+                         : getPattern(name);
+        if (name != null) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
-                if(entryMatches(child, pattern, name)) {
+                if (entryMatches(child, pattern, name)) {
                     tmp.add(child);
                 }
             }
@@ -1908,15 +1921,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             Hashtable props, StringBuffer sb)
             throws Exception {
 
-        int width = Misc.getProperty(props, ATTR_WIDTH, 200);
-        int serverImageWidth =Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
+        int     width        = Misc.getProperty(props, ATTR_WIDTH, 200);
+        int serverImageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
 
-        int     columns    = Misc.getProperty(props, ATTR_COLUMNS, 2);
-        boolean random     = Misc.getProperty(props, ATTR_RANDOM, false);
-        boolean popup      = Misc.getProperty(props, ATTR_POPUP, true);
-        boolean thumbnail  = Misc.getProperty(props, ATTR_THUMBNAIL, true);
-        String  caption    = Misc.getProperty(props, ATTR_CAPTION, "${name}");
-        String  captionPos = Misc.getProperty(props, ATTR_POPUPCAPTION,
+        int     columns      = Misc.getProperty(props, ATTR_COLUMNS, 2);
+        boolean random       = Misc.getProperty(props, ATTR_RANDOM, false);
+        boolean popup        = Misc.getProperty(props, ATTR_POPUP, true);
+        boolean thumbnail    = Misc.getProperty(props, ATTR_THUMBNAIL, true);
+        String  caption = Misc.getProperty(props, ATTR_CAPTION, "${name}");
+        String  captionPos   = Misc.getProperty(props, ATTR_POPUPCAPTION,
                                              "none");
 
         if (popup) {
@@ -1964,8 +1977,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     + getStorageManager().getFileTail(child), ARG_ENTRYID,
                         child.getId());
             }
-            if(serverImageWidth>0) {
-                url = url + "&" + ARG_IMAGEWIDTH+"="+serverImageWidth;
+            if (serverImageWidth > 0) {
+                url = url + "&" + ARG_IMAGEWIDTH + "=" + serverImageWidth;
             }
 
             String extra = "";
@@ -2179,10 +2192,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         Entry theEntry = null;
         if ((parent != null  /* top group */
                 ) && parent.isGroup()) {
-            String pattern= getPattern(name);
+            String pattern = getPattern(name);
             for (Entry child :
                     getEntryManager().getChildren(request, (Entry) parent)) {
-                if(entryMatches(child, pattern, name)) {
+                if (entryMatches(child, pattern, name)) {
                     return child;
                 }
             }
@@ -2196,36 +2209,56 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     }
 
 
+    /**
+     * Check to see if an entry matches the pattern or name
+     *
+     * @param child   the child
+     * @param pattern the pattern
+     * @param name    the name
+     *
+     * @return true if a match
+     */
     private boolean entryMatches(Entry child, String pattern, String name) {
         String entryName = child.getName().trim().toLowerCase();
-        if(pattern!=null) {
-            if(entryName.matches(pattern)) {
+        if (pattern != null) {
+            if (entryName.matches(pattern)) {
                 return true;
             }
-            String path  = child.getResource().getPath();
-            if(path!=null) {
-                path =path.toLowerCase();
-                if(path.matches(pattern)) {
+            String path = child.getResource().getPath();
+            if (path != null) {
+                path = path.toLowerCase();
+                if (path.matches(pattern)) {
                     return true;
                 }
             }
         } else if (name.startsWith("type:")) {
-            if(child.getTypeHandler().isType(name.substring("type:".length()))) {
+            if (child.getTypeHandler().isType(
+                    name.substring("type:".length()))) {
                 return true;
             }
         } else if (entryName.equalsIgnoreCase(name)) {
             return true;
         }
+
         return false;
 
     }
 
+    /**
+     * Make a pattern from the name
+     *
+     * @param name  the name
+     *
+     * @return the regex pattern
+     */
     private String getPattern(String name) {
-        return  (name.indexOf("*")>=0? StringUtil.wildcardToRegexp(name):null);
+        return ((name.indexOf("*") >= 0)
+                ? StringUtil.wildcardToRegexp(name)
+                : null);
     }
 
     /**
-
+     *
      * Make the wiki edit bar
      *
      * @param request The request
