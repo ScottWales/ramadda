@@ -18,7 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.fieldproject;
+package org.ramadda.geodata.gps;
 
 
 
@@ -65,8 +65,8 @@ import java.util.zip.*;
  */
 public class GpsOutputHandler extends OutputHandler {
 
-    public static final String PROP_TEQC = "fieldproject.teqc";
-    public static final String PROP_RUNPKR = "fieldproject.runpkr";
+    public static final String PROP_TEQC = "gps.teqc";
+    public static final String PROP_RUNPKR = "gps.runpkr";
 
     /** _more_ */
     private static final String TEQC_FLAG_QC = "+qcq";
@@ -82,7 +82,7 @@ public class GpsOutputHandler extends OutputHandler {
     public static final String OPUS_TITLE = "Add OPUS";
 
     /** _more_ */
-    public static final String URL_ADDOPUS = "/fieldproject/addopus";
+    public static final String URL_ADDOPUS = "/gps/addopus";
 
     /** _more_ */
     public static final String ARG_OPUS = "opus";
@@ -158,37 +158,37 @@ public class GpsOutputHandler extends OutputHandler {
 
     /** The output type */
     public static final OutputType OUTPUT_GPS_TORINEX =
-        new OutputType("Convert to RINEX", "fieldproject.gps.torinex",
+        new OutputType("Convert to RINEX", "gps.torinex",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/fieldproject/gps.png", "Field Project");
+                       "/gps/gps.png", "Field Project");
 
     public static final OutputType OUTPUT_GPS_BULKEDIT =
-        new OutputType("Edit GPS Metadata", "fieldproject.gps.bulkedit",
+        new OutputType("Edit GPS Metadata", "gps.bulkedit",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/fieldproject/gps.png", "Field Project");
+                       "/gps/gps.png", "Field Project");
 
     /** _more_ */
     public static final OutputType OUTPUT_GPS_METADATA =
-        new OutputType("Show GPS Metadata", "fieldproject.gps.metadata",
+        new OutputType("Show GPS Metadata", "gps.metadata",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/fieldproject/gps.png", "Field Project");
+                       "/gps/gps.png", "Field Project");
 
     /** _more_ */
     public static final OutputType OUTPUT_GPS_QC =
-        new OutputType("Show GPS QC", "fieldproject.gps.qc",
+        new OutputType("Show GPS QC", "gps.qc",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/fieldproject/gps.png", "Field Project");
+                       "/gps/gps.png", "Field Project");
 
     /** _more_ */
     public static final OutputType OUTPUT_GPS_OPUS =
-        new OutputType("Submit to OPUS", "fieldproject.gps.opus",
+        new OutputType("Submit to OPUS", "gps.gps.opus",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/fieldproject/opus.png", "Field Project");
+                       "/gps/opus.png", "Field Project");
 
     /** _more_ */
     public static final OutputType OUTPUT_GPS_CONTROLPOINTS =
         new OutputType("Make Control Points",
-                       "fieldproject.gps.controlpoints",
+                       "gps.gps.controlpoints",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/icons/csv.png", "Field Project");
 
@@ -1523,7 +1523,7 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append("</ul>");
         sb.append("When you get the results in your email click ");
         sb.append(HtmlUtils.href(getRepository().getUrlBase()
-                                + "/fieldproject/addopus", "here"));
+                                + "/gps/addopus", "here"));
         sb.append(" to upload the OPUS solutions");
         return new Result("", sb);
     }

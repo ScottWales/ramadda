@@ -18,7 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.fieldproject;
+package org.ramadda.geodata.gps;
 
 
 import ucar.unidata.util.TwoFacedObject;
