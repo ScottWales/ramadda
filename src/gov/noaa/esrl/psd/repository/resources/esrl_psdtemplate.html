@@ -33,7 +33,7 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 <link href="${root}/images/noaa3.gif " rel="SHORTCUT ICON">
 
 
-${html.imports}
+${imports}
 
 <style type="text/css">
 
@@ -167,8 +167,10 @@ ${headfinal}
 <!--
 <td align="left" width="50%"><div class="title"><a href="${root}">${repository_name}</a></div></td>
 <td align="right" width="50%">${links}&nbsp;|&nbsp;${userlink}</td>
--->
 <td align="left">${links}&nbsp;|&nbsp;${userlink}</td>
+-->
+<td align="left">${links}</td>
+<td align="right">${userlink}</td>
 </tr>
 </table>
 </div> <!--major_nav-->
