@@ -90,6 +90,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
+    public static final String ATTR_BORDER = "border";
+
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
 
@@ -349,6 +351,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_LINKS = "links";
 
+    public static final String WIKI_PROP_LINK = "link";
+
     /** _more_          */
     public static final String WIKI_PROP_LIST = "list";
 
@@ -426,10 +430,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String[] WIKIPROPS = {
         WIKI_PROP_GROUP + "Information", WIKI_PROP_INFORMATION,
         WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_DATE_FROM,
-        WIKI_PROP_DATE_TO, WIKI_PROP_HTML, WIKI_PROP_GROUP + "Layout",
+        WIKI_PROP_DATE_TO, 
+        WIKI_PROP_LINK,
+        WIKI_PROP_HTML, 
+        WIKI_PROP_GROUP + "Layout",
         prop(WIKI_PROP_LINKS,
              attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
                    "")),
+
         WIKI_PROP_LIST, prop(WIKI_PROP_TABS, ATTRS_LAYOUT), WIKI_PROP_TREE,
         prop(WIKI_PROP_ACCORDIAN, ATTRS_LAYOUT), WIKI_PROP_GRID,
         WIKI_PROP_TABLE, prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
@@ -639,6 +647,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String alt   = (String) props.get(HtmlUtils.ATTR_ALT);
         String extra = "";
 
+        //imagewidth says to resize and cache the image on the server
+        //If its defined then add it to the URL
+        int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
+        if(imageWidth>0) {
+            url = url +"&" + ARG_IMAGEWIDTH +  "="+imageWidth;
+        }
         if (width != null) {
             extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width);
         }
@@ -662,21 +676,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        String style = "";
+        String style = Misc.getProperty(props, ATTR_STYLE, "");
+        int border =  Misc.getProperty(props, ATTR_BORDER, -1);
 
+        if(border>0) {
+            style += " border: " + border +"px solid #000;";
+        }
         String left  = (String) props.get("left");
         if (left != null) {
-            style = style + " left: " + left + ";";
+            style += " position:absolute; left: " + left + ";";
         }
 
         String top = (String) props.get("top");
         if (top != null) {
-            style = style + " top: " + top + ";";
+            style += " position:absolute;  top: " + top + ";";
         }
 
         if (style.length() > 0) {
-            extra = extra + " style=\"position:absolute; " + style + "\" ";
+            extra = extra + " style=\" " + style + "\" ";
         }
+
 
         String  img          = HtmlUtils.img(url, entry.getName(), extra);
         boolean link         = Misc.equals("true", props.get(ATTR_LINK));
@@ -884,6 +903,23 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getEntryManager().getEntryToolbar(request, entry);
         } else if (include.equals(WIKI_PROP_BREADCRUMBS)) {
             return getEntryManager().getBreadCrumbs(request, entry);
+        } else if (include.equals(WIKI_PROP_LINK)) {
+            boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
+                                                    false);
+            String title  = Misc.getProperty(props, ATTR_TITLE, entry.getName());
+            String url;
+            if (linkResource
+                && (entry.getTypeHandler().isType("link")
+                    || entry.isFile()
+                    || entry.getResource().isUrl())) {
+                url = entry.getTypeHandler().getEntryResourceUrl(request,
+                                                                 entry);
+            } else {
+                url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                       entry);
+            }
+            return HtmlUtils.href(url, title);
+
         } else if (include.equals(WIKI_PROP_DESCRIPTION)) {
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
@@ -1872,10 +1908,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             Hashtable props, StringBuffer sb)
             throws Exception {
 
-        int width = Misc.getProperty(props, ATTR_WIDTH, -1);
-        if (width < 0) {
-            width = Misc.getProperty(props, ATTR_IMAGEWIDTH, 200);
-        }
+        int width = Misc.getProperty(props, ATTR_WIDTH, 200);
+        int serverImageWidth =Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
+
         int     columns    = Misc.getProperty(props, ATTR_COLUMNS, 2);
         boolean random     = Misc.getProperty(props, ATTR_RANDOM, false);
         boolean popup      = Misc.getProperty(props, ATTR_POPUP, true);
@@ -1928,6 +1963,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     request.url(repository.URL_ENTRY_GET) + "/"
                     + getStorageManager().getFileTail(child), ARG_ENTRYID,
                         child.getId());
+            }
+            if(serverImageWidth>0) {
+                url = url + "&" + ARG_IMAGEWIDTH+"="+serverImageWidth;
             }
 
             String extra = "";
