@@ -162,6 +162,11 @@ public class GpsOutputHandler extends OutputHandler {
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/fieldproject/gps.png", "Field Project");
 
+    public static final OutputType OUTPUT_GPS_BULKEDIT =
+        new OutputType("Edit GPS Metadata", "fieldproject.gps.bulkedit",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       "/fieldproject/gps.png", "Field Project");
+
     /** _more_ */
     public static final OutputType OUTPUT_GPS_METADATA =
         new OutputType("Show GPS Metadata", "fieldproject.gps.metadata",
@@ -198,6 +203,7 @@ public class GpsOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_GPS_TORINEX);
+        addType(OUTPUT_GPS_BULKEDIT);
 
         addType(OUTPUT_GPS_METADATA);
         addType(OUTPUT_GPS_QC);
@@ -307,11 +313,20 @@ public class GpsOutputHandler extends OutputHandler {
             return;
         }
         if (state.group != null) {
+            boolean addedToRinex = false;
             for (Entry child : state.getAllEntries()) {
                 if (isRawGps(child)) {
-                    links.add(makeLink(request, state.group,
-                                       OUTPUT_GPS_TORINEX));
-                    break;
+                    if(!addedToRinex) {
+                        links.add(makeLink(request, state.group,
+                                           OUTPUT_GPS_TORINEX));
+                        addedToRinex = true;
+                    }
+
+                    if(getAccessManager().canEditEntry(request,child)) {
+                        links.add(makeLink(request, state.group,
+                                           OUTPUT_GPS_BULKEDIT));
+                        break;
+                    }
                 }
             }
             for (Entry child : state.getAllEntries()) {
@@ -335,7 +350,6 @@ public class GpsOutputHandler extends OutputHandler {
                 links.add(makeLink(request, state.entry,
                                    OUTPUT_GPS_METADATA));
                 links.add(makeLink(request, state.entry, OUTPUT_GPS_TORINEX));
-
             }
             if (isRinex(state.entry)) {
                 links.add(makeLink(request, state.entry,
@@ -367,6 +381,9 @@ public class GpsOutputHandler extends OutputHandler {
             throws Exception {
         if (outputType.equals(OUTPUT_GPS_TORINEX)) {
             return outputRinex(request, group, entries);
+        }
+        if (outputType.equals(OUTPUT_GPS_BULKEDIT)) {
+            return outputBulkEdit(request, group, entries);
         }
         if (outputType.equals(OUTPUT_GPS_CONTROLPOINTS)) {
             return outputControlpoint(request, group, entries);
@@ -614,6 +631,207 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.formTableClose());
 
             sb.append(HtmlUtils.submit("Make RINEX"));
+            sb.append(HtmlUtils.formClose());
+            return new Result("", sb);
+        }
+
+
+        List<String> entryIds = request.get(ARG_GPS_FILE,
+                                            new ArrayList<String>());
+
+
+
+        boolean anyOK = false;
+        sb.append(msgHeader("Results"));
+        sb.append("<ul>");
+        String uniqueId = getRepository().getGUID();
+        File   workDir  = getWorkDir(uniqueId);
+
+        Hashtable<String, Entry> fileToEntryMap = new Hashtable<String,
+                                                      Entry>();
+
+        for (String entryId : entryIds) {
+            Entry rawEntry = getEntryManager().getEntry(request, entryId);
+            if (rawEntry == null) {
+                throw new IllegalArgumentException("No entry:" + entryId);
+            }
+
+            if ( !isRawGps(rawEntry)) {
+                sb.append("<li>");
+                sb.append("Skipping:" + rawEntry.getName());
+                sb.append(HtmlUtils.p());
+                continue;
+            }
+
+            File rawFile = rawEntry.getFile();
+            if ( !rawFile.exists()) {
+                throw new IllegalStateException("File does not exist:" + rawFile);
+            }
+
+            String inputFile = getRawFile(rawFile.toString());
+
+            GregorianCalendar cal =
+                new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+            cal.setTime(new Date(rawEntry.getStartDate()));
+
+            String tail = IOUtil.stripExtension(
+                              getStorageManager().getFileTail(rawEntry));
+            tail = tail + "_" + cal.get(cal.YEAR) + "_"
+                   + StringUtil.padLeft("" + cal.get(cal.MONTH), 2, "0")
+                   + "_"
+                   + StringUtil.padLeft("" + cal.get(cal.DAY_OF_MONTH), 2,
+                                        "0");
+            tail = tail + RINEX_SUFFIX;
+
+            File rinexFile = new File(IOUtil.joinDir(workDir, tail));
+            fileToEntryMap.put(rinexFile.toString(), rawEntry);
+
+            ProcessBuilder pb = new ProcessBuilder(teqcPath, "+out",
+                                                   rinexFile.toString(), inputFile);
+            pb.directory(workDir);
+            Process process = pb.start();
+            String errorMsg =
+                new String(IOUtil.readBytes(process.getErrorStream()));
+            String outMsg =
+                new String(IOUtil.readBytes(process.getInputStream()));
+            int result = process.waitFor();
+            sb.append("<li>");
+            sb.append(rawEntry.getName());
+            if (rinexFile.length() > 0) {
+                if (errorMsg.length() > 0) {
+                    sb.append(" ... RINEX file generated with warnings:");
+                } else {
+                    sb.append(" ... RINEX file generated");
+                }
+                anyOK = true;
+            } else if (rinexFile.exists()) {
+                sb.append(" ... Error: Zero length RINEX file created. ");
+            } else {
+                sb.append(" ... Error:");
+            }
+            if ((errorMsg.length() > 0) || (outMsg.length() > 0)) {
+                sb.append(
+                    "<pre style=\"  border: solid 1px #000; max-height: 150px;overflow-y: auto; \">");
+                sb.append(errorMsg);
+                sb.append(outMsg);
+                sb.append("</pre>");
+            }
+        }
+
+        sb.append("</ul>");
+        if ( !anyOK) {
+            return new Result("", sb);
+        }
+
+        if (doingPublish(request)) {
+            Entry parent = getEntryManager().findGroup(request,
+                               request.getString(ARG_PUBLISH_ENTRY
+                                   + "_hidden", ""));
+            if (parent == null) {
+                throw new IllegalArgumentException("Could not find folder");
+            }
+            if ( !getAccessManager().canDoAction(request, parent,
+                    Permission.ACTION_NEW)) {
+                throw new AccessException("No access", request);
+            }
+            File[] files = workDir.listFiles();
+            int    cnt   = 0;
+            for (File f : files) {
+                String originalFileLocation = f.toString();
+                Entry  rawEntry = fileToEntryMap.get(originalFileLocation);
+                if ( !f.getName().endsWith(RINEX_SUFFIX)
+                        || (f.length() == 0)) {
+                    continue;
+                }
+                //Get the name first
+                String name = f.getName();
+
+                //Copy the tmp file to storage. Use the storage name 
+                f = getStorageManager().copyToStorage(request, f,
+                        getStorageManager().getStorageFileName(f.getName()));
+
+                TypeHandler typeHandler =
+                    getRepository().getTypeHandler(GpsTypeHandler.TYPE_RINEX);
+                Object[] tmpValues = null;
+                if (rawEntry.getValues() != null) {
+                    tmpValues = (Object[]) rawEntry.getValues().clone();
+                    tmpValues[IDX_FORMAT] = "RINEX";
+                }
+                final Object[]   values      = tmpValues;
+                EntryInitializer initializer = new EntryInitializer() {
+                    public void initEntry(Entry entry) {
+                        entry.setValues(values);
+                    }
+                };
+
+                Entry newEntry = getEntryManager().addFileEntry(request, f,
+                                     parent, name, request.getUser(),
+                                     typeHandler, initializer);
+
+                if (cnt == 0) {
+                    sb.append(msgHeader("Published Entries"));
+                }
+                cnt++;
+                sb.append(
+                    HtmlUtils.href(
+                        HtmlUtils.url(
+                            getRepository().URL_ENTRY_SHOW.toString(),
+                            new String[] { ARG_ENTRYID,
+                                           newEntry.getId() }), newEntry
+                                           .getName()));
+
+                sb.append("<br>");
+                getRepository().addAuthToken(request);
+                getAssociationManager().addAssociation(request, newEntry,
+                        rawEntry, "generated rinex",
+                        ASSOCIATION_TYPE_GENERATED_FROM);
+            }
+
+
+            sb.append(HtmlUtils.p());
+            sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+            sb.append(HtmlUtils.hidden(ARG_OUTPUT,
+                                      OUTPUT_GPS_TORINEX.getId()));
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
+            sb.append(HtmlUtils.submit(msg("Download Results")));
+            sb.append(HtmlUtils.formClose());
+        }
+        return new Result("", sb);
+    }
+
+
+
+
+    private Result outputBulkEdit(Request request, Entry mainEntry,
+                                  List<Entry> entries)
+            throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        if ( !request.get(ARG_RINEX_PROCESS, false)) {
+            sb.append(HtmlUtils.p());
+            sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+            sb.append(HtmlUtils.hidden(ARG_OUTPUT,
+                                      OUTPUT_GPS_BULKEDIT.getId()));
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_RINEX_PROCESS, "true"));
+
+
+            sb.append(msgHeader("Select entries"));
+            sb.append(HtmlUtils.formTable());
+            for (Entry entry : entries) {
+                if ( !isRawGps(entry)) {
+                    continue;
+                }
+                sb.append(HtmlUtils.checkbox(ARG_GPS_FILE, entry.getId(),
+                                             true));
+                sb.append(" ");
+                sb.append(entry.getName());
+                sb.append(" ");
+            }
+
+            sb.append(HtmlUtils.formTableClose());
+            sb.append(HtmlUtils.submit("Apply Edits"));
             sb.append(HtmlUtils.formClose());
             return new Result("", sb);
         }
