@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,6 +29,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.BufferMapList;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.WikiUtil;
 
@@ -37,7 +39,6 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -82,52 +83,52 @@ import java.util.zip.*;
  */
 public class OutputHandler extends RepositoryManager {
 
-    /** _more_ */
+    /** max connections attribute */
     public static final String ATTR_MAXCONNECTIONS = "maxconnections";
 
-    /** _more_ */
+    /** the links label */
     public static final String LABEL_LINKS = "Actions";
 
-    /** _more_ */
+    /** HTML OutputType */
     public static final OutputType OUTPUT_HTML =
         new OutputType("Information", "default.html",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_INFORMATION);
 
-    /** _more_ */
+    /** Tree OutputType */
     public static final OutputType OUTPUT_TREE =
         new OutputType("Information", "tree.html",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_TREE);
 
 
-    /** _more_ */
+    /** name */
     private String name;
 
-    /** _more_ */
+    /** Output types */
     private List<OutputType> types = new ArrayList<OutputType>();
 
-    /** _more_ */
+    /** hash of name to output type */
     private Hashtable<String, OutputType> typeMap = new Hashtable<String,
                                                         OutputType>();
 
 
-    /** _more_ */
+    /** default max connnections */
     private int maxConnections = -1;
 
-    /** _more_ */
+    /** number of connnections */
     private int numberOfConnections = 0;
 
-    /** _more_ */
+    /** total calls */
     private int totalCalls = 0;
 
     /**
-     * _more_
+     * Construct an OutputHandler
      *
-     * @param repository _more_
-     * @param name _more_
+     * @param repository  the repository
+     * @param name        the OutputHandler name
      *
-     * @throws Exception _more_
+     * @throws Exception  problem with repository
      */
     public OutputHandler(Repository repository, String name)
             throws Exception {
@@ -136,23 +137,26 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
+    /**
+     * Shutdown
+     */
     public void shutdown() {}
 
     /**
-     * _more_
+     * Do we allow arachnids?
      *
-     * @return _more_
+     * @return  true if spiders allowed
      */
     public boolean allowSpiders() {
         return false;
     }
 
     /**
-     * _more_
+     * Find the output type matching the id
      *
-     * @param id _more_
+     * @param id  the name of the type
      *
-     * @return _more_
+     * @return the OutputType or null
      */
     public OutputType findOutputType(String id) {
         return typeMap.get(id);
@@ -160,11 +164,11 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Construct an OutputHandler
      *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
+     * @param repository  the repository
+     * @param element     the Element
+     * @throws Exception  problem with repository
      */
     public OutputHandler(Repository repository, Element element)
             throws Exception {
@@ -177,33 +181,33 @@ public class OutputHandler extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Initialize
      */
     public void init() {}
 
 
     /**
-     * _more_
+     * Clear the cache
      */
     public void clearCache() {}
 
     /**
-     * _more_
+     * Add this to the Entry node
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param node     the Node
      *
-     * @throws Exception _more_
+     * @throws Exception problem adding to Entry node
      */
     public void addToEntryNode(Request request, Entry entry, Element node)
             throws Exception {}
 
 
     /**
-     * _more_
+     * Add an OutputType to this handler
      *
-     * @param type _more_
+     * @param type  the OutputType
      */
     public void addType(OutputType type) {
         type.setGroupName(name);
@@ -213,9 +217,9 @@ public class OutputHandler extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Get a list of types
      *
-     * @return _more_
+     * @return  the list
      */
     public List<OutputType> getTypes() {
         return types;
@@ -241,19 +245,20 @@ public class OutputHandler extends RepositoryManager {
         if (name == null) {
             name = Misc.getClassName(getClass());
         }
+
         return name;
     }
 
 
 
     /**
-     * _more_
+     * Are we showing all
      *
-     * @param request _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request   the Request
+     * @param subGroups the list of subgroups
+     * @param entries   the list of entries
      *
-     * @return _more_
+     * @return    true if showing all
      */
     public boolean showingAll(Request request, List<Entry> subGroups,
                               List<Entry> entries) {
@@ -262,31 +267,32 @@ public class OutputHandler extends RepositoryManager {
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             return false;
         }
+
         return true;
     }
 
 
 
     /**
-     * _more_
+     * Get the AuthorizationMethod
      *
-     * @param request _more_
+     * @param request  the Request
      *
-     * @return _more_
+     * @return  the AuthorizationMethod
      */
     public AuthorizationMethod getAuthorizationMethod(Request request) {
         return AuthorizationMethod.AUTH_HTML;
     }
 
     /**
-     * _more_
+     * Show the next bunch
      *
-     * @param request _more_
-     * @param subGroups _more_
-     * @param entries _more_
-     * @param sb _more_
+     * @param request   the Request
+     * @param subGroups the subgroups
+     * @param entries   the List of Entries
+     * @param sb        the output StringBuffer
      *
-     * @throws Exception _more_
+     * @throws Exception  problems showing entries
      */
     public void showNext(Request request, List<Entry> subGroups,
                          List<Entry> entries, StringBuffer sb)
@@ -296,13 +302,13 @@ public class OutputHandler extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Show the next bunch
      *
-     * @param request _more_
-     * @param cnt _more_
-     * @param sb _more_
+     * @param request   the Request
+     * @param cnt       the number to show
+     * @param sb        the output StringBuffer
      *
-     * @throws Exception _more_
+     * @throws Exception  problem showing them
      */
     public void showNext(Request request, int cnt, StringBuffer sb)
             throws Exception {
@@ -316,13 +322,13 @@ public class OutputHandler extends RepositoryManager {
             List<String> toks = new ArrayList<String>();
             if (skip > 0) {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
-                                       + ARG_SKIP + "="
-                                       + (skip - max), msg("Previous...")));
+                                        + ARG_SKIP + "="
+                                        + (skip - max), msg("Previous...")));
             }
             if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
-                                       + ARG_SKIP + "="
-                                       + (skip + max), msg("Next...")));
+                                        + ARG_SKIP + "="
+                                        + (skip + max), msg("Next...")));
             }
             request.put(ARG_MAX, "" + (max + VIEW_MAX_ROWS));
             if (cnt >= max) {
@@ -343,12 +349,11 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Can we handle the OutputType?
      *
+     * @param output  the OutputType
      *
-     * @param output _more_
-     *
-     * @return _more_
+     * @return  true if supported
      */
     public boolean canHandleOutput(OutputType output) {
         for (OutputType type : types) {
@@ -356,13 +361,14 @@ public class OutputHandler extends RepositoryManager {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * _more_
+     * Get the system statistics
      *
-     * @param sb _more_
+     * @param sb  the StringBuffer to add to
      */
     public void getSystemStats(StringBuffer sb) {
         if (totalCalls > 0) {
@@ -377,7 +383,7 @@ public class OutputHandler extends RepositoryManager {
             }
 
             sb.append(HtmlUtils.formEntryTop(msgLabel(name),
-                                            stats.toString()));
+                                             stats.toString()));
 
         }
     }
@@ -385,42 +391,40 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * Class State _more_
-     *
+     * Class to hold State
      *
      * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
      */
     public static class State {
 
-        /** _more_ */
+        /** for unknown flag */
         public static final int FOR_UNKNOWN = 0;
 
-        /** _more_ */
+        /** for header flag  */
         public static final int FOR_HEADER = 1;
 
-        /** _more_ */
+        /** for what parameter */
         public int forWhat = FOR_UNKNOWN;
 
-        /** _more_ */
+        /** the Entry */
         public Entry entry;
 
-        /** _more_ */
+        /** the parent group */
         public Entry group;
 
-        /** _more_ */
+        /** the subgroups */
         public List<Entry> subGroups;
 
-        /** _more_ */
+        /** the entries */
         public List<Entry> entries;
 
-        /** _more_ */
+        /** all entries */
         public List<Entry> allEntries;
 
         /**
-         * _more_
+         * Create some state for the Entry
          *
-         * @param entry _more_
+         * @param entry  the Entry
          */
         public State(Entry entry) {
             if (entry != null) {
@@ -436,11 +440,11 @@ public class OutputHandler extends RepositoryManager {
         }
 
         /**
-         * _more_
+         * Create some State for the Entry and others
          *
-         * @param group _more_
-         * @param subGroups _more_
-         * @param entries _more_
+         * @param group     the parent group
+         * @param subGroups subgroups
+         * @param entries   list of entries in this
          */
         public State(Entry group, List<Entry> subGroups,
                      List<Entry> entries) {
@@ -451,11 +455,10 @@ public class OutputHandler extends RepositoryManager {
 
 
         /**
-         * _more_
+         * Create some State for the entries  and group
          *
-         *
-         * @param group _more_
-         * @param entries _more_
+         * @param group   the group Entry
+         * @param entries  the list of Entrys
          */
         public State(Entry group, List<Entry> entries) {
             this.group   = group;
@@ -463,9 +466,9 @@ public class OutputHandler extends RepositoryManager {
         }
 
         /**
-         * _more_
+         * Is this a dummy group?
          *
-         * @return _more_
+         * @return  true if stupid
          */
         public boolean isDummyGroup() {
             Entry entry = getEntry();
@@ -475,22 +478,23 @@ public class OutputHandler extends RepositoryManager {
             if ( !entry.isGroup()) {
                 return false;
             }
+
             return entry.isDummy();
         }
 
         /**
-         * _more_
+         * Is this for the header?
          *
-         * @return _more_
+         * @return  true if for header
          */
         public boolean forHeader() {
             return forWhat == FOR_HEADER;
         }
 
         /**
-         * _more_
+         * Get all the entries
          *
-         * @return _more_
+         * @return  a list of all the entries
          */
         public List<Entry> getAllEntries() {
             if (allEntries == null) {
@@ -505,18 +509,20 @@ public class OutputHandler extends RepositoryManager {
                     allEntries.add(entry);
                 }
             }
+
             return (List<Entry>) allEntries;
         }
 
         /**
-         * _more_
+         * Get the Entry for this State
          *
-         * @return _more_
+         * @return  the State of the Entry
          */
         public Entry getEntry() {
             if (entry != null) {
                 return entry;
             }
+
             return group;
         }
 
@@ -524,31 +530,32 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Make the links result
      *
-     * @param request _more_
-     * @param title _more_
-     * @param sb _more_
-     * @param state _more_
+     * @param request  the Request
+     * @param title    the links title
+     * @param sb       the StringBuffer to add to
+     * @param state    the State
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception problem making Result
      */
     public Result makeLinksResult(Request request, String title,
                                   StringBuffer sb, State state)
             throws Exception {
         Result result = new Result(title, sb);
         addLinks(request, result, state);
+
         return result;
     }
 
     /**
-     * _more_
+     * Add links
      *
-     * @param request _more_
-     * @param result _more_
-     * @param state _more_
+     * @param request   the Request
+     * @param result    the Result
+     * @param state     the State
      *
      * @throws Exception _more_
      */
@@ -561,18 +568,25 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
-    public  void getServices(Request request, Entry entry, List<Service> services) {
-    }
+    /**
+     * Get the services
+     *
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param services  the list of Services to add to
+     */
+    public void getServices(Request request, Entry entry,
+                            List<Service> services) {}
 
 
     /**
-     * _more_
+     * Get the Entry links
      *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
+     * @param request   the Request
+     * @param state     the State
+     * @param links     the List of Links to add to
      *
-     * @throws Exception _more_
+     * @throws Exception  problem creating Links
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {}
@@ -580,15 +594,15 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Make a link for the OutputType
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param outputType _more_
+     * @param request   The request
+     * @param entry     the Entry
+     * @param outputType  the OutputType
      *
-     * @return _more_
+     * @return the Link
      *
-     * @throws Exception _more_
+     * @throws Exception problem with repository
      */
     public Link makeLink(Request request, Entry entry, OutputType outputType)
             throws Exception {
@@ -596,16 +610,16 @@ public class OutputHandler extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Make a link for the OutputType and suffix
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param outputType _more_
-     * @param suffix _more_
+     * @param request   The request
+     * @param entry     the Entry
+     * @param outputType  the OutputType
+     * @param suffix  the suffix
      *
-     * @return _more_
+     * @return  the Link
      *
-     * @throws Exception _more_
+     * @throws Exception  problem with repository
      */
     public Link makeLink(Request request, Entry entry, OutputType outputType,
                          String suffix)
@@ -613,13 +627,14 @@ public class OutputHandler extends RepositoryManager {
         String url;
         if (entry == null) {
             url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + suffix,
-                               ARG_OUTPUT, outputType.toString());
+                                ARG_OUTPUT, outputType.toString());
         } else {
             url = request.getEntryUrl(getRepository().URL_ENTRY_SHOW
                                       + suffix, entry);
             url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
-                               outputType.toString());
+                                outputType.toString());
         }
+
         return new Link(url, (outputType.getIcon() == null)
                              ? null
                              : iconUrl(outputType.getIcon()), outputType
@@ -629,14 +644,14 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Add an OutputLink
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param links _more_
-     * @param type _more_
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param links     the list of Links
+     * @param type      the OutputType
      *
-     * @throws Exception _more_
+     * @throws Exception   problem with the repository
      */
     public void addOutputLink(Request request, Entry entry, List<Link> links,
                               OutputType type)
@@ -650,11 +665,10 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * A not implemented result
      *
-     *
-     * @param method _more_
-     * @return _more_
+     * @param method   the method
+     * @return  the Result
      */
     private Result notImplemented(String method) {
         throw new IllegalArgumentException("Method: " + method
@@ -662,21 +676,22 @@ public class OutputHandler extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Output the Entry for the type
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request     the Request
+     * @param outputType  the OutputType
+     * @param entry       the Entry
      *
-     * @return _more_
+     * @return  the Result'ing output
      *
-     * @throws Exception _more_
+     * @throws Exception  problem with the request
      */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return outputGroup(request, outputType,
                            getEntryManager().getDummyGroup(),
                            new ArrayList<Entry>(), entries);
@@ -684,17 +699,17 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Output a group
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request     the Request
+     * @param outputType  the OutputType
+     * @param group       the Entry group
+     * @param subGroups   the subgroup Entrys
+     * @param entries     Entries at the same level
      *
-     * @return _more_
+     * @return   the result
      *
-     * @throws Exception _more_
+     * @throws Exception  problem with the Repository
      */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
@@ -839,25 +854,25 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
 
         String selectorId = elementId + "_" + type;
-        String event = HtmlUtils.call("selectInitialClick",
-                                     HtmlUtils.comma("event",
-                                         HtmlUtils.squote(selectorId),
-                                         HtmlUtils.squote(elementId),
-                                         HtmlUtils.squote("" + allEntries),
-                                         HtmlUtils.squote(type)) + ","
-                                             + ((entry != null)
+        String event      = HtmlUtils.call("selectInitialClick",
+                                      HtmlUtils.comma("event",
+                                          HtmlUtils.squote(selectorId),
+                                          HtmlUtils.squote(elementId),
+                                          HtmlUtils.squote("" + allEntries),
+                                          HtmlUtils.squote(type)) + ","
+                                              + ((entry != null)
                 ? HtmlUtils.squote(entry.getId())
                 : "null"));
         String clearEvent = HtmlUtils.call("clearSelect",
-                                          HtmlUtils.squote(selectorId));
+                                           HtmlUtils.squote(selectorId));
         String link = HtmlUtils.mouseClickHref(event, label,
                           HtmlUtils.id(selectorId + ".selectlink"));
         if (addClear) {
             link = link + " "
                    + HtmlUtils.mouseClickHref(clearEvent, "Clear",
-                                             HtmlUtils.id(selectorId
-                                                 + ".selectlink"));
+                       HtmlUtils.id(selectorId + ".selectlink"));
         }
+
         return link;
     }
 
@@ -879,8 +894,8 @@ public class OutputHandler extends RepositoryManager {
         String       entryId  = entry.getId();
         String       icon     = getEntryManager().getIconUrl(request, entry);
         String       event;
-        String       uid = "link_" + HtmlUtils.blockCnt++;
-        String folderClickUrl =
+        String       uid            = "link_" + HtmlUtils.blockCnt++;
+        String       folderClickUrl =
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
             + HtmlUtils.args(new String[] {
             ARG_NOREDIRECT, "true", ARG_OUTPUT,
@@ -898,18 +913,18 @@ public class OutputHandler extends RepositoryManager {
                                   getRepository().iconUrl(ICON_BLANK), "",
                                   HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10"))
                               : HtmlUtils.img(
-                                  getRepository().iconUrl(
-                                      ICON_TOGGLEARROWRIGHT), msg(message),
-                                          HtmlUtils.id("img_" + uid)
-                                          + HtmlUtils.onMouseClick(
-                                              HtmlUtils.call(
-                                                  "folderClick",
-                                                  HtmlUtils.comma(
-                                                      HtmlUtils.squote(uid),
-                                                      HtmlUtils.squote(
-                                                          folderClickUrl), HtmlUtils.squote(
-                                                          iconUrl(
-                                                              ICON_TOGGLEARROWDOWN)))))));
+                                  getRepository().iconUrl(ICON_TOGGLEARROWRIGHT),
+                                  msg(message),
+                                  HtmlUtils.id("img_" + uid)
+                                  + HtmlUtils.onMouseClick(
+                                      HtmlUtils.call(
+                                          "folderClick",
+                                          HtmlUtils.comma(
+                                              HtmlUtils.squote(uid),
+                                              HtmlUtils.squote(folderClickUrl),
+                                              HtmlUtils.squote(
+                                                  iconUrl(
+                                                      ICON_TOGGLEARROWDOWN)))))));
 
 
         String img = prefix + HtmlUtils.space(1) + HtmlUtils.img(icon);
@@ -927,17 +942,18 @@ public class OutputHandler extends RepositoryManager {
 
         sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("selectClick",
                 HtmlUtils.comma(HtmlUtils.squote(target),
-                               HtmlUtils.squote(entry.getId()),
-                               HtmlUtils.squote(value),
-                               HtmlUtils.squote(type))), linkText));
+                                HtmlUtils.squote(entry.getId()),
+                                HtmlUtils.squote(value),
+                                HtmlUtils.squote(type))), linkText));
 
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.div("",
-                               HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                   "display:none;visibility:hidden",
-                                   HtmlUtils.ATTR_CLASS,
-                                   CSS_CLASS_FOLDER_BLOCK, HtmlUtils.ATTR_ID,
-                                   uid)));
+                                HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
+                                    "display:none;visibility:hidden",
+                                    HtmlUtils.ATTR_CLASS,
+                                    CSS_CLASS_FOLDER_BLOCK,
+                                    HtmlUtils.ATTR_ID, uid)));
+
         return sb.toString();
     }
 
@@ -954,6 +970,7 @@ public class OutputHandler extends RepositoryManager {
         StringBuffer xml = new StringBuffer("<content>\n");
         XmlUtil.appendCdata(xml, contents);
         xml.append("\n</content>");
+
         return new Result("", xml, "text/xml");
     }
 
@@ -988,6 +1005,7 @@ public class OutputHandler extends RepositoryManager {
         link.setLinkType(OutputType.TYPE_VIEW);
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
         links.add(link);
+
         return links;
     }
 
@@ -1023,17 +1041,18 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getSortLinks(Request request) {
         StringBuffer sb           = new StringBuffer();
-        String       oldOrderBy   = request.getString(ARG_ORDERBY,
-                                        "fromdate");
+        String       oldOrderBy   = request.getString(ARG_ORDERBY, "fromdate");
         String       oldAscending = request.getString(ARG_ASCENDING, "false");
         String[]     order        = {
             "name", "true",
-            msg("Name") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
+            msg("Name")
+            + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
             "Sort by name ascending", "name", "false",
             msg("Name")
             + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),
             "Sort by name descending", "fromdate", "true",
-            msg("Date") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
+            msg("Date")
+            + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
             "Sort by date ascending", "fromdate", "false",
             msg("Date")
             + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),
@@ -1044,7 +1063,7 @@ public class OutputHandler extends RepositoryManager {
             sb.append(HtmlUtils.br());
         }
         sb.append(HtmlUtils.span(msgLabel("Sort"),
-                                HtmlUtils.cssClass("sortlinkoff")));
+                                 HtmlUtils.cssClass("sortlinkoff")));
         String entryIds = request.getString(ARG_ENTRYIDS, (String) null);
         //Swap out the long value
         if (entryIds != null) {
@@ -1059,15 +1078,17 @@ public class OutputHandler extends RepositoryManager {
             if (Misc.equals(order[i], oldOrderBy)
                     && Misc.equals(order[i + 1], oldAscending)) {
                 sb.append(HtmlUtils.span(order[i + 2],
-                                        HtmlUtils.cssClass("sortlinkon")));
+                                         HtmlUtils.cssClass("sortlinkon")));
             } else {
                 request.put(ARG_ORDERBY, order[i]);
                 request.put(ARG_ASCENDING, order[i + 1]);
                 request.put(ARG_SHOWENTRYSELECTFORM, "true");
                 String url = request.getUrl();
-                sb.append(HtmlUtils.span(HtmlUtils.href(url, order[i + 2]),
-                                        HtmlUtils.title(order[i + 3])
-                                        + HtmlUtils.cssClass("sortlinkoff")));
+                sb.append(
+                    HtmlUtils.span(
+                        HtmlUtils.href(url, order[i + 2]),
+                        HtmlUtils.title(order[i + 3])
+                        + HtmlUtils.cssClass("sortlinkoff")));
             }
         }
 
@@ -1078,6 +1099,7 @@ public class OutputHandler extends RepositoryManager {
         request.remove(ARG_SHOWENTRYSELECTFORM);
         request.put(ARG_ORDERBY, oldOrderBy);
         request.put(ARG_ASCENDING, oldAscending);
+
         return sb.toString();
 
     }
@@ -1089,6 +1111,7 @@ public class OutputHandler extends RepositoryManager {
      * @param request _more_
      * @param entries _more_
      * @param hideIt _more_
+     * @param dummyEntryName _more_
      *
      * @return _more_
      *
@@ -1097,6 +1120,7 @@ public class OutputHandler extends RepositoryManager {
     public String[] getEntryFormStart(Request request, List entries,
                                       boolean hideIt, String dummyEntryName)
             throws Exception {
+
         if (hideIt) {
             hideIt = !request.get(ARG_SHOWENTRYSELECTFORM, false);
         }
@@ -1109,9 +1133,11 @@ public class OutputHandler extends RepositoryManager {
                                        HtmlUtils.id(formId)));
 
 
-        List<Link> links = getRepository().getOutputLinks(request,
-                               new State(getEntryManager().getDummyGroup(dummyEntryName),
-                                         entries));
+        List<Link> links = getRepository().getOutputLinks(
+                               request,
+                               new State(
+                                   getEntryManager().getDummyGroup(
+                                       dummyEntryName), entries));
 
         List<String> linkCategories = new ArrayList<String>();
         Hashtable<String, List<HtmlUtils.Selector>> linkMap =
@@ -1147,8 +1173,9 @@ public class OutputHandler extends RepositoryManager {
             if (icon == null) {
                 icon = getRepository().iconUrl(ICON_BLANK);
             }
-            linksForCategory.add(new HtmlUtils.Selector(outputType.getLabel(),
-                    outputType.getId(), icon, 20));
+            linksForCategory.add(
+                new HtmlUtils.Selector(
+                    outputType.getLabel(), outputType.getId(), icon, 20));
         }
 
         ArrayList<HtmlUtils.Selector> tfos =
@@ -1175,19 +1202,19 @@ public class OutputHandler extends RepositoryManager {
 
 
         String arrowImg = HtmlUtils.img(hideIt
-                                       ? getRepository().iconUrl(
-                                           ICON_RIGHTDART)
-                                       : getRepository().iconUrl(
-                                           ICON_DOWNDART), msg(
-                                               "Show/Hide Form"), HtmlUtils.id(
-                                               base + "img"));
+                                        ? getRepository().iconUrl(
+                                            ICON_RIGHTDART)
+                                        : getRepository()
+                                            .iconUrl(ICON_DOWNDART), msg(
+                                                "Show/Hide Form"), HtmlUtils
+                                                    .id(base + "img"));
         String link = HtmlUtils.space(2)
                       + HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
                           + ".groupToggleVisibility()"), arrowImg);
         String selectId = base + "select";
         formSB.append(HtmlUtils.span(selectSB.toString(),
-                                    HtmlUtils.cssClass("entrylistform")
-                                    + HtmlUtils.id(selectId) + (hideIt
+                                     HtmlUtils.cssClass("entrylistform")
+                                     + HtmlUtils.id(selectId) + (hideIt
                 ? HtmlUtils.style("display:none; visibility:hidden;")
                 : "")));
         formSB.append(
@@ -1200,7 +1227,9 @@ public class OutputHandler extends RepositoryManager {
                         HtmlUtils.squote(selectId), (hideIt
                 ? "0"
                 : "1")))));
+
         return new String[] { link, base, formSB.toString() };
+
     }
 
 
@@ -1226,7 +1255,8 @@ public class OutputHandler extends RepositoryManager {
                 "new EntryRow",
                 HtmlUtils.comma(
                     HtmlUtils.squote(entry.getId()), HtmlUtils.squote(rowId),
-                    HtmlUtils.squote(cbxId), HtmlUtils.squote(cbxWrapperId))));
+                    HtmlUtils.squote(cbxId),
+                    HtmlUtils.squote(cbxWrapperId))));
 
         String cbx =
             HtmlUtils.checkbox(
@@ -1258,6 +1288,7 @@ public class OutputHandler extends RepositoryManager {
     public String getEntryFormEnd(Request request, String formId) {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.formClose());
+
         //        sb.append(HtmlUtils.script(HtmlUtils.callln("initEntryListForm",HtmlUtils.squote(formId))));
         return sb.toString();
     }
@@ -1338,13 +1369,13 @@ public class OutputHandler extends RepositoryManager {
             String[] tuple = getEntryFormStart(request,
                                  ((entriesToCheck != null)
                                   ? entriesToCheck
-                                  : entries), true,"Search Results");
+                                  : entries), true, "Search Results");
             link = tuple[0];
             base = tuple[1];
             sb.append(tuple[2]);
         }
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
+                                 HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
         sb.append("\n\n");
         int          cnt  = 0;
         StringBuffer jsSB = new StringBuffer();
@@ -1411,6 +1442,7 @@ public class OutputHandler extends RepositoryManager {
         if (doFormClose) {
             sb.append(getEntryFormEnd(request, base));
         }
+
         return link;
     }
 
@@ -1556,10 +1588,12 @@ public class OutputHandler extends RepositoryManager {
 
         List   items          = new ArrayList();
         Object initialMessage = request.remove(ARG_MESSAGE);
-        String onLinkTemplate = getRepository().getPageHandler().getTemplateProperty(request,
-                                    "ramadda.template.sublink.on", "");
-        String offLinkTemplate = getRepository().getPageHandler().getTemplateProperty(request,
-                                     "ramadda.template.sublink.off", "");
+        String onLinkTemplate =
+            getRepository().getPageHandler().getTemplateProperty(request,
+                "ramadda.template.sublink.on", "");
+        String offLinkTemplate =
+            getRepository().getPageHandler().getTemplateProperty(request,
+                "ramadda.template.sublink.off", "");
         for (Link link : links) {
             OutputType outputType = link.getOutputType();
             String     url        = link.getUrl();
@@ -1577,6 +1611,7 @@ public class OutputHandler extends RepositoryManager {
         if (initialMessage != null) {
             request.put(ARG_MESSAGE, initialMessage);
         }
+
         return items;
     }
 
@@ -1680,6 +1715,7 @@ public class OutputHandler extends RepositoryManager {
             if (true) {
                 return null;
             }
+
             /*
             if (entry.hasAreaDefined()) {
                 return request.url(repository.URL_GETMAP, ARG_SOUTH,
@@ -1700,10 +1736,10 @@ public class OutputHandler extends RepositoryManager {
 
 
         return HtmlUtils.url(request.url(repository.URL_ENTRY_GET) + "/"
-                            + (addVersion
-                               ? ("v" + (imageVersionCnt++))
-                               : "") + getStorageManager().getFileTail(
-                                   entry), ARG_ENTRYID, entry.getId());
+                             + (addVersion
+                                ? ("v" + (imageVersionCnt++))
+                                : "") + getStorageManager().getFileTail(
+                                    entry), ARG_ENTRYID, entry.getId());
     }
 
 
@@ -1727,6 +1763,7 @@ public class OutputHandler extends RepositoryManager {
         if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
             sb.append(getEntryManager().getCommentHtml(request, entry));
         }
+
         return sb;
 
     }
@@ -1801,32 +1838,36 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Make tabs
      *
-     * @param titles _more_
-     * @param tabs _more_
-     * @param skipEmpty _more_
+     * @param titles   the titles for the tabs
+     * @param tabs     the list of tabs (entries)
+     * @param skipEmpty  skip empty tab flag
      *
-     * @return _more_
+     * @return  the tabs HTML
      */
     public static String makeTabs(List titles, List tabs, boolean skipEmpty) {
         return makeTabs(titles, tabs, skipEmpty, false);
     }
 
     /**
-     * _more_
+     * Make tabs
      *
-     * @param titles _more_
-     * @param tabs _more_
-     * @param skipEmpty _more_
+     * @param titles   the titles for the tabs
+     * @param tabs     the list of tabs (entries)
+     * @param skipEmpty  skip empty tab flag
+     * @param useCookies  use cookies flag
      *
-     * @return _more_
+     * @return  the tabs HTML
      */
-    public static String makeTabs(List titles, List tabs, boolean skipEmpty, boolean useCookies) {
+    public static String makeTabs(List titles, List tabs, boolean skipEmpty,
+                                  boolean useCookies) {
         StringBuffer tabHtml = new StringBuffer();
         String       tabId   = "tabId" + (tabCnt++);
         tabHtml.append("\n\n");
-        tabHtml.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.id(tabId)));
+        tabHtml.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                      HtmlUtils.id(tabId)
+                                      + HtmlUtils.cssClass("ui-tabs")));
         tabHtml.append(HtmlUtils.open(HtmlUtils.TAG_UL));
         int cnt = 1;
         for (int i = 0; i < titles.size(); i++) {
@@ -1849,18 +1890,19 @@ public class OutputHandler extends RepositoryManager {
                         || (tabContents.length() == 0))) {
                 continue;
             }
-            tabHtml.append(HtmlUtils.div(tabContents,
-                                        HtmlUtils.id(tabId + "-" + (cnt++))));
+            tabHtml.append(HtmlUtils.div(tabContents, HtmlUtils.id(tabId
+                    + "-" + (cnt++)) + HtmlUtils.cssClass("ui-tabs-hide")));
             tabHtml.append("\n");
         }
 
         tabHtml.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         tabHtml.append("\n");
         tabHtml.append(HtmlUtils.script("\njQuery(function(){\njQuery('#"
-                                       + tabId + "').tabs(" + 
-                (useCookies ? "{cookie: {expires:1}}":"") + 
-                ");\n});\n"));
+                                        + tabId + "').tabs(" + (useCookies
+                ? "{cookie: {expires:1}}"
+                : "") + ");\n});\n"));
         tabHtml.append("\n\n");
+
         return tabHtml.toString();
     }
 
@@ -1879,7 +1921,8 @@ public class OutputHandler extends RepositoryManager {
     public String htmlInput(Request request, String arg, String dflt,
                             int width) {
         return HtmlUtils.input(arg, request.getString(arg, dflt),
-                              HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "" + width));
+                               HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+                                   "" + width));
     }
 
 
@@ -1956,8 +1999,8 @@ public class OutputHandler extends RepositoryManager {
         if ( !request.getUser().getAnonymous()) {
             StringBuffer publishSB = new StringBuffer();
             sb.append(HtmlUtils.hidden(ARG_PUBLISH_ENTRY + "_hidden", "",
-                                      HtmlUtils.id(ARG_PUBLISH_ENTRY
-                                          + "_hidden")));
+                                       HtmlUtils.id(ARG_PUBLISH_ENTRY
+                                           + "_hidden")));
             sb.append(HtmlUtils.row(HtmlUtils.colspan(header, 2)));
 
             String select = OutputHandler.getSelect(request,
@@ -1974,12 +2017,11 @@ public class OutputHandler extends RepositoryManager {
                         ARG_PUBLISH_ENTRY, "",
                         HtmlUtils.id(ARG_PUBLISH_ENTRY)
                         + HtmlUtils.SIZE_60) + select + HtmlUtils.space(2)
-                                            + addMetadata));
+                                             + addMetadata));
 
             if (addNameField) {
                 sb.append(HtmlUtils.formEntry(msgLabel("Name"),
-                                             htmlInput(request,
-                                                 ARG_PUBLISH_NAME, "", 30)));
+                        htmlInput(request, ARG_PUBLISH_NAME, "", 30)));
             }
 
         }
