@@ -437,6 +437,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_GROUP + "Information", WIKI_PROP_INFORMATION,
         WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_DATE_FROM,
         WIKI_PROP_DATE_TO, WIKI_PROP_LINK, WIKI_PROP_HTML,
+        WIKI_PROP_IMPORT,
         WIKI_PROP_GROUP + "Layout",
         prop(WIKI_PROP_LINKS,
              attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
@@ -992,9 +993,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             Result result = getHtmlOutputHandler().getHtmlResult(request,
                                 OutputHandler.OUTPUT_HTML, entry);
-
             return new String(result.getContent());
-
         } else if (include.equals(WIKI_PROP_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
