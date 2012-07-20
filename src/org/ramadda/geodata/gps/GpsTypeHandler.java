@@ -40,6 +40,8 @@ import java.util.List;
  */
 public class GpsTypeHandler extends GenericTypeHandler {
 
+    public static final String TYPE_GPS = "project_gps";
+
     /** _more_ */
     public static final String TYPE_RINEX = "project_gps_rinex";
 

@@ -265,6 +265,10 @@ public class GpsOutputHandler extends OutputHandler {
         return entry.getTypeHandler().isType(GpsTypeHandler.TYPE_RAW);
     }
 
+    private boolean isGps(Entry entry) {
+        return entry.getTypeHandler().isType(GpsTypeHandler.TYPE_GPS);
+    }
+
     /**
      * _more_
      *
@@ -314,19 +318,21 @@ public class GpsOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if (!haveTeqc()) {
-            return;
-        }
+
         if (state.group != null) {
-            boolean addedToRinex = false;
-            for (Entry child : state.getAllEntries()) {
-                if (isRawGps(child)) {
-                    if(!addedToRinex) {
+            List<Entry> entries = state.getAllEntries();
+            if (haveTeqc()) {
+                for (Entry child : entries) {
+                    if (isRawGps(child)) {
                         links.add(makeLink(request, state.group,
                                            OUTPUT_GPS_TORINEX));
-                        addedToRinex = true;
+                        break;
                     }
+                }
+            }
 
+            for (Entry child : entries) {
+                if(isGps(child)) {
                     if(getAccessManager().canEditEntry(request,child)) {
                         links.add(makeLink(request, state.group,
                                            OUTPUT_GPS_BULKEDIT));
@@ -334,22 +340,20 @@ public class GpsOutputHandler extends OutputHandler {
                     }
                 }
             }
-            for (Entry child : state.getAllEntries()) {
+            for (Entry child : entries) {
                 if (isRinex(child)) {
                     links.add(makeLink(request, state.group,
                                        OUTPUT_GPS_OPUS));
                     break;
                 }
             }
-            for (Entry child : state.getAllEntries()) {
+            for (Entry child : entries) {
                 if (isOpus(child)) {
                     links.add(makeLink(request, state.group,
                                        OUTPUT_GPS_CONTROLPOINTS));
                     break;
                 }
             }
-
-
         } else if (state.entry != null) {
             if (isRawGps(state.entry)) {
                 links.add(makeLink(request, state.entry,
@@ -814,10 +818,20 @@ public class GpsOutputHandler extends OutputHandler {
         throws Exception {
 
         HashSet selected = null;
+        HashSet changed = new HashSet();
         StringBuffer sb = new StringBuffer();
         if (request.get(ARG_RINEX_PROCESS, false)) {
             selected=  new HashSet();
             int cnt = 0;
+            Double overrideHeight = null;
+            String overrideAntenna = null;
+            if(request.defined(ARG_GPS_ANTENNA_TYPE) && !request.getString(ARG_GPS_ANTENNA_TYPE,"").trim().equals(Antenna.NONE.trim())) {
+                overrideAntenna = request.getString(ARG_GPS_ANTENNA_TYPE,"");
+            }
+            if(request.defined(ARG_GPS_ANTENNA_HEIGHT)) {
+                overrideHeight =  new Double(request.get(ARG_GPS_ANTENNA_HEIGHT,0.0));
+            }
+
             while(true) {
                 cnt++;
                 String suffix = "_" + cnt;
@@ -845,20 +859,31 @@ public class GpsOutputHandler extends OutputHandler {
                     throw new AccessException("Cannot edit:" + entry.getLabel(),
                                               request);
                 }
-
-                selected.add(entry.getId());
                 Object [] values = ((GenericTypeHandler)entry.getTypeHandler()).getEntryValues(entry);
-                if(request.defined(ARG_GPS_ANTENNA_TYPE+suffix)) {
+                Object oldAntenna = values[IDX_ANTENNA_TYPE];
+                Object oldHeight = values[IDX_ANTENNA_HEIGHT];
+                selected.add(entry.getId());
+                if(overrideAntenna!=null) {
+                    values[IDX_ANTENNA_TYPE] = overrideAntenna;
+                } else if(request.defined(ARG_GPS_ANTENNA_TYPE+suffix)) {
                     values[IDX_ANTENNA_TYPE] = request.getString(ARG_GPS_ANTENNA_TYPE+suffix,"");
                 }
-                if(request.defined(ARG_GPS_ANTENNA_HEIGHT+suffix)) {
+                if(overrideHeight!=null) {
+                    values[IDX_ANTENNA_HEIGHT] = overrideHeight;
+                } else if(request.defined(ARG_GPS_ANTENNA_HEIGHT+suffix)) {
                     values[IDX_ANTENNA_HEIGHT] = new Double(request.get(ARG_GPS_ANTENNA_HEIGHT+suffix,0.0));
                 }
                 entry.setValues(values);
-                getEntryManager().storeEntry(entry);
+                if(!Misc.equals(oldAntenna,values[IDX_ANTENNA_TYPE]) ||
+                   !Misc.equals(oldHeight, values[IDX_ANTENNA_HEIGHT])) {
+                    changed.add(entry.getId());
+                    getEntryManager().storeEntry(entry);
+                }
             }
-            if(selected.size()>0) {
-                sb.append(getRepository().showDialogNote(msg("Entries have been edited")));
+            if(changed.size()>0) {
+                sb.append(getRepository().showDialogNote(changed.size() +" " + msg("entries have been updated")));
+            } else if(selected.size()>0) {
+                sb.append(getRepository().showDialogNote(msg("No entries were changed")));
             }
         } 
 
@@ -893,7 +918,7 @@ public class GpsOutputHandler extends OutputHandler {
             boolean entrySelected = true;
             if(selected!=null)
                 entrySelected = selected.contains(entry.getId());
-            sb.append(HtmlUtils.row(HtmlUtils.cols((selected!=null&&entrySelected?"Edited":""),
+            sb.append(HtmlUtils.row(HtmlUtils.cols(changed.contains(entry.getId())?"Changed":"",
                                                    HtmlUtils.checkbox(ARG_GPS_SELECTED +suffix, "true",
                                                                       entrySelected),
                                                    entry.getName(),
@@ -905,6 +930,14 @@ public class GpsOutputHandler extends OutputHandler {
                                                                     entry.getValue(IDX_ANTENNA_TYPE, "")))));
 
         }
+
+        sb.append(HtmlUtils.row(HtmlUtils.cols("",
+                                               "",
+                                               msgLabel("Override values"),
+                                               HtmlUtils.input(ARG_GPS_ANTENNA_HEIGHT,"",5),
+                                               HtmlUtils.select(ARG_GPS_ANTENNA_TYPE,
+                                                                Antenna.getAntennas(), ""))));
+
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
