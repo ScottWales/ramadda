@@ -100,7 +100,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
     private void initActions() throws Exception {
         actions.add(new EmailAction());
-        actions.add(new TwitterAction());
+        //The twitter post does not work now due to authentication changes
+        //actions.add(new TwitterAction());
         actions.add(new CopyAction());
         //        actions.add(new FtpAction());
         actions.add(new LdmAction());
