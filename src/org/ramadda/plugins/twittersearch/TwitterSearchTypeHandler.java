@@ -72,6 +72,10 @@ public class TwitterSearchTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
+        if ( !isDefaultHtmlOutput(request)) {
+            return null;
+        }
+
         StringBuffer sb = new StringBuffer();
         String template =
             getRepository().getResource(
