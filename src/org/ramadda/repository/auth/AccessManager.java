@@ -852,8 +852,12 @@ public class AccessManager extends RepositoryManager {
         Hashtable        map         = new Hashtable();
         List<Permission> permissions = getPermissions(entry);
         for (Permission permission : permissions) {
+            List roles = permission.getRoles();
+            if(roles.contains(UserManager.ROLE_NONE)) {
+                map.put(permission.getAction()+".hasnone", "true");
+            }
             map.put(permission.getAction(),
-                    StringUtil.join("\n", permission.getRoles()));
+                    StringUtil.join("\n", roles));
         }
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
 
@@ -883,6 +887,7 @@ public class AccessManager extends RepositoryManager {
         sb.append("</tr>");
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             String roles = (String) map.get(Permission.ACTIONS[i]);
+            boolean hasNoneRole = map.get(Permission.ACTIONS[i]+".hasnone")!=null;
             if (roles == null) {
                 roles = "";
             }
@@ -904,6 +909,11 @@ public class AccessManager extends RepositoryManager {
                             + msg(actionName);
 
             String message = "";
+            //If there isn't a none defined here and there are roles then
+            //tell te user what's up
+            if(!hasNoneRole && roles.length()>0) {
+                //                message=msg("No block defined");
+            }
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
                     HtmlUtils.textArea(ARG_ROLES + "."
                                       + Permission.ACTIONS[i], roles, 5,
