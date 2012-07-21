@@ -404,7 +404,7 @@ public class AccessManager extends RepositoryManager {
                                      String action, User user,
                                      String requestIp)
             throws Exception {
-        boolean stop = getProperty(PROP_STOPATFIRSTROLE,true);
+        boolean stop = getProperty(PROP_STOPATFIRSTROLE,false);
         //System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry);
         while (entry != null) {
             boolean hadAccessGrant = false;
