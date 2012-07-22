@@ -48,10 +48,17 @@ settings for all of the ancestor folders of the entry and allows the user to see
 are applicable to the entry.
 <p>
 To see if a given user has the ability to do a particular action for a particular entry RAMADDA looks
-at the permissions for the entry. If the user matches one of the roles then permission is granted.
-If there is a specific denial of permission then permission is not granted.
-If nothing matches then the permissions of the parent entry are checked. This process continues
-to the top most entry.
+at the permissions for the entry. 
+<ul>
+<li> If there are no permissions defined then the parent entry is recursively checked.
+<li> If the user matches one of the roles then permission is granted.
+<li> If there is a specific denial of permission (e.g, "none") then permission is not granted.
+<li> If nothing matches then, by default, permission is not granted. However, the permissions 
+of the parent are checked if there is a special role "inherit" defined. Also, if the RAMADDA
+repository has the property <i>ramadda.auth.stopatfirstrole=false</i> set to false then the parent 
+is always checked.
+<li> This process continues to the top most entry which has a set of default permissions.
+</ul> 
 <p>
 In the example shown above any user in the role "group1" can view anything under the Parent Folder.
 No other user can view the Parent Folder because of the "none" specified.
@@ -61,7 +68,7 @@ the Parent Folder.
 
 Here are other examples:
 <ul>
-<li> To make a whole tree of entrys inaccessable - under the <i>view</i>   action enter:
+<li> To make a whole tree of entrys inaccessable - under the <i>view</i> action enter:
 <div class="access-example">
 none
 </div>
@@ -74,8 +81,10 @@ none
 
 RAMADDA would first check if the given user was "joe". If it is "joe" then permission is granted. If
 its not "joe" then RAMADDA looks at the next role - "none". This blocks any other access.
+
 <div class="important">
-Note: If you did not specify "none" here then the parent Folder would be checked. 
+Note: If you did not specify "none" here then permission  would still be denied unless
+the <i>ramadda.auth.stopatfirstrole=false</i> property has been set for the entire repository.
 </div>
 
 <li> To allow for a group of users in the role "group1" to be able to edit and create new entries under a whole 
@@ -89,14 +98,16 @@ for both the <i>edit</i> and the <i>new</i> actions.
 example above) but to grant new and edit capabilities to some other user to a sub tree. For this you would 
 grant the access to the parent entry like above, e.g.:
 <ul>
-<li> parent entry - access = <div class="access-example">group1</div>
-<ul>
-<li> ...
-<ul>
-<li> descendent entry - access = <div class="access-example">otheruser</div>
+  <li> parent entry - access = <div class="access-example">group1</div>
+  <ul>
+    <li> ...
+       <ul>
+          <li> descendent entry - access = <div class="access-example">otheruser<br>inherit</div>
+       </ul>
+   </ul>
 </ul>
-</ul>
-</ul>
+
+Because the descendent entry has "inherit" defined then the parent entry is checked.
 
 </ul>
 
