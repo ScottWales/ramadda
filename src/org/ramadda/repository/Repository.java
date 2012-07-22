@@ -732,7 +732,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void shutdown() {
         try {
-            System.out.println("RAMADDA: shutting down");
+            println("RAMADDA: shutting down");
             active = false;
             for (RepositoryManager repositoryManager : repositoryManagers) {
                 try {
@@ -921,12 +921,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             File catalinaConfFile = new File(catalinaBase
                                              + "/conf/repository.properties");
             if (catalinaConfFile.exists()) {
-                System.out.println("RAMADDA: loading:" + catalinaConfFile);
+                println("RAMADDA: loading:" + catalinaConfFile);
                 loadProperties(properties, catalinaConfFile.toString());
             } else {
                 //A hack to run on unavco facility server
                 if (new File("/export/home/jeffmc/ramaddadev").exists()) {
-                    System.out.println(
+                    println(
                         "RAMADDA:  Using /export/home/jeffmc/ramaddadev");
                     properties.put(PROP_REPOSITORY_HOME,
                                    "/export/home/jeffmc/ramaddadev");
@@ -942,7 +942,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 new File(glassfish
                          + "/glassfish/config/repository.properties");
             if (confFile.exists()) {
-                System.out.println("RAMADDA: loading:" + confFile);
+                println("RAMADDA: loading:" + confFile);
                 loadProperties(properties, confFile.toString());
             }
         }
@@ -959,7 +959,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                "repository.properties");
 
             if (new File(localPropertyFile).exists()) {
-                System.out.println("RAMADDA: loading local property file:"
+                println("RAMADDA: loading local property file:"
                                    + localPropertyFile);
                 loadProperties(properties, localPropertyFile);
             } else {}
@@ -990,10 +990,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         readOnly = getProperty(PROP_READ_ONLY, false);
         doCache  = getProperty(PROP_DOCACHE, true);
         if (readOnly) {
-            System.out.println("RAMADDA: running in readonly mode");
+            println("RAMADDA: running in readonly mode");
         }
         if ( !doCache) {
-            System.out.println("RAMADDA: running with no in-memory cache");
+            println("RAMADDA: running with no in-memory cache");
         }
 
         setUrlBase((String) properties.get(PROP_HTML_URLBASE));
@@ -2950,7 +2950,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         double usedMemory    = (highWaterMark - freeMemory);
         usedMemory = usedMemory / 1000000.0;
 
-        //        System.out.println("http://ramadda.org" +request);
+        //        println("http://ramadda.org" +request);
         System.err.println(msg + ((int) usedMemory));
 
     }
@@ -2978,7 +2978,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (sslRedirect != null) {
             return sslRedirect;
         }
-        //        System.out.println(absoluteUrl(request.getUrl()));
+        //        println(absoluteUrl(request.getUrl()));
 
         request.setApiMethod(apiMethod);
         apiMethod.incrNumberOfCalls();
@@ -5689,7 +5689,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getPluginManager().getPythonLibs();
     }
 
-
+    public static void println(String msg) {
+        System.err.println(msg);
+    }
 
 
 }
