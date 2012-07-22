@@ -2157,13 +2157,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 title         = Misc.getProperty(props, ATTR_TITLE, title);
             }
 
-            boolean inBlock = Misc.getProperty(props, ATTR_SHOWHIDE, true);
-            boolean open    = Misc.getProperty(props, ATTR_OPEN, true);
-
+            boolean inBlock = Misc.getProperty(props, ATTR_SHOWTOGGLE, Misc.getProperty(props, ATTR_SHOWHIDE, false));
             if (inBlock && (title != null)) {
+                boolean open    = Misc.getProperty(props, ATTR_OPEN, true);
                 return HtmlUtils.makeShowHideBlock(title, propertyValue,
                         open, HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "");
-                //                        HtmlUtils.cssClass("wiki-tocheader"),   HtmlUtils.cssClass("wiki-toc"));
             }
 
             return propertyValue;
