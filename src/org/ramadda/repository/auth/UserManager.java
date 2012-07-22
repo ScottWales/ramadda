@@ -84,6 +84,7 @@ public class UserManager extends RepositoryManager {
     public static final String ROLE_USER = "user";
     public static final String ROLE_ANONYMOUS = "anonymous";
     public static final String ROLE_GUEST = "guest";
+    public static final String ROLE_INHERIT = "inherit";
 
 
     /** _more_ */

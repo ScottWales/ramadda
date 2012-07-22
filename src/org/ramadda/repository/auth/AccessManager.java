@@ -404,9 +404,10 @@ public class AccessManager extends RepositoryManager {
                                      String action, User user,
                                      String requestIp)
             throws Exception {
-        boolean stop = getProperty(PROP_STOPATFIRSTROLE,false);
+        boolean stop = getProperty(PROP_STOPATFIRSTROLE,true);
         //System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry);
         while (entry != null) {
+            boolean  hadInherit= false;
             boolean hadAccessGrant = false;
             List<String> roles       = (List<String>) getRoles(entry, action);
             if (roles != null) {
@@ -436,6 +437,10 @@ public class AccessManager extends RepositoryManager {
 
                 for (String role : roles) {
                     boolean negated = false;
+                    if(UserManager.ROLE_INHERIT.equals(role)) {
+                        hadInherit  =true;
+                        continue;
+                    }
                     if (role.startsWith("!")) {
                         negated = true;
                         role    = role.substring(1);
@@ -458,10 +463,8 @@ public class AccessManager extends RepositoryManager {
                 }
                 //If we had an access grant here (i.e., a non negated role)
                 //and the user did not fall under that role then block access
-                if(stop) {
-                    if(hadAccessGrant) {
-                        return false;
-                    }
+                if(!hadInherit && stop && hadAccessGrant) {
+                    return false;
                 }
             }
             //LOOK: make sure we pass in false here which says do not check for access control
