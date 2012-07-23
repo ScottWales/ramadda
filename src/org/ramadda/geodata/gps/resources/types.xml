@@ -2,6 +2,7 @@
 
 
   <type name="project_gps"  description="GPS File" foruser="false" category="Field Project"  handler="org.ramadda.geodata.gps.GpsTypeHandler">
+     <property name="location.format" value="####0.00000000"/>
      <property name="icon" value="/gps/gps.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
@@ -22,6 +23,7 @@
 
   <type name="project_gps_opus"  description="OPUS Solution" category="Field Project" pattern=".*\.opus"
         handler="org.ramadda.geodata.gps.OpusTypeHandler">
+     <property name="location.format" value="####0.00000000"/>
      <property name="icon" value="/gps/tux.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>

@@ -51,6 +51,8 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.BufferedInputStream;
+import java.text.DecimalFormat;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -194,6 +196,11 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     public String wikiTemplate;
+
+
+
+    private DecimalFormat latLonFormat = new DecimalFormat("##0.00");
+
 
 
     /** _more_ */
@@ -387,6 +394,13 @@ public class TypeHandler extends RepositoryManager {
             }
             parent.addChildTypeHandler(this);
         }
+
+        String llf = getProperty("location.format",(String)null);
+        if(llf!=null) {
+            latLonFormat = new DecimalFormat(llf);
+        }
+
+
     }
 
     /**
@@ -1989,8 +2003,8 @@ public class TypeHandler extends RepositoryManager {
             if (showMap) {
                 if (entry.hasLocationDefined()) {
                     sb.append(formEntry(request, msgLabel("Location"),
-                                        Misc.format(entry.getSouth()) + "/"
-                                        + Misc.format(entry.getEast())));
+                                        formatLocation(entry.getSouth(),
+                                                       + entry.getEast())));
                 } else if (entry.hasAreaDefined()) {
                     /*
                     String img =
@@ -2023,6 +2037,17 @@ public class TypeHandler extends RepositoryManager {
         return sb;
 
     }
+
+    public String formatLocation(double lat, double lon) {
+        if(latLonFormat!=null) {
+            synchronized(latLonFormat) {
+                return latLonFormat.format(lat) +"/" + latLonFormat.format(lon);
+            }
+        }
+        return Misc.format(lat) +"/" + Misc.format(lon);
+    }
+
+
 
     /**
      * _more_

@@ -144,8 +144,8 @@ Easting (X)  [meters]      379359.228           836346.070
          */
         //        List<String> 
         Object[] values = entry.getTypeHandler().getValues(entry);
-        String[] patterns = { "Northing\\s*\\(Y\\)\\s*\\[meters\\]\\s*([-\\.\\d]+) ",
-                              "Easting\\s*\\(X\\)\\s*\\[meters\\]\\s*([-\\.\\d]+) ",
+        String[] patterns = { "Northing\\s*\\(Y\\)\\s*\\[meters\\]\\s*([-\\.\\d]+)\\s+",
+                              "Easting\\s*\\(X\\)\\s*\\[meters\\]\\s*([-\\.\\d]+)\\s+",
                               "X:\\s*([-\\.\\d]+)\\(",
                               "Y:\\s*([-\\.\\d]+)\\(",
                               "Z:\\s*([-\\.\\d]+)\\(", };
@@ -180,5 +180,27 @@ Easting (X)  [meters]      379359.228           836346.070
         }
     }
 
+    public static void main(String[]args) {
+        String opus = "Northing (Y) [meters]     3634840.411\n" +
+            "Easting (X)  [meters]      734737.791\n";
+        String[] patterns = { "Northing\\s*\\(Y\\)\\s*\\[meters\\]\\s*([-\\.\\d]+)\\s+",
+                              "Easting\\s*\\(X\\)\\s*\\[meters\\]\\s*([-\\.\\d]+)\\s+",
+                              "X:\\s*([-\\.\\d]+)\\(",
+                              "Y:\\s*([-\\.\\d]+)\\(",
+                              "Z:\\s*([-\\.\\d]+)\\(", };
+        for (int i = 0; i < patterns.length; i++) {
+            String value = StringUtil.findPattern(opus, patterns[i]);
+            if (value != null) {
+                System.err.println("i:" + i +" " + patterns[i] +" " + value);
+            } else {
+                System.err.println("i:" + i +" " + patterns[i] +" BAD" );
+            }
+        }
+
+
+
+
+
+    }
 
 }
