@@ -446,10 +446,10 @@ public class Admin extends RepositoryManager {
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
                             topEntry.getName()));
                     topEntry.setDescription(
-                                            "<wiki>\nWelcome to your RAMADDA server.\n\n===Next steps===\n*Join the <a href=\"https://lists.sourceforge.net/lists/listinfo/ramadda-users\" target=_other>RAMADDA mailing list</a>\n*<a href=\""
+                                            "<wiki>\nWelcome to your RAMADDA server.\n\n===Next steps===\n*Join the <a href=\"https://lists.sourceforge.net/lists/listinfo/ramadda-users\" target=_other>RAMADDA mailing list</a>.\n*<a href=\""
                         + getRepository().URL_ENTRY_FORM + "?entryid="
                         + topEntry.getId()
-                        + "\">Edit</a> this page\n*Send any questions or requests to <a href=\"mailto:support@ramadda.org\">support@ramadda.org</a>\n\n<p>\n\n===Content===\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
+                        + "\">Edit</a> this page\n*Use the RAMADDA <a href=\"https://sourceforge.net/projects/ramadda/support\">SourceForge support form</a> for support requests.\n*Or send any questions or requests to <a href=\"mailto:support@ramadda.org\">support@ramadda.org</a>\n\n<p>\n\n===Content===\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
                     getEntryManager().storeEntry(topEntry);
 
 

@@ -1,8 +1,8 @@
 
 <api handler="org.ramadda.geodata.gps.GpsApiHandler" id="gps">
 
-<!--The Browse LiDAR search form -->
-      <api request="/gps/addopus"    method="processAddOpus"  name="Add OPUS"/>
+<!--The add to opus form -->
+      <api request="/gps/addopus"    method="processAddOpus"  name="Add OPUS" admin="false"/>
 
 
 </api>
