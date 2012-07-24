@@ -364,6 +364,39 @@ sh ramadda.sh
 </ul>
 
 
+<a name="initdesc"></a><div class="pagesubtitle">12.0.7 Changing the initial welcome text and entries</div> 
+When RAMADDA is first installed it populates your repository with some initial folders and sets the description
+of the root entry with some initial text. You can override what entries are created and what the text is (for example, if
+you wanted to configure a number of different RAMADDA servers).
+
+<p>
+To change the description used just create a file <i>initdescription.txt</i> in the RAMADDA home directory. This file, if it exists,
+is read by RAMADDA. You can see the default one in the source tree at:
+<pre>
+src/org/ramadda/repository/resources/examples/initdescription.txt
+</pre>
+
+This file contains 2 macros:<pre>
+$<filler>{root} - the top-level URL path
+$<filler>{topid} - the ID of the root entry
+</pre>
+
+To change what entries are created RAMADDA looks for a <i>initentries.xml</i> file in the RAMADDA home directory. The default file is:
+<pre>
+src/org/ramadda/repository/resources/examples/initentries.xml
+</pre>
+
+
+This is just the entries xml format. The ID of the top-level entry is simply "root", e.g.:
+<pre>
+&lt;entries&gt;
+&lt;entry parent="root" name="Projects" type="group"&gt;
+&lt;description&gt;A place to store projects&lt;/description&gt;
+&lt;/entry&gt;
+&lt;/entries&gt;
+</pre>
+
+
 
 <p>
 
