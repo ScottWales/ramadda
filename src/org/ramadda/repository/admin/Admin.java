@@ -445,17 +445,38 @@ public class Admin extends RepositoryManager {
                     Entry topEntry = getEntryManager().getTopGroup();
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
                             topEntry.getName()));
-                    topEntry.setDescription(
-                                            "<wiki>\nWelcome to your RAMADDA server.\n\n===Next steps===\n*Join the <a href=\"https://lists.sourceforge.net/lists/listinfo/ramadda-users\" target=_other>RAMADDA mailing list</a>.\n*<a href=\""
-                        + getRepository().URL_ENTRY_FORM + "?entryid="
-                        + topEntry.getId()
-                        + "\">Edit</a> this page\n*Use the RAMADDA <a href=\"https://sourceforge.net/projects/ramadda/support\">SourceForge support form</a> for support requests.\n*Or send any questions or requests to <a href=\"mailto:support@ramadda.org\">support@ramadda.org</a>\n\n<p>\n\n===Content===\nHere are some folders to get you started:<br>\n\n{{tree showtoggle=\"false\"}}\n");
+                    String description = null;
+                    File initDescFile =new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),"initdescription.txt"));
+                    if(initDescFile.exists()) {
+                        FileInputStream fis  = new FileInputStream(initDescFile);
+                        description = IOUtil.readContents(fis);
+                        IOUtil.close(fis);
+                    }
+
+
+                    if(description == null) {
+                        description = getRepository().getResource(
+                                                                  "/org/ramadda/repository/resources/examples/initdescription.txt");
+                    }
+
+                    description = description.replace("${topid}", topEntry.getId());
+                    description = description.replace("${root}", getRepository().getUrlBase());
+                    topEntry.setDescription(description);
                     getEntryManager().storeEntry(topEntry);
 
 
-                    String initEntriesXml =
-                        getRepository().getResource(
-                            "/org/ramadda/repository/resources/examples/initentries.xml");
+                    String initEntriesXml = null;
+                    File initFile =new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),"initentries.xml"));
+                    if(initFile.exists()) {
+                        FileInputStream fis  = new FileInputStream(initFile);
+                        initEntriesXml = IOUtil.readContents(fis);
+                        IOUtil.close(fis);
+                    }
+
+                    if(initEntriesXml==null) {
+                        initEntriesXml = getRepository().getResource(
+                                                                  "/org/ramadda/repository/resources/examples/initentries.xml");
+                    }
                     Element     root       = XmlUtil.getRoot(initEntriesXml);
                     List<Entry> newEntries =
                         getEntryManager().processEntryXml(
