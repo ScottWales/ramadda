@@ -1,0 +1,16 @@
+<wiki>
+Welcome to your RAMADDA server.
+
+===Next steps===
+* Join the <a href="https://lists.sourceforge.net/lists/listinfo/ramadda-users" target=_other>RAMADDA mailing list</a>.
+* <a href="${root}/entry/form?entryid=${topid}">Edit</a> this page
+* Use the RAMADDA <a href="https://sourceforge.net/projects/ramadda/support">SourceForge support form</a> for support requests.
+* Or send any questions or requests to <a href="mailto:support@ramadda.org">support@ramadda.org</a>
+
+<p>
+
+===Content===
+Here are some folders to get you started:<br>
+
+{{tree showtoggle="false"}}
+
