@@ -844,7 +844,7 @@ public class GpsOutputHandler extends OutputHandler {
                     throw new IllegalArgumentException("No entry:" + entryId);
                 }
 
-                if ( !isRawGps(entry)) {
+                if ( !isGps(entry)) {
                     sb.append(HtmlUtils.p());
                     continue;
                 }
@@ -899,7 +899,7 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.formTable());
         int cnt = 0;
         for (Entry entry : entries) {
-            if ( !isRawGps(entry)) {
+            if ( !isGps(entry)) {
                 continue;
             }
             if(!getAccessManager().canEditEntry(request, entry)) {
