@@ -41,6 +41,15 @@ form {
 	background: #fffeec;
 }
 
+
+.ramadda-system-message {
+   margin:4px;
+   padding:4px;
+//   background-color: #ff0000;
+   border: 1px solid #666;
+   font-weight: bold; 
+}
+
 .disabledinput {
    border : 0px #888888 solid;
    background: #dfdfdf;

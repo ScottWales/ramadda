@@ -99,6 +99,9 @@ public class SessionManager extends RepositoryManager {
                                                      Object>(5000);
 
 
+    /** _more_ */
+    private String sessionMessage = "";
+
     /**
      * _more_
      *
@@ -571,14 +574,6 @@ public class SessionManager extends RepositoryManager {
 
 
 
-    /** _more_ */
-    private Hashtable sessionMessages;
-    //    String sessionMessage;
-
-
-    /** _more_ */
-    private String sessionMessage = "";
-
     /**
      * _more_
      *
@@ -596,17 +591,7 @@ public class SessionManager extends RepositoryManager {
      * @return _more_
      */
     public String getSessionMessage(Request request) {
-        String sessionMessage = null;
-        Object id             = request.getSessionId();
-        if ((id != null) && (sessionMessages != null)) {
-            synchronized (sessionMessages) {
-                sessionMessage = (String) sessionMessages.get(id);
-                if (sessionMessage != null) {
-                    sessionMessages.remove(id);
-                }
-            }
-        }
-        return sessionMessage;
+        return getSessionMessage();
     }
 
 
@@ -617,16 +602,8 @@ public class SessionManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void setSessionMessage(String message) throws Exception {
+    public void setSessionMessage(String message)  {
         sessionMessage  = message;
-        sessionMessages = new Hashtable();
-        if ((message != null) && (message.trim().length() > 0)) {
-            synchronized (sessionMessages) {
-                for (Session session : getSessions()) {
-                    sessionMessages.put(session.getId(), message);
-                }
-            }
-        }
     }
 
 

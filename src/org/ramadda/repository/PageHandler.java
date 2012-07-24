@@ -307,8 +307,8 @@ public class PageHandler extends RepositoryManager {
         }
 
         String content = new String(result.getContent());
-        if (sessionMessage != null) {
-            content = repository.showDialogNote(sessionMessage) + content;
+        if (sessionMessage != null&& sessionMessage.length()>0) {
+            content = HtmlUtils.div(sessionMessage, HtmlUtils.cssClass("ramadda-system-message")) + content;
         }
 
         String head =
