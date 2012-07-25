@@ -295,7 +295,10 @@
         <unjar src="${lib_dir}/jetty-util.jar" dest="${tmpjar_dir}"/>
 -->
         <unjar src="${lib_dir}/lucene-core-3.0.3.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/mail.jar" dest="${tmpjar_dir}"/>
+<!--
         <unjar src="${lib_dir}/mailapi.jar" dest="${tmpjar_dir}"/>
+-->
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/gson-1.5.jar" dest="${tmpjar_dir}"/>
