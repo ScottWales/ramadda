@@ -2591,7 +2591,7 @@ public class EntryManager extends RepositoryManager {
                 .href(request
                     .url(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
                         .getId(), ARG_TYPE, typeHandler.getType()), img + " "
-                            + typeHandler.getLabel()));
+                      + msg(typeHandler.getLabel())));
 
             buffer.append(HtmlUtils.br());
         }
@@ -2600,9 +2600,9 @@ public class EntryManager extends RepositoryManager {
         for (String cat : categories) {
             sb.append(
                 HtmlUtils.col(
-                    HtmlUtils.b(cat)
+                              HtmlUtils.b(msg(cat))
                     + HtmlUtils.insetDiv(
-                        catMap.get(cat).toString(), 3, 15, 0, 0)));
+                                         catMap.get(cat).toString(), 3, 15, 0, 0)));
             colCnt++;
             if (colCnt > 3) {
                 sb.append("</tr><tr valign=top>");
