@@ -1988,7 +1988,7 @@ public class TypeHandler extends RepositoryManager {
             if ( !showImage) {
                 //Only show the created by and type when the user is logged in
                 //                if ( !request.isAnonymous()) {
-                sb.append(formEntry(request, msgLabel("Type"), typeDesc));
+                sb.append(formEntry(request, msgLabel("Type"), msg(typeDesc)));
                 //                }
             }
 
@@ -3114,7 +3114,7 @@ public class TypeHandler extends RepositoryManager {
                 if ( !typeHandler.getForUser()) {
                     continue;
                 }
-                tmp.add(new TwoFacedObject(typeHandler.getLabel(),
+                tmp.add(new TwoFacedObject(msg(typeHandler.getLabel()),
                                            typeHandler.getType()));
             }
             TwoFacedObject anyTfo = new TwoFacedObject(TYPE_ANY, TYPE_ANY);
@@ -3147,7 +3147,7 @@ public class TypeHandler extends RepositoryManager {
             basicSB.append(HtmlUtils.hidden(ARG_TYPE,
                                            typeHandlers.get(0).getType()));
             basicSB.append(formEntry(request, msgLabel("Type"),
-                                     typeHandlers.get(0).getDescription()));
+                                     msg(typeHandlers.get(0).getDescription())));
         }
 
 
