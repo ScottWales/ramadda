@@ -26,9 +26,10 @@ index.html
 
 
 >title:Geodata Facilities
->>pointdata.html
+#>>pointdata.html
 >>gridsubset.html
->>gridvisualization.html
+>>gridatpoint.html
+#>>gridvisualization.html
 >>idvpublisher.html
 
 >title:Installation and Site Administration:These pages are intended for Site Administrators

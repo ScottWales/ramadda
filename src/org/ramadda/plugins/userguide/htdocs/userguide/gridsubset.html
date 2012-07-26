@@ -7,14 +7,14 @@
 
 <body>
 <table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="pointdata.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Point Data Database" title="Previous: Point Data Database"></a> <a href="gridvisualization.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Grid Visualization" title="Next: Grid Visualization"></a>  <a href="toc.html#gridsubset.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="page_geodatafacilities.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Geodata Facilities" title="Previous: Geodata Facilities"></a> <a href="gridatpoint.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Grid Time Series" title="Next: Grid Time Series"></a>  <a href="toc.html#gridsubset.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
 </td>
 <td width=40% align=center>
 <div class="pagetitle">RAMADDA User Guide</div>
 </td>
 <td width=30%>&nbsp;</td>
 </tr></table>
-<div class="pagetitle">11.1 Grid Subsetting</div>
+<div class="pagetitle">11.0 Grid Subsetting</div>
 
 <style type="text/css">
 pre {
@@ -41,12 +41,30 @@ and will output the result to a CF compliant netCDF file.
 
 Options:
 
+<ul>
 
+<li><b>Horizontal Stride</b><p>Sample every Nth grid point where N is the stride value</p>
+
+<li><b>Subset Spatially</b><p>Enter the spatial bounds for the subset.  Click on the <code class="menu">Show Map</code> link to pop up a map where you can select the bounds using Shift-Drag.  The <code class="menu">Clear</code> link removes the selection.</p>
+
+<li><b>Time Range</b><p>Set the time range for the subset.  Default is all times.</p>
+
+<li><b>Add Lat/Lon Variables</b><p>For the grid to be CF compliant, 
+the latitude and longitude values at each point must be included 
+in the file.  If the grid is projected, the grid projection definition is
+also stored in the file, which is enough for some software packages.</p>
+
+<li><b>Select a folder to publish the results to</b><p>If you are logged in and have permission to add files to the repository, you can optionally add the file to the repository.  Specify the Folder location and a name for the file.</p>
+
+<li><b>Select Variables</b><p>Select the variables that you wish to include
+in the output file.</p>
+
+</ul>
 
 <p>
 
 <p>&nbsp;<p>
-<a href="pointdata.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Point Data Database" title="Previous: Point Data Database"></a> <a href="gridvisualization.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Grid Visualization" title="Next: Grid Visualization"></a>  <a href="toc.html#gridsubset.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="page_geodatafacilities.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Geodata Facilities" title="Previous: Geodata Facilities"></a> <a href="gridatpoint.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Grid Time Series" title="Next: Grid Time Series"></a>  <a href="toc.html#gridsubset.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
 <p>
 
 </body>
