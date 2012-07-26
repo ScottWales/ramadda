@@ -1746,7 +1746,7 @@ function popupFormLoadingDialog (dialogId) {
     dialog.dialog({
             resizable: false,
                 height:100,
-                modal: true,
+                modal: true
                 }
         );
 }
