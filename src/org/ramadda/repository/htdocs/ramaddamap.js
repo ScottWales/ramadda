@@ -118,7 +118,7 @@ function RepositoryMap(mapId, params) {
                 map_google_streets, 
                 map_google_satellite,
                 map_google_hybrid, 
-                map_wms_openlayers,
+                map_wms_openlayers
                 // these don't play well with google projection
                 // map_wms_topographic,
                 // map_ms_aerial,
@@ -129,6 +129,9 @@ function RepositoryMap(mapId, params) {
 
         for (i = 0; i < this.mapLayers.length; i++) {
             mapLayer = this.mapLayers[i];
+            if(mapLayer == null) {
+                continue;
+            }
             if (mapLayer == map_google_terrain) {
                 this.map.addLayer(new OpenLayers.Layer.Google("Google Terrain",
                         {
