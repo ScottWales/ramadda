@@ -436,8 +436,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String[] WIKIPROPS = {
         WIKI_PROP_GROUP + "Information", WIKI_PROP_INFORMATION,
         WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_DATE_FROM,
-        WIKI_PROP_DATE_TO, WIKI_PROP_LINK, WIKI_PROP_HTML,
-        WIKI_PROP_IMPORT,
+        WIKI_PROP_DATE_TO, WIKI_PROP_LINK, WIKI_PROP_HTML, WIKI_PROP_IMPORT,
         WIKI_PROP_GROUP + "Layout",
         prop(WIKI_PROP_LINKS,
              attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
@@ -719,18 +718,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (popup) {
             //A hack to see if this image is an attachment (e.g. src="::*")
             String hrefUrl;
-            if(url.indexOf("/metadata/view")>=0) {
+            if (url.indexOf("/metadata/view") >= 0) {
                 hrefUrl = url;
             } else {
-                hrefUrl = entry.getTypeHandler().getEntryResourceUrl(
-                                                                     request, entry);
+                hrefUrl = entry.getTypeHandler().getEntryResourceUrl(request,
+                        entry);
             }
             StringBuffer buf = new StringBuffer();
             addImagePopupJS(request, buf, props);
-            buf.append(
-                HtmlUtils.href(
-                               hrefUrl, img,
-                                         HtmlUtils.cssClass("popup_image")));
+            buf.append(HtmlUtils.href(hrefUrl, img,
+                                      HtmlUtils.cssClass("popup_image")));
 
             return buf.toString();
         }
@@ -1001,6 +998,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             Result result = getHtmlOutputHandler().getHtmlResult(request,
                                 OutputHandler.OUTPUT_HTML, entry);
+
             return new String(result.getContent());
         } else if (include.equals(WIKI_PROP_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
@@ -2165,9 +2163,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 title         = Misc.getProperty(props, ATTR_TITLE, title);
             }
 
-            boolean inBlock = Misc.getProperty(props, ATTR_SHOWTOGGLE, Misc.getProperty(props, ATTR_SHOWHIDE, false));
+            boolean inBlock = Misc.getProperty(props, ATTR_SHOWTOGGLE,
+                                  Misc.getProperty(props, ATTR_SHOWHIDE,
+                                      false));
             if (inBlock && (title != null)) {
-                boolean open    = Misc.getProperty(props, ATTR_OPEN, true);
+                boolean open = Misc.getProperty(props, ATTR_OPEN, true);
+
                 return HtmlUtils.makeShowHideBlock(title, propertyValue,
                         open, HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "");
             }
