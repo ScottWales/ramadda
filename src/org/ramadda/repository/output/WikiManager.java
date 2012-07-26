@@ -707,6 +707,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         boolean link         = Misc.equals("true", props.get(ATTR_LINK));
         boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                    false);
+
         boolean popup = Misc.getProperty(props, ATTR_POPUP, false);
         if (link) {
             return HtmlUtils.href(
@@ -716,12 +717,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 entry.getTypeHandler().getEntryResourceUrl(request, entry),
                 img);
         } else if (popup) {
+            //A hack to see if this image is an attachment (e.g. src="::*")
+            String hrefUrl;
+            if(url.indexOf("/metadata/view")>=0) {
+                hrefUrl = url;
+            } else {
+                hrefUrl = entry.getTypeHandler().getEntryResourceUrl(
+                                                                     request, entry);
+            }
             StringBuffer buf = new StringBuffer();
             addImagePopupJS(request, buf, props);
             buf.append(
                 HtmlUtils.href(
-                    entry.getTypeHandler().getEntryResourceUrl(
-                        request, entry), img,
+                               hrefUrl, img,
                                          HtmlUtils.cssClass("popup_image")));
 
             return buf.toString();
