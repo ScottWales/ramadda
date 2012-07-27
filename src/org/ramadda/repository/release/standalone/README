@@ -9,14 +9,17 @@ To run RAMADDA stand-alone just do:
    sh ramadda.sh
 
 By default this  will run RAMADDA on port 8080 with the RAMADDA home 
-directory (where it stores everything) set to ~/.ramadda and will use
-the Java Derby database.
+directory (where it stores everything) set to <user home>/.ramadda and 
+will use a local Java Derby database.
 
-See the Configuration section below on how to change these settings.
+See the Configuration section below for more details but an easy way to 
+change these settings is with command line arguments:
+
+    sh ramadda.sh -port 8081 -Dramadda_home=/some/other/directory/ramadda
+
 See the Database section below on how to change the database
 
-When you first start up ramadda you need to complete the initialization and 
-configuration at:
+You need to complete the configuration at:
 http://localhost:8080/repository
 
 For more information see:
