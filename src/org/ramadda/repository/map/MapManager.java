@@ -27,6 +27,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.MapOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.WikiManager;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -37,7 +39,6 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -284,7 +285,7 @@ public class MapManager extends RepositoryManager {
 
         String  otherOpts   = "";
         String  mapsKey     = "";
-        if(keyAndOther!=null) {
+        if (keyAndOther != null) {
             if ( !keyAndOther[0].isEmpty()) {
                 mapsKey = "?key=" + keyAndOther[0];
             }
@@ -307,7 +308,7 @@ public class MapManager extends RepositoryManager {
                 HtmlUtils.importJS(
                     fileUrl("/google/extensions-0.2.1.pack.js")));
             sb.append(HtmlUtils.script("google.load(\"earth\", \"1\""
-                                      + otherOpts + ");"));
+                                       + otherOpts + ");"));
             request.putExtraProperty("ge.inited", "true");
         }
 
@@ -323,29 +324,33 @@ public class MapManager extends RepositoryManager {
 
         String earthHtml =
             HtmlUtils.div("",
-                         HtmlUtils.id(id) + HtmlUtils.style(style)
-                         + HtmlUtils.cssClass(CSS_CLASS_EARTH_CONTAINER));
+                          HtmlUtils.id(id) + HtmlUtils.style(style)
+                          + HtmlUtils.cssClass(CSS_CLASS_EARTH_CONTAINER));
         sb.append("\n");
         sb.append(earthHtml);
         sb.append(HtmlUtils.italics(msgLabel("On click")));
         sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.checkbox("tmp", "true", showdetails,
-                                    HtmlUtils.id("googleearth.showdetails")));
+        sb.append(
+            HtmlUtils.checkbox(
+                "tmp", "true", showdetails,
+                HtmlUtils.id("googleearth.showdetails")));
         sb.append("\n");
         sb.append(HtmlUtils.space(1));
         sb.append(HtmlUtils.italics(msg("Show details")));
         sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.checkbox("tmp", "true", zoomOnClick,
-                                    HtmlUtils.id("googleearth.zoomonclick")));
+        sb.append(
+            HtmlUtils.checkbox(
+                "tmp", "true", zoomOnClick,
+                HtmlUtils.id("googleearth.zoomonclick")));
         sb.append(HtmlUtils.space(1));
         sb.append(HtmlUtils.italics(msg("Zoom")));
 
 
         sb.append(HtmlUtils.script("var  " + id + " = new RamaddaEarth("
-                                  + HtmlUtils.squote(id) + ", "
-                                  + ((url == null)
-                                     ? "null"
-                                     : HtmlUtils.squote(url)) + ");\n"));
+                                   + HtmlUtils.squote(id) + ", "
+                                   + ((url == null)
+                                      ? "null"
+                                      : HtmlUtils.squote(url)) + ");\n"));
 
         return id;
     }
@@ -404,9 +409,11 @@ public class MapManager extends RepositoryManager {
             }
             String call = id + ".entryClicked("
                           + HtmlUtils.squote(entry.getId()) + ");";
-            catSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                       HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)
-                                       + "" /*HtmlUtils.onMouseClick(call)*/));
+            catSB.append(
+                HtmlUtils.open(
+                    HtmlUtils.TAG_DIV,
+                    HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)
+                    + "" /*HtmlUtils.onMouseClick(call)*/));
             boolean visible = true;
             //If there are lots of kmls then don't load all of them
             if (kmlUrl != null) {
@@ -424,8 +431,9 @@ public class MapManager extends RepositoryManager {
             catSB.append(
                 HtmlUtils.href(
                     getEntryManager().getEntryURL(request, entry),
-                    HtmlUtils.img(iconUrl, msg("Click to view entry details"))
-                    + " " + entry.getName()));
+                    HtmlUtils.img(
+                        iconUrl, msg("Click to view entry details")) + " "
+                            + entry.getName()));
             catSB.append("</td><td align=right>");
             catSB.append(HtmlUtils.space(2));
             double lat = entry.getSouth();
@@ -517,9 +525,9 @@ public class MapManager extends RepositoryManager {
 
             String detailsUrl =
                 HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
-                             new String[] { ARG_ENTRYID,
-                                            entry.getId(), ARG_OUTPUT,
-                                            "mapinfo" });
+                              new String[] { ARG_ENTRYID,
+                                             entry.getId(), ARG_OUTPUT,
+                                             "mapinfo" });
 
             String fromTime = "null";
             String toTime   = "null";
@@ -606,6 +614,7 @@ public class MapManager extends RepositoryManager {
      */
     public String makeInfoBubble(Request request, Entry entry)
             throws Exception {
+
         String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
                                entry);
         if (fromEntry != null) {
@@ -619,7 +628,7 @@ public class MapManager extends RepositoryManager {
             String imageClass = request.getString("imageclass",
                                     (String) null);
             String extra = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                         "" + imageWidth);
+                                          "" + imageWidth);
             if ((alt != null) && !alt.isEmpty()) {
                 extra += " " + HtmlUtils.attr(ATTR_ALT, alt);
             }
@@ -628,9 +637,17 @@ public class MapManager extends RepositoryManager {
                 HtmlUtils.img(
                     getRepository().getHtmlOutputHandler().getImageUrl(
                         request, entry), "", extra);
-            image = HtmlUtils.href(
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                image);
+            if (request.get(WikiManager.ATTR_LINK, true)) {
+                image = HtmlUtils.href(
+                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                    image);
+                /*  Maybe add this later
+                } else if (request.get(WikiManager.ATTR_LINKRESOURCE, false)) {
+                    image =  HtmlUtils.href(
+                        entry.getTypeHandler().getEntryResourceUrl(request, entry),
+                        image);
+                */
+            }
             image = HtmlUtils.center(image);
             if (imageClass != null) {
                 image = HtmlUtils.div(image, HtmlUtils.cssClass(imageClass));
@@ -700,6 +717,7 @@ public class MapManager extends RepositoryManager {
         return info.toString();
 
 
+
     }
 
 
@@ -767,8 +785,8 @@ public class MapManager extends RepositoryManager {
                     String iconUrl = getEntryManager().getIconUrl(request,
                                          entry);
                     String navUrl = "javascript:" + map.getVariableName()
-                            + ".hiliteMarker(" + sqt(entry.getId())
-                        + ");";
+                                    + ".hiliteMarker(" + sqt(entry.getId())
+                                    + ");";
                     entryBuff.append(
                         HtmlUtils.href(
                             getEntryManager().getEntryURL(request, entry),
@@ -776,15 +794,14 @@ public class MapManager extends RepositoryManager {
                                 iconUrl,
                                 msg("Click to view entry details"))));
                     entryBuff.append("&nbsp;");
-                    entryBuff.append(
-                                     HtmlUtils.href(navUrl,
-                                                    entry.getName()));
+                    entryBuff.append(HtmlUtils.href(navUrl, entry.getName()));
                     entryBuff.append("</td><td align=right>");
                     entryBuff.append(
                         HtmlUtils.href(
-                                       navUrl, HtmlUtils.img(
-                                getRepository().iconUrl(
-                                    ICON_MAP_NAV), "View entry")));
+                            navUrl,
+                            HtmlUtils.img(
+                                getRepository().iconUrl(ICON_MAP_NAV),
+                                "View entry")));
                     entryBuff.append("</td></tr></table>");
                 }
             }
@@ -851,9 +868,10 @@ public class MapManager extends RepositoryManager {
             if (makeRectangles) {
                 boolean didMetadata = map.addSpatialMetadata(entry,
                                           metadataList);
-                boolean rectOK  = true;
+                boolean rectOK = true;
                 if (detailed) {
-                    rectOK =  entry.getTypeHandler().addToMap(request, entry, map);
+                    rectOK = entry.getTypeHandler().addToMap(request, entry,
+                            map);
                 }
                 if (rectOK && entry.hasAreaDefined() && !didMetadata) {
                     if ( !screenBigRects
