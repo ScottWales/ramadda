@@ -2042,17 +2042,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Statement statement =
             getDatabaseManager().select(Tables.GLOBALS.COLUMNS,
                                         Tables.GLOBALS.NAME, new Clause[] {});
-        dbProperties = new Properties();
+        Properties tmp =  new Properties();
         ResultSet results = statement.getResultSet();
         while (results.next()) {
             String name  = results.getString(1);
             String value = results.getString(2);
             if (name.equals(PROP_PROPERTIES)) {
-                dbProperties.load(new ByteArrayInputStream(value.getBytes()));
+                tmp.load(new ByteArrayInputStream(value.getBytes()));
             }
-            dbProperties.put(name, value);
+            tmp.put(name, value);
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
+        dbProperties = tmp;
     }
 
 
@@ -4077,6 +4078,43 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         StringBuffer sb = new StringBuffer("OK");
 
+        return new Result("", sb);
+    }
+
+
+    public Result processClearState(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer("");
+        String  passPhrase = getProperty(PROP_PASSPHRASE,"").trim();
+        if (passPhrase.length()>0 && request.defined(PROP_PASSPHRASE)) {
+            if(request.getString(PROP_PASSPHRASE,"").trim().equals(passPhrase)) {
+                clearAllCaches();
+                readGlobals();
+                //Tell the other repositoryManagers that the settings changed
+                for(RepositoryManager repositoryManager: getRepository().getRepositoryManagers()) {
+                    repositoryManager.adminSettingsChanged();
+                }
+                sb.append("OK, state is cleared");
+                return new Result("", sb);
+            }
+            sb.append("Bad pass phrase");
+            sb.append(HtmlUtils.p());
+        }
+        sb.append(HtmlUtils.p());
+        sb.append("This form allows you to clear any caches and have RAMADDA reload properties");
+        sb.append(HtmlUtils.br());
+        if(passPhrase.length()==0) {
+            sb.append("The pass phrase needs to be set as a property on your server - <i>ramadda.passphrase</i>");
+            sb.append(HtmlUtils.br());
+        }
+        sb.append("Note: The pass phrase is not meant to be secure, it is just used so anonymous users can't be clearing your repository state");
+        sb.append(HtmlUtils.hr());
+        sb.append(HtmlUtils.formTable());
+        sb.append(request.formPost(URL_CLEARSTATE));
+        sb.append(HtmlUtils.formEntry(msgLabel("Pass Phrase"),
+                                      HtmlUtils.input(PROP_PASSPHRASE)));
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Clear Repository State")));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.formClose());
         return new Result("", sb);
     }
 

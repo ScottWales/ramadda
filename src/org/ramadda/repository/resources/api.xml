@@ -5,6 +5,7 @@
   <group>
      <api request="/ping"             method="processPing"/>
      <api request="/info"             method="processInfo"/>
+     <api request="/clearstate"       method="processClearState"/>
      <api request="/docs"             method="processDocs"/>
   </group>
 

@@ -1046,6 +1046,9 @@ public interface Constants {
     public static final String PROP_SYSTEM_MESSAGE = "system.message";
 
 
+    public static final String PROP_PASSPHRASE =  "ramadda.passphrase";
+
+
     /** _more_ */
     public static final String PROP_MONITOR_ENABLE_EXEC =
         "ramadda.monitor.enable.exec";
