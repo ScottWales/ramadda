@@ -737,16 +737,20 @@ public class Admin extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result adminShutdown(Request request) throws Exception {
+    private Result processShutdown(Request request) throws Exception {
+        if(!getRepository().getShutdownEnabled()) {
+            throw new IllegalStateException("Shutdown not enabled");
+        }
 
-        Misc.runInABit(1000, new Runnable() {
+        Misc.runInABit(5000, new Runnable() {
             public void run() {
                 getRepository().shutdown();
+                System.err.println("RAMADDA: exiting");
+                System.exit(0);
             }
         });
-
         return makeResult(request, "Administration",
-                          new StringBuffer("Shutting down"));
+                          new StringBuffer("Shutting down in 5 seconds"));
     }
 
 
@@ -2057,7 +2061,6 @@ public class Admin extends RepositoryManager {
      */
     public Result adminCleanup(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(request.form(URL_ADMIN_CLEANUP));
         if (request.defined(ACTION_STOP)) {
             runningCleanup = false;
             cleanupTS++;
@@ -2074,13 +2077,15 @@ public class Admin extends RepositoryManager {
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
         } else if(request.defined(ACTION_SHUTDOWN)) {
+            request.ensureAuthToken();
             if(getRepository().getShutdownEnabled()) {
                 if(request.get(ARG_SHUTDOWN_CONFIRM,false)) {
-                    getRepository().shutdown();
-                    System.exit(0);
+                    return processShutdown(request);
                 }
             }
         }
+
+        request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP,"");
         String status = cleanupStatus.toString();
         if (runningCleanup) {
             sb.append(msg("Database clean up is running"));

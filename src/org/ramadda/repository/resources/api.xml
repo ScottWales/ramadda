@@ -124,7 +124,6 @@
       <api request="/admin/sql"          method="adminSql"           />
       <api request="/admin/plugin/upload"    method="adminPluginUpload"  />
       <api request="/admin/startstop"    method="adminDbStartStop"   requires_auth_token="true"  />
-      <api request="/admin/shutdown"     method="adminShutdown"      requires_auth_token="true" />
       <api request="/admin/settings"     method="adminSettings"       name="Admin" toplevel="true"/>
       <api request="/admin/settings/do"  method="adminSettingsDo"     requires_auth_token="true" />
       <api request="/admin/tables"       method="adminDbTables"      />
