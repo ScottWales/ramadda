@@ -986,8 +986,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_MESSAGE = "message";
 
-    /** _more_ */
-    public static final String ARG_SESSION_MESSAGE = "session.message";
 
     /** _more_ */
     public static final String ARG_METADATA_ADD = "metadata.add";
@@ -1043,6 +1041,10 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_MINLON = "minlon";
+
+    /** _more_ */
+    public static final String PROP_SYSTEM_MESSAGE = "system.message";
+
 
     /** _more_ */
     public static final String PROP_MONITOR_ENABLE_EXEC =

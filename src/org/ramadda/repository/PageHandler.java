@@ -221,8 +221,8 @@ public class PageHandler extends RepositoryManager {
         }
         template = htmlTemplate.getTemplate();
 
-        String sessionMessage =
-            getSessionManager().getSessionMessage(request);
+        String systemMessage =
+            getRepository().getSystemMessage(request);
 
 
         String jsContent = getTemplateJavascriptContent();
@@ -307,8 +307,8 @@ public class PageHandler extends RepositoryManager {
         }
 
         String content = new String(result.getContent());
-        if (sessionMessage != null&& sessionMessage.length()>0) {
-            content = HtmlUtils.div(sessionMessage, HtmlUtils.cssClass("ramadda-system-message")) + content;
+        if (systemMessage != null&& systemMessage.length()>0) {
+            content = HtmlUtils.div(systemMessage, HtmlUtils.cssClass("ramadda-system-message")) + content;
         }
 
         String head =

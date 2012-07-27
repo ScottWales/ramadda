@@ -5694,4 +5694,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSystemMessage() {
+        return getProperty(PROP_SYSTEM_MESSAGE,(String) null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
+    public String getSystemMessage(Request request) {
+        return getSystemMessage();
+    }
+
+
+
+
+
+
 }

@@ -1116,12 +1116,14 @@ public class Admin extends RepositoryManager {
 
 
         dsb.append(HtmlUtils.formEntry("", msg("System Message")));
+        String systemMessage = getRepository().getSystemMessage();
+        
         dsb.append(
             HtmlUtils.formEntry(
                 msgLabel("Message"),
                 HtmlUtils.textArea(
-                    ARG_SESSION_MESSAGE,
-                    getSessionManager().getSessionMessage(), 5, 60)));
+                    PROP_SYSTEM_MESSAGE,
+                    (systemMessage==null?"":systemMessage), 5, 60)));
 
 
         String phrases = getProperty(PROP_ADMIN_PHRASES, (String) null);
@@ -1502,8 +1504,11 @@ public class Admin extends RepositoryManager {
                                     request.getString(PROP_CACHE_MAXSIZEGB,
                                         "10").trim());
 
-        getSessionManager().setSessionMessage(
-            request.getString(ARG_SESSION_MESSAGE, ""));
+        getRepository().writeGlobal(PROP_SYSTEM_MESSAGE,
+                                    request.getString(PROP_SYSTEM_MESSAGE,
+                                                      ""));
+
+
 
 
         if (request.exists(PROP_LOCALFILEPATHS)) {

@@ -99,8 +99,6 @@ public class SessionManager extends RepositoryManager {
                                                      Object>(5000);
 
 
-    /** _more_ */
-    private String sessionMessage = "";
 
     /**
      * _more_
@@ -572,39 +570,6 @@ public class SessionManager extends RepositoryManager {
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getSessionMessage() {
-        return sessionMessage;
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
-    public String getSessionMessage(Request request) {
-        return getSessionMessage();
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param message _more_
-     *
-     * @throws Exception _more_
-     */
-    public void setSessionMessage(String message)  {
-        sessionMessage  = message;
-    }
 
 
 
