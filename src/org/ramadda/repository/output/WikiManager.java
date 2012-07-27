@@ -1232,8 +1232,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     + "px;overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
                     + width + "px;height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
-                sb.append(
-                    "<link rel=\"stylesheet\" href=\"/slides/paginate.css\">\n");
+                sb.append("<link rel=\"stylesheet\" href=\"");
+                sb.append(getRepository().fileUrl("/slides/paginate.css"));
+                sb.append("\" type=\"text/css\" media=\"screen\" />");
+                sb.append("\n");
+
 
                 // user speed is seconds, script uses milliseconds - 0 == no play
                 int    startSpeed  = (autoplay)
