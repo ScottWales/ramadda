@@ -1646,109 +1646,13 @@ public class GpsOutputHandler extends OutputHandler {
             return new Result(OPUS_TITLE, sb);
         }
         if (request.exists(ARG_OPUS)) {
-            //Look for:
-            //            FILE: 7655b430-7c46-4324-924f-57ec6c2075b5.rinex OP1330950241570
-            String opus = request.getString(ARG_OPUS, "");
-            String rinexEntryId = StringUtil.findPattern(opus,
-                                      "FILE: *([^\\.]+).rinex");
-            if (rinexEntryId == null) {
+            StringBuffer msgBuff = new StringBuffer();
+            Entry newEntry = processAddOpus(request,  request.getString(ARG_OPUS, ""), msgBuff, false);
+            if(newEntry==null) {
                 sb.append(
-                    getRepository().showDialogError(
-                        "Could not find FILE name in the given OPUS"));
+                          getRepository().showDialogError(msgBuff.toString()));
                 return processOpusForm(request, sb);
             }
-            final Entry rinexEntry = getEntryManager().getEntry(request,
-                                         rinexEntryId);
-            if (rinexEntry == null) {
-                sb.append(
-                    getRepository().showDialogError(
-                        "Could not find original RINEX entry"));
-                return processOpusForm(request, sb);
-            }
-            Entry parentEntry = rinexEntry.getParentEntry();
-
-            //Look for the OPUS sibling folder
-            for (Entry child :
-                    getEntryManager().getChildrenGroups(request,
-                        parentEntry.getParentEntry())) {
-                if (child.getName().toLowerCase().trim().equals("opus")) {
-                    parentEntry = child;
-                    break;
-                }
-            }
-
-            if ( !getAccessManager().canDoAction(request, parentEntry,
-                    Permission.ACTION_NEW)) {
-                sb.append(
-                    getRepository().showDialogError(
-                        "You do not have permission to add to:"
-                        + parentEntry.getName()));
-                return new Result(OPUS_TITLE, sb);
-            }
-
-            String opusFileName = IOUtil.stripExtension(rinexEntry.getName())
-                                  + ".opus";
-            //Write the text out
-            File f = getStorageManager().getTmpFile(request, opusFileName);
-            FileOutputStream out = getStorageManager().getFileOutputStream(f);
-            out.write(opus.getBytes());
-            out.flush();
-            out.close();
-            f = getStorageManager().copyToStorage(request, f, f.getName());
-
-            TypeHandler typeHandler =
-                getRepository().getTypeHandler("project_gps_opus");
-
-            final Object     siteCode = rinexEntry.getValue(IDX_SITE_CODE,
-                                            "");
-            EntryInitializer initializer = new EntryInitializer() {
-                public void initEntry(Entry entry) {
-                    entry.getTypeHandler().getValues(
-                        entry)[OpusTypeHandler.IDX_SITE_CODE] = siteCode;
-                    entry.setStartDate(rinexEntry.getStartDate());
-                    entry.setEndDate(rinexEntry.getEndDate());
-                }
-            };
-            Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                 parentEntry, opusFileName,
-                                 request.getUser(), typeHandler, initializer);
-
-
-            boolean canEditRinex = getAccessManager().canDoAction(request,
-                                       rinexEntry, Permission.ACTION_EDIT);
-
-            //If we figured out location from the opus file then set the rinex entry location
-
-
-            if (newEntry.hasLocationDefined()) {
-                if (canEditRinex) {
-                    rinexEntry.setLocation(newEntry.getLatitude(),
-                                           newEntry.getLongitude(),
-                                           newEntry.getAltitude());
-                    getEntryManager().storeEntry(rinexEntry);
-                }
-
-                for (Entry rawEntry :
-                        getEntryManager()
-                            .getEntriesWithType(getAssociationManager()
-                                .getTailEntriesWithAssociationType(request,
-                                    rinexEntry,
-                                    GpsOutputHandler
-                                        .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
-                                            .TYPE_RAW)) {
-                    if (getAccessManager().canDoAction(request, rawEntry,
-                            Permission.ACTION_EDIT)) {
-                        rawEntry.setLocation(newEntry.getLatitude(),
-                                             newEntry.getLongitude(),
-                                             newEntry.getAltitude());
-                        getEntryManager().storeEntry(rawEntry);
-                    }
-                }
-            }
-
-
-
-
             sb.append(HtmlUtils.p());
             sb.append("OPUS entry created: ");
             sb.append(
@@ -1758,16 +1662,114 @@ public class GpsOutputHandler extends OutputHandler {
                         new String[] { ARG_ENTRYID,
                                        newEntry.getId() }), newEntry
                                            .getName()));
-
-            getRepository().addAuthToken(request);
-            getAssociationManager().addAssociation(request, newEntry,
-                    rinexEntry, "generated rinex",
-                    GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
             return new Result(OPUS_TITLE, sb);
         }
 
         return processOpusForm(request, sb);
 
+    }
+
+    public Entry processAddOpus(Request request, String opus, StringBuffer sb, boolean fromEmail) throws Exception {
+        String rinexEntryId = StringUtil.findPattern(opus,
+                                                     "FILE: *([^\\.]+).rinex");
+        if (rinexEntryId == null) {
+            sb.append("Could not find FILE name in the given OPUS");
+            return null;
+        }
+        final Entry rinexEntry = getEntryManager().getEntry(request,
+                                                            rinexEntryId);
+        if (rinexEntry == null) {
+            sb.append("Could not find original RINEX entry");
+            return null;
+        }
+        Entry parentEntry = rinexEntry.getParentEntry();
+
+        //Look for the OPUS sibling folder
+        for (Entry child :
+                 getEntryManager().getChildrenGroups(request,
+                                                     parentEntry.getParentEntry())) {
+            if (child.getName().toLowerCase().trim().equals("opus")) {
+                parentEntry = child;
+                break;
+            }
+        }
+
+        if(!fromEmail  && getAccessManager().canDoAction(request, parentEntry,
+                                             Permission.ACTION_NEW)) {
+            sb.append("You do not have permission to add to:"
+                        + parentEntry.getName());
+            return null;
+        }
+
+        String opusFileName = IOUtil.stripExtension(rinexEntry.getName())
+            + ".opus";
+        //Write the text out
+        File f = getStorageManager().getTmpFile(request, opusFileName);
+        FileOutputStream out = getStorageManager().getFileOutputStream(f);
+        out.write(opus.getBytes());
+        out.flush();
+        out.close();
+        f = getStorageManager().copyToStorage(request, f, f.getName());
+
+        TypeHandler typeHandler =
+            getRepository().getTypeHandler("project_gps_opus");
+
+        final Object     siteCode = rinexEntry.getValue(IDX_SITE_CODE,
+                                                        "");
+        EntryInitializer initializer = new EntryInitializer() {
+                public void initEntry(Entry entry) {
+                    entry.getTypeHandler().getValues(
+                                                     entry)[OpusTypeHandler.IDX_SITE_CODE] = siteCode;
+                    entry.setStartDate(rinexEntry.getStartDate());
+                    entry.setEndDate(rinexEntry.getEndDate());
+                }
+            };
+        Entry newEntry = getEntryManager().addFileEntry(request, f,
+                                                        parentEntry, opusFileName,
+                                                        request.getUser(), typeHandler, initializer);
+
+
+        boolean canEditRinex = getAccessManager().canDoAction(request,
+                                                              rinexEntry, Permission.ACTION_EDIT);
+
+        //If we figured out location from the opus file then set the rinex entry location
+
+
+        if (newEntry.hasLocationDefined()) {
+            if (fromEmail || canEditRinex) {
+                rinexEntry.setLocation(newEntry.getLatitude(),
+                                       newEntry.getLongitude(),
+                                       newEntry.getAltitude());
+                getEntryManager().storeEntry(rinexEntry);
+            }
+
+            for (Entry rawEntry :
+                     getEntryManager()
+                     .getEntriesWithType(getAssociationManager()
+                                         .getTailEntriesWithAssociationType(request,
+                                                                            rinexEntry,
+                                                                            GpsOutputHandler
+                                                                            .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
+                                         .TYPE_RAW)) {
+                if (fromEmail || getAccessManager().canDoAction(request, rawEntry,
+                                                   Permission.ACTION_EDIT)) {
+                    rawEntry.setLocation(newEntry.getLatitude(),
+                                         newEntry.getLongitude(),
+                                         newEntry.getAltitude());
+                    getEntryManager().storeEntry(rawEntry);
+                }
+            }
+        }
+        if(!fromEmail) {
+            
+            getRepository().addAuthToken(request);
+            getAssociationManager().addAssociation(request, newEntry,
+                                                   rinexEntry, "generated rinex",
+                                                   GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
+        } else {
+            //TODO
+        }
+        return newEntry;
     }
 
 

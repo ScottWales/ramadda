@@ -30,9 +30,13 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import java.io.*;
 import java.io.File;
 
 import java.util.List;
+import java.util.Properties;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 
 /**
@@ -44,6 +48,8 @@ public class OpusTypeHandler extends GenericTypeHandler {
 
     /** _more_ */
     public static final String TYPE_OPUS = "project_gps_opus";
+
+    public static final String PROP_OPUS_MAIL_URL = "gps.opus.mailurl";
 
     /** _more_ */
     private static int COLCNT = 0;
@@ -67,7 +73,7 @@ public class OpusTypeHandler extends GenericTypeHandler {
     public static final int IDX_ITRF_Z = COLCNT++;
 
 
-
+    private boolean monitoringOpus = false;
 
 
     /**
@@ -80,8 +86,54 @@ public class OpusTypeHandler extends GenericTypeHandler {
     public OpusTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+        final String opusMailUrl = getRepository().getProperty(PROP_OPUS_MAIL_URL,(String)null);
+        if(opusMailUrl!=null) {
+            getLogManager().logInfoAndPrint ("OPUS:  email "+ opusMailUrl);
+            //Start up in 10 seconds
+            Misc.runInABit(10000, new Runnable() {
+                    public void run() {
+                        getLogManager().logInfoAndPrint ("OPUS: monitoring OPUS email");
+                        monitorOpusEmail(opusMailUrl);
+                    }});
+        }
     }
 
+    @Override
+    public void shutdown() throws Exception {
+        super.shutdown();
+        monitoringOpus = false;
+    }
+
+
+    private void monitorOpusEmail(String opusMailUrl) {
+        monitoringOpus = true;
+        int errorCnt = 0;
+        long time = System.currentTimeMillis();
+        while(monitoringOpus) {
+            if(errorCnt>5) {
+                getLogManager().logErrorAndPrint("OPUS: Opus email monitoring failed",null);
+                return;
+            }
+            try {
+                System.err.println ("calling checkfor opusmail");
+                if(!checkForOpusEmail(opusMailUrl)) {
+                    errorCnt++;
+                } else {
+                    errorCnt = 0;
+                }
+                System.err.println ("Sleeping");
+                Misc.sleepSeconds(60);
+                System.err.println ("Done");
+            } catch(Exception exc) {
+                errorCnt++;
+                //                if(errorCnt>5) {
+                exc.printStackTrace();
+                getLogManager().logError("OPUS: Opus email monitoring failed", exc);
+                return;
+                //                }
+            }
+        }
+    }
 
 
     /**
@@ -180,7 +232,7 @@ Easting (X)  [meters]      379359.228           836346.070
         }
     }
 
-    public static void main(String[]args) {
+    public static void xxxmain(String[]args) {
         String opus = "Northing (Y) [meters]     3634840.411\n" +
             "Easting (X)  [meters]      734737.791\n";
         String[] patterns = { "Northing\\s*\\(Y\\)\\s*\\[meters\\]\\s*([-\\.\\d]+)\\s+",
@@ -196,11 +248,99 @@ Easting (X)  [meters]      379359.228           836346.070
                 System.err.println("i:" + i +" " + patterns[i] +" BAD" );
             }
         }
-
-
-
-
-
     }
+
+    public static void main(String[]args)  throws Exception {
+    }
+
+    private boolean checkForOpusEmail(String opusMailUrl) throws Exception  {
+        Properties props = System.getProperties();
+        try {
+            Session session = Session.getDefaultInstance(props);
+            URLName urlName = new URLName(opusMailUrl);
+            Store store = session.getStore(urlName);
+            if (!store.isConnected()) {
+                store.connect();
+            }
+            Folder folder = store.getFolder("Inbox");
+            if (folder == null || !folder.exists()) {
+                getLogManager().logError("OPUS: Invalid folder");
+                return false;
+            }
+
+            folder.open(Folder.READ_WRITE);
+            Message[] messages = folder.getMessages();
+            for(int i=0;i<messages.length;i++) {
+                String subject = messages[i].getSubject();
+                System.err.println("subject:" +  subject);
+                if(subject.indexOf("OPUS solution") <0) {
+                    continue;
+                }
+                Object content = messages[i].getContent();
+                StringBuffer sb = new StringBuffer();
+                processContent(content, sb);
+                GpsOutputHandler gpsOutputHandler =
+                    (GpsOutputHandler) getRepository().getOutputHandler(
+                                                                        GpsOutputHandler.OUTPUT_GPS_TORINEX);
+                StringBuffer msgBuff = new StringBuffer();
+                Entry newEntry = gpsOutputHandler.processAddOpus(getRepository().getTmpRequest(),  sb.toString(), msgBuff, true);
+                if(newEntry==null) {
+                    System.err.println("OPUS: Unable to process OPUS message:" + msgBuff);
+                    getLogManager().logError("OPUS: Unable to process OPUS message:" + msgBuff);
+                } else {
+                    monitoringOpus = false;
+                    System.err.println("added opus. deleting email: " + newEntry.getId());
+                    //                    messages[i].setFlag(Flags.Flag.DELETED, true);
+                }
+            }
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            System.exit(2);
+        }
+        return true;
+    }
+
+    private static void processContent(Object content, StringBuffer desc)  throws Exception {
+        if(content instanceof MimeMultipart){
+            MimeMultipart multipart= (MimeMultipart) content;
+            for(int i=0;i<multipart.getCount();i++) {
+                MimeBodyPart part = (MimeBodyPart)multipart.getBodyPart(i);
+                String disposition = part.getDisposition();
+                if (disposition == null) {
+                    Object partContent = part.getContent();
+                    if(partContent instanceof MimeMultipart){
+                        processContent(partContent, desc);
+                    } else {
+                        String contentType = part.getContentType();
+                        //Only ingest the text
+                        if(contentType.indexOf("text/plain")>=0) {
+                            desc.append(partContent);
+                            desc.append("\n");
+                        }
+                    }
+                    continue;
+                }
+                if (disposition.equals(Part.ATTACHMENT) || 
+                        disposition.equals(Part.INLINE)) {
+                    if(part.getFileName()!=null) {
+                        InputStream inputStream = part.getInputStream();
+                    }
+                }
+            }
+        } else if(content instanceof Part) {
+            //TODO
+            Part part= (Part) content;
+        } else {
+            //            System.err.println ("xxx content:" + content.getClass().getName());
+            String contents = content.toString();
+            desc.append(contents);
+            desc.append("\n");
+        }
+    }
+
+
 
 }
