@@ -84,7 +84,7 @@ features
     </type>
 
 
-  <type name="project_tls_scan"  description="TLS Scan" category="Field Project" pattern=".*\.RiSCAN.zip">
+  <type name="project_tls_scan"  description="TLS Scan" category="Field Project" pattern="(.*\.RiSCAN\.zip|.*\.leica\.zip">
      <property name="icon" value="/fieldproject/tripod.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
