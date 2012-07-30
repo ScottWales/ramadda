@@ -103,10 +103,10 @@ public class Entry implements Cloneable {
     private User user;
 
     /** _more_ */
-    private long createDate;
+    private long createDate = 0L;
 
     /** _more_ */
-    private long changeDate;
+    private long changeDate =0L;
 
 
     /** _more_ */
@@ -461,8 +461,9 @@ public class Entry implements Cloneable {
         this.description = description;
         this.parentEntry = parentEntry;
         this.user        = user;
-        this.createDate  = createDate;
-        this.changeDate  = changeDate;
+
+        setCreateDate(createDate);
+        setChangeDate(changeDate);
 
 
         this.resource    = resource;
@@ -1344,8 +1345,8 @@ public class Entry implements Cloneable {
         this.description = description;
         this.parentEntry = parentEntry;
         this.user        = user;
-        this.createDate  = createDate;
-        this.changeDate  = changeDate;
+        setCreateDate(createDate);
+        setChangeDate(changeDate);
     }
 
 
