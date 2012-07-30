@@ -449,7 +449,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         StringBuffer sb           = new StringBuffer();
-
         String       wikiTemplate = getWikiText(request, entry);
         if (wikiTemplate != null) {
             sb.append(getWikiManager().wikifyEntry(request, entry,
@@ -461,10 +460,8 @@ public class HtmlOutputHandler extends OutputHandler {
             //            sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
             //                    informationBlock, true));
             sb.append(informationBlock);
-
             //            sb.append(getAttachmentsHtml(request, entry));
         }
-
         return makeLinksResult(request, msg("Entry"), sb, new State(entry));
     }
 

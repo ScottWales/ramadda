@@ -1125,9 +1125,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 titles.add(title);
                 String content;
                 if ( !useDescription) {
-                    Result result =
-                        getHtmlOutputHandler().getHtmlResult(request,
-                            OutputHandler.OUTPUT_HTML, child);
+                    Result result = null;
+                    TypeHandler typeHandler = child.getTypeHandler();
+                    result = typeHandler.getHtmlDisplay(request, child);
+                    if(typeHandler.isGroup()) {
+                        List<Entry>  entries     = new ArrayList<Entry>();
+                        List<Entry>  subGroups   = new ArrayList<Entry>();
+                        child.getTypeHandler().getChildrenEntries(request, child, entries,
+                                                       subGroups, null);
+                        result = typeHandler.getHtmlDisplay(request, child, subGroups, entries);
+                    }
+                    if(result == null) {
+                        result = getHtmlOutputHandler().getHtmlResult(request,
+                                                                      OutputHandler.OUTPUT_HTML, child);
+                    }
                     content = new String(result.getContent());
                 } else {
                     if (child.getTypeHandler().isType(TYPE_WIKIPAGE)) {

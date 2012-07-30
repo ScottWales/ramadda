@@ -4544,9 +4544,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Request getTmpRequest() throws Exception {
-        Request request = new Request(getRepository(), "", new Hashtable());
-        request.setUser(getUserManager().getAnonymousUser());
+        return getTmpRequest(UserManager.USER_ANONYMOUS);
+    }
 
+    public Request getTmpRequest(String user) throws Exception {
+        Request request = new Request(getRepository(), "", new Hashtable());
+        request.setUser(getUserManager().findUser(user));
         return request;
     }
 
