@@ -731,6 +731,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ENTRYID = "entryid";
 
+    public static final String ARG_ENTRY_TIMESTAMP = "entry.timestamp";
+
     /** _more_ */
     public static final String ARG_LOCALEID = "localeid";
 

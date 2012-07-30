@@ -619,7 +619,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private Result processGroupShow(Request request,
+    public Result processGroupShow(Request request,
                                     OutputHandler outputHandler,
                                     OutputType outputType, Entry group)
             throws Exception {
@@ -631,7 +631,6 @@ public class EntryManager extends RepositoryManager {
         List<Entry>  entries     = new ArrayList<Entry>();
         List<Entry>  subGroups   = new ArrayList<Entry>();
         try {
-
             typeHandler.getChildrenEntries(request, group, entries,
                                            subGroups, where);
         } catch (Exception exc) {
@@ -787,6 +786,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
             if (entry != null) {
                 sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+                sb.append(HtmlUtils.hidden(ARG_ENTRY_TIMESTAMP, getEntryTimestamp(entry)));
                 if (isAnonymousUpload(entry)) {
                     List<Metadata> metadataList =
                         getMetadataManager().findMetadata(entry,
@@ -827,6 +827,13 @@ public class EntryManager extends RepositoryManager {
         return makeEntryEditResult(request, entry, title, sb);
 
     }
+
+    private String getEntryTimestamp(Entry entry) {
+        long changeDate = entry.getChangeDate();
+        //        System.err.println("timestamp:" +changeDate +" " + new Date(changeDate));
+        return ""+changeDate;
+    }
+
 
     /**
      * Function to get share button, ratings and also Numbers of Comments and comments icon getComments(request, entry);
@@ -1080,6 +1087,13 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
+            //If we have a timestampd then check if the user was editing an up to date entry
+            if(request.defined(ARG_ENTRY_TIMESTAMP) && !Misc.equals(request.getString(ARG_ENTRY_TIMESTAMP, ""), getEntryTimestamp(entry))) {
+                StringBuffer sb = new StringBuffer();
+                sb.append(getRepository().showDialogError(msg("Error: The entry you are editing has been edited since the time you began the edit")));
+                return addEntryHeader(request, entry,
+                                      new Result(msg("Entry Edit Error"), sb));
+            }
 
             if (request.exists(ARG_DELETE_CONFIRM)) {
                 if (entry.isTopEntry()) {
@@ -6130,9 +6144,11 @@ public class EntryManager extends RepositoryManager {
         //create date
         getDatabaseManager().setDate(statement, col++, entry.getCreateDate());
 
-        //change date
+        //We always set the change date here. Make sure we set it on the entry as well
+        //because the entry object sticks around in memory
+        entry.setChangeDate(getRepository().currentTime());
         getDatabaseManager().setDate(statement, col++,
-                                     getRepository().currentTime());
+                                     entry.getChangeDate());
         try {
             getDatabaseManager().setDate(statement, col,
                                          entry.getStartDate());
