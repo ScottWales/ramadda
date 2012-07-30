@@ -41,16 +41,16 @@ server (e.g., mysql, postgres). You configure your internal and external
 RAMADDA instances to use the same database. 
 <p>
 For the file system you could have both RAMADDA's use the same RAMADDA home directory. But,
-there are some things in there that shouldn't be shared (e.g., properties files, plugins, log files, etc). So, its best to configure the RAMADDAs so each have their own home directory but configure the shared content directories to be the same.
+there are some things in there that shouldn't be shared (e.g., properties files, plugins, log files, etc). So, 
+its best to configure the RAMADDAs so each have their own home directory but configure the shared content 
+directories to be the same.
 <p>
-To set this up:
-<ul>
-<li> For your read only RAMADDA you set the property (e.g., in repository.properties)
+To configure this add the following property to one of the local property files on your read-only server.
 <pre>
 ramadda.readonly=true
 </pre>
 
-To have it point to alternate directories you set the properties:
+Set the following properties to define any alternate storage directories:
 <pre>
 ramadda.storage.storagedir=/some/dir/storage
 ramadda.storage.entriesdir=/some/dir/entries
@@ -85,7 +85,19 @@ This just turns off RAMADDA's memory cache mechanism. But, if you are doing lots
 simultaneous editing and deletion and moving of content on the different RAMADDA's you
 might run into some issues.
 
+<h2>Clearing the Cache</h2>
 
+You can force RAMADDA to clear its cache and also re-read all of the properties from the database by hitting:<brP>
+&lt;repository root&gt;/clearstate
+</pre>
+
+This will present a form where you need to enter a special pass-phrase  or password. 
+<b>
+Note:The pass-phrase is not meant to be secure. Its used to filter out strangers from resetting your repository.</b>
+
+To set the pass-phrase set a property on the server (e.g., plugins/admin.properties):<pre>
+ramadda.passphrase=....
+</pre>
 
 
 
