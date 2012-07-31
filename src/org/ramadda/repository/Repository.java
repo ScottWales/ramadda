@@ -4547,9 +4547,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getTmpRequest(UserManager.USER_ANONYMOUS);
     }
 
-    public Request getTmpRequest(String user) throws Exception {
+    public Request getTmpRequest(String userId) throws Exception {
+        User user = getUserManager().findUser(userId);
+
+        if(user == null) {
+            throw new IllegalArgumentException ("Could not find user:" + userId);
+
+        }
         Request request = new Request(getRepository(), "", new Hashtable());
-        request.setUser(getUserManager().findUser(user));
+        request.setUser(user);
+        request.setSessionId(getGUID());
         return request;
     }
 
