@@ -18,13 +18,11 @@
      <property name="icon" value="/gps/unavco.png"/>
    </type>
 
-  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" pattern="(.*/GPS/Raw/T?\d+.*|.*\.tps$|.*\.t\d\d|.*\.T\d\d)" super="project_gps">>
+  <type name="project_gps_raw"  description="Raw GPS File" category="Field Project" pattern="(.*/GPS/Raw/T?\d+.*|.*\.tps$|.*\.t\d\d|.*\.T\d\d)" super="project_gps">
   </type>
 
-  <type name="project_gps_opus"  description="OPUS Solution" category="Field Project" pattern=".*\.opus"
-        handler="org.ramadda.geodata.gps.OpusTypeHandler">
+  <type name="gps_solution"  description="GPS Solution" category="Field Project" foruser="false">
      <property name="location.format" value="####0.00000000"/>
-     <property name="icon" value="/gps/tux.png"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
@@ -34,7 +32,18 @@
      <column name="itrf_x" label="ITRF X"  type="double"/>
      <column name="itrf_y" label="ITRF Y"  type="double"/>
      <column name="itrf_z" label="ITRF Z"  type="double"/>
+  </type>
+
+  <type name="gps_solution_opus"  super="gps_solution" description="OPUS Solution" xcategory="Field Project" pattern=".*\.opus"
+        handler="org.ramadda.geodata.gps.OpusTypeHandler" >
+     <property name="icon" value="/gps/tux.png"/>
    </type>
+
+  <type name="gps_solution_csrs"    super="gps_solution" description="CSRS Solution" xcategory="Field Project" 
+        handler="org.ramadda.geodata.gps.SolutionTypeHandler">
+     <property name="icon" value="/gps/canada.png"/>
+  </type>
+
 
   <type name="project_gps_controlpoints"  description="Control Points File" category="Field Project">
      <property name="icon" value="/icons/csv.png"/>

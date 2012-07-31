@@ -23,6 +23,7 @@ package org.ramadda.geodata.gps;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.auth.User;
 
 import org.w3c.dom.*;
 
@@ -44,37 +45,18 @@ import javax.mail.internet.*;
  *
  * @author Jeff McWhirter
  */
-public class OpusTypeHandler extends GenericTypeHandler {
+public class OpusTypeHandler extends SolutionTypeHandler {
 
     /** _more_ */
-    public static final String TYPE_OPUS = "project_gps_opus";
+    public static final String TYPE_OPUS = "gps_solution_opus";
 
-    public static final String PROP_OPUS_MAIL_URL = "gps.opus.mailurl";
-
-    /** _more_ */
-    private static int COLCNT = 0;
-
-    /** _more_ */
-    public static final int IDX_SITE_CODE = COLCNT++;
-
-    /** _more_ */
-    public static final int IDX_UTM_X = COLCNT++;
-
-    /** _more_ */
-    public static final int IDX_UTM_Y = COLCNT++;
-
-    /** _more_ */
-    public static final int IDX_ITRF_X = COLCNT++;
-
-    /** _more_ */
-    public static final int IDX_ITRF_Y = COLCNT++;
-
-    /** _more_ */
-    public static final int IDX_ITRF_Z = COLCNT++;
+    public static final String PROP_OPUS_MAIL_URL = "gps.opus.mail.url";
+    public static final String PROP_OPUS_MAIL_USER = "gps.opus.mail.user";
 
 
     private boolean monitoringOpus = false;
 
+    private String opusUser;
 
     /**
      * _more_
@@ -87,11 +69,27 @@ public class OpusTypeHandler extends GenericTypeHandler {
             throws Exception {
         super(repository, node);
         final String opusMailUrl = getRepository().getProperty(PROP_OPUS_MAIL_URL,(String)null);
+        opusUser = getRepository().getProperty(PROP_OPUS_MAIL_USER,(String)null);
         if(opusMailUrl!=null) {
-            getLogManager().logInfoAndPrint ("OPUS:  email "+ opusMailUrl);
+            if(opusUser == null) {
+                getLogManager().logInfoAndPrint ("OPUS:  error: No user id defined by property: "+PROP_OPUS_MAIL_USER);
+                return;
+            }
             //Start up in 10 seconds
             Misc.runInABit(10000, new Runnable() {
                     public void run() {
+                        //Make sure we have a user
+                        try {
+                            User user = getUserManager().findUser(opusUser);
+                            if(user == null) {
+                                getLogManager().logInfoAndPrint ("OPUS: could not find user:" + opusUser);
+                                return;
+                            }
+                        } catch(Exception exc) {
+                            getLogManager().logError ("OPUS: could not find user:" + opusUser,exc);
+                            return;
+                        }
+                        //                        getLogManager().logInfoAndPrint ("OPUS:  monitoring email "+ opusMailUrl);
                         getLogManager().logInfoAndPrint ("OPUS: monitoring OPUS email");
                         monitorOpusEmail(opusMailUrl);
                     }});
@@ -115,15 +113,15 @@ public class OpusTypeHandler extends GenericTypeHandler {
                 return;
             }
             try {
-                System.err.println ("calling checkfor opusmail");
+                //                System.err.println ("calling checkfor opusmail");
+                System.err.println ("OPUS: checking mbox");
                 if(!checkForOpusEmail(opusMailUrl)) {
                     errorCnt++;
                 } else {
                     errorCnt = 0;
                 }
-                System.err.println ("Sleeping");
+                System.err.println ("OPUS: done checking mbox");
                 Misc.sleepSeconds(60);
-                System.err.println ("Done");
             } catch(Exception exc) {
                 errorCnt++;
                 //                if(errorCnt>5) {
@@ -232,26 +230,6 @@ Easting (X)  [meters]      379359.228           836346.070
         }
     }
 
-    public static void xxxmain(String[]args) {
-        String opus = "Northing (Y) [meters]     3634840.411\n" +
-            "Easting (X)  [meters]      734737.791\n";
-        String[] patterns = { "Northing\\s*\\(Y\\)\\s*\\[meters\\]\\s*([-\\.\\d]+)\\s+",
-                              "Easting\\s*\\(X\\)\\s*\\[meters\\]\\s*([-\\.\\d]+)\\s+",
-                              "X:\\s*([-\\.\\d]+)\\(",
-                              "Y:\\s*([-\\.\\d]+)\\(",
-                              "Z:\\s*([-\\.\\d]+)\\(", };
-        for (int i = 0; i < patterns.length; i++) {
-            String value = StringUtil.findPattern(opus, patterns[i]);
-            if (value != null) {
-                System.err.println("i:" + i +" " + patterns[i] +" " + value);
-            } else {
-                System.err.println("i:" + i +" " + patterns[i] +" BAD" );
-            }
-        }
-    }
-
-    public static void main(String[]args)  throws Exception {
-    }
 
     private boolean checkForOpusEmail(String opusMailUrl) throws Exception  {
         Properties props = System.getProperties();
@@ -272,25 +250,32 @@ Easting (X)  [meters]      379359.228           836346.070
             Message[] messages = folder.getMessages();
             for(int i=0;i<messages.length;i++) {
                 String subject = messages[i].getSubject();
-                System.err.println("subject:" +  subject);
                 if(subject.indexOf("OPUS solution") <0) {
+                    System.err.println("OPUS: skipping: " + subject);
+                    //                    messages[i].setFlag(Flags.Flag.DELETED, true);
                     continue;
                 }
+                System.err.println("OPUS: subject:" +  subject);
                 Object content = messages[i].getContent();
                 StringBuffer sb = new StringBuffer();
                 processContent(content, sb);
                 GpsOutputHandler gpsOutputHandler =
                     (GpsOutputHandler) getRepository().getOutputHandler(
                                                                         GpsOutputHandler.OUTPUT_GPS_TORINEX);
+                //                System.err.println("deleting:" +  subject);
+                //                messages[i].setFlag(Flags.Flag.DELETED, true);
+                //                if(true) continue;
+
                 StringBuffer msgBuff = new StringBuffer();
-                Entry newEntry = gpsOutputHandler.processAddOpus(getRepository().getTmpRequest(),  sb.toString(), msgBuff, true);
+                Request tmpRequest = getRepository().getTmpRequest(opusUser);
+                Entry newEntry = gpsOutputHandler.processAddOpus(tmpRequest, sb.toString(), msgBuff);
                 if(newEntry==null) {
                     System.err.println("OPUS: Unable to process OPUS message:" + msgBuff);
                     getLogManager().logError("OPUS: Unable to process OPUS message:" + msgBuff);
                 } else {
-                    monitoringOpus = false;
-                    System.err.println("added opus. deleting email: " + newEntry.getId());
-                    //                    messages[i].setFlag(Flags.Flag.DELETED, true);
+                    //                    monitoringOpus = false;
+                    System.err.println("OPUS: added opus. deleting email: " + newEntry.getId());
+                    messages[i].setFlag(Flags.Flag.DELETED, true);
                 }
             }
         } catch (NoSuchProviderException e) {
@@ -314,7 +299,7 @@ Easting (X)  [meters]      379359.228           836346.070
                     if(partContent instanceof MimeMultipart){
                         processContent(partContent, desc);
                     } else {
-                        String contentType = part.getContentType();
+                       String contentType = part.getContentType();
                         //Only ingest the text
                         if(contentType.indexOf("text/plain")>=0) {
                             desc.append(partContent);

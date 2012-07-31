@@ -69,6 +69,8 @@ public class GpsOutputHandler extends OutputHandler {
     public static final String PROP_TEQC = "gps.teqc";
     public static final String PROP_RUNPKR = "gps.runpkr";
 
+    public static final String OPUS_URL =  "http://www.ngs.noaa.gov/OPUS-cgi/OPUS/prod/upload.prl";
+
     /** _more_ */
     private static final String TEQC_FLAG_QC = "+qcq";
 
@@ -276,8 +278,8 @@ public class GpsOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private boolean isOpus(Entry entry) {
-        return entry.getType().equals(OpusTypeHandler.TYPE_OPUS);
+    private boolean isSolution(Entry entry) {
+        return entry.getTypeHandler().isType(SolutionTypeHandler.TYPE_SOLUTION);
     }
 
     /**
@@ -288,7 +290,7 @@ public class GpsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private boolean isRinex(Entry entry) {
-        return entry.getType().equals(GpsTypeHandler.TYPE_RINEX);
+        return entry.getTypeHandler().isType(GpsTypeHandler.TYPE_RINEX);
     }
 
 
@@ -348,7 +350,7 @@ public class GpsOutputHandler extends OutputHandler {
                 }
             }
             for (Entry child : entries) {
-                if (isOpus(child)) {
+                if (isSolution(child)) {
                     links.add(makeLink(request, state.group,
                                        OUTPUT_GPS_CONTROLPOINTS));
                     break;
@@ -987,7 +989,7 @@ public class GpsOutputHandler extends OutputHandler {
             entryTable.append(
                 "<table><tr><td align=center></td><td align=center><b>X</b></td><td align=center><b>Y</b></td><td align=center><b>Z</b></td></tr>");
             for (Entry entry : entries) {
-                if ( !isOpus(entry)) {
+                if ( !isSolution(entry)) {
                     continue;
                 }
                 entryTable.append("<tr><td>");
@@ -996,13 +998,13 @@ public class GpsOutputHandler extends OutputHandler {
                 entryTable.append(" ");
                 entryTable.append(entry.getName());
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_X,
+                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_ITRF_X,
                         "NA"));
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_Y,
+                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_ITRF_Y,
                         "NA"));
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getValue(OpusTypeHandler.IDX_ITRF_Z,
+                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_ITRF_Z,
                         "NA"));
                 entryTable.append("</td></tr>");
 
@@ -1033,47 +1035,47 @@ public class GpsOutputHandler extends OutputHandler {
         boolean anyOK = false;
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
-        List<Entry> opusEntries = new ArrayList<Entry>();
+        List<Entry> solutionEntries = new ArrayList<Entry>();
         double      maxLat      = -90;
         double      minLat      = 90;
         double      maxLon      = -180;
         double      minLon      = 180;
         for (String entryId : entryIds) {
-            Entry opusEntry = getEntryManager().getEntry(request, entryId);
-            if (opusEntry == null) {
+            Entry solutionEntry = getEntryManager().getEntry(request, entryId);
+            if (solutionEntry == null) {
                 throw new IllegalArgumentException("No entry:" + entryId);
             }
 
-            if ( !isOpus(opusEntry)) {
+            if ( !isSolution(solutionEntry)) {
                 sb.append("<li>");
-                sb.append("Skipping:" + opusEntry.getName());
+                sb.append("Skipping:" + solutionEntry.getName());
                 sb.append(HtmlUtils.p());
                 continue;
             }
 
-            maxLat = Math.max(maxLat, opusEntry.getLatitude());
-            minLat = Math.min(minLat, opusEntry.getLatitude());
-            maxLon = Math.max(maxLon, opusEntry.getLongitude());
-            minLon = Math.min(minLon, opusEntry.getLongitude());
+            maxLat = Math.max(maxLat, solutionEntry.getLatitude());
+            minLat = Math.min(minLat, solutionEntry.getLatitude());
+            maxLon = Math.max(maxLon, solutionEntry.getLongitude());
+            minLon = Math.min(minLon, solutionEntry.getLongitude());
 
-            opusEntries.add(opusEntry);
+            solutionEntries.add(solutionEntry);
             anyOK = true;
             String siteCode =
-                opusEntry.getValue(OpusTypeHandler.IDX_SITE_CODE, "");
+                solutionEntry.getValue(SolutionTypeHandler.IDX_SITE_CODE, "");
             if (siteCode.length() == 0) {
-                siteCode = opusEntry.getName();
+                siteCode = solutionEntry.getName();
             }
             buff.append(siteCode);
             buff.append(",");
-            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_X, "NA"));
+            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_X, "NA"));
             buff.append(",");
-            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Y, "NA"));
+            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Y, "NA"));
             buff.append(",");
-            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_ITRF_Z, "NA"));
+            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Z, "NA"));
             buff.append("\n");
-            //            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_X,"NA"));
-            //            buff.append(opusEntry.getValue(OpusTypeHandler.IDX_UTM_Y,"NA"));
-            //            buff.append(opusEntry.getAltitude());
+            //            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_UTM_X,"NA"));
+            //            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_UTM_Y,"NA"));
+            //            buff.append(solutionEntry.getAltitude());
         }
 
         sb.append("</ul>");
@@ -1135,9 +1137,9 @@ public class GpsOutputHandler extends OutputHandler {
                                            .getName()));
 
             getRepository().addAuthToken(request);
-            for (Entry opusEntry : opusEntries) {
+            for (Entry solutionEntry : solutionEntries) {
                 getAssociationManager().addAssociation(request, newEntry,
-                        opusEntry, "", ASSOCIATION_TYPE_GENERATED_FROM);
+                        solutionEntry, "", ASSOCIATION_TYPE_GENERATED_FROM);
             }
         }
         return new Result("", sb);
@@ -1404,16 +1406,16 @@ public class GpsOutputHandler extends OutputHandler {
             postEntries.add(HttpFormField.hidden("opusOption", "0"));
             postEntries.add(HttpFormField.hidden("frameValue", "2011"));
             //Use the entry id so when we get the opus back we can look up the original entry
+            String filename = request.getUser().getId()+"_" + entry.getId();
+            filename = entry.getId();
             postEntries.add(
                 new HttpFormField(
-                    "uploadfile", entry.getId() + ".rinex",
+                    "uploadfile", filename,
                     IOUtil.readBytes(
                         getStorageManager().getFileInputStream(f))));
 
 
-            String url =
-                "http://www.ngs.noaa.gov/OPUS-cgi/OPUS/prod/upload.prl";
-
+            String url = OPUS_URL;
             String[] result   = { "", "" };
             String   errorMsg = null;
             try {
@@ -1647,7 +1649,7 @@ public class GpsOutputHandler extends OutputHandler {
         }
         if (request.exists(ARG_OPUS)) {
             StringBuffer msgBuff = new StringBuffer();
-            Entry newEntry = processAddOpus(request,  request.getString(ARG_OPUS, ""), msgBuff, false);
+            Entry newEntry = processAddOpus(request,  request.getString(ARG_OPUS, ""), msgBuff);
             if(newEntry==null) {
                 sb.append(
                           getRepository().showDialogError(msgBuff.toString()));
@@ -1669,17 +1671,57 @@ public class GpsOutputHandler extends OutputHandler {
 
     }
 
-    public Entry processAddOpus(Request request, String opus, StringBuffer sb, boolean fromEmail) throws Exception {
-        String rinexEntryId = StringUtil.findPattern(opus,
-                                                     "FILE: *([^\\.]+).rinex");
-        if (rinexEntryId == null) {
+    public Entry processAddOpus(Request request, String opus, StringBuffer sb) throws Exception {
+
+        //FILE: admin_2cc34996-d976-46d3-88b2-559fe3460f63 0
+
+        String suffix = StringUtil.findPattern(opus,
+                                               "FILE:\\s*([^\\s\\.]+)(\\s|\\.rinex)");
+        if (suffix == null) {
             sb.append("Could not find FILE name in the given OPUS");
             return null;
         }
+
+        String user = null;
+        String rinexEntryId = null;
+        //We encode the user id and rinex entry id in the posted filename
+        if(suffix.indexOf("_")>=0) {
+            user = StringUtil.findPattern(suffix,
+                                          "([^_]+)_");
+            if (user == null) {
+                sb.append("Could not find user id in: " + suffix);
+                return null;
+            }
+            rinexEntryId = StringUtil.findPattern(suffix,
+                                          "[^_]+_(.*)$");
+            if (rinexEntryId == null) {
+                sb.append("Could not find rinex entry id in: " + suffix);
+                return null;
+            }
+        } else {
+            rinexEntryId = suffix;
+        }
+
+        if(rinexEntryId == null) {
+            rinexEntryId = suffix;
+        }
+
+        if(request == null) {
+            if(user == null) {
+                sb.append("Could not find user id in OPUS results");
+                return null;
+            }
+            request = getRepository().getTmpRequest(user);
+            //            System.err.println("tmp request:" + request.getUser() +" admin="+ request.getUser().getAdmin());
+        }
+
+        //        System.err.println("request:" + request.getUser() +" admin="+ request.getUser().getAdmin());
+
+
         final Entry rinexEntry = getEntryManager().getEntry(request,
                                                             rinexEntryId);
         if (rinexEntry == null) {
-            sb.append("Could not find original RINEX entry");
+            sb.append("Could not find original RINEX entry: "+ rinexEntryId);
             return null;
         }
         Entry parentEntry = rinexEntry.getParentEntry();
@@ -1688,14 +1730,18 @@ public class GpsOutputHandler extends OutputHandler {
         for (Entry child :
                  getEntryManager().getChildrenGroups(request,
                                                      parentEntry.getParentEntry())) {
+            if (child.getName().toLowerCase().trim().equals("solutions")) {
+                parentEntry = child;
+                break;
+            }
             if (child.getName().toLowerCase().trim().equals("opus")) {
                 parentEntry = child;
                 break;
             }
         }
 
-        if(!fromEmail  && getAccessManager().canDoAction(request, parentEntry,
-                                             Permission.ACTION_NEW)) {
+        if(!getAccessManager().canDoAction(request, parentEntry,
+                                          Permission.ACTION_NEW)) {
             sb.append("You do not have permission to add to:"
                         + parentEntry.getName());
             return null;
@@ -1712,7 +1758,7 @@ public class GpsOutputHandler extends OutputHandler {
         f = getStorageManager().copyToStorage(request, f, f.getName());
 
         TypeHandler typeHandler =
-            getRepository().getTypeHandler("project_gps_opus");
+            getRepository().getTypeHandler(OpusTypeHandler.TYPE_OPUS);
 
         final Object     siteCode = rinexEntry.getValue(IDX_SITE_CODE,
                                                         "");
@@ -1736,7 +1782,7 @@ public class GpsOutputHandler extends OutputHandler {
 
 
         if (newEntry.hasLocationDefined()) {
-            if (fromEmail || canEditRinex) {
+            if (canEditRinex) {
                 rinexEntry.setLocation(newEntry.getLatitude(),
                                        newEntry.getLongitude(),
                                        newEntry.getAltitude());
@@ -1751,7 +1797,7 @@ public class GpsOutputHandler extends OutputHandler {
                                                                             GpsOutputHandler
                                                                             .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
                                          .TYPE_RAW)) {
-                if (fromEmail || getAccessManager().canDoAction(request, rawEntry,
+                if (getAccessManager().canDoAction(request, rawEntry,
                                                    Permission.ACTION_EDIT)) {
                     rawEntry.setLocation(newEntry.getLatitude(),
                                          newEntry.getLongitude(),
@@ -1760,15 +1806,10 @@ public class GpsOutputHandler extends OutputHandler {
                 }
             }
         }
-        if(!fromEmail) {
-            
-            getRepository().addAuthToken(request);
-            getAssociationManager().addAssociation(request, newEntry,
-                                                   rinexEntry, "generated rinex",
-                                                   GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
-        } else {
-            //TODO
-        }
+        getRepository().addAuthToken(request);
+        getAssociationManager().addAssociation(request, newEntry,
+                                               rinexEntry, "generated rinex",
+                                               GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
         return newEntry;
     }
 
