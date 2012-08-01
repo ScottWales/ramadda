@@ -1319,8 +1319,8 @@ public class GpsOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Result outputOpus(Request request, Entry mainEntry,
-                              List<Entry> entries)
+    private Result outputOpus(final Request request, final Entry mainEntry,
+                              final List<Entry> entries)
             throws Exception {
 
 
@@ -1335,6 +1335,21 @@ public class GpsOutputHandler extends OutputHandler {
             return outputOpusForm(request, mainEntry, entries, sb);
         }
 
+        ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    submitToOpus(request, mainEntry, entries, actionId);
+                }
+            };
+        
+        return getActionManager().doAction(request, action,
+                                           "Uploading to OPUS", "");
+    }
+
+
+    private void submitToOpus(Request request,  Entry mainEntry,
+                                List<Entry> entries, Object actionId)
+        throws Exception {
+        StringBuffer sb = new StringBuffer();
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
         StringBuffer extra = new StringBuffer();
@@ -1449,10 +1464,9 @@ public class GpsOutputHandler extends OutputHandler {
                 errorMsg = StringUtil.stripTags(errorMsg);
                 sb.append(errorMsg);
                 sb.append("</pre>");
-                sb.append("<p>");
-                sb.append(msgHeader("Upload Form"));
                 sb.append("</ul>");
-                return outputOpusForm(request, mainEntry, entries, sb);
+                getActionManager().setActionMessage(actionId, sb.toString());
+                break;
             } else {
                 if (html.indexOf("Upload successful") >= 0) {
                     sb.append(" ... Uploaded to OPUS. Height:" + height);
@@ -1467,6 +1481,8 @@ public class GpsOutputHandler extends OutputHandler {
                     //                    System.out.println(result[1]);
                 }
             }
+            getActionManager().setActionMessage(actionId, sb.toString()+"</ul>");
+            if(!getActionManager().getActionOk(actionId)) break;
         }
 
         sb.append("</ul>");
@@ -1474,8 +1490,12 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.href(getRepository().getUrlBase()
                                 + "/gps/addopus", "here"));
         sb.append(" to upload the OPUS solutions");
-        return new Result("", sb);
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW, mainEntry),
+                                 msg("Return to Folder")));
+        getActionManager().setContinueHtml(actionId, sb.toString());
     }
+
 
 
     /**
