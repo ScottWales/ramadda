@@ -294,12 +294,12 @@ Easting (X)  [meters]      379359.228           836346.070
             for(int i=0;i<multipart.getCount();i++) {
                 MimeBodyPart part = (MimeBodyPart)multipart.getBodyPart(i);
                 String disposition = part.getDisposition();
+                String contentType = part.getContentType();
+                Object partContent = part.getContent();
                 if (disposition == null) {
-                    Object partContent = part.getContent();
                     if(partContent instanceof MimeMultipart){
                         processContent(partContent, desc);
                     } else {
-                       String contentType = part.getContentType();
                         //Only ingest the text
                         if(contentType.indexOf("text/plain")>=0) {
                             desc.append(partContent);
@@ -308,6 +308,12 @@ Easting (X)  [meters]      379359.228           836346.070
                     }
                     continue;
                 }
+                if (disposition.equals(Part.INLINE) && contentType.indexOf("text/plain")>=0) {
+                    desc.append(partContent);
+                    return;
+                }
+
+                //                System.err.println("disposition:" + disposition + " Type:" + contentType +" part:" + partContent.getClass().getName());
                 if (disposition.equals(Part.ATTACHMENT) || 
                         disposition.equals(Part.INLINE)) {
                     if(part.getFileName()!=null) {
@@ -316,10 +322,12 @@ Easting (X)  [meters]      379359.228           836346.070
                 }
             }
         } else if(content instanceof Part) {
+            //            System.err.println("Part");
             //TODO
             Part part= (Part) content;
         } else {
             //            System.err.println ("xxx content:" + content.getClass().getName());
+            //            System.err.println("Content");
             String contents = content.toString();
             desc.append(contents);
             desc.append("\n");

@@ -87,6 +87,10 @@ public class GpsOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String URL_ADDOPUS = "/gps/addopus";
 
+    public static final String ARG_COORD_LONLATALT = "coord.lonlatalt";
+    public static final String ARG_COORD_XYZ = "coord.xyz";
+
+
     /** _more_ */
     public static final String ARG_OPUS = "opus";
 
@@ -1002,9 +1006,20 @@ public class GpsOutputHandler extends OutputHandler {
                         ARG_CONTROLPOINTS_COMMENT, "", HtmlUtils.SIZE_60)));
 
 
-            StringBuffer entryTable = new StringBuffer();
-            entryTable.append(
-                "<table><tr><td align=center></td><td align=center><b>X</b></td><td align=center><b>Y</b></td><td align=center><b>Z</b></td></tr>");
+            StringBuffer entryTable = new StringBuffer("<table>");
+            entryTable.append("<tr><td align=center></td>");
+            entryTable.append("<td colspan=3 align=center>");
+            entryTable.append(HtmlUtils.checkbox(ARG_COORD_XYZ,"true", true));
+            entryTable.append(HtmlUtils.space(1));
+            entryTable.append(msg("Include X/Y/Z"));
+            entryTable.append("</td>");
+            entryTable.append("<td colspan=3 align=center>");
+            entryTable.append(HtmlUtils.checkbox(ARG_COORD_LONLATALT,"true", true));
+            entryTable.append(HtmlUtils.space(1));
+            entryTable.append(msg("Include Lat/Lon/Elev"));
+            entryTable.append("</td></tr>");
+            entryTable.append("<tr><td align=center></td><td align=center><b>X</b></td><td align=center><b>Y</b></td><td align=center><b>Z</b></td><td align=center><b>Longitude</b></td><td align=center><b>Latitude</b></td><td align=center><b>Elevation</b></td></tr>");
+
             for (Entry entry : entries) {
                 if ( !isSolution(entry)) {
                     continue;
@@ -1023,6 +1038,15 @@ public class GpsOutputHandler extends OutputHandler {
                 entryTable.append("</td><td align=right>");
                 entryTable.append(entry.getValue(SolutionTypeHandler.IDX_ITRF_Z,
                         "NA"));
+
+                entryTable.append("</td><td align=right>");
+                entryTable.append(""+entry.getLongitude());
+                entryTable.append("</td>");
+                entryTable.append("</td><td align=right>");
+                entryTable.append(""+entry.getLatitude());
+                entryTable.append("</td>");
+                entryTable.append("</td><td align=right>");
+                entryTable.append(""+entry.getAltitude());
                 entryTable.append("</td></tr>");
 
             }
@@ -1083,12 +1107,23 @@ public class GpsOutputHandler extends OutputHandler {
                 siteCode = solutionEntry.getName();
             }
             buff.append(siteCode);
-            buff.append(",");
-            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_X, "NA"));
-            buff.append(",");
-            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Y, "NA"));
-            buff.append(",");
-            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Z, "NA"));
+            if(request.get(ARG_COORD_XYZ, false)) {
+                buff.append(",");
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_X, "NA"));
+                buff.append(",");
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Y, "NA"));
+                buff.append(",");
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Z, "NA"));
+            }
+
+            if(request.get(ARG_COORD_LONLATALT, false)) {
+                buff.append(",");
+                buff.append(solutionEntry.getLongitude());
+                buff.append(",");
+                buff.append(solutionEntry.getLatitude());
+                buff.append(",");
+                buff.append(solutionEntry.getAltitude());
+            }
             buff.append("\n");
             //            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_UTM_X,"NA"));
             //            buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_UTM_Y,"NA"));
@@ -1715,6 +1750,7 @@ public class GpsOutputHandler extends OutputHandler {
         String suffix = StringUtil.findPattern(opus,
                                                "FILE:\\s*([^\\s\\.]+)(\\s|\\.rinex)");
         if (suffix == null) {
+            System.err.println("OPUS:" + opus);
             sb.append("Could not find FILE name in the given OPUS");
             return null;
         }
