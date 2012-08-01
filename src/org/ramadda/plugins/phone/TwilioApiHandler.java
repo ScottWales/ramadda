@@ -31,6 +31,7 @@ import org.w3c.dom.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.xml.XmlUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -48,6 +49,8 @@ import java.util.regex.*;
  */
 public class TwilioApiHandler extends RepositoryManager implements RequestHandler {
 
+    public static final String TAG_RESPONSE = "Response";
+    public static final String TAG_SMS = "Sms";
 
 
     /**
@@ -77,9 +80,22 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      */
     public Result processSms(Request request) throws Exception {
         System.err.println("sms from:" + request.getString("From","none"));
+        System.err.println("sms to:" + request.getString("To","none"));
         System.err.println("sms body:" + request.getString("Body","none"));
-        System.err.println("sms url:" + request.getString("RecordingUrl","none"));
+        System.err.println("sms args:" + request.getUrlArgs());
+        StringBuffer sb =new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        sb.append(XmlUtil.openTag(TAG_RESPONSE));
+        sb.append(XmlUtil.tag(TAG_SMS,"","Cool!"));
+        sb.append(XmlUtil.closeTag(TAG_RESPONSE));
+        return new Result("",sb,"text/xml");
+    }
 
+
+    public Result processVoice(Request request) throws Exception {
+        System.err.println("sms from:" + request.getString("From","none"));
+        System.err.println("sms body:" + request.getString("Body","none"));
+        String recordingUrl = request.getString("RecordingUrl","none");
+        System.err.println("sms url:" + recordingUrl);
         System.err.println("sms args:" + request.getUrlArgs());
         StringBuffer sb =new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -89,5 +105,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         sb.append("</Response>");
         return new Result("",sb,"text/xml");
     }
+
+
 
 }
