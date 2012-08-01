@@ -917,6 +917,10 @@ a.image-link {
      border:0px solid;
 }
 
+.audio-player {
+     border:1px solid;
+}
+
 .tooltip-inner {
    padding:2px;
    padding-bottom:0px;
