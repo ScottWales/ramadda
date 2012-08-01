@@ -698,8 +698,25 @@ public class GpsOutputHandler extends OutputHandler {
             File rinexFile = new File(IOUtil.joinDir(workDir, tail));
             fileToEntryMap.put(rinexFile.toString(), rawEntry);
 
-            ProcessBuilder pb = new ProcessBuilder(teqcPath, "+out",
-                                                   rinexFile.toString(), inputFile);
+            List<String> args  = new ArrayList<String>();
+            args.add(teqcPath);
+            String antenna = rawEntry.getValue(IDX_ANTENNA_TYPE, (String)null);
+            double height = rawEntry.getValue(IDX_ANTENNA_HEIGHT,0.0);
+
+            if(height!=0) { 
+                args.add("-O.pe");
+                args.add(""+height);
+                args.add("0");
+                args.add("0");
+            }
+            if(antenna!=null && antenna.length()>0 && !antenna.equalsIgnoreCase(Antenna.NONE)) {
+                args.add("-O.at");
+                args.add(antenna);
+            }
+            args.add("+out");
+            args.add(rinexFile.toString());
+            args.add(inputFile);
+            ProcessBuilder pb = new ProcessBuilder(args);
             pb.directory(workDir);
             Process process = pb.start();
             String errorMsg =
