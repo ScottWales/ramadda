@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.plugins.phone.TwilioApiHandler" id="twilio">
+      <api request="/phone/twilio/sms"    method="processSms" admin="false"/>
+</api>
