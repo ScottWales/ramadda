@@ -500,8 +500,8 @@ public class CatalogHarvester extends Harvester {
         /*
         System.err.println(tab + "name:" + name + "  #children:"
                            + elements.getLength() + " depth:" + xmlDepth
-                           + " " + urlPath + " " + haveChildDatasets);
-        */
+                           + " " + urlPath + " " + haveChildDatasets);*/
+        //        if(entries.size()>2) {return;}
 
         if ( !haveChildDatasets && (xmlDepth > 0) && (urlPath != null)) {
             if (makeEntry(node, parent, catalogUrlPath, urlPath, name)) {
@@ -585,7 +585,7 @@ public class CatalogHarvester extends Harvester {
 
         URL catalogUrl = new URL(catalogUrlPath);
         Element serviceNode = CatalogUtil.findServiceNodeForDataset(node,
-                                  false, null);
+                                                                    false, (download?CatalogUtil.SERVICE_HTTP:null));
 
         boolean isOpendap = false;
         if (serviceNode != null) {
