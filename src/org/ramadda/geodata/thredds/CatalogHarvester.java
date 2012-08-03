@@ -587,6 +587,7 @@ public class CatalogHarvester extends Harvester {
         Element serviceNode = CatalogUtil.findServiceNodeForDataset(node,
                                                                     false, (download?CatalogUtil.SERVICE_HTTP:null));
 
+
         boolean isOpendap = false;
         if (serviceNode != null) {
             String path = XmlUtil.getAttribute(serviceNode, "base");
