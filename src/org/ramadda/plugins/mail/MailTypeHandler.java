@@ -69,7 +69,9 @@ public class MailTypeHandler extends GenericTypeHandler {
         if(!entry.isFile()) return;
         MimeMessage message  = new MimeMessage(null, getStorageManager().getFileInputStream(entry.getFile().toString()));
         if(entryHasDefaultName(entry)) {
-            entry.setName(message.getSubject());
+            String subject = message.getSubject();
+            if(subject == null)  subject = "";
+            entry.setName(subject);
         }
         String from = InternetAddress.toString(message.getFrom());
         String to = InternetAddress.toString(message.getAllRecipients()); 
@@ -87,8 +89,8 @@ public class MailTypeHandler extends GenericTypeHandler {
 
         processContent(request, entry, content, desc);
         Object[] values = getEntryValues(entry);
-        values[0] = from.toString();
-        values[1] = to.toString();
+        values[0] = from;
+        values[1] = to;
 
         if(entry.getDescription().length()==0) {
             entry.setDescription(desc.toString());
