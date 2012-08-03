@@ -1494,6 +1494,7 @@ public class Entry implements Cloneable {
      * @return The Name
      */
     public String getName() {
+        if(name ==null) name = "";
         return name;
     }
 
