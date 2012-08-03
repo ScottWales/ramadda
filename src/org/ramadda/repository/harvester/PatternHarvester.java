@@ -549,10 +549,6 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
      * @throws Exception _more_
      */
     public String getExtraInfo() throws Exception {
-        String error = getError();
-        if (error != null) {
-            return super.getExtraInfo();
-        }
         String dirMsg = "";
         if (dirs != null) {
             if (dirs.size() == 0) {

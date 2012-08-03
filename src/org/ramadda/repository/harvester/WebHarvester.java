@@ -455,11 +455,6 @@ public class WebHarvester extends Harvester {
      * @throws Exception _more_
      */
     public String getExtraInfo() throws Exception {
-        String error = getError();
-        if (error != null) {
-            return super.getExtraInfo();
-        }
-
         String messages = StringUtil.join("", statusMessages);
         return status.toString() + ((messages.length() == 0)
                                     ? ""

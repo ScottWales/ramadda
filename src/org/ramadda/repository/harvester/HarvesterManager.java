@@ -638,6 +638,13 @@ public class HarvesterManager extends RepositoryManager {
                     HtmlUtils.cssClass(CSS_CLASS_HARVESTER_ACTIVE);
             }
 
+            StringBuffer info = new StringBuffer();
+            StringBuffer error = harvester.getError();
+            if (error != null && error.length()>0) {
+                info.append(HtmlUtils.b(msg("Errors")));
+                info.append("<div class=\"error-list\"><pre>" + error + "</div></pre>");
+            }
+            info.append(harvester.getExtraInfo());
             sb.append(HtmlUtils.tag(HtmlUtils.TAG_TR, rowAttributes,
                                    HtmlUtils.cols(edit, harvester.getName(),
                                        (harvester.getActive()
@@ -645,7 +652,7 @@ public class HarvesterManager extends RepositoryManager {
                                         : msg("Stopped")) + HtmlUtils.space(
                                             2), harvester.getRunLink(
                                             request, false), removeLink,
-                                                harvester.getExtraInfo())));
+                                                  info.toString())));
         }
         sb.append(HtmlUtils.formTableClose());
 

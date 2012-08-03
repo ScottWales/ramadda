@@ -232,7 +232,7 @@ public abstract class Harvester extends RepositoryManager {
     private TypeHandler typeHandler;
 
     /** _more_ */
-    private String error;
+    private StringBuffer error;
 
     /** _more_ */
     protected StringBuffer status = new StringBuffer();
@@ -844,12 +844,12 @@ public abstract class Harvester extends RepositoryManager {
      */
     public final void run() throws Exception {
         try {
-            error = null;
+            error = new StringBuffer();
             setActive(true);
             runInner(++timestamp);
         } catch (Throwable exc) {
             logHarvesterError("Error in harvester.run", exc);
-            error = "Error: " + exc + "<br>" + LogUtil.getStackTrace(exc);
+            error.append("Error: " + exc + "<br>" + LogUtil.getStackTrace(exc)+"<br>");
         }
         setActive(false);
     }
@@ -864,6 +864,7 @@ public abstract class Harvester extends RepositoryManager {
     public void logHarvesterError(String message, Throwable exc) {
         getRepository().getLogManager().logError(LOG,
                 getName() + " " + message, exc);
+        appendError(message);
     }
 
 
@@ -893,9 +894,15 @@ public abstract class Harvester extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getError() {
+    public StringBuffer getError() {
         return error;
     }
+
+    public void appendError(String e) {
+        this.error.append(e);
+        this.error.append("<br>");
+    }
+
 
     /**
      * _more_
@@ -905,9 +912,6 @@ public abstract class Harvester extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getExtraInfo() throws Exception {
-        if (error != null) {
-            return "<pre>" + error + "</pre>";
-        }
         return "";
     }
 
