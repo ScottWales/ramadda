@@ -1002,6 +1002,15 @@ a.image-link {
   font-weight: bold;
 }
 
+.error-list {
+   border: 1px #666666 solid;     
+   max-height: 200px; 
+   overflow-y: auto;
+   padding:5px;
+}
+
+
+
 .selectdiv {
    position: absolute; 
    visibility: hidden; 
