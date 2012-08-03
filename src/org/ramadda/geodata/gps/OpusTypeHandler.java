@@ -114,14 +114,15 @@ public class OpusTypeHandler extends SolutionTypeHandler {
             }
             try {
                 //                System.err.println ("calling checkfor opusmail");
-                System.err.println ("OPUS: checking mbox");
+                //                System.err.println ("OPUS: checking mbox");
                 if(!checkForOpusEmail(opusMailUrl)) {
                     errorCnt++;
                 } else {
                     errorCnt = 0;
                 }
-                System.err.println ("OPUS: done checking mbox");
-                Misc.sleepSeconds(60);
+                //                System.err.println ("OPUS: done checking mbox");
+                //Sleep for  5 minutes
+                Misc.sleepSeconds(60*5);
             } catch(Exception exc) {
                 errorCnt++;
                 //                if(errorCnt>5) {
