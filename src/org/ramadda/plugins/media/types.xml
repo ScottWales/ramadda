@@ -1,11 +1,11 @@
 <types>
 
-  <type name="youtubevideo"  
+  <type name="media_youtubevideo"  
         description="YouTube Video" 
-        handler="org.ramadda.plugins.youtube.YouTubeVideoTypeHandler" 
+        handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
         category="Information" 
         pattern="^http://www.youtube.com/watch\?v=.*">
-     <property name="icon" value="/youtube/youtube.png"/>
+     <property name="icon" value="/media/youtube.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.datatype.show" value="false"/>

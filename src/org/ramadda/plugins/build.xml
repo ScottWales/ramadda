@@ -52,7 +52,7 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/weather/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/wiki/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/youtube/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/media/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/gadgets/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/mail/build.xml" inheritAll="false"/>
       <copy overwrite="true"  todir="${plugindest_dir}">

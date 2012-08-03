@@ -18,7 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.plugins.youtube;
+package org.ramadda.plugins.media;
 
 
 import org.ramadda.repository.*;

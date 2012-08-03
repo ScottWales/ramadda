@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="../../../../../" default="plugin" name="ramadda plugin">
     <target name="plugin">
-      <property name="plugin" value="youtube"/>
+      <property name="plugin" value="media"/>
       <property file="${basedir}/build.properties"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="${plugin}plugin.jar"/>
