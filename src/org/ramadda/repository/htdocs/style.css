@@ -171,7 +171,7 @@ form {
 
 .ramadda-earth-entries {
    min-width: 150px;
-   max-width: 250px;
+//   max-width: 250px;
    min-height:200px;
    overflow-x: auto;
   white-space:nowrap; 

@@ -108,6 +108,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** listentries attribute */
     public static final String ATTR_LISTENTRIES = "listentries";
 
+    /** listwidth attribute */
+    public static final String ATTR_LISTWIDTH = "listwidth";
+
     /** link attribute */
     public static final String ATTR_LINK = "link";
 
@@ -1125,19 +1128,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 titles.add(title);
                 String content;
                 if ( !useDescription) {
-                    Result result = null;
+                    Result      result      = null;
                     TypeHandler typeHandler = child.getTypeHandler();
                     result = typeHandler.getHtmlDisplay(request, child);
-                    if(typeHandler.isGroup()) {
-                        List<Entry>  entries     = new ArrayList<Entry>();
-                        List<Entry>  subGroups   = new ArrayList<Entry>();
-                        child.getTypeHandler().getChildrenEntries(request, child, entries,
-                                                       subGroups, null);
-                        result = typeHandler.getHtmlDisplay(request, child, subGroups, entries);
+                    if (typeHandler.isGroup()) {
+                        List<Entry> entries   = new ArrayList<Entry>();
+                        List<Entry> subGroups = new ArrayList<Entry>();
+                        child.getTypeHandler().getChildrenEntries(request,
+                                child, entries, subGroups, null);
+                        result = typeHandler.getHtmlDisplay(request, child,
+                                subGroups, entries);
                     }
-                    if(result == null) {
-                        result = getHtmlOutputHandler().getHtmlResult(request,
-                                                                      OutputHandler.OUTPUT_HTML, child);
+                    if (result == null) {
+                        result =
+                            getHtmlOutputHandler().getHtmlResult(request,
+                                OutputHandler.OUTPUT_HTML, child);
                     }
                     content = new String(result.getContent());
                 } else {

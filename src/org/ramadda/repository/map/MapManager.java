@@ -565,9 +565,14 @@ public class MapManager extends RepositoryManager {
 
 
         if (includeList) {
+            int listwidth = request.get(WikiManager.ATTR_LISTWIDTH, 250);
             sb.append(
                 "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
-            sb.append("<td width=\"250\" style=\"max-width:250px;\">");
+            sb.append("<td width=\"");
+            sb.append(listwidth);
+            sb.append("\" style=\"max-width:");
+            sb.append(listwidth);
+            sb.append("px;\">");
             sb.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
@@ -777,6 +782,7 @@ public class MapManager extends RepositoryManager {
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
         map.centerOn(bounds);
         if (listentries) {
+            int listwidth = request.get(WikiManager.ATTR_LISTWIDTH, 250);
             StringBuffer entryBuff = new StringBuffer();
             for (Entry entry : entriesToUse) {
                 if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
@@ -810,12 +816,18 @@ public class MapManager extends RepositoryManager {
 
             sb.append(
                 "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
-            sb.append("<td width=\"250\">");
+            sb.append("<td width=\"");
+            sb.append(listwidth);
+            sb.append("\" style=\"max-width:");
+            sb.append(listwidth);
+            sb.append("px;\">");
             sb.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
-                    HtmlUtils.style(
-                        "max-width:250px; overflow-x: auto;  overflow-y: auto; max-height:"
+                    HtmlUtils.cssClass(CSS_CLASS_EARTH_ENTRIES)
+                    + HtmlUtils.style(
+                        "max-width:" + listwidth
+                        + "px; overflow-x: auto;  overflow-y: auto; max-height:"
                         + map.getHeight())));
             sb.append(entryBuff);
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
