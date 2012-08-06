@@ -435,7 +435,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                             CatalogUtil.TAG_DATASET, null,
                                             new String[] {
                                                 CatalogUtil.ATTR_NAME,
-                        "Latest OpenDAP Data" });
+                        "Latest OPeNDAP Data" });
                 XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                                latestDataset,
                                new String[] { CatalogUtil.ATTR_NAME,

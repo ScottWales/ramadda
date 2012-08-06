@@ -966,7 +966,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         }
         List formats = Misc.toList(new Object[] {
                            new TwoFacedObject("NetCDF", QueryParams.NETCDF),
-                           new TwoFacedObject("Xml", QueryParams.XML),
+                           new TwoFacedObject("XML", QueryParams.XML),
                            new TwoFacedObject("Time Series Image",
                                FORMAT_TIMESERIES),
         // Comment out until it works better to handled dates
@@ -996,7 +996,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         //sb.append(submitExtra);
         sb.append(HtmlUtils.formClose());
 
-        return makeLinksResult(request, msg("Grid As Point"), sb,
+        return makeLinksResult(request, msg("Grid At Point"), sb,
                                new State(entry));
     }
 

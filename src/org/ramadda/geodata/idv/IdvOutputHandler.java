@@ -213,7 +213,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     }
 
     /**
-     * This is from the ../data plugin. It provides routines for checking if an Entry is a grid
+     * This is from the ../cdmdata plugin. It provides routines for checking if an Entry is a grid
      * and provides a netcdf file cache
      *
      * @return The DataOutputHandler
