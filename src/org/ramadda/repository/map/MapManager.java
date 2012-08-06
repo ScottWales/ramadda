@@ -388,6 +388,7 @@ public class MapManager extends RepositoryManager {
         String categoryType = request.getString("category", "type");
 
         int    kmlCnt       = 0;
+        int    numEntries   = 0;
         for (Entry entry : entries) {
             String kmlUrl = KmlOutputHandler.getKmlUrl(request, entry);
             if ((kmlUrl == null)
@@ -427,37 +428,30 @@ public class MapManager extends RepositoryManager {
                     + HtmlUtils.onMouseClick(id + ".togglePlacemarkVisible("
                         + HtmlUtils.squote(entry.getId()) + ")")));
 
+            String navUrl  = "javascript:" + call;
             String iconUrl = getEntryManager().getIconUrl(request, entry);
             catSB.append(
                 HtmlUtils.href(
                     getEntryManager().getEntryURL(request, entry),
                     HtmlUtils.img(
-                        iconUrl, msg("Click to view entry details")) + " "
-                            + entry.getName()));
+                        iconUrl, msg("Click to view entry details"))));
+            catSB.append("&nbsp;");
+            catSB.append(HtmlUtils.href(navUrl, entry.getName()));
             catSB.append("</td><td align=right>");
             catSB.append(HtmlUtils.space(2));
-            double lat = entry.getSouth();
-            double lon = entry.getEast();
-            //            catSB.append("<a href=\"javascript:" + call +"\">"
-            //                         + entry.getName() + "</a><br>");
-            //HtmlUtils.onMouseClick(call);
-
-            /*
-            catSB.append(
-                         HtmlUtils.href(
-                                       "javascript:" + call, entry.getName(),
-                                       HtmlUtils.cssClass(CSS_CLASS_EARTH_LINK)));
-            */
             catSB.append(
                 HtmlUtils.href(
-                    "javascript:" + call,
+                    navUrl,
                     HtmlUtils.img(
                         getRepository().iconUrl(ICON_MAP_NAV),
                         "View entry"), HtmlUtils.cssClass(
                             CSS_CLASS_EARTH_LINK)));
             catSB.append("</td></tr></table>");
             catSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            numEntries++;
 
+            double         lat          = entry.getSouth();
+            double         lon          = entry.getEast();
             String         pointsString = "null";
             boolean        hasPolygon   = false;
             List<Metadata> metadataList =
@@ -564,8 +558,32 @@ public class MapManager extends RepositoryManager {
         }
 
 
+        int listwidth = request.get(WikiManager.ATTR_LISTWIDTH, 250);
+        layoutMap(sb, includeList, numEntries, listwidth, height, categories,
+                  catMap, mapSB.toString());
+        sb.append(HtmlUtils.script(js.toString()));
+
+    }
+
+    /**
+     * Make the table for the entry list
+     *
+     * @param sb          StringBuffer to append to
+     * @param includeList flag to include the list or not
+     * @param numEntries  number of entries
+     * @param listwidth   width of list table element
+     * @param height      height
+     * @param categories  list of categories
+     * @param catMap      category map
+     * @param mapHtml     the map html
+     */
+    private void layoutMap(StringBuffer sb, boolean includeList,
+                           int numEntries, int listwidth, int height,
+                           List<String> categories,
+                           Hashtable<String, StringBuffer> catMap,
+                           String mapHtml) {
+
         if (includeList) {
-            int listwidth = request.get(WikiManager.ATTR_LISTWIDTH, 250);
             sb.append(
                 "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
             sb.append("<td width=\"");
@@ -580,8 +598,7 @@ public class MapManager extends RepositoryManager {
                     + HtmlUtils.style(
                         "max-height:" + height + "px; overflow-y: auto;")));
 
-            boolean doToggle = (entries.size() > 5)
-                               && (categories.size() > 1);
+            boolean doToggle = (numEntries > 5) && (categories.size() > 1);
             for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
                 String       category = categories.get(catIdx);
                 StringBuffer catSB    = catMap.get(category);
@@ -589,8 +606,10 @@ public class MapManager extends RepositoryManager {
                     sb.append(HtmlUtils.makeShowHideBlock(category,
                             catSB.toString(), catIdx == 0));
                 } else {
-                    sb.append(HtmlUtils.b(category));
-                    sb.append(HtmlUtils.br());
+                    if (categories.size() > 1) {
+                        sb.append(HtmlUtils.b(category));
+                        sb.append(HtmlUtils.br());
+                    }
                     sb.append(catSB);
                 }
             }
@@ -598,14 +617,11 @@ public class MapManager extends RepositoryManager {
             sb.append("</td>");
             sb.append("<td align=left>");
         }
-        sb.append(mapSB);
-        sb.append(HtmlUtils.script(js.toString()));
+        sb.append(mapHtml);
         if (includeList) {
             sb.append("</td></tr></table>");
         }
-
     }
-
 
     /**
      * Make the info bubble for the map popups
@@ -781,64 +797,57 @@ public class MapManager extends RepositoryManager {
 
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
         map.centerOn(bounds);
-        if (listentries) {
-            int listwidth = request.get(WikiManager.ATTR_LISTWIDTH, 250);
-            StringBuffer entryBuff = new StringBuffer();
-            for (Entry entry : entriesToUse) {
-                if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                    entryBuff.append(
-                        "<table cellspacing=0 cellpadding=0  width=100%><tr><td nowrap=true>");
-                    String iconUrl = getEntryManager().getIconUrl(request,
-                                         entry);
-                    String navUrl = "javascript:" + map.getVariableName()
-                                    + ".hiliteMarker(" + sqt(entry.getId())
-                                    + ");";
-                    entryBuff.append(
-                        HtmlUtils.href(
-                            getEntryManager().getEntryURL(request, entry),
-                            HtmlUtils.img(
-                                iconUrl,
-                                msg("Click to view entry details"))));
-                    entryBuff.append("&nbsp;");
-                    entryBuff.append(HtmlUtils.href(navUrl, entry.getName()));
-                    entryBuff.append("</td><td align=right>");
-                    entryBuff.append(
-                        HtmlUtils.href(
-                            navUrl,
-                            HtmlUtils.img(
-                                getRepository().iconUrl(ICON_MAP_NAV),
-                                "View entry")));
-                    entryBuff.append("</td></tr></table>");
-                }
+        List<String>                    categories = new ArrayList<String>();
+        Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
+                                                     StringBuffer>();
+        String categoryType = request.getString("category", "type");
+        int    numEntries   = 0;
+        for (Entry entry : entriesToUse) {
+            if ( !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
+                continue;
             }
 
-
-
-            sb.append(
-                "<table border=\"0\" width=\"100%\"><tr valign=\"top\">");
-            sb.append("<td width=\"");
-            sb.append(listwidth);
-            sb.append("\" style=\"max-width:");
-            sb.append(listwidth);
-            sb.append("px;\">");
-            sb.append(
+            String category;
+            if (Misc.equals(categoryType, "parent")) {
+                category = entry.getParentEntry().getName();
+            } else {
+                category = entry.getTypeHandler().getCategory(entry);
+            }
+            StringBuffer catSB = catMap.get(category);
+            if (catSB == null) {
+                catMap.put(category, catSB = new StringBuffer());
+                categories.add(category);
+            }
+            catSB.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass(CSS_CLASS_EARTH_ENTRIES)
-                    + HtmlUtils.style(
-                        "max-width:" + listwidth
-                        + "px; overflow-x: auto;  overflow-y: auto; max-height:"
-                        + map.getHeight())));
-            sb.append(entryBuff);
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-            sb.append("</td>");
-            sb.append("<td>");
-            sb.append(map.getHtml());
-            sb.append("</td>");
-            sb.append("</tr></table>");
-        } else {
-            sb.append(map.getHtml());
+                    HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
+            catSB.append(
+                "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
+            String iconUrl = getEntryManager().getIconUrl(request, entry);
+            String navUrl  = "javascript:" + map.getVariableName()
+                            + ".hiliteMarker(" + sqt(entry.getId()) + ");";
+            catSB.append(
+                HtmlUtils.href(
+                    getEntryManager().getEntryURL(request, entry),
+                    HtmlUtils.img(
+                        iconUrl, msg("Click to view entry details"))));
+            catSB.append("&nbsp;");
+            catSB.append(HtmlUtils.href(navUrl, entry.getName()));
+            catSB.append("</td><td align=right>");
+            catSB.append(
+                HtmlUtils.href(
+                    navUrl,
+                    HtmlUtils.img(
+                        getRepository().iconUrl(ICON_MAP_NAV),
+                        "View entry")));
+            catSB.append("</td></tr></table>");
+            catSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            numEntries++;
         }
+        int listwidth = request.get(WikiManager.ATTR_LISTWIDTH, 250);
+        layoutMap(sb, listentries, numEntries, listwidth, height, categories,
+                  catMap, map.getHtml());
 
         return map;
     }
