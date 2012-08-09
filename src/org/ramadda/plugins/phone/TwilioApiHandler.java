@@ -106,9 +106,11 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                                        request.getString(ARG_TO,""),
                                        null);
         System.err.println ("Phone: " + info);
+        System.err.println ("request: " + request);
         StringBuffer sb =new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append(XmlUtil.openTag(TAG_RESPONSE));
         info.setMessage(request.getString(ARG_BODY,""));
+        info.setFromZip(request.getString("FromZip",(String) null));
         boolean handledMessage = false;
         for(PhoneHarvester harvester: getHarvesters()) {
             if(harvester.handleMessage(request, info)) {

@@ -64,6 +64,8 @@ public class PhoneInfo {
     private String passCode;
     private String message;    
     private String recordingUrl;
+    private String fromZip;
+
 
     /**
      */
@@ -178,5 +180,27 @@ public class PhoneInfo {
     public String toString() {
         return "type:" + type +" from:" + fromPhone +" to:" + toPhone + (isSms()?" " + message:"");
     }
+
+
+    /**
+       Set the FromZip property.
+
+       @param value The new value for FromZip
+    **/
+    public void setFromZip (String value) {
+	fromZip = value;
+    }
+
+    /**
+       Get the FromZip property.
+
+       @return The FromZip
+    **/
+    public String getFromZip () {
+	return fromZip;
+    }
+
+
+
 
 }

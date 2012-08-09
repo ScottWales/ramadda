@@ -141,6 +141,11 @@ public class PhoneHarvester extends Harvester {
                         date.getTime(), date.getTime(), values);
 
 
+        double [] location = org.ramadda.util.GeoUtils.getLocationFromAddress(info.getFromZip());
+        if(location!=null) {
+            entry.setLocation(location[0], location[1], 0);
+        }
+
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().insertEntries(entries, true, true);
         return true;
