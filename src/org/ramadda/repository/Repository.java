@@ -127,6 +127,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private static final org.ramadda.util.EntryGroup dummyField3ToForceCompile =
         null;
 
+    private static final org.ramadda.util.GeoUtils dummyField4ToForceCompile =
+        null;
+
 
 
 
