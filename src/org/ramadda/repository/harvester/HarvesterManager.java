@@ -170,7 +170,7 @@ public class HarvesterManager extends RepositoryManager {
      *
      * @return _more_
      */
-    protected List<Harvester> getHarvesters() {
+    public List<Harvester> getHarvesters() {
         return harvesters;
     }
 

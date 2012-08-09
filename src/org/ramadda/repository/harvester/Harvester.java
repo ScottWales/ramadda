@@ -604,12 +604,19 @@ public abstract class Harvester extends RepositoryManager {
                                      HtmlUtils.input(ARG_NAME, name,
                                          HtmlUtils.SIZE_40)));
 
+        makeRunSettings(request, sb);
+
+    }
+
+
+    public void  makeRunSettings(Request request, StringBuffer sb) {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject(msg("Absolute (minutes)"),
                                     UNIT_ABSOLUTE));
         tfos.add(new TwoFacedObject(msg("Minutes"), UNIT_MINUTE));
         tfos.add(new TwoFacedObject(msg("Hourly"), UNIT_HOUR));
         //        tfos.add(new TwoFacedObject("Daily",UNIT_DAY));
+
 
         String minutes = "" + sleepMinutes;
         if (sleepUnit.equals(UNIT_HOUR)) {
@@ -633,23 +640,21 @@ public abstract class Harvester extends RepositoryManager {
             sleepLbl += msg("Would run at") + " " + then;
         }
 
+
+
         StringBuffer runWidgets = new StringBuffer();
-
-        //J-
-        runWidgets.append(HtmlUtils.checkbox(ATTR_TESTMODE, "true", testMode) + HtmlUtils.space(1) + msg("Test mode") +
-                HtmlUtils.space(3) +  msgLabel("Count") + HtmlUtils.input(ATTR_TESTCOUNT, "" + testCount, HtmlUtils.SIZE_5) +
-                HtmlUtils.br()    +
-                HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true", activeOnStart) + HtmlUtils.space(1) + msg("Active on startup") +
-                HtmlUtils.br() + 
-                HtmlUtils.checkbox(ATTR_MONITOR, "true", monitor) + HtmlUtils.space(1) + msg("Run continually") +
-                HtmlUtils.br() + HtmlUtils.space(3) +
-                          msgLabel("Every") + HtmlUtils.space(1) + HtmlUtils.input(ATTR_SLEEP, ""+ minutes, HtmlUtils.SIZE_5) + HtmlUtils.space(1) + sleepType + sleepLbl);
-
+        runWidgets.append(HtmlUtils.checkbox(ATTR_TESTMODE, "true", testMode) + HtmlUtils.space(1) + msg("Test mode"));
+        runWidgets.append(HtmlUtils.space(3) +  msgLabel("Count") + HtmlUtils.input(ATTR_TESTCOUNT, "" + testCount, HtmlUtils.SIZE_5));
+        runWidgets.append(HtmlUtils.br());
+        runWidgets.append(HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true", activeOnStart) + HtmlUtils.space(1) + msg("Active on startup"));
+        runWidgets.append(HtmlUtils.br()); 
+        runWidgets.append(HtmlUtils.checkbox(ATTR_MONITOR, "true", monitor) + HtmlUtils.space(1) + msg("Run continually"));
+        runWidgets.append(HtmlUtils.br() + HtmlUtils.space(5));
+        runWidgets.append(msgLabel("Every") + HtmlUtils.space(1) + HtmlUtils.input(ATTR_SLEEP, ""+ minutes, HtmlUtils.SIZE_5) + HtmlUtils.space(1) + sleepType + sleepLbl);
         sb.append(
                   HtmlUtils.formEntryTop("",
-                                        HtmlUtils.makeShowHideBlock(msg("Run Settings"), 
-                                                                   runWidgets.toString(), false)));
-               //J+
+                                         HtmlUtils.makeShowHideBlock(msg("Run Settings"), 
+                                                                     runWidgets.toString(), false)));
     }
 
 
