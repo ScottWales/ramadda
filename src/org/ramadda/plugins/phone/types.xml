@@ -1,6 +1,6 @@
 <types>
 
-  <type name="phone_sms"  description="Text Message" xxxhandler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information" foruser="false">
+  <type name="phone_sms"  description="Text Message" xxxhandler="org.ramadda.repository.type.GenericTypeHandler" category="Information" foruser="false">
      <property name="icon" value="/phone/sms.png"/>
      <property name="form.name.label" value="Message"/>
      <property name="form.description.label" value="Abstract"/>

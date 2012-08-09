@@ -22,6 +22,7 @@ package org.ramadda.plugins.phone;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
@@ -33,12 +34,15 @@ import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
+
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 
 import java.io.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
 import java.util.regex.*;
 
@@ -53,7 +57,13 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     public static final String TAG_SMS = "Sms";
 
 
-    /**
+    public static final String ARG_FROM  = "From"; 
+    public static final String ARG_TO  = "To"; 
+    public static final String ARG_BODY  = "Body"; 
+    public static final String ARG_  = ""; 
+    //    public static final String ARG_  = ""; 
+
+/**
      * ctor
      *
      * @param repository the repository
@@ -69,6 +79,18 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
 
 
+    public List<PhoneHarvester> getHarvesters() {
+        List<PhoneHarvester> harvesters = new ArrayList<PhoneHarvester>();
+        for(Harvester harvester: getHarvesterManager().getHarvesters()) {
+            if(harvester.getActiveOnStart() && harvester instanceof PhoneHarvester)  {
+                harvesters.add((PhoneHarvester) harvester);
+            }
+        }
+        return harvesters;
+    }
+
+
+
     /**
      * handle the request
      *
@@ -79,14 +101,28 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception on badness
      */
     public Result processSms(Request request) throws Exception {
-        System.err.println("sms from:" + request.getString("From","none"));
-        System.err.println("sms to:" + request.getString("To","none"));
-        System.err.println("sms body:" + request.getString("Body","none"));
-        System.err.println("sms args:" + request.getUrlArgs());
+        PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
+                                       request.getString(ARG_FROM,""),
+                                       request.getString(ARG_TO,""),
+                                       null);
+        System.err.println ("Phone: " + info);
         StringBuffer sb =new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append(XmlUtil.openTag(TAG_RESPONSE));
-        sb.append(XmlUtil.tag(TAG_SMS,"","Cool!"));
+        info.setMessage(request.getString(ARG_BODY,""));
+        boolean handledMessage = false;
+        for(PhoneHarvester harvester: getHarvesters()) {
+            if(harvester.handleMessage(request, info)) {
+                sb.append(XmlUtil.tag(TAG_SMS,"","Cool!"));
+                handledMessage = true;
+                break;
+            }
+        }
+
+        if(!handledMessage) {
+            sb.append(XmlUtil.tag(TAG_SMS,"","Sorry dude"));
+        }
         sb.append(XmlUtil.closeTag(TAG_RESPONSE));
+
         return new Result("",sb,"text/xml");
     }
 

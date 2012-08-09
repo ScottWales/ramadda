@@ -166,6 +166,17 @@ public class PhoneInfo {
 	return recordingUrl;
     }
 
+    public boolean isSms() {
+        return type.equals(TYPE_SMS);
+    }
 
+
+    public boolean isVoice() {
+        return type.equals(TYPE_VOICE);
+    }
+
+    public String toString() {
+        return "type:" + type +" from:" + fromPhone +" to:" + toPhone + (isSms()?" " + message:"");
+    }
 
 }

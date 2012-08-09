@@ -28,6 +28,7 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
 
+import ucar.unidata.xml.XmlUtil;
 
 
 import org.w3c.dom.*;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -114,6 +116,35 @@ public class PhoneHarvester extends Harvester {
     }
 
 
+    public boolean handleMessage(Request request, PhoneInfo info) throws Exception {
+
+        if(fromPhone.length()>0) {
+            if(!Misc.equals(fromPhone, info.getFromPhone())) return false;
+        }
+
+        if(toPhone.length()>0) {
+            if(!Misc.equals(toPhone, info.getToPhone())) return false;
+        }
+
+        TypeHandler typeHandler = getRepository().getTypeHandler("phone_sms");
+        Entry baseGroup = getBaseGroup();
+        Entry parent = baseGroup;
+        Entry entry = typeHandler.createEntry(getRepository().getGUID());
+        String name = "sms";
+        String desc = info.getMessage();
+        Date date = new Date();
+        Object[] values = typeHandler.makeValues(new Hashtable());
+        values[0] = info.getFromPhone();
+        values[1] = info.getToPhone();
+        entry.initEntry(name, desc, parent, getUser(), new Resource(), "",
+                        date.getTime(), date.getTime(),
+                        date.getTime(), date.getTime(), values);
+
+
+        List<Entry> entries = (List<Entry>) Misc.newList(entry);
+        getEntryManager().insertEntries(entries, true, true);
+        return true;
+    }
 
     /**
      * _more_
@@ -125,6 +156,12 @@ public class PhoneHarvester extends Harvester {
     }
 
 
+    public void  makeRunSettings(Request request, StringBuffer sb) {
+        StringBuffer runWidgets = new StringBuffer();
+        runWidgets.append(HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true", getActiveOnStart()) + HtmlUtils.space(1) + msg("Active"));
+        sb.append(
+                  HtmlUtils.formEntryTop("",runWidgets.toString()));
+    }
 
     /**
      * _more_
