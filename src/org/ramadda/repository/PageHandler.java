@@ -365,6 +365,11 @@ public class PageHandler extends RepositoryManager {
             html = html.replace("${" + macros[i] + "}", macros[i + 1]);
         }
 
+        for(String property: htmlTemplate.getPropertyIds()) {
+            System.err.println("PROP:" + property);
+            html = html.replace("${" + property + "}", getRepository().getProperty(property,""));
+        }
+
 
         //cleanup old macro
         html = StringUtil.replace(html, "${sublinks}", BLANK);

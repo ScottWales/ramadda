@@ -64,6 +64,7 @@ import java.lang.reflect.*;
 import java.net.*;
 
 import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -85,6 +86,9 @@ import java.util.zip.*;
  */
 public class HtmlTemplate {
 
+    public static final String PROP_PROPERTIES = "ramadda.template.properties";
+
+
     /** _more_ */
     private PropertyProvider propertyProvider;
 
@@ -103,6 +107,8 @@ public class HtmlTemplate {
     /** _more_ */
     private Hashtable properties = new Hashtable();
 
+
+    private List<String> propertyIds = new ArrayList<String>();
 
     /**
      * _more_
@@ -133,6 +139,11 @@ public class HtmlTemplate {
             }
             name = (String) properties.get("name");
             id   = (String) properties.get("id");
+            String tmp = (String)properties.get(PROP_PROPERTIES);
+            if(tmp!=null) {
+                propertyIds = StringUtil.split(tmp,",",true,true);
+            }
+
             if (name == null) {
                 name = IOUtil.stripExtension(IOUtil.getFileTail(path));
             }
@@ -144,6 +155,11 @@ public class HtmlTemplate {
         }
 
     }
+
+    public  List<String> getPropertyIds() {
+        return propertyIds;
+    }
+
 
     /**
      * _more_
