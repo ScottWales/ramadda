@@ -281,10 +281,8 @@ Easting (X)  [meters]      379359.228           836346.070
             }
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
-            System.exit(1);
         } catch (MessagingException e) {
             e.printStackTrace();
-            System.exit(2);
         }
         return true;
     }
