@@ -29,9 +29,10 @@
      <column name="site_code" label="Site Code"  type="enumerationplus" />
      <column name="utm_x" label="UTM X"  type="double"/>
      <column name="utm_y" label="UTM Y"  type="double"/>
-     <column name="itrf_x" label="ITRF X"  type="double"/>
-     <column name="itrf_y" label="ITRF Y"  type="double"/>
-     <column name="itrf_z" label="ITRF Z"  type="double"/>
+     <column name="reference_frame" label="Reference Frame"  type="enumerationplus"/>
+     <column name="itrf_x" label="X"  type="double"/>
+     <column name="itrf_y" label="Y"  type="double"/>
+     <column name="itrf_z" label="Z"  type="double"/>
   </type>
 
   <type name="gps_solution_opus"  super="gps_solution" description="OPUS Solution" xcategory="Field Project" pattern=".*\.opus"

@@ -62,13 +62,17 @@ public class SolutionTypeHandler extends GenericTypeHandler {
     public static final int IDX_UTM_Y = COLCNT++;
 
     /** _more_ */
-    public static final int IDX_ITRF_X = COLCNT++;
+    public static final int IDX_REFERENCE_FRAME= COLCNT++;
+
 
     /** _more_ */
-    public static final int IDX_ITRF_Y = COLCNT++;
+    public static final int IDX_X = COLCNT++;
 
     /** _more_ */
-    public static final int IDX_ITRF_Z = COLCNT++;
+    public static final int IDX_Y = COLCNT++;
+
+    /** _more_ */
+    public static final int IDX_Z = COLCNT++;
 
     /**
      * _more_

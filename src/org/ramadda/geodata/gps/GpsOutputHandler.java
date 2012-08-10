@@ -1030,13 +1030,13 @@ public class GpsOutputHandler extends OutputHandler {
                 entryTable.append(" ");
                 entryTable.append(entry.getName());
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_ITRF_X,
+                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_X,
                         "NA"));
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_ITRF_Y,
+                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_Y,
                         "NA"));
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_ITRF_Z,
+                entryTable.append(entry.getValue(SolutionTypeHandler.IDX_Z,
                         "NA"));
 
                 entryTable.append("</td><td align=right>");
@@ -1109,11 +1109,11 @@ public class GpsOutputHandler extends OutputHandler {
             buff.append(siteCode);
             if(request.get(ARG_COORD_XYZ, false)) {
                 buff.append(",");
-                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_X, "NA"));
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_X, "NA"));
                 buff.append(",");
-                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Y, "NA"));
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_Y, "NA"));
                 buff.append(",");
-                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_ITRF_Z, "NA"));
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_Z, "NA"));
             }
 
             if(request.get(ARG_COORD_LONLATALT, false)) {
