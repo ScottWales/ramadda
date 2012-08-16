@@ -50,4 +50,11 @@
      <property name="icon" value="/icons/csv.png"/>
   </type>
 
+  <type name="project_gps_trimble_vce"  description="Trimble Project File" category="Field Project" pattern=".*\.vce"
+        >
+     <property name="icon" value="/gps/trimble.png"/>
+   </type>
+
+
+
 </types>
