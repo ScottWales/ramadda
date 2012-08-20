@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,9 +26,10 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
@@ -56,7 +58,10 @@ public class CountdownTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
-    private int countdownCnt =0;
+    /** _more_          */
+    private int countdownCnt = 0;
+
+    /** _more_          */
     private String countdownHtml;
 
     /**
@@ -74,24 +79,38 @@ public class CountdownTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        if(countdownHtml==null) {
+        if (countdownHtml == null) {
             countdownHtml = getRepository().getResource(
-                                                        "/org/ramadda/plugins/gadgets/countdown.html");
+                "/org/ramadda/plugins/gadgets/countdown.html");
         }
-        String orient = entry.getValue(0,"");
-        String howMany = entry.getValue(1,"");
-        if(howMany.length()==0) howMany = "4";
+        String orient  = entry.getValue(0, "");
+        String howMany = entry.getValue(1, "");
+        if (howMany.length() == 0) {
+            howMany = "4";
+        }
         StringBuffer sb = new StringBuffer(countdownHtml);
         sb.append("<table><tr><td><center>");
-        sb.append(getRepository().formatDate(request,entry.getStartDate(),
-                                             getEntryManager().getTimezone(entry)));
-        Date to  = new Date(entry.getStartDate());
+        sb.append(
+            getRepository().formatDate(
+                request, entry.getStartDate(),
+                getEntryManager().getTimezone(entry)));
+        Date   to = new Date(entry.getStartDate());
         String id = "countdownid_" + (countdownCnt++);
         //        sb.append(HtmlUtils.cssBlock(".countdown-clock {font-size: 150%;}\n.countdown-number {color:#A94DEA;\n.countdown-label {color:#000;}\n"));
-        String inner = HtmlUtils.div("", HtmlUtils.id(id)+HtmlUtils.cssClass("countdown-clock"));
-        sb.append("<table><td><td>" +HtmlUtils.div(inner,HtmlUtils.cssClass("countdown"))+"</td></tr></table>");
-        sb.append(HtmlUtils.script("$(document).ready(function() {countdownStart(" + HtmlUtils.squote(entry.getName())+","+HtmlUtils.squote(id)+"," + (to.getTime()/1000)+"," + HtmlUtils.squote(orient) +"," +howMany +");});\n"));
+        String inner = HtmlUtils.div("",
+                                     HtmlUtils.id(id)
+                                     + HtmlUtils.cssClass("countdown-clock"));
+        sb.append("<table><td><td>"
+                  + HtmlUtils.div(inner, HtmlUtils.cssClass("countdown"))
+                  + "</td></tr></table>");
+        sb.append(
+            HtmlUtils.script(
+                "$(document).ready(function() {countdownStart("
+                + HtmlUtils.squote(entry.getName()) + ","
+                + HtmlUtils.squote(id) + "," + (to.getTime() / 1000) + ","
+                + HtmlUtils.squote(orient) + "," + howMany + ");});\n"));
         sb.append("</center></td></tr></table>");
+
         return new Result("Countdown", sb);
     }
 

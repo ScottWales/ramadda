@@ -24,25 +24,27 @@ package org.ramadda.plugins.map;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.*;
+
+import ucar.unidata.data.gis.KmlUtil;
 
 import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.gis.*;
 import ucar.unidata.gis.shapefile.*;
-
-import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import org.ramadda.util.HtmlUtils;
 
-import ucar.unidata.data.gis.KmlUtil;
+import ucar.unidata.xml.XmlUtil;
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import     ucar.unidata.gis.shapefile.EsriShapefile;
+
 
 /**
  *
@@ -53,14 +55,13 @@ public class KmlEntryOutputHandler extends OutputHandler {
 
     /** Map output type */
     public static final OutputType OUTPUT_KML_HTML =
-        new OutputType("Display as HTML", "kml.html",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_KML);
+        new OutputType("Display as HTML", "kml.html", OutputType.TYPE_VIEW,
+                       "", ICON_KML);
 
+    /** _more_          */
     public static final OutputType OUTPUT_KMZ_IMAGE =
-        new OutputType("Display as HTML", "kml.image",
-                       OutputType.TYPE_VIEW, "",
-                       ICON_KML);
+        new OutputType("Display as HTML", "kml.image", OutputType.TYPE_VIEW,
+                       "", ICON_KML);
 
 
     /**
@@ -90,8 +91,10 @@ public class KmlEntryOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if(state.entry==null) return;
-        if(state.entry.getTypeHandler().isType("geo_kml")) {
+        if (state.entry == null) {
+            return;
+        }
+        if (state.entry.getTypeHandler().isType("geo_kml")) {
             links.add(makeLink(request, state.entry, OUTPUT_KML_HTML));
         }
     }
@@ -111,48 +114,74 @@ public class KmlEntryOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        if(outputType.equals(OUTPUT_KML_HTML)) {
+        if (outputType.equals(OUTPUT_KML_HTML)) {
             return outputKmlHtml(request, entry);
         }
+
         return null;
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private Result outputKmlHtml(Request request, Entry entry)
-        throws Exception {
+            throws Exception {
 
-        StringBuffer sb = new StringBuffer();
-        Element root  = KmlTypeHandler.readKml(getRepository(), entry);
-        if(root == null) {
-            sb.append(getRepository().showDialogError("Could not read KML/KMZ file"));
+        StringBuffer sb   = new StringBuffer();
+        Element      root = KmlTypeHandler.readKml(getRepository(), entry);
+        if (root == null) {
+            sb.append(
+                getRepository().showDialogError(
+                    "Could not read KML/KMZ file"));
+
             return new Result("KML/KMZ Error", sb);
         }
         walkTree(request, entry, sb, root);
 
         Result result = new Result("", sb);
+
         return result;
     }
 
-    private void walkTree(Request request, Entry entry, StringBuffer sb, Element node) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param node _more_
+     */
+    private void walkTree(Request request, Entry entry, StringBuffer sb,
+                          Element node) {
         String tagName = node.getTagName();
-        if(tagName.equals(KmlUtil.TAG_KML)) {
+        if (tagName.equals(KmlUtil.TAG_KML)) {
             walkChildren(request, entry, sb, node);
+
             return;
         }
 
-        if(tagName.equals(KmlUtil.TAG_FOLDER) || tagName.equals(KmlUtil.TAG_DOCUMENT) ||
-           tagName.equals(KmlUtil.TAG_TOUR)) {
+        if (tagName.equals(KmlUtil.TAG_FOLDER)
+                || tagName.equals(KmlUtil.TAG_DOCUMENT)
+                || tagName.equals(KmlUtil.TAG_TOUR)) {
             //TODO: encode the text
             sb.append("<li> ");
-            appendName(node, sb,tagName);
+            appendName(node, sb, tagName);
             sb.append("<ul>");
             walkChildren(request, entry, sb, node);
             sb.append("</ul>");
-        } else if(tagName.equals(KmlUtil.TAG_PLACEMARK)) {
+        } else if (tagName.equals(KmlUtil.TAG_PLACEMARK)) {
             sb.append("<li> ");
             appendName(node, sb, tagName);
-        } else if(tagName.equals(KmlUtil.TAG_GROUNDOVERLAY)) {
+        } else if (tagName.equals(KmlUtil.TAG_GROUNDOVERLAY)) {
             sb.append("<li> ");
             appendName(node, sb, tagName);
         } else {
@@ -161,20 +190,38 @@ public class KmlEntryOutputHandler extends OutputHandler {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param sb _more_
+     * @param tagName _more_
+     */
     private void appendName(Node node, StringBuffer sb, String tagName) {
-        sb.append(tagName+": ");
+        sb.append(tagName + ": ");
         sb.append(XmlUtil.getGrandChildText(node, KmlUtil.TAG_NAME, tagName));
-        String desc = XmlUtil.getGrandChildText(node, KmlUtil.TAG_DESCRIPTION, null);
-        if(desc!=null) {
-            sb.append(HtmlUtils.div(desc, HtmlUtils.cssClass("kml-description")));
+        String desc = XmlUtil.getGrandChildText(node,
+                          KmlUtil.TAG_DESCRIPTION, null);
+        if (desc != null) {
+            sb.append(HtmlUtils.div(desc,
+                                    HtmlUtils.cssClass("kml-description")));
         }
-        
+
     }
 
-    private void walkChildren(Request request, Entry entry, StringBuffer sb, Element node) {
-        NodeList    children = XmlUtil.getElements(node);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param node _more_
+     */
+    private void walkChildren(Request request, Entry entry, StringBuffer sb,
+                              Element node) {
+        NodeList children = XmlUtil.getElements(node);
         for (int i = 0; i < children.getLength(); i++) {
-            Element child = (Element)  children.item(i);
+            Element child = (Element) children.item(i);
             walkTree(request, entry, sb, child);
         }
     }

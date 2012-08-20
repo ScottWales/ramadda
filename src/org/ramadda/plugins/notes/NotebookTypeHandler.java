@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,13 +28,13 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.Clause;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -52,7 +53,7 @@ import java.util.List;
 public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LETTER = "letter";
 
     /** _more_ */
@@ -84,6 +85,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !isDefaultHtmlOutput(request)) {
             return super.getDefaultQueryLimit(request, entry);
         }
+
         return 1000;
     }
 
@@ -114,6 +116,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             return where;
         }
         where.add(Clause.like(Tables.ENTRIES.COL_NAME, letter + "%"));
+
         return where;
     }
 
@@ -169,8 +172,8 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (canAdd) {
             String label = HtmlUtils.img(getRepository().iconUrl(ICON_NEW),
-                                        msg("New Note")) + " "
-                                            + msg("Create new note");
+                                         msg("New Note")) + " "
+                                             + msg("Create new note");
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(
@@ -180,7 +183,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
                                         NoteTypeHandler.TYPE_NOTE), label));
         }
 
-        List<String> letters = new ArrayList<String>();
+        List<String>                    letters = new ArrayList<String>();
         Hashtable<String, StringBuffer> letterToBuffer =
             new Hashtable<String, StringBuffer>();
         subGroups.addAll(entries);
@@ -199,7 +202,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
                 header.add(HtmlUtils.b(letter));
             } else {
                 header.add(HtmlUtils.href(url + "&" + ARG_LETTER + "="
-                                         + letter, letter));
+                                          + letter, letter));
             }
         }
         sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
@@ -225,7 +228,8 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             }
             String href = getEntryManager().getAjaxLink(request, entry,
                               name).toString();
-            letterBuffer.append(HtmlUtils.li(href, HtmlUtils.cssClass("note")));
+            letterBuffer.append(HtmlUtils.li(href,
+                                             HtmlUtils.cssClass("note")));
         }
 
         letters = (List<String>) Misc.sort(letters);
@@ -237,6 +241,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(HtmlUtils.h2(letter));
             sb.append(letterBuffer);
         }
+
         return new Result(msg("Notebook"), sb);
     }
 

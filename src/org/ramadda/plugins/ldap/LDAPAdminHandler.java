@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -18,7 +19,6 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-
 package org.ramadda.plugins.ldap;
 
 
@@ -26,6 +26,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 
 import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.List;
  */
 public class LDAPAdminHandler extends AdminHandlerImpl {
 
-    /** _more_          */
+    /** _more_ */
     private int version = 0;
 
     /** property id */
@@ -75,19 +76,19 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
 
 
     /** list of property ids */
-    public static final String[] PROPERTY_IDS = {
-        PROP_LDAP_URL, PROP_LDAP_USER_DIRECTORY,
-        PROP_LDAP_GROUP_DIRECTORY, PROP_LDAP_ADMIN, PROP_LDAP_PASSWORD,
-    };
+    public static final String[] PROPERTY_IDS = { PROP_LDAP_URL,
+            PROP_LDAP_USER_DIRECTORY, PROP_LDAP_GROUP_DIRECTORY,
+            PROP_LDAP_ADMIN, PROP_LDAP_PASSWORD, };
 
     /** list of property labels */
-    public static final String[] PROPERTY_LABELS = {
-        "LDAP URL", LABEL_LDAP_USER_DIRECTORY,
-        LABEL_LDAP_GROUP_DIRECTORY, LABEL_LDAP_ADMIN, LABEL_LDAP_PASSWORD,
-    };
+    public static final String[] PROPERTY_LABELS = { "LDAP URL",
+            LABEL_LDAP_USER_DIRECTORY, LABEL_LDAP_GROUP_DIRECTORY,
+            LABEL_LDAP_ADMIN, LABEL_LDAP_PASSWORD, };
 
     /**
-     * ctor. 
+     * ctor.
+     *
+     * @param repository _more_
      */
     public LDAPAdminHandler(Repository repository) {
         super(repository);
@@ -124,7 +125,9 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
     @Override
     public void addToAdminSettingsForm(String blockId, StringBuffer sb) {
         //For now don't do this
-        if(true) return;
+        if (true) {
+            return;
+        }
         //Are we in the access section
         if ( !blockId.equals(Admin.BLOCK_ACCESS)) {
             return;
@@ -142,12 +145,10 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
             }
             if (isPassword) {
                 sb.append(HtmlUtils.formEntry(msgLabel(PROPERTY_LABELS[i]),
-                                             HtmlUtils.password(prop, value,
-                                                 HtmlUtils.SIZE_40)));
+                        HtmlUtils.password(prop, value, HtmlUtils.SIZE_40)));
             } else {
                 sb.append(HtmlUtils.formEntry(msgLabel(PROPERTY_LABELS[i]),
-                                             HtmlUtils.input(prop, value,
-                                                 HtmlUtils.SIZE_40)));
+                        HtmlUtils.input(prop, value, HtmlUtils.SIZE_40)));
             }
         }
     }
@@ -184,7 +185,9 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
     @Override
     public void applyAdminSettingsForm(Request request) throws Exception {
         //For now don't do this
-        if(true) return;
+        if (true) {
+            return;
+        }
         version++;
         for (int i = 0; i < PROPERTY_IDS.length; i++) {
             String prop  = PROPERTY_IDS[i];
@@ -261,6 +264,7 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
         if (value.length() == 0) {
             return value;
         }
+
         return new String(RepositoryUtil.encodeBase64(value.getBytes()));
     }
 
@@ -281,6 +285,7 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
         if (value.length() == 0) {
             return value;
         }
+
         return new String(RepositoryUtil.decodeBase64(value));
     }
 

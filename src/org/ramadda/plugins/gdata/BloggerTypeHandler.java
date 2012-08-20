@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -48,10 +49,11 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.Element;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
@@ -107,6 +109,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
     protected GoogleService getService(Entry entry) throws Exception {
         GoogleService myService = new GoogleService("blogger",
                                       "exampleCo-exampleApp-1");
+
         //        myService.setUserCredentials("user@example.com", "secretPassword");
         return myService;
     }
@@ -128,8 +131,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
             return null;
         }
         String[]      pair      = getEntryManager().getSynthId(entry.getId());
-        Entry         mainEntry = getEntryManager().getEntry(request,
-                                      pair[0]);
+        Entry         mainEntry = getEntryManager().getEntry(request, pair[0]);
         List<Comment> comments  = new ArrayList<Comment>();
         String        blogId    = mainEntry.getValue(2, (String) null);
         if (blogId == null) {
@@ -156,6 +158,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
             comments.add(comment);
 
         }
+
         return comments;
     }
 
@@ -188,6 +191,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
         for (Entry entry : entries) {
             ids.add(entry.getId());
         }
+
         return ids;
     }
 
@@ -245,6 +249,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
                                null);
             getEntryManager().cacheEntry(newEntry);
         }
+
         return entries;
     }
 
@@ -280,6 +285,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
                 return entry;
             }
         }
+
         return null;
     }
 
@@ -300,6 +306,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
         if ( !getEntryManager().isSynthEntry(id)) {
             return super.getIconUrl(request, entry);
         }
+
         return super.getIconUrl(request, entry);
     }
 

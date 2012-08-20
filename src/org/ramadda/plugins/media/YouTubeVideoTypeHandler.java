@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,15 +26,16 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
+
 
 import ucar.unidata.xml.XmlUtil;
-
-import org.ramadda.util.HtmlUtils;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Misc;
 
 import java.util.Date;
 import java.util.List;
@@ -45,12 +47,22 @@ import java.util.List;
  */
 public class YouTubeVideoTypeHandler extends GenericTypeHandler {
 
-    public static final int IDX_WIDTH=0;
-    public static final int IDX_HEIGHT=1;
-    public static final int IDX_START=2;
-    public static final int IDX_END = 3;
-    public static final int IDX_DISPLAY=4;
+    /** _more_          */
+    public static final int IDX_WIDTH = 0;
 
+    /** _more_          */
+    public static final int IDX_HEIGHT = 1;
+
+    /** _more_          */
+    public static final int IDX_START = 2;
+
+    /** _more_          */
+    public static final int IDX_END = 3;
+
+    /** _more_          */
+    public static final int IDX_DISPLAY = 4;
+
+    /** _more_          */
     private int idCnt = 0;
 
     /**
@@ -66,6 +78,13 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     */
     public String getDefaultEntryName(String path) {
         //TODO: fetch the web page and get the title
         return "YouTube Video";
@@ -86,70 +105,83 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        String sdisplay = entry.getValue(IDX_DISPLAY, "true");
-        boolean display = sdisplay.length()==0?true:Misc.equals("true", sdisplay);
-        if(!display) return null;
-
-        StringBuffer sb = new StringBuffer();
-        String url = entry.getResource().getPath();
-        String id = StringUtil.findPattern(url,"v=([^&]+)&");
-        if(id == null) {
-            id = StringUtil.findPattern(url,"v=([^&]+)");
+        String  sdisplay = entry.getValue(IDX_DISPLAY, "true");
+        boolean display  = (sdisplay.length() == 0)
+                           ? true
+                           : Misc.equals("true", sdisplay);
+        if ( !display) {
+            return null;
         }
-        if(id == null) {
-            sb.append(getRepository().showDialogError("Could not find ID in YouTube URL"));
+
+        StringBuffer sb  = new StringBuffer();
+        String       url = entry.getResource().getPath();
+        String       id  = StringUtil.findPattern(url, "v=([^&]+)&");
+        if (id == null) {
+            id = StringUtil.findPattern(url, "v=([^&]+)");
+        }
+        if (id == null) {
+            sb.append(
+                getRepository().showDialogError(
+                    "Could not find ID in YouTube URL"));
+
             return new Result(msg("YouTube Video"), sb);
         }
 
 
 
-        String width = entry.getValue(IDX_WIDTH,"640");
-        String height = entry.getValue(IDX_HEIGHT,"390");
-        double start = entry.getValue(IDX_START, 0.0);
-        double end = entry.getValue(IDX_END, -1);
+        String width  = entry.getValue(IDX_WIDTH, "640");
+        String height = entry.getValue(IDX_HEIGHT, "390");
+        double start  = entry.getValue(IDX_START, 0.0);
+        double end    = entry.getValue(IDX_END, -1);
         sb.append("\n");
-        sb.append(HtmlUtils.href(url,url));
+        sb.append(HtmlUtils.href(url, url));
         sb.append(HtmlUtils.br());
-        sb.append("<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
-        sb.append(XmlUtil.attr("width",width));
-        sb.append(XmlUtil.attr("height",height));
-        String playerId = "video_" +(idCnt++);
+        sb.append(
+            "<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
+        sb.append(XmlUtil.attr("width", width));
+        sb.append(XmlUtil.attr("height", height));
+        String playerId = "video_" + (idCnt++);
         String embedUrl = "http://www.youtube.com/embed/" + id;
         embedUrl += "?enablejsapi=1";
         embedUrl += "&autoplay=0";
-        embedUrl += "&playerapiid=" +playerId;
-        if(start>0) {
-            embedUrl += "&start=" + ((int)(start*60));
+        embedUrl += "&playerapiid=" + playerId;
+        if (start > 0) {
+            embedUrl += "&start=" + ((int) (start * 60));
         }
-        if(end>0) {
-            embedUrl += "&end=" + ((int)(end*60));
+        if (end > 0) {
+            embedUrl += "&end=" + ((int) (end * 60));
         }
 
         sb.append("\n");
-        sb.append("src=\""+embedUrl+"\"");
+        sb.append("src=\"" + embedUrl + "\"");
         sb.append(">\n");
         sb.append("</iframe>\n");
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(entry,
-                                              "video_cue", false);
+            getMetadataManager().findMetadata(entry, "video_cue", false);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             StringBuffer links = new StringBuffer();
-            for(Metadata metadata: metadataList) {
-                String name = metadata.getAttr1();
+            for (Metadata metadata : metadataList) {
+                String name   = metadata.getAttr1();
                 String offset = metadata.getAttr2().trim();
-                if(offset.length()==0) continue;
-                links.append(HtmlUtils.href("javascript:cueVideo(" +
-                                            HtmlUtils.squote(playerId) +"," +
-                                            offset+");", name +" -- " +offset +" minutes" ));
+                if (offset.length() == 0) {
+                    continue;
+                }
+                links.append(HtmlUtils.href("javascript:cueVideo("
+                                            + HtmlUtils.squote(playerId)
+                                            + "," + offset + ");", name
+                                                + " -- " + offset
+                                                    + " minutes"));
                 links.append(HtmlUtils.br());
             }
-            StringBuffer embed=sb;
+            StringBuffer embed = sb;
             sb = new StringBuffer();
 
-            sb.append(HtmlUtils.importJS("http://www.youtube.com/player_api"));
+            sb.append(
+                HtmlUtils.importJS("http://www.youtube.com/player_api"));
             StringBuffer js = new StringBuffer("\n");
-            js.append("function onYouTubePlayerAPIReady(id) {/*alert(id);*/}\n");
+            js.append(
+                "function onYouTubePlayerAPIReady(id) {/*alert(id);*/}\n");
             js.append("function cueVideo (id,minutes) {\n");
             js.append("player = document.getElementById('ytplayer');");
             js.append("alert(player.playVideo);");
@@ -170,9 +202,15 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     }
 
 
-    public static void main(String[]args) {
-        String pattern="^http://www.youtube.com/watch\\?v=.*";
-        String url = "http://www.youtube.com/watch?v=sOU2WXaDEs0&feature=g-vrec";
+    /**
+     * _more_
+     *
+     * @param args _more_
+     */
+    public static void main(String[] args) {
+        String pattern = "^http://www.youtube.com/watch\\?v=.*";
+        String url     =
+            "http://www.youtube.com/watch?v=sOU2WXaDEs0&feature=g-vrec";
         System.err.println(url.matches(pattern));
     }
 

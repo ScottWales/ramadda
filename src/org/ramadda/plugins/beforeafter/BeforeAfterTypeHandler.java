@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,6 +28,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
@@ -38,8 +41,6 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -70,7 +71,7 @@ import java.util.Properties;
  */
 public class BeforeAfterTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, Dimension> dimensions = new Hashtable<String,
                                                           Dimension>();
 
@@ -113,11 +114,12 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             return null;
         }
         List<Entry> children = getEntryManager().getChildren(request, entry);
+
         return getHtmlDisplay(request, entry, new ArrayList<Entry>(),
                               children);
     }
 
-    /** _more_          */
+    /** _more_ */
     private static int cnt = 0;
 
 
@@ -138,8 +140,8 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         StringBuffer sb   = new StringBuffer();
-        String desc = group.getDescription();
-        if(desc!=null && desc.length()>0) {
+        String       desc = group.getDescription();
+        if ((desc != null) && (desc.length() > 0)) {
             sb.append(desc);
             sb.append(HtmlUtils.br());
         }
@@ -225,11 +227,12 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             String args = "{imagePath:'" + path + "'}";
             sb.append("\n");
             sb.append(HtmlUtils.script("\n$(function(){$('#" + id
-                                      + "').beforeAfter(" + args
-                                      + ");});\n"));
+                                       + "').beforeAfter(" + args
+                                       + ");});\n"));
         }
         sb.append("\n");
         sb.append(divs);
+
         return new Result(msg("Before/After Image"), sb);
     }
 

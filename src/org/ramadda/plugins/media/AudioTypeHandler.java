@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,15 +26,16 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
+
 
 import ucar.unidata.xml.XmlUtil;
-
-import org.ramadda.util.HtmlUtils;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Misc;
 
 import java.util.Date;
 import java.util.List;
@@ -75,15 +77,17 @@ public class AudioTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        StringBuffer sb     = new StringBuffer();
-        String html = "<table><tr><td><div class=\"audio-player\"><object>\n<param name=\"autostart\" value=\"false\">\n<param name=\"src\" value=\"${url}\">\n<param name=\"autoplay\" value=\"false\">\n<param name=\"controller\" value=\"true\">\n<embed src=\"${url}\" controller=\"true\" autoplay=\"false\" autostart=\"False\" type=\"audio/wav\" /\n></object></div></td></tr></table>\n";
+        StringBuffer sb   = new StringBuffer();
+        String       html =
+            "<table><tr><td><div class=\"audio-player\"><object>\n<param name=\"autostart\" value=\"false\">\n<param name=\"src\" value=\"${url}\">\n<param name=\"autoplay\" value=\"false\">\n<param name=\"controller\" value=\"true\">\n<embed src=\"${url}\" controller=\"true\" autoplay=\"false\" autostart=\"False\" type=\"audio/wav\" /\n></object></div></td></tr></table>\n";
 
-        String fileUrl  = entry.getTypeHandler().getEntryResourceUrl(request,
-                                                                   entry);
+        String fileUrl = entry.getTypeHandler().getEntryResourceUrl(request,
+                             entry);
         html = html.replace("${url}", fileUrl);
         sb.append(html);
         sb.append(HtmlUtils.p());
         sb.append(entry.getDescription());
+
         return new Result(msg("Audio"), sb);
     }
 

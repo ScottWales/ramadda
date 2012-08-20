@@ -1,5 +1,6 @@
-/**
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+/*
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,45 +23,50 @@ package org.ramadda.plugins.map;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.repository.map.*;
 import org.ramadda.repository.type.*;
-
-
-import java.awt.geom.Rectangle2D;
+import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.data.gis.KmlUtil;
+
+
+import ucar.unidata.gis.*;
+import ucar.unidata.gis.shapefile.*;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
-import ucar.unidata.data.gis.KmlUtil;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 
-import java.text.SimpleDateFormat;
+import java.awt.geom.Rectangle2D;
 
 
 import java.io.File;
 
+
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
-
-import ucar.unidata.gis.*;
-import ucar.unidata.gis.shapefile.*;
 
 /**
  */
 public class ShapefileTypeHandler extends GenericTypeHandler {
 
+    /** _more_          */
     private static final int IDX_LON = 0;
+
+    /** _more_          */
     private static final int IDX_LAT = 1;
 
 
@@ -72,28 +78,44 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public ShapefileTypeHandler(Repository repository, Element node)
-        throws Exception {
+            throws Exception {
         super(repository, node);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param parent _more_
+     * @param newEntry _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
-        throws Exception {
-        if(!entry.isFile()) return;
-        EsriShapefile shapefile = new EsriShapefile(entry.getFile().toString());
-        Rectangle2D bounds = shapefile.getBoundingBox();
-        double[][] lonlat = new double[][]{{bounds.getX()},
-                                           {bounds.getY()+bounds.getHeight()}};
-        ProjFile projFile  = shapefile.getProjFile();
-        if(projFile!=null)
+            throws Exception {
+        if ( !entry.isFile()) {
+            return;
+        }
+        EsriShapefile shapefile =
+            new EsriShapefile(entry.getFile().toString());
+        Rectangle2D bounds   = shapefile.getBoundingBox();
+        double[][]  lonlat   = new double[][] {
+            { bounds.getX() }, { bounds.getY() + bounds.getHeight() }
+        };
+        ProjFile    projFile = shapefile.getProjFile();
+        if (projFile != null) {
             lonlat = projFile.convertToLonLat(lonlat);
+        }
         entry.setNorth(lonlat[IDX_LAT][0]);
         entry.setWest(lonlat[IDX_LON][0]);
         lonlat[IDX_LAT][0] = bounds.getY();
-        lonlat[IDX_LON][0] = bounds.getX()+bounds.getWidth();
-        if(projFile!=null)
+        lonlat[IDX_LON][0] = bounds.getX() + bounds.getWidth();
+        if (projFile != null) {
             lonlat = projFile.convertToLonLat(lonlat);
+        }
         entry.setSouth(lonlat[IDX_LAT][0]);
         entry.setEast(lonlat[IDX_LON][0]);
     }
@@ -101,41 +123,56 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
 
 
     /**
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param map _more_
+     *
+     * @return _more_
      */
     @Override
-    public boolean addToMap(Request request, Entry entry, MapInfo map)     {
+    public boolean addToMap(Request request, Entry entry, MapInfo map) {
         try {
-            if(!entry.isFile()) return true;
+            if ( !entry.isFile()) {
+                return true;
+            }
             //TODO: stream through the shapes
-            EsriShapefile shapefile = new EsriShapefile(entry.getFile().toString());
-            List features = shapefile.getFeatures();
-            int totalPoints = 0;
-            int MAX_POINTS = 10000;
-            for(int i=0;i<features.size();i++) {
-                if(totalPoints>MAX_POINTS) break;
+            EsriShapefile shapefile =
+                new EsriShapefile(entry.getFile().toString());
+            List features    = shapefile.getFeatures();
+            int  totalPoints = 0;
+            int  MAX_POINTS  = 10000;
+            for (int i = 0; i < features.size(); i++) {
+                if (totalPoints > MAX_POINTS) {
+                    break;
+                }
                 EsriShapefile.EsriFeature gf =
                     (EsriShapefile.EsriFeature) features.get(i);
                 java.util.Iterator pi = gf.getGisParts();
                 while (pi.hasNext()) {
-                    if(totalPoints>MAX_POINTS) break;
-                    GisPart   gp   = (GisPart) pi.next();
-                    double[]  xx   = gp.getX();
-                    double[]  yy   = gp.getY();
+                    if (totalPoints > MAX_POINTS) {
+                        break;
+                    }
+                    GisPart        gp     = (GisPart) pi.next();
+                    double[]       xx     = gp.getX();
+                    double[]       yy     = gp.getY();
                     List<double[]> points = new ArrayList<double[]>();
-                    for(int ptIdx=0;ptIdx<xx.length;ptIdx++) {
-                        points.add(new double[]{yy[ptIdx],xx[ptIdx]});
+                    for (int ptIdx = 0; ptIdx < xx.length; ptIdx++) {
+                        points.add(new double[] { yy[ptIdx], xx[ptIdx] });
                     }
                     totalPoints += points.size();
-                    if(points.size()>1) {
+                    if (points.size() > 1) {
                         map.addLines("", points);
-                    } else if(points.size()==1) {
-                        map.addMarker("id", points.get(0)[0],points.get(0)[1], null, "");
+                    } else if (points.size() == 1) {
+                        map.addMarker("id", points.get(0)[0],
+                                      points.get(0)[1], null, "");
                     }
                 }
             }
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+
         return false;
     }
 

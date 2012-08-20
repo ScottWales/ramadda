@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -60,10 +61,11 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
@@ -116,6 +118,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
             throws Exception {
         SitesService service = new SitesService("unavco-ramadda-v1");
         service.setUserCredentials(userId, password);
+
         return service;
     }
 
@@ -140,6 +143,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
         if (ids != null) {
             return ids;
         }
+
         return getSynthIds(request, mainEntry, parentEntry, synthId,
                            new Hashtable<String, Entry>());
     }
@@ -171,8 +175,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
         }
         String      site        = mainEntry.getValue(2, "");
         String url = "https://sites.google.com/feeds/content/site/" + site;
-        SiteFeed    contentFeed = client.getFeed(new URL(url),
-                                      SiteFeed.class);
+        SiteFeed    contentFeed = client.getFeed(new URL(url), SiteFeed.class);
         List<Entry> entries     = new ArrayList<Entry>();
         for (BaseEntry entry : contentFeed.getEntries()) {
             entry = entry.getAdaptedEntry();
@@ -182,9 +185,9 @@ public class SitesTypeHandler extends GdataTypeHandler {
             } else {
                 parentId = getSynthId(mainEntry, parentId);
             }
-            String title   = entry.getTitle().getPlainText();
-            String entryId = getEntryId(entry);
-            Entry newEntry = new Entry(getSynthId(mainEntry, entryId), this,
+            String title    = entry.getTitle().getPlainText();
+            String entryId  = getEntryId(entry);
+            Entry  newEntry = new Entry(getSynthId(mainEntry, entryId), this,
                                        true);
             String blob = "";
             if (entry instanceof BaseContentEntry) {
@@ -234,6 +237,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
             }
             getEntryManager().cacheEntry(entry);
         }
+
         return ids;
     }
 
@@ -273,6 +277,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
 
         Hashtable<String, Entry> map = new Hashtable<String, Entry>();
         getSynthIds(request, mainEntry, null, "", map);
+
         return map.get(getSynthId(mainEntry, id));
     }
 
@@ -296,6 +301,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
                 && (entry.getResource().getPath().length() > 0)) {
             return getIconUrlFromPath(entry.getName());
         }
+
         return iconUrl("/icons/folder.png");
         /*
         if (id.indexOf(TYPE_FOLDER) >= 0) {
@@ -332,6 +338,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
         if (link == null) {
             return null;
         }
+
         return getEntryId(link.getHref());
     }
 
@@ -350,6 +357,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
             //                System.err.println("link:" + link.getRel() +" " + link.getHref());
             //            }
         }
+
         return id;
     }
 
@@ -383,6 +391,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
         if (entry instanceof AttachmentEntry) {
             return getId(((AttachmentEntry) entry).getParentLink());
         }
+
         return null;
     }
 
@@ -574,6 +583,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
                     .getPlainText();
             }
         }
+
         //        System.err.println(content.getClass().getName());
         return "";
         /*

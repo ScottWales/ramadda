@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,10 +26,11 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
 
+import org.ramadda.util.HtmlUtils;
+
+
 import org.w3c.dom.*;
 
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.util.Date;
@@ -76,8 +78,9 @@ public class WeatherTypeHandler extends GenericTypeHandler {
         String       string      = entry.getValue(0, "");
         String       orientation = entry.getValue(3, "horizontal");
 
-        String template = getRepository().getResource(
-                              "/org/ramadda/plugins/gadgets/weathertemplate.html");
+        String       template    =
+            getRepository().getResource(
+                "/org/ramadda/plugins/gadgets/weathertemplate.html");
 
         if (orientation.equals("horizontal")) {
             sb.append("<table><tr valign=top>");
@@ -99,6 +102,7 @@ public class WeatherTypeHandler extends GenericTypeHandler {
         if (orientation.equals("horizontal")) {
             sb.append("</table>");
         }
+
         return new Result(msg("Weather"), sb);
     }
 

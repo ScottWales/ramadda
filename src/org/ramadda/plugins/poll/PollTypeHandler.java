@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,6 +28,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
@@ -37,8 +40,6 @@ import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -71,7 +72,7 @@ public class PollTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String ATTR_CHOICES = "choices";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RESPONSETYPES = "responsetypes";
 
     /** _more_ */
@@ -86,7 +87,7 @@ public class PollTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String ACTION_ADDRESPONSE = "addresponse";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_DELETERESPONSE = "deleteresponse";
 
     /** _more_ */
@@ -142,14 +143,14 @@ public class PollTypeHandler extends BlobTypeHandler {
             }
             formBuffer.append(HtmlUtils.formEntryTop(msgLabel("Choices"),
                     HtmlUtils.textArea(ATTR_CHOICES,
-                                      StringUtil.join("\n", choices), 8,
-                                      30) + " "
-                                          + msg("One choice per line")));
+                                       StringUtil.join("\n", choices), 8,
+                                       30) + " "
+                                           + msg("One choice per line")));
 
             formBuffer.append(HtmlUtils.formEntryTop(msgLabel("Responses"),
                     HtmlUtils.textArea(ATTR_RESPONSETYPES,
-                                      StringUtil.join("\n", types), 4,
-                                      30) + " " + msg("One type per line")));
+                                       StringUtil.join("\n", types), 4,
+                                       30) + " " + msg("One type per line")));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
 
@@ -167,6 +168,7 @@ public class PollTypeHandler extends BlobTypeHandler {
         if (type.equals(Permission.ACTION_TYPE1)) {
             return "Who can add to poll";
         }
+
         return "Who can view poll results";
     }
 
@@ -186,7 +188,7 @@ public class PollTypeHandler extends BlobTypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
-        String choicesString = request.getString(ATTR_CHOICES, "");
+        String       choicesString = request.getString(ATTR_CHOICES, "");
         List<String> choices = StringUtil.split(choicesString, "\n", true,
                                    true);
 
@@ -233,7 +235,7 @@ public class PollTypeHandler extends BlobTypeHandler {
         String  secretFromUrl = request.getString(ATTR_SECRET, "none");
         boolean hasSecret     = secret.equals(secretFromUrl);
 
-        boolean canEditEntry = getAccessManager().canEditEntry(request,
+        boolean canEditEntry  = getAccessManager().canEditEntry(request,
                                    entry);
 
         if ( !canEditEntry && !hasSecret) {
@@ -273,7 +275,7 @@ public class PollTypeHandler extends BlobTypeHandler {
         }
 
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
-                                   + "/poll/style.css"));
+                                    + "/poll/style.css"));
 
         sb.append(HtmlUtils.p());
         sb.append(entry.getDescription());
@@ -353,17 +355,18 @@ public class PollTypeHandler extends BlobTypeHandler {
         StringBuffer headerRow = new StringBuffer();
         headerRow.append("<tr>");
         if (canEditEntry) {
-            headerRow.append(HtmlUtils.col("&nbsp;",
-                                          HtmlUtils.cssClass("poll-header")));
+            headerRow.append(
+                HtmlUtils.col("&nbsp;", HtmlUtils.cssClass("poll-header")));
         }
         headerRow.append(HtmlUtils.col(HtmlUtils.b(msg("What or who")),
-                                      HtmlUtils.cssClass("poll-header")));
+                                       HtmlUtils.cssClass("poll-header")));
         for (String choice : choices) {
-            headerRow.append(HtmlUtils.col(HtmlUtils.b(choice),
-                                          HtmlUtils.cssClass("poll-header")));
+            headerRow.append(
+                HtmlUtils.col(
+                    HtmlUtils.b(choice), HtmlUtils.cssClass("poll-header")));
         }
         headerRow.append(HtmlUtils.col(HtmlUtils.b(msg("Comment")),
-                                      HtmlUtils.cssClass("poll-header")));
+                                       HtmlUtils.cssClass("poll-header")));
         headerRow.append("</tr>");
         sb.append(headerRow);
 
@@ -391,7 +394,8 @@ public class PollTypeHandler extends BlobTypeHandler {
                 } else {
                     sb.append(
                         HtmlUtils.col(
-                            "&nbsp;", HtmlUtils.cssClass("poll-response-no")));
+                            "&nbsp;",
+                            HtmlUtils.cssClass("poll-response-no")));
                 }
             }
             sb.append(HtmlUtils.col(response.getComment() + "&nbsp;"));
@@ -400,12 +404,11 @@ public class PollTypeHandler extends BlobTypeHandler {
 
 
         String input = HtmlUtils.input(ARG_RESPONSE, "",
-                                      HtmlUtils.SIZE_30
-                                      + HtmlUtils.cssClass("poll-input"));
-        String commentInput =
-            HtmlUtils.input(ARG_COMMENT, "",
-                           HtmlUtils.SIZE_30
-                           + HtmlUtils.cssClass("poll-input"));
+                                       HtmlUtils.SIZE_30
+                                       + HtmlUtils.cssClass("poll-input"));
+        String commentInput = HtmlUtils.input(ARG_COMMENT, "",
+                                  HtmlUtils.SIZE_30
+                                  + HtmlUtils.cssClass("poll-input"));
         sb.append("<tr>");
 
         if (canEditEntry) {
@@ -419,8 +422,8 @@ public class PollTypeHandler extends BlobTypeHandler {
                 sb.append(HtmlUtils.col(HtmlUtils.checkbox("response."
                         + choice, types.get(0), false) + " " + types.get(0)));
             } else {
-                sb.append(HtmlUtils.col(HtmlUtils.select("response." + choice,
-                        typesPlus)));
+                sb.append(HtmlUtils.col(HtmlUtils.select("response."
+                        + choice, typesPlus)));
             }
         }
         sb.append(HtmlUtils.col(commentInput));
@@ -435,6 +438,7 @@ public class PollTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit(msg("Add Response"), ""));
         sb.append("</form>");
+
         return new Result("Poll", sb);
     }
 

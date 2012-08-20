@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.plugins.chat;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 
 //import org.slf4j.Logger;
@@ -36,7 +38,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.SocketConnection;
@@ -80,9 +81,10 @@ import java.util.zip.*;
  */
 public class ChatOutputHandler extends OutputHandler {
 
+    /** _more_          */
     public static final String PROP_CHAT_PORT = "ramadda.chat.port";
 
-    /** _more_          */
+    /** _more_ */
     public static final int DEFAULT_PORT = -1;
 
     /** _more_ */
@@ -240,6 +242,7 @@ public class ChatOutputHandler extends OutputHandler {
                       + ">\n");
             sb.append(body);
             sb.append("</message>");
+
             return sb.toString();
         }
 
@@ -291,6 +294,7 @@ public class ChatOutputHandler extends OutputHandler {
                     }
                     if (entry == null) {
                         writeError("Could not find entry:" + tmpEntryId);
+
                         return;
                     }
                     //TODO: Check view access here on the entry
@@ -309,7 +313,8 @@ public class ChatOutputHandler extends OutputHandler {
                 handleMessage(type, node, s);
             } catch (Exception exc) {
                 try {
-                    getLogManager().logError("Error handling chat message", exc);
+                    getLogManager().logError("Error handling chat message",
+                                             exc);
                     exc.printStackTrace();
                     writeError("An error has occurred:" + exc);
                 } catch (Exception ignore) {}
@@ -348,17 +353,16 @@ public class ChatOutputHandler extends OutputHandler {
             } else if (type.equals("SESSION")) {
                 writeMessage("SESSION", XmlUtil.attr("id", connectionId), "");
             } else if (type.equals("FILE")) {
-                Request      request = new Request(getRepository(),
-                                           this.user);
+                Request      request = new Request(getRepository(), this.user);
                 StringBuffer sb      = new StringBuffer();
                 List<Entry>  entries = new ArrayList<Entry>();
                 if (entry.isGroup()) {
                     entries.addAll(getEntryManager().getChildren(request,
                             entry));
                 }
-                if(entry.getParentEntry()!=null) {
+                if (entry.getParentEntry() != null) {
                     entries.addAll(getEntryManager().getChildren(request,
-                                                                 entry.getParentEntry()));
+                            entry.getParentEntry()));
                 }
                 for (Entry entry : entries) {
                     if (entry.isGroup()) {
@@ -369,10 +373,10 @@ public class ChatOutputHandler extends OutputHandler {
                     if (entry.getResource().isImage()) {
                         entryType = "image";
                         url = getEntryManager().getEntryResourceUrl(request,
-                                                                    entry, true, false);
+                                entry, true, false);
                     } else {
                         entryType = "url";
-                        url = request.entryUrl(
+                        url       = request.entryUrl(
                             getRepository().URL_ENTRY_SHOW, entry);
                     }
                     if (url == null) {
@@ -448,6 +452,7 @@ public class ChatOutputHandler extends OutputHandler {
                 }
                 inRoom.add(connection);
             }
+
             return inRoom;
         }
     }
@@ -470,6 +475,7 @@ public class ChatOutputHandler extends OutputHandler {
                 }
             }
         }
+
         return null;
     }
 
@@ -636,10 +642,10 @@ public class ChatOutputHandler extends OutputHandler {
                 "" + System.currentTimeMillis());
         if (entry.getResource().isImage()) {
             String url = getEntryManager().getEntryResourceUrl(request,
-                                                               entry, true, false);
+                             entry, true, false);
             params += HtmlUtils.open("PARAM",
-                                    HtmlUtils.attrs("NAME",
-                                        "whiteboard.bgimage", "VALUE", url));
+                                     HtmlUtils.attrs("NAME",
+                                         "whiteboard.bgimage", "VALUE", url));
 
         }
         String session = request.getSessionId();
@@ -656,6 +662,7 @@ public class ChatOutputHandler extends OutputHandler {
                 params);
         chatAppletTemplate = chatAppletTemplate.replace("${channel}",
                 entry.getId());
+
         return makeLinksResult(request, msg("Chat"),
                                new StringBuffer(chatAppletTemplate),
                                new State(entry));

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.plugins.trip;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -31,7 +33,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -151,8 +152,7 @@ public class TripOutputHandler extends OutputHandler {
         boolean         differentTZ = !timeZone.equals(utcTimeZone);
 
         boolean         forPrint    = request.get("forprint", false);
-        TripTypeHandler handler     =
-            (TripTypeHandler) group.getTypeHandler();
+        TripTypeHandler handler     = (TripTypeHandler) group.getTypeHandler();
         StringBuffer    sb          = new StringBuffer();
         if (forPrint) {
             request.setHtmlTemplateId("empty");
@@ -178,7 +178,7 @@ public class TripOutputHandler extends OutputHandler {
 
 
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
-                                   + "/trip/trip.css"));
+                                    + "/trip/trip.css"));
         subGroups = getEntryManager().sortEntriesOnDate(subGroups, false);
         String currentDate = "";
         for (Entry entry : subGroups) {
@@ -229,7 +229,7 @@ public class TripOutputHandler extends OutputHandler {
                 String email        = entry.getValue(3, null);
                 String confirmation = entry.getValue(4, null);
 
-                String mapUrl =
+                String mapUrl       =
                     "http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q="
                     + address.replaceAll("\n", " ");
                 address = address.replaceAll("\n", "<br>");
@@ -237,10 +237,12 @@ public class TripOutputHandler extends OutputHandler {
                         HtmlUtils.italics(address) + " "
                         + HtmlUtils.href(mapUrl, "(map)")));
                 if (phone != null) {
-                    desc.append(HtmlUtils.formEntry(msgLabel("Phone"), phone));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Phone"),
+                            phone));
                 }
                 if (email != null) {
-                    desc.append(HtmlUtils.formEntry(msgLabel("Email"), email));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Email"),
+                            email));
                 }
                 if (confirmation != null) {
                     desc.append(HtmlUtils.formEntry(msgLabel("Confirmation"),
@@ -253,7 +255,7 @@ public class TripOutputHandler extends OutputHandler {
                 String address = entry.getValue(1, "");
                 String phone   = entry.getValue(2, null);
                 String email   = entry.getValue(3, null);
-                String mapUrl =
+                String mapUrl  =
                     "http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q="
                     + address.replaceAll("\n", " ");
                 address = address.replaceAll("\n", "<br>");
@@ -261,10 +263,12 @@ public class TripOutputHandler extends OutputHandler {
                         HtmlUtils.italics(address) + " "
                         + HtmlUtils.href(mapUrl, "(map)")));
                 if (phone != null) {
-                    desc.append(HtmlUtils.formEntry(msgLabel("Phone"), phone));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Phone"),
+                            phone));
                 }
                 if (email != null) {
-                    desc.append(HtmlUtils.formEntry(msgLabel("Email"), email));
+                    desc.append(HtmlUtils.formEntry(msgLabel("Email"),
+                            email));
                 }
             }
 

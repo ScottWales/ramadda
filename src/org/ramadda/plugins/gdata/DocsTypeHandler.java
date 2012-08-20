@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -46,10 +47,11 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
@@ -126,6 +128,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
             throws Exception {
         DocsService service = new DocsService("ramadda");
         service.setUserCredentials(userId, password);
+
         return service;
     }
 
@@ -147,6 +150,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
                                     Entry parentEntry, String synthId)
             throws Exception {
         Hashtable<String, Entry> entryMap = new Hashtable<String, Entry>();
+
         return getSynthIds(request, mainEntry, parentEntry, synthId,
                            entryMap);
     }
@@ -224,7 +228,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
         for (DocumentListEntry docListEntry : allEntries.getEntries()) {
             java.util.List<com.google.gdata.data.Link> links =
                 docListEntry.getParentLinks();
-            Entry newEntry;
+            Entry  newEntry;
             String entryId =
                 getSynthId(mainEntry,
                            IOUtil.getFileTail(docListEntry.getId()));
@@ -292,6 +296,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
             }
             getEntryManager().cacheEntry(newEntry);
         }
+
         return ids;
     }
 
@@ -314,6 +319,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
         getSynthIds(request, mainEntry, null, id, entryMap);
         Entry newEntry = entryMap.get(id);
         System.err.println("newEntry:" + newEntry + " " + id);
+
         return newEntry;
     }
 
@@ -350,6 +356,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
         if (id.indexOf(TYPE_PDF) >= 0) {
             return iconUrl("/icons/pdf.png");
         }
+
         return super.getIconUrl(request, entry);
     }
 
@@ -373,7 +380,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
         //        String url = "https://docs.google.com/feeds/default/private/full?showfolders=true";
         DocumentQuery    query      = new DocumentQuery(new URL(url));
         DocumentListFeed allEntries = new DocumentListFeed();
-        DocumentListFeed tempFeed = client.getFeed(query,
+        DocumentListFeed tempFeed   = client.getFeed(query,
                                         DocumentListFeed.class);
         do {
             allEntries.getEntries().addAll(tempFeed.getEntries());

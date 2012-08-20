@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,6 +28,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 import org.ramadda.util.WikiUtil;
 
 
@@ -39,8 +42,6 @@ import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -68,6 +69,7 @@ import java.util.Properties;
  */
 public class WikiPageTypeHandler extends GenericTypeHandler {
 
+    /** _more_          */
     public static final String ARG_WIKI_TEXTAREA = "wikipage.wikitext";
 
 
@@ -107,6 +109,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
         Result result = getRepository().getOutputHandler(
                             WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
                             request, request.getOutput(), entry);
+
         return new String(result.getContent());
     }
 
@@ -123,9 +126,9 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        return  getRepository().getOutputHandler(
-                                                 WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
-                                                                                                request, request.getOutput(), entry);
+        return getRepository().getOutputHandler(
+            WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
+            request, request.getOutput(), entry);
     }
 
 
@@ -149,13 +152,19 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param newEntry _more_
+     * @param idList _more_
+     */
     @Override
-    public void convertIdsFromImport(Entry newEntry, List<String[]>idList) {
+    public void convertIdsFromImport(Entry newEntry, List<String[]> idList) {
         super.convertIdsFromImport(newEntry, idList);
-        Object[] values       = newEntry.getValues();
+        Object[] values = newEntry.getValues();
         if (values != null) {
             String wikiText = (String) values[0];
-            wikiText = convertIdsFromImport(wikiText, idList);
+            wikiText  = convertIdsFromImport(wikiText, idList);
             values[0] = wikiText;
         }
     }
@@ -188,7 +197,8 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             if (wasNew) {
                 desc = "Created";
             } else {
-                desc = request.getString(WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "");
+                desc = request.getString(
+                    WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "");
             }
 
             getDatabaseManager().executeInsert(Tables.WIKIPAGEHISTORY.INSERT,
@@ -239,7 +249,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             Hashtable         ids             = new Hashtable();
             List<Association> newAssociations = new ArrayList<Association>();
             for (Enumeration keys = links.keys(); keys.hasMoreElements(); ) {
-                Entry linkedEntry = (Entry) keys.nextElement();
+                Entry       linkedEntry = (Entry) keys.nextElement();
                 Association tmp = new Association(getRepository().getGUID(),
                                       "", ASSOC_WIKILINK, entry.getId(),
                                       linkedEntry.getId());
@@ -311,7 +321,10 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
             }
         }
         if (request.defined(WikiPageOutputHandler.ARG_WIKI_EDITWITH)) {
-            Date dttm = new Date((long) request.get(WikiPageOutputHandler.ARG_WIKI_EDITWITH, 0.0));
+            Date dttm = new Date(
+                            (long) request.get(
+                                WikiPageOutputHandler.ARG_WIKI_EDITWITH,
+                                0.0));
             WikiPageHistory wph = getHistory(entry, dttm);
             if (wph == null) {
                 throw new IllegalArgumentException(
@@ -326,13 +339,15 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
         }
 
         sb.append(HtmlUtils.formEntry(msgLabel("Title"),
-                                     HtmlUtils.input(ARG_NAME, name, size)));
+                                      HtmlUtils.input(ARG_NAME, name, size)));
 
         if (entry != null) {
             sb.append(
                 HtmlUtils.formEntry(
                     msgLabel("Edit&nbsp;Summary"),
-                    HtmlUtils.input(WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "", size)));
+                    HtmlUtils.input(
+                        WikiPageOutputHandler.ARG_WIKI_CHANGEDESCRIPTION, "",
+                        size)));
         }
 
 
@@ -352,14 +367,14 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
 
         String buttons =
             getRepository().getWikiManager().makeWikiEditBar(request, entry,
-                                                             ARG_WIKI_TEXTAREA );
+                ARG_WIKI_TEXTAREA);
         String textWidget = buttons + HtmlUtils.br()
-                            + HtmlUtils.textArea(ARG_WIKI_TEXTAREA, wikiText, 250,
-                                80, HtmlUtils.id(ARG_WIKI_TEXTAREA));
+                            + HtmlUtils.textArea(ARG_WIKI_TEXTAREA, wikiText,
+                                250, 80, HtmlUtils.id(ARG_WIKI_TEXTAREA));
 
         String right = HtmlUtils.div(help.toString(),
-                                    HtmlUtils.cssClass(CSS_CLASS_SMALLHELP));
-        right = "";
+                                     HtmlUtils.cssClass(CSS_CLASS_SMALLHELP));
+        right      = "";
         textWidget = "<table><tr valign=\"top\"><td>" + textWidget
                      + "</td><td>" + right + "</td></tr></table>";
         sb.append(HtmlUtils.formEntryTop(msgLabel("Wiki Text"), textWidget));
@@ -386,6 +401,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
         if (list.size() > 0) {
             return list.get(0);
         }
+
         return null;
     }
 
@@ -431,7 +447,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
         List<WikiPageHistory> history = new ArrayList<WikiPageHistory>();
         int                   version = 1;
         while ((results = iter.getNext()) != null) {
-            int col = 1;
+            int             col = 1;
             WikiPageHistory wph = new WikiPageHistory(
                                       version++,
                                       getUserManager().findUser(
@@ -444,6 +460,7 @@ public class WikiPageTypeHandler extends GenericTypeHandler {
                     : ""));
             history.add(wph);
         }
+
         return history;
     }
 

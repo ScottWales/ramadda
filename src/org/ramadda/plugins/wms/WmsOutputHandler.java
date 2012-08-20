@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,13 +25,13 @@ package org.ramadda.plugins.wms;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
 import ucar.unidata.data.GeoLocationInfo;
 import ucar.unidata.data.gis.WmsSelection;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.WmsUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -121,6 +122,7 @@ public class WmsOutputHandler extends OutputHandler {
             //TODO: Expire the cache after some time so we would pick up any changes to the wms xml
             wmsCache.put(wmsUrl, root);
         }
+
         return root;
     }
 
@@ -160,6 +162,7 @@ public class WmsOutputHandler extends OutputHandler {
                                     WmsUtil.TAG_LAYER);
         if (topLevelLayer == null) {
             sb.append("No top level layer found");
+
             return new Result("", sb);
         }
         String title = XmlUtil.getGrandChildText(topLevelLayer,
@@ -175,8 +178,8 @@ public class WmsOutputHandler extends OutputHandler {
         //Go through each layer, find its styles and then use the WmsUtil method to extract out the
         //urls and other information from the DOM
         for (Element layerNode : layerNodes) {
-            String[] message = new String[] { null };
-            List<Element> styles = XmlUtil.findChildren(layerNode,
+            String[]      message = new String[] { null };
+            List<Element> styles  = XmlUtil.findChildren(layerNode,
                                        WmsUtil.TAG_STYLE);
 
             //Throw in the parent layer node so we get its title, etc.
@@ -187,6 +190,7 @@ public class WmsOutputHandler extends OutputHandler {
             if (message[0] != null) {
                 sb.append(message[0]);
                 sb.append("<br>");
+
                 continue;
             }
             StringBuffer layerSB = new StringBuffer("<ul>");
@@ -201,6 +205,7 @@ public class WmsOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.makeShowHideBlock(layers.get(0).getTitle(),
                     layerSB.toString(), false));
         }
+
         return new Result("", sb);
     }
 
@@ -214,6 +219,7 @@ public class WmsOutputHandler extends OutputHandler {
      */
     public String getHref(WmsSelection wms) {
         String href = HtmlUtils.href(getUrl(wms), wms.getTitle());
+
         return href;
     }
 
@@ -228,8 +234,9 @@ public class WmsOutputHandler extends OutputHandler {
     public String getUrl(WmsSelection wms) {
         double width  = wms.getBounds().getDegreesX();
         double height = wms.getBounds().getDegreesY();
-        String url = wms.assembleRequest(wms.getBounds(), 600,
+        String url    = wms.assembleRequest(wms.getBounds(), 600,
                                          (int) (600 * height / width));
+
         return url;
     }
 

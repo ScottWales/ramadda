@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -79,6 +80,7 @@ public class OboConverter extends ImportHandler {
             return null;
         }
         String xml = processFile(fileName);
+
         return new ByteArrayInputStream(xml.getBytes());
     }
 
@@ -117,6 +119,7 @@ public class OboConverter extends ImportHandler {
         if (toks.size() == 1) {
             return new String[] { toks.get(0).trim() };
         }
+
         return new String[] { toks.get(0).trim(), toks.get(1).trim() };
     }
 
@@ -144,16 +147,19 @@ public class OboConverter extends ImportHandler {
                 currentTerm = new Term(pair[1]);
                 map.put(currentTerm.id, currentTerm);
                 terms.add(currentTerm);
+
                 continue;
             }
 
             if (line.startsWith("[Typedef]")) {
                 currentTerm = null;
+
                 continue;
             }
             String[] pair = getPair(line);
             if (pair[0].equals(OboUtil.TAG_DEFAULT_NAMESPACE)) {
                 defaultNamespace = pair[1];
+
                 continue;
             }
 
@@ -173,6 +179,7 @@ public class OboConverter extends ImportHandler {
         System.err.println("# terms:" + terms.size());
         xml.append(associations);
         xml.append("</entries>\n");
+
         return xml.toString();
     }
 
@@ -210,6 +217,7 @@ public class OboConverter extends ImportHandler {
             Term   otherTerm = map.get(id);
             if (otherTerm == null) {
                 System.out.println("    isa =  NULL " + id);
+
                 continue;
             }
             process(otherTerm, xml, associations, processed, map);
@@ -235,6 +243,7 @@ public class OboConverter extends ImportHandler {
             Term         otherTerm = map.get(id);
             if (otherTerm == null) {
                 System.out.println("    relationship =  NULL " + id);
+
                 continue;
             }
             process(otherTerm, xml, associations, processed, map);
@@ -401,6 +410,7 @@ public class OboConverter extends ImportHandler {
             if (idx >= 0) {
                 s = s.substring(0, idx);
             }
+
             return s;
         }
 
@@ -430,6 +440,7 @@ public class OboConverter extends ImportHandler {
                     return tuple[1];
                 }
             }
+
             return dflt;
         }
 
@@ -447,6 +458,7 @@ public class OboConverter extends ImportHandler {
                     theValues.add(unquote(tuple[1]));
                 }
             }
+
             return theValues;
         }
 

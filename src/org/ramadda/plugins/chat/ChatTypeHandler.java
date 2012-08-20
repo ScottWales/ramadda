@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -57,17 +58,23 @@ public class ChatTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    private ChatOutputHandler getChatOutputHandler()  {
-        if(chatOutputHandler == null) {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    private ChatOutputHandler getChatOutputHandler() {
+        if (chatOutputHandler == null) {
             try {
                 chatOutputHandler =
                     (ChatOutputHandler) getRepository().getOutputHandler(
-                                                                         ChatOutputHandler.OUTPUT_CHATROOM);
-            } catch(Exception exc) {
+                        ChatOutputHandler.OUTPUT_CHATROOM);
+            } catch (Exception exc) {
                 throw new RuntimeException(exc);
 
             }
         }
+
         return chatOutputHandler;
     }
 
@@ -88,16 +95,24 @@ public class ChatTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
-        return getChatOutputHandler().outputEntry(
-            request, chatOutputHandler.OUTPUT_CHATROOM, entry);
+        return getChatOutputHandler().outputEntry(request,
+                chatOutputHandler.OUTPUT_CHATROOM, entry);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     @Override
     public boolean getForUser() {
-        if(getChatOutputHandler()==null) return false;
-        if(getChatOutputHandler().getChatPort()>0) {
+        if (getChatOutputHandler() == null) {
+            return false;
+        }
+        if (getChatOutputHandler().getChatPort() > 0) {
             return true;
         }
+
         return false;
     }
 

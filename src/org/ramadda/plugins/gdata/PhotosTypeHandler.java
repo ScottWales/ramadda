@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -110,6 +111,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             throws Exception {
         PicasawebService myService = new PicasawebService("ramadda");
         myService.setUserCredentials(userId, password);
+
         return myService;
     }
 
@@ -135,6 +137,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             ids.add(album.getId());
         }
         entry.setChildIds(ids);
+
         return ids;
     }
 
@@ -158,7 +161,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             return entries;
         }
 
-        URL feedUrl = new URL(PICASA_ROOT + userId + "?kind=album");
+        URL      feedUrl  = new URL(PICASA_ROOT + userId + "?kind=album");
         UserFeed userFeed =
             ((PicasawebService) getService(entry)).getFeed(feedUrl,
                 UserFeed.class);
@@ -180,6 +183,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
                                dttm.getTime(), null);
             getEntryManager().cacheEntry(newEntry);
         }
+
         return entries;
     }
 
@@ -220,6 +224,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             ids.add(photoEntry.getId());
         }
         parentEntry.setChildIds(ids);
+
         return ids;
     }
 
@@ -242,11 +247,11 @@ public class PhotosTypeHandler extends GdataTypeHandler {
         List<Entry> entries = new ArrayList<Entry>();
         String      userId  = getUserId(mainEntry);
         URL feedUrl = new URL(PICASA_ROOT + userId + "/albumid/" + albumId);
-        AlbumFeed feed =
+        AlbumFeed   feed    =
             ((PicasawebService) getService(mainEntry)).getFeed(feedUrl,
                 AlbumFeed.class);
         for (PhotoEntry photo : feed.getPhotoEntries()) {
-            String name = photo.getTitle().getPlainText();
+            String name  = photo.getTitle().getPlainText();
             String newId = getSynthId(mainEntry, TYPE_PHOTO,
                                       photo.getAlbumId() + ":"
                                       + photo.getGphotoId());
@@ -292,6 +297,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             }
             getEntryManager().cacheEntry(newEntry);
         }
+
         return entries;
     }
 
@@ -310,6 +316,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
                 || !getEntryManager().isSynthEntry(entry.getId())) {
             return getRepository().getTypeHandler(TypeHandler.TYPE_GROUP);
         }
+
         return getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
     }
 
@@ -336,6 +343,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
                     return album;
                 }
             }
+
             return null;
         }
 
@@ -350,6 +358,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
                 return photoEntry;
             }
         }
+
         return null;
     }
 
@@ -368,6 +377,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
         if (entry.getId().indexOf(TYPE_PHOTO) >= 0) {
             return iconUrl("/icons/jpg.png");
         }
+
         return iconUrl("/gdata/picasa.png");
     }
 

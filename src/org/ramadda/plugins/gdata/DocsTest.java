@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -65,6 +66,7 @@ public class DocsTest {
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
             System.err.println("Usage: DocsTest <userid> <password>");
+
             return;
         }
         DocsService client = new DocsService("ramadda");
@@ -77,7 +79,7 @@ public class DocsTest {
         for (String url : urls) {
             DocumentQuery    query      = new DocumentQuery(new URL(url));
             DocumentListFeed allEntries = new DocumentListFeed();
-            DocumentListFeed tempFeed = client.getFeed(query,
+            DocumentListFeed tempFeed   = client.getFeed(query,
                                             DocumentListFeed.class);
             do {
                 allEntries.getEntries().addAll(tempFeed.getEntries());

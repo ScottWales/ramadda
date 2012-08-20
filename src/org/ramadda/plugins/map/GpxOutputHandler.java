@@ -24,12 +24,15 @@ package org.ramadda.plugins.map;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import org.ramadda.util.HtmlUtils;
+
+import ucar.unidata.xml.XmlUtil;
 
 
 import java.text.SimpleDateFormat;
@@ -37,7 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import     ucar.unidata.gis.shapefile.EsriShapefile;
+
 
 /**
  *
@@ -86,6 +89,7 @@ public class GpxOutputHandler extends OutputHandler {
         for (Entry entry : state.getAllEntries()) {
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_GPX));
+
                 break;
             }
         }
@@ -108,6 +112,7 @@ public class GpxOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entriesToUse = new ArrayList<Entry>();
         entriesToUse.add(entry);
+
         return outputGpx(request, entry, entriesToUse);
     }
 
@@ -135,28 +140,45 @@ public class GpxOutputHandler extends OutputHandler {
         return outputGpx(request, group, entriesToUse);
     }
 
-    public Result outputGpx(Request request, Entry entry,
-                            List<Entry> entries)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result outputGpx(Request request, Entry entry, List<Entry> entries)
             throws Exception {
-        StringBuffer sb  = new StringBuffer();
-        sb.append(XmlUtil.openTag(GpxUtil.TAG_GPX,XmlUtil.attrs(new String[]{
-                    GpxUtil.ATTR_VERSION,"1.1",
-                    GpxUtil.ATTR_CREATOR,"RAMADDA"
-                    })));
+        StringBuffer sb = new StringBuffer();
+        sb.append(XmlUtil.openTag(GpxUtil.TAG_GPX,
+                                  XmlUtil.attrs(new String[] {
+                                      GpxUtil.ATTR_VERSION,
+                                      "1.1", GpxUtil.ATTR_CREATOR,
+                                      "RAMADDA" })));
 
         for (Entry child : entries) {
-            if (!(child.hasLocationDefined() || child.hasAreaDefined())) {
+            if ( !(child.hasLocationDefined() || child.hasAreaDefined())) {
                 continue;
             }
-            if(child.hasAreaDefined()) {
-            } else {
-                sb.append(XmlUtil.tag(GpxUtil.TAG_WPT, XmlUtil.attrs(new String[]{GpxUtil.ATTR_LAT, ""+child.getLatitude(),
-                                                                                 GpxUtil.ATTR_LON,""+ child.getLongitude()})));
+            if (child.hasAreaDefined()) {}
+            else {
+                sb.append(XmlUtil.tag(GpxUtil.TAG_WPT,
+                                      XmlUtil.attrs(new String[] {
+                                          GpxUtil.ATTR_LAT,
+                                          "" + child.getLatitude(),
+                                          GpxUtil.ATTR_LON,
+                                          "" + child.getLongitude() })));
             }
         }
 
         Result result = new Result("", sb, "application/gpx+xml");
-        result.setReturnFilename(IOUtil.stripExtension(entry.getName())+".gpx");
+        result.setReturnFilename(IOUtil.stripExtension(entry.getName())
+                                 + ".gpx");
+
         return result;
     }
 

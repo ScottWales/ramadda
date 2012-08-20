@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,10 +29,11 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.xml.XmlUtil;
 
 
@@ -161,6 +163,7 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
             if (content == null) {
                 content = "";
             }
+
             return getRepository().getHtmlOutputHandler().makeAjaxResult(
                 request, content);
         }
@@ -172,6 +175,7 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
             Result result = new Result("", new StringBuffer(content),
                                        "text/csv");
             result.setShouldDecorate(false);
+
             return result;
         }
 
@@ -187,6 +191,7 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
             entries.add(entry);
             getEntryManager().insertEntries(entries, false);
             System.err.println("storing:" + ss);
+
             return getRepository().getHtmlOutputHandler().makeAjaxResult(
                 request, "ok");
             //            String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
@@ -230,17 +235,18 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
 
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_SPREADSHEET_STOREDATA, "",
-                                  HtmlUtils.id(ARG_SPREADSHEET_STOREDATA)));
+                                   HtmlUtils.id(ARG_SPREADSHEET_STOREDATA)));
         sb.append(HtmlUtils.formClose());
 
         StringBuffer js = new StringBuffer();
         js.append("var entryId = " + HtmlUtils.squote(entry.getId()) + ";\n");
         js.append(HtmlUtils.call("loadFromRamadda",
-                                HtmlUtils.squote(entry.getId())));
+                                 HtmlUtils.squote(entry.getId())));
 
         sb.append(HtmlUtils.script(js.toString()));
         //        System.err.println("******\n" + sb+"\n******");
         Result result = new Result("", sb);
+
         return result;
     }
 

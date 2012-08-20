@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -44,10 +45,11 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.StringUtil;
@@ -121,6 +123,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         CalendarService myService =
             new CalendarService("exampleCo-exampleApp-1");
         myService.setUserCredentials(userId, password);
+
         return myService;
     }
 
@@ -179,6 +182,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             ids.add(calendar.getId());
         }
         entry.setChildIds(ids);
+
         return ids;
     }
 
@@ -206,7 +210,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         CalendarFeed resultFeed = getFeed(entry, feedUrl);
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
             CalendarEntry calendar = resultFeed.getEntries().get(i);
-            String entryId = getSynthId(entry, TYPE_CALENDAR,
+            String        entryId  = getSynthId(entry, TYPE_CALENDAR,
                                         IOUtil.getFileTail(calendar.getId()));
             String       title    = calendar.getTitle().getPlainText();
             Entry        newEntry = new Entry(entryId, this, true);
@@ -221,6 +225,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                                null);
             getEntryManager().cacheEntry(newEntry);
         }
+
         return entries;
     }
 
@@ -250,6 +255,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             ids.add(event.getId());
         }
         entry.setChildIds(ids);
+
         return ids;
     }
 
@@ -278,8 +284,8 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         //        System.err.println("Feed:" + feedUrl);
         CalendarEventFeed resultFeed = getEventFeed(mainEntry, feedUrl);
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
-            CalendarEventEntry event = resultFeed.getEntries().get(i);
-            String entryId = getSynthId(mainEntry, TYPE_EVENT,
+            CalendarEventEntry event   = resultFeed.getEntries().get(i);
+            String             entryId = getSynthId(mainEntry, TYPE_EVENT,
                                         calendarId + ":"
                                         + IOUtil.getFileTail(event.getId()));
             String       title    = event.getTitle().getPlainText();
@@ -329,6 +335,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                                null);
             getEntryManager().cacheEntry(newEntry);
         }
+
         return entries;
     }
 
@@ -360,6 +367,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         List<String> toks       = StringUtil.split(synthId, ":");
         String       type       = toks.get(0);
         String       calendarId = toks.get(1);
+
         return getEventIds(request, mainEntry, parentEntry, calendarId);
     }
 
@@ -385,10 +393,11 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                     return entry;
                 }
             }
+
             return null;
         }
 
-        String calendarId = toks.get(1);
+        String calendarId      = toks.get(1);
         String calendarEntryId = getSynthId(mainEntry, TYPE_CALENDAR,
                                             calendarId);
         Entry calendarEntry = getEntryManager().getEntry(request,
@@ -405,6 +414,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                 return entry;
             }
         }
+
         return null;
     }
 
@@ -422,6 +432,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         if (entry.getId().indexOf(TYPE_EVENT) >= 0) {
             return iconUrl("/icons/calendar_view_day.png");
         }
+
         return super.getIconUrl(request, entry);
     }
 
@@ -456,6 +467,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                 (CalendarOutputHandler) getRepository().getOutputHandler(
                     CalendarOutputHandler.OUTPUT_CALENDAR);
         }
+
         return calendarOutputHandler.outputGroup(request,
                 request.getOutput(), group, subGroups, entries);
     }
@@ -470,7 +482,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String userId = "jeff.mcwhirter@gmail.com";
+        String          userId    = "jeff.mcwhirter@gmail.com";
         CalendarService myService =
             new CalendarService("exampleCo-exampleApp-1");
         myService.setUserCredentials(userId, args[0]);

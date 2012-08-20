@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,6 +28,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.WikiUtil;
 
@@ -40,7 +42,6 @@ import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -252,6 +253,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                 root = XmlUtil.getRoot(xml);
             }
         }
+
         return root;
     }
 
@@ -284,12 +286,12 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
             numberOfSlides = children.getLength();
 
             for (int i = 0; i < children.getLength(); i++) {
-                Element node = (Element) children.item(i);
+                Element node  = (Element) children.item(i);
 
 
-                String title = XmlUtil.getAttribute(node, ATTR_SLIDE_TITLE,
+                String  title = XmlUtil.getAttribute(node, ATTR_SLIDE_TITLE,
                                    "");
-                String type = XmlUtil.getAttribute(node, ATTR_SLIDE_TYPE, "");
+                String  type = XmlUtil.getAttribute(node, ATTR_SLIDE_TYPE, "");
                 boolean visible = XmlUtil.getAttribute(node,
                                       ATTR_SLIDE_VISIBLE, true);
                 String contents = XmlUtil.getGrandChildText(node,
@@ -297,10 +299,10 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                 String note = XmlUtil.getGrandChildText(node, TAG_NOTE, "");
                 String slideBlock = getSlideEdit(request, entry, cnt, title,
                                         type, contents, note);
-                String hdr = msg("Slide") + " #" + cnt + " " + title;
+                String hdr      = msg("Slide") + " #" + cnt + " " + title;
                 String editForm =
                     HtmlUtils.insetLeft(makeCommands(cnt, true, visible)
-                                       + HtmlUtils.br() + slideBlock, 30);
+                                        + HtmlUtils.br() + slideBlock, 30);
                 slides.append(HtmlUtils.makeShowHideBlock(hdr, editForm,
                         false));
                 cnt++;
@@ -311,12 +313,12 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         //Add 3 new ones at first or always a new one at the end
 
         for (int i = 0; i < 2; i++) {
-            String title    = "";
-            String type     = TYPE_PLAIN;
-            String contents = "";
+            String title      = "";
+            String type       = TYPE_PLAIN;
+            String contents   = "";
             String slideBlock = getSlideEdit(request, entry, cnt, title,
                                              type, contents, "");
-            String hdr = msg("New Slide");
+            String hdr      = msg("New Slide");
             String editForm = HtmlUtils.insetLeft(makeCommands(cnt, false,
                                   true) + HtmlUtils.br() + slideBlock, 30);
             slides.append(HtmlUtils.hidden(ARG_SLIDE_EXTRA + cnt, "true"));
@@ -325,7 +327,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         }
 
         sb.append(HtmlUtils.formEntryTop(msgLabel("Slides"),
-                                        slides.toString()));
+                                         slides.toString()));
     }
 
     /**
@@ -340,16 +342,16 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
     private String makeCommands(int cnt, boolean exists, boolean visible) {
         String newLink =
             HtmlUtils.submitImage(getRepository().iconUrl(ICON_SLIDE_NEW),
-                                 ARG_SLIDE_NEW + cnt, "Insert New Slide");
+                                  ARG_SLIDE_NEW + cnt, "Insert New Slide");
         String copyLink =
             HtmlUtils.submitImage(getRepository().iconUrl(ICON_SLIDE_COPY),
-                                 ARG_SLIDE_COPY + cnt, "Copy Slide");
+                                  ARG_SLIDE_COPY + cnt, "Copy Slide");
         String upLink =
             HtmlUtils.submitImage(getRepository().iconUrl(ICON_SLIDE_UP),
-                                 ARG_SLIDE_UP + cnt, "Move Slide Up");
+                                  ARG_SLIDE_UP + cnt, "Move Slide Up");
         String downLink =
             HtmlUtils.submitImage(getRepository().iconUrl(ICON_SLIDE_DOWN),
-                                 ARG_SLIDE_DOWN + cnt, "Move Slide Down");
+                                  ARG_SLIDE_DOWN + cnt, "Move Slide Down");
         String deleteLink = ( !exists
                               ? ""
                               : HtmlUtils.submitImage(
@@ -357,10 +359,11 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                                   ARG_SLIDE_DELETE + cnt, "Delete Slide"));
         String visibleCbx = HtmlUtils.checkbox(ARG_SLIDE_VISIBLE + cnt,
                                 "true", visible);
+
         return visibleCbx + " " + msg("Visible") + HtmlUtils.space(2)
                + newLink + HtmlUtils.space(2) + copyLink + HtmlUtils.space(2)
-               + deleteLink + HtmlUtils.space(2) + upLink + HtmlUtils.space(2)
-               + downLink + HtmlUtils.space(2);
+               + deleteLink + HtmlUtils.space(2) + upLink
+               + HtmlUtils.space(2) + downLink + HtmlUtils.space(2);
     }
 
     /**
@@ -385,9 +388,10 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         StringBuffer slideBlock = new StringBuffer();
         slideBlock.append(HtmlUtils.hidden(ARG_SLIDE_ID + i, "" + i));
         slideBlock.append(msgLabel("Title"));
-        slideBlock.append(HtmlUtils.input(ARG_SLIDE_TITLE + i, title,
-                                         HtmlUtils.attrs(HtmlUtils.ATTR_SIZE,
-                                             "80")));
+        slideBlock.append(
+            HtmlUtils.input(
+                ARG_SLIDE_TITLE + i, title,
+                HtmlUtils.attrs(HtmlUtils.ATTR_SIZE, "80")));
         slideBlock.append(HtmlUtils.br());
         slideBlock.append(msgLabel("Type"));
         slideBlock.append(HtmlUtils.select(ARG_SLIDE_TYPE + i, types, type));
@@ -399,14 +403,16 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                 request, entry, ARG_SLIDE_CONTENT + i));
         slideBlock.append(HtmlUtils.br());
         slideBlock.append(HtmlUtils.textArea(ARG_SLIDE_CONTENT + i, contents,
-                                            15, 80,
-                                            HtmlUtils.id(ARG_SLIDE_CONTENT
-                                                + i)));
+                                             15, 80,
+                                             HtmlUtils.id(ARG_SLIDE_CONTENT
+                                                 + i)));
         slideBlock.append(HtmlUtils.br());
         slideBlock.append(msgLabel("Note"));
         slideBlock.append(HtmlUtils.br());
-        slideBlock.append(HtmlUtils.textArea(ARG_SLIDE_NOTE + i, note, 5, 80));
+        slideBlock.append(HtmlUtils.textArea(ARG_SLIDE_NOTE + i, note, 5,
+                                             80));
         slideBlock.append(HtmlUtils.p());
+
         return slideBlock.toString();
     }
 
@@ -441,8 +447,8 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
             throws Exception {
 
         super.initializeEntryFromForm(request, entry, parent, newEntry);
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, TAG_SLIDESHOW, null,
+        Document doc  = XmlUtil.makeDocument();
+        Element  root = XmlUtil.create(doc, TAG_SLIDESHOW, null,
                                       new String[] {});
         int           cnt          = 0;
         StringBuffer  slides       = new StringBuffer();
@@ -486,6 +492,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                 nodes.add(nodes.size() - 1, slideNode);
             } else if (request.exists(ARG_SLIDE_DOWN + cnt)) {
                 nodeToInsert = slideNode;
+
                 continue;
             } else {
                 nodes.add(slideNode);
@@ -542,6 +549,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         Element noteNode    = XmlUtil.create(TAG_NOTE, slideNode);
         contentNode.appendChild(XmlUtil.makeCDataNode(doc, content, false));
         noteNode.appendChild(XmlUtil.makeCDataNode(doc, note, false));
+
         return slideNode;
     }
 
@@ -564,6 +572,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         if (request.defined(ARG_SLIDESHOW_SHOW)) {
             return getSlideshow(request, entry);
         }
+
         return super.getHtmlDisplay(request, entry);
     }
 
@@ -582,9 +591,9 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
     public Result getSlideshow(Request request, Entry entry)
             throws Exception {
 
-        Element      root = getRoot(entry);
-        StringBuffer sb   = new StringBuffer();
-        String template =
+        Element      root     = getRoot(entry);
+        StringBuffer sb       = new StringBuffer();
+        String       template =
             getRepository().getResource(
                 "/org.ramadda.plugins.slideshow/htdocs/slideshow/template.html");
 
@@ -612,7 +621,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                 String note = XmlUtil.getGrandChildText(node, TAG_NOTE, "");
                 sb.append("\n");
                 sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                        HtmlUtils.cssClass(CLASS_SLIDE)));
+                                         HtmlUtils.cssClass(CLASS_SLIDE)));
                 sb.append("\n");
                 if (title.length() > 0) {
                     sb.append(HtmlUtils.h1(title));
@@ -667,7 +676,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                 }
                 if (note.trim().length() > 0) {
                     sb.append(HtmlUtils.div(note,
-                                           HtmlUtils.cssClass(CLASS_NOTES)));
+                                            HtmlUtils.cssClass(CLASS_NOTES)));
                     sb.append("\n");
                 }
                 sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
@@ -698,6 +707,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
 
         Result result = new Result("", new StringBuffer(template));
         result.setShouldDecorate(false);
+
         return result;
     }
 

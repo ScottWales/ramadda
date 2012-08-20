@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,13 +28,13 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.Clause;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -52,7 +53,7 @@ import java.util.List;
 public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LETTER = "letter";
 
     /** _more_ */
@@ -85,6 +86,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         if (request.defined(ARG_OUTPUT)) {
             return super.getDefaultQueryLimit(request, entry);
         }
+
         return 1000;
     }
 
@@ -121,6 +123,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
                     letter.toLowerCase() + "%"), Clause.like(
                         Tables.ENTRIES.COL_NAME,
                         letter.toUpperCase() + "%")));
+
         return where;
     }
 
@@ -176,8 +179,8 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         if (canAdd) {
             String label =
                 HtmlUtils.img(getRepository().iconUrl(ICON_NEW),
-                             msg("New Glossary Question")) + " "
-                                 + msg("Create new glossary entry");
+                              msg("New Glossary Question")) + " "
+                                  + msg("Create new glossary entry");
             sb.append(HtmlUtils
                 .href(HtmlUtils
                     .url(request
@@ -187,7 +190,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
                                           .TYPE_GLOSSARYENTRY), label));
         }
 
-        List<String> letters = new ArrayList<String>();
+        List<String>                    letters = new ArrayList<String>();
         Hashtable<String, StringBuffer> letterToBuffer =
             new Hashtable<String, StringBuffer>();
 
@@ -209,7 +212,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
                 header.add(HtmlUtils.b(letter));
             } else {
                 header.add(HtmlUtils.href(url + "&" + ARG_LETTER + "="
-                                         + letter, letter));
+                                          + letter, letter));
             }
         }
         sb.append(StringUtil.join("&nbsp;|&nbsp;", header));
@@ -251,6 +254,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(HtmlUtils.h2(letter));
             sb.append(letterBuffer);
         }
+
         return new Result(msg("Glossary"), sb);
     }
 

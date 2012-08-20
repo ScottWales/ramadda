@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.plugins.biblio;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -31,7 +33,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -81,8 +82,8 @@ public class BiblioOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_BIBLIO_TEST =
-        new OutputType("Biblio Test", "biblio_test",
-                       OutputType.TYPE_VIEW, "", "/biblio/book.png");
+        new OutputType("Biblio Test", "biblio_test", OutputType.TYPE_VIEW,
+                       "", "/biblio/book.png");
 
 
     /**
@@ -115,7 +116,8 @@ public class BiblioOutputHandler extends OutputHandler {
             return;
         }
         if (state.entry.getTypeHandler().getType().equals("biblio")) {
-            links.add(makeLink(request, state.getEntry(), OUTPUT_BIBLIO_TEST));
+            links.add(makeLink(request, state.getEntry(),
+                               OUTPUT_BIBLIO_TEST));
         }
     }
 
@@ -128,6 +130,7 @@ public class BiblioOutputHandler extends OutputHandler {
      * @param group _more_
      * @param subGroups _more_
      * @param entries _more_
+     * @param entry _more_
      *
      * @return _more_
      *
@@ -135,10 +138,11 @@ public class BiblioOutputHandler extends OutputHandler {
      */
     @Override
     public Result outputEntry(Request request, OutputType outputType,
-                              Entry entry) 
+                              Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(entry.getName());
+
         return new Result("", sb);
 
     }

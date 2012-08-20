@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.RssUtil;
 
@@ -33,7 +35,6 @@ import org.ramadda.util.RssUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -45,8 +46,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -97,6 +98,7 @@ public class FeedTypeHandler extends GenericTypeHandler {
             ids.add(item.getId());
         }
         mainEntry.setChildIds(ids);
+
         return ids;
     }
 
@@ -126,6 +128,7 @@ public class FeedTypeHandler extends GenericTypeHandler {
         if ( !getEntryManager().isSynthEntry(entry.getId())) {
             return getRepository().getTypeHandler(TypeHandler.TYPE_GROUP);
         }
+
         return getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
     }
 
@@ -156,29 +159,29 @@ public class FeedTypeHandler extends GenericTypeHandler {
                            List<Entry> items, Element root)
             throws Exception {
         //        Thu, 14 Jun 2012 14:50:14 -05:00
-        SimpleDateFormat []sdfs = new SimpleDateFormat[]{
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
-        };
+        SimpleDateFormat[] sdfs =
+            new SimpleDateFormat[] {
+                new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
+                new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"), };
         Element channel = XmlUtil.getElement(root, RssUtil.TAG_CHANNEL);
         if (channel == null) {
             throw new IllegalArgumentException("No channel tag");
         }
         NodeList children = XmlUtil.getElements(channel, RssUtil.TAG_ITEM);
-        HashSet seen = new HashSet();
+        HashSet  seen     = new HashSet();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
-            Element item = (Element) children.item(childIdx);
-            String title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
+            Element item  = (Element) children.item(childIdx);
+            String  title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
                                "");
 
             String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,
                               "");
 
 
-            
+
             String guid = XmlUtil.getGrandChildText(item, RssUtil.TAG_GUID,
-                                                    link);
-            if(seen.contains(guid)) {
+                              link);
+            if (seen.contains(guid)) {
                 continue;
             }
 
@@ -201,15 +204,15 @@ public class FeedTypeHandler extends GenericTypeHandler {
 
             Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
             Date  dttm  = new Date();
-            for(SimpleDateFormat sdf: sdfs) {
+            for (SimpleDateFormat sdf : sdfs) {
                 try {
                     dttm = sdf.parse(pubDate);
+
                     break;
-                } catch (Exception exc) {
-                }
+                } catch (Exception exc) {}
             }
 
-            if(dttm == null) {
+            if (dttm == null) {
                 dttm = DateUtil.parse(pubDate);
             }
 
@@ -230,23 +233,33 @@ public class FeedTypeHandler extends GenericTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param items _more_
+     * @param root _more_
+     *
+     * @throws Exception _more_
+     */
     public void processAtom(Request request, Entry mainEntry,
-                           List<Entry> items, Element root)
+                            List<Entry> items, Element root)
             throws Exception {
         //        Thu, 14 Jun 2012 14:50:14 -05:00
-        SimpleDateFormat []sdfs = new SimpleDateFormat[]{
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
-        };
+        SimpleDateFormat[] sdfs =
+            new SimpleDateFormat[] {
+                new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz"),
+                new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"), };
         NodeList children = XmlUtil.getElements(root, AtomUtil.TAG_ENTRY);
-        HashSet seen = new HashSet();
+        HashSet  seen     = new HashSet();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
-            Element item = (Element) children.item(childIdx);
-            String title = XmlUtil.getGrandChildText(item, AtomUtil.TAG_TITLE,
-                               "");
+            Element item  = (Element) children.item(childIdx);
+            String  title = XmlUtil.getGrandChildText(item,
+                               AtomUtil.TAG_TITLE, "");
             String guid = XmlUtil.getGrandChildText(item, AtomUtil.TAG_ID,
-                                                    ""+childIdx);
-            if(seen.contains(guid)) {
+                              "" + childIdx);
+            if (seen.contains(guid)) {
                 continue;
             }
             seen.add(guid);
@@ -267,18 +280,17 @@ public class FeedTypeHandler extends GenericTypeHandler {
             }
 
             Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
-            Date  dttm  = null;
-            Date  changeDate  = null;
-            for(SimpleDateFormat sdf: sdfs) {
+            Date  dttm       = null;
+            Date  changeDate = null;
+            for (SimpleDateFormat sdf : sdfs) {
                 try {
                     //                    dttm = sdf.parse(pubDate);
                     break;
-                } catch (Exception exc) {
-                }
+                } catch (Exception exc) {}
             }
 
-            
-            if(dttm == null) {
+
+            if (dttm == null) {
                 dttm = DateUtil.parse(pubDate);
             }
 
@@ -286,8 +298,8 @@ public class FeedTypeHandler extends GenericTypeHandler {
                 entry.setLocation(Double.parseDouble(lat),
                                   Double.parseDouble(lon), 0);
             }
-            String link = XmlUtil.getGrandChildText(item, "feedburner:origLink",
-                              "");
+            String link = XmlUtil.getGrandChildText(item,
+                              "feedburner:origLink", "");
             //TODO: look through the link tags 
             Resource resource = new Resource(link);
             entry.initEntry(title, desc, mainEntry, mainEntry.getUser(),
@@ -320,8 +332,9 @@ public class FeedTypeHandler extends GenericTypeHandler {
         Element root;
         try {
             root = XmlUtil.getRoot(url, getClass());
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             logError("Error reading feed:" + url, exc);
+
             return items;
         }
         if (root.getTagName().equals(RssUtil.TAG_RSS)) {
@@ -329,7 +342,8 @@ public class FeedTypeHandler extends GenericTypeHandler {
         } else if (root.getTagName().equals(AtomUtil.TAG_FEED)) {
             processAtom(request, mainEntry, items, root);
         } else {
-            throw new IllegalArgumentException("Unknown feed type:" + root.getTagName()); 
+            throw new IllegalArgumentException("Unknown feed type:"
+                    + root.getTagName());
             //            getRepository().getLogManager().logError("Unknown feed type:" + root.getTagName()); 
         }
 
@@ -356,6 +370,7 @@ public class FeedTypeHandler extends GenericTypeHandler {
                 return item;
             }
         }
+
         return null;
     }
 

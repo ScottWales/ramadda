@@ -1,5 +1,6 @@
 /*
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -20,6 +21,7 @@
 
 package org.ramadda.plugins.phone;
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
@@ -28,12 +30,13 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
 
-import ucar.unidata.xml.XmlUtil;
-
 
 import org.w3c.dom.*;
+
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
+
+import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -57,17 +60,33 @@ import java.util.Properties;
 /**
  */
 public class PhoneHarvester extends Harvester {
+
+    /** _more_          */
     public static final String ATTR_TYPE = "type";
 
+    /** _more_          */
     public static final String ATTR_FROMPHONE = "fromphone";
+
+    /** _more_          */
     public static final String ATTR_TOPHONE = "tophone";
+
+    /** _more_          */
     public static final String ATTR_PASSCODE = "passcode";
+
+    /** _more_          */
     public static final String ATTR_ = "";
 
 
+    /** _more_          */
     private String type = PhoneInfo.TYPE_SMS;
+
+    /** _more_          */
     private String fromPhone;
+
+    /** _more_          */
     private String toPhone;
+
+    /** _more_          */
     private String passCode;
 
 
@@ -79,8 +98,7 @@ public class PhoneHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    public PhoneHarvester(Repository repository, String id)
-            throws Exception {
+    public PhoneHarvester(Repository repository, String id) throws Exception {
         super(repository, id);
     }
 
@@ -109,45 +127,62 @@ public class PhoneHarvester extends Harvester {
      */
     protected void init(Element element) throws Exception {
         super.init(element);
-        fromPhone   = XmlUtil.getAttribute(element, ATTR_FROMPHONE, fromPhone);
+        fromPhone = XmlUtil.getAttribute(element, ATTR_FROMPHONE, fromPhone);
         toPhone   = XmlUtil.getAttribute(element, ATTR_TOPHONE, toPhone);
-        passCode   = XmlUtil.getAttribute(element, ATTR_PASSCODE, passCode);
-        type   = XmlUtil.getAttribute(element, ATTR_TYPE, type);
+        passCode  = XmlUtil.getAttribute(element, ATTR_PASSCODE, passCode);
+        type      = XmlUtil.getAttribute(element, ATTR_TYPE, type);
     }
 
 
-    public boolean handleMessage(Request request, PhoneInfo info) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param info _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean handleMessage(Request request, PhoneInfo info)
+            throws Exception {
 
-        if(fromPhone.length()>0) {
-            if(!Misc.equals(fromPhone, info.getFromPhone())) return false;
+        if (fromPhone.length() > 0) {
+            if ( !Misc.equals(fromPhone, info.getFromPhone())) {
+                return false;
+            }
         }
 
-        if(toPhone.length()>0) {
-            if(!Misc.equals(toPhone, info.getToPhone())) return false;
+        if (toPhone.length() > 0) {
+            if ( !Misc.equals(toPhone, info.getToPhone())) {
+                return false;
+            }
         }
 
         TypeHandler typeHandler = getRepository().getTypeHandler("phone_sms");
-        Entry baseGroup = getBaseGroup();
-        Entry parent = baseGroup;
-        Entry entry = typeHandler.createEntry(getRepository().getGUID());
-        String name = "sms";
-        String desc = info.getMessage();
-        Date date = new Date();
-        Object[] values = typeHandler.makeValues(new Hashtable());
+        Entry       baseGroup   = getBaseGroup();
+        Entry       parent      = baseGroup;
+        Entry       entry = typeHandler.createEntry(getRepository().getGUID());
+        String      name        = "sms";
+        String      desc        = info.getMessage();
+        Date        date        = new Date();
+        Object[]    values      = typeHandler.makeValues(new Hashtable());
         values[0] = info.getFromPhone();
         values[1] = info.getToPhone();
         entry.initEntry(name, desc, parent, getUser(), new Resource(), "",
-                        date.getTime(), date.getTime(),
-                        date.getTime(), date.getTime(), values);
+                        date.getTime(), date.getTime(), date.getTime(),
+                        date.getTime(), values);
 
 
-        double [] location = org.ramadda.util.GeoUtils.getLocationFromAddress(info.getFromZip());
-        if(location!=null) {
+        double[] location = org.ramadda.util.GeoUtils.getLocationFromAddress(
+                                info.getFromZip());
+        if (location != null) {
             entry.setLocation(location[0], location[1], 0);
         }
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().insertEntries(entries, true, true);
+
         return true;
     }
 
@@ -161,11 +196,19 @@ public class PhoneHarvester extends Harvester {
     }
 
 
-    public void  makeRunSettings(Request request, StringBuffer sb) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     */
+    public void makeRunSettings(Request request, StringBuffer sb) {
         StringBuffer runWidgets = new StringBuffer();
-        runWidgets.append(HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true", getActiveOnStart()) + HtmlUtils.space(1) + msg("Active"));
-        sb.append(
-                  HtmlUtils.formEntryTop("",runWidgets.toString()));
+        runWidgets.append(
+            HtmlUtils.checkbox(
+                ATTR_ACTIVEONSTART, "true",
+                getActiveOnStart()) + HtmlUtils.space(1) + msg("Active"));
+        sb.append(HtmlUtils.formEntryTop("", runWidgets.toString()));
     }
 
     /**
@@ -177,10 +220,10 @@ public class PhoneHarvester extends Harvester {
      */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
-        element.setAttribute( ATTR_FROMPHONE, fromPhone);
-        element.setAttribute( ATTR_TOPHONE, toPhone);
-        element.setAttribute( ATTR_PASSCODE, passCode);
-        element.setAttribute( ATTR_TYPE, type);
+        element.setAttribute(ATTR_FROMPHONE, fromPhone);
+        element.setAttribute(ATTR_TOPHONE, toPhone);
+        element.setAttribute(ATTR_PASSCODE, passCode);
+        element.setAttribute(ATTR_TYPE, type);
     }
 
 
@@ -193,10 +236,10 @@ public class PhoneHarvester extends Harvester {
      */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
-        fromPhone   = request.getString(ATTR_FROMPHONE, fromPhone);
+        fromPhone = request.getString(ATTR_FROMPHONE, fromPhone);
         toPhone   = request.getString(ATTR_TOPHONE, toPhone);
-        passCode   = request.getString(ATTR_PASSCODE, passCode);
-        type   = request.getString(ATTR_TYPE, type);
+        passCode  = request.getString(ATTR_PASSCODE, passCode);
+        type      = request.getString(ATTR_TYPE, type);
     }
 
 
@@ -213,14 +256,14 @@ public class PhoneHarvester extends Harvester {
         super.createEditForm(request, sb);
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
         sb.append(HtmlUtils.formEntry(msgLabel("From Phone"),
-                                      HtmlUtils.input(ATTR_FROMPHONE, fromPhone,
-                                                      HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_FROMPHONE,
+                                          fromPhone, HtmlUtils.SIZE_60)));
         sb.append(HtmlUtils.formEntry(msgLabel("To Phone"),
                                       HtmlUtils.input(ATTR_TOPHONE, toPhone,
-                                                      HtmlUtils.SIZE_60)));
+                                          HtmlUtils.SIZE_60)));
         sb.append(HtmlUtils.formEntry(msgLabel("Pass Code"),
-                                      HtmlUtils.input(ATTR_PASSCODE, passCode,
-                                                      HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_PASSCODE,
+                                          passCode, HtmlUtils.SIZE_60)));
     }
 
 

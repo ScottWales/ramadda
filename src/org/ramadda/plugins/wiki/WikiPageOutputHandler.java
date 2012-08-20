@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,11 +28,11 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 
+import org.ramadda.util.HtmlUtils;
+
 import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
-
-import org.ramadda.util.HtmlUtils;
 
 
 
@@ -96,6 +97,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public static final String ARG_WIKI_VERSION = "wiki.version";
 
 
+    /** _more_          */
     public static final String GROUP_WIKI = "Wiki";
 
 
@@ -103,20 +105,23 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
                                                      "wiki.view",
                                                      OutputType.TYPE_OTHER,
-                                                     "", ICON_WIKI, GROUP_WIKI);
+                                                     "", ICON_WIKI,
+                                                     GROUP_WIKI);
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI_HISTORY =
         new OutputType("Wiki History", "wiki.history", OutputType.TYPE_OTHER,
                        "", ICON_WIKI, GROUP_WIKI);
 
+    /** _more_          */
     public static final OutputType OUTPUT_WIKI_DETAILS =
-        new OutputType("Entry Details", "wiki.details", OutputType.TYPE_OTHER,
-                       "", ICON_WIKI, GROUP_WIKI);
+        new OutputType("Entry Details", "wiki.details",
+                       OutputType.TYPE_OTHER, "", ICON_WIKI, GROUP_WIKI);
 
+    /** _more_          */
     public static final OutputType OUTPUT_WIKI_TEXT =
-        new OutputType("Wiki Text", "wiki.text", OutputType.TYPE_OTHER,
-                       "", ICON_WIKI, GROUP_WIKI);
+        new OutputType("Wiki Text", "wiki.text", OutputType.TYPE_OTHER, "",
+                       ICON_WIKI, GROUP_WIKI);
 
 
     /**
@@ -154,17 +159,27 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         if (state.entry == null) {
             return;
         }
-        if(canAccessDetails(request)) {
-            if (state.entry.getType().equals(WikiPageTypeHandler.TYPE_WIKIPAGE)) {
+        if (canAccessDetails(request)) {
+            if (state.entry.getType().equals(
+                    WikiPageTypeHandler.TYPE_WIKIPAGE)) {
                 links.add(makeLink(request, state.entry, OUTPUT_WIKI));
-                links.add(makeLink(request, state.entry, OUTPUT_WIKI_DETAILS));
-                links.add(makeLink(request, state.entry, OUTPUT_WIKI_HISTORY));
+                links.add(makeLink(request, state.entry,
+                                   OUTPUT_WIKI_DETAILS));
+                links.add(makeLink(request, state.entry,
+                                   OUTPUT_WIKI_HISTORY));
                 links.add(makeLink(request, state.entry, OUTPUT_WIKI_TEXT));
             }
         }
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
     private boolean canAccessDetails(Request request) {
         return !request.isAnonymous();
     }
@@ -187,28 +202,28 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
         boolean okToAccessWiki = canAccessDetails(request);
 
-        if(okToAccessWiki) {
+        if (okToAccessWiki) {
             if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
                 return super.getHtmlResult(request, outputType, entry, false);
             }
-            
+
             if (outputType.equals(OUTPUT_WIKI_HISTORY)) {
                 return outputWikiHistory(request, entry);
             }
-            
+
             if (outputType.equals(OUTPUT_WIKI_DETAILS)) {
-                request.put(ARG_WIKI_DETAILS,"true");
+                request.put(ARG_WIKI_DETAILS, "true");
             }
 
             if (outputType.equals(OUTPUT_WIKI_TEXT)) {
-                request.put(ARG_WIKI_RAW,"true");
+                request.put(ARG_WIKI_RAW, "true");
             }
         }
 
         String wikiText = "";
         String header   = "";
         if (request.defined(ARG_WIKI_VERSION)) {
-            if(!okToAccessWiki) {
+            if ( !okToAccessWiki) {
                 throw new AccessException("Not allowed", request);
             }
             Date dttm = new Date((long) request.get(ARG_WIKI_VERSION, 0.0));
@@ -220,7 +235,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                     "Could not find wiki history");
             }
             wikiText = wph.getText();
-            header =
+            header   =
                 getRepository().showDialogNote(msgLabel("Text from version")
                     + getRepository().formatDate(wph.getDate()));
         } else {
@@ -231,13 +246,15 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             }
         }
 
-        if(okToAccessWiki) {
+        if (okToAccessWiki) {
             if (request.get(ARG_WIKI_RAW, false)) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(HtmlUtils.form(""));
-                sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 250, 60,
+                sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 250,
+                                             60,
                                              HtmlUtils.id(ARG_WIKI_TEXT)));
                 sb.append(HtmlUtils.formClose());
+
                 return makeLinksResult(request, msg("Wiki"), sb,
                                        new State(entry));
             }
@@ -290,7 +307,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
      */
     public Result outputWikiCompare(Request request, Entry entry)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer    sb   = new StringBuffer();
 
         Date dttm1 = new Date((long) request.get(ARG_WIKI_COMPARE1, 0.0));
         WikiPageHistory wph1 =
@@ -321,6 +338,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
         getDiff(wph1.getText(), wph2.getText(), sb);
         sb.append("</table>");
+
         return makeLinksResult(request, msg("Wiki Comparison"), sb,
                                new State(entry));
     }
@@ -338,8 +356,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public Result outputWikiHistory(Request request, Entry entry)
             throws Exception {
         StringBuffer sb      = new StringBuffer();
-        boolean      canEdit = getAccessManager().canEditEntry(request,
-                                   entry);
+        boolean      canEdit = getAccessManager().canEditEntry(request, entry);
 
         if (request.exists(ARG_WIKI_COMPARE1)
                 && request.exists(ARG_WIKI_COMPARE2)) {
@@ -357,7 +374,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             ((WikiPageTypeHandler) entry.getTypeHandler()).getHistoryList(
                 entry, null, false);
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
-                                " cellspacing=5 cellpadding=5 "));
+                                 " cellspacing=5 cellpadding=5 "));
         sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
             HtmlUtils.b(msg("Version")), "", "", "", HtmlUtils.b(msg("User")),
             HtmlUtils.b(msg("Date")), HtmlUtils.b(msg("Description"))
@@ -380,14 +397,15 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry,
                                   ARG_WIKI_VERSION,
-                                  wph.getDate().getTime() + ""), HtmlUtils.img(
+                                  wph.getDate().getTime()
+                                  + ""), HtmlUtils.img(
                                       getRepository().iconUrl(ICON_WIKI),
                                       msg("View this page")));
             String btns =
                 HtmlUtils.radio(ARG_WIKI_COMPARE1,
-                               "" + wph.getDate().getTime(),
-                               false) + HtmlUtils.radio(ARG_WIKI_COMPARE2,
-                                   "" + wph.getDate().getTime(), false);
+                                "" + wph.getDate().getTime(),
+                                false) + HtmlUtils.radio(ARG_WIKI_COMPARE2,
+                                    "" + wph.getDate().getTime(), false);
             String versionLabel;
             if (i == history.size() - 1) {
                 versionLabel = msg("Current");
@@ -467,12 +485,12 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             int        addEnd   = diff.getAddedEnd();
             String     from     = toString(delStart, delEnd);
             String     to       = toString(addStart, addEnd);
-            String type = ((delEnd != Difference.NONE)
+            String     type     = ((delEnd != Difference.NONE)
                            && (addEnd != Difference.NONE))
-                          ? "c"
-                          : ((delEnd == Difference.NONE)
-                             ? "a"
-                             : "d");
+                                  ? "c"
+                                  : ((delEnd == Difference.NONE)
+                                     ? "a"
+                                     : "d");
 
 
             if (delEnd != Difference.NONE) {
@@ -513,6 +531,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                     appendLines(addStart, addEnd, false, bLines, sb);
                     rightIdx = addEnd + 1;
                     sb.append("</td></tr>");
+
                     continue;
                 }
                 sb.append("<td></td><td width=50%>&nbsp;</td></tr>");
@@ -598,6 +617,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         if ((end != Difference.NONE) && (start != end)) {
             buf.append(",").append(1 + end);
         }
+
         return buf.toString();
     }
 

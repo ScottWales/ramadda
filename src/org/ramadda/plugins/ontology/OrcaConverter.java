@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -167,6 +168,7 @@ public class OrcaConverter extends ImportHandler {
             return null;
         }
         String xml = processFile(root);
+
         return XmlUtil.getRoot(xml);
     }
 
@@ -182,6 +184,7 @@ public class OrcaConverter extends ImportHandler {
      */
     public String processFile(String file) throws Exception {
         Element root = XmlUtil.getRoot(file, OrcaConverter.class);
+
         return processFile(root);
     }
 
@@ -216,10 +219,10 @@ public class OrcaConverter extends ImportHandler {
             if ( !repositoryObject.getTagName().equals(TAG_REGISTRYOBJECT)) {
                 System.err.println("unknown tag:"
                                    + repositoryObject.getTagName());
+
                 continue;
             }
-            String  key = XmlUtil.getGrandChildText(repositoryObject,
-                              TAG_KEY);
+            String  key = XmlUtil.getGrandChildText(repositoryObject, TAG_KEY);
             Element mainElement = null;
             String  partName    = "";
             String  entryType   = "";
@@ -230,12 +233,14 @@ public class OrcaConverter extends ImportHandler {
                 if (mainElement != null) {
                     partName  = subTagNames[j];
                     entryType = entryTypes[j];
+
                     break;
                 }
             }
             if (mainElement == null) {
                 System.err.println("Unknown tag: "
                                    + XmlUtil.toString(repositoryObject));
+
                 continue;
             }
             String groupName = XmlUtil.getAttribute(repositoryObject,
@@ -279,9 +284,9 @@ public class OrcaConverter extends ImportHandler {
 
 
 
-            StringBuffer childTags = new StringBuffer();
+            StringBuffer childTags    = new StringBuffer();
 
-            List descriptions = XmlUtil.findChildren(mainElement,
+            List         descriptions = XmlUtil.findChildren(mainElement,
                                     TAG_DESCRIPTION);
             StringBuffer desc = new StringBuffer();
             for (int j = 0; j < descriptions.size(); j++) {
@@ -346,13 +351,13 @@ public class OrcaConverter extends ImportHandler {
                                    TAG_RELATEDOBJECT);
             for (int j = 0; j < related.getLength(); j++) {
                 Element relatedObject = (Element) related.item(j);
-                String relatedKey = XmlUtil.getGrandChildText(relatedObject,
+                String  relatedKey = XmlUtil.getGrandChildText(relatedObject,
                                         TAG_KEY);
                 Object relatedTo = keyMap.get(relatedKey);
                 if (relatedTo == null) {
                     continue;
                 }
-                String type = "";
+                String  type     = "";
                 Element relation = XmlUtil.findChild(relatedObject,
                                        TAG_RELATION);
                 if (relation != null) {
@@ -375,6 +380,7 @@ public class OrcaConverter extends ImportHandler {
             }
         }
         xml.append("</entries>\n");
+
         return xml.toString();
 
     }
@@ -400,7 +406,7 @@ public class OrcaConverter extends ImportHandler {
             Element node = (Element) addresses.item(j);
             String  tag  = node.getTagName();
             if (tag.equals(TAG_ELECTRONIC)) {
-                String type = XmlUtil.getAttribute(node, ATTR_TYPE);
+                String type  = XmlUtil.getAttribute(node, ATTR_TYPE);
                 String value = XmlUtil.getGrandChildText(node,
                                    TAG_VALUE).trim();
                 if (type.equals("url")) {

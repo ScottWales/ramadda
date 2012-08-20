@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -84,10 +85,10 @@ public class OwlConverter extends ImportHandler {
         }
         StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("<entries>\n");
-        List<AssociationInfo> links = new ArrayList<AssociationInfo>();
+        List<AssociationInfo>        links = new ArrayList<AssociationInfo>();
         StringBuffer associations = new StringBuffer(XmlUtil.XML_HEADER);
-        HashSet<String>       seen    = new HashSet<String>();
-        List<EntryInfo>       entries = new ArrayList<EntryInfo>();
+        HashSet<String>              seen     = new HashSet<String>();
+        List<EntryInfo>              entries  = new ArrayList<EntryInfo>();
         Hashtable<String, EntryInfo> entryMap = new Hashtable<String,
                                                     EntryInfo>();
         HashSet<String> processed = new HashSet<String>();
@@ -95,6 +96,7 @@ public class OwlConverter extends ImportHandler {
         EntryInfo.appendEntries(xml, entries, entryMap, processed);
         AssociationInfo.appendAssociations(xml, links, seen);
         xml.append("</entries>\n");
+
         return new ByteArrayInputStream(xml.toString().getBytes());
     }
 
@@ -128,6 +130,7 @@ public class OwlConverter extends ImportHandler {
         for (String ltr : ltrs) {
             name = name.replaceAll(ltr, " " + ltr);
         }
+
         return name.trim();
     }
 
@@ -153,10 +156,10 @@ public class OwlConverter extends ImportHandler {
         StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("<entries>\n");
 
-        List<AssociationInfo> links = new ArrayList<AssociationInfo>();
+        List<AssociationInfo>        links = new ArrayList<AssociationInfo>();
         StringBuffer associations = new StringBuffer(XmlUtil.XML_HEADER);
-        HashSet<String>       seen    = new HashSet<String>();
-        List<EntryInfo>       entries = new ArrayList<EntryInfo>();
+        HashSet<String>              seen     = new HashSet<String>();
+        List<EntryInfo>              entries  = new ArrayList<EntryInfo>();
         Hashtable<String, EntryInfo> entryMap = new Hashtable<String,
                                                     EntryInfo>();
 
@@ -236,6 +239,7 @@ public class OwlConverter extends ImportHandler {
         Element root = XmlUtil.getRoot(file.toString(), OwlConverter.class);
         if (root == null) {
             System.err.println("failed to read:" + file);
+
             return;
         }
         NodeList children = XmlUtil.getElements(root);
@@ -259,7 +263,7 @@ public class OwlConverter extends ImportHandler {
                     String[] toks = tag.split(":");
                     if (XmlUtil.hasAttribute(root, "xmlns:" + toks[0])) {
                         okToProcess = true;
-                        parent = XmlUtil.getAttribute(root,
+                        parent      = XmlUtil.getAttribute(root,
                                 "xmlns:" + toks[0]) + "" + toks[1];
                         parent =
                             parent.replace("http://sweet.jpl.nasa.gov/2.1/",
@@ -358,6 +362,7 @@ public class OwlConverter extends ImportHandler {
                 IOUtil.writeFile(IOUtil.stripExtension(file) + "entries.xml",
                                  IOUtil.readInputStream(newStream));
             }
+
             return;
         }
 

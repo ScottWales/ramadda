@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,12 +25,12 @@ package org.ramadda.plugins.map;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 
 
@@ -80,7 +81,7 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
     public void childEntryChanged(Entry entry, boolean isNew)
             throws Exception {
         super.childEntryChanged(entry, isNew);
-        Entry parent = entry.getParentEntry();
+        Entry       parent   = entry.getParentEntry();
         List<Entry> children =
             getEntryManager().getChildren(getRepository().getTmpRequest(),
                                           parent);
@@ -95,11 +96,13 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param services _more_
      *
      * @return _more_
      */
     @Override
-    public void getServices(Request request, Entry entry, List<Service> services) {
+    public void getServices(Request request, Entry entry,
+                            List<Service> services) {
         super.getServices(request, entry, services);
         /*
         String url =
