@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.repository.auth;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 
 
@@ -38,7 +40,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -102,10 +103,14 @@ public class AccessManager extends RepositoryManager {
     private Object MUTEX_PERMISSIONS = new Object();
 
 
-    private TTLCache<String, Object[]> recentPermissions= new TTLCache<String,Object[]>(5*60*1000);
+    /** _more_          */
+    private TTLCache<String, Object[]> recentPermissions =
+        new TTLCache<String, Object[]>(5 * 60 * 1000);
 
 
-    public static final String PROP_STOPATFIRSTROLE = "ramadda.auth.stopatfirstrole";
+    /** _more_          */
+    public static final String PROP_STOPATFIRSTROLE =
+        "ramadda.auth.stopatfirstrole";
 
 
     /**
@@ -119,8 +124,11 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     */
     public void clearCache() {
-        recentPermissions= new TTLCache<String,Object[]>(5*60*1000);
+        recentPermissions = new TTLCache<String, Object[]>(5 * 60 * 1000);
     }
 
 
@@ -146,7 +154,7 @@ public class AccessManager extends RepositoryManager {
         mainEntry.addPermission(new Permission(Permission.ACTION_DELETE,
                 UserManager.ROLE_NONE));
         mainEntry.addPermission(new Permission(Permission.ACTION_COMMENT,
-                                               UserManager.ROLE_ANY));
+                UserManager.ROLE_ANY));
         insertPermissions(null, mainEntry, mainEntry.getPermissions());
     }
 
@@ -167,7 +175,7 @@ public class AccessManager extends RepositoryManager {
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
                     || action.equals(Permission.ACTION_VIEWCHILDREN)
-                   || action.equals(Permission.ACTION_FILE))) {
+                    || action.equals(Permission.ACTION_FILE))) {
                 return false;
             }
         }
@@ -187,6 +195,7 @@ public class AccessManager extends RepositoryManager {
                     "Could not find entry:"
                     + request.getString(ARG_ENTRYID, ""));
             }
+
             return canDoAction(request, entry, action);
         }
 
@@ -203,6 +212,7 @@ public class AccessManager extends RepositoryManager {
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -214,6 +224,7 @@ public class AccessManager extends RepositoryManager {
                     + request.getString(ARG_GROUP, ""));
             }
             boolean canDo = canDoAction(request, group, action);
+
             //            System.err.println ("action:" + action +" found folder:" + group + " canDo:" + canDo);
             return canDo;
         }
@@ -234,6 +245,7 @@ public class AccessManager extends RepositoryManager {
                 if (canDoAction(request, toEntry, action)) {
                     return true;
                 }
+
                 return false;
 
 
@@ -283,10 +295,11 @@ public class AccessManager extends RepositoryManager {
     public boolean canDoAction(Request request, Entry entry, String action,
                                boolean log)
             throws Exception {
+
         if (getRepository().isReadOnly()) {
             if ( !(action.equals(Permission.ACTION_VIEW)
-                   || action.equals(Permission.ACTION_VIEWCHILDREN)
-                   || action.equals(Permission.ACTION_FILE))) {
+                    || action.equals(Permission.ACTION_VIEWCHILDREN)
+                    || action.equals(Permission.ACTION_FILE))) {
                 return false;
             }
         }
@@ -334,6 +347,7 @@ public class AccessManager extends RepositoryManager {
 
         if (user == null) {
             logInfo("Upload:canDoAction: user is null");
+
             return false;
         }
 
@@ -343,6 +357,7 @@ public class AccessManager extends RepositoryManager {
             if (log) {
                 logInfo("Upload:user is admin");
             }
+
             //            System.err.println("user is admin");
             return true;
         }
@@ -352,13 +367,14 @@ public class AccessManager extends RepositoryManager {
             if (log) {
                 logInfo("Upload:user is owner");
             }
+
             //            System.err.println("user is owner of entry");
             return true;
         }
 
         String key = "a:" + action + "_u:" + user.getId() + "_ip:"
                      + requestIp + "_e:" + entry.getId();
-        Object[] pastResult =  recentPermissions.get(key);
+        Object[] pastResult = recentPermissions.get(key);
         Date     now        = new Date();
         if (pastResult != null) {
             Date    then = (Date) pastResult[0];
@@ -369,6 +385,7 @@ public class AccessManager extends RepositoryManager {
                 if (log) {
                     logInfo("Upload:getting result from cache");
                 }
+
                 //            logInfo("Upload:canDoAction: cache");
                 return ok.booleanValue();
             } else {
@@ -383,7 +400,9 @@ public class AccessManager extends RepositoryManager {
             clearCache();
         }
         recentPermissions.put(key, new Object[] { now, new Boolean(result) });
+
         return result;
+
 
     }
 
@@ -404,12 +423,12 @@ public class AccessManager extends RepositoryManager {
                                      String action, User user,
                                      String requestIp)
             throws Exception {
-        boolean stop = getProperty(PROP_STOPATFIRSTROLE,true);
+        boolean stop = getProperty(PROP_STOPATFIRSTROLE, true);
         //System.err.println("canDoAction:  user=" + user +" action=" + action +" entry=" + entry);
         while (entry != null) {
-            boolean  hadInherit= false;
-            boolean hadAccessGrant = false;
-            List<String> roles       = (List<String>) getRoles(entry, action);
+            boolean      hadInherit     = false;
+            boolean      hadAccessGrant = false;
+            List<String> roles = (List<String>) getRoles(entry, action);
             if (roles != null) {
                 if (requestIp != null) {
                     boolean hadIp = false;
@@ -422,7 +441,7 @@ public class AccessManager extends RepositoryManager {
                         if ( !role.startsWith("ip:")) {
                             continue;
                         }
-                        if (!negated) {
+                        if ( !negated) {
                             hadIp = true;
                         }
                         String ip = role.substring(3);
@@ -437,8 +456,9 @@ public class AccessManager extends RepositoryManager {
 
                 for (String role : roles) {
                     boolean negated = false;
-                    if(UserManager.ROLE_INHERIT.equals(role)) {
-                        hadInherit  =true;
+                    if (UserManager.ROLE_INHERIT.equals(role)) {
+                        hadInherit = true;
+
                         continue;
                     }
                     if (role.startsWith("!")) {
@@ -448,13 +468,13 @@ public class AccessManager extends RepositoryManager {
                     if (role.startsWith("ip:")) {
                         continue;
                     }
-                    if(!negated) {
+                    if ( !negated) {
                         hadAccessGrant = true;
                     }
-                    if(UserManager.ROLE_ANY.equals(role)) {
+                    if (UserManager.ROLE_ANY.equals(role)) {
                         return true;
                     }
-                    if(UserManager.ROLE_NONE.equals(role)) {
+                    if (UserManager.ROLE_NONE.equals(role)) {
                         return false;
                     }
                     if (user.isRole(role)) {
@@ -463,7 +483,7 @@ public class AccessManager extends RepositoryManager {
                 }
                 //If we had an access grant here (i.e., a non negated role)
                 //and the user did not fall under that role then block access
-                if(!hadInherit && stop && hadAccessGrant) {
+                if ( !hadInherit && stop && hadAccessGrant) {
                     return false;
                 }
             }
@@ -471,6 +491,7 @@ public class AccessManager extends RepositoryManager {
             entry = getEntryManager().getEntry(request,
                     entry.getParentEntryId(), false);
         }
+
         return false;
     }
 
@@ -492,6 +513,7 @@ public class AccessManager extends RepositoryManager {
     public List getRoles(Entry entry, String action) throws Exception {
         //Make sure we call getPermissions first which forces the instantation of the roles
         getPermissions(entry);
+
         return entry.getRoles(action);
     }
 
@@ -512,6 +534,7 @@ public class AccessManager extends RepositoryManager {
         if ((request != null) && request.isSpider()) {
             return false;
         }
+
         return canDoAction(request, entry, Permission.ACTION_FILE, false);
     }
 
@@ -569,6 +592,7 @@ public class AccessManager extends RepositoryManager {
                                Resource.TYPE_FILE)) {
             if ( !entry.getResource().getTheFile().exists()) {
                 getEntryManager().entryFileIsMissing(entry);
+
                 //                System.err.println ("missing:" + entry.getResource());
                 return null;
             }
@@ -620,6 +644,7 @@ public class AccessManager extends RepositoryManager {
                 filtered.add(entry);
             }
         }
+
         return filtered;
     }
 
@@ -690,7 +715,7 @@ public class AccessManager extends RepositoryManager {
             return;
         }
         List<Permission> permissions = getPermissions(entry);
-        String entryUrl = HtmlUtils.href(request.url(URL_ACCESS_FORM,
+        String           entryUrl = HtmlUtils.href(request.url(URL_ACCESS_FORM,
                               ARG_ENTRYID, entry.getId()), entry.getName());
 
         Hashtable map = new Hashtable();
@@ -765,6 +790,7 @@ public class AccessManager extends RepositoryManager {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -812,6 +838,7 @@ public class AccessManager extends RepositoryManager {
             roles.add(role);
         }
         entry.setPermissions(permissions);
+
         return permissions;
     }
 
@@ -828,6 +855,7 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processAccessForm(Request request) throws Exception {
+
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntryManager().getEntry(request);
         //        sb.append(getEntryManager().makeEntryHeader(request, entry));
@@ -856,11 +884,10 @@ public class AccessManager extends RepositoryManager {
         List<Permission> permissions = getPermissions(entry);
         for (Permission permission : permissions) {
             List roles = permission.getRoles();
-            if(roles.contains(UserManager.ROLE_NONE)) {
-                map.put(permission.getAction()+".hasnone", "true");
+            if (roles.contains(UserManager.ROLE_NONE)) {
+                map.put(permission.getAction() + ".hasnone", "true");
             }
-            map.put(permission.getAction(),
-                    StringUtil.join("\n", roles));
+            map.put(permission.getAction(), StringUtil.join("\n", roles));
         }
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
 
@@ -872,8 +899,8 @@ public class AccessManager extends RepositoryManager {
         sb.append("<table>");
         sb.append("<tr valign=top>");
         sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action")),
-                                HtmlUtils.bold(msg("Role")) + " ("
-                                + msg("one per line") + ")"));
+                                 HtmlUtils.bold(msg("Role")) + " ("
+                                 + msg("one per line") + ")"));
         sb.append(HtmlUtils.cols(HtmlUtils.space(5)));
         sb.append("<td rowspan=6><b>" + msg("All Roles")
                   + "</b><i><br>user:&lt;userid&gt;<br>");
@@ -889,8 +916,9 @@ public class AccessManager extends RepositoryManager {
 
         sb.append("</tr>");
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
-            String roles = (String) map.get(Permission.ACTIONS[i]);
-            boolean hasNoneRole = map.get(Permission.ACTIONS[i]+".hasnone")!=null;
+            String  roles       = (String) map.get(Permission.ACTIONS[i]);
+            boolean hasNoneRole = map.get(Permission.ACTIONS[i] + ".hasnone")
+                                  != null;
             if (roles == null) {
                 roles = "";
             }
@@ -914,13 +942,13 @@ public class AccessManager extends RepositoryManager {
             String message = "";
             //If there isn't a none defined here and there are roles then
             //tell te user what's up
-            if(!hasNoneRole && roles.length()>0) {
+            if ( !hasNoneRole && (roles.length() > 0)) {
                 //                message=msg("No block defined");
             }
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
                     HtmlUtils.textArea(ARG_ROLES + "."
-                                      + Permission.ACTIONS[i], roles, 5,
-                                       20), message)));
+                                       + Permission.ACTIONS[i], roles, 5,
+                                           20), message)));
         }
         sb.append(HtmlUtils.formTableClose());
         //        sb.append("</td><td>&nbsp;&nbsp;&nbsp;</td><td>");
@@ -932,6 +960,7 @@ public class AccessManager extends RepositoryManager {
 
         return getEntryManager().makeEntryEditResult(request, entry,
                 msg("Edit Access"), sb);
+
 
     }
 

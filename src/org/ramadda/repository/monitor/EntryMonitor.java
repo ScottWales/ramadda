@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,9 +26,9 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -136,7 +137,7 @@ public class EntryMonitor implements Constants {
         }
         this.id  = repository.getGUID();
         fromDate = new Date();
-        toDate = new Date(fromDate.getTime()
+        toDate   = new Date(fromDate.getTime()
                           + (long) DateUtil.daysToMillis(7));
     }
 
@@ -159,6 +160,7 @@ public class EntryMonitor implements Constants {
                 return monitor;
             }
         }
+
         return null;
     }
 
@@ -179,6 +181,7 @@ public class EntryMonitor implements Constants {
             }
             sb.append(getSearchSummary(filters.get(i)));
         }
+
         return sb.toString();
     }
 
@@ -199,6 +202,7 @@ public class EntryMonitor implements Constants {
             }
             sb.append(actions.get(i).getSummary(this));
         }
+
         return sb.toString();
     }
 
@@ -247,8 +251,9 @@ public class EntryMonitor implements Constants {
 
         stateSB.append(HtmlUtils.formTable());
         stateSB.append(HtmlUtils.formEntry(getRepository().msgLabel("Name"),
-                                          HtmlUtils.input(ARG_MONITOR_NAME,
-                                              getName(), HtmlUtils.SIZE_70)));
+                                           HtmlUtils.input(ARG_MONITOR_NAME,
+                                               getName(),
+                                                   HtmlUtils.SIZE_70)));
         stateSB.append(
             HtmlUtils.formEntry(
                 getRepository().msgLabel("Enabled"),
@@ -280,7 +285,7 @@ public class EntryMonitor implements Constants {
         }
 
         sb.append(HtmlUtils.makeShowHideBlock("Settings", stateSB.toString(),
-                                             true));
+                true));
 
         if ((getLastError() != null) && (getLastError().length() > 0)) {
             StringBuffer errorSB = new StringBuffer();
@@ -292,17 +297,17 @@ public class EntryMonitor implements Constants {
                 HtmlUtils.makeShowHideBlock(
                     HtmlUtils.span(
                         getRepository().msg("Error"),
-                        HtmlUtils.cssClass("errorlabel")), errorSB.toString(),
-                            true));
+                        HtmlUtils.cssClass(
+                            "errorlabel")), errorSB.toString(), true));
         }
 
 
 
 
         sb.append(HtmlUtils.makeShowHideBlock("Search Criteria",
-                                             searchSB.toString(), false));
-        sb.append(HtmlUtils.makeShowHideBlock("Actions", actionsSB.toString(),
-                                             false));
+                searchSB.toString(), false));
+        sb.append(HtmlUtils.makeShowHideBlock("Actions",
+                actionsSB.toString(), false));
         sb.append(HtmlUtils.p());
 
     }
@@ -367,6 +372,7 @@ public class EntryMonitor implements Constants {
                     || (bbox[3] != Entry.NONGEO)) {
                 addFilter(new Filter(what, bbox, doNot));
             }
+
             return;
         }
 
@@ -388,8 +394,9 @@ public class EntryMonitor implements Constants {
             addFilter(new Filter(what, users, doNot));
         } else if (what.equals(ARG_ANCESTOR)) {
             String ancestorName = request.getString(ARG_ANCESTOR, "");
-            Entry entry = getRepository().getEntryManager().findGroupFromName(request,
-                              ancestorName, getUser(), false);
+            Entry  entry        =
+                getRepository().getEntryManager().findGroupFromName(request,
+                    ancestorName, getUser(), false);
             if (entry == null) {
                 addFilter(new Filter(what, "", doNot));
             } else {
@@ -414,12 +421,15 @@ public class EntryMonitor implements Constants {
         //TODO: We need to have a StringMatcher object
         if (s1.endsWith("%")) {
             s1 = s1.substring(0, s1.length() - 1);
+
             return s2.startsWith(s1);
         }
         if (s1.startsWith("%")) {
             s1 = s1.substring(1);
+
             return s2.endsWith(s1);
         }
+
         return s2.equals(s1);
     }
 
@@ -442,7 +452,7 @@ public class EntryMonitor implements Constants {
         boolean doNot  = ((filter == null)
                           ? false
                           : filter.getDoNot());
-        String notCbx = HtmlUtils.checkbox(what + "_not", "true", doNot)
+        String  notCbx = HtmlUtils.checkbox(what + "_not", "true", doNot)
                         + HtmlUtils.space(1) + getRepository().msg("Not");
 
         if (what.equals(ARG_FILESUFFIX)) {
@@ -457,8 +467,8 @@ public class EntryMonitor implements Constants {
                         " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_TEXT)) {
             sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Text"),
-                                         HtmlUtils.input(what,
-                                             ((filter == null)
+                                          HtmlUtils.input(what,
+                                              ((filter == null)
                     ? ""
                     : filter.getValue()
                         .toString()), " size=\"60\" ") + notCbx));
@@ -467,14 +477,14 @@ public class EntryMonitor implements Constants {
                                   ? (List) new ArrayList()
                                   : (List) filter.getValue());
             sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Users"),
-                                         HtmlUtils.input(what,
-                                             StringUtil.join(",", users),
-                                             " size=\"60\" ") + notCbx));
+                                          HtmlUtils.input(what,
+                                              StringUtil.join(",", users),
+                                                  " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_ANCESTOR)) {
-            String id = (String) ((filter == null)
-                                  ? ""
-                                  : filter.getValue());
-            Entry group =
+            String id    = (String) ((filter == null)
+                                     ? ""
+                                     : filter.getValue());
+            Entry  group =
                 (Entry) getRepository().getEntryManager().getEntry(null, id);
 
             String select = OutputHandler.getGroupSelect(getRequest(), what);
@@ -482,11 +492,11 @@ public class EntryMonitor implements Constants {
                 HtmlUtils.formEntry(
                     getRepository().msgLabel("Ancestor Folder"),
                     HtmlUtils.input(what, ((group == null)
-                                          ? ""
-                                          : group.getFullName()), HtmlUtils.id(
-                                          what) + HtmlUtils.attr(
-                                          HtmlUtils.ATTR_SIZE, "60")) + select
-                                              + notCbx));
+                                           ? ""
+                                           : group.getFullName()), HtmlUtils
+                                           .id(what) + HtmlUtils
+                                           .attr(HtmlUtils.ATTR_SIZE,
+                                               "60")) + select + notCbx));
 
 
         } else if (what.equals(ARG_AREA)) {
@@ -506,7 +516,7 @@ public class EntryMonitor implements Constants {
                     : Double.NaN);
 
             sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Area"),
-                                         latLonForm));
+                                          latLonForm));
         } else if (what.equals(ARG_TYPE)) {
             List<TypeHandler> typeHandlers =
                 getRepository().getTypeHandlers();
@@ -524,7 +534,7 @@ public class EntryMonitor implements Constants {
             String typeSelect = HtmlUtils.select(ARG_TYPE, tmp, types,
                                     " MULTIPLE SIZE=4 ");
             sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Type"),
-                                         typeSelect + notCbx));
+                                          typeSelect + notCbx));
         }
     }
 
@@ -546,6 +556,7 @@ public class EntryMonitor implements Constants {
             group = (Entry) getRepository().getEntryManager().getEntry(null,
                     (String) filter.getValue());
             filter.putProperty("ancestor", group);
+
             return group;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -592,6 +603,7 @@ public class EntryMonitor implements Constants {
                 value = HtmlUtils.quote(filter.getValue().toString());
             }
         }
+
         return HtmlUtils.italics(desc) + " " + (filter.getDoNot()
                 ? "!"
                 : "") + "= (" + value + ")";
@@ -702,6 +714,7 @@ public class EntryMonitor implements Constants {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -742,6 +755,7 @@ public class EntryMonitor implements Constants {
             }
         }
         entryMatched(entry);
+
         return true;
     }
 
@@ -776,6 +790,7 @@ public class EntryMonitor implements Constants {
                 for (String suffix : suffixes) {
                     if (IOUtil.hasSuffix(path, suffix)) {
                         ok = true;
+
                         break;
                     }
                 }
@@ -790,6 +805,7 @@ public class EntryMonitor implements Constants {
                 while (parent != null) {
                     if (ancestor.equals(parent)) {
                         ok = true;
+
                         break;
                     }
                     parent = parent.getParentEntry();
@@ -831,12 +847,14 @@ public class EntryMonitor implements Constants {
                 ok = true;
             } else {
                 System.err.println("unknown field:" + field);
+
                 return true;
             }
         }
         if (doNot) {
             return !ok;
         }
+
         return ok;
     }
 
@@ -853,6 +871,7 @@ public class EntryMonitor implements Constants {
         if (request == null) {
             request = new Request(repository, getUser());
         }
+
         return request;
     }
 
@@ -869,6 +888,7 @@ public class EntryMonitor implements Constants {
         if (group == null) {
             return false;
         }
+
         return getRepository().getAccessManager().canDoAction(getRequest(),
                 group, Permission.ACTION_NEW);
     }
@@ -886,6 +906,7 @@ public class EntryMonitor implements Constants {
         if (entry == null) {
             return false;
         }
+
         return getRepository().getAccessManager().canDoAction(getRequest(),
                 entry, Permission.ACTION_VIEW);
     }
@@ -966,6 +987,7 @@ public class EntryMonitor implements Constants {
                 user = repository.getUserManager().findUser(userId, true);
             }
         }
+
         return user;
     }
 
@@ -1114,6 +1136,7 @@ public class EntryMonitor implements Constants {
             return false;
         }
         EntryMonitor that = (EntryMonitor) o;
+
         return this.id.equals(that.id);
     }
 

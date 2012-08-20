@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -80,6 +81,7 @@ public class JettyServer extends RepositoryServlet implements Constants {
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
                 port = new Integer(args[i + 1]).intValue();
+
                 break;
             }
         }
@@ -88,14 +90,15 @@ public class JettyServer extends RepositoryServlet implements Constants {
         RepositoryServlet repositoryServlet = new RepositoryServlet(this,
                                                   args, port);
 
-        Server                   server   = new Server(port);
-        Repository repository             = repositoryServlet.getRepository();
+        Server     server     = new Server(port);
+        Repository repository = repositoryServlet.getRepository();
         repository.setShutdownEnabled(true);
 
         //        HandlerCollection        handlers = new HandlerCollection();
         //        ContextHandlerCollection contexts = new ContextHandlerCollection();
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        ServletContextHandler context =
+            new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         context.addServlet(new ServletHolder(repositoryServlet), "/*");
         server.setHandler(context);
@@ -157,6 +160,7 @@ public class JettyServer extends RepositoryServlet implements Constants {
 
         if (repository.getProperty(PROP_SSL_IGNORE, false)) {
             repository.getLogManager().logInfo("SSL: ssl.ignore is set.");
+
             return;
         }
         repository.getLogManager().logInfo("SSL: using keystore: "
@@ -183,8 +187,8 @@ public class JettyServer extends RepositoryServlet implements Constants {
         }
 
 
-        int sslPort = -1;
-        String ssls = repository.getPropertyValue(PROP_SSL_PORT,
+        int    sslPort = -1;
+        String ssls    = repository.getPropertyValue(PROP_SSL_PORT,
                           (String) null, false);
         if ((ssls != null) && (ssls.trim().length() > 0)) {
             sslPort = new Integer(ssls.trim());

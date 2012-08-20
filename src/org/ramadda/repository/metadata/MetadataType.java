@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,13 +24,13 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.ui.ImageUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -95,6 +96,8 @@ public class MetadataType extends MetadataTypeBase {
 
     /** _more_ */
     public static final String ATTR_FORUSER = "foruser";
+
+    /** _more_          */
     public static final String ATTR_ENTRYTYPE = "entrytype";
 
 
@@ -115,6 +118,7 @@ public class MetadataType extends MetadataTypeBase {
     public static final String ATTR_ = "";
 
 
+    /** _more_          */
     public static final String PROP_METADATA_LABEL = "metadata.label";
 
     /** _more_ */
@@ -147,6 +151,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     private boolean forUser = true;
 
+    /** _more_          */
     private String entryType = null;
 
     /**
@@ -161,10 +166,18 @@ public class MetadataType extends MetadataTypeBase {
         this.id = id;
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public boolean isForEntry(Entry entry) {
-        if(entryType!=null) {
+        if (entryType != null) {
             return entry.isType(entryType);
         }
+
         return getHandler().isForEntry(entry);
     }
 
@@ -195,6 +208,7 @@ public class MetadataType extends MetadataTypeBase {
             throws Exception {
         List<MetadataType> types = new ArrayList<MetadataType>();
         parse(root, manager, types);
+
         return types;
     }
 
@@ -222,6 +236,7 @@ public class MetadataType extends MetadataTypeBase {
             Element node = (Element) children.item(i);
             if (node.getTagName().equals(TAG_HANDLER)) {
                 parse(node, manager, types);
+
                 continue;
             }
 
@@ -240,6 +255,7 @@ public class MetadataType extends MetadataTypeBase {
                     manager.addTemplate(metadataType, templateType,
                                         XmlUtil.getChildText(node));
                 }
+
                 continue;
             }
             if ( !node.getTagName().equals(TAG_TYPE)) {
@@ -251,8 +267,7 @@ public class MetadataType extends MetadataTypeBase {
                           ATTR_CLASS,
                           "org.ramadda.repository.metadata.MetadataHandler"));
 
-            String          id           = XmlUtil.getAttribute(node,
-                                               ATTR_ID);
+            String          id           = XmlUtil.getAttribute(node, ATTR_ID);
             MetadataHandler handler      = manager.getHandler(c);
             MetadataType    metadataType = new MetadataType(id, handler);
             metadataType.init(node);
@@ -275,7 +290,8 @@ public class MetadataType extends MetadataTypeBase {
                 false));
 
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
-        entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,(String)null);
+        entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,
+                (String) null);
 
 
         setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,
@@ -413,27 +429,33 @@ public class MetadataType extends MetadataTypeBase {
         NodeList elements = XmlUtil.getElements(node);
 
         for (MetadataElement element : getChildren()) {
-            if (!element.getDataType().equals(element.DATATYPE_FILE)) {
+            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
-            String fileArg = null;
+            String  fileArg  = null;
             Element attrNode = XmlUtil.findElement(elements,
-                                                   Metadata.ATTR_INDEX, ""+ element.getIndex());
-            if(attrNode==null) {
-                fileArg = XmlUtil.getAttribute(node, "attr"+ element.getIndex(), (String)null);
-                if(fileArg == null) {
-                    System.err.println("Could not find attr node:" + XmlUtil.toString(node));
+                                   Metadata.ATTR_INDEX,
+                                   "" + element.getIndex());
+            if (attrNode == null) {
+                fileArg = XmlUtil.getAttribute(node,
+                        "attr" + element.getIndex(), (String) null);
+                if (fileArg == null) {
+                    System.err.println("Could not find attr node:"
+                                       + XmlUtil.toString(node));
+
                     continue;
                 }
             } else {
-                fileArg = XmlUtil.getAttribute(attrNode,
-                                               "fileid", (String)null);
+                fileArg = XmlUtil.getAttribute(attrNode, "fileid",
+                        (String) null);
             }
-            if(fileArg==null) {
-                System.err.println("Could not find fileid:" + XmlUtil.toString(attrNode));
+            if (fileArg == null) {
+                System.err.println("Could not find fileid:"
+                                   + XmlUtil.toString(attrNode));
+
                 continue;
             }
-            
+
             String fileName = null;
             if (internal) {
                 fileName = fileArg;
@@ -443,6 +465,7 @@ public class MetadataType extends MetadataTypeBase {
                     try {
                         //See if its a URL
                         URL testUrl = new URL(fileArg);
+
                         continue;
                     } catch (Exception ignore) {
                         handler.getRepository().getLogManager().logError(
@@ -454,11 +477,12 @@ public class MetadataType extends MetadataTypeBase {
                     }
                 }
                 File file = new File(tmpFile);
-                fileName = getStorageManager().copyToEntryDir(entry,
-                                                              file, metadata.getAttr(element.getIndex())).getName();
+                fileName = getStorageManager().copyToEntryDir(entry, file,
+                        metadata.getAttr(element.getIndex())).getName();
             }
             metadata.setAttr(element.getIndex(), fileName);
         }
+
         return true;
 
     }
@@ -492,6 +516,7 @@ public class MetadataType extends MetadataTypeBase {
                                oldMetadata, suffix);
             metadata.setAttr(element.getIndex(), value);
         }
+
         return metadata;
     }
 
@@ -537,6 +562,7 @@ public class MetadataType extends MetadataTypeBase {
             node = (Element) parent.getOwnerDocument().importNode(node, true);
             parent.appendChild(node);
         }
+
         return true;
     }
 
@@ -601,6 +627,7 @@ public class MetadataType extends MetadataTypeBase {
                         sb.append(HtmlUtils.space(1));
                     }
                 }
+
                 continue;
             }
             if ( !forLink) {
@@ -717,6 +744,7 @@ public class MetadataType extends MetadataTypeBase {
                                 getStorageManager().getFileInputStream(f),
                                 null, true), mimeType);
         result.setShouldDecorate(false);
+
         return result;
     }
 
@@ -760,6 +788,7 @@ public class MetadataType extends MetadataTypeBase {
         for (Object o : args) {
             if (o == null) {
                 System.err.println("NULL: " + args);
+
                 return null;
             }
         }
@@ -771,6 +800,7 @@ public class MetadataType extends MetadataTypeBase {
                         .URL_ENTRY_SEARCH), args);
         } catch (Exception exc) {
             System.err.println("ARGS:" + args);
+
             throw new RuntimeException(exc);
         }
     }
@@ -805,13 +835,22 @@ public class MetadataType extends MetadataTypeBase {
         if (template != null) {
             return template;
         }
+
         return getMetadataManager().getTemplate(id, type);
     }
 
 
 
-    public String getTypeLabel(Metadata metadata)
-            throws Exception {
+    /**
+     * _more_
+     *
+     * @param metadata _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getTypeLabel(Metadata metadata) throws Exception {
         String nameString = getName();
         for (MetadataElement element : getChildren()) {
             String value = metadata.getAttr(element.getIndex());
@@ -821,6 +860,7 @@ public class MetadataType extends MetadataTypeBase {
             nameString = nameString.replace("${attr" + element.getIndex()
                                             + "}", value);
         }
+
         return nameString;
     }
 
@@ -846,7 +886,7 @@ public class MetadataType extends MetadataTypeBase {
             content.append(handler.getSearchLink(request, metadata));
         }
 
-        String nameString =  getTypeLabel(metadata);
+        String nameString   = getTypeLabel(metadata);
         String lbl          = msgLabel(nameString);
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
         if (htmlTemplate != null) {
@@ -868,7 +908,7 @@ public class MetadataType extends MetadataTypeBase {
                 content.append(HtmlUtils.formTable());
             } else {
                 content.append(HtmlUtils.formTable());
-            //??                    "<table border=0 cellpadding=0 cellspacing=0>");
+                //??                    "<table border=0 cellpadding=0 cellspacing=0>");
             }
             for (MetadataElement element : children) {
                 MetadataElement.FormInfo formInfo =
@@ -892,6 +932,7 @@ public class MetadataType extends MetadataTypeBase {
                 return null;
             }
         }
+
         return new String[] { lbl, content.toString() };
     }
 
@@ -913,6 +954,7 @@ public class MetadataType extends MetadataTypeBase {
                 template = template.replace("${id}", id);
             }
         }
+
         return template;
     }
 
@@ -936,12 +978,12 @@ public class MetadataType extends MetadataTypeBase {
                             boolean forEdit)
             throws Exception {
 
-        String lbl = (String)request.getExtraProperty(PROP_METADATA_LABEL);
-        if(lbl==null) {
+        String lbl = (String) request.getExtraProperty(PROP_METADATA_LABEL);
+        if (lbl == null) {
             lbl = msgLabel(getName());
         }
         String submit = HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
-                                        + getName());
+                                         + getName());
         String       cancel = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
 
 
@@ -960,7 +1002,7 @@ public class MetadataType extends MetadataTypeBase {
                         2)));
             }
             String elementLbl = msgLabel(element.getLabel());
-            String widget =
+            String widget     =
                 element.getForm(request, entry, metadata, suffix,
                                 metadata.getAttr(element.getIndex()),
                                 forEdit);
@@ -976,10 +1018,12 @@ public class MetadataType extends MetadataTypeBase {
             }
         }
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Inherited"),
-                                     HtmlUtils.checkbox(ARG_METADATA_INHERITED
-                                         + suffix, "true",
-                                             metadata.getInherited())));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Inherited"),
+                HtmlUtils.checkbox(
+                    ARG_METADATA_INHERITED + suffix, "true",
+                    metadata.getInherited())));
 
 
 

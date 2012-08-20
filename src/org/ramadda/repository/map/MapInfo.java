@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,10 +26,10 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -200,6 +201,7 @@ public class MapInfo {
                 didone = true;
             }
         }
+
         return didone;
     }
 
@@ -212,12 +214,12 @@ public class MapInfo {
      * @return  the div tag
      */
     private String getMapDiv(String contents) {
-        StringBuffer result = new StringBuffer();
-        String readout =
+        StringBuffer result  = new StringBuffer();
+        String       readout =
             HtmlUtils.div("&nbsp;",
-                         HtmlUtils.id("ramadda-map-latlonreadout")
-                         + HtmlUtils.style("font-style:italic; width:" + width
-                                          + "px;"));
+                          HtmlUtils.id("ramadda-map-latlonreadout")
+                          + HtmlUtils.style("font-style:italic; width:"
+                                            + width + "px;"));
 
         result.append(
             HtmlUtils.div(
@@ -229,6 +231,7 @@ public class MapInfo {
         result.append("\n");
         result.append(readout);
         result.append("\n");
+
         return result.toString();
     }
 
@@ -247,6 +250,7 @@ public class MapInfo {
         result.append(getMapDiv(""));
         result.append(HtmlUtils.script(getJS().toString()));
         result.append("\n");
+
         return result.toString();
     }
 
@@ -266,6 +270,7 @@ public class MapInfo {
                 jsBuffer.append("theMap.initMap(" + forSelection + ");\n");
             }
         }
+
         return jsBuffer;
     }
 
@@ -310,8 +315,8 @@ public class MapInfo {
         }
 
         String       msg = HtmlUtils.italics(doRegion
-                                            ? msg("Shift-drag to select region")
-                                            : msg("Click to select point"));
+                                             ? msg("Shift-drag to select region")
+                                             : msg("Click to select point"));
 
         StringBuffer sb  = new StringBuffer();
         sb.append(msg);
@@ -321,8 +326,8 @@ public class MapInfo {
             widget = widget + HtmlUtils.br() + extraLeft;
         }
 
-        String rightSide = null;
-        String clearLink = getSelectorClearLink(msg("Clear"));
+        String rightSide  = null;
+        String clearLink  = getSelectorClearLink(msg("Clear"));
         String initParams = HtmlUtils.squote(arg) + "," + doRegion + ","
                             + (popup
                                ? "1"
@@ -345,6 +350,7 @@ public class MapInfo {
         }
 
         addJS(getVariableName() + ".setSelection(" + initParams + ");\n");
+
         return HtmlUtils.table(new Object[] { widget, rightSide }) + html
                + HtmlUtils.script(getJS().toString());
     }
@@ -358,7 +364,7 @@ public class MapInfo {
      */
     public String getSelectorClearLink(String msg) {
         return HtmlUtils.mouseClickHref(getVariableName()
-                                       + ".selectionClear();", msg);
+                                        + ".selectionClear();", msg);
     }
 
 
@@ -382,19 +388,19 @@ public class MapInfo {
 
         if (doRegion) {
             widget = HtmlUtils.makeLatLonBox(arg, nwse[2], nwse[0], nwse[3],
-                                            nwse[1]);
+                                             nwse[1]);
         } else {
             widget =
                 " " + msgLabel("Latitude") + " "
                 + HtmlUtils.input(arg + ".latitude", nwse[0],
-                                 HtmlUtils.SIZE_5 + " "
-                                 + HtmlUtils.id(arg + ".latitude")) + " "
-                                     + msgLabel("Longitude") + " "
-                                     + HtmlUtils.input(arg + ".longitude",
-                                         nwse[1],
-                                         HtmlUtils.SIZE_5 + " "
-                                         + HtmlUtils.id(arg
-                                             + ".longitude")) + " ";
+                                  HtmlUtils.SIZE_5 + " "
+                                  + HtmlUtils.id(arg + ".latitude")) + " "
+                                      + msgLabel("Longitude") + " "
+                                      + HtmlUtils.input(arg + ".longitude",
+                                          nwse[1],
+                                          HtmlUtils.SIZE_5 + " "
+                                          + HtmlUtils.id(arg
+                                              + ".longitude")) + " ";
 
         }
 
@@ -489,6 +495,7 @@ public class MapInfo {
             if (Double.isNaN(currentPoint[0])
                     || Double.isNaN(currentPoint[0])) {
                 lastGoodPoint = null;
+
                 continue;
             }
             if (lastGoodPoint != null) {
@@ -540,14 +547,19 @@ public class MapInfo {
      */
     public void addMarker(String id, double lat, double lon, String icon,
                           String info) {
-        getJS().append(mapVarName + ".addMarker(" + HtmlUtils.squote(id) + ","
-                       + llp(lat, lon) + "," + ((icon == null)
+        getJS().append(mapVarName + ".addMarker(" + HtmlUtils.squote(id)
+                       + "," + llp(lat, lon) + "," + ((icon == null)
                 ? "null"
                 : HtmlUtils.squote(icon)) + "," + HtmlUtils.squote(info)
-                                         + ");\n");
+                                          + ");\n");
     }
 
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     */
     public void addKmlUrl(String url) {
         //TODO:
         //This doesn't work now in the js
@@ -591,6 +603,7 @@ public class MapInfo {
     public void centerOn(Entry entry) {
         if (entry == null) {
             center();
+
             return;
         }
         if (entry.hasAreaDefined()) {
@@ -652,6 +665,7 @@ public class MapInfo {
         if (lon > 180) {
             lon = 180;
         }
+
         return "new OpenLayers.LonLat(" + lon + "," + lat + ")";
     }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,6 +24,7 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -30,7 +32,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -147,6 +148,7 @@ public class TextOutputHandler extends OutputHandler {
         for (int i = 0; i < codesuffixes.length; i++) {
             if (path.endsWith(codesuffixes[i])) {
                 links.add(makeLink(request, state.entry, OUTPUT_PRETTY));
+
                 return;
             }
         }
@@ -156,6 +158,7 @@ public class TextOutputHandler extends OutputHandler {
             if (path.endsWith(suffixes[i])) {
                 links.add(makeLink(request, state.entry, OUTPUT_TEXT));
                 links.add(makeLink(request, state.entry, OUTPUT_WORDCLOUD));
+
                 return;
             }
         }
@@ -222,6 +225,7 @@ public class TextOutputHandler extends OutputHandler {
                       + HtmlUtils.space(1) + line + "<br>");
         }
         sb.append("</pre>");
+
         return makeLinksResult(request, msg("Text"), sb, new State(entry));
     }
 
@@ -280,6 +284,7 @@ public class TextOutputHandler extends OutputHandler {
         Result result = makeLinksResult(request, msg("Word Cloud"), sb,
                                         new State(entry));
         result.putProperty(PROP_HTML_HEAD, head.toString());
+
         return result;
     }
 
@@ -330,6 +335,7 @@ public class TextOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.script("prettyPrint();"));
         Result result = makeLinksResult(request, msg("Pretty Print"), sb,
                                         new State(entry));
+
         return result;
     }
 

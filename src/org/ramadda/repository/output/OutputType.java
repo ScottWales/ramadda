@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,6 +24,7 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -30,7 +32,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -258,6 +259,7 @@ public class OutputType {
                 type |= TYPE_OTHER;
             }
         }
+
         return type;
     }
 
@@ -342,6 +344,7 @@ public class OutputType {
             return false;
         }
         OutputType that = (OutputType) other;
+
         return Misc.equals(id, that.id);
     }
 

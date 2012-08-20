@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,6 +26,7 @@ import org.ramadda.repository.*;
 
 
 import org.ramadda.repository.database.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import ucar.unidata.sql.Clause;
@@ -34,7 +36,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -124,6 +125,11 @@ public class SessionManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
     private void deleteAllSessions() throws Exception {
         sessionMap = new Hashtable<String, Session>();
     }
@@ -139,6 +145,7 @@ public class SessionManager extends RepositoryManager {
     public String putSessionExtra(Object value) {
         String id = "${" + getRepository().getGUID() + "}";
         putSessionExtra(id, value);
+
         return id;
     }
 
@@ -179,6 +186,7 @@ public class SessionManager extends RepositoryManager {
                 cullSessionsInner();
             } catch (Exception exc) {
                 logException("Culling sessions", exc);
+
                 return;
             }
             //Wake up every minute to see if we're shutdown
@@ -280,6 +288,7 @@ public class SessionManager extends RepositoryManager {
         if (session == null) {
             return dflt;
         }
+
         return session.getProperty(key);
     }
 
@@ -326,8 +335,9 @@ public class SessionManager extends RepositoryManager {
                 getDatabaseManager().closeAndReleaseConnection(stmt);
             }
         }
+
         //        if(session==null)
-            //            System.err.println ("No session found");
+        //            System.err.println ("No session found");
         return session;
     }
 
@@ -355,6 +365,7 @@ public class SessionManager extends RepositoryManager {
         if (session != null) {
             return session;
         }
+
         return new Session(sessionId, user, createDate, lastActiveDate);
     }
 
@@ -407,6 +418,7 @@ public class SessionManager extends RepositoryManager {
         while ((results = iter.getNext()) != null) {
             sessions.add(makeSession(results));
         }
+
         return sessions;
     }
 
@@ -433,6 +445,7 @@ public class SessionManager extends RepositoryManager {
                     session.setLastActivity(new Date());
                     user = getUserManager().getCurrentUser(session.getUser());
                     session.setUser(user);
+
                     break;
                 }
             }
@@ -566,6 +579,7 @@ public class SessionManager extends RepositoryManager {
             }
         }
         request.tmp.append("cookies:" + cookies + "<p>");
+
         return cookies;
     }
 
@@ -640,18 +654,23 @@ public class SessionManager extends RepositoryManager {
         sessionHtml.append(
             HtmlUtils.row(
                 HtmlUtils.cols(
-                    HtmlUtils.bold(msg("User")), HtmlUtils.bold(msg("Since")),
+                    HtmlUtils.bold(msg("User")),
+                    HtmlUtils.bold(msg("Since")),
                     HtmlUtils.bold(msg("Last Activity")))));
         for (Session session : sessions) {
             String url = request.url(getRepositoryBase().URL_USER_LIST,
                                      ARG_REMOVESESSIONID, session.getId());
-            sessionHtml.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,
-                    HtmlUtils.img(iconUrl(ICON_DELETE))) + " "
-                        + session.user.getLabel(), formatDate(request,
-                            session.createDate), formatDate(request,
-                                session.getLastActivity()))));
+            sessionHtml.append(
+                HtmlUtils.row(
+                    HtmlUtils.cols(
+                        HtmlUtils.href(
+                            url, HtmlUtils.img(iconUrl(ICON_DELETE))) + " "
+                                + session.user.getLabel(), formatDate(
+                                    request, session.createDate), formatDate(
+                                    request, session.getLastActivity()))));
         }
         sessionHtml.append(HtmlUtils.formTableClose());
+
         return sessionHtml;
     }
 
@@ -776,6 +795,7 @@ public class SessionManager extends RepositoryManager {
             if (user == null) {
                 return "";
             }
+
             return user.getId();
         }
 

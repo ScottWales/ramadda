@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,13 +24,13 @@ package org.ramadda.repository.harvester;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -130,8 +131,8 @@ public class DirectoryHarvester extends Harvester {
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
-                                     HtmlUtils.input(ARG_NAME, getName(),
-                                         HtmlUtils.SIZE_40)));
+                                      HtmlUtils.input(ARG_NAME, getName(),
+                                          HtmlUtils.SIZE_40)));
         sb.append(HtmlUtils
             .formEntry(msgLabel("Run"), HtmlUtils
                 .checkbox(ATTR_ACTIVEONSTART, "true", getActiveOnStart()) + HtmlUtils
@@ -149,18 +150,18 @@ public class DirectoryHarvester extends Harvester {
 
 
 
-        List<File> rootDirs = getRootDirs();
+        List<File>   rootDirs   = getRootDirs();
 
-        String extraLabel = "";
-        StringBuffer inputText = new StringBuffer();
-        for(File rootDir: rootDirs) {
+        String       extraLabel = "";
+        StringBuffer inputText  = new StringBuffer();
+        for (File rootDir : rootDirs) {
             String path = rootDir.toString();
             path = path.replace("\\", "/");
             inputText.append(path);
             inputText.append("\n");
-            if (!rootDir.exists()) {
+            if ( !rootDir.exists()) {
                 extraLabel = HtmlUtils.space(2)
-                    + HtmlUtils.bold("Directory does not exist");
+                             + HtmlUtils.bold("Directory does not exist");
             }
         }
 
@@ -168,8 +169,9 @@ public class DirectoryHarvester extends Harvester {
         sb.append(
             RepositoryManager.tableSubHeader("Walk the directory tree"));
         sb.append(HtmlUtils.formEntry(msgLabel("Under directory"),
-                                     HtmlUtils.input(ATTR_ROOTDIR, inputText,
-                                         HtmlUtils.SIZE_60) + extraLabel));
+                                      HtmlUtils.input(ATTR_ROOTDIR,
+                                          inputText,
+                                          HtmlUtils.SIZE_60) + extraLabel));
         sb.append(
             RepositoryManager.tableSubHeader("Create new folders under"));
 
@@ -192,7 +194,7 @@ public class DirectoryHarvester extends Harvester {
         if (baseGroup == null) {
             baseGroup = getEntryManager().getTopGroup();
         }
-        for(File rootDir: getRootDirs()) {
+        for (File rootDir : getRootDirs()) {
             walkTree(rootDir, baseGroup);
         }
     }
@@ -207,13 +209,13 @@ public class DirectoryHarvester extends Harvester {
      * @throws Exception _more_
      */
     protected void walkTree(File dir, Entry parentGroup) throws Exception {
-        String name = dir.getName();
-        File xmlFile = new File(IOUtil.joinDir(dir.getParentFile(),
+        String name    = dir.getName();
+        File   xmlFile = new File(IOUtil.joinDir(dir.getParentFile(),
                            "." + name + ".ramadda"));
         Entry fileInfoEntry = getEntryManager().getTemplateEntry(dir);
-        Entry group =
-            getEntryManager().findGroupFromName(getRequest(), parentGroup.getFullName()
-                + "/" + name, getUser(), false);
+        Entry group         = getEntryManager().findGroupFromName(getRequest(),
+                          parentGroup.getFullName() + "/" + name, getUser(),
+                          false);
         if (group == null) {
             group = getEntryManager().makeNewGroup(parentGroup, name,
                     getUser(), fileInfoEntry);

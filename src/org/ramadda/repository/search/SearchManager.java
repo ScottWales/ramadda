@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -19,8 +20,6 @@
 */
 
 package org.ramadda.repository.search;
-
-import org.ramadda.repository.util.ServerInfo;
 
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -58,6 +57,9 @@ import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+
+import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.OpenSearchUtil;
 
 
@@ -69,7 +71,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -254,11 +255,12 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      * @throws Exception _more_
      */
     private IndexWriter getLuceneWriter() throws Exception {
-        File indexFile = new File(getStorageManager().getIndexDir());
-        IndexWriter writer =
+        File        indexFile = new File(getStorageManager().getIndexDir());
+        IndexWriter writer    =
             new IndexWriter(FSDirectory.open(indexFile),
                             new StandardAnalyzer(Version.LUCENE_CURRENT),
                             IndexWriter.MaxFieldLength.LIMITED);
+
         return writer;
     }
 
@@ -401,7 +403,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         try {
 
             org.apache.tika.metadata.Metadata metadata =
-               new org.apache.tika.metadata.Metadata();
+                new org.apache.tika.metadata.Metadata();
             org.apache.tika.parser.AutoDetectParser parser =
                 new org.apache.tika.parser.AutoDetectParser();
             org.apache.tika.sax.BodyContentHandler handler =
@@ -409,10 +411,10 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             parser.parse(stream, handler, metadata);
             String contents = handler.toString();
             System.out.println("contents: " + contents);
-             if ((contents != null) && (contents.length() > 0)) {
-                 doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
-                                   Field.Index.ANALYZED));
-             }
+            if ((contents != null) && (contents.length() > 0)) {
+                doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
+                                  Field.Index.ANALYZED));
+            }
 
             /*
             String[] names = metadata.names();
@@ -450,6 +452,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 FSDirectory.open(
                     new File(getStorageManager().getIndexDir())), false);
         }
+
         return luceneReader;
     }
 
@@ -465,6 +468,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         if (luceneSearcher == null) {
             luceneSearcher = new IndexSearcher(getLuceneReader());
         }
+
         return luceneSearcher;
     }
 
@@ -481,7 +485,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     public void processLuceneSearch(Request request, List<Entry> groups,
                                     List<Entry> entries)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer     sb       = new StringBuffer();
         StandardAnalyzer analyzer =
             new StandardAnalyzer(Version.LUCENE_CURRENT);
         QueryParser qp = new MultiFieldQueryParser(Version.LUCENE_CURRENT,
@@ -632,6 +636,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                        new String[] { OpenSearchUtil.ATTR_TYPE,
                                       "application/atom+xml",
                                       OpenSearchUtil.ATTR_TEMPLATE, url });
+
         return new Result(XmlUtil.toString(root), OpenSearchUtil.MIMETYPE);
     }
 
@@ -663,6 +668,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             //            return getRepository().remoteSearchUrls;
             return remoteSearchUrls;
         }
+
         return searchUrls;
     }
 
@@ -715,8 +721,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             throws Exception {
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
-        sb.append(HtmlUtils.form(getSearchUrl(request),
-                                makeFormSubmitDialog(sb,msg("Searching...")) + " name=\"searchform\" "));
+        sb.append(
+            HtmlUtils.form(
+                getSearchUrl(request),
+                makeFormSubmitDialog(sb, msg("Searching..."))
+                + " name=\"searchform\" "));
 
         if (justText) {
             sb.append(HtmlUtils.hidden(ARG_SEARCH_TYPE, SEARCH_TYPE_TEXT));
@@ -725,7 +734,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         //Put in an empty submit button so when the user presses return 
         //it acts like a regular submit (not a submit to change the type)
         sb.append(HtmlUtils.submitImage(iconUrl(ICON_BLANK),
-                                       ARG_SEARCH_SUBMIT));
+                                        ARG_SEARCH_SUBMIT));
 
         String what = (String) request.getWhat(BLANK);
         if (what.length() == 0) {
@@ -765,10 +774,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                     + msg("Use regular expression");
                     }*/
             sb.append(HtmlUtils.span(msgLabel("Text"),
-                                    HtmlUtils.cssClass("formlabel")) + " "
-                                        + HtmlUtils.input(ARG_TEXT, value,
-                                            HtmlUtils.SIZE_50
-                                            + " autofocus ") + " " + extra + " " + buttons);
+                                     HtmlUtils.cssClass("formlabel")) + " "
+                                         + HtmlUtils.input(ARG_TEXT, value,
+                                             HtmlUtils.SIZE_50
+                                             + " autofocus ") + " " + extra
+                                                 + " " + buttons);
             /*            sb.append(
                 "<table width=\"100%\" border=\"0\"><tr><td width=\"60\">");
             typeHandler.addTextSearch(request, sb);
@@ -825,8 +835,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             outputForm.append(HtmlUtils.formEntry(msgLabel("Order By"),
                     orderBy));
             outputForm.append(HtmlUtils.formEntry(msgLabel("Output"),
-                    HtmlUtils.select(ARG_OUTPUT, getOutputHandlerSelectList(),
-                                    request.getString(ARG_OUTPUT, ""))));
+                    HtmlUtils.select(ARG_OUTPUT,
+                                     getOutputHandlerSelectList(),
+                                     request.getString(ARG_OUTPUT, ""))));
 
             outputForm.append(HtmlUtils.formTableClose());
 
@@ -845,11 +856,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             String       call;
 
             cbxId = ATTR_SERVER + (serverCnt++);
-            call = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                                 HtmlUtils.call("checkboxClicked",
-                                     HtmlUtils.comma("event",
-                                         HtmlUtils.squote(ATTR_SERVER),
-                                         HtmlUtils.squote(cbxId))));
+            call  = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+                                  HtmlUtils.call("checkboxClicked",
+                                      HtmlUtils.comma("event",
+                                          HtmlUtils.squote(ATTR_SERVER),
+                                          HtmlUtils.squote(cbxId))));
 
             serverSB.append(HtmlUtils.checkbox(ARG_DOFRAMES, "true",
                     request.get(ARG_DOFRAMES, false)));
@@ -861,11 +872,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             serverSB.append(HtmlUtils.br());
             for (ServerInfo server : servers) {
                 cbxId = ATTR_SERVER + (serverCnt++);
-                call = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
-                                     HtmlUtils.call("checkboxClicked",
-                                         HtmlUtils.comma("event",
-                                             HtmlUtils.squote(ATTR_SERVER),
-                                             HtmlUtils.squote(cbxId))));
+                call  = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+                                      HtmlUtils.call("checkboxClicked",
+                                          HtmlUtils.comma("event",
+                                              HtmlUtils.squote(ATTR_SERVER),
+                                                  HtmlUtils.squote(cbxId))));
                 serverSB.append(HtmlUtils.checkbox(ATTR_SERVER,
                         server.getId(), false, HtmlUtils.id(cbxId) + call));
                 serverSB.append(HtmlUtils.space(1));
@@ -913,6 +924,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 }
             }
         }
+
         return tfos;
     }
 
@@ -956,6 +968,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             }
             servers.add(server);
         }
+
         return servers;
     }
 
@@ -971,7 +984,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      * @throws Exception _more_
      */
     public Result processRemoteSearch(Request request) throws Exception {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb      = new StringBuffer();
         List<String> servers = (List<String>) request.get(ATTR_SERVER,
                                    new ArrayList());
         sb.append(HtmlUtils.p());
@@ -1023,6 +1036,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
         StringBuffer sb = new StringBuffer();
         getMetadataManager().addToBrowseSearchForm(request, sb);
+
         return makeResult(request, msg("Search Form"), sb);
     }
 
@@ -1045,6 +1059,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         headerSB.append(sb);
         sb = headerSB;
         Result result = new Result(title, sb);
+
         return addHeaderToAncillaryPage(request, result);
     }
 
@@ -1068,6 +1083,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         if (request.defined("submit_type.x")
                 || request.defined(ARG_SEARCH_SUBSET)) {
             request.remove(ARG_OUTPUT);
+
             return processEntrySearchForm(request);
         }
 
@@ -1151,6 +1167,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 }
                 request.remove(ARG_DECORATE);
                 request.remove(ARG_TARGET);
+
                 return new Result("Remote Search Results", sb);
             }
 
@@ -1160,6 +1177,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                 request).outputGroup(
                                 request, request.getOutput(), tmpGroup,
                                 groups, entries);
+
             return result;
 
         }
@@ -1182,10 +1200,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         //        if (s.length() > 0) {
         StringBuffer searchForm = new StringBuffer();
         request.remove(ARG_SEARCH_SUBMIT);
-        String url = request.getUrl(URL_SEARCH_FORM);
-        String searchLink = HtmlUtils.href(url,
-                                          HtmlUtils.img(iconUrl(ICON_SEARCH),
-                                              "Search Again"));
+        String url        = request.getUrl(URL_SEARCH_FORM);
+        String searchLink =
+            HtmlUtils.href(url,
+                           HtmlUtils.img(iconUrl(ICON_SEARCH),
+                                         "Search Again"));
         //            searchForm.append(searchLink);
         if (s.length() > 0) {
             searchForm.append(msg("Search Criteria") + "<br><table>" + s
@@ -1231,6 +1250,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         if (theGroup.isDummy()) {
             return addHeaderToAncillaryPage(request, result);
         }
+
         return getEntryManager().addEntryHeader(request, theGroup, result);
     }
 
@@ -1362,6 +1382,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             //Wait at most 10 seconds
             if ((t2 - t1) > 20000) {
                 logInfo("Remote search waited too long");
+
                 break;
             }
         }
@@ -1390,8 +1411,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         List        links       = new ArrayList();
         String      extra1      = " class=subnavnolink ";
         String      extra2      = " class=subnavlink ";
-        String[]    whats       = { WHAT_ENTRIES, WHAT_TAG,
-                                    WHAT_ASSOCIATION };
+        String[]    whats       = { WHAT_ENTRIES, WHAT_TAG, WHAT_ASSOCIATION };
         String[]    names       = { "Entries", "Tags", "Associations" };
 
         String      formType    = request.getString(ARG_FORM_TYPE, "basic");
@@ -1425,9 +1445,16 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         return links;
     }
 
-    public static void main(String[]args) throws Exception {
-        for(String f: args) {
-            InputStream stream = new FileInputStream(f);
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        for (String f : args) {
+            InputStream                       stream = new FileInputStream(f);
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
             org.apache.tika.parser.AutoDetectParser parser =

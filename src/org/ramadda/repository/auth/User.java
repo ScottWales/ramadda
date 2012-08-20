@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -202,6 +203,7 @@ public class User {
         if (properties != null) {
             return Repository.encodeObject(properties);
         }
+
         return null;
     }
 
@@ -256,6 +258,7 @@ public class User {
             return false;
         }
         User that = (User) o;
+
         return Misc.equals(this.id, that.id);
     }
 
@@ -288,6 +291,7 @@ public class User {
         if (name.trim().length() == 0) {
             return id;
         }
+
         return name;
 
     }
@@ -351,6 +355,7 @@ public class User {
         if (Misc.equals(UserManager.USER_ANONYMOUS, id)) {
             return true;
         }
+
         return anonymous;
     }
 
@@ -547,6 +552,7 @@ public class User {
         if (roles == null) {
             return false;
         }
+
         return roles.contains(role);
     }
 
@@ -561,6 +567,7 @@ public class User {
         if (roles == null) {
             return "";
         }
+
         return StringUtil.join(delimiter, roles);
     }
 
@@ -601,6 +608,7 @@ public class User {
         if (template == null) {
             return "";
         }
+
         return template;
     }
 
@@ -614,6 +622,11 @@ public class User {
         //        return !(getAnonymous() || getIsGuest());
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean canEditFavorites() {
         return !(getAnonymous() || getIsGuest());
     }
@@ -628,6 +641,11 @@ public class User {
         return getIsLocal() && canEditSettings() && getCanChangePassword();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean canChangeNameAndEmail() {
         return getIsLocal() && canEditSettings();
     }
@@ -706,6 +724,7 @@ public class User {
         if ((v == null) || Misc.equals(v, "true")) {
             return true;
         }
+
         return false;
     }
 

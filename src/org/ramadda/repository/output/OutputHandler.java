@@ -400,7 +400,7 @@ public class OutputHandler extends RepositoryManager {
         /** for unknown flag */
         public static final int FOR_UNKNOWN = 0;
 
-        /** for header flag  */
+        /** for header flag */
         public static final int FOR_HEADER = 1;
 
         /** for what parameter */

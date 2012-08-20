@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,6 +26,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -32,7 +34,6 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -93,8 +94,7 @@ public class HtmlOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_TABLE =
         new OutputType("Tabular Layout", "html.table",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, 
-                       "",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_TABLE);
 
     /** _more_ */
@@ -180,6 +180,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (entry.isDummy() || !entry.isGroup()) {
             return "";
         }
+
         return makeHtmlHeader(request, entry, "Layout");
     }
 
@@ -194,12 +195,14 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
-        OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE, OUTPUT_GRID,
-                                                CalendarOutputHandler.OUTPUT_TIMELINE, CalendarOutputHandler.OUTPUT_CALENDAR };
+        OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE,
+                OUTPUT_GRID, CalendarOutputHandler.OUTPUT_TIMELINE,
+                CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
-            new StringBuffer("<table border=0 cellspacing=0 cellpadding=0><tr>");
+            new StringBuffer(
+                "<table border=0 cellspacing=0 cellpadding=0><tr>");
         String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
-        if(title.length()>0) {
+        if (title.length() > 0) {
             sb.append("<td align=center>" + msgLabel(title) + "</td>");
         }
         for (OutputType output : types) {
@@ -221,6 +224,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append("</td>");
         }
         sb.append("</table>");
+
         return "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td align=right>"
                + sb.toString() + "</td></tr></table>";
     }
@@ -261,7 +265,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result getMapInfo(Request request, Entry entry) throws Exception {
-        String html = null;
+        String html       = null;
         Result typeResult = entry.getTypeHandler().getHtmlDisplay(request,
                                 entry);
         if (typeResult != null) {
@@ -287,6 +291,7 @@ public class HtmlOutputHandler extends OutputHandler {
         xml.append("\n<content>\n");
         XmlUtil.appendCdata(xml, html);
         xml.append("\n</content>");
+
         return new Result("", xml, "text/xml");
     }
 
@@ -328,6 +333,7 @@ public class HtmlOutputHandler extends OutputHandler {
         XmlUtil.appendCdata(xml,
                             getRepository().translate(request, contents));
         xml.append("\n</content>");
+
         //        System.err.println(xml);
         return new Result("", xml, "text/xml");
 
@@ -349,14 +355,15 @@ public class HtmlOutputHandler extends OutputHandler {
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
         StringBuffer inner = new StringBuffer();
-        String cLink =
+        String       cLink =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hidePopupObject();"),
-                            HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
+                             HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
         inner.append(cLink);
         inner.append(HtmlUtils.br());
         inner.append(links);
         XmlUtil.appendCdata(sb, inner.toString());
         sb.append("\n</content>");
+
         return new Result("", sb, "text/xml");
     }
 
@@ -396,6 +403,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 XmlUtil.appendCdata(xml,
                                     "<div class=inline>" + inline + "</div>");
                 xml.append("\n</content>");
+
                 return new Result("", xml, "text/xml");
             }
             String wikiTemplate = getWikiText(request, entry);
@@ -407,8 +415,10 @@ public class HtmlOutputHandler extends OutputHandler {
                 XmlUtil.appendCdata(xml,
                                     "<div class=inline>" + wiki + "</div>");
                 xml.append("\n</content>");
+
                 return new Result("", xml, "text/xml");
             }
+
             return getMetadataXml(request, entry);
         }
 
@@ -436,12 +446,24 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param outputType _more_
+     * @param entry _more_
+     * @param checkType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result getHtmlResult(Request request, OutputType outputType,
                                 Entry entry, boolean checkType)
             throws Exception {
 
         TypeHandler typeHandler = entry.getTypeHandler();
-        if(checkType) {
+        if (checkType) {
             Result typeResult = typeHandler.getHtmlDisplay(request, entry);
             if (typeResult != null) {
                 return typeResult;
@@ -462,6 +484,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(informationBlock);
             //            sb.append(getAttachmentsHtml(request, entry));
         }
+
         return makeLinksResult(request, msg("Entry"), sb, new State(entry));
     }
 
@@ -486,6 +509,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     "<div class=\"description\">" + metadataSB + "</div>",
                     false);
         }
+
         return "";
     }
 
@@ -516,7 +540,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_GRID)||output.equals(OUTPUT_TABLE)) {
+        if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_TABLE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
@@ -553,8 +577,8 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        Hashtable    catMap = new Hashtable();
-        List<String> cats   = new ArrayList<String>();
+        Hashtable             catMap           = new Hashtable();
+        List<String>          cats             = new ArrayList<String>();
         List<MetadataHandler> metadataHandlers =
             getMetadataManager().getMetadataHandlers();
 
@@ -582,8 +606,7 @@ public class HtmlOutputHandler extends OutputHandler {
             boolean  firstOne = false;
             if (blob == null) {
                 firstOne = true;
-                blob     = new Object[] { new StringBuffer(),
-                                          new Integer(1) };
+                blob     = new Object[] { new StringBuffer(), new Integer(1) };
                 catMap.put(cat, blob);
                 cats.add(cat);
             }
@@ -624,7 +647,8 @@ public class HtmlOutputHandler extends OutputHandler {
                     + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
                     + html[0] + "</nobr></td><td>"
                 //                    + HtmlUtils.makeToggleInline("", html[1], false)
-                + HtmlUtils.makeToggleInline("", html[1], true) + "</td></tr>";
+                + HtmlUtils.makeToggleInline("", html[1],
+                                             true) + "</td></tr>";
                 sb.append(row);
             } else {
                 String row =
@@ -674,6 +698,7 @@ public class HtmlOutputHandler extends OutputHandler {
                             getRepository().translate(request,
                                 sb.toString()));
         xml.append("\n</content>");
+
         return new Result("", xml, "text/xml");
     }
 
@@ -767,6 +792,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                 jsSB.toString()));
         xml.append("</javascript>");
         xml.append("\n</response>");
+
         return new Result("", xml, "text/xml");
     }
 
@@ -859,6 +885,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(getSelectLink(request, entry, target));
             }
         }
+
         return makeAjaxResult(request,
                               getRepository().translate(request,
                                   sb.toString()));
@@ -935,7 +962,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         StringBuffer comments = getCommentBlock(request, entry, true);
-        if(comments.length()>0) {
+        if (comments.length() > 0) {
             tabTitles.add(msg("Comments"));
             //        System.out.println (comments);
             tabContents.add(comments);
@@ -949,7 +976,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         StringBuffer associationBlock =
             getAssociationManager().getAssociationBlock(request, entry);
-        if(associationBlock.length()>0) {
+        if (associationBlock.length() > 0) {
             if (request.get(ARG_SHOW_ASSOCIATIONS, false)) {
                 tabTitles.add(0, msg("Links"));
                 tabContents.add(0, associationBlock);
@@ -964,7 +991,7 @@ public class HtmlOutputHandler extends OutputHandler {
         //        tabContents.add(getEntryManager().getEntryActionsTable(request, entry,
         //                OutputType.TYPE_ALL));
 
-        if(tabContents.size()==1) {
+        if (tabContents.size() == 1) {
             return tabContents.get(0).toString();
         }
 
@@ -998,19 +1025,33 @@ public class HtmlOutputHandler extends OutputHandler {
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
         makeGrid(request, allEntries, sb);
+
         return makeLinksResult(request, msg("Grid"), sb,
                                new State(group, subGroups, entries));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputTable(Request request, Entry group,
-                             List<Entry> subGroups, List<Entry> entries)
+                              List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
         List<Entry>  allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
         makeTable(request, allEntries, sb);
+
         return makeLinksResult(request, msg("Table"), sb,
                                new State(group, subGroups, entries));
     }
@@ -1098,32 +1139,43 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param allEntries _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public void makeTable(Request request, List<Entry> allEntries,
-                         StringBuffer sb)
+                          StringBuffer sb)
             throws Exception {
-        Hashtable<String,List<Entry>> map = new Hashtable<String,List<Entry>>();
+
+        Hashtable<String, List<Entry>> map = new Hashtable<String,
+                                                 List<Entry>>();
         List<String> types = new ArrayList<String>();
         for (Entry entry : allEntries) {
-            TypeHandler typeHandler = entry.getTypeHandler();
-            String type = typeHandler.getType();
-            List<Column> columns = typeHandler.getColumns();
-            boolean hasFields = false;
-            if(columns!=null) {
-                for(Column column: columns) {
-                    if(column.getCanList() && column.getCanShow()) {
-                        hasFields=true;
+            TypeHandler  typeHandler = entry.getTypeHandler();
+            String       type        = typeHandler.getType();
+            List<Column> columns     = typeHandler.getColumns();
+            boolean      hasFields   = false;
+            if (columns != null) {
+                for (Column column : columns) {
+                    if (column.getCanList() && column.getCanShow()) {
+                        hasFields = true;
                     }
                 }
             }
-            if(!hasFields) {
-                if(typeHandler.isGroup()) {
+            if ( !hasFields) {
+                if (typeHandler.isGroup()) {
                     type = "Folders";
-                } else if(entry.isFile()) {
+                } else if (entry.isFile()) {
                     type = "Files";
                 }
             }
             List<Entry> entries = map.get(type);
-            if(entries==null) {
+            if (entries == null) {
                 entries = new ArrayList<Entry>();
                 map.put(type, entries);
                 types.add(type);
@@ -1132,14 +1184,16 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         int typeCnt = 0;
-        for(String type: types) {
+        for (String type : types) {
             typeCnt++;
-            int numCols = 0;
-            List<Entry> entries = map.get(type);
-            TypeHandler typeHandler = entries.get(0).getTypeHandler();
-            String typeLabel = type.equals("File")?"File":typeHandler.getLabel();
-            List<Column> columns = typeHandler.getColumns();
-            StringBuffer tableSB = new StringBuffer();
+            int          numCols     = 0;
+            List<Entry>  entries     = map.get(type);
+            TypeHandler  typeHandler = entries.get(0).getTypeHandler();
+            String       typeLabel   = type.equals("File")
+                                       ? "File"
+                                       : typeHandler.getLabel();
+            List<Column> columns     = typeHandler.getColumns();
+            StringBuffer tableSB     = new StringBuffer();
             tableSB.append("<div class=\"ramadda-entry-table\">");
             tableSB.append("<table width=100% cellspacing=2 cellpadding=2>");
             tableSB.append("<tr>");
@@ -1152,81 +1206,105 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
             boolean isFile = false;
-            for(Entry entry: entries) {
-                if(entry.isFile()) {
+            for (Entry entry : entries) {
+                if (entry.isFile()) {
                     isFile = true;
+
                     break;
                 }
             }
-            if(isFile) {
+            if (isFile) {
                 numCols++;
                 tableSB.append(HtmlUtils.col(""));
                 numCols++;
-                tableSB.append(HtmlUtils.col(HtmlUtils.b(msg("Size"))," align=right "));
+                tableSB.append(HtmlUtils.col(HtmlUtils.b(msg("Size")),
+                                             " align=right "));
             }
             //            tableSB.append(HtmlUtils.col("&nbsp;"));
-            if(columns!=null) {
-                for(Column column: columns) {
-                    if(column.getCanList() && column.getCanShow()) {
+            if (columns != null) {
+                for (Column column : columns) {
+                    if (column.getCanList() && column.getCanShow()) {
                         numCols++;
-                        tableSB.append(HtmlUtils.col(HtmlUtils.b(column.getLabel())));
+                        tableSB.append(
+                            HtmlUtils.col(HtmlUtils.b(column.getLabel())));
                     }
                 }
             }
             tableSB.append("</tr>");
 
-            String blank  = HtmlUtils.img(getRepository().iconUrl(ICON_BLANK));
-            for(Entry entry: entries) {
-                tableSB.append("<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
-                tableSB.append(HtmlUtils.col(getEntryManager().getAjaxLink(request,entry,entry.getLabel()).toString()," nowrap "));
-                tableSB.append(HtmlUtils.col(getRepository().formatDateShort(request,
-                                                               new Date(entry.getStartDate()),
-                                                                            getEntryManager().getTimezone(entry), "")," width=10% align=right "));
+            String blank = HtmlUtils.img(getRepository().iconUrl(ICON_BLANK));
+            for (Entry entry : entries) {
+                tableSB.append(
+                    "<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
+                tableSB.append(
+                    HtmlUtils.col(
+                        getEntryManager().getAjaxLink(
+                            request, entry,
+                            entry.getLabel()).toString(), " nowrap "));
+                tableSB.append(
+                    HtmlUtils.col(
+                        getRepository().formatDateShort(
+                            request, new Date(entry.getStartDate()),
+                            getEntryManager().getTimezone(entry),
+                            ""), " width=10% align=right "));
 
-                if(entry.isFile()) {
-                    tableSB.append(HtmlUtils.col(HtmlUtils.href(entry.getTypeHandler().getEntryResourceUrl(request,
-                                                                                       entry), HtmlUtils.img(iconUrl(ICON_DOWNLOAD),
-                                                                                                            msg("Download"), ""))," width=2% "));
+                if (entry.isFile()) {
+                    tableSB.append(
+                        HtmlUtils.col(
+                            HtmlUtils.href(
+                                entry.getTypeHandler().getEntryResourceUrl(
+                                    request, entry), HtmlUtils.img(
+                                    iconUrl(ICON_DOWNLOAD), msg("Download"),
+                                    "")), " width=2% "));
                 } else {
                     tableSB.append(HtmlUtils.col(""));
                 }
 
-                if(isFile) {
-                    if(entry.isFile()) {
-                        tableSB.append(HtmlUtils.col(formatFileLength(entry.getResource().getFileSize()), " align=right nowrap "));
+                if (isFile) {
+                    if (entry.isFile()) {
+                        tableSB.append(HtmlUtils
+                            .col(formatFileLength(entry.getResource()
+                                .getFileSize()), " align=right nowrap "));
                     } else {
-                        tableSB.append(HtmlUtils.col("NA"," align=right nowrap "));
+                        tableSB.append(HtmlUtils.col("NA",
+                                " align=right nowrap "));
                     }
 
                 }
-                Object[]values = entry.getValues();
+                Object[] values = entry.getValues();
 
-                if(columns!=null) {
-                    for(Column column: columns) {
-                        if(column.getCanList() && column.getCanShow()) {
+                if (columns != null) {
+                    for (Column column : columns) {
+                        if (column.getCanList() && column.getCanShow()) {
                             String s = column.getString(values);
-                            if(s==null) s = "NA";
+                            if (s == null) {
+                                s = "NA";
+                            }
                             tableSB.append(HtmlUtils.col(s));
                         }
                     }
                 }
                 tableSB.append("</tr>");
-                tableSB.append("<tr><td colspan=" + numCols +" style=\"border-bottom:1px #eee solid;\" >"  + blank +"</td></tr>");
+                tableSB.append("<tr><td colspan=" + numCols
+                               + " style=\"border-bottom:1px #eee solid;\" >"
+                               + blank + "</td></tr>");
             }
             tableSB.append("</table>");
 
-            if(typeCnt>1) {
+            if (typeCnt > 1) {
                 sb.append("<p>");
-            } 
+            }
 
             tableSB.append("</div>");
-            if(types.size()>1) {
-                sb.append(HtmlUtils.makeShowHideBlock(typeLabel, HtmlUtils.insetLeft(tableSB.toString(),10), true));
+            if (types.size() > 1) {
+                sb.append(HtmlUtils.makeShowHideBlock(typeLabel,
+                        HtmlUtils.insetLeft(tableSB.toString(), 10), true));
             } else {
                 sb.append(tableSB.toString());
             }
 
         }
+
     }
 
 
@@ -1249,8 +1327,8 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
 
 
-        boolean isSearchResults = group.isDummy();
-        TypeHandler typeHandler =
+        boolean     isSearchResults = group.isDummy();
+        TypeHandler typeHandler     =
             getRepository().getTypeHandler(group.getType());
 
         if (outputType.equals(OUTPUT_INLINE)) {
@@ -1299,11 +1377,11 @@ public class HtmlOutputHandler extends OutputHandler {
         //            return typeResult;
         //        }
 
-        
-        boolean doSimpleListing  = !request.exists(ARG_OUTPUT);
+
+        boolean doSimpleListing = !request.exists(ARG_OUTPUT);
 
         //If no children then show the details of this group
-        if(subGroups.size() == 0 && entries.size() ==0) {
+        if ((subGroups.size() == 0) && (entries.size() == 0)) {
             doSimpleListing = false;
         }
 
@@ -1343,7 +1421,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     getRepository().showDialogNote(msg("No entries found")));
             }
         }
-        
+
 
 
         String wikiTemplate = null;
@@ -1361,14 +1439,15 @@ public class HtmlOutputHandler extends OutputHandler {
             //            sb.append(getHtmlHeader(request,  group));
             addDescription(request, group, sb, !hasChildren);
             //If its the default view of an entry then just show the children listing
-            if(!doSimpleListing) {
+            if ( !doSimpleListing) {
                 String informationBlock = getInformationTabs(request, group,
-                                                             false, false);
+                                              false, false);
 
-                if(hasChildren) {
-                  sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
-                                                     informationBlock,
-                                                     request.get(ARG_SHOW_ASSOCIATIONS, !hasChildren)));
+                if (hasChildren) {
+                    sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
+                            informationBlock,
+                            request.get(ARG_SHOW_ASSOCIATIONS,
+                                        !hasChildren)));
                 } else {
                     sb.append(informationBlock);
                 }
@@ -1399,12 +1478,15 @@ public class HtmlOutputHandler extends OutputHandler {
                                              allEntries, true, false, true,
                                              group.isDummy(),
                                              group.isDummy());
-                if(!doSimpleListing) {
-                    sb.append(HtmlUtils.makeShowHideBlock(msg("Entries") + link,
-                                                         groupsSB.toString(), true));
+                if ( !doSimpleListing) {
+                    sb.append(HtmlUtils.makeShowHideBlock(msg("Entries")
+                            + link, groupsSB.toString(), true));
                 } else {
                     sb.append(HtmlUtils.br());
-                    sb.append(HtmlUtils.span(msg("Entries"), HtmlUtils.cssClass("toggleblocklabel")) + link);
+                    sb.append(
+                        HtmlUtils.span(
+                            msg("Entries"),
+                            HtmlUtils.cssClass("toggleblocklabel")) + link);
                     sb.append(HtmlUtils.br());
                     sb.append(groupsSB.toString());
 
@@ -1479,6 +1561,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (wikiTemplate != null) {
             return wikiTemplate;
         }
+
         return null;
     }
 
@@ -1521,6 +1604,7 @@ public class HtmlOutputHandler extends OutputHandler {
             request.url(
                 getRepository().URL_ENTRY_GETENTRIES, ARG_ENTRYIDS, "%ids%",
                 ARG_OUTPUT, OUTPUT_HTML));
+
         return tmp;
 
     }

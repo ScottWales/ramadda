@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,13 +25,13 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -132,8 +133,8 @@ public class CalendarOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
         new OutputType("Timeline", "default.timeline",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, 
-                       "", ICON_TIMELINE);
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       ICON_TIMELINE);
 
 
     /**
@@ -173,10 +174,12 @@ public class CalendarOutputHandler extends OutputHandler {
         }
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_CALENDAR));
-            if(state.getAllEntries().size() > 1) {
-                links.add(makeLink(request, state.getEntry(), OUTPUT_TIMELINE));
-                links.add(makeLink(request, state.getEntry(), OUTPUT_DATE_GRID));
-            }            
+            if (state.getAllEntries().size() > 1) {
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_TIMELINE));
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_DATE_GRID));
+            }
         }
     }
 
@@ -203,6 +206,7 @@ public class CalendarOutputHandler extends OutputHandler {
             List<Entry> allEntries = new ArrayList<Entry>();
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
+
             return outputTimelineXml(request, group, allEntries);
         }
 
@@ -220,13 +224,14 @@ public class CalendarOutputHandler extends OutputHandler {
             allEntries.addAll(subGroups);
             makeTimeline(request, allEntries, sb, "height: 300px;");
             result = makeLinksResult(request, msg("Timeline"), sb,
-                                     new State(group, subGroups,
-                                               entries));
+                                     new State(group, subGroups, entries));
+
             return result;
         } else {
             result = outputCalendar(request, group, entries, sb);
         }
         addLinks(request, result, new State(group, subGroups, entries));
+
         return result;
     }
 
@@ -251,7 +256,7 @@ public class CalendarOutputHandler extends OutputHandler {
 
 
         for (Entry entry : allEntries) {
-            String icon = getEntryManager().getIconUrl(request, entry);
+            String       icon  = getEntryManager().getIconUrl(request, entry);
             StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE,
                                      " " + entry.getName(), ATTR_ICON, icon));
 
@@ -281,6 +286,7 @@ public class CalendarOutputHandler extends OutputHandler {
         }
 
         sb.append(XmlUtil.closeTag(TAG_DATA));
+
         //        System.err.println(sb);
         return new Result("", sb, "text/xml");
     }
@@ -298,7 +304,7 @@ public class CalendarOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makeTimeline(Request request, List<Entry> entries,
-                               StringBuffer sb, String style)
+                             StringBuffer sb, String style)
             throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         long             minDate = 0;
@@ -332,10 +338,10 @@ public class CalendarOutputHandler extends OutputHandler {
             getRepository().getResource(
                 "/org/ramadda/repository/resources/timeline.html");
         String url = request.getUrl();
-        url = url + "&timelinexml=true";
+        url            = url + "&timelinexml=true";
         timelineApplet = timelineApplet.replace("${timelineurl}", url);
         timelineApplet = timelineApplet.replace("${basedate}",
-                                                sdf.format(new Date(minDate)));
+                sdf.format(new Date(minDate)));
         timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
         timelineApplet = timelineApplet.replace("${style}", style);
         System.out.println(timelineApplet);
@@ -385,15 +391,15 @@ public class CalendarOutputHandler extends OutputHandler {
                 types.add(entry.getTypeHandler());
                 typeMap.put(type, type);
                 header.append(
-                    "<td>" + HtmlUtils.bold(entry.getTypeHandler().getLabel())
+                    "<td>"
+                    + HtmlUtils.bold(entry.getTypeHandler().getLabel())
                     + "</td>");
             }
             if (dayMap.get(day) == null) {
                 days.add(new Date(entry.getStartDate()));
                 dayMap.put(day, day);
             }
-            String       time =
-                timeSdf.format(new Date(entry.getStartDate()));
+            String       time = timeSdf.format(new Date(entry.getStartDate()));
             String       key   = type + "_" + day;
             StringBuffer colSB = (StringBuffer) contents.get(key);
             if (colSB == null) {
@@ -436,6 +442,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append("</tr>");
         }
         sb.append("</table>");
+
         return new Result(msg("Date Grid"), sb);
 
     }
@@ -467,6 +474,7 @@ public class CalendarOutputHandler extends OutputHandler {
         cal.set(cal.DAY_OF_MONTH, day);
         cal.set(cal.MONTH, month);
         cal.set(cal.YEAR, year);
+
         return cal;
     }
 
@@ -494,6 +502,7 @@ public class CalendarOutputHandler extends OutputHandler {
     private GregorianCalendar add(GregorianCalendar cal, int what,
                                   int delta) {
         cal.add(what, delta);
+
         return cal;
     }
 
@@ -557,7 +566,8 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append(
                 getRepository().showDialogNote(msg("No entries found")));
         }
-        outputCalendar(request, makeCalendarEntries(request, entries), sb, request.defined(ARG_DAY));
+        outputCalendar(request, makeCalendarEntries(request, entries), sb,
+                       request.defined(ARG_DAY));
         if (true) {
             return new Result(msg("Calendar"), sb);
         }
@@ -579,9 +589,9 @@ public class CalendarOutputHandler extends OutputHandler {
 
         int[]   prev  = (doDay
                          ? getDayMonthYear(add(getCalendar(selected),
-                             Calendar.DAY_OF_MONTH, -1))
+                                               Calendar.DAY_OF_MONTH, -1))
                          : getDayMonthYear(add(getCalendar(selected),
-                             Calendar.MONTH, -1)));
+                                               Calendar.MONTH, -1)));
         int[] next = (doDay
                       ? getDayMonthYear(add(getCalendar(selected),
                                             Calendar.DAY_OF_MONTH, 1))
@@ -605,7 +615,7 @@ public class CalendarOutputHandler extends OutputHandler {
         List                    dayItems = null;
         Hashtable               dates    = new Hashtable();
         Hashtable<String, List> map      = new Hashtable<String, List>();
-        GregorianCalendar mapCal =
+        GregorianCalendar       mapCal   =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         boolean didone = false;
         for (int tries = 0; tries < 2; tries++) {
@@ -613,7 +623,7 @@ public class CalendarOutputHandler extends OutputHandler {
             for (Entry entry : entries) {
                 Date entryDate = new Date(entry.getStartDate());
                 mapCal.setTime(entryDate);
-                int[] entryDay = getDayMonthYear(mapCal);
+                int[]  entryDay = getDayMonthYear(mapCal);
                 String key = entryDay[IDX_YEAR] + "/" + entryDay[IDX_MONTH]
                              + "/" + entryDay[IDX_DAY];
                 if (tries == 0) {
@@ -758,8 +768,8 @@ public class CalendarOutputHandler extends OutputHandler {
 
         for (int i = 0; i < navLabels.length; i++) {
             navList.add(HtmlUtils.href(navUrls.get(i),
-                                      HtmlUtils.img(iconUrl(navIcons[i]),
-                                          navLabels[i], " border=\"0\"")));
+                                       HtmlUtils.img(iconUrl(navIcons[i]),
+                                           navLabels[i], " border=\"0\"")));
         }
 
 
@@ -801,9 +811,11 @@ public class CalendarOutputHandler extends OutputHandler {
         } else {
             sb.append(
                 HtmlUtils.center(
-                    HtmlUtils.b(StringUtil.join(HtmlUtils.space(1), navList))));
+                    HtmlUtils.b(
+                        StringUtil.join(HtmlUtils.space(1), navList))));
             sb.append(
-                HtmlUtils.center(HtmlUtils.b(headerSdf.format(cal.getTime()))));
+                HtmlUtils.center(
+                    HtmlUtils.b(headerSdf.format(cal.getTime()))));
             sb.append(
                 "<table class=\"calendartable\"  cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
             String[] dayNames = {
@@ -883,21 +895,34 @@ public class CalendarOutputHandler extends OutputHandler {
     }
 
 
-    public List<CalendarEntry> makeCalendarEntries(Request request, List<Entry> entries) throws Exception {
-        List<CalendarEntry> calEntries =  new ArrayList<CalendarEntry>();
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<CalendarEntry> makeCalendarEntries(Request request,
+            List<Entry> entries)
+            throws Exception {
+        List<CalendarEntry> calEntries = new ArrayList<CalendarEntry>();
         for (Entry entry : entries) {
             Date   entryDate = new Date(entry.getStartDate());
             String label     = entry.getLabel();
             if (label.length() > 20) {
                 label = label.substring(0, 19) + "...";
             }
-            String url = HtmlUtils.nobr(getEntryManager().getAjaxLink(request,
-                             entry, label, null, true, null,
-                             false).toString());
+            String url =
+                HtmlUtils.nobr(getEntryManager().getAjaxLink(request, entry,
+                    label, null, true, null, false).toString());
 
 
             calEntries.add(new CalendarEntry(entryDate, url, entry));
         }
+
         return calEntries;
     }
 
@@ -942,6 +967,7 @@ public class CalendarOutputHandler extends OutputHandler {
      * @param group _more_
      * @param entries _more_
      * @param sb _more_
+     * @param doDay _more_
      *
      * @return _more_
      *
@@ -965,11 +991,11 @@ public class CalendarOutputHandler extends OutputHandler {
                                      request.get(ARG_YEAR, today[IDX_YEAR]) };
 
 
-        int[]   prev  = (doDay
-                         ? getDayMonthYear(add(getCalendar(selected),
-                             Calendar.DAY_OF_MONTH, -1))
-                         : getDayMonthYear(add(getCalendar(selected),
-                             Calendar.MONTH, -1)));
+        int[] prev = (doDay
+                      ? getDayMonthYear(add(getCalendar(selected),
+                                            Calendar.DAY_OF_MONTH, -1))
+                      : getDayMonthYear(add(getCalendar(selected),
+                                            Calendar.MONTH, -1)));
         int[] next = (doDay
                       ? getDayMonthYear(add(getCalendar(selected),
                                             Calendar.DAY_OF_MONTH, 1))
@@ -993,7 +1019,7 @@ public class CalendarOutputHandler extends OutputHandler {
         List                    dayItems = null;
         Hashtable               dates    = new Hashtable();
         Hashtable<String, List> map      = new Hashtable<String, List>();
-        GregorianCalendar mapCal =
+        GregorianCalendar       mapCal   =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         boolean didone = false;
         for (int tries = 0; tries < 2; tries++) {
@@ -1001,7 +1027,7 @@ public class CalendarOutputHandler extends OutputHandler {
             for (CalendarEntry entry : entries) {
                 Date entryDate = entry.date;
                 mapCal.setTime(entryDate);
-                int[] entryDay = getDayMonthYear(mapCal);
+                int[]  entryDay = getDayMonthYear(mapCal);
                 String key = entryDay[IDX_YEAR] + "/" + entryDay[IDX_MONTH]
                              + "/" + entryDay[IDX_DAY];
                 if (tries == 0) {
@@ -1138,8 +1164,8 @@ public class CalendarOutputHandler extends OutputHandler {
 
         for (int i = 0; i < navLabels.length; i++) {
             navList.add(HtmlUtils.href(navUrls.get(i),
-                                      HtmlUtils.img(iconUrl(navIcons[i]),
-                                          navLabels[i], " border=\"0\"")));
+                                       HtmlUtils.img(iconUrl(navIcons[i]),
+                                           navLabels[i], " border=\"0\"")));
         }
 
 
@@ -1186,9 +1212,11 @@ public class CalendarOutputHandler extends OutputHandler {
         } else {
             sb.append(
                 HtmlUtils.center(
-                    HtmlUtils.b(StringUtil.join(HtmlUtils.space(1), navList))));
+                    HtmlUtils.b(
+                        StringUtil.join(HtmlUtils.space(1), navList))));
             sb.append(
-                HtmlUtils.center(HtmlUtils.b(headerSdf.format(cal.getTime()))));
+                HtmlUtils.center(
+                    HtmlUtils.b(headerSdf.format(cal.getTime()))));
             sb.append(
                 "<table class=\"calendartable\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
             String[] dayNames = {

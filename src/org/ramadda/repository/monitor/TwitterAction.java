@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -45,6 +46,11 @@ public class TwitterAction extends PasswordAction {
      */
     public TwitterAction() {}
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     */
     public TwitterAction(String id) {
         super(id);
     }
@@ -73,6 +79,11 @@ public class TwitterAction extends PasswordAction {
         return "twitter";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getActionLabel() {
         return "Twitter Action";
     }
@@ -106,10 +117,12 @@ public class TwitterAction extends PasswordAction {
     public void addToEditForm(EntryMonitor monitor, StringBuffer sb) {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.colspan("Twitter Action", 2));
-        sb.append(HtmlUtils.formEntry("Twitter ID:",
-                                     HtmlUtils.input(getArgId(ARG_ACTION_ID),
-                                         getRemoteUserId(),
-                                         HtmlUtils.SIZE_60)));
+        sb.append(
+            HtmlUtils.formEntry(
+                "Twitter ID:",
+                HtmlUtils.input(
+                    getArgId(ARG_ACTION_ID), getRemoteUserId(),
+                    HtmlUtils.SIZE_60)));
         sb.append(
             HtmlUtils.formEntry(
                 "Twitter Password:",

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,13 +26,13 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 
+import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.sql.Clause;
 
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -79,6 +80,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
     private List<EntryMonitor> monitors = new ArrayList<EntryMonitor>();
 
 
+    /** _more_          */
     private List<MonitorAction> actions = new ArrayList<MonitorAction>();
 
     /**
@@ -98,6 +100,11 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
     }
 
 
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
     private void initActions() throws Exception {
         actions.add(new EmailAction());
         //The twitter post does not work now due to authentication changes
@@ -174,9 +181,11 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         Entry entry = entryMonitor.getEntry();
         if (entry == null) {
             System.err.println("No entry");
+
             return new Result(BLANK, new StringBuffer("No match"),
                               getRepository().getMimeTypeFromSuffix(".html"));
         }
+
         return getRepository().getOutputHandler(request).outputEntry(request,
                 request.getOutput(), entry);
     }
@@ -319,6 +328,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         if (request.exists(ARG_MONITOR_DELETE_CONFIRM)) {
             request.ensureAuthToken();
             deleteMonitor(monitor);
+
             return new Result(
                 request.url(
                     getRepositoryBase().URL_USER_MONITORS, ARG_MESSAGE,
@@ -329,16 +339,17 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             request.ensureAuthToken();
             monitor.applyEditForm(request);
             updateMonitor(monitor);
+
             return new Result(
                 HtmlUtils.url(
                     getRepositoryBase().URL_USER_MONITORS.toString(),
                     ARG_MONITOR_ID, monitor.getId()));
         }
 
-        StringBuffer sb = new StringBuffer();
-        String listLink =
+        StringBuffer sb       = new StringBuffer();
+        String       listLink =
             HtmlUtils.href(getRepositoryBase().URL_USER_MONITORS.toString(),
-                          msg("Monitor List"));
+                           msg("Monitor List"));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.center(HtmlUtils.b(listLink)));
 
@@ -362,6 +373,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                     msg("Are you sure you want to delete the monitor?"),
                     fb.toString()));
             sb.append(HtmlUtils.formClose());
+
             return getUserManager().makeResult(request,
                     msg("Monitor Delete"), sb);
         }
@@ -377,6 +389,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         sb.append(buttons);
 
         sb.append(HtmlUtils.formClose());
+
         return getUserManager().makeResult(request,
                                            msg("Edit Entry Monitor"), sb);
     }
@@ -392,34 +405,36 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      * @throws Exception _more_
      */
     public Result processMonitorCreate(Request request) throws Exception {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb      = new StringBuffer();
         EntryMonitor monitor = new EntryMonitor(getRepository(),
                                    request.getUser(), "New Monitor", true);
-        String type = request.getString(ARG_MONITOR_TYPE, "email");
+        String        type   = request.getString(ARG_MONITOR_TYPE, "email");
         MonitorAction action = null;
-        for(MonitorAction templateAction: actions) {
-            if(!templateAction.enabled(getRepository())) {
+        for (MonitorAction templateAction : actions) {
+            if ( !templateAction.enabled(getRepository())) {
                 continue;
             }
-            if(templateAction.getActionName().equals(type)) {
+            if (templateAction.getActionName().equals(type)) {
                 action = templateAction.cloneMe();
                 action.setId(getRepository().getGUID());
+
                 break;
             }
         }
 
-        if(action == null) {
+        if (action == null) {
             throw new IllegalArgumentException("unknown action type:" + type);
         }
 
-        if(action.adminOnly() && !request.getUser().getAdmin()) {
+        if (action.adminOnly() && !request.getUser().getAdmin()) {
             throw new IllegalArgumentException(
-                                               "You need to be an admin to add an " + type + " action");
+                "You need to be an admin to add an " + type + " action");
         }
 
 
         monitor.addAction(action);
         addNewMonitor(monitor);
+
         return new Result(
             HtmlUtils.url(
                 getRepositoryBase().URL_USER_MONITORS.toString(),
@@ -443,6 +458,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         if (request.getUser().getAdmin()) {
             return true;
         }
+
         return Misc.equals(monitor.getUser(), request.getUser());
     }
 
@@ -465,6 +481,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 result.add(monitor);
             }
         }
+
         return result;
     }
 
@@ -484,7 +501,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 || request.getUser().getIsGuest()) {
             throw new IllegalArgumentException("Cannot access monitors");
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuffer       sb       = new StringBuffer();
         List<EntryMonitor> monitors = getEditableMonitors(request,
                                           getEntryMonitors());
         if (request.exists(ARG_MONITOR_ID)) {
@@ -502,6 +519,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 throw new IllegalArgumentException(
                     "You are not allowed to edit thr monitor");
             }
+
             return processMonitorEdit(request, monitor);
         }
 
@@ -513,18 +531,23 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
 
-        for(MonitorAction templateAction: actions) {
-            if(!templateAction.enabled(getRepository())) {
+        for (MonitorAction templateAction : actions) {
+            if ( !templateAction.enabled(getRepository())) {
                 continue;
             }
-            if(templateAction.adminOnly() && !request.getUser().getAdmin()) {
+            if (templateAction.adminOnly() && !request.getUser().getAdmin()) {
                 continue;
             }
-            String form =
-                request.form(getRepositoryBase().URL_USER_MONITORS)
-                + HtmlUtils.submit(templateAction.getActionLabel(), ARG_MONITOR_CREATE)
-                + HtmlUtils.hidden(ARG_MONITOR_TYPE, templateAction.getActionName())
-                + HtmlUtils.formClose();
+            String form = request.form(getRepositoryBase().URL_USER_MONITORS)
+                          + HtmlUtils
+                              .submit(
+                                  templateAction.getActionLabel(),
+                                  ARG_MONITOR_CREATE) + HtmlUtils
+                                      .hidden(
+                                          ARG_MONITOR_TYPE,
+                                          templateAction
+                                              .getActionName()) + HtmlUtils
+                                                  .formClose();
             sb.append(HtmlUtils.col(form));
         }
 
@@ -535,8 +558,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         sb.append(HtmlUtils.p());
 
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
-                                HtmlUtils.attrs(HtmlUtils.ATTR_CELLPADDING,
-                                    "4", HtmlUtils.ATTR_CELLSPACING, "0")));
+                                 HtmlUtils.attrs(HtmlUtils.ATTR_CELLPADDING,
+                                     "4", HtmlUtils.ATTR_CELLSPACING, "0")));
         if (monitors.size() > 0) {
             sb.append(HtmlUtils.row(HtmlUtils.cols("", boldMsg("Monitor"),
                     boldMsg("User"), boldMsg("Search Criteria"),
@@ -544,8 +567,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         }
         for (EntryMonitor monitor : monitors) {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
-                                    HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
-                                        "top") + ( !monitor.isActive()
+                                     HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
+                                         "top") + ( !monitor.isActive()
                     ? HtmlUtils.attr(HtmlUtils.ATTR_BGCOLOR, "#cccccc")
                     : "")));
             sb.append(HtmlUtils.open(HtmlUtils.TAG_TD));

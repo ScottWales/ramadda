@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,13 +25,13 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -164,6 +165,7 @@ public class IcalOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
         entries.addAll(subGroups);
+
         return outputEntries(request, entries);
     }
 
@@ -178,6 +180,7 @@ public class IcalOutputHandler extends OutputHandler {
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
         }
+
         return sdf.format(new Date(t)) + "Z";
     }
 

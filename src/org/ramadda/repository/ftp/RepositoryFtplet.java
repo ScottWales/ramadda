@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -285,8 +286,10 @@ public class RepositoryFtplet extends DefaultFtplet {
                 result = handleRetr(request, group, session, ftpRequest);
             } else {
                 ftpManager.logInfo("Not handling command: " + cmd);
+
                 return super.beforeCommand(session, ftpRequest);
             }
+
             //            System.err.println("        done:" + ftpRequest.getCommand());
             return result;
             //          return FtpletResult.SKIP;
@@ -294,6 +297,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             ftpManager.logError("Error handling ftp request:"
                                 + ftpRequest.getCommand() + " arg:"
                                 + ftpRequest.getArgument(), exc);
+
             return handleError(session, ftpRequest, "Error:" + exc);
         }
     }
@@ -334,6 +338,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                            ? org.ramadda.repository.auth.UserManager
                                .USER_ANONYMOUS
                            : user.getName());
+
             return new Request(
                 getRepository(),
                 getRepository().getUserManager().findUser(name));
@@ -359,6 +364,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         if (id == null) {
             return getEntryManager().getTopGroup();
         }
+
         return (Entry) getEntryManager().getEntry(request, id);
     }
 
@@ -406,6 +412,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             throws FtpException, IOException {
         //        System.err.println("error:" + message);
         session.write(new DefaultFtpReply(reply, message));
+
         return FtpletResult.SKIP;
     }
 
@@ -443,6 +450,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         session.write(
             new DefaultFtpReply(
                 FtpReply.REPLY_257_PATHNAME_CREATED, result.toString()));
+
         return FtpletResult.SKIP;
     }
 
@@ -464,6 +472,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         session.write(
             new DefaultFtpReply(
                 FtpReply.REPLY_215_NAME_SYSTEM_TYPE, "UNIX Type: L8"));
+
         return FtpletResult.SKIP;
     }
 
@@ -790,6 +799,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                 entry)) {
             System.err.println("permission problem:" + request.getUser()
                                + " " + entry.getName());
+
             return handleError(session, ftpRequest,
                                "You don't have permission to get the file");
         }
@@ -868,6 +878,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                 entry)) {
             System.err.println("permission problem:" + request.getUser()
                                + " " + entry.getName());
+
             return handleError(session, ftpRequest,
                                "You don't have permission to get the file");
         }
@@ -881,6 +892,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             new DefaultFtpReply(
                 FtpReply.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
                 "" + entry.getFile().length()));
+
         return FtpletResult.SKIP;
 
     }
@@ -905,6 +917,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         if (result.size() > 0) {
             return result.get(0);
         }
+
         return null;
     }
 
@@ -931,12 +944,14 @@ public class RepositoryFtplet extends DefaultFtplet {
         List<Entry> result = new ArrayList<Entry>();
         if (name.length() == 0) {
             result.add(getEntryManager().getTopGroup());
+
             return result;
         }
         if (name.startsWith("/")) {
             name = name.substring(1);
             if (name.length() == 0) {
                 result.add(getEntryManager().getTopGroup());
+
                 return result;
             }
             //            getRepository().getLogManager().logInfo("ftp: calling findEntryFrom name");
@@ -958,8 +973,10 @@ public class RepositoryFtplet extends DefaultFtplet {
             }
             if (name.equals("")) {
                 result.add(parent);
+
                 return result;
             }
+
             return getEntryManager().findDescendants(request, parent, name);
         }
     }
@@ -1001,6 +1018,7 @@ public class RepositoryFtplet extends DefaultFtplet {
             new DefaultFtpReply(
                 FtpReply.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
                 result.toString()));
+
         return FtpletResult.SKIP;
     }
 

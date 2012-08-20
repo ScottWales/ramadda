@@ -29,6 +29,7 @@ import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -37,7 +38,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -167,7 +167,8 @@ public class MapOutputHandler extends OutputHandler {
                                    new State(entry));
         }
 
-        MapInfo map = getMapManager().getMap(request, entriesToUse, sb, 700, 500, true,
+        MapInfo map = getMapManager().getMap(request, entriesToUse, sb, 700,
+                                             500, true,
                                              new boolean[] { false }, false);
 
         return makeLinksResult(request, msg("Map"), sb, new State(entry));
@@ -213,8 +214,9 @@ public class MapOutputHandler extends OutputHandler {
 
 
         boolean[] haveBearingLines = { false };
-        MapInfo   map = getMapManager().getMap(request, entriesToUse, sb, 700, 500, false,
-                             haveBearingLines, true);
+        MapInfo   map = getMapManager().getMap(request, entriesToUse, sb, 700,
+                                             500, false, haveBearingLines,
+                                             true);
 
         return makeLinksResult(request, msg("Map"), sb,
                                new State(group, subGroups, entries));

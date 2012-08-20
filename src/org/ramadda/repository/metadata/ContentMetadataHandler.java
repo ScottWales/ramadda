@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,6 +23,7 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -32,7 +34,6 @@ import ucar.unidata.ui.ImageUtils;
 
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -76,9 +77,16 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_PAGESTYLE = "content.pagestyle";
 
+    /** _more_          */
     public static final String TYPE_KEYWORD = "content.keyword";
+
+    /** _more_          */
     public static final String TYPE_URL = "content.url";
+
+    /** _more_          */
     public static final String TYPE_EMAIL = "content.email";
+
+    /** _more_          */
     public static final String TYPE_AUTHOR = "content.author";
 
     /** _more_ */

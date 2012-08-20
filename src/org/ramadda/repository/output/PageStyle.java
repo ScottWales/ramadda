@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -67,6 +68,7 @@ public class PageStyle {
     /** _more_ */
     private boolean showBreadcrumbs = true;
 
+    /** _more_          */
     private boolean showLayoutToolbar = true;
 
     /**
@@ -96,6 +98,7 @@ public class PageStyle {
         if (menus.size() == 0) {
             return true;
         }
+
         return menus.contains(menu);
     }
 
@@ -121,6 +124,7 @@ public class PageStyle {
         if (entry.isDummy()) {
             return null;
         }
+
         return wikiTemplate;
     }
 

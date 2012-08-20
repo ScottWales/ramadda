@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,10 +26,11 @@ import org.apache.commons.net.ftp.*;
 
 import org.ramadda.repository.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -103,6 +105,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
         if (getEntryManager().isSynthEntry(entry.getId())) {
             return getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
         }
+
         return this;
     }
 
@@ -142,8 +145,10 @@ public class FtpTypeHandler extends GenericTypeHandler {
             if ( !getEntryManager().isSynthEntry(entry.getId())) {
                 return iconUrl(ICON_FTP);
             }
+
             return iconUrl(ICON_FTP);
         }
+
         return super.getIconUrl(request, entry);
     }
 
@@ -173,6 +178,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
         if (values[COL_MAXSIZE] != null) {
             maxSize = ((Double) values[COL_MAXSIZE]).doubleValue();
         }
+
         return entry.getResource().getFileSize() < 1000000 * maxSize;
     }
 
@@ -189,6 +195,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
     private Entry getMainEntry(String id) throws Exception {
         String[] pair   = getEntryManager().getSynthId(id);
         Entry    parent = getEntryManager().getEntry(null, pair[0]);
+
         return parent;
     }
 
@@ -207,11 +214,13 @@ public class FtpTypeHandler extends GenericTypeHandler {
             Entry parent  = getMainEntry(entry.getId());
             if (parent == null) {
                 System.err.println("Could not find main entry");
+
                 return badFile;
             }
             Object[] values = parent.getValues();
             if (values == null) {
                 System.err.println("FtpTypeHandler: no values");
+
                 return badFile;
             }
             double maxSize = 0;
@@ -227,12 +236,13 @@ public class FtpTypeHandler extends GenericTypeHandler {
             }
             FTPClient ftpClient = null;
             try {
-                String[] pair = getEntryManager().getSynthId(entry.getId());
+                String[]  pair = getEntryManager().getSynthId(entry.getId());
                 MyFTPFile myFtpFile = getFileFromId(parent, pair[1],
                                           (String) values[COL_BASEDIR]);
                 ftpClient = getFtpClient(parent);
                 if (ftpClient == null) {
                     System.err.println("no ftp client ");
+
                     return badFile;
                 }
                 //                String path = entry.getResource().getPath();
@@ -253,12 +263,15 @@ public class FtpTypeHandler extends GenericTypeHandler {
                 //                System.err.println("Fetching:" + path);
                 //                System.err.println("writing to:" + cacheFile);
                 OutputStream fos =
-                    getStorageManager().getUncheckedFileOutputStream(cacheFile);
+                    getStorageManager().getUncheckedFileOutputStream(
+                        cacheFile);
                 if (ftpClient.retrieveFile(path, fos)) {
                     fos.flush();
                     fos.close();
+
                     return cacheFile;
                 }
+
                 //                System.err.println ("BAD FILE");
                 return badFile;
             } finally {
@@ -287,6 +300,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
         if ((id == null) || (id.length() == 0)) {
             return baseDir;
         }
+
         return new String(RepositoryUtil.decodeBase64(id));
     }
 
@@ -304,6 +318,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
                              String parentPath, FTPFile file) {
         String id = parentPath + "/" + file.getName();
         id = RepositoryUtil.encodeBase64(id.getBytes()).replace("\n", "");
+
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
@@ -321,6 +336,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
                              String parentPath) {
         String id = parentPath;
         id = RepositoryUtil.encodeBase64(id.getBytes()).replace("\n", "");
+
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
@@ -347,6 +363,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
         if (path.indexOf(".") < 0) {
             isDir = ftpClient.changeWorkingDirectory(path);
         }
+
         return isDir;
     }
 
@@ -438,6 +455,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
             closeConnection(ftpClient);
         }
         long t5 = System.currentTimeMillis();
+
         //        System.err.println ("getSynthIds:" + (t5-t0));
         return ids;
     }
@@ -483,6 +501,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
             if ( !FTPReply.isPositiveCompletion(reply)) {
                 ftpClient.disconnect();
                 System.err.println("FTP server refused connection.");
+
                 return null;
             }
             ftpClient.setFileType(FTP.IMAGE_FILE_TYPE);
@@ -504,6 +523,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
                     throw new IOException("Unable to retrieve file:" + file);
                 }
             }
+
             return "";
         } finally {
             closeConnection(ftpClient);
@@ -531,7 +551,9 @@ public class FtpTypeHandler extends GenericTypeHandler {
         String user     = (String) values[COL_USER];
         String password = (String) values[COL_PASSWORD];
         if (password != null) {
-            password = getRepository().getPageHandler().processTemplate(password, false);
+            password =
+                getRepository().getPageHandler().processTemplate(password,
+                    false);
         } else {
             password = "";
         }
@@ -545,13 +567,16 @@ public class FtpTypeHandler extends GenericTypeHandler {
             if ( !FTPReply.isPositiveCompletion(reply)) {
                 ftpClient.disconnect();
                 System.err.println("FTP server refused connection.");
+
                 return null;
             }
             ftpClient.setFileType(FTP.IMAGE_FILE_TYPE);
             ftpClient.enterLocalPassiveMode();
+
             return ftpClient;
         } catch (Exception exc) {
             System.err.println("Could not connect to ftp server:" + exc);
+
             return null;
         }
     }
@@ -594,6 +619,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
             cache.put(parentEntry.getId(),
                       map = new Hashtable<String, FTPFile>());
         }
+
         //TODO:CHECK SIZE and flush
         return map;
     }
@@ -619,6 +645,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
             FTPFile file = new FTPFile();
             file.setName(baseDir);
             file.setType(FTPFile.DIRECTORY_TYPE);
+
             return new MyFTPFile(file, baseDir);
         } else {
             path = new String(RepositoryUtil.decodeBase64(id));
@@ -656,12 +683,14 @@ public class FtpTypeHandler extends GenericTypeHandler {
                 }
                 System.err.println("Could not find directory:" + name
                                    + " path:" + path);
+
                 return null;
             } else {
                 //                System.err.println("getFileFromId path=" + path);
                 FTPFile[] files = ftpClient.listFiles(path);
                 if (files.length == 1) {
                     putCache(parentEntry, path, files[0]);
+
                     return new MyFTPFile(files[0], path);
                 } else {
                     System.err.println(
@@ -670,6 +699,7 @@ public class FtpTypeHandler extends GenericTypeHandler {
                 }
 
             }
+
             return null;
 
         } finally {

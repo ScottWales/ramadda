@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -67,7 +68,9 @@ public class FtpManager extends RepositoryManager {
     /** _more_ */
     public static final String DFLT_PASSIVE_PORTS = "44001-44099";
 
-    private final LogManager.LogId LOGID  = new LogManager.LogId("org.apache.ftpserver");
+    /** _more_          */
+    private final LogManager.LogId LOGID =
+        new LogManager.LogId("org.apache.ftpserver");
 
 
 
@@ -104,8 +107,8 @@ public class FtpManager extends RepositoryManager {
      * @param exc _more_
      */
     public void logError(String message, Exception exc) {
-        getRepository().getLogManager().logError(LOGID,
-                "RAMADDA:" + message, exc);
+        getRepository().getLogManager().logError(LOGID, "RAMADDA:" + message,
+                exc);
     }
 
 
@@ -128,6 +131,7 @@ public class FtpManager extends RepositoryManager {
         int newPort = getRepository().getProperty(PROP_FTP_PORT, -1);
         if (newPort < 0) {
             stop();
+
             return;
         }
         if (newPort != port) {

@@ -1,5 +1,6 @@
 /*
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -31,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Log4jPrintWriter;
 
 
@@ -47,7 +49,6 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -105,10 +106,13 @@ import javax.sql.DataSource;
 public class DatabaseManager extends RepositoryManager implements SqlUtil
     .ConnectionManager {
 
-    /** _more_          */
+    /** _more_ */
     private long myTime = System.currentTimeMillis();
 
-    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.database.DatabaseManager");
+    /** _more_          */
+    private final LogManager.LogId LOGID =
+        new LogManager.LogId(
+            "org.ramadda.repository.database.DatabaseManager");
 
     /** _more_ */
     //NOTE: When we had a non-zero timeout we got a memory leak
@@ -133,7 +137,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private static final String DB_MYSQL = "mysql";
 
+    /** _more_          */
     private static final String DB_H2 = "h2";
+
     /** _more_ */
     private static final String DB_DERBY = "derby";
 
@@ -284,8 +290,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                   PROP_DB_USER.replace("${db}", db));
             String password = (String) getRepository().getProperty(
                                   PROP_DB_PASSWORD.replace("${db}", db));
-            String connectionURL = getStorageManager().localizePath((String) getRepository().getProperty(
-                                                                                                          PROP_DB_URL.replace("${db}", db)));
+            String connectionURL = getStorageManager().localizePath(
+                                       (String) getRepository().getProperty(
+                                           PROP_DB_URL.replace("${db}", db)));
 
 
 
@@ -305,9 +312,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             ds.setPassword(password);
             ds.setUrl(connectionURL);
             Logger logger = getLogManager().getLogger(LOGID);
-            if(logger!=null) {
+            if (logger != null) {
                 ds.setLogWriter(new Log4jPrintWriter(logger));
             }
+
             return ds;
         } catch (Exception exc) {
             System.err.println(
@@ -1937,6 +1945,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return (db.equals(DB_MYSQL));
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isDatabaseH2() {
         return (db.equals(DB_H2));
     }
@@ -2167,6 +2180,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         } else if (db.equals(DB_H2)) {
             return true;
         }
+
         return false;
     }
 

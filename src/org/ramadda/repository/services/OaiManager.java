@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,6 +30,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
@@ -36,8 +39,6 @@ import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -394,6 +395,7 @@ public class OaiManager extends RepositoryManager {
         });
 
         XmlUtil.create(TAG_RESPONSEDATE, root, format(new Date()));
+
         return root;
     }
 
@@ -407,8 +409,7 @@ public class OaiManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void addRequest(Request request, Element root) throws Exception {
-        String  url         =
-            request.getAbsoluteUrl(request.getRequestPath());
+        String  url         = request.getAbsoluteUrl(request.getRequestPath());
         Element requestNode = XmlUtil.create(TAG_REQUEST, root, url);
 
         if ( !Misc.equals(request.getString(ARG_METADATAPREFIX, "oai_dc"),
@@ -494,6 +495,7 @@ public class OaiManager extends RepositoryManager {
         } catch (Exception exc) {
             handleError(request, root, ERROR_BADARGUMENT, exc.toString());
         }
+
         return makeResult(request, root);
     }
 
@@ -511,6 +513,7 @@ public class OaiManager extends RepositoryManager {
         if ( !request.exists(ARG_VERB)) {
             handleError(request, root, ERROR_BADARGUMENT,
                         "'" + ARG_VERB + "' is missing");
+
             return;
         }
         String verb = request.getString(ARG_VERB, VERB_IDENTIFY);
@@ -519,6 +522,7 @@ public class OaiManager extends RepositoryManager {
             String url = request.getAbsoluteUrl(request.getRequestPath());
             XmlUtil.create(TAG_REQUEST, root, url);
             handleError(request, root, ERROR_BADVERB, "Bad verb:" + verb);
+
             return;
         }
 
@@ -531,11 +535,13 @@ public class OaiManager extends RepositoryManager {
             if ( !argSet.contains(key)) {
                 handleError(request, root, ERROR_BADARGUMENT,
                             "Bad argument:" + key);
+
                 return;
             }
             if (request.hasMultiples(key)) {
                 handleError(request, root, ERROR_BADARGUMENT,
                             "Multiple arguments:" + key);
+
                 return;
             }
         }
@@ -668,6 +674,7 @@ public class OaiManager extends RepositoryManager {
             Entry  entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
                 handleError(request, root, ERROR_IDDOESNOTEXIST);
+
                 return;
             }
         }
@@ -692,6 +699,7 @@ public class OaiManager extends RepositoryManager {
      */
     private String getId(String id) {
         id = id.replace("oai:" + getRepositoryIdentifier() + ":", "");
+
         return id;
     }
 
@@ -710,6 +718,7 @@ public class OaiManager extends RepositoryManager {
                     StringUtil.split(
                         getRepository().getHostname(), ".", true, true)));
         }
+
         return repositoryIdentifier;
     }
 
@@ -817,6 +826,7 @@ public class OaiManager extends RepositoryManager {
                 return parser.parse(s);
             } catch (Exception exc) {}
         }
+
         return null;
     }
 
@@ -917,6 +927,7 @@ public class OaiManager extends RepositoryManager {
         if ( !request.exists(ARG_METADATAPREFIX)) {
             handleError(request, root, ERROR_BADARGUMENT,
                         "'" + ARG_METADATAPREFIX + "' is missing");
+
             return;
         }
 
@@ -925,6 +936,7 @@ public class OaiManager extends RepositoryManager {
         if (entryList.entries.size() == 0) {
             handleError(request, root, ERROR_NORECORDSMATCH,
                         "No records match");
+
             return;
         }
 
@@ -950,6 +962,7 @@ public class OaiManager extends RepositoryManager {
         if ( !request.exists(ARG_METADATAPREFIX)) {
             handleError(request, root, ERROR_BADARGUMENT,
                         "'" + ARG_METADATAPREFIX + "' is missing");
+
             return;
         }
 
@@ -962,6 +975,7 @@ public class OaiManager extends RepositoryManager {
         if (entryList.entries.size() == 0) {
             handleError(request, root, ERROR_NORECORDSMATCH,
                         "No records match");
+
             return;
         }
         Element listRecordNode = XmlUtil.create(TAG_LISTRECORDS, root);
@@ -992,6 +1006,7 @@ public class OaiManager extends RepositoryManager {
                     metadataHandler.addMetadataToXml(request,
                             MetadataTypeBase.TEMPLATETYPE_OAIDC, entry,
                             metadata, node.getOwnerDocument(), node);
+
                     break;
                 }
             }
@@ -1013,11 +1028,13 @@ public class OaiManager extends RepositoryManager {
         if ( !request.exists(ARG_IDENTIFIER)) {
             handleError(request, root, ERROR_BADARGUMENT,
                         "'identifier' is missing");
+
             return;
         }
         if ( !request.exists(ARG_METADATAPREFIX)) {
             handleError(request, root, ERROR_BADARGUMENT,
                         "'" + ARG_METADATAPREFIX + "' is missing");
+
             return;
         }
 
@@ -1026,6 +1043,7 @@ public class OaiManager extends RepositoryManager {
         Entry  entry = getEntryManager().getEntry(request, id);
         if (entry == null) {
             handleError(request, root, ERROR_IDDOESNOTEXIST);
+
             return;
         }
 

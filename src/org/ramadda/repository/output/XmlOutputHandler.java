@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -33,7 +35,6 @@ import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -124,6 +125,7 @@ public class XmlOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_XML) || output.equals(OUTPUT_XMLENTRY)) {
             return repository.getMimeTypeFromSuffix(".xml");
         }
+
         return super.getMimeType(output);
     }
 
@@ -142,10 +144,11 @@ public class XmlOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document doc = XmlUtil.makeDocument();
-        Element root = getEntryTag(request, entry, null, doc, null, false,
+        Document doc  = XmlUtil.makeDocument();
+        Element  root = getEntryTag(request, entry, null, doc, null, false,
                                    true);
         StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
+
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
@@ -182,6 +185,7 @@ public class XmlOutputHandler extends OutputHandler {
             getEntryTag(request, entry, null, doc, root, false, true);
         }
         StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
+
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
@@ -251,10 +255,10 @@ public class XmlOutputHandler extends OutputHandler {
 
         if (entry.getResource().isDefined()) {
             Resource resource = entry.getResource();
-            if (forExport)   {
-                if(resource.isUrl()) {
+            if (forExport) {
+                if (resource.isUrl()) {
                     XmlUtil.setAttributes(node, new String[] { ATTR_URL,
-                                                               resource.getPath()});
+                            resource.getPath() });
                 }
             } else {
                 XmlUtil.setAttributes(node, new String[] { ATTR_RESOURCE,
@@ -302,6 +306,7 @@ public class XmlOutputHandler extends OutputHandler {
         }
         getMetadataManager().addMetadata(request, entry, zos, doc, node);
         entry.getTypeHandler().addToEntryNode(entry, node);
+
         return node;
     }
 
@@ -330,6 +335,7 @@ public class XmlOutputHandler extends OutputHandler {
                                   Permission.ACTION_UPLOAD);
         node.setAttribute(ATTR_CANDONEW, "" + canDoNew);
         node.setAttribute(ATTR_CANDOUPLOAD, "" + canDoUpload);
+
         return node;
 
     }

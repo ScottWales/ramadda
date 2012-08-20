@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,6 +28,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.AtomUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -35,7 +37,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -88,10 +89,10 @@ public class AtomOutputHandler extends OutputHandler {
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
     /** _more_ */
-    public static final OutputType OUTPUT_ATOM = new OutputType("ATOM Feed",
-                                                     "atom",
-                                                     OutputType.TYPE_FEEDS| OutputType.TYPE_FORSEARCH,
-                                                     "", ICON_ATOM);
+    public static final OutputType OUTPUT_ATOM =
+        new OutputType("ATOM Feed", "atom",
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       ICON_ATOM);
 
 
 
@@ -149,6 +150,7 @@ public class AtomOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
         entries.addAll(subGroups);
+
         return outputEntries(request, group, entries);
     }
 
@@ -169,6 +171,7 @@ public class AtomOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return outputEntries(request, entry, entries);
     }
 
@@ -188,8 +191,8 @@ public class AtomOutputHandler extends OutputHandler {
                                  List<Entry> entries)
             throws Exception {
 
-        String feedId = request.getAbsoluteUrl(request.getRequestPath());
-        StringBuffer sb = new StringBuffer();
+        String       feedId = request.getAbsoluteUrl(request.getRequestPath());
+        StringBuffer sb     = new StringBuffer();
         sb.append(AtomUtil.openFeed(feedId));
         sb.append("\n");
         sb.append(AtomUtil.makeTitle(parentEntry.getName()
@@ -200,10 +203,13 @@ public class AtomOutputHandler extends OutputHandler {
                 AtomUtil.REL_SELF, request.getAbsoluteUrl(request.getUrl())));
         sb.append("\n");
         for (Entry entry : entries) {
-            List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
-            String selfUrl =
-                request.getAbsoluteUrl(HtmlUtils.url(getRepository().getUrlPath(getRepository().URL_ENTRY_SHOW),
-                                                    ARG_ENTRYID, entry.getId()));
+            List<AtomUtil.Link> links   = new ArrayList<AtomUtil.Link>();
+            String              selfUrl =
+                request.getAbsoluteUrl(
+                    HtmlUtils.url(
+                        getRepository().getUrlPath(
+                            getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
+                                entry.getId()));
             links.add(new AtomUtil.Link(AtomUtil.REL_ALTERNATE, selfUrl,
                                         "Web page", "text/html"));
             String resource = entry.getResource().getPath();
@@ -218,9 +224,9 @@ public class AtomOutputHandler extends OutputHandler {
                 links.add(new AtomUtil.Link(AtomUtil.REL_IMAGE, imageUrl,
                                             "Image"));
             }
-            
+
             TypeHandler   typeHandler = entry.getTypeHandler();
-            List<Service> services = new ArrayList<Service>();
+            List<Service> services    = new ArrayList<Service>();
             typeHandler.getServices(request, entry, services);
             for (Service service : services) {
                 String url      = service.getUrl();
@@ -240,8 +246,9 @@ public class AtomOutputHandler extends OutputHandler {
             }
 
             StringBuffer extra = new StringBuffer();
-            Document     doc   = XmlUtil.getDocument("<content type=\"text/xml\"></content>");
-            Element      root  = doc.getDocumentElement();
+            Document     doc   =
+                XmlUtil.getDocument("<content type=\"text/xml\"></content>");
+            Element root = doc.getDocumentElement();
             typeHandler.addMetadataToXml(entry, root, extra, "atom");
 
             List<Metadata> inheritedMetadata =
@@ -284,6 +291,7 @@ public class AtomOutputHandler extends OutputHandler {
                     extra.append(firstLon);
                     extra.append(" ");
                     extra.append("</georss:polygon>\n");
+
                     continue;
                 }
 
@@ -309,17 +317,19 @@ public class AtomOutputHandler extends OutputHandler {
             if (TypeHandler.isWikiText(desc)) {
                 desc = "";
             }
-                        
-            String authorUrl = request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW.toString());
+
+            String authorUrl = request.getAbsoluteUrl(
+                                   getRepository().URL_ENTRY_SHOW.toString());
             sb.append(AtomUtil.makeEntry(entry.getName(), selfUrl,
                                          new Date(entry.getCreateDate()),
                                          new Date(entry.getChangeDate()),
                                          new Date(entry.getStartDate()),
-                                         new Date(entry.getEndDate()),
-                                         desc, null, entry.getUser().getName(), authorUrl, links,
-                                         extra.toString()));
+                                         new Date(entry.getEndDate()), desc,
+                                         null, entry.getUser().getName(),
+                                         authorUrl, links, extra.toString()));
         }
         sb.append(AtomUtil.closeFeed());
+
         return new Result("", sb, MIME_ATOM);
     }
 
@@ -347,6 +357,7 @@ public class AtomOutputHandler extends OutputHandler {
                             metadata, doc, root);
 
                 }
+
                 break;
             }
         }

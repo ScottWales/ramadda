@@ -25,6 +25,7 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -32,7 +33,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -146,21 +146,18 @@ public class ImageOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_VIDEO =
-        new OutputType("Play Video", "image.video",
-                       OutputType.TYPE_VIEW , "",
+        new OutputType("Play Video", "image.video", OutputType.TYPE_VIEW, "",
                        ICON_IMAGES);
 
     /** _more_ */
     public static final OutputType OUTPUT_PLAYER =
-        new OutputType("Image Player", "image.player",
-                       OutputType.TYPE_VIEW , "",
-                       ICON_IMAGES);
+        new OutputType("Image Player", "image.player", OutputType.TYPE_VIEW,
+                       "", ICON_IMAGES);
 
     /** _more_ */
     public static final OutputType OUTPUT_SLIDESHOW =
-        new OutputType("Slideshow", "image.slideshow",
-                       OutputType.TYPE_VIEW , "",
-                       ICON_IMAGES);
+        new OutputType("Slideshow", "image.slideshow", OutputType.TYPE_VIEW,
+                       "", ICON_IMAGES);
 
 
     /** _more_ */
@@ -228,6 +225,7 @@ public class ImageOutputHandler extends OutputHandler {
                     }
                 }
             }
+
             return;
         }
 
@@ -242,6 +240,7 @@ public class ImageOutputHandler extends OutputHandler {
             for (Entry entry : entries) {
                 if (entry.getResource().isImage()) {
                     ok = true;
+
                     break;
                 }
             }
@@ -282,6 +281,7 @@ public class ImageOutputHandler extends OutputHandler {
             }
             imageCache.put(entry.getId(), image);
         }
+
         return image;
     }
 
@@ -370,6 +370,7 @@ public class ImageOutputHandler extends OutputHandler {
             request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT_Y);
             request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT_Y);
             request.remove(ARG_IMAGE_UNDO);
+
             return new Result(request.getUrl());
         }
 
@@ -387,50 +388,51 @@ public class ImageOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_EDIT));
         sb.append(HtmlUtils.submit(msgLabel("Change width"),
-                                  ARG_IMAGE_EDIT_RESIZE));
+                                   ARG_IMAGE_EDIT_RESIZE));
         sb.append(HtmlUtils.input(ARG_IMAGE_EDIT_WIDTH, "" + imageWidth,
-                                 HtmlUtils.SIZE_5));
+                                  HtmlUtils.SIZE_5));
         sb.append(HtmlUtils.space(2));
 
         sb.append(HtmlUtils.submit(msg("Crop"), ARG_IMAGE_EDIT_CROP));
         sb.append(HtmlUtils.submit(msg("Remove Redeye"),
-                                  ARG_IMAGE_EDIT_REDEYE));
+                                   ARG_IMAGE_EDIT_REDEYE));
         sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX1, "",
-                                  HtmlUtils.SIZE_3
-                                  + HtmlUtils.id(ARG_IMAGE_CROPX1)));
+                                   HtmlUtils.SIZE_3
+                                   + HtmlUtils.id(ARG_IMAGE_CROPX1)));
         sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY1, "",
-                                  HtmlUtils.SIZE_3
-                                  + HtmlUtils.id(ARG_IMAGE_CROPY1)));
+                                   HtmlUtils.SIZE_3
+                                   + HtmlUtils.id(ARG_IMAGE_CROPY1)));
         sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX2, "",
-                                  HtmlUtils.SIZE_3
-                                  + HtmlUtils.id(ARG_IMAGE_CROPX2)));
+                                   HtmlUtils.SIZE_3
+                                   + HtmlUtils.id(ARG_IMAGE_CROPX2)));
         sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY2, "",
-                                  HtmlUtils.SIZE_3
-                                  + HtmlUtils.id(ARG_IMAGE_CROPY2)));
+                                   HtmlUtils.SIZE_3
+                                   + HtmlUtils.id(ARG_IMAGE_CROPY2)));
         sb.append(HtmlUtils.div("",
-                               HtmlUtils.cssClass("image_edit_box")
-                               + HtmlUtils.id("image_edit_box")));
+                                HtmlUtils.cssClass("image_edit_box")
+                                + HtmlUtils.id("image_edit_box")));
 
 
 
         sb.append(HtmlUtils.space(2));
         sb.append(HtmlUtils.submitImage(iconUrl(ICON_ANTIROTATE),
-                                       ARG_IMAGE_EDIT_ROTATE_LEFT,
-                                       msg("Rotate Left")));
+                                        ARG_IMAGE_EDIT_ROTATE_LEFT,
+                                        msg("Rotate Left")));
         sb.append(HtmlUtils.space(2));
         sb.append(HtmlUtils.submitImage(iconUrl(ICON_ROTATE),
-                                       ARG_IMAGE_EDIT_ROTATE_RIGHT,
-                                       msg("Rotate Right")));
+                                        ARG_IMAGE_EDIT_ROTATE_RIGHT,
+                                        msg("Rotate Right")));
         File entryDir = getStorageManager().getEntryDir(entry.getId(), false);
         File original = new File(entryDir + "/" + "originalimage");
         if (original.exists()) {
             sb.append(HtmlUtils.space(2));
-            sb.append(HtmlUtils.submit(msg("Undo all edits"), ARG_IMAGE_UNDO));
+            sb.append(HtmlUtils.submit(msg("Undo all edits"),
+                                       ARG_IMAGE_UNDO));
         }
 
         sb.append(HtmlUtils.space(20));
         sb.append(HtmlUtils.checkbox(ARG_IMAGE_APPLY_TO_GROUP, "true",
-                                    applyToGroup));
+                                     applyToGroup));
         sb.append(HtmlUtils.space(1));
         sb.append(msg("Apply to siblings"));
 
@@ -441,9 +443,9 @@ public class ImageOutputHandler extends OutputHandler {
         String clickParams =
             "event,'imgid',"
             + HtmlUtils.comma(HtmlUtils.squote(ARG_IMAGE_CROPX1),
-                             HtmlUtils.squote(ARG_IMAGE_CROPY1),
-                             HtmlUtils.squote(ARG_IMAGE_CROPX2),
-                             HtmlUtils.squote(ARG_IMAGE_CROPY2));
+                              HtmlUtils.squote(ARG_IMAGE_CROPY1),
+                              HtmlUtils.squote(ARG_IMAGE_CROPX2),
+                              HtmlUtils.squote(ARG_IMAGE_CROPY2));
 
         sb.append(
             HtmlUtils.importJS(getRepository().fileUrl("/editimage.js")));
@@ -451,6 +453,7 @@ public class ImageOutputHandler extends OutputHandler {
         String call = HtmlUtils.onMouseClick(HtmlUtils.call("editImageClick",
                           clickParams));
         sb.append(HtmlUtils.img(url, "", HtmlUtils.id("imgid") + call));
+
         return new Result("Image Edit", sb);
 
     }
@@ -486,6 +489,7 @@ public class ImageOutputHandler extends OutputHandler {
                 if (original.exists()) {
                     imageCache.remove(entry.getId());
                     IOUtil.copyFile(original, f);
+
                     return true;
                 }
             }
@@ -538,6 +542,7 @@ public class ImageOutputHandler extends OutputHandler {
                 }
                 ImageUtils.writeImageToFile(newImage, f);
             }
+
             return true;
         }
 
@@ -563,6 +568,7 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
         Result result = makeResult(request, group, entries);
         addLinks(request, result, new State(group, subGroups, entries));
+
         return result;
     }
 
@@ -578,6 +584,7 @@ public class ImageOutputHandler extends OutputHandler {
                 || output.equals(OUTPUT_SLIDESHOW)) {
             return repository.getMimeTypeFromSuffix(".html");
         }
+
         return super.getMimeType(output);
     }
 
@@ -604,14 +611,18 @@ public class ImageOutputHandler extends OutputHandler {
         OutputType   output = request.getOutput();
         if (entries.size() == 0) {
             sb.append("<b>Nothing Found</b><p>");
+
             return new Result("Query Results", sb, getMimeType(output));
         }
 
         if (output.equals(OUTPUT_GALLERY)) {
-            getWikiManager().makeGallery(request, getWikiManager().getImageEntries(entries), new Hashtable(), sb);
+            getWikiManager().makeGallery(
+                request, getWikiManager().getImageEntries(entries),
+                new Hashtable(), sb);
+
             return new Result(group.getName(), sb, getMimeType(output));
 
-        } 
+        }
 
         if (output.equals(OUTPUT_PLAYER)) {
             if ( !request.exists(ARG_ASCENDING)) {
@@ -635,10 +646,9 @@ public class ImageOutputHandler extends OutputHandler {
                 String entryUrl = getEntryLink(request, entry);
                 String title    =
                     "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
-                String dttm = formatDate(request,entry);
+                String dttm = formatDate(request, entry);
                 title += "<tr><td><b>Image:</b> " + entryUrl
-                         + "</td><td align=right>"
-                    + dttm;
+                         + "</td><td align=right>" + dttm;
                 title += "</table>";
                 title = title.replace("\"", "\\\"");
                 sb.append("addImage(" + HtmlUtils.quote(url) + ","
@@ -685,7 +695,8 @@ public class ImageOutputHandler extends OutputHandler {
                 widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
             }
             String imageHtml = "<img name=\"animation\" border=\"0\" "
-                               + widthAttr + HtmlUtils.attr("SRC", firstImage)
+                               + widthAttr
+                               + HtmlUtils.attr("SRC", firstImage)
                                + " alt=\"image\">";
 
             String tmp = playerTemplate.replace("${imagelist}",
@@ -699,17 +710,16 @@ public class ImageOutputHandler extends OutputHandler {
             if (width > 0) {
                 request.put(ARG_WIDTH, "0");
                 fullUrl = HtmlUtils.href(request.getUrl(),
-                                        msg("Use image width"));
+                                         msg("Use image width"));
             } else {
                 request.put(ARG_WIDTH, "600");
                 fullUrl = HtmlUtils.href(request.getUrl(),
-                                        msg("Use fixed width"));
+                                         msg("Use fixed width"));
             }
 
-            sb  = new StringBuffer();
+            sb = new StringBuffer();
             sb.append(tmp);
-            sb.append(HtmlUtils.leftRight(getSortLinks(request),
-                    fullUrl));
+            sb.append(HtmlUtils.leftRight(getSortLinks(request), fullUrl));
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
             String template = repository.getResource(PROP_HTML_SLIDESHOW);
             template = template.replace("${imagelist}", sb.toString());
@@ -722,14 +732,24 @@ public class ImageOutputHandler extends OutputHandler {
 
         finalSB.append(HtmlUtils.p());
         finalSB.append(sb);
+
         return new Result(group.getName(), finalSB, getMimeType(output));
 
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private String formatDate(Request request, Entry entry) {
-        return  getRepository().formatDate(request,entry.getStartDate(),
-                                           getEntryManager().getTimezone(entry));
+        return getRepository().formatDate(
+            request, entry.getStartDate(),
+            getEntryManager().getTimezone(entry));
     }
 
     /**
@@ -748,6 +768,7 @@ public class ImageOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         if (entries.size() == 0) {
             finalSB.append("<b>Nothing Found</b><p>");
+
             return;
         }
 
@@ -771,10 +792,9 @@ public class ImageOutputHandler extends OutputHandler {
             String entryUrl = getEntryLink(request, entry);
             String title    =
                 "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
-            String dttm = formatDate(request,entry);
+            String dttm = formatDate(request, entry);
             title += "<tr><td><b>Image:</b> " + entryUrl
-                     + "</td><td align=right>"
-                     + dttm;
+                     + "</td><td align=right>" + dttm;
             title += "</table>";
             title = title.replace("\"", "\\\"");
             sb.append("addImage(" + HtmlUtils.quote(url) + ","
@@ -800,11 +820,11 @@ public class ImageOutputHandler extends OutputHandler {
             if (width > 0) {
                 request.put(ARG_WIDTH, "0");
                 fullUrl = HtmlUtils.href(request.getUrl(),
-                                        msg("Use image width"));
+                                         msg("Use image width"));
             } else {
                 request.put(ARG_WIDTH, "600");
                 fullUrl = HtmlUtils.href(request.getUrl(),
-                                        msg("Use fixed width"));
+                                         msg("Use fixed width"));
             }
             sb = new StringBuffer(HtmlUtils.leftRight(getSortLinks(request),
                     fullUrl));

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -34,7 +36,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -200,6 +201,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         if (seenFiles.contains(f)) {
             return true;
         }
+
         return false;
     }
 
@@ -283,12 +285,12 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         super.applyEditForm(request);
 
         //Reset the seen files
-        seenFiles   = new HashSet();
+        seenFiles         = new HashSet();
 
-        lastRunTime = 0;
+        lastRunTime       = 0;
         filePatternString = request.getUnsafeString(ATTR_FILEPATTERN,
                 filePatternString);
-        filePattern = null;
+        filePattern          = null;
 
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,
                 notfilePatternString).trim();
@@ -325,8 +327,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 extraLabel = HtmlUtils.br()
                              + HtmlUtils.span(
                                  msg("Directory does not exist"),
-                                 HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
+                                 HtmlUtils.cssClass(
+                                     CSS_CLASS_REQUIRED_LABEL));
                 fileFieldExtra = HtmlUtils.cssClass(CSS_CLASS_REQUIRED);
+
                 break;
             } else if ( !getStorageManager().isLocalFileOk(rootDir)) {
                 String adminLink =
@@ -341,15 +345,16 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                             "You need to add this directory to the file system access list"), HtmlUtils
                                 .cssClass(CSS_CLASS_REQUIRED_LABEL)) + HtmlUtils.space(2) + adminLink;
                 fileFieldExtra = HtmlUtils.cssClass(CSS_CLASS_REQUIRED);
+
                 break;
             }
         }
 
         if (rootDirs.size() == 0) {
-            extraLabel =
-                HtmlUtils.br()
-                + HtmlUtils.span(msg("Required"),
-                                HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
+            extraLabel = HtmlUtils.br()
+                         + HtmlUtils.span(
+                             msg("Required"),
+                             HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
             fileFieldExtra = HtmlUtils.cssClass(CSS_CLASS_REQUIRED);
 
         }
@@ -373,9 +378,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
 
         sb.append(HtmlUtils.formEntry(msgLabel("That match pattern"),
-                                     HtmlUtils.input(ATTR_FILEPATTERN,
-                                         filePatternString,
-                                         HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_FILEPATTERN,
+                                          filePatternString,
+                                          HtmlUtils.SIZE_60)));
 
         sb.append(
             HtmlUtils.formEntry(
@@ -399,50 +404,59 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 
         sb.append(HtmlUtils.formEntry(msgLabel("Folder template"),
-                                     HtmlUtils.input(ATTR_GROUPTEMPLATE,
-                                         groupTemplate, HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_GROUPTEMPLATE,
+                                          groupTemplate, HtmlUtils.SIZE_60)));
 
         sb.append(HtmlUtils.formEntry(msgLabel("Name template"),
-                                     HtmlUtils.input(ATTR_NAMETEMPLATE,
-                                         nameTemplate, HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_NAMETEMPLATE,
+                                          nameTemplate, HtmlUtils.SIZE_60)));
         sb.append(HtmlUtils.formEntry(msgLabel("Description template"),
-                                     HtmlUtils.input(ATTR_DESCTEMPLATE,
-                                         descTemplate, HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_DESCTEMPLATE,
+                                          descTemplate, HtmlUtils.SIZE_60)));
 
         sb.append(HtmlUtils.formEntry(msgLabel("Entry type"),
-                                     makeEntryTypeSelector(request,
-                                         getTypeHandler())));
+                                      makeEntryTypeSelector(request,
+                                          getTypeHandler())));
 
 
 
         sb.append(HtmlUtils.formEntry(msgLabel("Date format"),
-                                     HtmlUtils.input(ATTR_DATEFORMAT,
-                                         dateFormat, HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_DATEFORMAT,
+                                          dateFormat, HtmlUtils.SIZE_60)));
 
 
         String moveNote =
             msg(
             "Note: This will move the files from their current location to RAMADDA's storage directory");
         sb.append(HtmlUtils.formEntry(msgLabel("Move file to storage"),
-                                     HtmlUtils.checkbox(ATTR_MOVETOSTORAGE,
-                                         "true",
-                                         moveToStorage) + HtmlUtils.space(1)
-                                             + moveNote));
+                                      HtmlUtils.checkbox(ATTR_MOVETOSTORAGE,
+                                          "true",
+                                          moveToStorage) + HtmlUtils.space(1)
+                                              + moveNote));
 
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Metadata"),
-                HtmlUtils.checkbox(ATTR_ADDMETADATA, "true", getAddMetadata())
-                + HtmlUtils.space(1) + msg("Add full metadata")
-                + HtmlUtils.space(4)
-                + HtmlUtils.checkbox(ATTR_ADDSHORTMETADATA, "true",
-                    getAddShortMetadata()) + HtmlUtils.space(1)
-                        + msg("Just add spatial/temporal metadata")));
+        sb.append(
+            HtmlUtils
+                .formEntry(
+                    msgLabel("Metadata"),
+                    HtmlUtils
+                        .checkbox(
+                            ATTR_ADDMETADATA, "true",
+                            getAddMetadata()) + HtmlUtils.space(1)
+                                + msg("Add full metadata")
+                                + HtmlUtils.space(4)
+                                + HtmlUtils
+                                    .checkbox(
+                                        ATTR_ADDSHORTMETADATA, "true",
+                                        getAddShortMetadata()) + HtmlUtils
+                                            .space(1) + msg(
+                                                "Just add spatial/temporal metadata")));
 
         sb.append(HtmlUtils.formEntry(msgLabel("User"),
-                                     HtmlUtils.input(ATTR_USER,
-                                         (getUserName() != null)
-                                         ? getUserName().trim()
-                                         : "", HtmlUtils.SIZE_30)));
+                                      HtmlUtils.input(ATTR_USER,
+                                          (getUserName() != null)
+                                          ? getUserName().trim()
+                                          : "", HtmlUtils.SIZE_30)));
 
 
     }
@@ -462,6 +476,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             throws Exception {
         List items = new ArrayList();
         items.add(new TwoFacedObject(msg("Find match"), TYPE_FINDMATCH));
+
         return repository.makeTypeSelect(items, request, false,
                                          getTypeHandler().getType(), false,
                                          null);
@@ -489,6 +504,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 format.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
             }
         }
+
         return sdf;
 
     }
@@ -513,6 +529,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 int idx1 = tmp.indexOf("(");
                 if (idx1 < 0) {
                     pattern.append(tmp);
+
                     break;
                 }
                 int idx2 = tmp.indexOf(":");
@@ -572,8 +589,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         }
         List<File> rootDirs = getRootDirs();
+
         return "Directory:" + StringUtil.join(" ", rootDirs) + "<br>"
-               + dirMsg + entryMsg + status+"<br>" + currentStatus;
+               + dirMsg + entryMsg + status + "<br>" + currentStatus;
     }
 
     /**
@@ -598,6 +616,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         FileInfo fileInfo = new FileInfo(dir, rootDir, true);
         dirs.add(fileInfo);
         dirMap.add(dir);
+
         return fileInfo;
     }
 
@@ -626,6 +645,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         logHarvesterInfo("******************* Starting ****************");
         if ( !canContinueRunning(timestamp)) {
             logHarvesterInfo("stopping in runInner");
+
             return;
         }
 
@@ -675,6 +695,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             if ( !getMonitor()) {
                 status.append("Done<br>");
                 logHarvesterInfo("Ran one time only. Exiting loop");
+
                 break;
             }
 
@@ -723,12 +744,14 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 logHarvesterInfo("Directory:" + dirInfo.getFile()
                                  + " * does not exist *");
                 removeDir(dirInfo);
+
                 continue;
             }
             boolean directoryChanged = dirInfo.hasChanged();
             if (checkIfDirHasChanged && !firstTime && !directoryChanged) {
                 logHarvesterInfo("Directory:" + dirInfo.getFile()
                                  + "  * no change *");
+
                 continue;
             }
 
@@ -737,6 +760,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             if ((files == null) || (files.length == 0)) {
                 logHarvesterInfo("Directory:" + dirInfo.getFile()
                                  + " * no files *");
+
                 continue;
             }
 
@@ -754,6 +778,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                         logHarvesterInfo("New directory:" + f);
                         tmpDirs.add(addDir(f, dirInfo.getRootDir()));
                     }
+
                     continue;
                 }
                 long fileTime = f.lastModified();
@@ -769,6 +794,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
+
                     continue;
                 }
                 Entry entry = null;
@@ -779,6 +805,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 }
                 if (entry == null) {
                     logHarvesterInfo("No entry created");
+
                     continue;
                 }
                 entries.add(entry);
@@ -814,6 +841,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 }
                 if ( !canContinueRunning(timestamp)) {
                     logHarvesterInfo("stopping harvest");
+
                     return;
                 }
             }
@@ -873,19 +901,22 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             newEntry.getTypeHandler().initializeNewEntry(newEntry);
             entriesToAdd.add(newEntry);
             cnt++;
-            currentStatus = "Initialized " + cnt +" of " + entries.size() +" entries";
+            currentStatus = "Initialized " + cnt + " of " + entries.size()
+                            + " entries";
         }
         currentStatus = "Done initializng entries";
         if (getAddMetadata() || getAddShortMetadata()) {
             currentStatus = "Adding metadata";
-            int count=0;
-            for(Entry entry: entriesToAdd) {
-                List<Entry> tmpList =new ArrayList<Entry>();
+            int count = 0;
+            for (Entry entry : entriesToAdd) {
+                List<Entry> tmpList = new ArrayList<Entry>();
                 tmpList.add(entry);
                 count++;
                 getEntryManager().addInitialMetadata(null, tmpList, true,
-                                                     getAddShortMetadata());
-                currentStatus = "Added metadata for " + count +" entries. " + (entriesToAdd.size()-count) + " more entries to process";
+                        getAddShortMetadata());
+                currentStatus = "Added metadata for " + count + " entries. "
+                                + (entriesToAdd.size() - count)
+                                + " more entries to process";
             }
         }
         currentStatus = "";
@@ -932,6 +963,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             names.add(name);
             parentFile = file;
         }
+
         return StringUtil.join(Entry.PATHDELIMITER, names);
     }
 
@@ -957,6 +989,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         if (lastException != null) {
             throw lastException;
         }
+
         return null;
     }
 
@@ -990,6 +1023,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         if (f.getName().startsWith(".") && !isPlaceholder) {
             logHarvesterInfo("File is hidden file:" + f);
+
             return null;
         }
 
@@ -1007,6 +1041,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 debug("file:<i>" + fileName + "</i> does not match pattern");
                 logHarvesterInfo("file:" + fileName
                                  + " does not match pattern");
+
                 return null;
             }
         }
@@ -1016,12 +1051,14 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 logHarvesterInfo(
                     "excluding file because it matches the NOT pattern:"
                     + fileName);
+
                 return null;
             }
         }
 
 
         debug("file:<i>" + fileName + "</i> matches pattern");
+
         return harvestFile(fileInfo, f, matcher);
     }
 
@@ -1068,12 +1105,13 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         if ((typeHandlerToUse == null)
                 && typeHandler.getType().equals(TYPE_FINDMATCH)) {
-            String path = f.toString();
+            String path      = f.toString();
             String shortName = f.getName();
             for (TypeHandler otherTypeHandler :
                     getRepository().getTypeHandlers()) {
                 if (otherTypeHandler.canHandleResource(path, shortName)) {
                     typeHandlerToUse = otherTypeHandler;
+
                     break;
                 }
             }
@@ -1099,8 +1137,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         List dirToks = (List<String>) StringUtil.split(dirPath, "/", true,
                            true);
         //        System.err.println ("file:" +fileName + " " + dirPath +" " + dirToks);
-        Entry baseGroup = getBaseGroup();
-        String dirGroup =
+        Entry  baseGroup = getBaseGroup();
+        String dirGroup  =
             getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
                         false && !getTestMode()
                         && (groupTemplate.indexOf("${dirgroup}") >= 0));
@@ -1125,7 +1163,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             } else if (dataName.equals("todate")) {
                 value = toDate = parseDate((String) value);
             } else {
-                value = typeHandlerToUse.convert(dataName, (String) value);
+                value     = typeHandlerToUse.convert(dataName, (String) value);
                 groupName = groupName.replace("${" + dataName + "}",
                         value.toString());
                 name = name.replace("${" + dataName + "}", value.toString());
@@ -1178,11 +1216,12 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     debug("\tvalue: " + values[i]);
                 }
             }
+
             return null;
         }
 
         boolean createIfNeeded = !getTestMode();
-        Entry group = getEntryManager().findEntryFromName(getRequest(),
+        Entry   group = getEntryManager().findEntryFromName(getRequest(),
                           groupName, getUser(), createIfNeeded,
                           getLastGroupType(), this);
         //If its just a placeholder then all we need to do is create the group and return
@@ -1196,6 +1235,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             }
             group.setDescription(IOUtil.readContents(f.toString(), ""));
             getEntryManager().storeEntry(group);
+
             return null;
         }
 
@@ -1211,7 +1251,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         Resource resource;
         if (moveToStorage) {
             File fromFile = new File(fileName);
-            File newFile = getStorageManager().moveToStorage(
+            File newFile  = getStorageManager().moveToStorage(
                                null, fromFile,
                                getStorageManager().getStorageFileName(
                                    fromFile.getName()));
@@ -1256,6 +1296,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
             }
         }
+
         /*
         if (tag.length() > 0) {
             List tags = StringUtil.split(tag, ",", true, true);
@@ -1310,6 +1351,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             return null;
         }
         File f = new File(filepath);
+
         return processFile(new FileInfo(f.getParentFile()), f);
     }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -20,12 +21,14 @@
 
 package org.ramadda.repository.util;
 
+
 import org.ramadda.repository.*;
+
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
 
@@ -222,6 +225,7 @@ public class ServerInfo implements Constants {
             return false;
         }
         ServerInfo that = (ServerInfo) o;
+
         return this.getId().equals(that.getId());
     }
 
@@ -251,6 +255,7 @@ public class ServerInfo implements Constants {
             XmlUtil.create(doc, TAG_INFO_SSLPORT, info, "" + sslPort, null);
         }
         XmlUtil.create(doc, TAG_INFO_ISREGISTRY, info, "" + isRegistry, null);
+
         return info;
     }
 
@@ -285,7 +290,7 @@ public class ServerInfo implements Constants {
      */
     public String getHref(String extra, boolean includeUrl) {
         return HtmlUtils.href("http://" + hostname + ":" + port + basePath,
-                             getLabel(includeUrl), extra);
+                              getLabel(includeUrl), extra);
     }
 
     /**
@@ -323,6 +328,7 @@ public class ServerInfo implements Constants {
         if (port != 80) {
             return hostname + ":" + port;
         }
+
         return hostname;
     }
 

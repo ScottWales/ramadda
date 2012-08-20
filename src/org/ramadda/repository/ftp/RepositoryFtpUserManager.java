@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -107,6 +108,7 @@ public class RepositoryFtpUserManager implements org.ramadda.repository
                 if ( !ftpManager.getRepository().getUserManager()
                         .isPasswordValid(name, password)) {
                     System.err.println("bad pass");
+
                     return null;
                 }
             } else if (auth instanceof AnonymousAuthentication) {
@@ -124,6 +126,7 @@ public class RepositoryFtpUserManager implements org.ramadda.repository
                 getRepository().getUserManager().findUser(name);
             if (repositoryUser == null) {
                 ftpManager.logInfo("Could not find user:" + name);
+
                 return null;
             }
 
@@ -131,6 +134,7 @@ public class RepositoryFtpUserManager implements org.ramadda.repository
                 if ( !repositoryUser.getAdmin()) {
                     ftpManager.logInfo(
                         "Only site administrators can access this server");
+
                     return null;
                 }
             }
@@ -145,6 +149,7 @@ public class RepositoryFtpUserManager implements org.ramadda.repository
             List<Authority> auths = new ArrayList<Authority>();
             auths.add(new ConcurrentLoginPermission(10, 10));
             user.setAuthorities(auths);
+
             //      System.err.println(" returning user:"+ user);
             return user;
         } catch (Exception exc) {

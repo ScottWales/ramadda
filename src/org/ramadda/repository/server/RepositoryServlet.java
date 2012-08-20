@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -180,8 +181,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         //        Repository tmpRepository = new Repository(getInitParams(), port);
         tmpRepository.init(webAppProperties);
         if (checkSsl) {
-            int sslPort = -1;
-            String ssls = tmpRepository.getPropertyValue(PROP_SSL_PORT,
+            int    sslPort = -1;
+            String ssls    = tmpRepository.getPropertyValue(PROP_SSL_PORT,
                               (String) null, false);
             if ((ssls != null) && (ssls.trim().length() > 0)) {
                 sslPort = new Integer(ssls.trim());
@@ -223,9 +224,11 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             String paramValue =
                 getServletContext().getInitParameter(paramName);
             tokens = StringUtil.split(paramValue, ",", true, true);
+
             break;
         }
         String[] args = (String[]) tokens.toArray(new String[tokens.size()]);
+
         return args;
     }
 
@@ -269,6 +272,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 logException(e, request);
                 response.sendError(response.SC_INTERNAL_SERVER_ERROR,
                                    "An error has occurred:" + e.getMessage());
+
                 return;
             }
         }
@@ -278,7 +282,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         RequestHandler handler          = new RequestHandler(request);
         Result         repositoryResult = null;
 
-        boolean isHeadRequest = request.getMethod().equals("HEAD");
+        boolean        isHeadRequest    = request.getMethod().equals("HEAD");
         try {
             try {
                 // create a org.ramadda.repository.Request object from the relevant info from the HttpServletRequest object
@@ -308,6 +312,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 response.sendError(response.SC_INTERNAL_SERVER_ERROR,
                                    "Unknown request:"
                                    + request.getRequestURI());
+
                 return;
             }
 
@@ -338,9 +343,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     }
                 }
 
-                if(isHeadRequest) {
-                    response.setStatus(
-                                       repositoryResult.getResponseCode());
+                if (isHeadRequest) {
+                    response.setStatus(repositoryResult.getResponseCode());
+
                     return;
                 }
 
@@ -555,8 +560,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             //            fileName = HtmlUtils.encode(fileName);
 
 
-            String contentType = item.getContentType();
-            File uploadedFile =
+            String contentType  = item.getContentType();
+            File   uploadedFile =
                 new File(
                     IOUtil.joinDir(
                         repository.getStorageManager().getUploadDir(),
@@ -564,7 +569,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         + fileName));
 
             try {
-                InputStream inputStream = item.getInputStream();
+                InputStream  inputStream  = item.getInputStream();
                 OutputStream outputStream =
                     repository.getStorageManager().getFileOutputStream(
                         uploadedFile);
@@ -576,6 +581,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 //                item.write(uploadedFile);
             } catch (Exception e) {
                 logException(e, request);
+
                 return;
             }
             fileUploads.put(fieldName, uploadedFile.toString());
@@ -624,6 +630,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             if (repository != null) {
                 repository.getLogManager().logError(
                     "Error in RepositoryServlet address=" + address, exc);
+
                 return;
             }
             System.err.println("Exception: " + exc);

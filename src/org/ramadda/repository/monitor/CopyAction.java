@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -86,6 +87,11 @@ public class CopyAction extends MonitorAction {
         return "copy";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getActionLabel() {
         return "Copy Action";
     }
@@ -104,6 +110,7 @@ public class CopyAction extends MonitorAction {
                     (Entry) entryMonitor.getRepository().getEntryManager()
                         .findGroup(null, parentGroupId);
             }
+
             return group;
         } catch (Exception exc) {
             return null;
@@ -122,6 +129,7 @@ public class CopyAction extends MonitorAction {
         if (group == null) {
             return "Copy entry: Error bad folder";
         }
+
         return "Copy entry to:" + group.getName();
     }
 
@@ -164,7 +172,7 @@ public class CopyAction extends MonitorAction {
                                 ? group.getFullName()
                                 : "");
             String inputId   = getArgId(ARG_GROUP);
-            String select =
+            String select    =
                 monitor.getRepository().getHtmlOutputHandler().getSelect(
                     null, inputId,
                     HtmlUtils.img(
@@ -173,7 +181,7 @@ public class CopyAction extends MonitorAction {
                                 + monitor.getRepository().msg(
                                     "Select"), false, "");
             sb.append(HtmlUtils.hidden(inputId + "_hidden", parentGroupId,
-                                      HtmlUtils.id(inputId + "_hidden")));
+                                       HtmlUtils.id(inputId + "_hidden")));
             sb.append(
                 HtmlUtils.formEntry(
                     "Folder:",
@@ -184,7 +192,8 @@ public class CopyAction extends MonitorAction {
                 HtmlUtils.formEntry(
                     "Sub-Folder Template:",
                     HtmlUtils.input(
-                        getArgId(ARG_SUBGROUP), subGroup, HtmlUtils.SIZE_60)));
+                        getArgId(ARG_SUBGROUP), subGroup,
+                        HtmlUtils.SIZE_60)));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

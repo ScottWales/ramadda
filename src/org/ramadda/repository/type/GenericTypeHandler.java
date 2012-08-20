@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -35,7 +37,6 @@ import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -137,6 +138,7 @@ public class GenericTypeHandler extends TypeHandler {
         if (icon != null) {
             return iconUrl(icon);
         }
+
         return super.getIconUrl(request, entry);
     }
 
@@ -204,9 +206,9 @@ public class GenericTypeHandler extends TypeHandler {
 
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
             Element columnNode = (Element) columnNodes.get(colIdx);
-            String className = XmlUtil.getAttribute(columnNode, ATTR_CLASS,
+            String  className  = XmlUtil.getAttribute(columnNode, ATTR_CLASS,
                                    Column.class.getName());
-            Class c = Misc.findClass(className);
+            Class       c    = Misc.findClass(className);
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { getClass(),
                     Element.class, Integer.TYPE });
@@ -232,6 +234,11 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<Column> getMyColumns() {
         return columns;
     }
@@ -252,6 +259,7 @@ public class GenericTypeHandler extends TypeHandler {
         if (columns != null) {
             allColumns.addAll(columns);
         }
+
         return allColumns;
     }
 
@@ -271,10 +279,12 @@ public class GenericTypeHandler extends TypeHandler {
                     if (s != null) {
                         return s;
                     }
+
                     break;
                 }
             }
         }
+
         return super.getCategory(entry);
     }
 
@@ -291,6 +301,7 @@ public class GenericTypeHandler extends TypeHandler {
                 return column;
             }
         }
+
         throw new IllegalArgumentException("Could not find column:"
                                            + columnName);
     }
@@ -311,6 +322,7 @@ public class GenericTypeHandler extends TypeHandler {
             values[idx] = data;
             idx++;
         }
+
         return values;
     }
 
@@ -325,6 +337,7 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public Object convert(String columnName, String value) {
         Column column = findColumn(columnName);
+
         return column.convert(value);
     }
 
@@ -348,6 +361,7 @@ public class GenericTypeHandler extends TypeHandler {
         if ( !haveDatabaseTable()) {
             return 0;
         }
+
         return colNames.size() - 1;
     }
 
@@ -358,6 +372,7 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public Object[] makeEntryValueArray() {
         int numberOfValues = getTotalNumberOfValues();
+
         return new Object[numberOfValues];
     }
 
@@ -374,6 +389,7 @@ public class GenericTypeHandler extends TypeHandler {
             values = makeEntryValueArray();
             entry.setValues(values);
         }
+
         return values;
     }
 
@@ -418,8 +434,7 @@ public class GenericTypeHandler extends TypeHandler {
         Object[] values = getEntryValues(entry);
         super.initializeEntryFromXml(request, entry, node);
 
-        Hashtable<String, Element> nodes    = new Hashtable<String,
-                                                  Element>();
+        Hashtable<String, Element> nodes    = new Hashtable<String, Element>();
 
         NodeList                   elements = XmlUtil.getElements(node);
         for (int i = 0; i < elements.getLength(); i++) {
@@ -470,6 +485,7 @@ public class GenericTypeHandler extends TypeHandler {
                 return MATCH_TRUE;
             }
         }
+
         return MATCH_UNKNOWN;
     }
 
@@ -492,6 +508,7 @@ public class GenericTypeHandler extends TypeHandler {
                                              .getFullName()));
             }
         }
+
         return list;
     }
 
@@ -511,6 +528,7 @@ public class GenericTypeHandler extends TypeHandler {
         for (Column column : columns) {
             if (column.getCanList() && column.getFullName().equals(what)) {
                 theColumn = column;
+
                 break;
             }
         }
@@ -519,11 +537,11 @@ public class GenericTypeHandler extends TypeHandler {
             return super.processList(request, what);
         }
 
-        String       column = theColumn.getFullName();
-        String       tag    = theColumn.getName();
-        String       title  = theColumn.getDescription();
-        List<Clause> where  = assembleWhereClause(request);
-        Statement statement = select(request, SqlUtil.distinct(column),
+        String       column    = theColumn.getFullName();
+        String       tag       = theColumn.getName();
+        String       title     = theColumn.getDescription();
+        List<Clause> where     = assembleWhereClause(request);
+        Statement    statement = select(request, SqlUtil.distinct(column),
                                      where, "");
 
         String[] values =
@@ -574,6 +592,7 @@ public class GenericTypeHandler extends TypeHandler {
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {
             sb.append(XmlUtil.closeTag(tag + "s"));
         }
+
         return new Result(
             title, sb,
             repository.getOutputHandler(request).getMimeType(output));
@@ -593,6 +612,7 @@ public class GenericTypeHandler extends TypeHandler {
         if ( !super.equals(obj)) {
             return false;
         }
+
         //TODO
         return true;
     }
@@ -680,6 +700,7 @@ public class GenericTypeHandler extends TypeHandler {
             where.add(Clause.join(Tables.ENTRIES.COL_ID,
                                   getTableName() + ".id"));
         }
+
         return where;
     }
 
@@ -760,6 +781,7 @@ public class GenericTypeHandler extends TypeHandler {
             stmt.setString(stmtIdx, entry.getId());
             stmtIdx++;
         }
+
         return stmtIdx;
     }
 
@@ -825,6 +847,7 @@ public class GenericTypeHandler extends TypeHandler {
         } finally {
             getDatabaseManager().closeAndReleaseConnection(stmt);
         }
+
         return values;
     }
 
@@ -912,10 +935,12 @@ public class GenericTypeHandler extends TypeHandler {
                     StringBuffer tmpSB = new StringBuffer();
                     formatColumnHtmlValue(request, entry, column, tmpSB,
                                           values);
+
                     return tmpSB.toString();
                 }
             }
         }
+
         return super.getFieldHtml(request, entry, name);
     }
 
@@ -940,7 +965,7 @@ public class GenericTypeHandler extends TypeHandler {
                                              boolean linkToDownload)
             throws Exception {
         StringBuffer sb = super.getInnerEntryContent(entry, request, output,
-                                                     showDescription, showResource, linkToDownload);
+                              showDescription, showResource, linkToDownload);
         if (true) {
             //        if (shouldShowInHtml(request, entry, output)) {
             Object[] values = entry.getValues();
@@ -953,11 +978,12 @@ public class GenericTypeHandler extends TypeHandler {
                     formatColumnHtmlValue(request, entry, column, tmpSb,
                                           values);
                     sb.append(formEntry(request, column.getLabel() + ":",
-                            tmpSb.toString()));
+                                        tmpSb.toString()));
                 }
 
             }
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
+
         return sb;
     }
 
@@ -1010,9 +1036,11 @@ public class GenericTypeHandler extends TypeHandler {
             }
             if (request.defined(column.getFullName())) {
                 initTables.add(getTableName());
+
                 break;
             }
         }
+
         return initTables;
     }
 
@@ -1023,6 +1051,7 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public String getTableName() {
         String typeName = getType();
+
         //TODO  - clean up the table name
         //        typeName = typeName.replaceAll("\\.","_");
         return typeName;

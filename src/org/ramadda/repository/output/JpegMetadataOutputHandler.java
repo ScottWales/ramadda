@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -32,10 +33,11 @@ import com.drew.metadata.exif.*;
 import org.ramadda.repository.*;
 
 
+import org.ramadda.util.HtmlUtils;
+
+
 import org.w3c.dom.*;
 
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 
 
@@ -68,8 +70,7 @@ public class JpegMetadataOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_JPEG_METADATA =
         new OutputType("JPEG Metadata", "jpeg.metadata",
-                       OutputType.TYPE_VIEW , "",
-                       ICON_IMAGES);
+                       OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
     /**
      * _more_
@@ -101,11 +102,10 @@ public class JpegMetadataOutputHandler extends OutputHandler {
             throws Exception {
         if (state.entry != null) {
             String path = state.entry.getResource().getPath().toLowerCase();
-            if ( !(path.endsWith(".jpg") || 
-                   path.endsWith(".jpeg")||
-                   path.endsWith(".tiff"))) {
-                    return;
-                }
+            if ( !(path.endsWith(".jpg") || path.endsWith(".jpeg")
+                    || path.endsWith(".tiff"))) {
+                return;
+            }
             links.add(makeLink(request, state.getEntry(),
                                OUTPUT_JPEG_METADATA));
         }
@@ -126,29 +126,45 @@ public class JpegMetadataOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        File jpegFile = new File(entry.getResource().getPath());
-        outputTags(sb, jpegFile,true);
+        StringBuffer sb       = new StringBuffer();
+        File         jpegFile = new File(entry.getResource().getPath());
+        outputTags(sb, jpegFile, true);
+
         return new Result("JPEG Metadata", sb);
     }
 
-    private static void outputTags(StringBuffer sb, File jpegFile, boolean forHtml) throws Exception {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param jpegFile _more_
+     * @param forHtml _more_
+     *
+     * @throws Exception _more_
+     */
+    private static void outputTags(StringBuffer sb, File jpegFile,
+                                   boolean forHtml)
+            throws Exception {
 
-        com.drew.metadata.Metadata metadata  = com.drew.imaging.ImageMetadataReader.readMetadata(jpegFile);
+        com.drew.metadata.Metadata metadata =
+            com.drew.imaging.ImageMetadataReader.readMetadata(jpegFile);
         //            JpegMetadataReader.readMetadata(jpegFile);
 
-        if(forHtml) 
+        if (forHtml) {
             sb.append("<ul>");
+        }
         //        java.lang.Iterable<Directory> directories = metadata.getDirectories();
         Iterator directories = metadata.getDirectories().iterator();
         while (directories.hasNext()) {
             Directory directory = (Directory) directories.next();
-            if(forHtml) 
+            if (forHtml) {
                 sb.append("<li> ");
+            }
             sb.append(directory.getName());
             sb.append("\n");
-            if(forHtml) 
+            if (forHtml) {
                 sb.append("<ul>");
+            }
             //            Iterator tags = directory.getTagIterator();
             //while (tags.hasNext()) {
             //                Tag tag = (Tag) tags.next();
@@ -156,27 +172,36 @@ public class JpegMetadataOutputHandler extends OutputHandler {
                 if (tag.getTagName().indexOf("Unknown") >= 0) {
                     continue;
                 }
-                if(forHtml) 
+                if (forHtml) {
                     sb.append("<li> ");
+                }
                 sb.append(tag.getTagName());
                 sb.append(":");
                 sb.append(tag.getDescription());
                 sb.append("\n");
             }
-            if(forHtml) 
+            if (forHtml) {
                 sb.append("</ul>");
+            }
         }
-        if(forHtml) 
+        if (forHtml) {
             sb.append("</ul>");
+        }
     }
 
-    public static void main(String[]args) throws Exception {
-        for(String file: args) {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        for (String file : args) {
             StringBuffer sb = new StringBuffer();
-            outputTags(sb, new File(file),false);
+            outputTags(sb, new File(file), false);
             System.out.println(sb);
         }
     }
 
 }
-

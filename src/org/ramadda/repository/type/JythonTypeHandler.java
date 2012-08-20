@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -32,9 +33,10 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -74,6 +76,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                 interp.exec(
                     getRepository().getResource(
                         "/org/ramadda/repository/resources/init.py"));
+
                 return interp;
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
@@ -124,6 +127,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
         PythonInterpreter interp = interpPool.get("interp");
         Result            result = getHtmlDisplay(request, entry, interp);
         interpPool.put("interp", interp);
+
         return result;
     }
 
@@ -263,6 +267,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
         Result result = new Result((formInfo.title != null)
                                    ? formInfo.title
                                    : entry.getName(), formSB);
+
         return result;
     }
 
@@ -304,7 +309,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                 } else if (info.type == InputInfo.TYPE_ENTRY) {
                     String entryName = request.getString(info.id, "");
 
-                    String entryId = request.getUnsafeString(info.id
+                    String entryId   = request.getUnsafeString(info.id
                                          + "_hidden", "");
                     Entry theEntry = getEntryManager().getEntry(request,
                                          entryId);
@@ -366,6 +371,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                                    : entry.getName(), new StringBuffer(
                                        formInfo.resultHtml), formInfo
                                            .mimeType);
+
         return result;
     }
 
@@ -673,13 +679,15 @@ public class JythonTypeHandler extends GenericTypeHandler {
             inputs.add(new InputInfo(InputInfo.TYPE_ENTRY, id));
 
             sb.append(HtmlUtils.hidden(id + "_hidden", "",
-                                      HtmlUtils.id(id + "_hidden")));
+                                       HtmlUtils.id(id + "_hidden")));
             String select = OutputHandler.getSelect(request, id, "Select",
                                 true, null, entry);
-            sb.append(HtmlUtils.formEntry(label,
-                                         HtmlUtils.disabledInput(id, "",
-                                             HtmlUtils.id(id)
-                                             + HtmlUtils.SIZE_60) + select));
+            sb.append(
+                HtmlUtils.formEntry(
+                    label,
+                    HtmlUtils.disabledInput(
+                        id, "",
+                        HtmlUtils.id(id) + HtmlUtils.SIZE_60) + select));
             cnt++;
         }
 
@@ -710,13 +718,10 @@ public class JythonTypeHandler extends GenericTypeHandler {
             cnt++;
             inputs.add(new InputInfo(InputInfo.TYPE_TEXT, id));
             if (rows == 1) {
-                sb.append(
-                    HtmlUtils.formEntry(
-                        typeHandler.msgLabel(label),
-                        HtmlUtils.input(
-                            id, dflt,
-                            HtmlUtils.attr(
-                                HtmlUtils.ATTR_SIZE, "" + columns))));
+                sb.append(HtmlUtils.formEntry(typeHandler.msgLabel(label),
+                        HtmlUtils.input(id, dflt,
+                                        HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+                                            "" + columns))));
             } else {
                 sb.append(HtmlUtils.formEntryTop(typeHandler.msgLabel(label),
                         HtmlUtils.textArea(id, dflt, rows, columns)));
@@ -736,7 +741,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
             cnt++;
             inputs.add(new InputInfo(InputInfo.TYPE_TEXT, id));
             sb.append(HtmlUtils.formEntry(label,
-                                         HtmlUtils.select(id, items, dflt)));
+                                          HtmlUtils.select(id, items, dflt)));
         }
 
 

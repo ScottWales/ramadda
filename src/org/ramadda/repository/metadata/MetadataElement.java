@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,10 +25,11 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.DataTypes;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -165,7 +167,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     /** _more_ */
     private String group;
 
-    /** _more_          */
+    /** _more_ */
     private Element xmlNode;
 
     /**
@@ -248,12 +250,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 if (idx < 0) {
                     valueMap.put(tok, tok);
                     enumValues.add(tok);
+
                     continue;
                 }
                 String[] toks = StringUtil.split(tok, delimiter, 2);
                 if (toks == null) {
                     valueMap.put(tok, tok);
                     enumValues.add(tok);
+
                     continue;
                 }
                 valueMap.put(toks[0], toks[1]);
@@ -299,7 +303,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      * @throws Exception _more_
      */
     private List<Metadata> getGroupData(String value) throws Exception {
-        List<Metadata> result = new ArrayList<Metadata>();
+        List<Metadata>                   result  = new ArrayList<Metadata>();
         List<Hashtable<Integer, String>> entries =
             (List<Hashtable<Integer,
                             String>>) (((value != null)
@@ -317,6 +321,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 metadata.setAttr(index.intValue(), map.get(index));
             }
         }
+
         return result;
     }
 
@@ -381,9 +386,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         if (formInfo.isGroup) {
                             //                            subEntrySB.append("<tr valign=\"top\"><td></td><td>\n");
                         }
-                        subEntrySB.append(
-                            HtmlUtils.formEntry(
-                                formInfo.label, formInfo.content));
+                        subEntrySB.append(HtmlUtils.formEntry(formInfo.label,
+                                formInfo.content));
                         if (formInfo.isGroup) {
                             //                            subEntrySB.append("</td></tr>\n");
                         }
@@ -418,8 +422,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 String       initJS = toggle[2];
                 StringBuffer tmp    = new StringBuffer();
                 tmp.append(HtmlUtils.formTable());
-                tmp.append("<tr valign=top><td width=1%>"
-                    + link + "</td><td>"
+                tmp.append(
+                    "<tr valign=top><td width=1%>" + link + "</td><td>"
                     + HtmlUtils.div(
                         entriesSB.toString(),
                         HtmlUtils.id(id)
@@ -452,9 +456,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             } else {
                 name = HtmlUtils.space(1);
             }
+
             //            sb.append(HtmlUtils.formEntry(name, html));
             return new FormInfo(name, html);
         }
+
         return null;
 
     }
@@ -490,6 +496,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         metadata.getAttr(element.getIndex()), sb);
                 }
             }
+
             return;
         } else if (dataType.equals(DATATYPE_ENUMERATION)
                    || dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
@@ -560,6 +567,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         if (label == null) {
             label = value;
         }
+
         return label;
     }
 
@@ -595,6 +603,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         if (getDataType().equals(DATATYPE_BOOLEAN)) {
             boolean value = request.get(arg, false);
+
             return "" + value;
         }
 
@@ -629,6 +638,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 }
                 entries.add(map);
             }
+
             return Repository.encodeObject(entries);
         }
 
@@ -662,7 +672,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             URL           fromUrl    = new URL(url);
             URLConnection connection = fromUrl.openConnection();
             InputStream   fromStream = connection.getInputStream();
-            OutputStream toStream =
+            OutputStream  toStream   =
                 getStorageManager().getFileOutputStream(tmpFile);
             try {
                 int bytes = IOUtil.writeTo(fromStream, toStream);
@@ -687,6 +697,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         }
         theFile = getStorageManager().moveToEntryDir(entry,
                 new File(theFile)).getName();
+
         return theFile;
     }
 
@@ -724,6 +735,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             xml.append(applyTemplate(templateType, entry, subMetadata,
                                      parent));
         }
+
         return xml.toString();
     }
 
@@ -761,19 +773,22 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 String buttons =
                     getRepository().getWikiManager().makeWikiEditBar(request,
                         entry, arg) + HtmlUtils.br();
+
                 return buttons
                        + HtmlUtils.textArea(arg, value, rows, columns,
-                                           HtmlUtils.id(arg));
+                                            HtmlUtils.id(arg));
             } else {
                 if (rows > 1) {
                     return HtmlUtils.textArea(arg, value, rows, columns);
                 }
+
                 return HtmlUtils.input(arg, value,
-                                      HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
-                                          "" + columns));
+                                       HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+                                           "" + columns));
             }
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
-            return HtmlUtils.checkbox(arg, "true", Misc.equals(value, "true"));
+            return HtmlUtils.checkbox(arg, "true",
+                                      Misc.equals(value, "true"));
         } else if (dataType.equals(DATATYPE_INT)) {
             return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
         } else if (dataType.equals(DATATYPE_DOUBLE)) {
@@ -785,6 +800,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             } else {
                 date = new Date();
             }
+
             return getRepository().makeDateInput(request, arg, "", date);
         } else if (dataType.equals(DATATYPE_DATE)) {
             Date date;
@@ -793,14 +809,17 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             } else {
                 date = new Date();
             }
+
             return getRepository().makeDateInput(request, arg, "", date,
                     null, false);
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
             return HtmlUtils.select(arg, values, value);
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
             boolean contains = TwoFacedObject.contains(values, value);
+
             return HtmlUtils.select(arg, values, value) + HtmlUtils.space(2)
-                   + msgLabel("Or") + HtmlUtils.input(arg + ".input", (contains
+                   + msgLabel("Or")
+                   + HtmlUtils.input(arg + ".input", (contains
                     ? ""
                     : value), HtmlUtils.SIZE_30);
         } else if (dataType.equals(DATATYPE_FILE)) {
@@ -813,8 +832,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             } else {
                 image = "<br>" + image;
             }
-            return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + image + "<br>"
-                   + "Or download URL:"
+
+            return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + image
+                   + "<br>" + "Or download URL:"
                    + HtmlUtils.input(arg + ".url", "", HtmlUtils.SIZE_70);
         } else if (dataType.equals(DATATYPE_GROUP)) {
             StringBuffer   sb            = new StringBuffer();
@@ -827,7 +847,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             for (Metadata subMetadata : groupMetadata) {
                 StringBuffer groupSB = new StringBuffer();
                 groupSB.append(HtmlUtils.formTable());
-                String subArg = arg + ".group" + groupCnt + ".";
+                String  subArg  = arg + ".group" + groupCnt + ".";
                 boolean lastOne = ((groupMetadata.size() > 1)
                                    && (groupCnt == groupMetadata.size() - 1));
                 if (lastOne) {
@@ -893,12 +913,17 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 }
                 groupCnt++;
             }
-            sb.append(HtmlUtils.makeToggleInline("",
-                    HtmlUtils.div(entriesSB.toString(),
-                                 HtmlUtils.cssClass("metadatagroup")), true));
+            sb.append(
+                HtmlUtils.makeToggleInline(
+                    "",
+                    HtmlUtils.div(
+                        entriesSB.toString(),
+                        HtmlUtils.cssClass("metadatagroup")), true));
+
             return sb.toString();
         } else {
             System.err.println("Unknown data type:" + dataType);
+
             return null;
         }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,6 +23,7 @@ package org.ramadda.repository.harvester;
 
 
 import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -45,6 +47,7 @@ public class FileInfo {
     /** The file */
     private File file;
 
+    /** _more_          */
     private File rootDir;
 
     /** _more_ */
@@ -76,12 +79,13 @@ public class FileInfo {
      * ctor
      *
      * @param f the file
+     * @param rootDir _more_
      * @param isDir is file a directory
      */
     public FileInfo(File f, File rootDir, boolean isDir) {
-        this.isDir = isDir;
+        this.isDir   = isDir;
         this.rootDir = rootDir;
-        file       = f;
+        file         = f;
     }
 
     /**
@@ -126,6 +130,7 @@ public class FileInfo {
             return false;
         }
         FileInfo that = (FileInfo) obj;
+
         return this.file.equals(that.file);
     }
 
@@ -139,6 +144,7 @@ public class FileInfo {
     public boolean hasChanged() {
         if ( !hasInitialized) {
             doInit();
+
             return true;
         }
         long newTime      = file.lastModified();
@@ -162,6 +168,7 @@ public class FileInfo {
         time      = newTime;
         size      = newSize;
         fileCount = newFileCount;
+
         return changed;
     }
 
@@ -223,8 +230,10 @@ public class FileInfo {
             String fileBlock = HtmlUtils.insetDiv("Added files:<br>"
                                    + StringUtil.join("<br>", tmp), 0, 10, 0,
                                        0);
+
             return HtmlUtils.makeShowHideBlock(s, fileBlock, false);
         }
+
         return s;
     }
 
@@ -237,7 +246,8 @@ public class FileInfo {
      *
      * @throws Exception _more_
      */
-    public static List<FileInfo> collectDirs(final File rootDir) throws Exception {
+    public static List<FileInfo> collectDirs(final File rootDir)
+            throws Exception {
         final List<FileInfo> dirs       = new ArrayList();
         IOUtil.FileViewer    fileViewer = new IOUtil.FileViewer() {
             public int viewFile(File f) throws Exception {
@@ -247,13 +257,20 @@ public class FileInfo {
                     }
                     dirs.add(new FileInfo(f, rootDir, true));
                 }
+
                 return DO_CONTINUE;
             }
         };
         IOUtil.walkDirectory(rootDir, fileViewer);
+
         return dirs;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public File getRootDir() {
         return rootDir;
     }
@@ -285,6 +302,7 @@ public class FileInfo {
                     dirs.add(new FileInfo(f, f, true));
                     //    if(dirs.size()%1000==0) System.err.print(".");
                 }
+
                 return DO_CONTINUE;
             }
         };

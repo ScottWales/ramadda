@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.RepositoryBase;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
 import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.Document;
@@ -36,7 +38,6 @@ import org.w3c.dom.NodeList;
 
 
 import ucar.unidata.ui.HttpFormEntry;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -61,13 +62,28 @@ import java.util.zip.*;
  */
 public class RepositoryClient extends RepositoryBase {
 
+    /** _more_          */
     public static final String CMD_FETCH = "-fetch";
+
+    /** _more_          */
     public static final String CMD_PRINT = "-print";
-    public static final String CMD_PRINTXML =  "-printxml";
-    public static final String CMD_IMPORT =  "-import";
-    public static final String CMD_DEBUG =  "-debug";
-    public static final String CMD_EXIT =  "-exit";
-    public static final String CMD_FOLDER = "-folder" ;
+
+    /** _more_          */
+    public static final String CMD_PRINTXML = "-printxml";
+
+    /** _more_          */
+    public static final String CMD_IMPORT = "-import";
+
+    /** _more_          */
+    public static final String CMD_DEBUG = "-debug";
+
+    /** _more_          */
+    public static final String CMD_EXIT = "-exit";
+
+    /** _more_          */
+    public static final String CMD_FOLDER = "-folder";
+
+    /** _more_          */
     public static final String CMD_FILE = "-file";
     //    public static final String CMD_ = ;
 
@@ -113,7 +129,10 @@ public class RepositoryClient extends RepositoryBase {
     /** _more_ */
     private String lastId = "";
 
+    /** _more_          */
     private File importFile;
+
+    /** _more_          */
     private String importParentId;
 
 
@@ -289,6 +308,7 @@ public class RepositoryClient extends RepositoryBase {
             throws Exception {
 
         RepositoryClient client = new RepositoryClient(host, user, passwd);
+
         return client.uploadFile(entryName, entryDescription, parent,
                                  filePath);
     }
@@ -312,8 +332,8 @@ public class RepositoryClient extends RepositoryBase {
 
         checkSession();
 
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+        Document doc  = XmlUtil.makeDocument();
+        Element  root = XmlUtil.create(doc, TAG_ENTRIES, null,
                                       new String[] {});
         Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
                                            new String[] {});
@@ -387,6 +407,7 @@ public class RepositoryClient extends RepositoryBase {
         Element response = XmlUtil.getRoot(result[1]);
         if ( !responseOk(response)) {
             String body = XmlUtil.getChildText(response);
+
             throw new EntryErrorException(body);
         }
         Element newEntryNode = XmlUtil.findChild(response, TAG_ENTRY);
@@ -394,6 +415,7 @@ public class RepositoryClient extends RepositoryBase {
             throw new IllegalStateException("No entry node found in:"
                                             + XmlUtil.toString(response));
         }
+
         return XmlUtil.getAttribute(newEntryNode, ATTR_ID);
 
     }
@@ -420,6 +442,7 @@ public class RepositoryClient extends RepositoryBase {
         };
         String url = HtmlUtils.url(URL_ENTRY_SHOW.getFullUrl(), args);
         String xml = IOUtil.readContents(url, getClass());
+
         return xml;
     }
 
@@ -435,6 +458,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     public ClientEntry getEntry(String entryId) throws Exception {
         Element root = XmlUtil.getRoot(getEntryXml(entryId));
+
         return getEntry(root);
     }
 
@@ -473,8 +497,9 @@ public class RepositoryClient extends RepositoryBase {
             throws Exception {
         checkSession();
         String url = HtmlUtils.url(URL_ENTRY_GET.getFullUrl(),
-                                  new String[] { ARG_ENTRYID,
+                                   new String[] { ARG_ENTRYID,
                 entryId, ARG_SESSIONID, getSessionId() });
+
         return IOUtil.getInputStream(url, getClass());
     }
 
@@ -511,6 +536,7 @@ public class RepositoryClient extends RepositoryBase {
         InputStream stream = getResourceInputStream(entryId);
         IOUtil.copyFile(stream, toFileOrDirectory);
         stream.close();
+
         return toFileOrDirectory;
     }
 
@@ -583,12 +609,13 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     public void addThumbnail(Element node, String filename) throws Exception {
-        Element metadataNode = XmlUtil.create(node.getOwnerDocument(), TAG_METADATA, node,
-                                              new String[] { ATTR_TYPE,
-                                                             "content.thumbnail", ATTR_ATTR1,
-                                                             filename });
+        Element metadataNode = XmlUtil.create(node.getOwnerDocument(),
+                                   TAG_METADATA, node,
+                                   new String[] { ATTR_TYPE,
+                "content.thumbnail", ATTR_ATTR1, filename });
         XmlUtil.create(node.getOwnerDocument(), "attr1", metadataNode,
-                                              new String[] {"fileid", filename });
+                       new String[] { "fileid",
+                                      filename });
     }
 
     /**
@@ -689,6 +716,7 @@ public class RepositoryClient extends RepositoryBase {
             parentId = lastId;
         }
         lastId = dummyId;
+
         return XmlUtil.create(parentNode.getOwnerDocument(), TAG_ENTRY,
                               parentNode, new String[] {
             ATTR_ID, dummyId, ATTR_TYPE, TYPE_GROUP, ATTR_PARENT, parentId,
@@ -774,8 +802,8 @@ public class RepositoryClient extends RepositoryBase {
             if (name == null) {
                 return false;
             }
-            Document doc = XmlUtil.makeDocument();
-            Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+            Document doc  = XmlUtil.makeDocument();
+            Element  root = XmlUtil.create(doc, TAG_ENTRIES, null,
                                           new String[] {});
             makeGroupNode(root, parentId, name, dummyid);
             String xml     = XmlUtil.toString(root);
@@ -787,11 +815,13 @@ public class RepositoryClient extends RepositoryBase {
 
             if (result[0] != null) {
                 handleError("Error creating folder:\n" + result[0], null);
+
                 return false;
             }
             Element response = XmlUtil.getRoot(result[1]);
             if (responseOk(response)) {
                 handleMessage("Folder created");
+
                 return true;
             }
             String body = XmlUtil.getChildText(response).trim();
@@ -799,6 +829,7 @@ public class RepositoryClient extends RepositoryBase {
         } catch (Exception exc) {
             handleError("Error creating folder", exc);
         }
+
         return false;
     }
 
@@ -832,6 +863,7 @@ public class RepositoryClient extends RepositoryBase {
         if (isAnonymous()) {
             return "";
         }
+
         return sessionId;
     }
 
@@ -869,8 +901,10 @@ public class RepositoryClient extends RepositoryBase {
             if (doLogin) {
                 return doLogin(msg);
             }
+
             return false;
         }
+
         return true;
     }
 
@@ -888,15 +922,16 @@ public class RepositoryClient extends RepositoryBase {
             String url;
             if (isAnonymous()) {
                 url = HtmlUtils.url(URL_PING.getFullUrl(),
-                                   new String[] { ARG_RESPONSE,
+                                    new String[] { ARG_RESPONSE,
                         RESPONSE_XML });
             } else {
                 if (sessionId == null) {
                     msg[0] = "No session id";
+
                     return false;
                 }
                 url = HtmlUtils.url(URL_USER_HOME.getFullUrl(),
-                                   new String[] { ARG_RESPONSE,
+                                    new String[] { ARG_RESPONSE,
                         RESPONSE_XML, ARG_SESSIONID, sessionId });
             }
             System.err.println("url:" + url);
@@ -907,11 +942,13 @@ public class RepositoryClient extends RepositoryBase {
                 return true;
             } else {
                 msg[0] = XmlUtil.getChildText(root).trim();
+
                 return false;
             }
         } catch (Exception exc) {
             System.err.println("error:" + exc);
             msg[0] = "xxx Could not connect to server: " + getHostname();
+
             return false;
         }
     }
@@ -963,6 +1000,7 @@ public class RepositoryClient extends RepositoryBase {
             String[] result = doPost(URL_USER_LOGIN, entries);
             if (result[0] != null) {
                 msg[0] = "Error logging in: " + result[0];
+
                 return false;
             }
             String contents = result[1];
@@ -971,9 +1009,11 @@ public class RepositoryClient extends RepositoryBase {
             String  body = XmlUtil.getChildText(root).trim();
             if (responseOk(root)) {
                 sessionId = body;
+
                 return true;
             } else {
                 msg[0] = body;
+
                 return false;
             }
         } catch (java.io.IOException exc) {
@@ -983,6 +1023,7 @@ public class RepositoryClient extends RepositoryBase {
         } catch (Exception exc) {
             msg[0] = "An error occurred: " + exc + "\n";
         }
+
         return false;
     }
 
@@ -995,15 +1036,15 @@ public class RepositoryClient extends RepositoryBase {
      */
     private void getInfo() throws Exception {
         String url = HtmlUtils.url(URL_INFO.getFullUrl(),
-                                  new String[] { ARG_RESPONSE,
+                                   new String[] { ARG_RESPONSE,
                 RESPONSE_XML });
 
         //        System.err.println("url:" + url);
         String contents = IOUtil.readContents(url, getClass());
         //        System.err.println(contents);
-        Element root = XmlUtil.getRoot(contents);
+        Element root        = XmlUtil.getRoot(contents);
 
-        String sslPortProp = XmlUtil.getGrandChildText(root,
+        String  sslPortProp = XmlUtil.getGrandChildText(root,
                                  ServerInfo.TAG_INFO_SSLPORT);
         if ((sslPortProp != null) && (sslPortProp.trim().length() > 0)) {
             sslPort = new Integer(sslPortProp.trim()).intValue();
@@ -1045,6 +1086,7 @@ public class RepositoryClient extends RepositoryBase {
         if (password == null) {
             return null;
         }
+
         return RepositoryUtil.encodeBase64(password.getBytes()).getBytes();
     }
 
@@ -1166,7 +1208,8 @@ public class RepositoryClient extends RepositoryBase {
             usage("Incorrect number of arguments");
         }
         try {
-            if(args[0].startsWith("-") || args[1].startsWith("-") || args[2].startsWith("-")) {
+            if (args[0].startsWith("-") || args[1].startsWith("-")
+                    || args[2].startsWith("-")) {
                 usage("Incorrect argument");
             }
             RepositoryClient client = new RepositoryClient(new URL(args[0]),
@@ -1174,6 +1217,7 @@ public class RepositoryClient extends RepositoryBase {
             String[] msg = { "" };
             if ( !client.isValidSession(true, msg)) {
                 System.err.println("Error: invalid session:" + msg[0]);
+
                 return;
             }
 
@@ -1189,8 +1233,16 @@ public class RepositoryClient extends RepositoryBase {
 
 
 
+    /**
+     * _more_
+     *
+     * @param arg _more_
+     * @param desc _more_
+     *
+     * @return _more_
+     */
     private static String argLine(String arg, String desc) {
-        return  "\t" + arg +" " + desc +"\n";
+        return "\t" + arg + " " + desc + "\n";
     }
 
     /**
@@ -1204,27 +1256,25 @@ public class RepositoryClient extends RepositoryBase {
             "Usage: RepositoryClient <server url> <user id> <password> <arguments>");
         System.err.println(
             "e.g,  RepositoryClient http://localhost:8080/repository <user id> <password> <arguments>");
-        System.err.println(
-            "Where arguments are:\nFor fetching: \n"
-            + argLine(CMD_PRINT, "<entry id> Create and print the given entry")
-            + argLine(CMD_PRINTXML," <entry id> Print out the xml for the given entry id")
-            + argLine(CMD_FETCH,"<entry id> <destination file or directory>")
-            + "\n"
-            + "For creating a new folder:\n"
-            + argLine(CMD_FOLDER,"<folder name> <parent folder id (see below)>")
-            + "\n" + "For uploading files:\n"
-            + argLine(CMD_IMPORT,"entries.xml <parent entry id or path>")
-            + "\n"
-            + argLine(CMD_FILE,"<entry name> <file to upload> <parent folder id (see below)>")
-            + "\n"
-            + "The following arguments get applied to the previously created folder or file:\n"
-            + "\t-description <entry description>\n"
-            + "\t-attach <file to attach>\n"
-            + "\t-addmetadata (Add full metadata to entry)\n"
-            + "\t-addshortmetadata (Add spatial/temporal metadata to entry)\n"
-            + "\n" + "Miscellaneous:\n"
-            + "\t-debug (print out the generated xml)\n"
-            + "\t-exit (exit without adding anything to the repository\n");
+        System.err.println("Where arguments are:\nFor fetching: \n"
+                + argLine(CMD_PRINT, "<entry id> Create and print the given entry")
+                + argLine(CMD_PRINTXML, " <entry id> Print out the xml for the given entry id")
+                + argLine(CMD_FETCH, "<entry id> <destination file or directory>")
+                + "\n" + "For creating a new folder:\n"
+                + argLine(CMD_FOLDER, "<folder name> <parent folder id (see below)>")
+                + "\n" + "For uploading files:\n"
+                + argLine(CMD_IMPORT, "entries.xml <parent entry id or path>")
+                + "\n"
+                + argLine(CMD_FILE, "<entry name> <file to upload> <parent folder id (see below)>")
+                + "\n"
+                + "The following arguments get applied to the previously created folder or file:\n"
+                + "\t-description <entry description>\n"
+                + "\t-attach <file to attach>\n"
+                + "\t-addmetadata (Add full metadata to entry)\n"
+                + "\t-addshortmetadata (Add spatial/temporal metadata to entry)\n"
+                + "\n" + "Miscellaneous:\n"
+                + "\t-debug (print out the generated xml)\n"
+                + "\t-exit (exit without adding anything to the repository\n");
 
 
         System.err.println(
@@ -1238,15 +1288,26 @@ public class RepositoryClient extends RepositoryBase {
 
 
 
-    private void   importFile(File file, String parent) throws Exception {
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param parent _more_
+     *
+     * @throws Exception _more_
+     */
+    private void importFile(File file, String parent) throws Exception {
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
         addUrlArgs(postEntries);
         postEntries.add(HttpFormEntry.hidden(ARG_GROUP, parent));
-        postEntries.add(new HttpFormEntry(ARG_FILE, IOUtil.getFileTail(file.toString()),
-                                          IOUtil.readBytes(new FileInputStream(file))));
+        postEntries.add(
+            new HttpFormEntry(
+                ARG_FILE, IOUtil.getFileTail(file.toString()),
+                IOUtil.readBytes(new FileInputStream(file))));
         String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
         if (result[0] != null) {
             System.err.println("Error:" + result[0]);
+
             return;
         }
 
@@ -1260,15 +1321,23 @@ public class RepositoryClient extends RepositoryBase {
             System.err.println("Error:" + body);
         }
 
-        
+
 
     }
 
 
+    /**
+     * _more_
+     *
+     * @param arg _more_
+     * @param i _more_
+     * @param length _more_
+     * @param howMany _more_
+     */
     private void assertArgs(String arg, int i, int length, int howMany) {
         //        System.err.println(i + " " + length + " " + howMany);
         if (i >= length - howMany) {
-            usage("Bad argument: "+ arg);
+            usage("Bad argument: " + arg);
         }
     }
 
@@ -1298,35 +1367,39 @@ public class RepositoryClient extends RepositoryBase {
 
             if (arg.equals(CMD_FETCH)) {
                 if (i >= args.length - 1) {
-                    usage("Bad argument: "+ arg);
+                    usage("Bad argument: " + arg);
                 }
                 if (i >= args.length - 2) {
-                    usage("Bad argument: "+ arg);
+                    usage("Bad argument: " + arg);
                 }
                 File f = writeFile(args[i + 1], new File(args[i + 2]));
                 System.err.println("Wrote file to:" + f);
+
                 return;
             }
 
             if (arg.equals(CMD_PRINT)) {
                 if (i >= args.length - 1) {
-                    usage("Bad argument: "+ arg);
+                    usage("Bad argument: " + arg);
                 }
                 printEntry(args[i + 1]);
+
                 return;
             }
 
             if (arg.equals(CMD_PRINTXML)) {
                 if (i >= args.length - 1) {
-                    usage("Bad argument: "+ arg);
+                    usage("Bad argument: " + arg);
                 }
                 printEntryXml(args[i + 1]);
+
                 return;
             }
 
             if (arg.equals(CMD_IMPORT)) {
-                assertArgs(arg,  i, args.length,2);
-                importFile(new File(args[i+1]), args[i+2]);
+                assertArgs(arg, i, args.length, 2);
+                importFile(new File(args[i + 1]), args[i + 2]);
+
                 return;
             }
 
@@ -1336,7 +1409,7 @@ public class RepositoryClient extends RepositoryBase {
                 return;
             } else if (arg.equals(CMD_FOLDER)) {
                 if (i == args.length) {
-                    usage("Bad argument: "+ arg);
+                    usage("Bad argument: " + arg);
                 }
                 entryCnt++;
                 String name     = args[++i];
@@ -1345,7 +1418,7 @@ public class RepositoryClient extends RepositoryBase {
                 entryNode = makeGroupNode(root, parentId, name);
             } else if (arg.equals(CMD_FILE)) {
                 if (i >= args.length - 2) {
-                    usage("Bad argument: "+ arg);
+                    usage("Bad argument: " + arg);
                 }
                 String name = args[++i];
                 File   f    = new File(args[++i]);
@@ -1363,7 +1436,7 @@ public class RepositoryClient extends RepositoryBase {
                 files.add(f);
             } else if (arg.equals("-localfile")) {
                 if (i == args.length) {
-                    usage("Bad argument: "+ arg);
+                    usage("Bad argument: " + arg);
                 }
                 i++;
                 File f = new File(args[i]);
@@ -1457,6 +1530,7 @@ public class RepositoryClient extends RepositoryBase {
         String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
         if (result[0] != null) {
             System.err.println("Error:" + result[0]);
+
             return;
         }
 

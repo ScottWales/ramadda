@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -111,6 +112,11 @@ public class FtpAction extends MonitorAction {
         return "ftp";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getActionLabel() {
         return "FTP Action";
     }
@@ -136,8 +142,8 @@ public class FtpAction extends MonitorAction {
      */
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
-        this.server = request.getString(getArgId(PROP_FTP_SERVER), "");
-        this.user   = request.getString(getArgId(PROP_FTP_USER), "");
+        this.server       = request.getString(getArgId(PROP_FTP_SERVER), "");
+        this.user         = request.getString(getArgId(PROP_FTP_USER), "");
         this.directory = request.getString(getArgId(PROP_FTP_DIRECTORY), "");
         this.fileTemplate =
             request.getString(getArgId(PROP_FTP_FILETEMPLATE), "");
@@ -213,7 +219,8 @@ public class FtpAction extends MonitorAction {
             }
 
             String passwordToUse =
-                monitor.getRepository().getPageHandler().processTemplate(password, false);
+                monitor.getRepository().getPageHandler().processTemplate(
+                    password, false);
             ftpClient.connect(server);
             if (user.length() > 0) {
                 ftpClient.login(user, password);
@@ -223,6 +230,7 @@ public class FtpAction extends MonitorAction {
                 ftpClient.disconnect();
                 monitor.handleError("FTP server refused connection:"
                                     + server, null);
+
                 return;
             }
             ftpClient.setFileType(FTP.IMAGE_FILE_TYPE);
@@ -339,6 +347,7 @@ public class FtpAction extends MonitorAction {
         if (password == null) {
             return null;
         }
+
         return RepositoryUtil.encodeBase64(password.getBytes()).getBytes();
     }
 

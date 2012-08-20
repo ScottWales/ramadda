@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,13 +25,13 @@ package org.ramadda.repository.harvester;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -125,6 +126,7 @@ public class TestGenerator extends Harvester {
     public String getExtraInfo() throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("Created: " + cnt + "  entries");
+
         return sb.toString();
     }
 
@@ -144,9 +146,8 @@ public class TestGenerator extends Harvester {
         final User  user    = repository.getUserManager().getDefaultUser();
         List        groups  = new ArrayList();
         for (int j = 0; j < 100; j++) {
-            Entry group =
-                getEntryManager().findGroupFromName(getRequest(), "Test/Generated/"
-                    + "Group" + j, user, true);
+            Entry group = getEntryManager().findGroupFromName(getRequest(),
+                              "Test/Generated/" + "Group" + j, user, true);
             groups.add(group);
         }
 
@@ -154,8 +155,8 @@ public class TestGenerator extends Harvester {
             for (int j = 0; j < 100; j++) {
                 Entry group = (Entry) groups.get(j);
                 for (int k = 0; k < 10; k++) {
-                    Date createDate = new Date();
-                    Entry entry =
+                    Date  createDate = new Date();
+                    Entry entry      =
                         getTypeHandler().createEntry(repository.getGUID());
                     entry.initEntry("test_" + i + "_" + j + "_" + k, "",
                                     group, user,

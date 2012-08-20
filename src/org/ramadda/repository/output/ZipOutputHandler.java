@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.util.HtmlUtils;
 
 
 
@@ -32,7 +34,6 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -74,27 +75,29 @@ import java.util.zip.*;
  */
 public class ZipOutputHandler extends OutputHandler {
 
-    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.output.ZipOutputHandler");
+    /** _more_          */
+    private final LogManager.LogId LOGID =
+        new LogManager.LogId(
+            "org.ramadda.repository.output.ZipOutputHandler");
 
 
 
     /** _more_ */
-    public static final OutputType OUTPUT_ZIP = new OutputType("Zip and Download File",
-                                                    "zip.zip",
-                                                    OutputType.TYPE_FILE, "",
-                                                    ICON_ZIP);
+    public static final OutputType OUTPUT_ZIP =
+        new OutputType("Zip and Download File", "zip.zip",
+                       OutputType.TYPE_FILE, "", ICON_ZIP);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
-        new OutputType("Zip and Download Tree", "zip.tree", OutputType.TYPE_FILE, "",
-                       ICON_ZIP);
+        new OutputType("Zip and Download Tree", "zip.tree",
+                       OutputType.TYPE_FILE, "", ICON_ZIP);
 
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPGROUP =
-        new OutputType("Zip and Download Files", "zip.zipgroup", OutputType.TYPE_FILE,
-                       "", ICON_ZIP);
+        new OutputType("Zip and Download Files", "zip.zipgroup",
+                       OutputType.TYPE_FILE, "", ICON_ZIP);
 
 
     /**
@@ -145,6 +148,7 @@ public class ZipOutputHandler extends OutputHandler {
                         "/" + IOUtil.stripExtension(state.entry.getName())
                         + ".zip"));
             }
+
             return;
         }
 
@@ -153,6 +157,7 @@ public class ZipOutputHandler extends OutputHandler {
         for (Entry child : state.getAllEntries()) {
             if (getAccessManager().canDownload(request, child)) {
                 hasFile = true;
+
                 break;
             }
             if (child.isGroup()) {
@@ -175,7 +180,8 @@ public class ZipOutputHandler extends OutputHandler {
         }
 
 
-        if ((state.group != null) && hasGroup && (!state.group.isTopEntry() ||state.group.isDummy())) {
+        if ((state.group != null) && hasGroup
+                && ( !state.group.isTopEntry() || state.group.isDummy())) {
             links.add(makeLink(request, state.group, OUTPUT_ZIPTREE,
                                "/"
                                + IOUtil.stripExtension(state.group.getName())
@@ -203,6 +209,7 @@ public class ZipOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return toZip(request, "", entries, false, false);
     }
 
@@ -230,6 +237,7 @@ public class ZipOutputHandler extends OutputHandler {
             all.addAll(subGroups);
             all.addAll(entries);
             getLogManager().logInfo("Doing zip tree");
+
             return toZip(request, group.getName(), all, true, false);
         } else {
             return toZip(request, group.getName(), entries, false, false);
@@ -283,7 +291,7 @@ public class ZipOutputHandler extends OutputHandler {
         } else {
             tmpFile = getRepository().getStorageManager().getTmpFile(request,
                     ".zip");
-            os        = getStorageManager().getUncheckedFileOutputStream(tmpFile);
+            os = getStorageManager().getUncheckedFileOutputStream(tmpFile);
             doingFile = true;
         }
 
@@ -302,12 +310,13 @@ public class ZipOutputHandler extends OutputHandler {
             ok = false;
         }
 
-        if (!ok) {
+        if ( !ok) {
             javax.servlet.http.HttpServletResponse response =
                 request.getHttpServletResponse();
             response.setStatus(Result.RESPONSE_UNAUTHORIZED);
             response.sendError(response.SC_INTERNAL_SERVER_ERROR,
                                "Size of request has exceeded maximum size");
+
             return result;
         }
 
@@ -344,12 +353,14 @@ public class ZipOutputHandler extends OutputHandler {
         }
         if (doingFile) {
             os.close();
+
             return new Result(
                 "", getStorageManager().getFileInputStream(tmpFile),
                 getMimeType(OUTPUT_ZIP));
 
         }
         getLogManager().logInfo("Zip File ended");
+
         return result;
     }
 
@@ -393,7 +404,9 @@ public class ZipOutputHandler extends OutputHandler {
                             2000);
         }
         for (Entry entry : entries) {
-            if(getEntryManager().isSynthEntry(entry.getId())) continue;
+            if (getEntryManager().isSynthEntry(entry.getId())) {
+                continue;
+            }
             counter[0]++;
             //We are getting some weirdness in the database connections so lets
             //sleep a bit every 100 entries we see
@@ -407,8 +420,9 @@ public class ZipOutputHandler extends OutputHandler {
             */
 
             //Don't get big files
-            if(request.defined(ARG_MAXFILESIZE)  && entry.isFile()) {
-                if(entry.getFile().length()>=request.get(ARG_MAXFILESIZE,0)) {
+            if (request.defined(ARG_MAXFILESIZE) && entry.isFile()) {
+                if (entry.getFile().length()
+                        >= request.get(ARG_MAXFILESIZE, 0)) {
                     continue;
                 }
             }
@@ -422,7 +436,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
             if (entry.isGroup() && recurse) {
-                Entry group = (Entry) entry;
+                Entry       group    = (Entry) entry;
                 List<Entry> children = getEntryManager().getChildren(request,
                                            group);
                 String path = group.getName();
@@ -487,6 +501,7 @@ public class ZipOutputHandler extends OutputHandler {
                 }
             }
         }
+
         return sizeProcessed;
 
     }

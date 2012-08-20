@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -60,6 +61,7 @@ public class LdmAction extends MonitorAction {
 
     /** _more_ */
     public static final String PROP_LDM_QUEUE = "ldm.queue";
+
     /** _more_ */
     public static final String[] LDM_FEED_TYPES = {
         "PPS", "DDS", "HDS", "IDS", "SPARE", "UNIWISC", "PCWS", "FSL2",
@@ -100,6 +102,11 @@ public class LdmAction extends MonitorAction {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean adminOnly() {
         return true;
     }
@@ -114,6 +121,11 @@ public class LdmAction extends MonitorAction {
         return "LDM Action";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getActionName() {
         return "ldm";
     }
@@ -160,13 +172,13 @@ public class LdmAction extends MonitorAction {
         if ((pqinsert.length() > 0) && !new File(pqinsert).exists()) {
             ldmExtra1 = HtmlUtils.space(2)
                         + HtmlUtils.span("File does not exist!",
-                                        HtmlUtils.cssClass("errorlabel"));
+                                         HtmlUtils.cssClass("errorlabel"));
         }
         String ldmExtra2 = "";
         if ((queue.length() > 0) && !new File(queue).exists()) {
             ldmExtra2 = HtmlUtils.space(2)
                         + HtmlUtils.span("File does not exist!",
-                                        HtmlUtils.cssClass("errorlabel"));
+                                         HtmlUtils.cssClass("errorlabel"));
         }
 
 
@@ -176,13 +188,18 @@ public class LdmAction extends MonitorAction {
                 HtmlUtils.input(
                     getArgId(PROP_LDM_PQINSERT), pqinsert,
                     HtmlUtils.SIZE_60) + ldmExtra1));
-        sb.append(HtmlUtils.formEntry("Queue Location:",
-                                     HtmlUtils.input(getArgId(PROP_LDM_QUEUE),
-                                         queue,
-                                         HtmlUtils.SIZE_60) + ldmExtra2));
-        sb.append(HtmlUtils.formEntry("Feed:",
-                                     HtmlUtils.select(getArgId(PROP_LDM_FEED),
-                                         Misc.toList(LDM_FEED_TYPES), feed)));
+        sb.append(
+            HtmlUtils.formEntry(
+                "Queue Location:",
+                HtmlUtils.input(
+                    getArgId(PROP_LDM_QUEUE), queue,
+                    HtmlUtils.SIZE_60) + ldmExtra2));
+        sb.append(
+            HtmlUtils.formEntry(
+                "Feed:",
+                HtmlUtils.select(
+                    getArgId(PROP_LDM_FEED), Misc.toList(LDM_FEED_TYPES),
+                    feed)));
 
         sb.append(
             HtmlUtils.formEntry(
@@ -208,6 +225,7 @@ public class LdmAction extends MonitorAction {
             if ( !resource.isFile()) {
                 monitor.handleError("LdmMonitor:" + this
                                     + " Entry is not a file:" + entry, null);
+
                 return;
             }
             String id = productId.trim();

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -33,7 +35,6 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -82,7 +83,8 @@ public abstract class Harvester extends RepositoryManager {
     private static final boolean PRINT_DEBUG = false;
 
     /** _more_ */
-    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.harvester.Harvester");
+    private final LogManager.LogId LOGID =
+        new LogManager.LogId("org.ramadda.repository.harvester.Harvester");
 
 
     /** _more_ */
@@ -114,7 +116,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_ROOTDIR = "rootdir";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ROOTDIR_DELIM = ";";
 
     /** _more_ */
@@ -160,7 +162,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_BASEGROUP = "basegroup";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_FINDMATCH = "findmatch";
 
 
@@ -236,6 +238,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     protected StringBuffer status = new StringBuffer();
 
+    /** _more_          */
     protected String currentStatus = "";
 
     /** _more_ */
@@ -290,6 +293,7 @@ public abstract class Harvester extends RepositoryManager {
             this.typeHandler =
                 repository.getTypeHandler(TypeHandler.TYPE_FILE);
         }
+
         return typeHandler;
     }
 
@@ -347,6 +351,7 @@ public abstract class Harvester extends RepositoryManager {
             String value = macros[i + 1];
             s = s.replace(macro, value);
         }
+
         return s;
     }
 
@@ -370,6 +375,7 @@ public abstract class Harvester extends RepositoryManager {
         if (user == null) {
             user = repository.getUserManager().getDefaultUser();
         }
+
         return user;
     }
 
@@ -388,6 +394,7 @@ public abstract class Harvester extends RepositoryManager {
         if (request == null) {
             request = new Request(getRepository(), getUser());
         }
+
         return request;
     }
 
@@ -407,6 +414,7 @@ public abstract class Harvester extends RepositoryManager {
         if (g != null) {
             return g;
         }
+
         return getEntryManager().findGroupFromName(getRequest(), baseGroupId,
                 getUser(), false);
     }
@@ -423,30 +431,29 @@ public abstract class Harvester extends RepositoryManager {
      */
     protected void addBaseGroupSelect(String selectId, StringBuffer sb)
             throws Exception {
-        Entry baseGroup = getBaseGroup();
+        Entry  baseGroup  = getBaseGroup();
         String baseSelect = OutputHandler.getGroupSelect(getRequest(),
                                 selectId);
         String extra = "";
         if (baseGroup == null) {
-            extra =
-                HtmlUtils.br()
-                + HtmlUtils.span(msg("Required"),
-                                HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
+            extra = HtmlUtils.br()
+                    + HtmlUtils.span(
+                        msg("Required"),
+                        HtmlUtils.cssClass(CSS_CLASS_REQUIRED_LABEL));
         }
 
         sb.append(HtmlUtils.hidden(selectId + "_hidden", ((baseGroup != null)
                 ? baseGroup.getId()
                 : ""), HtmlUtils.id(selectId + "_hidden")));
         sb.append(HtmlUtils.formEntry(msgLabel("Base Folder"),
-                                     HtmlUtils.disabledInput(selectId,
-                                         ((baseGroup != null)
-                                          ? baseGroup.getFullName()
-                                          : ""), HtmlUtils.id(selectId)
-                                          + HtmlUtils.SIZE_60
-                                          + ((baseGroup == null)
-                                             ? HtmlUtils.cssClass(
-                                             CSS_CLASS_REQUIRED_DISABLED)
-                                             : "")) + baseSelect + extra));
+                                      HtmlUtils.disabledInput(selectId,
+                                          ((baseGroup != null)
+                                           ? baseGroup.getFullName()
+                                           : ""), HtmlUtils.id(selectId)
+                                           + HtmlUtils.SIZE_60
+                                           + ((baseGroup == null)
+                ? HtmlUtils.cssClass(CSS_CLASS_REQUIRED_DISABLED)
+                : "")) + baseSelect + extra));
     }
 
 
@@ -481,16 +488,16 @@ public abstract class Harvester extends RepositoryManager {
         nameTemplate = XmlUtil.getAttribute(element, ATTR_NAMETEMPLATE,
                                             nameTemplate);
         descTemplate = XmlUtil.getAttribute(element, ATTR_DESCTEMPLATE, "");
-        tagTemplate = XmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
+        tagTemplate  = XmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
                                            tagTemplate);
 
 
 
-        this.name     = XmlUtil.getAttribute(element, ATTR_NAME, "");
+        this.name        = XmlUtil.getAttribute(element, ATTR_NAME, "");
         this.monitor = XmlUtil.getAttribute(element, ATTR_MONITOR, monitor);
 
-        this.userName = XmlUtil.getAttribute(element, ATTR_USER, userName);
-        this.user     = null;
+        this.userName    = XmlUtil.getAttribute(element, ATTR_USER, userName);
+        this.user        = null;
 
         this.addMetadata = XmlUtil.getAttribute(element, ATTR_ADDMETADATA,
                 addMetadata);
@@ -556,7 +563,7 @@ public abstract class Harvester extends RepositoryManager {
             rootDirs.add(new File(dir));
         }
 
-        name = request.getString(ARG_NAME, name);
+        name        = request.getString(ARG_NAME, name);
 
         typeHandler = repository.getTypeHandler(request.getString(ATTR_TYPE,
                 ""));
@@ -578,11 +585,11 @@ public abstract class Harvester extends RepositoryManager {
         } else if (sleepUnit.equals(UNIT_DAY)) {
             sleepMinutes = sleepMinutes * 60 * 60;
         }
-        nameTemplate = request.getString(ATTR_NAMETEMPLATE, nameTemplate);
+        nameTemplate  = request.getString(ATTR_NAMETEMPLATE, nameTemplate);
         groupTemplate = request.getUnsafeString(ATTR_GROUPTEMPLATE,
                 groupTemplate);
 
-        baseGroupId = request.getUnsafeString(ATTR_BASEGROUP + "_hidden", "");
+        baseGroupId  = request.getUnsafeString(ATTR_BASEGROUP + "_hidden", "");
 
         descTemplate = request.getUnsafeString(ATTR_DESCTEMPLATE,
                 descTemplate);
@@ -600,15 +607,21 @@ public abstract class Harvester extends RepositoryManager {
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
-                                     HtmlUtils.input(ARG_NAME, name,
-                                         HtmlUtils.SIZE_40)));
+                                      HtmlUtils.input(ARG_NAME, name,
+                                          HtmlUtils.SIZE_40)));
 
         makeRunSettings(request, sb);
 
     }
 
 
-    public void  makeRunSettings(Request request, StringBuffer sb) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     */
+    public void makeRunSettings(Request request, StringBuffer sb) {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject(msg("Absolute (minutes)"),
                                     UNIT_ABSOLUTE));
@@ -624,7 +637,7 @@ public abstract class Harvester extends RepositoryManager {
             minutes = "" + (sleepMinutes / (60 * 60));
         }
         String sleepType = HtmlUtils.select(ATTR_SLEEPUNIT, tfos, sleepUnit);
-        String sleepLbl =
+        String sleepLbl  =
             "<br>" + HtmlUtils.space(3)
             + "e.g., 30 minutes = on the hour and the half hour<br>"
             + HtmlUtils.space(3);
@@ -642,18 +655,28 @@ public abstract class Harvester extends RepositoryManager {
 
 
         StringBuffer runWidgets = new StringBuffer();
-        runWidgets.append(HtmlUtils.checkbox(ATTR_TESTMODE, "true", testMode) + HtmlUtils.space(1) + msg("Test mode"));
-        runWidgets.append(HtmlUtils.space(3) +  msgLabel("Count") + HtmlUtils.input(ATTR_TESTCOUNT, "" + testCount, HtmlUtils.SIZE_5));
+        runWidgets.append(HtmlUtils.checkbox(ATTR_TESTMODE, "true", testMode)
+                          + HtmlUtils.space(1) + msg("Test mode"));
+        runWidgets.append(HtmlUtils.space(3) + msgLabel("Count")
+                          + HtmlUtils.input(ATTR_TESTCOUNT, "" + testCount,
+                                            HtmlUtils.SIZE_5));
         runWidgets.append(HtmlUtils.br());
-        runWidgets.append(HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true", activeOnStart) + HtmlUtils.space(1) + msg("Active on startup"));
-        runWidgets.append(HtmlUtils.br()); 
-        runWidgets.append(HtmlUtils.checkbox(ATTR_MONITOR, "true", monitor) + HtmlUtils.space(1) + msg("Run continually"));
+        runWidgets.append(
+            HtmlUtils.checkbox(ATTR_ACTIVEONSTART, "true", activeOnStart)
+            + HtmlUtils.space(1) + msg("Active on startup"));
+        runWidgets.append(HtmlUtils.br());
+        runWidgets.append(HtmlUtils.checkbox(ATTR_MONITOR, "true", monitor)
+                          + HtmlUtils.space(1) + msg("Run continually"));
         runWidgets.append(HtmlUtils.br() + HtmlUtils.space(5));
-        runWidgets.append(msgLabel("Every") + HtmlUtils.space(1) + HtmlUtils.input(ATTR_SLEEP, ""+ minutes, HtmlUtils.SIZE_5) + HtmlUtils.space(1) + sleepType + sleepLbl);
+        runWidgets.append(
+            msgLabel("Every") + HtmlUtils.space(1)
+            + HtmlUtils.input(ATTR_SLEEP, "" + minutes, HtmlUtils.SIZE_5)
+            + HtmlUtils.space(1) + sleepType + sleepLbl);
         sb.append(
-                  HtmlUtils.formEntryTop("",
-                                         HtmlUtils.makeShowHideBlock(msg("Run Settings"), 
-                                                                     runWidgets.toString(), false)));
+            HtmlUtils.formEntryTop(
+                "",
+                HtmlUtils.makeShowHideBlock(
+                    msg("Run Settings"), runWidgets.toString(), false)));
     }
 
 
@@ -668,6 +691,7 @@ public abstract class Harvester extends RepositoryManager {
         if ( !getClass().equals(o.getClass())) {
             return false;
         }
+
         return this.id.equals(((Harvester) o).id);
     }
 
@@ -718,6 +742,7 @@ public abstract class Harvester extends RepositoryManager {
         Document doc  = XmlUtil.makeDocument();
         Element  root = doc.createElement(TAG_HARVESTER);
         applyState(root);
+
         return XmlUtil.toString(root);
     }
 
@@ -792,10 +817,9 @@ public abstract class Harvester extends RepositoryManager {
             Element root)
             throws Exception {
         List<Harvester> harvesters = new ArrayList<Harvester>();
-        List            children   = XmlUtil.findChildren(root,
-                                         TAG_HARVESTER);
+        List            children   = XmlUtil.findChildren(root, TAG_HARVESTER);
         for (int i = 0; i < children.size(); i++) {
-            Element node = (Element) children.get(i);
+            Element     node = (Element) children.get(i);
             Class c = Misc.findClass(XmlUtil.getAttribute(node, ATTR_CLASS));
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { Repository.class,
@@ -806,6 +830,7 @@ public abstract class Harvester extends RepositoryManager {
             harvesters.add(harvester);
             harvester.init(node);
         }
+
         return harvesters;
     }
 
@@ -853,7 +878,8 @@ public abstract class Harvester extends RepositoryManager {
             runInner(++timestamp);
         } catch (Throwable exc) {
             logHarvesterError("Error in harvester.run", exc);
-            error.append("Error: " + exc + "<br>" + LogUtil.getStackTrace(exc)+"<br>");
+            error.append("Error: " + exc + "<br>"
+                         + LogUtil.getStackTrace(exc) + "<br>");
         }
         setActive(false);
     }
@@ -902,6 +928,11 @@ public abstract class Harvester extends RepositoryManager {
         return error;
     }
 
+    /**
+     * _more_
+     *
+     * @param e _more_
+     */
     public void appendError(String e) {
         this.error.append(e);
         this.error.append("<br>");
@@ -935,6 +966,7 @@ public abstract class Harvester extends RepositoryManager {
         double minutes = getSleepMinutes();
         if (minutes < 1) {
             Misc.sleep((long) (1000 * 60 * minutes));
+
             return;
         }
         Misc.pauseEvery((int) minutes);
@@ -1117,6 +1149,7 @@ public abstract class Harvester extends RepositoryManager {
         if ( !XmlUtil.hasAttribute(element, attr)) {
             return new ArrayList<String>();
         }
+
         return StringUtil.split(XmlUtil.getAttribute(element, attr), ",",
                                 true, true);
     }

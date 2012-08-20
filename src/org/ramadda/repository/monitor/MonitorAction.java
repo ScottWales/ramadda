@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -59,18 +60,42 @@ public abstract class MonitorAction implements Constants, Cloneable {
         this.id = id;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws CloneNotSupportedException _more_
+     */
     public MonitorAction cloneMe() throws CloneNotSupportedException {
         return (MonitorAction) super.clone();
     }
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     *
+     * @return _more_
+     */
     public boolean enabled(Repository repository) {
         return true;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean adminOnly() {
         return false;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public abstract String getActionLabel();
 
 

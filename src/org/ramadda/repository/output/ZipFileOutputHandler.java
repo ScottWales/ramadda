@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,6 +24,7 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -30,7 +32,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -129,7 +130,7 @@ public class ZipFileOutputHandler extends OutputHandler {
         }
         String path = state.entry.getResource().getPath().toLowerCase();
         if (path.endsWith(".zip") || path.endsWith(".jar")
-            || path.endsWith(".zidv")||path.endsWith(".kmz")) {
+                || path.endsWith(".zidv") || path.endsWith(".kmz")) {
             links.add(makeLink(request, state.entry, OUTPUT_LIST));
         }
 
@@ -155,7 +156,7 @@ public class ZipFileOutputHandler extends OutputHandler {
                 entry)) {
             throw new AccessException("Cannot access data", request);
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuffer    sb  = new StringBuffer();
 
         FileInputStream fis = getStorageManager().getFileInputStream(
                                   entry.getResource().getPath());
@@ -182,6 +183,7 @@ public class ZipFileOutputHandler extends OutputHandler {
                         IOUtil.close(output);
                         IOUtil.close(zin);
                     }
+
                     return Result.makeNoOpResult();
                     //                    return new Result("", zin, type);
                 }
@@ -190,8 +192,9 @@ public class ZipFileOutputHandler extends OutputHandler {
                 String name = IOUtil.getFileTail(path);
                 String url  = getRepository().URL_ENTRY_SHOW + "/" + name;
 
-                url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(), ARG_FILE,
-                                   path, ARG_OUTPUT, OUTPUT_LIST.getId());
+                url = HtmlUtils.url(url, ARG_ENTRYID, entry.getId(),
+                                    ARG_FILE, path, ARG_OUTPUT,
+                                    OUTPUT_LIST.getId());
                 sb.append(HtmlUtils.href(url, path));
             }
             sb.append("</ul>");
@@ -199,6 +202,7 @@ public class ZipFileOutputHandler extends OutputHandler {
             IOUtil.close(zin);
             IOUtil.close(fis);
         }
+
         return makeLinksResult(request, msg("Zip File Listing"), sb,
                                new State(entry));
     }

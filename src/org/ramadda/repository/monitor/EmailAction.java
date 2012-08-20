@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -48,6 +49,12 @@ public class EmailAction extends PasswordAction {
      * _more_
      */
     public EmailAction() {}
+
+    /**
+     * _more_
+     *
+     * @param id _more_
+     */
     public EmailAction(String id) {
         super(id);
     }
@@ -72,6 +79,11 @@ public class EmailAction extends PasswordAction {
         return "Email Action";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getActionName() {
         return "email";
     }
@@ -98,10 +110,12 @@ public class EmailAction extends PasswordAction {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.colspan("Send an email", 2));
 
-        sb.append(HtmlUtils.formEntry("Email address",
-                                     HtmlUtils.input(getArgId(ARG_ACTION_ID),
-                                         getRemoteUserId(),
-                                         HtmlUtils.SIZE_60)));
+        sb.append(
+            HtmlUtils.formEntry(
+                "Email address",
+                HtmlUtils.input(
+                    getArgId(ARG_ACTION_ID), getRemoteUserId(),
+                    HtmlUtils.SIZE_60)));
         sb.append(
             HtmlUtils.formEntryTop(
                 "Message",

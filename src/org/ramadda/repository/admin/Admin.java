@@ -1,5 +1,6 @@
 /*
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -30,6 +31,7 @@ import org.ramadda.repository.ftp.FtpManager;
 import org.ramadda.repository.harvester.*;
 
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -39,7 +41,6 @@ import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.util.Counter;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -326,13 +327,14 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.textArea("", license, 20, 75));
         sb.append("<p>");
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                HtmlUtils.cssClass(CSS_CLASS_HIGHLIGHT)));
+                                 HtmlUtils.cssClass(CSS_CLASS_HIGHLIGHT)));
         sb.append(HtmlUtils.checkbox("agree", "1"));
         sb.append(HtmlUtils.space(1));
         sb.append(
             "I agree to the above terms and conditions of use of the RAMADDA software");
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         sb.append("<p>");
+
         return sb;
     }
 
@@ -445,37 +447,48 @@ public class Admin extends RepositoryManager {
                     Entry topEntry = getEntryManager().getTopGroup();
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
                             topEntry.getName()));
-                    String description = null;
-                    File initDescFile =new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),"initdescription.txt"));
-                    if(initDescFile.exists()) {
-                        FileInputStream fis  = new FileInputStream(initDescFile);
+                    String description  = null;
+                    File   initDescFile =
+                        new File(
+                            IOUtil.joinDir(
+                                getStorageManager().getRepositoryDir(),
+                                "initdescription.txt"));
+                    if (initDescFile.exists()) {
+                        FileInputStream fis =
+                            new FileInputStream(initDescFile);
                         description = IOUtil.readContents(fis);
                         IOUtil.close(fis);
                     }
 
 
-                    if(description == null) {
+                    if (description == null) {
                         description = getRepository().getResource(
-                                                                  "/org/ramadda/repository/resources/examples/initdescription.txt");
+                            "/org/ramadda/repository/resources/examples/initdescription.txt");
                     }
 
-                    description = description.replace("${topid}", topEntry.getId());
-                    description = description.replace("${root}", getRepository().getUrlBase());
+                    description = description.replace("${topid}",
+                            topEntry.getId());
+                    description = description.replace("${root}",
+                            getRepository().getUrlBase());
                     topEntry.setDescription(description);
                     getEntryManager().storeEntry(topEntry);
 
 
                     String initEntriesXml = null;
-                    File initFile =new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),"initentries.xml"));
-                    if(initFile.exists()) {
-                        FileInputStream fis  = new FileInputStream(initFile);
+                    File   initFile       =
+                        new File(
+                            IOUtil.joinDir(
+                                getStorageManager().getRepositoryDir(),
+                                "initentries.xml"));
+                    if (initFile.exists()) {
+                        FileInputStream fis = new FileInputStream(initFile);
                         initEntriesXml = IOUtil.readContents(fis);
                         IOUtil.close(fis);
                     }
 
-                    if(initEntriesXml==null) {
+                    if (initEntriesXml == null) {
                         initEntriesXml = getRepository().getResource(
-                                                                  "/org/ramadda/repository/resources/examples/initentries.xml");
+                            "/org/ramadda/repository/resources/examples/initentries.xml");
                     }
                     Element     root       = XmlUtil.getRoot(initEntriesXml);
                     List<Entry> newEntries =
@@ -499,6 +512,7 @@ public class Admin extends RepositoryManager {
                             getRepository().showDialogError(
                                 msg("Error") + "<br>" + errorBuffer));
                     }
+
                     return new Result("", sb);
                 }
             }
@@ -520,7 +534,8 @@ public class Admin extends RepositoryManager {
             sb.append(
                 HtmlUtils.formEntry(
                     msgLabel("ID"),
-                    HtmlUtils.input(UserManager.ARG_USER_ID, id) + required1));
+                    HtmlUtils.input(UserManager.ARG_USER_ID, id)
+                    + required1));
             sb.append(
                 HtmlUtils.formEntry(
                     msgLabel("Name"),
@@ -570,14 +585,13 @@ public class Admin extends RepositoryManager {
                         getProperty(PROP_REPOSITORY_DESCRIPTION, ""), 5,
                         60)));
 
-            sb.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Hostname"),
-                    HtmlUtils.input(PROP_HOSTNAME, hostname, HtmlUtils.SIZE_60)
-                    + " (Use  &quot;ipaddress&quot; for dynamic IPS)"));
+            sb.append(HtmlUtils
+                .formEntry(msgLabel("Hostname"), HtmlUtils
+                    .input(PROP_HOSTNAME, hostname, HtmlUtils
+                        .SIZE_60) + " (Use  &quot;ipaddress&quot; for dynamic IPS)"));
             sb.append(HtmlUtils.formEntry(msgLabel("Port"),
-                                         HtmlUtils.input(PROP_PORT, port,
-                                             HtmlUtils.SIZE_10)));
+                                          HtmlUtils.input(PROP_PORT, port,
+                                              HtmlUtils.SIZE_10)));
 
             sb.append(HtmlUtils.colspan(msgHeader("Plugins"), 2));
 
@@ -608,6 +622,7 @@ public class Admin extends RepositoryManager {
         finalSB.append(msgHeader(title));
         finalSB.append(sb);
         finalSB.append(HtmlUtils.formClose());
+
         return new Result(msg(title), finalSB);
 
     }
@@ -717,6 +732,7 @@ public class Admin extends RepositoryManager {
 
                 sb.append("</ul>");
             }
+
             return sb;
         } finally {
             getDatabaseManager().closeConnection(connection);
@@ -738,7 +754,7 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private Result processShutdown(Request request) throws Exception {
-        if(!getRepository().getShutdownEnabled()) {
+        if ( !getRepository().getShutdownEnabled()) {
             throw new IllegalStateException("Shutdown not enabled");
         }
 
@@ -749,6 +765,7 @@ public class Admin extends RepositoryManager {
                 System.exit(0);
             }
         });
+
         return makeResult(request, "Administration",
                           new StringBuffer("Shutting down in 5 seconds"));
     }
@@ -765,6 +782,7 @@ public class Admin extends RepositoryManager {
      */
     public Result adminPluginUpload(Request request) throws Exception {
         request.ensureAuthToken();
+
         return getRepository().getPluginManager().adminPluginUpload(request);
     }
 
@@ -809,6 +827,7 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtils.submit("Shut Down Database"));
         }
         sb.append("</form>");
+
         return makeResult(request, "Administration", sb);
 
     }
@@ -850,6 +869,7 @@ public class Admin extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         sb.append(header("Database Tables"));
         sb.append(getDbMetaData());
+
         return makeResult(request, "Administration", sb);
     }
 
@@ -871,6 +891,7 @@ public class Admin extends RepositoryManager {
             StringBuffer sb = new StringBuffer(
                                   getRepository().showDialogWarning(
                                       "Currently exporting the database"));
+
             return makeResult(request, msg("Database export"), sb);
         }
 
@@ -881,7 +902,7 @@ public class Admin extends RepositoryManager {
             }
         };
         String href = HtmlUtils.href(request.url(URL_ADMIN_CLEANUP),
-                                    "Continue");
+                                     "Continue");
 
         Result result = getActionManager().doAction(request, action,
                             "Dumping database", href);
@@ -941,6 +962,7 @@ public class Admin extends RepositoryManager {
         headerSB.append(sb);
         sb = headerSB;
         Result result = new Result(title, sb);
+
         return addHeaderToAncillaryPage(request, result);
     }
 
@@ -972,15 +994,16 @@ public class Admin extends RepositoryManager {
         sb.append("<ul>\n");
         sb.append("<li> ");
         sb.append(HtmlUtils.href(request.url(URL_ADMIN_STARTSTOP),
-                                "Administer Database"));
+                                 "Administer Database"));
         sb.append("<li> ");
         sb.append(HtmlUtils.href(request.url(URL_ADMIN_TABLES),
-                                "Show Tables"));
+                                 "Show Tables"));
         sb.append("<li> ");
         sb.append(HtmlUtils.href(request.url(URL_ADMIN_STATS), "System"));
         sb.append("<li> ");
         sb.append(HtmlUtils.href(request.url(URL_ADMIN_SQL), "Execute SQL"));
         sb.append("</ul>");
+
         return makeResult(request, "Administration", sb);
 
     }
@@ -1010,16 +1033,17 @@ public class Admin extends RepositoryManager {
 
 
         csb.append(
-            HtmlUtils.row(HtmlUtils.colspan(msgHeader("Site Information"), 2)));
+            HtmlUtils.row(
+                HtmlUtils.colspan(msgHeader("Site Information"), 2)));
         csb.append(HtmlUtils.formEntry(msgLabel("Hostname"),
-                                      HtmlUtils.input(PROP_HOSTNAME,
-                                          getProperty(PROP_HOSTNAME, ""),
-                                          HtmlUtils.SIZE_40)));
+                                       HtmlUtils.input(PROP_HOSTNAME,
+                                           getProperty(PROP_HOSTNAME, ""),
+                                           HtmlUtils.SIZE_40)));
 
         csb.append(HtmlUtils.formEntry(msgLabel("HTTP Port"),
-                                      HtmlUtils.input(PROP_PORT,
-                                          getProperty(PROP_PORT, ""),
-                                          HtmlUtils.SIZE_5)));
+                                       HtmlUtils.input(PROP_PORT,
+                                           getProperty(PROP_PORT, ""),
+                                           HtmlUtils.SIZE_5)));
 
 
         csb.append(
@@ -1049,7 +1073,8 @@ public class Admin extends RepositoryManager {
                 getProperty(PROP_ACCESS_ALLSSL, false)) + " "
                     + msg("Force all connections to be secure");
 
-        String sslMsg = "Note: To enable ssl see the <a href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
+        String sslMsg =
+            "Note: To enable ssl see the <a href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
         csb.append(
             HtmlUtils.formEntryTop(
                 msgLabel("SSL"),
@@ -1062,9 +1087,9 @@ public class Admin extends RepositoryManager {
 
         csb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Email"), 2)));
         csb.append(HtmlUtils.formEntry(msgLabel("Administrator Email"),
-                                      HtmlUtils.input(PROP_ADMIN_EMAIL,
-                                          getProperty(PROP_ADMIN_EMAIL, ""),
-                                          HtmlUtils.SIZE_40)));
+                                       HtmlUtils.input(PROP_ADMIN_EMAIL,
+                                           getProperty(PROP_ADMIN_EMAIL, ""),
+                                           HtmlUtils.SIZE_40)));
 
         csb.append(
             HtmlUtils.formEntry(
@@ -1076,7 +1101,8 @@ public class Admin extends RepositoryManager {
 
 
         csb.append(
-            HtmlUtils.row(HtmlUtils.colspan(msgHeader("Extra Properties"), 2)));
+            HtmlUtils.row(
+                HtmlUtils.colspan(msgHeader("Extra Properties"), 2)));
         csb.append(
             HtmlUtils.formEntryTop(
                 msgLabel("Properties"),
@@ -1093,9 +1119,9 @@ public class Admin extends RepositoryManager {
 
         dsb.append(HtmlUtils.formTable());
         dsb.append(HtmlUtils.formEntry(msgLabel("Title"),
-                                      HtmlUtils.input(PROP_REPOSITORY_NAME,
-                                          getProperty(PROP_REPOSITORY_NAME,
-                                              "Repository"), size)));
+                                       HtmlUtils.input(PROP_REPOSITORY_NAME,
+                                           getProperty(PROP_REPOSITORY_NAME,
+                                               "Repository"), size)));
         dsb.append(
             HtmlUtils.formEntryTop(
                 msgLabel("Description"),
@@ -1103,31 +1129,34 @@ public class Admin extends RepositoryManager {
                     PROP_REPOSITORY_DESCRIPTION,
                     getProperty(PROP_REPOSITORY_DESCRIPTION, ""), 5, 60)));
 
-        dsb.append(HtmlUtils.formEntryTop(msgLabel("Footer"),
-                                         HtmlUtils.textArea(PROP_HTML_FOOTER,
-                                             getProperty(PROP_HTML_FOOTER,
-                                                 ""), 5, 60)));
+        dsb.append(
+            HtmlUtils.formEntryTop(
+                msgLabel("Footer"),
+                HtmlUtils.textArea(
+                    PROP_HTML_FOOTER, getProperty(PROP_HTML_FOOTER, ""), 5,
+                    60)));
 
         dsb.append(HtmlUtils.formEntry(msgLabel("Logo Image Location"),
-                                      HtmlUtils.input(PROP_LOGO_IMAGE,
-                                          getProperty(PROP_LOGO_IMAGE, ""),
-                                          size)));
+                                       HtmlUtils.input(PROP_LOGO_IMAGE,
+                                           getProperty(PROP_LOGO_IMAGE, ""),
+                                           size)));
         dsb.append(HtmlUtils.formEntry(msgLabel("Logo URL"),
-                                      HtmlUtils.input(PROP_LOGO_URL,
-                                          getProperty(PROP_LOGO_URL, ""),
-                                          size)));
+                                       HtmlUtils.input(PROP_LOGO_URL,
+                                           getProperty(PROP_LOGO_URL, ""),
+                                           size)));
 
 
 
         dsb.append(HtmlUtils.formEntry("", msg("System Message")));
         String systemMessage = getRepository().getSystemMessage();
-        
+
         dsb.append(
             HtmlUtils.formEntry(
                 msgLabel("Message"),
                 HtmlUtils.textArea(
-                    PROP_SYSTEM_MESSAGE,
-                    (systemMessage==null?"":systemMessage), 5, 60)));
+                    PROP_SYSTEM_MESSAGE, ((systemMessage == null)
+                                          ? ""
+                                          : systemMessage), 5, 60)));
 
 
         String phrases = getProperty(PROP_ADMIN_PHRASES, (String) null);
@@ -1136,10 +1165,10 @@ public class Admin extends RepositoryManager {
         }
 
         dsb.append(HtmlUtils.formEntryTop(msgLabel("Ignore Page Styles"),
-                                         HtmlUtils.checkbox(PROP_NOSTYLE,
-                                             "true",
-                                             getProperty(PROP_NOSTYLE,
-                                                 false))));
+                                          HtmlUtils.checkbox(PROP_NOSTYLE,
+                                              "true",
+                                                  getProperty(PROP_NOSTYLE,
+                                                      false))));
 
 
         dsb.append(
@@ -1191,15 +1220,15 @@ public class Admin extends RepositoryManager {
                 HtmlUtils.checkbox(
                     PROP_ACCESS_REQUIRELOGIN, "true",
                     getProperty(
-                        PROP_ACCESS_REQUIRELOGIN, false)) + HtmlUtils.space(2)
-                            + msg("Require login to access the site")));
+                        PROP_ACCESS_REQUIRELOGIN, false)) + HtmlUtils.space(
+                            2) + msg("Require login to access the site")));
 
         asb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.checkbox(PROP_ACCESS_NOBOTS,
-                                          "true",
-                                          getProperty(PROP_ACCESS_NOBOTS,
-                                              false)) + HtmlUtils.space(2)
-                                                  + msg("Disallow robots")));
+                                       HtmlUtils.checkbox(PROP_ACCESS_NOBOTS,
+                                           "true",
+                                           getProperty(PROP_ACCESS_NOBOTS,
+                                               false)) + HtmlUtils.space(2)
+                                                   + msg("Disallow robots")));
 
 
 
@@ -1235,9 +1264,10 @@ public class Admin extends RepositoryManager {
             + msg("Directories that RAMADDA is allowed to serve files from")
             + " " + "(e.g., from harvesters or the server file view entries)";
         asb.append(HtmlUtils.formEntryTop(msgLabel("File system access"),
-                                         "<table><tr valign=top><td>"
-                                         + fileWidget + "</td><td>"
-                                         + fileLabel + "</td></tr></table>"));
+                                          "<table><tr valign=top><td>"
+                                          + fileWidget + "</td><td>"
+                                          + fileLabel
+                                          + "</td></tr></table>"));
 
 
 
@@ -1287,7 +1317,7 @@ public class Admin extends RepositoryManager {
         }
         outputSB.append("</div>\n");
         String outputDiv = HtmlUtils.div(outputSB.toString(),
-                                        HtmlUtils.cssClass("scrollablediv"));
+                                         HtmlUtils.cssClass("scrollablediv"));
         osb.append("\n");
         String doAllOutput = HtmlUtils.checkbox("outputtype.all", "true",
                                  false) + HtmlUtils.space(1) + msg("Use all");
@@ -1319,6 +1349,7 @@ public class Admin extends RepositoryManager {
 
         sb.append(HtmlUtils.submit(msg("Change Settings")));
         sb.append(HtmlUtils.formClose());
+
         return makeResult(request, msg("Settings"), sb);
 
     }
@@ -1352,6 +1383,7 @@ public class Admin extends RepositoryManager {
         if ((serverAdmin.length() == 0) || (smtpServer.length() == 0)) {
             return false;
         }
+
         return true;
     }
 
@@ -1510,7 +1542,7 @@ public class Admin extends RepositoryManager {
 
         getRepository().writeGlobal(PROP_SYSTEM_MESSAGE,
                                     request.getString(PROP_SYSTEM_MESSAGE,
-                                                      ""));
+                                        ""));
 
 
 
@@ -1558,7 +1590,8 @@ public class Admin extends RepositoryManager {
         }
 
         //Tell the other repositoryManagers that the settings changed
-        for(RepositoryManager repositoryManager: getRepository().getRepositoryManagers()) {
+        for (RepositoryManager repositoryManager :
+                getRepository().getRepositoryManagers()) {
             repositoryManager.adminSettingsChanged();
         }
 
@@ -1611,12 +1644,9 @@ public class Admin extends RepositoryManager {
         }
 
         sb.append("<table cellspacing=\"0\" cellpadding=\"0\">");
-        sb.append(
-            HtmlUtils.row(
-                HtmlUtils.cols(
-                    HtmlUtils.space(10),
-                    HtmlUtils.b(msg("Action")) + HtmlUtils.space(3),
-                    HtmlUtils.b(msg("Role")))));
+        sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.space(10),
+                HtmlUtils.b(msg("Action")) + HtmlUtils.space(3),
+                HtmlUtils.b(msg("Role")))));
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
             sb.append(
@@ -1685,7 +1715,8 @@ public class Admin extends RepositoryManager {
                 msgLabel("Total Memory Available"),
                 fmt.format(totalMemory) + " (MB)"));
         statusSB.append(HtmlUtils.formEntry(msgLabel("Used Memory"),
-                                           fmt.format(usedMemory) + " (MB)"));
+                                            fmt.format(usedMemory)
+                                            + " (MB)"));
 
         long    uptime  = ManagementFactory.getRuntimeMXBean().getUptime();
         Counter counter = getRepository().getNumberOfCurrentRequests();
@@ -1696,14 +1727,11 @@ public class Admin extends RepositoryManager {
                                                    + msg("minutes")));
         */
         statusSB.append(HtmlUtils.formEntry(msgLabel("Total # Requests"),
-                                           getLogManager().getRequestCount()
-                                           + ""));
-        statusSB.append(
-            HtmlUtils.formEntryTop(
-                msgLabel("Active Requests"),
+                                            getLogManager().getRequestCount()
+                                            + ""));
+        statusSB.append(HtmlUtils.formEntryTop(msgLabel("Active Requests"),
                 counter.getCount() + HtmlUtils.space(2)
-                + HtmlUtils.makeShowHideBlock(
-                    msg("List"),
+                + HtmlUtils.makeShowHideBlock(msg("List"),
                     StringUtil.join("<br>", counter.getMessages()), false)));
 
 
@@ -1740,8 +1768,8 @@ public class Admin extends RepositoryManager {
         for (Object[] tuple : tuples) {
             ApiMethod apiMethod = (ApiMethod) tuple[1];
             apiSB.append(HtmlUtils.formEntry(apiMethod.getName(),
-                                            "# " + msgLabel("Calls")
-                                            + apiMethod.getNumberOfCalls()));
+                                             "# " + msgLabel("Calls")
+                                             + apiMethod.getNumberOfCalls()));
         }
 
 
@@ -1755,23 +1783,24 @@ public class Admin extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.makeShowHideBlock(msg("System Status"),
-                                             statusSB.toString(), false));
+                statusSB.toString(), false));
 
         StringBuffer pluginsSB = new StringBuffer();
         getRepository().getPluginManager().addStatusInfo(request, pluginsSB);
         sb.append(HtmlUtils.makeShowHideBlock(msg("Plugins"),
-                                             pluginsSB.toString(), false));
+                pluginsSB.toString(), false));
 
         sb.append(HtmlUtils.makeShowHideBlock(msg("API"), apiSB.toString(),
-                                             false));
+                false));
 
         sb.append(HtmlUtils.makeShowHideBlock(msg("Output Handlers"),
-                                             outputSB.toString(), false));
+                outputSB.toString(), false));
 
         sb.append(HtmlUtils.makeShowHideBlock(msg("Repository State"),
-                                             stateSB.toString(), false));
+                stateSB.toString(), false));
         sb.append(HtmlUtils.makeShowHideBlock(msg("Database Statistics"),
-                                             dbSB.toString(), false));
+                dbSB.toString(), false));
+
         return makeResult(request, msg("System"), sb);
     }
 
@@ -1815,10 +1844,10 @@ public class Admin extends RepositoryManager {
         //        sb.append(msgHeader("SQL"));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.href(request.url(URL_ADMIN_TABLES),
-                                msg("View Schema")));
+                                 msg("View Schema")));
         sb.append(HtmlUtils.bold("&nbsp;|&nbsp;"));
         sb.append(HtmlUtils.href(request.url(URL_ADMIN_DUMPDB),
-                                msg("Dump Database")));
+                                 msg("Dump Database")));
         sb.append(HtmlUtils.p());
         request.uploadFormWithAuthToken(sb, URL_ADMIN_SQL);
 
@@ -1844,6 +1873,7 @@ public class Admin extends RepositoryManager {
         request.ensureAuthToken();
         if (bulkLoad) {
             getDatabaseManager().loadSql(query, false, true);
+
             return makeResult(request, msg("SQL"),
                               new StringBuffer("Executed SQL" + "<P>"
                                   + HtmlUtils.space(1) + sb.toString()));
@@ -1854,6 +1884,7 @@ public class Admin extends RepositoryManager {
                 statement = getDatabaseManager().execute(query, -1, 10000);
             } catch (Exception exc) {
                 exc.printStackTrace();
+
                 throw exc;
             }
 
@@ -1897,8 +1928,9 @@ public class Admin extends RepositoryManager {
                         }
                         s = HtmlUtils.entityEncode(s);
                         if (s.length() > 100) {
-                            sb.append(HtmlUtils.col(HtmlUtils.textArea("dummy",
-                                    s, 5, 50)));
+                            sb.append(
+                                HtmlUtils.col(
+                                    HtmlUtils.textArea("dummy", s, 5, 50)));
                         } else {
                             sb.append(HtmlUtils.col(HtmlUtils.pre(s)));
                         }
@@ -1914,6 +1946,7 @@ public class Admin extends RepositoryManager {
             long t2 = System.currentTimeMillis();
             getRepository().clearCache();
             getRepository().readGlobals();
+
             return makeResult(request, msg("SQL"),
                               new StringBuffer(msgLabel("Fetched rows") + cnt
                                   + HtmlUtils.space(1) + msgLabel("in")
@@ -1960,9 +1993,11 @@ public class Admin extends RepositoryManager {
         sb.append("Scanned " + cnt + " entries");
         if (delete) {
             getEntryManager().deleteEntries(request, badEntries, null);
+
             return makeResult(request, msg("Scan"),
                               new StringBuffer("Deleted"));
         }
+
         return makeResult(request, msg("Scan"), sb);
     }
 
@@ -1986,16 +2021,16 @@ public class Admin extends RepositoryManager {
         totalMemory = totalMemory / 1000000.0;
         usedMemory  = usedMemory / 1000000.0;
         sb.append(HtmlUtils.formEntry("Total Memory Available:",
-                                     fmt.format(totalMemory) + " (MB)"));
+                                      fmt.format(totalMemory) + " (MB)"));
         sb.append(HtmlUtils.formEntry("Used Memory:",
-                                     fmt.format(usedMemory) + " (MB)"));
+                                      fmt.format(usedMemory) + " (MB)"));
 
         sb.append(
             HtmlUtils.formEntry(
                 "# Requests:",
                 "" + getRepository().getNumberOfCurrentRequests()));
         sb.append(HtmlUtils.formEntry("Start Time:",
-                                     "" + getRepository().getStartTime()));
+                                      "" + getRepository().getStartTime()));
 
 
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
@@ -2006,15 +2041,14 @@ public class Admin extends RepositoryManager {
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.makeShowHideBlock(msg("Stack"),
-                                             "<pre>"
-                                             + LogUtil.getStackDump(true)
-                                             + "</pre>", false));
+                "<pre>" + LogUtil.getStackDump(true) + "</pre>", false));
+
         return makeResult(request, msg("Stack Trace"), sb);
     }
 
     /**
      * Format the uptime
-     * 
+     *
      * @param milliseconds  time in milliseconds
      *
      * @return formatted time
@@ -2046,6 +2080,7 @@ public class Admin extends RepositoryManager {
         if (minutes != 1) {
             buf.append("s");
         }
+
         return buf.toString();
     }
 
@@ -2064,28 +2099,31 @@ public class Admin extends RepositoryManager {
         if (request.defined(ACTION_STOP)) {
             runningCleanup = false;
             cleanupTS++;
+
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_START)) {
             //            Misc.run(this, "runDatabaseCleanUp", request);
             Misc.run(this, "runDatabaseOrphanCheck", request);
+
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_DUMPDB)) {
             return adminDbDump(request);
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
+
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
-        } else if(request.defined(ACTION_SHUTDOWN)) {
+        } else if (request.defined(ACTION_SHUTDOWN)) {
             request.ensureAuthToken();
-            if(getRepository().getShutdownEnabled()) {
-                if(request.get(ARG_SHUTDOWN_CONFIRM,false)) {
+            if (getRepository().getShutdownEnabled()) {
+                if (request.get(ARG_SHUTDOWN_CONFIRM, false)) {
                     return processShutdown(request);
                 }
             }
         }
 
-        request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP,"");
+        request.formPostWithAuthToken(sb, URL_ADMIN_CLEANUP, "");
         String status = cleanupStatus.toString();
         if (runningCleanup) {
             sb.append(msg("Database clean up is running"));
@@ -2103,7 +2141,8 @@ public class Admin extends RepositoryManager {
             sb.append("<p>");
             sb.append(msg("Clear the entry cache"));
             sb.append("<br>");
-            sb.append(HtmlUtils.submit(msg("Clear cache"), ACTION_CLEARCACHE));
+            sb.append(HtmlUtils.submit(msg("Clear cache"),
+                                       ACTION_CLEARCACHE));
 
 
             sb.append("<p>");
@@ -2112,13 +2151,15 @@ public class Admin extends RepositoryManager {
                     msg("Reinitialize Database Connection"), ACTION_NEWDB));
             */
 
-            if(getRepository().getShutdownEnabled()) {
+            if (getRepository().getShutdownEnabled()) {
                 sb.append("<p>");
                 sb.append(msg("Shutdown the server"));
                 sb.append("<br>");
-                sb.append(HtmlUtils.submit(msg("Shutdown server"), ACTION_SHUTDOWN));
+                sb.append(HtmlUtils.submit(msg("Shutdown server"),
+                                           ACTION_SHUTDOWN));
                 sb.append(HtmlUtils.space(2));
-                sb.append(HtmlUtils.checkbox(ARG_SHUTDOWN_CONFIRM,"true",false));
+                sb.append(HtmlUtils.checkbox(ARG_SHUTDOWN_CONFIRM, "true",
+                                             false));
                 sb.append(HtmlUtils.space(1));
                 sb.append(msg("Yes, I really want to shutdown the server"));
             }
@@ -2138,6 +2179,7 @@ public class Admin extends RepositoryManager {
             sb.append(msgHeader("Cleanup Status"));
             sb.append(status);
         }
+
         //        sb.append(cnt +" files do not exist in " + (t2-t1) );
         return makeResult(request, msg("Cleanup"), sb);
     }
@@ -2178,6 +2220,7 @@ public class Admin extends RepositoryManager {
             while ((results = iter.getNext()) != null) {
                 if ((cleanupTS != myTS) || !runningCleanup) {
                     runningCleanup = false;
+
                     break;
                 }
                 int    col      = 1;
@@ -2204,6 +2247,7 @@ public class Admin extends RepositoryManager {
                 }
                 if ((cleanupTS != myTS) || !runningCleanup) {
                     runningCleanup = false;
+
                     break;
                 }
             }
@@ -2257,6 +2301,7 @@ public class Admin extends RepositoryManager {
             while ((results = iter.getNext()) != null) {
                 if ((cleanupTS != myTS) || !runningCleanup) {
                     runningCleanup = false;
+
                     break;
                 }
                 String id       = results.getString(1);
@@ -2271,6 +2316,7 @@ public class Admin extends RepositoryManager {
                 if (parentId == null) {
                     Entry entry = getEntryManager().getEntry(request, id);
                     System.out.println("root:" + id + " " + entry);
+
                     continue;
                 }
                 if ( !idMap.contains(parentId)) {

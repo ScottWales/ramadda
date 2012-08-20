@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,6 +23,7 @@ package org.ramadda.repository.client;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.Document;
@@ -29,7 +31,6 @@ import org.w3c.dom.Element;
 
 
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -128,6 +129,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
         if (getDefaultGroupId() != null) {
             return getDefaultGroupId();
         }
+
         return getSelectedGroupFromTree();
     }
 
@@ -150,8 +152,10 @@ public class InteractiveRepositoryClient extends RepositoryClient {
             if ( !(last instanceof GroupNode)) {
                 continue;
             }
+
             return ((GroupNode) last).id;
         }
+
         return null;
     }
 
@@ -164,11 +168,12 @@ public class InteractiveRepositoryClient extends RepositoryClient {
         if (groupTree == null) {
             doMakeGroupTree();
         }
-        Dimension defaultDimension = new Dimension(200, 150);
-        JScrollPane scroller = GuiUtils.makeScrollPane(groupTree,
+        Dimension   defaultDimension = new Dimension(200, 150);
+        JScrollPane scroller         = GuiUtils.makeScrollPane(groupTree,
                                    (int) defaultDimension.getWidth(),
                                    (int) defaultDimension.getHeight());
         scroller.setPreferredSize(defaultDimension);
+
         return scroller;
     }
 
@@ -257,6 +262,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
                 } else {
                     setIcon(iconClosed);
                 }
+
                 return this;
             }
         };
@@ -304,7 +310,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
      */
     public void newGroup(GroupNode groupTreeNode) {
         String parentId = groupTreeNode.id;
-        String name = GuiUtils.getInput("Enter a folder name to create",
+        String name     = GuiUtils.getInput("Enter a folder name to create",
                                         "Name: ", "");
         if (super.newGroup(parentId, name)) {
             groupTreeNode.removeAllChildren();
@@ -512,10 +518,12 @@ public class InteractiveRepositoryClient extends RepositoryClient {
             String[] msg = { "" };
             if (isValidSession(true, msg)) {
                 LogUtil.userMessage("Configuration succeeded");
+
                 break;
             }
             LogUtil.userMessage(msg[0]);
         }
+
         return true;
     }
 
@@ -541,8 +549,10 @@ public class InteractiveRepositoryClient extends RepositoryClient {
                     return false;
                 }
             }
+
             return showConfigDialog();
         }
+
         return true;
     }
 

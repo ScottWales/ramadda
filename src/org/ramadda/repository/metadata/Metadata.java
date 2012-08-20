@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,13 +24,13 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -137,6 +138,7 @@ public class Metadata implements Constants {
     /** _more_ */
     private boolean inherited = false;
 
+    /** _more_          */
     private Object[] values;
 
 
@@ -146,9 +148,14 @@ public class Metadata implements Constants {
     public Metadata() {}
 
 
+    /**
+     * _more_
+     *
+     * @param that _more_
+     */
     public Metadata(Metadata that) {
-        this("","",that);
-   }
+        this("", "", that);
+    }
 
 
     /**
@@ -205,13 +212,22 @@ public class Metadata implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param entryId _more_
+     * @param type _more_
+     * @param inherited _more_
+     * @param values _more_
+     */
     public Metadata(String id, String entryId, MetadataType type,
-                    boolean inherited, Object[]values) {
-        this.id  = id;
-        this.entryId = id;
-        this.type = type.getId();
-        this.inherited  = inherited;
-        this.values = values;
+                    boolean inherited, Object[] values) {
+        this.id        = id;
+        this.entryId   = id;
+        this.type      = type.getId();
+        this.inherited = inherited;
+        this.values    = values;
     }
 
 
@@ -318,6 +334,7 @@ public class Metadata implements Constants {
         if (s == null) {
             return true;
         }
+
         return s.length() < MAX_LENGTH;
     }
 
@@ -536,24 +553,45 @@ public class Metadata implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param index _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     private String getValue(int index, String dflt) {
-        if(values==null) {
+        if (values == null) {
             return dflt;
         }
         index--;
-        if(index>0 && index<values.length && values[index]!=null)
+        if ((index > 0) && (index < values.length)
+                && (values[index] != null)) {
             return values[index].toString();
+        }
+
         return null;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param index _more_
+     *
+     * @return _more_
+     */
     private Object getValue(int index) {
-        if(values!=null) {
+        if (values != null) {
             index--;
-            if(index>0 && index<values.length)
+            if ((index > 0) && (index < values.length)) {
                 return values[index];
+            }
+
             return null;
         }
+
         return getAttr(index);
     }
 
@@ -566,8 +604,8 @@ public class Metadata implements Constants {
      * @return _more_
      */
     public String getAttr(int idx) {
-        if(values!=null) {
-            return (String)getValue(idx);
+        if (values != null) {
+            return (String) getValue(idx);
         }
         if (idx == 1) {
             return attr1;
@@ -582,6 +620,7 @@ public class Metadata implements Constants {
             return attr4;
         }
         Hashtable<Integer, String> extraMap = getExtraMap();
+
         return extraMap.get(new Integer(idx));
         //        throw new IllegalArgumentException("Bad attr idx:" + idx);
 
@@ -774,6 +813,7 @@ public class Metadata implements Constants {
                 return false;
             }
             Type that = (Type) o;
+
             return type.equals(that.type);
         }
 
@@ -938,6 +978,7 @@ public class Metadata implements Constants {
             tmp        = mapToExtra(extraMap);
             this.extra = tmp;
         }
+
         return tmp;
     }
 
@@ -953,6 +994,7 @@ public class Metadata implements Constants {
         }
         Hashtable<Integer, String> tmp = extraToMap(extra);
         extraMap = tmp;
+
         //        extra    = null;
         return tmp;
     }
@@ -976,7 +1018,7 @@ public class Metadata implements Constants {
 
                     for (int j = 0; j < elements.size(); j++) {
                         Element extraNode = (Element) elements.get(j);
-                        int index = XmlUtil.getAttribute(extraNode,
+                        int     index     = XmlUtil.getAttribute(extraNode,
                                         ATTR_INDEX, -1);
                         String text = XmlUtil.getChildText(extraNode);
                         if (text == null) {
@@ -989,6 +1031,7 @@ public class Metadata implements Constants {
                 throw new RuntimeException(exc);
             }
         }
+
         return tmp;
     }
 
@@ -1003,8 +1046,8 @@ public class Metadata implements Constants {
      */
     public static String mapToExtra(Hashtable<Integer, String> map) {
         try {
-            Document doc = XmlUtil.makeDocument();
-            Element root = XmlUtil.create(doc, TAG_ATTRIBUTES,
+            Document doc  = XmlUtil.makeDocument();
+            Element  root = XmlUtil.create(doc, TAG_ATTRIBUTES,
                                           (Element) null);
             for (Enumeration keys = map.keys(); keys.hasMoreElements(); ) {
                 Integer index = (Integer) keys.nextElement();
@@ -1013,6 +1056,7 @@ public class Metadata implements Constants {
                                new String[] { ATTR_INDEX,
                         index.toString() });
             }
+
             return XmlUtil.toString(root, false);
         } catch (Exception exc) {
             throw new RuntimeException(exc);

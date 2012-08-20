@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,20 +27,21 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
+
+import ucar.unidata.data.gis.KmlUtil;
 
 
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
-import ucar.unidata.data.gis.KmlUtil;
 
 
 import java.awt.Color;
@@ -67,7 +69,9 @@ import java.util.Properties;
  */
 public class KmlOutputHandler extends OutputHandler {
 
-    public static final String MIME_KML = "application/vnd.google-earth.kml+xml";
+    /** _more_          */
+    public static final String MIME_KML =
+        "application/vnd.google-earth.kml+xml";
 
 
     /** _more_ */
@@ -153,6 +157,7 @@ public class KmlOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return outputGroup(request, outputType, entry,
                            new ArrayList<Entry>(), entries);
 
@@ -180,10 +185,10 @@ public class KmlOutputHandler extends OutputHandler {
                                && (subGroups.size() == 0);
 
 
-        String  title = (justOneEntry
-                         ? entries.get(0).getName()
-                         : group.getFullName());
-        Element root  = KmlUtil.kml(title);
+        String  title  = (justOneEntry
+                          ? entries.get(0).getName()
+                          : group.getFullName());
+        Element root   = KmlUtil.kml(title);
         Element folder = KmlUtil.folder(root, title,
                                         request.get(ARG_VISIBLE, false));
         KmlUtil.open(folder, false);
@@ -232,10 +237,10 @@ public class KmlOutputHandler extends OutputHandler {
         for (Entry entry : (List<Entry>) entries) {
             if (isLatLonImage(entry)) {
                 String fileTail = getStorageManager().getFileTail(entry);
-                String url =
+                String url      =
                     HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET)
-                                 + "/" + fileTail, ARG_ENTRYID,
-                                     entry.getId());
+                                  + "/" + fileTail, ARG_ENTRYID,
+                                      entry.getId());
                 url = request.getAbsoluteUrl(url);
                 myGroundOverlay(folder, entry.getName(),
                                 entry.getDescription(), url,
@@ -244,6 +249,7 @@ public class KmlOutputHandler extends OutputHandler {
                                 getLocation(entry.getEast(), 180),
                                 getLocation(entry.getWest(), -180),
                                 request.get(ARG_VISIBLE, false));
+
                 continue;
             }
 
@@ -323,6 +329,7 @@ public class KmlOutputHandler extends OutputHandler {
                                   (float) pt.getLongitude() }
                             }, Color.red, 2);
                             KmlUtil.visible(bearingPlacemark, false);
+
                             break;
                         }
                     }
@@ -335,6 +342,7 @@ public class KmlOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root));
+
         return new Result(title, sb, MIME_KML);
 
     }
@@ -372,6 +380,7 @@ public class KmlOutputHandler extends OutputHandler {
         KmlUtil.makeText(llb, KmlUtil.TAG_SOUTH, "" + south);
         KmlUtil.makeText(llb, KmlUtil.TAG_EAST, "" + east);
         KmlUtil.makeText(llb, KmlUtil.TAG_WEST, "" + west);
+
         return node;
     }
 
@@ -404,10 +413,12 @@ public class KmlOutputHandler extends OutputHandler {
             url = HtmlUtils.url(
                 request.url(request.getRepository().URL_ENTRY_GET) + "/"
                 + fileTail, ARG_ENTRYID, entry.getId());
+
             return request.getAbsoluteUrl(url);
         } else if (entry.getResource().isUrl()) {
             return entry.getResource().getPath();
         }
+
         return null;
     }
 
@@ -426,6 +437,7 @@ public class KmlOutputHandler extends OutputHandler {
                     || IOUtil.hasSuffix(resource, "kmz"))) {
             return true;
         }
+
         return false;
     }
 
@@ -441,6 +453,7 @@ public class KmlOutputHandler extends OutputHandler {
         if ((l == l) && (l != Entry.NONGEO)) {
             return l;
         }
+
         return dflt;
     }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,13 +23,13 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.ui.ImageUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -216,9 +217,9 @@ public class MetadataTypeBase extends RepositoryManager {
                 handler.getRepository().getMetadataManager().URL_METADATA_VIEW
                     .getFullUrl("/" + tail);
             String url = HtmlUtils.url(path, ARG_ELEMENT,
-                                      element.getIndex() + "", ARG_ENTRYID,
-                                      metadata.getEntryId(), ARG_METADATA_ID,
-                                      metadata.getId());
+                                       element.getIndex() + "", ARG_ENTRYID,
+                                       metadata.getEntryId(),
+                                       ARG_METADATA_ID, metadata.getId());
             //TODO:
             if (templateType.equals(TEMPLATETYPE_THREDDS)) {
                 XmlUtil.create(parent.getOwnerDocument(), "property", parent,
@@ -281,6 +282,7 @@ public class MetadataTypeBase extends RepositoryManager {
             template = applyMacros(template, element, value);
 
         }
+
         return template;
     }
 
@@ -342,6 +344,7 @@ public class MetadataTypeBase extends RepositoryManager {
         template = StringUtil.applyMacros(template, macros, false);
         template = template.replaceAll("\r\n\r\n", "<p>");
         template = template.replace("\n\n", "<p>");
+
         return template;
     }
 
@@ -364,6 +367,7 @@ public class MetadataTypeBase extends RepositoryManager {
         if (getChildren().size() > 1) {
             return false;
         }
+
         return !getChildren().get(0).getDataType().equals(TYPE_GROUP);
     }
 
@@ -514,6 +518,7 @@ public class MetadataTypeBase extends RepositoryManager {
                 if ((value != null) && value.startsWith("http")) {
                     return value;
                 }
+
                 return null;
             }
 
@@ -525,18 +530,19 @@ public class MetadataTypeBase extends RepositoryManager {
                 }
             }
             if (ImageUtils.isImage(f.toString())) {
-                tail = tail.replaceAll(" ","_");
+                tail = tail.replaceAll(" ", "_");
                 String path =
                     handler.getRepository().getMetadataManager()
                         .URL_METADATA_VIEW + "/" + tail;
 
 
                 return HtmlUtils.url(path, ARG_ELEMENT,
-                                    element.getIndex() + "", ARG_ENTRYID,
-                                    metadata.getEntryId(), ARG_METADATA_ID,
-                                    metadata.getId());
+                                     element.getIndex() + "", ARG_ENTRYID,
+                                     metadata.getEntryId(), ARG_METADATA_ID,
+                                     metadata.getId());
             }
         }
+
         return null;
     }
 
@@ -563,7 +569,7 @@ public class MetadataTypeBase extends RepositoryManager {
                         ? " "
                         : "");
         String tail  = getStorageManager().getFileTail(f.toString());
-        String path =
+        String path  =
             handler.getRepository().getMetadataManager().URL_METADATA_VIEW
             + "/" + tail;
 
@@ -578,32 +584,34 @@ public class MetadataTypeBase extends RepositoryManager {
                                              : ""), extra);
 
             if (forLink) {
-                String bigimg = HtmlUtils.img(HtmlUtils.url(path, ARG_ELEMENT,
-                                    element.getIndex() + "", ARG_ENTRYID,
-                                    metadata.getEntryId(), ARG_METADATA_ID,
+                String bigimg = HtmlUtils.img(HtmlUtils.url(path,
+                                    ARG_ELEMENT, element.getIndex() + "",
+                                    ARG_ENTRYID, metadata.getEntryId(),
+                                    ARG_METADATA_ID,
                                     metadata.getId()), "thumbnail", "");
 
 
                 String imgUrl = HtmlUtils.url(path, ARG_ELEMENT,
-                                             element.getIndex() + "",
-                                             ARG_ENTRYID,
-                                             metadata.getEntryId(),
-                                             ARG_METADATA_ID,
-                                             metadata.getId());
+                                    element.getIndex() + "", ARG_ENTRYID,
+                                    metadata.getEntryId(), ARG_METADATA_ID,
+                                    metadata.getId());
 
                 img = handler.getRepository().makePopupLink(img, bigimg,
                         true, false);
             } else {
                 img = img + "\n<br>\n<b>" + tail + "</b>\n";
             }
+
             return img;
         } else if (f.exists()) {
             String name = getStorageManager().getFileTail(f.getName());
+
             return HtmlUtils.href(HtmlUtils.url(path, ARG_ELEMENT,
                     element.getIndex() + "", ARG_ENTRYID,
                     metadata.getEntryId(), ARG_METADATA_ID,
                     metadata.getId()), name);
         }
+
         return "";
     }
 
@@ -639,6 +647,7 @@ public class MetadataTypeBase extends RepositoryManager {
         if ((filename == null) || (filename.trim().length() == 0)) {
             return null;
         }
+
         return new File(
             IOUtil.joinDir(
                 getStorageManager().getEntryDir(
@@ -667,6 +676,7 @@ public class MetadataTypeBase extends RepositoryManager {
         if ((f == null) || !f.exists()) {
             return null;
         }
+
         return f;
     }
 
@@ -699,6 +709,7 @@ public class MetadataTypeBase extends RepositoryManager {
         if (label != null) {
             return label;
         }
+
         return getName();
     }
 

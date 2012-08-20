@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,13 +23,13 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -126,6 +127,13 @@ public class MetadataHandler extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public boolean isForEntry(Entry entry) {
         return true;
     }
@@ -152,6 +160,7 @@ public class MetadataHandler extends RepositoryManager {
         if (type != null) {
             type.initializeCopiedMetadata(oldEntry, newEntry, newMetadata);
         }
+
         return newMetadata;
     }
 
@@ -342,6 +351,7 @@ public class MetadataHandler extends RepositoryManager {
         if (type == null) {
             return null;
         }
+
         return type.processView(request, entry, metadata);
     }
 
@@ -379,6 +389,7 @@ public class MetadataHandler extends RepositoryManager {
                         + "</td>" + "<td>" + cols[i + 1]));
             }
         }
+
         return sb.toString();
     }
 
@@ -500,16 +511,17 @@ public class MetadataHandler extends RepositoryManager {
                             Element node)
             throws Exception {
         MetadataType type = getType(metadata.getType());
-        if(type == null) {
-            throw new IllegalStateException("Unknown metadata type:" + metadata.getType());
+        if (type == null) {
+            throw new IllegalStateException("Unknown metadata type:"
+                                            + metadata.getType());
         }
 
-        Document doc = node.getOwnerDocument();
-        Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
+        Document doc          = node.getOwnerDocument();
+        Element  metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
                                    new String[] { ATTR_TYPE,
-                                                  metadata.getType() });
+                metadata.getType() });
         for (MetadataElement element : type.getChildren()) {
-            int index = element.getIndex();
+            int    index = element.getIndex();
             String value = metadata.getAttr(index);
             if (value == null) {
                 continue;
@@ -517,12 +529,15 @@ public class MetadataHandler extends RepositoryManager {
             Element attrNode = XmlUtil.create(doc, Metadata.TAG_ATTR,
                                    metadataNode,
                                    new String[] { Metadata.ATTR_INDEX,
-                                                  "" + index });
+                    "" + index });
             //true means to base 64 encode the text
             attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, true));
-            if (zos!=null && element.getDataType().equals(element.DATATYPE_FILE)) {
+            if ((zos != null)
+                    && element.getDataType().equals(element.DATATYPE_FILE)) {
                 File f = type.getFile(entry, metadata, element);
-                if(f == null || !f.exists()) continue;
+                if ((f == null) || !f.exists()) {
+                    continue;
+                }
                 String fileName = repository.getGUID();
                 //metadata.getId() +"_" + index;
                 attrNode.setAttribute("fileid", fileName);
@@ -565,6 +580,7 @@ public class MetadataHandler extends RepositoryManager {
         if (type == null) {
             return false;
         }
+
         return type.addMetadataToXml(request, xmlType, entry, metadata,
                                      datasetNode);
     }
@@ -607,6 +623,7 @@ public class MetadataHandler extends RepositoryManager {
         s = s.replace("_", " ");
         s = s.replace(".", " ");
         s = s.substring(0, 1).toUpperCase() + s.substring(1);
+
         return s;
     }
 
@@ -629,6 +646,7 @@ public class MetadataHandler extends RepositoryManager {
         if ((type == null) || !type.hasElements()) {
             return null;
         }
+
         return type.getHtml(request, entry, metadata);
     }
 
@@ -646,6 +664,7 @@ public class MetadataHandler extends RepositoryManager {
         if ((type == null) || !type.hasElements()) {
             return false;
         }
+
         return type.isSimple();
     }
 
@@ -674,6 +693,7 @@ public class MetadataHandler extends RepositoryManager {
         if (metadata.getId().length() > 0) {
             suffix = "." + metadata.getId();
         }
+
         return type.getForm(this, request, entry, metadata, suffix, forEdit);
     }
 
@@ -708,6 +728,7 @@ public class MetadataHandler extends RepositoryManager {
         if (type == null) {
             return null;
         }
+
         return type.getSearchUrl(request, metadata);
     }
 
@@ -727,6 +748,7 @@ public class MetadataHandler extends RepositoryManager {
         //        args.add(type.toString());
         args.add(ARG_METADATA_ATTR1 + "." + type.getId());
         args.add(value);
+
         return HtmlUtils.url(
             request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH),
             args);
@@ -782,12 +804,12 @@ public class MetadataHandler extends RepositoryManager {
             l.add(0, new TwoFacedObject("-" + msg("all") + "-", ""));
             String value = request.getString(argName, "");
             sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
-                                         HtmlUtils.select(argName, l, value,
-                                             100) + inheritedCbx));
+                                          HtmlUtils.select(argName, l, value,
+                                              100) + inheritedCbx));
         } else {
             sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
-                                         HtmlUtils.input(argName, "")
-                                         + inheritedCbx));
+                                          HtmlUtils.input(argName, "")
+                                          + inheritedCbx));
         }
     }
 
@@ -806,8 +828,8 @@ public class MetadataHandler extends RepositoryManager {
                                       MetadataType type)
             throws Exception {
 
-        boolean doSelect = true;
-        String cloudLink =
+        boolean doSelect  = true;
+        String  cloudLink =
             HtmlUtils.href(
                 request.url(
                     getRepository().getMetadataManager().URL_METADATA_LIST,
@@ -825,17 +847,17 @@ public class MetadataHandler extends RepositoryManager {
         int rowNum = 1;
         for (int i = 0; i < values.length; i++) {
             String browseUrl = HtmlUtils.url(url,
-                                            ARG_METADATA_TYPE + "."
-                                            + type.getId(), type.getId(),
-                                                ARG_METADATA_ATTR1 + "."
-                                                + type.getId(), values[i]);
+                                             ARG_METADATA_TYPE + "."
+                                             + type.getId(), type.getId(),
+                                                 ARG_METADATA_ATTR1 + "."
+                                                 + type.getId(), values[i]);
             String value = values[i].trim();
             if (value.length() == 0) {
                 value = "-blank-";
             }
             content.append(HtmlUtils.div(HtmlUtils.href(browseUrl, value),
-                                        HtmlUtils.cssClass("listrow"
-                                            + rowNum)));
+                                         HtmlUtils.cssClass("listrow"
+                                             + rowNum)));
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
@@ -843,10 +865,8 @@ public class MetadataHandler extends RepositoryManager {
         }
         content.append("</div>");
 
-        sb.append(
-            HtmlUtils.makeShowHideBlock(
-                cloudLink + HtmlUtils.space(1) + type.getLabel(),
-                content.toString(), false));
+        sb.append(HtmlUtils.makeShowHideBlock(cloudLink + HtmlUtils.space(1)
+                + type.getLabel(), content.toString(), false));
 
 
     }
@@ -867,6 +887,7 @@ public class MetadataHandler extends RepositoryManager {
             }
             values.add(new TwoFacedObject(label, s));
         }
+
         return values;
     }
 

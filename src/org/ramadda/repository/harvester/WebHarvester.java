@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -33,7 +35,6 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -169,6 +170,7 @@ public class WebHarvester extends Harvester {
         if (user == null) {
             user = repository.getUserManager().getDefaultUser();
         }
+
         return user;
     }
 
@@ -206,11 +208,13 @@ public class WebHarvester extends Harvester {
             String urlArg = ATTR_URL + cnt;
             if ( !request.exists(urlArg)) {
                 System.err.println("done cnt:" + cnt);
+
                 break;
             }
             if ( !request.defined(urlArg)) {
                 System.err.println(urlArg + " not defined cnt = " + cnt);
                 cnt++;
+
                 continue;
             }
             String baseGroupId = request.getUnsafeString(ATTR_BASEGROUP + cnt
@@ -271,8 +275,8 @@ public class WebHarvester extends Harvester {
 
 
         superSB.append(HtmlUtils.formEntry(msgLabel("User"),
-                                          HtmlUtils.input(ATTR_USER,
-                                              (getUserName() != null)
+                                           HtmlUtils.input(ATTR_USER,
+                                               (getUserName() != null)
                 ? getUserName().trim()
                 : "", HtmlUtils.SIZE_30)));
 
@@ -304,7 +308,7 @@ public class WebHarvester extends Harvester {
                     HtmlUtils.attr("target", "_linkpage"));
             }
             String urlInput = HtmlUtils.input(ATTR_URL + cnt, urlEntry.url,
-                                             HtmlUtils.SIZE_80) + link;
+                                  HtmlUtils.SIZE_80) + link;
 
             entrySB.append(HtmlUtils.formEntry(msgLabel("Fetch URL"),
                     urlInput));
@@ -319,8 +323,8 @@ public class WebHarvester extends Harvester {
         entrySB = new StringBuffer();
         entrySB.append(HtmlUtils.formTable());
         entrySB.append(HtmlUtils.formEntry(msgLabel("Fetch URL"),
-                                          HtmlUtils.input(ATTR_URL + cnt, "",
-                                              HtmlUtils.SIZE_80)));
+                                           HtmlUtils.input(ATTR_URL + cnt,
+                                               "", HtmlUtils.SIZE_80)));
         /*
         entrySB.append(
             RepositoryManager.tableSubHeader("Then create an entry with"));
@@ -347,7 +351,7 @@ public class WebHarvester extends Harvester {
         entrySB.append(HtmlUtils.formTableClose());
 
         sb.append(HtmlUtils.makeShowHideBlock("New URL", entrySB.toString(),
-                                             true));
+                true));
 
 
         sb.append(HtmlUtils.p());
@@ -428,9 +432,9 @@ public class WebHarvester extends Harvester {
         String baseSelect = OutputHandler.getGroupSelect(request,
                                 baseGroupFieldId);
         entrySB.append(HtmlUtils.hidden(baseGroupFieldId + "_hidden",
-                                       urlEntry.baseGroupId,
-                                       HtmlUtils.id(baseGroupFieldId
-                                           + "_hidden")));
+                                        urlEntry.baseGroupId,
+                                        HtmlUtils.id(baseGroupFieldId
+                                            + "_hidden")));
         entrySB.append(
             HtmlUtils.formEntry(
                 msgLabel("Base Folder"),
@@ -456,6 +460,7 @@ public class WebHarvester extends Harvester {
      */
     public String getExtraInfo() throws Exception {
         String messages = StringUtil.join("", statusMessages);
+
         return status.toString() + ((messages.length() == 0)
                                     ? ""
                                     : HtmlUtils.makeShowHideBlock("Entries",
@@ -483,6 +488,7 @@ public class WebHarvester extends Harvester {
 
         if (getTestMode()) {
             collectEntries((cnt == 0));
+
             return;
         }
 
@@ -493,6 +499,7 @@ public class WebHarvester extends Harvester {
             cnt++;
             if ( !getMonitor()) {
                 status = new StringBuffer("Done<br>");
+
                 break;
             }
 
@@ -564,6 +571,7 @@ public class WebHarvester extends Harvester {
             statusMessages.add(crumbs);
             entryCnt++;
         }
+
         return true;
     }
 
@@ -597,6 +605,7 @@ public class WebHarvester extends Harvester {
             IOUtil.writeTo(new URL(url), tmpFile, null);
         } catch (Exception exc) {
             statusMessages.add("Unable to fetch URL: " + url);
+
             return null;
         }
 
@@ -623,10 +632,10 @@ public class WebHarvester extends Harvester {
         Entry group = ((baseGroup != null)
                        ? getEntryManager().findGroupUnder(getRequest(),
                            baseGroup, groupName, getUser())
-                       : getEntryManager().findGroupFromName(getRequest(), groupName,
-                           getUser(), true));
+                       : getEntryManager().findGroupFromName(getRequest(),
+                           groupName, getUser(), true));
         //        System.err.println("Group:" + group.getFullName());
-        Entry entry = getTypeHandler().createEntry(repository.getGUID());
+        Entry    entry    = getTypeHandler().createEntry(repository.getGUID());
         Resource resource = new Resource(newFile.toString(),
                                          Resource.TYPE_STOREDFILE);
 
@@ -647,6 +656,7 @@ public class WebHarvester extends Harvester {
 
         }
         getTypeHandler().initializeNewEntry(entry);
+
         return entry;
 
     }

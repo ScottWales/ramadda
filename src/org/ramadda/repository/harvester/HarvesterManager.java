@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,14 +28,14 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -161,6 +162,7 @@ public class HarvesterManager extends RepositoryManager {
                 return harvester;
             }
         }
+
         return null;
     }
 
@@ -184,7 +186,9 @@ public class HarvesterManager extends RepositoryManager {
      */
     public void initHarvesters() throws Exception {
         //If we are in read only mode then don't start the harvesters
-        if(getRepository().isReadOnly()) return;
+        if (getRepository().isReadOnly()) {
+            return;
+        }
         Misc.run(this, "initHarvestersInThread");
     }
 
@@ -237,6 +241,7 @@ public class HarvesterManager extends RepositoryManager {
                     getRepository().getLogManager().logError(
                         "HarvesterManager: Could not load harvester class: "
                         + className);
+
                     continue;
                 }
             }
@@ -277,7 +282,7 @@ public class HarvesterManager extends RepositoryManager {
 
 
         for (Harvester harvester : harvesters) {
-            for(File rootDir: harvester.getRootDirs()) {
+            for (File rootDir : harvester.getRootDirs()) {
                 getStorageManager().addOkToReadFromDirectory(rootDir);
             }
             if ( !okToStart) {
@@ -324,39 +329,41 @@ public class HarvesterManager extends RepositoryManager {
                     new StringBuffer("No harvesters defined"));
             }
 
-            for(Harvester harvester: harvestersBeingCreated) {
+            for (Harvester harvester : harvestersBeingCreated) {
                 harvester.setId(getRepository().getGUID());
             }
 
         } else if (request.exists(ARG_NAME)) {
-            String id = getRepository().getGUID();
+            String      id   = getRepository().getGUID();
             Class c = Misc.findClass(request.getString(ARG_HARVESTER_CLASS));
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { Repository.class,
                     String.class });
             Harvester harvester = (Harvester) ctor.newInstance(new Object[] {
-                getRepository(),
-                id });
+                                      getRepository(),
+                                      id });
             harvester.setName(request.getString(ARG_NAME, ""));
             harvester.setUser(request.getUser());
             harvestersBeingCreated.add(harvester);
         }
 
 
-        if (harvestersBeingCreated.size()>0) {
-            for(Harvester harvester: harvestersBeingCreated) {
+        if (harvestersBeingCreated.size() > 0) {
+            for (Harvester harvester : harvestersBeingCreated) {
                 harvester.setIsEditable(true);
                 harvesters.add(harvester);
                 harvesterMap.put(harvester.getId(), harvester);
 
                 getDatabaseManager().executeInsert(Tables.HARVESTERS.INSERT,
-                                                   new Object[] { harvester.getId(),
-                                                                  harvester.getClass().getName(),
-                                                                  harvester.getContent() });
+                        new Object[] { harvester.getId(),
+                                       harvester.getClass().getName(),
+                                       harvester.getContent() });
             }
-            return new Result(request.url(URL_HARVESTERS_FORM,
-                                          ARG_HARVESTER_ID,
-                                          harvestersBeingCreated.get(0).getId()));
+
+            return new Result(
+                request.url(
+                    URL_HARVESTERS_FORM, ARG_HARVESTER_ID,
+                    harvestersBeingCreated.get(0).getId()));
         }
 
 
@@ -364,16 +371,16 @@ public class HarvesterManager extends RepositoryManager {
         request.formPostWithAuthToken(sb, URL_HARVESTERS_NEW);
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry(msgLabel("Name"),
-                                     HtmlUtils.input(ARG_NAME, "",
-                                         HtmlUtils.SIZE_40)));
+                                      HtmlUtils.input(ARG_NAME, "",
+                                          HtmlUtils.SIZE_40)));
         String typeInput = HtmlUtils.select(ARG_HARVESTER_CLASS,
-                                           harvesterTypes);
+                                            harvesterTypes);
         sb.append(HtmlUtils.formEntry(msgLabel("Type"), typeInput));
         sb.append(HtmlUtils.formEntry("",
-                                     HtmlUtils.submit(msg("Create"))
-                                     + HtmlUtils.space(1)
-                                     + HtmlUtils.submit(msg("Cancel"),
-                                         ARG_CANCEL)));
+                                      HtmlUtils.submit(msg("Create"))
+                                      + HtmlUtils.space(1)
+                                      + HtmlUtils.submit(msg("Cancel"),
+                                          ARG_CANCEL)));
 
         sb.append(HtmlUtils.formClose());
 
@@ -386,13 +393,14 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("File"),
-                HtmlUtils.fileInput(ARG_HARVESTER_XMLFILE, HtmlUtils.SIZE_70)));
+                HtmlUtils.fileInput(
+                    ARG_HARVESTER_XMLFILE, HtmlUtils.SIZE_70)));
 
         sb.append(HtmlUtils.formEntry("",
-                                     HtmlUtils.submit(msg("Upload"))
-                                     + HtmlUtils.space(1)
-                                     + HtmlUtils.submit(msg("Cancel"),
-                                         ARG_CANCEL)));
+                                      HtmlUtils.submit(msg("Upload"))
+                                      + HtmlUtils.space(1)
+                                      + HtmlUtils.submit(msg("Cancel"),
+                                          ARG_CANCEL)));
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.formTableClose());
 
@@ -410,8 +418,8 @@ public class HarvesterManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processForm(Request request) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        Harvester harvester =
+        StringBuffer sb        = new StringBuffer();
+        Harvester    harvester =
             findHarvester(request.getString(ARG_HARVESTER_ID));
         if (harvester == null) {
             throw new IllegalArgumentException("Could not find harvester");
@@ -420,6 +428,7 @@ public class HarvesterManager extends RepositoryManager {
         if (request.get(ARG_HARVESTER_GETXML, false)) {
             String xml = harvester.getContent();
             xml = XmlUtil.tag(Harvester.TAG_HARVESTERS, "", xml);
+
             return new Result("",
                               new StringBuffer(XmlUtil.getHeader() + "\n"
                                   + xml), "text/xml");
@@ -461,6 +470,7 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(formSB);
         sb.append(buttons);
         sb.append(HtmlUtils.formClose());
+
         return getAdmin().makeResult(request, msg("Edit Harvester"), sb);
     }
 
@@ -494,6 +504,7 @@ public class HarvesterManager extends RepositoryManager {
             getDatabaseManager().delete(Tables.HARVESTERS.NAME,
                                         Clause.eq(Tables.HARVESTERS.COL_ID,
                                             harvester.getId()));
+
             return new Result(request.url(URL_HARVESTERS_LIST));
         }
 
@@ -507,6 +518,7 @@ public class HarvesterManager extends RepositoryManager {
                         HtmlUtils.submit(msg("Yes"), ARG_DELETE_CONFIRM),
                         HtmlUtils.submit(msg("Cancel"), ARG_CANCEL_DELETE))));
             sb.append(HtmlUtils.formClose());
+
             return getAdmin().makeResult(request, msg("Edit Harvester"), sb);
         }
         if (request.exists(ARG_CHANGE)) {
@@ -520,6 +532,7 @@ public class HarvesterManager extends RepositoryManager {
                                    harvester.getContent() });
 
         }
+
         return new Result(request.url(URL_HARVESTERS_FORM, ARG_HARVESTER_ID,
                                       harvester.getId()));
     }
@@ -551,7 +564,7 @@ public class HarvesterManager extends RepositoryManager {
     public Result processList(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         if (request.defined(ARG_ACTION)) {
-            String action = request.getString(ARG_ACTION);
+            String    action    = request.getString(ARG_ACTION);
             Harvester harvester =
                 findHarvester(request.getString(ARG_HARVESTER_ID));
             if (action.equals(ACTION_STOP)) {
@@ -571,6 +584,7 @@ public class HarvesterManager extends RepositoryManager {
                 return new Result(request.url(URL_HARVESTERS_FORM,
                         ARG_HARVESTER_ID, harvester.getId()));
             }
+
             return new Result(request.url(URL_HARVESTERS_LIST));
         }
 
@@ -585,6 +599,7 @@ public class HarvesterManager extends RepositoryManager {
                     request.getString(ARG_MESSAGE, "")));
         }
         makeHarvestersList(request, harvesters, sb);
+
         return getAdmin().makeResult(request, msg("Harvesters"), sb);
     }
 
@@ -605,17 +620,16 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(HtmlUtils.p());
         //        sb.append(HtmlUtils.formTable());
         sb.append("<table cellpadding=4 cellspacing=0>");
-        sb.append(HtmlUtils.row(HtmlUtils.cols("", HtmlUtils.bold(msg("Name")),
-                                             HtmlUtils.bold(msg("State")),
-                                             HtmlUtils.bold(msg("Action")),
-                                             "", "")));
+        sb.append(HtmlUtils.row(HtmlUtils.cols("",
+                HtmlUtils.bold(msg("Name")), HtmlUtils.bold(msg("State")),
+                HtmlUtils.bold(msg("Action")), "", "")));
 
         int cnt = 0;
         for (Harvester harvester : harvesters) {
             String removeLink =
                 HtmlUtils.href(request.url(URL_HARVESTERS_LIST, ARG_ACTION,
-                                          ACTION_REMOVE, ARG_HARVESTER_ID,
-                                          harvester.getId()), msg("Remove"));
+                                           ACTION_REMOVE, ARG_HARVESTER_ID,
+                                           harvester.getId()), msg("Remove"));
             if (harvester.getIsEditable()) {
                 removeLink = "";
             }
@@ -638,21 +652,22 @@ public class HarvesterManager extends RepositoryManager {
                     HtmlUtils.cssClass(CSS_CLASS_HARVESTER_ACTIVE);
             }
 
-            StringBuffer info = new StringBuffer();
+            StringBuffer info  = new StringBuffer();
             StringBuffer error = harvester.getError();
-            if (error != null && error.length()>0) {
+            if ((error != null) && (error.length() > 0)) {
                 info.append(HtmlUtils.b(msg("Errors")));
-                info.append("<div class=\"error-list\"><pre>" + error + "</div></pre>");
+                info.append("<div class=\"error-list\"><pre>" + error
+                            + "</div></pre>");
             }
             info.append(harvester.getExtraInfo());
             sb.append(HtmlUtils.tag(HtmlUtils.TAG_TR, rowAttributes,
-                                   HtmlUtils.cols(edit, harvester.getName(),
-                                       (harvester.getActive()
-                                        ? HtmlUtils.bold(msg("Active"))
-                                        : msg("Stopped")) + HtmlUtils.space(
-                                            2), harvester.getRunLink(
-                                            request, false), removeLink,
-                                                  info.toString())));
+                                    HtmlUtils.cols(edit, harvester.getName(),
+                                        (harvester.getActive()
+                                         ? HtmlUtils.bold(msg("Active"))
+                                         : msg("Stopped")) + HtmlUtils.space(
+                                             2), harvester.getRunLink(
+                                             request, false), removeLink,
+                                                 info.toString())));
         }
         sb.append(HtmlUtils.formTableClose());
 
@@ -674,8 +689,7 @@ public class HarvesterManager extends RepositoryManager {
     public Result processFile(Request request) throws Exception {
         List<Harvester> harvesters  = getHarvesters();
         TypeHandler     typeHandler = getRepository().getTypeHandler(request);
-        String          filepath    = request.getUnsafeString(ARG_FILE,
-                                          BLANK);
+        String          filepath    = request.getUnsafeString(ARG_FILE, BLANK);
         //Check to  make sure we can access this file
         if ( !getStorageManager().isInDownloadArea(new File(filepath))) {
             return new Result(BLANK,
@@ -686,10 +700,12 @@ public class HarvesterManager extends RepositoryManager {
             Entry entry = harvester.processFile(typeHandler, filepath);
             if (entry != null) {
                 getEntryManager().addNewEntry(entry);
+
                 return new Result(BLANK, new StringBuffer("OK"),
                                   "text/plain");
             }
         }
+
         return new Result(BLANK, new StringBuffer("Could not create entry"),
                           "text/plain");
     }

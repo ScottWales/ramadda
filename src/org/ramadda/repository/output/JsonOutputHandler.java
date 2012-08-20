@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,6 +29,8 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.Column;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
@@ -35,8 +38,6 @@ import ucar.unidata.data.gis.KmlUtil;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -534,6 +535,7 @@ public class JsonOutputHandler extends OutputHandler {
                 return false;
             }
             System.err.println("class:" + clazz.getName());
+
             return false;
         }
 
@@ -549,6 +551,7 @@ public class JsonOutputHandler extends OutputHandler {
                 return false;
             }
             System.err.println("field:" + f.getName());
+
             //            return true;
             return false;
         }
@@ -567,8 +570,7 @@ public class JsonOutputHandler extends OutputHandler {
         }
         final StringBuilder     result    = new StringBuilder();
 
-        StringCharacterIterator iterator  =
-            new StringCharacterIterator(aText);
+        StringCharacterIterator iterator  = new StringCharacterIterator(aText);
         char                    character = iterator.current();
         while (character != StringCharacterIterator.DONE) {
             if (character == '\"') {
@@ -594,6 +596,7 @@ public class JsonOutputHandler extends OutputHandler {
             }
             character = iterator.next();
         }
+
         return result.toString();
     }
 

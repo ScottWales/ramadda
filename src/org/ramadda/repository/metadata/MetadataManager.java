@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -37,7 +39,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -232,6 +233,7 @@ public class MetadataManager extends RepositoryManager {
         if (templatesForType == null) {
             return null;
         }
+
         return templatesForType.get(templateType);
     }
 
@@ -287,6 +289,7 @@ public class MetadataManager extends RepositoryManager {
                                  Metadata oldMetadata)
             throws Exception {
         MetadataHandler handler = findMetadataHandler(oldMetadata.getType());
+
         return handler.copyMetadata(oldEntry, newEntry, oldMetadata);
     }
 
@@ -350,6 +353,7 @@ public class MetadataManager extends RepositoryManager {
         if (result.size() == 0) {
             return null;
         }
+
         return result;
     }
 
@@ -366,6 +370,7 @@ public class MetadataManager extends RepositoryManager {
         List<Metadata> result = new ArrayList<Metadata>();
         findInheritedMetadata(getEntryManager().getParent(null, entry),
                               result);
+
         return result;
     }
 
@@ -454,6 +459,7 @@ public class MetadataManager extends RepositoryManager {
                 return metadata;
             }
         }
+
         return null;
     }
 
@@ -498,6 +504,7 @@ public class MetadataManager extends RepositoryManager {
         }
 
         entry.setMetadata(metadataList);
+
         return metadataList;
     }
 
@@ -521,6 +528,7 @@ public class MetadataManager extends RepositoryManager {
             handler.getInitialMetadata(request, entry, metadataList, extra,
                                        shortForm);
         }
+
         return metadataList;
     }
 
@@ -547,6 +555,7 @@ public class MetadataManager extends RepositoryManager {
         if (extra.size() > 0) {
             changed = true;
         }
+
         return changed;
     }
 
@@ -616,6 +625,7 @@ public class MetadataManager extends RepositoryManager {
         if (dfltMetadataHandler == null) {
             dfltMetadataHandler = new MetadataHandler(getRepository(), null);
         }
+
         return dfltMetadataHandler;
     }
 
@@ -639,6 +649,7 @@ public class MetadataManager extends RepositoryManager {
         if (dfltMetadataHandler == null) {
             dfltMetadataHandler = new MetadataHandler(getRepository(), null);
         }
+
         return dfltMetadataHandler;
     }
 
@@ -669,6 +680,7 @@ public class MetadataManager extends RepositoryManager {
             metadataHandlers.add(handler);
             metadataHandlerMap.put(c, handler);
         }
+
         return handler;
     }
 
@@ -699,6 +711,7 @@ public class MetadataManager extends RepositoryManager {
                 MetadataType.parse(root, this);
             } catch (Exception exc) {
                 logError("Error loading metadata handler file:" + file, exc);
+
                 throw exc;
             }
 
@@ -725,21 +738,46 @@ public class MetadataManager extends RepositoryManager {
             }
             type.getHandler().addToSearchForm(request, sb, type);
         }
+
         return sb;
     }
 
 
-    public List<Metadata> getMetadataFromClipboard(Request request) throws Exception {
-        List<Metadata> metadata = (List<Metadata> ) getSessionManager().getSessionProperty(request, PROP_METADATA);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Metadata> getMetadataFromClipboard(Request request)
+            throws Exception {
+        List<Metadata> metadata =
+            (List<Metadata>) getSessionManager().getSessionProperty(request,
+                PROP_METADATA);
+
         return metadata;
     }
 
-    public void copyMetadataToClipboard(Request request, List<Metadata> metadataList) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param metadataList _more_
+     *
+     * @throws Exception _more_
+     */
+    public void copyMetadataToClipboard(Request request,
+                                        List<Metadata> metadataList)
+            throws Exception {
         List<Metadata> copies = new ArrayList<Metadata>();
-        for(Metadata metadata: metadataList) {
+        for (Metadata metadata : metadataList) {
             copies.add(new Metadata(metadata));
         }
-        getSessionManager().putSessionProperty(request, PROP_METADATA, copies);
+        getSessionManager().putSessionProperty(request, PROP_METADATA,
+                copies);
     }
 
 
@@ -762,6 +800,7 @@ public class MetadataManager extends RepositoryManager {
             }
             type.getHandler().addToBrowseSearchForm(request, sb, type);
         }
+
         return sb;
     }
 
@@ -812,8 +851,8 @@ public class MetadataManager extends RepositoryManager {
      */
     public Result processMetadataChange(Request request) throws Exception {
         synchronized (MUTEX_METADATA) {
-            Entry entry = getEntryManager().getEntry(request);
-            Entry parent = getEntryManager().getParent(request, entry);
+            Entry   entry         = getEntryManager().getEntry(request);
+            Entry   parent = getEntryManager().getParent(request, entry);
             boolean canEditParent =
                 (parent != null)
                 && getAccessManager().canDoAction(request, parent,
@@ -846,8 +885,8 @@ public class MetadataManager extends RepositoryManager {
                                              newMetadataList);
                 }
 
-                if(!request.isAnonymous()
-                   && request.exists(ARG_METADATA_CLIPBOARD_COPY)) {
+                if ( !request.isAnonymous()
+                        && request.exists(ARG_METADATA_CLIPBOARD_COPY)) {
                     List<Metadata> toCopy = new ArrayList<Metadata>();
                     for (Metadata metadata : newMetadataList) {
                         if (request.defined(ARG_METADATA_ID + SUFFIX_SELECT
@@ -878,6 +917,7 @@ public class MetadataManager extends RepositoryManager {
                         }
                     }
                     parent.setMetadata(null);
+
                     return new Result(request.url(URL_METADATA_FORM,
                             ARG_ENTRYID, parent.getId(), ARG_MESSAGE,
                             cnt + " "
@@ -897,6 +937,7 @@ public class MetadataManager extends RepositoryManager {
             entry.setMetadata(null);
             Misc.run(getRepository(), "checkModifiedEntries",
                      Misc.newList(entry));
+
             return new Result(request.url(URL_METADATA_FORM, ARG_ENTRYID,
                                           entry.getId()));
         }
@@ -923,8 +964,9 @@ public class MetadataManager extends RepositoryManager {
             header = HtmlUtils.href(request.getUrl(), msg("List"))
                      + HtmlUtils.span(
                          "&nbsp;|&nbsp;",
-                         HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)) + HtmlUtils.b(
-                             msg("Cloud"));
+                         HtmlUtils.cssClass(
+                             CSS_CLASS_SEPARATOR)) + HtmlUtils.b(
+                                 msg("Cloud"));
         } else {
             request.put(ARG_TYPE, "cloud");
             header = HtmlUtils.b(msg("List"))
@@ -1031,15 +1073,15 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataView(Request request) throws Exception {
         Entry          entry        = getEntryManager().getEntry(request);
         List<Metadata> metadataList = getMetadata(entry);
-        Metadata metadata = findMetadata(entry,
+        Metadata       metadata     = findMetadata(entry,
                                          request.getString(ARG_METADATA_ID,
                                              ""));
         if (metadata == null) {
             return new Result("", "Could not find metadata");
         }
         MetadataHandler handler = findMetadataHandler(metadata.getType());
-        Result          result = handler.processView(request, entry,
-                                     metadata);
+        Result          result = handler.processView(request, entry, metadata);
+
         return getEntryManager().addEntryHeader(request,
                 getEntryManager().getTopGroup(), result);
     }
@@ -1056,13 +1098,27 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processMetadataForm(Request request) throws Exception {
-        Entry entry = getEntryManager().getEntry(request);
-        StringBuffer sb = new StringBuffer();
+        Entry        entry = getEntryManager().getEntry(request);
+        StringBuffer sb    = new StringBuffer();
         request.appendMessage(sb);
+
         return processMetadataForm(request, entry, sb);
     }
 
-    public Result processMetadataForm(Request request, Entry entry, StringBuffer sb) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processMetadataForm(Request request, Entry entry,
+                                      StringBuffer sb)
+            throws Exception {
         boolean canEditParent = getAccessManager().canDoAction(request,
                                     getEntryManager().getParent(request,
                                         entry), Permission.ACTION_EDIT);
@@ -1083,12 +1139,10 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtils.submit(msg("Change")));
             sb.append(HtmlUtils.space(2));
             sb.append(HtmlUtils.submit(msg("Delete selected"),
-                                      ARG_METADATA_DELETE));
+                                       ARG_METADATA_DELETE));
             sb.append(HtmlUtils.space(2));
-            sb.append(
-                      HtmlUtils.submit(
-                                      msg("Copy selected to clipboard"),
-                                      ARG_METADATA_CLIPBOARD_COPY));
+            sb.append(HtmlUtils.submit(msg("Copy selected to clipboard"),
+                                       ARG_METADATA_CLIPBOARD_COPY));
             //            sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.br());
             for (Metadata metadata : metadataList) {
@@ -1105,7 +1159,7 @@ public class MetadataManager extends RepositoryManager {
                 }
 
                 String cbxId = "cbx_" + metadata.getId();
-                String cbx =
+                String cbx   =
                     HtmlUtils.checkbox(
                         ARG_METADATA_ID + SUFFIX_SELECT + metadata.getId(),
                         metadata.getId(), false,
@@ -1136,11 +1190,9 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtils.submit(msg("Change")));
             sb.append(HtmlUtils.space(2));
             sb.append(HtmlUtils.submit(msg("Delete Selected"),
-                                      ARG_METADATA_DELETE));
-            sb.append(
-                      HtmlUtils.submit(
-                                      msg("Copy selected to clipboard"),
-                                      ARG_METADATA_CLIPBOARD_COPY));
+                                       ARG_METADATA_DELETE));
+            sb.append(HtmlUtils.submit(msg("Copy selected to clipboard"),
+                                       ARG_METADATA_CLIPBOARD_COPY));
             sb.append(HtmlUtils.formClose());
         }
 
@@ -1165,21 +1217,24 @@ public class MetadataManager extends RepositoryManager {
         Entry        entry = getEntryManager().getEntry(request);
         sb.append(HtmlUtils.p());
 
-        if(request.get(ARG_METADATA_CLIPBOARD_PASTE, false)) {
-            List<Metadata>clipboard = getMetadataFromClipboard(request);
-            if(clipboard==null || clipboard.size()==0) {
+        if (request.get(ARG_METADATA_CLIPBOARD_PASTE, false)) {
+            List<Metadata> clipboard = getMetadataFromClipboard(request);
+            if ((clipboard == null) || (clipboard.size() == 0)) {
                 sb.append(getRepository().showDialogError("Clipboard empty"));
             } else {
                 //TODO: file attachments
-                for(Metadata copiedMetadata: clipboard) {
+                for (Metadata copiedMetadata : clipboard) {
                     Metadata newMetadata =
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(), copiedMetadata);
                     insertMetadata(newMetadata);
                 }
                 entry.setMetadata(null);
-                sb.append(getRepository().showDialogNote("Metadata pasted from clipboard"));
+                sb.append(
+                    getRepository().showDialogNote(
+                        "Metadata pasted from clipboard"));
             }
+
             return processMetadataForm(request, entry, sb);
         }
 
@@ -1192,11 +1247,13 @@ public class MetadataManager extends RepositoryManager {
                 if (handler.canHandle(type)) {
                     handler.makeAddForm(request, entry,
                                         handler.findType(type), sb);
+
                     break;
                 }
             }
             sb.append(HtmlUtils.formTableClose());
         }
+
         return getEntryManager().makeEntryEditResult(request, entry,
                 msg("Add Property"), sb);
     }
@@ -1212,31 +1269,32 @@ public class MetadataManager extends RepositoryManager {
      */
     private void makeAddList(Request request, Entry entry, StringBuffer sb)
             throws Exception {
-        List<String> groups   = new ArrayList<String>();
-        Hashtable    groupMap = new Hashtable();
+        List<String>   groups    = new ArrayList<String>();
+        Hashtable      groupMap  = new Hashtable();
 
-        List<Metadata>clipboard = getMetadataFromClipboard(request);
-        if(clipboard!=null && clipboard.size()>0) {
+        List<Metadata> clipboard = getMetadataFromClipboard(request);
+        if ((clipboard != null) && (clipboard.size() > 0)) {
             StringBuffer clipboardSB = new StringBuffer();
-            Entry dummyEntry = new Entry();
-            int cnt = 0;
-            for(Metadata copied: clipboard) {
-                MetadataHandler handler = findMetadataHandler(copied.getType());
-                MetadataType type = handler.getType(copied.getType());
-                String label = type.getTypeLabel(copied);
-                String row = label;
+            Entry        dummyEntry  = new Entry();
+            int          cnt         = 0;
+            for (Metadata copied : clipboard) {
+                MetadataHandler handler =
+                    findMetadataHandler(copied.getType());
+                MetadataType type  = handler.getType(copied.getType());
+                String       label = type.getTypeLabel(copied);
+                String       row   = label;
                 clipboardSB.append(row);
                 clipboardSB.append("<br>");
                 cnt++;
             }
-            
+
             request.uploadFormWithAuthToken(sb, URL_METADATA_ADDFORM);
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             sb.append(HtmlUtils.hidden(ARG_METADATA_CLIPBOARD_PASTE, "true"));
             sb.append(HtmlUtils.submit(msg("Copy from Clipboard")));
             sb.append(HtmlUtils.formClose());
-            sb.append(HtmlUtils.makeShowHideBlock("Clipboard", clipboardSB.toString(),
-                    false));
+            sb.append(HtmlUtils.makeShowHideBlock("Clipboard",
+                    clipboardSB.toString(), false));
             sb.append(HtmlUtils.p());
         }
 
@@ -1247,7 +1305,7 @@ public class MetadataManager extends RepositoryManager {
             if ( !type.getForUser()) {
                 continue;
             }
-            if(!type.isForEntry(entry)) {
+            if ( !type.isForEntry(entry)) {
                 continue;
             }
             String       name    = type.getCategory();
@@ -1309,6 +1367,7 @@ public class MetadataManager extends RepositoryManager {
             entry.setMetadata(null);
             Misc.run(getRepository(), "checkModifiedEntries",
                      Misc.newList(entry));
+
             return new Result(request.url(URL_METADATA_FORM, ARG_ENTRYID,
                                           entry.getId()));
 
@@ -1350,6 +1409,7 @@ public class MetadataManager extends RepositoryManager {
                 myDistinctMap.put(type.getId(), values);
             }
         }
+
         return values;
     }
 

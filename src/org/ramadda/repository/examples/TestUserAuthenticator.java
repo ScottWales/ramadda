@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -124,9 +125,11 @@ public class TestUserAuthenticator extends UserAuthenticatorImpl {
             roles.add("some role1");
             roles.add("some role2");
             user.setRoles(roles);
+
             return user;
         }
         debug("could not find user");
+
         return null;
     }
 
@@ -159,6 +162,7 @@ public class TestUserAuthenticator extends UserAuthenticatorImpl {
         if (userId.equals("xxx") && password.equals("yyy")) {
             return findUser(repository, userId);
         }
+
         return null;
     }
 
@@ -172,6 +176,7 @@ public class TestUserAuthenticator extends UserAuthenticatorImpl {
         ArrayList<String> roles = new ArrayList<String>();
         roles.add("some role1");
         roles.add("some role2");
+
         return roles;
     }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -71,12 +72,23 @@ public class ExecAction extends MonitorAction {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     *
+     * @return _more_
+     */
     public boolean enabled(Repository repository) {
-        return repository.getProperty(PROP_MONITOR_ENABLE_EXEC,
-                                      false);
+        return repository.getProperty(PROP_MONITOR_ENABLE_EXEC, false);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean adminOnly() {
         return true;
     }
@@ -91,6 +103,11 @@ public class ExecAction extends MonitorAction {
         return "exec";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getActionLabel() {
         return "Exec Action";
     }
@@ -153,7 +170,7 @@ public class ExecAction extends MonitorAction {
             throw new IllegalArgumentException("Exec action not enabled");
         }
         Resource resource = entry.getResource();
-        String command =
+        String   command  =
             monitor.getRepository().getEntryManager().replaceMacros(entry,
                 execLine);
         try {

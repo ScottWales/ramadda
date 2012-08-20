@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,6 +26,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -35,7 +37,6 @@ import ucar.unidata.sql.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -161,6 +162,7 @@ public class GraphOutputHandler extends OutputHandler {
         sb.append(html);
         Result result = new Result(msg("Graph"), sb);
         addLinks(request, result, new State(entry));
+
         return result;
 
     }
@@ -342,8 +344,7 @@ public class GraphOutputHandler extends OutputHandler {
             getRepository().getResource(PROP_HTML_GRAPHTEMPLATE);
         String  id         = (String) request.getId((String) null);
         String  originalId = id;
-        String  type = (String) request.getString(ARG_NODETYPE,
-                           (String) null);
+        String  type = (String) request.getString(ARG_NODETYPE, (String) null);
         int     cnt        = 0;
         int     actualCnt  = 0;
 
@@ -428,6 +429,7 @@ public class GraphOutputHandler extends OutputHandler {
                                               ATTR_ID, skipId, ATTR_TITLE,
                                                   "...")));
                     addEdgeTag(sb, "etc", originalId, skipId);
+
                     break;
                 }
             }
@@ -455,6 +457,7 @@ public class GraphOutputHandler extends OutputHandler {
                                               ATTR_ID, skipId, ATTR_TITLE,
                                                   "...")));
                     addEdgeTag(sb, originalId, skipId, "etc");
+
                     break;
                 }
             }
@@ -464,6 +467,7 @@ public class GraphOutputHandler extends OutputHandler {
                                         sb.toString());
         xml = StringUtil.replace(xml, "${root}",
                                  getRepository().getUrlBase());
+
         //        System.err.println(xml);
         return new Result(BLANK, new StringBuffer(xml),
                           getRepository().getMimeTypeFromSuffix(".xml"));
@@ -483,6 +487,7 @@ public class GraphOutputHandler extends OutputHandler {
         if (s.length() > 40) {
             s = s.substring(0, 39) + "...";
         }
+
         return s;
     }
 
@@ -502,6 +507,7 @@ public class GraphOutputHandler extends OutputHandler {
         if ((desc == null) || (desc.length() == 0)) {
             desc = entry.getName();
         }
+
         return desc;
     }
 

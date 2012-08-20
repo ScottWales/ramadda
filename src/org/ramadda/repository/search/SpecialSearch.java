@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,10 +30,11 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -70,7 +72,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
+    /** _more_          */
     public static final String ARG_SEARCH_REFINE = "search.refine";
+
+    /** _more_          */
     public static final String ARG_SEARCH_CLEAR = "search.clear";
 
     /** _more_ */
@@ -85,13 +90,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private boolean searchOpen = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showText = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showArea = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showDate = true;
 
     /** _more_ */
@@ -183,6 +188,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         //        request.put("atom.id", theType);
         Result result =
             getRepository().getSearchManager().processEntrySearch(request);
+
         return result;
     }
 
@@ -214,9 +220,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         int contentsHeight = 450;
         int minWidth       = contentsWidth + 200;
         request.put(ARG_TYPE, theType);
-        List<Entry> entries = new ArrayList<Entry>();
-        boolean refinement =request.exists(ARG_SEARCH_REFINE);
-        if(!refinement) {
+        List<Entry> entries    = new ArrayList<Entry>();
+        boolean     refinement = request.exists(ARG_SEARCH_REFINE);
+        if ( !refinement) {
             List[] groupAndEntries =
                 getRepository().getEntryManager().getEntries(request);
             entries = (List<Entry>) groupAndEntries[0];
@@ -225,8 +231,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         if (request.exists("timelinexml")) {
             Entry group = getRepository().getEntryManager().getDummyGroup();
-            return getRepository().getCalendarOutputHandler().outputTimelineXml(
-                request, group, entries);
+
+            return getRepository().getCalendarOutputHandler()
+                .outputTimelineXml(request, group, entries);
         }
 
         StringBuffer sb = new StringBuffer();
@@ -314,8 +321,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 TypeHandler.getSpatialSearchTypeWidget(request);
             String widget = map.getSelectorWidget(ARG_AREA, nwse);
             formSB.append(HtmlUtils.formEntry(msgLabel("Location"),
-                                             HtmlUtils.table(new Object[] {
-                                                 widget,
+                    HtmlUtils.table(new Object[] { widget,
                     clearLink })));
         }
         //        formSB.append(HtmlUtils.formEntry("", searchType));
@@ -332,11 +338,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             }
         }
 
-        formSB.append(HtmlUtils.formEntry("",
-                                         HtmlUtils.submit(msg("Search"),
-                                                         ARG_SEARCH_SUBMIT) +"  " +
-                                         HtmlUtils.submit(msg("Refine"),
-                                                         ARG_SEARCH_REFINE)));
+        formSB.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT) + "  "
+                + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE)));
 
         formSB.append(HtmlUtils.formTableClose());
         formSB.append(HtmlUtils.formClose());
@@ -352,9 +358,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         makeEntryList(request, listSB, entries);
 
         getRepository().getCalendarOutputHandler().makeTimeline(request,
-                                                                entries, timelineSB,
-                                                                "width:" + contentsWidth + "px; height: " + contentsHeight
-                                                                + "px;");
+                entries, timelineSB,
+                "width:" + contentsWidth + "px; height: " + contentsHeight
+                + "px;");
 
 
         StringBuffer mapSB = new StringBuffer(
@@ -366,50 +372,54 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         listSB.append(
             "&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>");
 
-        if(refinement) {
+        if (refinement) {
             tabTitles.add(msg("Results"));
             tabContents.add(
-                            HtmlUtils.div(
-                                         getRepository().showDialogNote("Search criteria refined"),
-                                         HtmlUtils.style("min-width:" + minWidth + "px")));
+                HtmlUtils.div(
+                    getRepository().showDialogNote(
+                        "Search criteria refined"), HtmlUtils.style(
+                        "min-width:" + minWidth + "px")));
         } else {
             if (entries.size() == 0) {
                 tabTitles.add(msg("Results"));
                 tabContents.add(
-                                HtmlUtils.div(
-                                             getRepository().showDialogNote("No entries found"),
-                                             HtmlUtils.style("min-width:" + minWidth + "px")));
+                    HtmlUtils.div(
+                        getRepository().showDialogNote("No entries found"),
+                        HtmlUtils.style("min-width:" + minWidth + "px")));
             } else {
                 for (String tab : tabs) {
                     if (tab.equals(TAB_LIST)) {
                         tabContents.add(HtmlUtils.div(listSB.toString(),
-                                                     HtmlUtils.style("min-width:"
-                                                                    + minWidth + "px")));
+                                HtmlUtils.style("min-width:" + minWidth
+                                    + "px")));
                         tabTitles.add(HtmlUtils.img(iconUrl(ICON_LIST)) + " "
                                       + msg("List"));
                     } else if (tab.equals(TAB_MAP)) {
                         tabContents.add(HtmlUtils.div(mapSB.toString(),
-                                                     HtmlUtils.style("min-width:"
-                                                                    + minWidth + "px")));
+                                HtmlUtils.style("min-width:" + minWidth
+                                    + "px")));
                         tabTitles.add(HtmlUtils.img(iconUrl(ICON_MAP)) + " "
                                       + msg("Map"));
                     } else if (tab.equals(TAB_TIMELINE)) {
                         tabContents.add(HtmlUtils.div(timelineSB.toString(),
-                                                     HtmlUtils.style("min-width:"
-                                                                    + minWidth + "px")));
-                        tabTitles.add(HtmlUtils.img(iconUrl(ICON_TIMELINE)) + " "
-                                      + msg("Timeline"));
+                                HtmlUtils.style("min-width:" + minWidth
+                                    + "px")));
+                        tabTitles.add(HtmlUtils.img(iconUrl(ICON_TIMELINE))
+                                      + " " + msg("Timeline"));
                     } else if (tab.equals(TAB_EARTH)
-                               && getMapManager().isGoogleEarthEnabled(request)) {
+                               && getMapManager().isGoogleEarthEnabled(
+                                   request)) {
                         StringBuffer earthSB = new StringBuffer();
-                        getMapManager().getGoogleEarth(request, entries, earthSB,
-                                                       contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
-                                                       contentsHeight, true, false);
+                        getMapManager().getGoogleEarth(
+                            request, entries, earthSB,
+                            contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
+                            contentsHeight, true, false);
                         tabContents.add(HtmlUtils.div(earthSB.toString(),
-                                                     HtmlUtils.style("min-width:"
-                                                                    + minWidth + "px")));
-                        tabTitles.add(HtmlUtils.img(iconUrl(ICON_GOOGLEEARTH)) + " "
-                                      + msg("Earth"));
+                                HtmlUtils.style("min-width:" + minWidth
+                                    + "px")));
+                        tabTitles.add(
+                            HtmlUtils.img(iconUrl(ICON_GOOGLEEARTH)) + " "
+                            + msg("Earth"));
                     }
                 }
             }
@@ -421,7 +431,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
         String searchHtml =
             HtmlUtils.makeShowHideBlock(HtmlUtils.img(iconUrl(ICON_SEARCH)),
-                                       formSB.toString(), searchOpen);
+                                        formSB.toString(), searchOpen);
         sb.append(HtmlUtils.col(searchHtml, ""
         /*HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "200")*/
         ));
@@ -439,6 +449,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         for (Entry entry : entries) {}
 
         Result result = new Result("Search", sb);
+
         return getRepository().getEntryManager().addEntryHeader(request,
                 getRepository().getEntryManager().getTopGroup(), result);
     }

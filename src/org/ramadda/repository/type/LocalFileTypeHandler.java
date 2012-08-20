@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,6 +26,8 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.metadata.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
@@ -33,8 +36,6 @@ import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -110,6 +111,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if (entry.isGroup()) {
             return iconUrl(ICON_SYNTH_FILE);
         }
+
         return super.getIconUrl(request, entry);
     }
 
@@ -176,6 +178,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if (values[idx] == null) {
             return new ArrayList<String>();
         }
+
         return (List<String>) StringUtil.split(values[idx], "\n", true, true);
     }
 
@@ -254,9 +257,10 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         } else if (by.equals("mixed")) {
             List<File> filesByDate = new ArrayList<File>();
             List<File> filesByName = new ArrayList<File>();
-            for(File f: files) {
+            for (File f : files) {
                 String name = f.getName();
-                if(name.matches(".*(\\d\\d\\d\\d\\d\\d|\\d\\d\\d\\d_\\d\\d).*")){
+                if (name.matches(
+                        ".*(\\d\\d\\d\\d\\d\\d|\\d\\d\\d\\d_\\d\\d).*")) {
                     filesByDate.add(f);
                 } else {
                     filesByName.add(f);
@@ -264,13 +268,15 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             }
             //            System.err.println ("by date:" + filesByDate);
             //            System.err.println ("by name:" + filesByName);
-            File[] byDate = IOUtil.sortFilesOnAge(toArray(filesByDate), descending);
-            File[] byName = IOUtil.sortFilesOnAge(toArray(filesByName), descending);
-            int cnt=0;
-            for(int i=0;i<byName.length;i++) {
+            File[] byDate = IOUtil.sortFilesOnAge(toArray(filesByDate),
+                                descending);
+            File[] byName = IOUtil.sortFilesOnAge(toArray(filesByName),
+                                descending);
+            int cnt = 0;
+            for (int i = 0; i < byName.length; i++) {
                 files[cnt++] = byName[i];
             }
-            for(int i=0;i<byDate.length;i++) {
+            for (int i = 0; i < byDate.length; i++) {
                 files[cnt++] = byDate[i];
             }
         } else {
@@ -280,7 +286,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
 
         List<String> includes = get(values, COL_INCLUDES);
         List<String> excludes = get(values, COL_EXCLUDES);
-        long age = (long) (1000
+        long         age      = (long) (1000
                            * (((Double) values[COL_AGE]).doubleValue() * 60));
         long       now      = System.currentTimeMillis();
         int        start    = skip;
@@ -317,16 +323,26 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             }
         }
         long t2 = System.currentTimeMillis();
+
         //        System.err.println ("Time:" + (t2-t1) + " ids:" + ids.size());
         return ids;
 
 
     }
 
+    /**
+     * _more_
+     *
+     * @param files _more_
+     *
+     * @return _more_
+     */
     private File[] toArray(List<File> files) {
-        File[]a = new File[files.size()];
-        for(int i=0;i<a.length;i++)
+        File[] a = new File[files.size()];
+        for (int i = 0; i < a.length; i++) {
             a[i] = files.get(i);
+        }
+
         return a;
     }
 
@@ -344,6 +360,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         } else {
             pattern = pattern.substring("regexp:".length());
         }
+
         return pattern;
     }
 
@@ -364,7 +381,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             if (pattern.startsWith("dir:")) {
                 if (file.isDirectory()) {
                     hadPattern = true;
-                    pattern =
+                    pattern    =
                         getRegexp(pattern.substring("dir:".length()).trim());
                     if (StringUtil.stringMatch(value, pattern, true, false)) {
                         return true;
@@ -383,6 +400,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if (hadPattern) {
             return false;
         }
+
         return dflt;
     }
 
@@ -400,6 +418,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         String subId = childFile.toString().substring(rootDirPath.length());
         subId = RepositoryUtil.encodeBase64(subId.getBytes()).replace("\n",
                                             "");
+
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
     }
 
@@ -507,6 +526,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             entry.setMetadata(metadataList);
         }
         long t2 = System.currentTimeMillis();
+
         //        System.err.println ("makeSynthEntry: " + entry + " " +(t2-t1));
         return entry;
     }

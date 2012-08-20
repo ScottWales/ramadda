@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,15 +28,15 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.OutputType;
 
 
+import org.ramadda.util.HtmlUtils;
+
+
 import org.w3c.dom.*;
 
 import ucar.unidata.data.gis.KmlUtil;
 
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
-
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -298,10 +299,10 @@ public class Column implements DataTypes, Constants {
         this.offset      = offset;
         name             = XmlUtil.getAttribute(element, ATTR_NAME);
         group = XmlUtil.getAttribute(element, ATTR_GROUP, (String) null);
-        oldNames = StringUtil.split(XmlUtil.getAttribute(element,
+        oldNames         = StringUtil.split(XmlUtil.getAttribute(element,
                 ATTR_OLDNAMES, ""), ",", true, true);
-        suffix = XmlUtil.getAttribute(element, ATTR_SUFFIX, "");
-        label  = XmlUtil.getAttribute(element, ATTR_LABEL, name);
+        suffix     = XmlUtil.getAttribute(element, ATTR_SUFFIX, "");
+        label      = XmlUtil.getAttribute(element, ATTR_LABEL, name);
         searchType = XmlUtil.getAttribute(element, ATTR_SEARCHTYPE,
                                           searchType);
         propertiesFile = XmlUtil.getAttribute(element, ATTR_PROPERTIES,
@@ -313,8 +314,7 @@ public class Column implements DataTypes, Constants {
         dflt        = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
         isIndex     = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
         canSearch   = XmlUtil.getAttribute(element, ATTR_CANSEARCH, false);
-        addToForm   = XmlUtil.getAttribute(element, ATTR_ADDTOFORM,
-                                           addToForm);
+        addToForm   = XmlUtil.getAttribute(element, ATTR_ADDTOFORM, addToForm);
         canShow     = XmlUtil.getAttribute(element, ATTR_SHOWINHTML, canShow);
         canList     = XmlUtil.getAttribute(element, ATTR_CANLIST, true);
         size        = XmlUtil.getAttribute(element, ATTR_SIZE, size);
@@ -475,14 +475,14 @@ public class Column implements DataTypes, Constants {
             return null;
         }
         int idx = getOffset();
-        if(idx>=values.length) {
+        if (idx >= values.length) {
             return null;
         }
         if (values[idx] == null) {
             return null;
         }
-        if(isType(DATATYPE_PASSWORD)) {
-            return  null;
+        if (isType(DATATYPE_PASSWORD)) {
+            return null;
         }
 
         return values[idx].toString();
@@ -508,6 +508,7 @@ public class Column implements DataTypes, Constants {
                     ? dflt
                     : "");
         }
+
         return values[idx].toString();
     }
 
@@ -535,6 +536,7 @@ public class Column implements DataTypes, Constants {
             return "NA";
         }
         double d = ((Double) values[idx]).doubleValue();
+
         return latLonFormat.format(d);
     }
 
@@ -551,8 +553,10 @@ public class Column implements DataTypes, Constants {
             if (StringUtil.notEmpty(dflt)) {
                 return new Boolean(dflt).booleanValue();
             }
+
             return true;
         }
+
         return ((Boolean) values[idx]).booleanValue();
     }
 
@@ -760,6 +764,7 @@ public class Column implements DataTypes, Constants {
             }
             statementIdx++;
         }
+
         return statementIdx;
     }
 
@@ -782,7 +787,7 @@ public class Column implements DataTypes, Constants {
         //Don't export the password
         if (isType(DATATYPE_PASSWORD)) {
             return;
-        } 
+        }
         if (isType(DATATYPE_LATLON)) {
             stringValue = values[offset] + ";" + values[offset + 1];
         } else if (isType(DATATYPE_LATLONBBOX)) {
@@ -856,6 +861,7 @@ public class Column implements DataTypes, Constants {
             values[offset] = results.getString(valueIdx);
             valueIdx++;
         }
+
         return valueIdx;
     }
 
@@ -996,6 +1002,7 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_LATLONBBOX)) {
             //TODO
         }
+
         return value;
     }
 
@@ -1023,6 +1030,7 @@ public class Column implements DataTypes, Constants {
             return false;
         }
         Double d = (Double) o;
+
         return latLonOk(d.doubleValue());
     }
 
@@ -1129,7 +1137,7 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isDate()) {
             String relativeArg = id + "_relative";
-            Date[] dateRange = request.getDateRange(id + "_fromdate",
+            Date[] dateRange   = request.getDateRange(id + "_fromdate",
                                    id + "_todate", relativeArg, new Date());
             if (dateRange[0] != null) {
                 where.add(Clause.ge(getFullName(), dateRange[0]));
@@ -1182,6 +1190,7 @@ public class Column implements DataTypes, Constants {
                 if (values[offset].toString().equals(value)) {
                     return TypeHandler.MATCH_TRUE;
                 }
+
                 return TypeHandler.MATCH_FALSE;
             }
         } else if (isNumeric()) {
@@ -1191,9 +1200,11 @@ public class Column implements DataTypes, Constants {
                 if (values[offset].equals(value)) {
                     return TypeHandler.MATCH_TRUE;
                 }
+
                 return TypeHandler.MATCH_FALSE;
             }
         }
+
         return TypeHandler.MATCH_UNKNOWN;
     }
 
@@ -1299,7 +1310,9 @@ public class Column implements DataTypes, Constants {
             List<TwoFacedObject> items = new ArrayList<TwoFacedObject>();
             items.add(new TwoFacedObject("Yes", "true"));
             items.add(new TwoFacedObject("No", "false"));
-            widget = HtmlUtils.select(id, items, value?"true":"false");
+            widget = HtmlUtils.select(id, items, value
+                    ? "true"
+                    : "false");
         } else if (isType(DATATYPE_DATETIME)) {
             Date date;
             if (values != null) {
@@ -1395,12 +1408,12 @@ public class Column implements DataTypes, Constants {
                     getRepository().getEntryManager().getEntry(request,
                         value);
             }
-            StringBuffer sb = new StringBuffer();
-            String select =
+            StringBuffer sb     = new StringBuffer();
+            String       select =
                 getRepository().getHtmlOutputHandler().getSelect(request, id,
                     "Select", true, null, entry);
             sb.append(HtmlUtils.hidden(id + "_hidden", value,
-                                      HtmlUtils.id(id + "_hidden")));
+                                       HtmlUtils.id(id + "_hidden")));
             sb.append(HtmlUtils.disabledInput(id, ((theEntry != null)
                     ? theEntry.getFullName()
                     : ""), HtmlUtils.id(id) + HtmlUtils.SIZE_60) + select);
@@ -1442,9 +1455,10 @@ public class Column implements DataTypes, Constants {
                 widget = HtmlUtils.textArea(id, value, rows, columns);
             } else {
                 widget = HtmlUtils.input(id, value,
-                                        "size=\"" + columns + "\"");
+                                         "size=\"" + columns + "\"");
             }
         }
+
         return HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
 
     }
@@ -1476,6 +1490,7 @@ public class Column implements DataTypes, Constants {
             enums = tmp;
             //            System.err.print("TMPS: " + enums);
         }
+
         return enums;
     }
 
@@ -1565,8 +1580,8 @@ public class Column implements DataTypes, Constants {
             //Note: using the default will not work if we use checkboxes for the widget
             //For now we are using a yes/no combobox
             String value = request.getString(id, (StringUtil.notEmpty(dflt)
-                                                  ? dflt
-                                                  : "true")).toLowerCase();
+                    ? dflt
+                    : "true")).toLowerCase();
             //            String value = request.getString(id, "false");
             values[offset] = new Boolean(value);
         } else if (isType(DATATYPE_ENUMERATION)) {
@@ -1769,9 +1784,10 @@ public class Column implements DataTypes, Constants {
 
         } else if (isType(DATATYPE_BOOLEAN)) {
             widget = HtmlUtils.select(id,
-                                     Misc.newList(TypeHandler.ALL_OBJECT,
-                                         "True",
-                                         "False"), request.getString(id, ""));
+                                      Misc.newList(TypeHandler.ALL_OBJECT,
+                                          "True",
+                                          "False"), request.getString(id,
+                                              ""));
             //        } else if (isType(DATATYPE_ENUMERATION)) {
             //            List tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             //            tmpValues.addAll(enumValues);
@@ -1779,8 +1795,7 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
             List tmpValues   = Misc.newList(TypeHandler.ALL_OBJECT);
-            List values      = typeHandler.getEnumValues(request, this,
-                                   entry);
+            List values      = typeHandler.getEnumValues(request, this, entry);
             List valuesToUse = new ArrayList();
             if (enumValues != null) {
                 for (Object value : values) {
@@ -1800,14 +1815,14 @@ public class Column implements DataTypes, Constants {
             widget = HtmlUtils.select(id, tmpValues, request.getString(id));
         } else if (isNumeric()) {
             String expr = HtmlUtils.select(id + "_expr", EXPR_ITEMS,
-                                          request.getString(id + "_expr",
-                                              ""));
+                                           request.getString(id + "_expr",
+                                               ""));
             widget = expr
                      + HtmlUtils.input(id + "_from",
-                                      request.getString(id + "_from", ""),
-                                      "size=\"10\"") + HtmlUtils.input(id
-                                      + "_to", request.getString(id + "_to",
-                                          ""), "size=\"10\"");
+                                       request.getString(id + "_from", ""),
+                                       "size=\"10\"") + HtmlUtils.input(id
+                                       + "_to", request.getString(id + "_to",
+                                           ""), "size=\"10\"");
         } else if (isType(DATATYPE_ENTRY)) {
 
 
@@ -1828,7 +1843,7 @@ public class Column implements DataTypes, Constants {
                     "Select", true, null, entry);
             StringBuffer sb = new StringBuffer();
             sb.append(HtmlUtils.hidden(id + "_hidden", entryId,
-                                      HtmlUtils.id(id + "_hidden")));
+                                       HtmlUtils.id(id + "_hidden")));
             sb.append(HtmlUtils.disabledInput(id, ((theEntry != null)
                     ? theEntry.getFullName()
                     : ""), HtmlUtils.id(id) + HtmlUtils.SIZE_60) + select);
@@ -1836,10 +1851,10 @@ public class Column implements DataTypes, Constants {
             widget = sb.toString();
         } else {
             if (searchType.equals(SEARCHTYPE_SELECT)) {
-                long t1 = System.currentTimeMillis();
+                long      t1        = System.currentTimeMillis();
                 Statement statement = typeHandler.select(request,
                                           SqlUtil.distinct(id), tmp, "");
-                long t2 = System.currentTimeMillis();
+                long     t2     = System.currentTimeMillis();
                 String[] values =
                     SqlUtil.readString(
                         typeHandler.getDatabaseManager().getIterator(
@@ -1859,9 +1874,9 @@ public class Column implements DataTypes, Constants {
                 list = new ArrayList<TwoFacedObject>();
                 list.addAll(sorted);
                 if (list.size() == 1) {
-                    widget =
-                        HtmlUtils.hidden(id, (String) list.get(0).getId())
-                        + " " + list.get(0).toString();
+                    widget = HtmlUtils.hidden(id,
+                            (String) list.get(0).getId()) + " "
+                                + list.get(0).toString();
                 } else {
                     list.add(0, TypeHandler.ALL_OBJECT);
                     widget = HtmlUtils.select(id, list);
@@ -1871,7 +1886,7 @@ public class Column implements DataTypes, Constants {
                 //                                           rows, columns);
             } else {
                 widget = HtmlUtils.input(id, request.getString(id, ""),
-                                        "size=\"" + columns + "\"");
+                                         "size=\"" + columns + "\"");
             }
         }
         formBuffer.append(typeHandler.formEntry(request, getLabel() + ":",
@@ -1900,6 +1915,7 @@ public class Column implements DataTypes, Constants {
                 desc = desc.replace("${value}", value);
             }
         }
+
         return desc;
 
     }
@@ -1941,6 +1957,7 @@ public class Column implements DataTypes, Constants {
         } else {
             names.add(name);
         }
+
         return names;
     }
 
@@ -1956,6 +1973,7 @@ public class Column implements DataTypes, Constants {
         if (isType(DATATYPE_LATLONBBOX)) {
             return name + "_north";
         }
+
         return name;
     }
 
@@ -2078,7 +2096,10 @@ public class Column implements DataTypes, Constants {
      *  @return The CanShow
      */
     public boolean getCanShow() {
-        if(isType(DATATYPE_PASSWORD)) return false;
+        if (isType(DATATYPE_PASSWORD)) {
+            return false;
+        }
+
         return canShow;
     }
 
