@@ -45,6 +45,7 @@ import java.io.FileNotFoundException;
 
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Date;
 import java.util.List;
 
@@ -59,11 +60,13 @@ import java.util.List;
  */
 public class LogManager extends RepositoryManager {
 
-    /** _more_ */
-    private Logger LOGGER;
 
     /** _more_ */
     private boolean LOGGER_OK = true;
+
+    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.LogManager");
+
+    private Hashtable<String,Logger> loggers = new Hashtable<String,Logger>();
 
     /** _more_ */
     public static boolean debug = true;
@@ -107,28 +110,34 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-
-
     /**
      * Create if needed and return the logger
      *
      * @return _more_
      */
-    private Logger getLogger() {
+    public Logger getLogger() {
+        return getLogger(LOGID);
+    }
+
+
+    public Logger getLogger(LogId logId) {
         //Check if we've already had an error
         if ( !LOGGER_OK) {
             return null;
         }
-        if (LOGGER == null) {
-            try {
-                LOGGER = Logger.getLogger(LogManager.class);
-            } catch (Exception exc) {
-                LOGGER_OK = false;
-                System.err.println("Error getting logger: " + exc);
-                exc.printStackTrace();
-            }
+
+        Logger logger = loggers.get(logId.getId());
+        if(logger !=null) return logger;
+        try {
+            logger = Logger.getLogger(logId.getId());
+        } catch (Exception exc) {
+            LOGGER_OK = false;
+            System.err.println("Error getting logger: " + exc);
+            exc.printStackTrace();
+            return null;
         }
-        return LOGGER;
+        loggers.put(logId.getId(), logger);
+        return logger;
     }
 
 
@@ -138,7 +147,10 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void debug(String message) {
-        Logger logger = getLogger();
+        debug(getLogger(),message);
+    }
+
+    public void debug(Logger logger, String message) {
         if (logger != null) {
             logger.debug(message);
         } else {
@@ -197,7 +209,15 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logInfo(String message) {
-        Logger logger = getLogger();
+        logInfo(getLogger(), message);
+    }
+
+    public void logInfo(LogId logId,String message) {
+        logInfo(getLogger(logId), message);
+    }
+
+
+     public void logInfo(Logger logger, String message) {
         if (logger != null) {
             logger.info(message);
         } else {
@@ -212,7 +232,10 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logError(String message) {
-        Logger logger = getLogger();
+        logError(getLogger(), message);
+    }
+
+    public void logError(Logger logger, String message) {
         if (logger != null) {
             logger.error(message);
         } else {
@@ -227,14 +250,16 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void logWarning(String message) {
-        Logger logger = getLogger();
+        logWarning(getLogger(), message);
+    }
+
+    public void logWarning(Logger logger, String message) {
         if (logger != null) {
             logger.warn(message);
         } else {
             System.err.println("RAMADDA WARNING:" + message);
         }
     }
-
 
 
     /**
@@ -249,6 +274,9 @@ public class LogManager extends RepositoryManager {
         exc.printStackTrace();
     }
 
+    public void logError(LogId logId, String message, Throwable exc) {
+        logError(getLogger(logId), message, exc);
+    }
 
     /**
      * _more_
@@ -274,13 +302,9 @@ public class LogManager extends RepositoryManager {
             thr = LogUtil.getInnerException(exc);
         }
 
-
         if (log == null) {
             System.err.println("RAMADDA ERROR:" + message + " " + thr);
-        }
-
-
-        if (thr != null) {
+        } else  if (thr != null) {
             if ((thr instanceof RepositoryUtil.MissingEntryException)
                     || (thr instanceof AccessException)) {
                 log.error(message + " " + thr);
@@ -710,6 +734,27 @@ public class LogManager extends RepositoryManager {
         sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
     }
+
+    public static class LogId {
+        private String id;
+        public LogId(String id) {
+            this.id = id;
+        }
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+
+        public boolean equals(Object that) {
+            return id.equals(that);
+        }
+
+    }
+
 
 
 }

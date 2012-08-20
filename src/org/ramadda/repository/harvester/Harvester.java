@@ -21,7 +21,6 @@
 package org.ramadda.repository.harvester;
 
 
-import org.apache.log4j.Logger;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -83,8 +82,8 @@ public abstract class Harvester extends RepositoryManager {
     private static final boolean PRINT_DEBUG = false;
 
     /** _more_ */
-    private static final Logger LOG =
-        Logger.getLogger("org.ramadda.repository.harvester.Harvester");
+    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.harvester.Harvester");
+
 
     /** _more_ */
 
@@ -867,7 +866,7 @@ public abstract class Harvester extends RepositoryManager {
      * @param exc _more_
      */
     public void logHarvesterError(String message, Throwable exc) {
-        getRepository().getLogManager().logError(LOG,
+        getRepository().getLogManager().logError(LOGID,
                 getName() + " " + message, exc);
         appendError(message);
     }
@@ -882,7 +881,7 @@ public abstract class Harvester extends RepositoryManager {
         if (PRINT_DEBUG) {
             System.err.println(printTab + message);
         }
-        LOG.info(getName() + ": " + printTab + message);
+        getLogManager().logInfo(LOGID, getName() + ": " + printTab + message);
     }
 
 

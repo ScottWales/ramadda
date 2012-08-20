@@ -21,7 +21,6 @@
 package org.ramadda.repository.harvester;
 
 
-import org.apache.log4j.Logger;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;

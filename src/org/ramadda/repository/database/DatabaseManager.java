@@ -108,9 +108,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_          */
     private long myTime = System.currentTimeMillis();
 
-    /** _more_ */
-    private final Logger LOG = Logger.getLogger(DatabaseManager.class);
-
+    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.database.DatabaseManager");
 
     /** _more_ */
     //NOTE: When we had a non-zero timeout we got a memory leak
@@ -306,8 +304,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             ds.setUsername(userName);
             ds.setPassword(password);
             ds.setUrl(connectionURL);
-            ds.setLogWriter(new Log4jPrintWriter(LOG));
-
+            Logger logger = getLogManager().getLogger(LOGID);
+            if(logger!=null) {
+                ds.setLogWriter(new Log4jPrintWriter(logger));
+            }
             return ds;
         } catch (Exception exc) {
             System.err.println(

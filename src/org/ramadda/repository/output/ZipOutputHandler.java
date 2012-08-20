@@ -21,7 +21,6 @@
 package org.ramadda.repository.output;
 
 
-import org.apache.log4j.Logger;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -75,8 +74,8 @@ import java.util.zip.*;
  */
 public class ZipOutputHandler extends OutputHandler {
 
-    /** _more_ */
-    private final Logger LOG = Logger.getLogger(ZipOutputHandler.class);
+    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.output.ZipOutputHandler");
+
 
 
     /** _more_ */

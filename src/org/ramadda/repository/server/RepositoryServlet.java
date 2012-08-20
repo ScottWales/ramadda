@@ -81,9 +81,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     /** _more_ */
     private String[] args;
 
-    /** ExceptionLogger to handle any runtime exceptions */
-
-
     /** Repository object that will be instantiated */
     private static Repository repository;
 
@@ -624,7 +621,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             if (request != null) {
                 address = request.getRemoteAddr();
             }
-            //            logger.logException(logger.getStackTrace(exc), address);
             if (repository != null) {
                 repository.getLogManager().logError(
                     "Error in RepositoryServlet address=" + address, exc);

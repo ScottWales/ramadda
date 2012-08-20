@@ -29,7 +29,6 @@ import org.apache.ftpserver.usermanager.*;
 import org.apache.ftpserver.usermanager.impl.*;
 
 
-import org.apache.log4j.Logger;
 
 
 import org.ramadda.repository.*;
@@ -68,8 +67,9 @@ public class FtpManager extends RepositoryManager {
     /** _more_ */
     public static final String DFLT_PASSIVE_PORTS = "44001-44099";
 
-    /** _more_ */
-    private Logger LOG;
+    private final LogManager.LogId LOGID  = new LogManager.LogId("org.apache.ftpserver");
+
+
 
 
     /** _more_ */
@@ -100,23 +100,11 @@ public class FtpManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @return _more_
-     */
-    private Logger getLogger() {
-        if (LOG == null) {
-            LOG = Logger.getLogger("org.apache.ftpserver");
-        }
-        return LOG;
-    }
-
-    /**
-     * _more_
-     *
      * @param message _more_
      * @param exc _more_
      */
     public void logError(String message, Exception exc) {
-        getRepository().getLogManager().logError(getLogger(),
+        getRepository().getLogManager().logError(LOGID,
                 "RAMADDA:" + message, exc);
     }
 
@@ -127,7 +115,7 @@ public class FtpManager extends RepositoryManager {
      * @param message _more_
      */
     public void logInfo(String message) {
-        getLogger().info("RAMADDA:" + message);
+        getLogManager().logInfo(LOGID, "RAMADDA:" + message);
     }
 
 
