@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -92,6 +93,7 @@ public class RequestUrl {
         if (needsSsl) {
             return getHttpsUrl(suffix);
         }
+
         return repositorySource.getRepositoryBase().absoluteUrl(
             repositorySource.getRepositoryBase().getUrlBase()
             + path) + suffix;
@@ -130,6 +132,7 @@ public class RequestUrl {
         if (needsSsl) {
             return getHttpsUrl();
         }
+
         return repositorySource.getRepositoryBase().absoluteUrl(
             repositorySource.getRepositoryBase().getUrlBase() + path);
     }
@@ -146,6 +149,7 @@ public class RequestUrl {
         if (needsSsl) {
             return getHttpsUrl();
         }
+
         return repositorySource.getRepositoryBase().getUrlBase() + path;
     }
 
@@ -169,6 +173,7 @@ public class RequestUrl {
      */
     public String toString() {
         checkInit();
+
         return repositorySource.getRepositoryBase().getUrlPath(this);
     }
 
@@ -227,6 +232,7 @@ public class RequestUrl {
             return false;
         }
         RequestUrl that = (RequestUrl) o;
+
         return this.path.equals(that.path);
     }
 

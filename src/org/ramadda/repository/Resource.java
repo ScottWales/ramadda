@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -185,6 +186,7 @@ public class Resource {
             return false;
         }
         String file = path.toLowerCase();
+
         return file.endsWith(".jpg") || file.endsWith(".jpeg")
                || file.endsWith(".gif") || file.endsWith(".png")
                || file.endsWith(".bmp");
@@ -200,6 +202,7 @@ public class Resource {
             return false;
         }
         String file = path.toLowerCase();
+
         return file.endsWith(".jpg") || file.endsWith(".jpeg")
                || file.endsWith(".gif") || file.endsWith(".png");
     }
@@ -213,6 +216,7 @@ public class Resource {
         if (file == null) {
             file = new File(path);
         }
+
         return file;
     }
 
@@ -230,6 +234,7 @@ public class Resource {
         if (file.exists()) {
             fileSize = file.length();
         }
+
         return fileSize;
     }
 
@@ -248,6 +253,7 @@ public class Resource {
                 || type.equals(TYPE_REMOTE_FILE)) {
             return getTheFile().exists();
         }
+
         return false;
     }
 
@@ -261,6 +267,7 @@ public class Resource {
                 || type.equals(TYPE_LOCAL_FILE)) {
             return true;
         }
+
         return false;
     }
 
@@ -374,6 +381,7 @@ public class Resource {
             //                md5 = IOUtil.getMd5(file.toString());
             //            }
         }
+
         return md5;
     }
 

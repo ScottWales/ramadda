@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -164,6 +165,7 @@ public class Link {
         if (outputType == null) {
             return OutputType.TYPE_ACTION;
         }
+
         return outputType.getType();
     }
 
@@ -206,6 +208,7 @@ public class Link {
         if (icon == null) {
             return HtmlUtils.href(url, label);
         }
+
         return HtmlUtils.href(url, HtmlUtils.img(icon, label));
     }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,10 +28,11 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
 
 import org.ramadda.util.HtmlTemplate;
-import org.ramadda.util.PropertyProvider;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.PropertyProvider;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -40,6 +42,7 @@ import ucar.unidata.util.TwoFacedObject;
 import java.io.*;
 import java.io.File;
 import java.io.InputStream;
+
 import java.net.URL;
 
 
@@ -59,10 +62,11 @@ import java.util.Properties;
  */
 public class PageHandler extends RepositoryManager {
 
-    public static final String DEFAULT_TEMPLATE  = "aodnStyle";
-
-
     /** _more_          */
+    public static final String DEFAULT_TEMPLATE = "aodnStyle";
+
+
+    /** _more_ */
     private static final org.ramadda.util.HttpFormField dummyFieldToForceCompile =
         null;
 
@@ -111,6 +115,7 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_USERLINK = "userlinks";
 
+    /** _more_          */
     public static final String MACRO_ALLLINKS = "alllinks";
 
     /** html template macro */
@@ -167,8 +172,10 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private HashSet<String> seenMsg = new HashSet<String>();
 
-    /** Set this to true to print to a file the missing messages and this also
-        adds a "NA:" to the missing labels.*/
+    /**
+     * Set this to true to print to a file the missing messages and this also
+     *   adds a "NA:" to the missing labels.
+     */
     private boolean debugMsg = false;
 
     /** _more_ */
@@ -187,6 +194,9 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     */
     public void adminSettingsChanged() {
         super.adminSettingsChanged();
         phraseMap = null;
@@ -204,15 +214,15 @@ public class PageHandler extends RepositoryManager {
     public void decorateResult(Request request, Result result)
             throws Exception {
 
-        if (!request.get(ARG_DECORATE, true)) {
+        if ( !request.get(ARG_DECORATE, true)) {
             return;
         }
 
-        Repository repository = getRepository();
-        Entry currentEntry =
+        Repository repository   = getRepository();
+        Entry      currentEntry =
             (Entry) getSessionManager().getSessionProperty(request,
                 "lastentry");
-        String   template     = null;
+        String       template = null;
         HtmlTemplate htmlTemplate;
         if (request.isMobile()) {
             htmlTemplate = getMobileTemplate();
@@ -221,17 +231,17 @@ public class PageHandler extends RepositoryManager {
         }
         template = htmlTemplate.getTemplate();
 
-        String systemMessage =
-            getRepository().getSystemMessage(request);
+        String systemMessage = getRepository().getSystemMessage(request);
 
 
-        String jsContent = getTemplateJavascriptContent();
+        String jsContent     = getTemplateJavascriptContent();
 
-        List   links     = (List) result.getProperty(PROP_NAVLINKS);
-        String linksHtml = HtmlUtils.space(1);
+        List   links         = (List) result.getProperty(PROP_NAVLINKS);
+        String linksHtml     = HtmlUtils.space(1);
 
         if (links != null) {
-            linksHtml = StringUtil.join(htmlTemplate.getTemplateProperty(
+            linksHtml = StringUtil.join(
+                htmlTemplate.getTemplateProperty(
                     "ramadda.template.link.separator", ""), links);
         }
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER);
@@ -259,11 +269,12 @@ public class PageHandler extends RepositoryManager {
                                       "ramadda.template.favorites.wrapper",
                                       "${link}");
         String favoritesTemplate =
-            htmlTemplate.getTemplateProperty("ramadda.template.favorites",
+            htmlTemplate.getTemplateProperty(
+                "ramadda.template.favorites",
                 "<span class=\"linkslabel\">Favorites:</span>${entries}");
         String favoritesSeparator =
             htmlTemplate.getTemplateProperty(
-                                "ramadda.template.favorites.separator", "");
+                "ramadda.template.favorites.separator", "");
 
         List<FavoriteEntry> favoritesList =
             getUserManager().getFavorites(request, request.getUser());
@@ -275,7 +286,7 @@ public class PageHandler extends RepositoryManager {
                 if (favoriteCnt++ > 100) {
                     break;
                 }
-                Entry entry = favorite.getEntry();
+                Entry     entry     = favorite.getEntry();
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, entry.getLabel(), null,
                                           false, null, false);
@@ -289,9 +300,9 @@ public class PageHandler extends RepositoryManager {
 
         List<Entry> cartEntries = getUserManager().getCart(request);
         if (cartEntries.size() > 0) {
-            String cartTemplate = htmlTemplate.getTemplateProperty(
-                                      "ramadda.template.cart",
-                                      "<b>Cart:<b><br>${entries}");
+            String cartTemplate =
+                htmlTemplate.getTemplateProperty("ramadda.template.cart",
+                    "<b>Cart:<b><br>${entries}");
             List cartLinks = new ArrayList();
             for (Entry entry : cartEntries) {
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
@@ -307,8 +318,10 @@ public class PageHandler extends RepositoryManager {
         }
 
         String content = new String(result.getContent());
-        if (systemMessage != null&& systemMessage.length()>0) {
-            content = HtmlUtils.div(systemMessage, HtmlUtils.cssClass("ramadda-system-message")) + content;
+        if ((systemMessage != null) && (systemMessage.length() > 0)) {
+            content = HtmlUtils.div(
+                systemMessage,
+                HtmlUtils.cssClass("ramadda-system-message")) + content;
         }
 
         String head =
@@ -344,20 +357,19 @@ public class PageHandler extends RepositoryManager {
         String[] macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, iconUrl(ICON_HEADER), MACRO_HEADER_TITLE,
-            pageTitle, 
-            MACRO_USERLINK, getUserManager().getUserLinks(request, htmlTemplate),
-            MACRO_LINKS, linksHtml,
-            MACRO_REPOSITORY_NAME,
+            pageTitle, MACRO_USERLINK,
+            getUserManager().getUserLinks(request, htmlTemplate), MACRO_LINKS,
+            linksHtml, MACRO_REPOSITORY_NAME,
             repository.getProperty(PROP_REPOSITORY_NAME, "Repository"),
             MACRO_FOOTER, repository.getProperty(PROP_HTML_FOOTER, BLANK),
             MACRO_TITLE, result.getTitle(), MACRO_BOTTOM,
             result.getBottomHtml(), MACRO_SEARCH_URL,
-            getSearchManager().getSearchUrl(request), 
-            MACRO_CONTENT, content + jsContent, MACRO_FAVORITES,
-            favorites.toString(), MACRO_ENTRY_HEADER, entryHeader,
-            MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
-            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs, MACRO_HEADFINAL, head,
-            MACRO_ROOT, repository.getUrlBase(),
+            getSearchManager().getSearchUrl(request), MACRO_CONTENT,
+            content + jsContent, MACRO_FAVORITES, favorites.toString(),
+            MACRO_ENTRY_HEADER, entryHeader, MACRO_HEADER, header,
+            MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_BREADCRUMBS,
+            entryBreadcrumbs, MACRO_HEADFINAL, head, MACRO_ROOT,
+            repository.getUrlBase(),
         };
 
 
@@ -365,9 +377,10 @@ public class PageHandler extends RepositoryManager {
             html = html.replace("${" + macros[i] + "}", macros[i + 1]);
         }
 
-        for(String property: htmlTemplate.getPropertyIds()) {
+        for (String property : htmlTemplate.getPropertyIds()) {
             System.err.println("PROP:" + property);
-            html = html.replace("${" + property + "}", getRepository().getProperty(property,""));
+            html = html.replace("${" + property + "}",
+                                getRepository().getProperty(property, ""));
         }
 
 
@@ -397,11 +410,14 @@ public class PageHandler extends RepositoryManager {
      */
     public String getTemplateJavascriptContent() {
         return HtmlUtils.div(
-            "", " id=\"tooltipdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
-            "", " id=\"popupdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
-            "", " id=\"output\"") + HtmlUtils.div(
-            "", " id=\"selectdiv\" class=\"selectdiv\" ") + HtmlUtils.div(
-            "", " id=\"floatdiv\" class=\"floatdiv\" ");
+            "",
+            " id=\"tooltipdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
+                "",
+                " id=\"popupdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
+                    "", " id=\"output\"") + HtmlUtils.div(
+                    "",
+                    " id=\"selectdiv\" class=\"selectdiv\" ") + HtmlUtils.div(
+                        "", " id=\"floatdiv\" class=\"floatdiv\" ");
     }
 
 
@@ -443,6 +459,7 @@ public class PageHandler extends RepositoryManager {
                 }
             }
         }
+
         return result.toString();
     }
 
@@ -483,7 +500,7 @@ public class PageHandler extends RepositoryManager {
             if (phrases != null) {
                 Object[] result = parsePhrases("", phrases);
                 tmpPhraseMap = (Properties) result[2];
-                phraseMap = tmpPhraseMap;
+                phraseMap    = tmpPhraseMap;
             }
         }
 
@@ -501,6 +518,7 @@ public class PageHandler extends RepositoryManager {
             int    idx1 = s.indexOf(MSG_PREFIX);
             if (idx1 < 0) {
                 stripped.append(s);
+
                 break;
             }
             String text = s.substring(0, idx1);
@@ -553,6 +571,7 @@ public class PageHandler extends RepositoryManager {
             stripped.append(value);
             s = s.substring(idx2 + suffixLength);
         }
+
         return stripped.toString();
     }
 
@@ -568,8 +587,7 @@ public class PageHandler extends RepositoryManager {
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = StringUtil.split(content, "\n", true, true);
         Properties   phrases = new Properties();
-        String       type    =
-            IOUtil.stripExtension(IOUtil.getFileTail(file));
+        String       type    = IOUtil.stripExtension(IOUtil.getFileTail(file));
         String       name    = type;
         for (String line : lines) {
             if (line.startsWith("#")) {
@@ -606,6 +624,7 @@ public class PageHandler extends RepositoryManager {
                 phrases.put(key, value);
             }
         }
+
         return new Object[] { type, name, phrases };
     }
 
@@ -647,10 +666,12 @@ public class PageHandler extends RepositoryManager {
                         return htmlTemplate;
                     }
                     mobileTemplate = htmlTemplate;
+
                     break;
                 }
             }
         }
+
         return mobileTemplate;
     }
 
@@ -700,6 +721,7 @@ public class PageHandler extends RepositoryManager {
                     } catch (Exception exc) {
                         getLogManager().logError(
                             "failed to process template:" + path, exc);
+
                         continue;
                     }
                     String[] changes = { "userlink", MACRO_USERLINK,
@@ -735,6 +757,7 @@ public class PageHandler extends RepositoryManager {
                 htmlTemplates = theTemplates;
             }
         }
+
         return theTemplates;
     }
 
@@ -754,6 +777,7 @@ public class PageHandler extends RepositoryManager {
             int idx1 = html.indexOf("<include");
             if (idx1 < 0) {
                 template.append(html);
+
                 break;
             }
             template.append(html.substring(0, idx1));
@@ -779,6 +803,7 @@ public class PageHandler extends RepositoryManager {
         if (html.indexOf("${headfinal}") < 0) {
             html = html.replace("</head>", "${headfinal}\n</head>");
         }
+
         return html;
     }
 
@@ -804,8 +829,11 @@ public class PageHandler extends RepositoryManager {
                                        getClass());
             for (String path : listing) {
                 if ( !path.endsWith(".pack")) {
-                    if(i==0)
-                        getLogManager().logInfoAndPrint("RAMADDA: not ends with .pack:" + path);
+                    if (i == 0) {
+                        getLogManager().logInfoAndPrint(
+                            "RAMADDA: not ends with .pack:" + path);
+                    }
+
                     continue;
                 }
                 if (seenPack.contains(path)) {
@@ -816,7 +844,9 @@ public class PageHandler extends RepositoryManager {
                     getStorageManager().readUncheckedSystemResource(path,
                         (String) null);
                 if (content == null) {
-                    getLogManager().logInfoAndPrint("RAMADDA: could not read:" + path);
+                    getLogManager().logInfoAndPrint(
+                        "RAMADDA: could not read:" + path);
+
                     continue;
                 }
                 Object[]   result     = parsePhrases(path, content);
@@ -865,6 +895,7 @@ public class PageHandler extends RepositoryManager {
             tfos.add(new TwoFacedObject(template.getName(),
                                         template.getId()));
         }
+
         return tfos;
 
     }
@@ -905,6 +936,7 @@ public class PageHandler extends RepositoryManager {
             if (defaultTemplate != null) {
                 return defaultTemplate;
             }
+
             return theTemplates.get(0);
         }
 
@@ -919,6 +951,7 @@ public class PageHandler extends RepositoryManager {
         if (defaultTemplate != null) {
             return defaultTemplate;
         }
+
         return theTemplates.get(0);
     }
 
@@ -940,6 +973,7 @@ public class PageHandler extends RepositoryManager {
             return msg;
 
         }
+
         return MSG_PREFIX + msg + MSG_SUFFIX;
     }
 
@@ -958,6 +992,7 @@ public class PageHandler extends RepositoryManager {
             return msg;
         }
         msg = msg(msg);
+
         return msg(msg) + ":" + HtmlUtils.space(1);
     }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,13 +25,13 @@ package org.ramadda.repository;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
+
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.MultiJarClassLoader;
 import org.ramadda.util.TempDir;
 
 
 import org.w3c.dom.*;
-
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -157,8 +158,13 @@ public class PluginManager extends RepositoryManager {
         super(repository);
     }
 
-    public void shutdown()  throws Exception {
-        for(MultiJarClassLoader classLoader: classLoaders) {
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    public void shutdown() throws Exception {
+        for (MultiJarClassLoader classLoader : classLoaders) {
             classLoader.shutdown();
         }
 
@@ -187,6 +193,7 @@ public class PluginManager extends RepositoryManager {
         if ( !contains) {
             markSeen(object);
         }
+
         return contains;
     }
 
@@ -331,6 +338,7 @@ public class PluginManager extends RepositoryManager {
         boolean contains = seenThings.contains(file);
         seenThings.remove(file);
         checkFile(file);
+
         return contains;
     }
 
@@ -401,7 +409,7 @@ public class PluginManager extends RepositoryManager {
                                         "");
         formBuffer.append(msgLabel("Plugin File"));
         formBuffer.append(HtmlUtils.fileInput(ARG_PLUGIN_FILE,
-                                             HtmlUtils.SIZE_60));
+                HtmlUtils.SIZE_60));
         formBuffer.append(HtmlUtils.submit("Upload new plugin file"));
         formBuffer.append(HtmlUtils.formClose());
         formBuffer.append(HtmlUtils.br());
@@ -458,7 +466,8 @@ public class PluginManager extends RepositoryManager {
                 pluginStat("Template", file);
             }
             templateFiles.add(file);
-        } else if (file.endsWith(".properties") && file.indexOf("htdocs")<0) {
+        } else if (file.endsWith(".properties")
+                   && (file.indexOf("htdocs") < 0)) {
             if (fromPlugin) {
                 pluginStat("Properties", file);
                 propertyFiles.add(file);
@@ -467,8 +476,10 @@ public class PluginManager extends RepositoryManager {
             //            if (fromPlugin) 
             //                pluginStat("Unknown", file);
             pluginFiles.add(file);
+
             return false;
         }
+
         return true;
     }
 
@@ -506,6 +517,7 @@ public class PluginManager extends RepositoryManager {
                 if (clazz != null) {
                     return clazz;
                 }
+
                 return clazz;
             } catch (ClassNotFoundException cnfe) {
                 for (MultiJarClassLoader loader : classLoaders) {
@@ -514,6 +526,7 @@ public class PluginManager extends RepositoryManager {
                         return clazz;
                     }
                 }
+
                 throw cnfe;
             }
         }
@@ -538,6 +551,7 @@ public class PluginManager extends RepositoryManager {
                 } else {
                     importHandlers.add((ImportHandler) c.newInstance());
                 }
+
                 return;
             }
 
@@ -612,6 +626,7 @@ public class PluginManager extends RepositoryManager {
                     }
                 }
             }
+
             return path;
         }
     }

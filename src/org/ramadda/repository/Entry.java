@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -106,7 +107,7 @@ public class Entry implements Cloneable {
     private long createDate = 0L;
 
     /** _more_ */
-    private long changeDate =0L;
+    private long changeDate = 0L;
 
 
     /** _more_ */
@@ -222,6 +223,13 @@ public class Entry implements Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param handler _more_
+     * @param isDummy _more_
+     * @param dummyName _more_
+     */
     public Entry(TypeHandler handler, boolean isDummy, String dummyName) {
         this("", handler);
         this.isDummy = isDummy;
@@ -301,6 +309,7 @@ public class Entry implements Cloneable {
     public Object clone() throws CloneNotSupportedException {
         Entry that = (Entry) super.clone();
         that.associations = null;
+
         return that;
     }
 
@@ -332,10 +341,12 @@ public class Entry implements Cloneable {
         Entry parent = getParentEntry();
         if (parent != null) {
             String parentName = parent.getFullName(encodeForUrl);
+
             //            if(debug)
             //                System.err.println ("parent name:" + parentName);
             return parentName + PATHDELIMITER + name;
         }
+
         return name;
     }
 
@@ -352,6 +363,7 @@ public class Entry implements Cloneable {
         name = name.replaceAll("\\?", "%3F");
         name = name.replaceAll("\\&", "%26");
         name = name.replaceAll("\\#", "%23");
+
         return name;
     }
 
@@ -366,6 +378,7 @@ public class Entry implements Cloneable {
         name = name.replaceAll("%2F", "/");
         name = name.replaceAll("%3F", "?");
         name = name.replaceAll("%26", "&");
+
         return name;
     }
 
@@ -466,8 +479,8 @@ public class Entry implements Cloneable {
         setChangeDate(changeDate);
 
 
-        this.resource    = resource;
-        this.category    = category;
+        this.resource = resource;
+        this.category = category;
         if ((category == null) || (category.length() == 0)) {
             this.category = typeHandler.getDefaultCategory();
         }
@@ -610,6 +623,7 @@ public class Entry implements Cloneable {
         if (typeHandler != null) {
             return typeHandler.isGroup();
         }
+
         return false;
     }
 
@@ -640,6 +654,13 @@ public class Entry implements Cloneable {
         return typeHandler.getType();
     }
 
+    /**
+     * _more_
+     *
+     * @param type _more_
+     *
+     * @return _more_
+     */
     public boolean isType(String type) {
         return getType().equals(type);
     }
@@ -687,12 +708,24 @@ public class Entry implements Cloneable {
                 || (values[index] == null)) {
             return dflt;
         }
+
         return values[index].toString();
     }
 
+    /**
+     * _more_
+     *
+     * @param index _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public double getValue(int index, double dflt) {
         String sValue = getValue(index, "");
-        if(sValue.length()==0) return dflt;
+        if (sValue.length() == 0) {
+            return dflt;
+        }
+
         return Double.parseDouble(sValue);
     }
 
@@ -715,6 +748,7 @@ public class Entry implements Cloneable {
         if ((south != NONGEO) && (east != NONGEO) && !hasAreaDefined()) {
             return true;
         }
+
         return false;
     }
 
@@ -767,8 +801,10 @@ public class Entry implements Cloneable {
             if ((south == north) && (east == west)) {
                 return false;
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -807,6 +843,7 @@ public class Entry implements Cloneable {
         if (label.length() > 0) {
             return label;
         }
+
         return getTypeHandler().getLabel() + ": " + new Date(startDate);
     }
 
@@ -822,6 +859,7 @@ public class Entry implements Cloneable {
         if ((description != null) && (description.trim().length() > 0)) {
             return description;
         }
+
         return "";
 
     }
@@ -1238,6 +1276,7 @@ public class Entry implements Cloneable {
         if (properties == null) {
             return null;
         }
+
         return properties.get(key);
     }
 
@@ -1274,6 +1313,7 @@ public class Entry implements Cloneable {
                 properties = new Hashtable();
             }
         }
+
         return this.properties;
     }
 
@@ -1289,6 +1329,7 @@ public class Entry implements Cloneable {
         if (properties != null) {
             return Repository.encodeObject(properties);
         }
+
         return null;
     }
 
@@ -1366,6 +1407,7 @@ public class Entry implements Cloneable {
             return false;
         }
         Entry that = (Entry) o;
+
         return Misc.equals(this.id, that.id);
     }
 
@@ -1494,7 +1536,10 @@ public class Entry implements Cloneable {
      * @return The Name
      */
     public String getName() {
-        if(name ==null) name = "";
+        if (name == null) {
+            name = "";
+        }
+
         return name;
     }
 
@@ -1586,6 +1631,7 @@ public class Entry implements Cloneable {
         if (metadata == null) {
             return false;
         }
+
         return metadata.contains(value);
     }
 
@@ -1605,6 +1651,7 @@ public class Entry implements Cloneable {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -1626,6 +1673,7 @@ public class Entry implements Cloneable {
             return false;
         }
         metadata.add(value);
+
         return true;
     }
 

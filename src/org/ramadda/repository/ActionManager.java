@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,10 +22,11 @@
 package org.ramadda.repository;
 
 
+import org.ramadda.util.HtmlUtils;
+
+
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 
 
@@ -111,6 +113,7 @@ public class ActionManager extends RepositoryManager {
         StringBuffer sb     = new StringBuffer();
         if (action == null) {
             sb.append(msg("No action found"));
+
             return new Result(msg("Status"), sb);
         }
 
@@ -156,6 +159,7 @@ public class ActionManager extends RepositoryManager {
             return getEntryManager().addEntryHeader(request, action.entry,
                     result);
         }
+
         return result;
     }
 
@@ -175,6 +179,7 @@ public class ActionManager extends RepositoryManager {
         if (id == null) {
             return null;
         }
+
         return actions.get(id);
     }
 
@@ -191,6 +196,7 @@ public class ActionManager extends RepositoryManager {
         if (action == null) {
             return false;
         }
+
         return action.getRunning();
     }
 
@@ -250,6 +256,7 @@ public class ActionManager extends RepositoryManager {
 
         String id = getRepository().getGUID();
         actions.put(id, new ActionInfo(msg, continueHtml, entry));
+
         return id;
     }
 
@@ -283,6 +290,7 @@ public class ActionManager extends RepositoryManager {
     public Result doAction(Request request, final Action runnable,
                            String name, String continueHtml, Entry entry) {
         Object actionId = runAction(runnable, name, continueHtml, entry);
+
         return new Result(request.url(URL_STATUS, ARG_ACTION_ID,
                                       "" + actionId));
     }
@@ -323,11 +331,13 @@ public class ActionManager extends RepositoryManager {
                     //TODO: handle the error better
                     exc.printStackTrace();
                     handleError(actionId, exc);
+
                     return;
                 }
                 actionComplete(actionId);
             }
         });
+
         return actionId;
     }
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -52,7 +53,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public final RequestUrl URL_PING = new RequestUrl(this, "/ping");
 
-    public final RequestUrl URL_CLEARSTATE = new RequestUrl(this, "/clearstate");
+    /** _more_          */
+    public final RequestUrl URL_CLEARSTATE = new RequestUrl(this,
+                                                 "/clearstate");
 
 
     /** _more_ */
@@ -174,7 +177,8 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_ACCESS = new RequestUrl(this,
-                                                 "/entry/access", "Edit Entry");
+                                                   "/entry/access",
+                                                   "Edit Entry");
 
 
     /** _more_ */
@@ -260,6 +264,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
+    /** _more_          */
     public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
 
 
@@ -417,6 +422,7 @@ public class RepositoryBase implements Constants, RepositorySource {
             }
             dateFormats.put(key, sdf);
         }
+
         return sdf;
     }
 
@@ -496,6 +502,7 @@ public class RepositoryBase implements Constants, RepositorySource {
                 }
             } catch (Exception noop) {}
         }
+
         throw new IllegalArgumentException("Unable to parse date:" + dttm);
     }
 
@@ -526,6 +533,7 @@ public class RepositoryBase implements Constants, RepositorySource {
         if (getProperty(PROP_ALWAYS_HTTPS, false)) {
             return "https";
         }
+
         return "http";
     }
 
@@ -737,6 +745,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public String showDialogError(String h) {
         h = getDialogString(h);
+
         return getMessage(h, Constants.ICON_ERROR, true);
     }
 
@@ -756,6 +765,7 @@ public class RepositoryBase implements Constants, RepositorySource {
         s = s.replace("&#60;p&#62;", "<p>");
         s = s.replace("&#60;br&#62;", "<br>");
         s = s.replace("&#38;nbsp&#59;", "&nbsp;");
+
         return s;
     }
 
@@ -772,7 +782,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String getMessage(String h, String icon, boolean showClose) {
         String html =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hide('messageblock')"),
-                            HtmlUtils.img(iconUrl(Constants.ICON_CLOSE)));
+                             HtmlUtils.img(iconUrl(Constants.ICON_CLOSE)));
         if ( !showClose) {
             html = "&nbsp;";
         }
@@ -780,6 +790,7 @@ public class RepositoryBase implements Constants, RepositorySource {
             + HtmlUtils.img(iconUrl(icon)) + HtmlUtils.space(2)
             + "</td><td valign=\"bottom\"><span class=\"notetext\">" + h
             + "</span></td></tr></table></div>";
+
         return "\n<table border=\"0\" id=\"messageblock\"><tr><td><div class=\"note\"><table><tr valign=top><td>"
                + h + "</td><td>" + html + "</td></tr></table>"
                + "</div></td></tr></table>\n";
@@ -810,6 +821,7 @@ public class RepositoryBase implements Constants, RepositorySource {
             return null;
         }
         String path = getProperty(f, f);
+
         return urlBase + path;
     }
 

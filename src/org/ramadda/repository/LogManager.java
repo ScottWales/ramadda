@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.LogUtil;
@@ -45,8 +47,8 @@ import java.io.FileNotFoundException;
 
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -64,9 +66,13 @@ public class LogManager extends RepositoryManager {
     /** _more_ */
     private boolean LOGGER_OK = true;
 
-    private final LogManager.LogId LOGID  = new LogManager.LogId("org.ramadda.repository.LogManager");
+    /** _more_          */
+    private final LogManager.LogId LOGID =
+        new LogManager.LogId("org.ramadda.repository.LogManager");
 
-    private Hashtable<String,Logger> loggers = new Hashtable<String,Logger>();
+    /** _more_          */
+    private Hashtable<String, Logger> loggers = new Hashtable<String,
+                                                    Logger>();
 
     /** _more_ */
     public static boolean debug = true;
@@ -120,6 +126,13 @@ public class LogManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param logId _more_
+     *
+     * @return _more_
+     */
     public Logger getLogger(LogId logId) {
         //Check if we've already had an error
         if ( !LOGGER_OK) {
@@ -127,16 +140,20 @@ public class LogManager extends RepositoryManager {
         }
 
         Logger logger = loggers.get(logId.getId());
-        if(logger !=null) return logger;
+        if (logger != null) {
+            return logger;
+        }
         try {
             logger = Logger.getLogger(logId.getId());
         } catch (Exception exc) {
             LOGGER_OK = false;
             System.err.println("Error getting logger: " + exc);
             exc.printStackTrace();
+
             return null;
         }
         loggers.put(logId.getId(), logger);
+
         return logger;
     }
 
@@ -147,9 +164,15 @@ public class LogManager extends RepositoryManager {
      * @param message _more_
      */
     public void debug(String message) {
-        debug(getLogger(),message);
+        debug(getLogger(), message);
     }
 
+    /**
+     * _more_
+     *
+     * @param logger _more_
+     * @param message _more_
+     */
     public void debug(Logger logger, String message) {
         if (logger != null) {
             logger.debug(message);
@@ -212,12 +235,24 @@ public class LogManager extends RepositoryManager {
         logInfo(getLogger(), message);
     }
 
-    public void logInfo(LogId logId,String message) {
+    /**
+     * _more_
+     *
+     * @param logId _more_
+     * @param message _more_
+     */
+    public void logInfo(LogId logId, String message) {
         logInfo(getLogger(logId), message);
     }
 
 
-     public void logInfo(Logger logger, String message) {
+    /**
+     * _more_
+     *
+     * @param logger _more_
+     * @param message _more_
+     */
+    public void logInfo(Logger logger, String message) {
         if (logger != null) {
             logger.info(message);
         } else {
@@ -235,6 +270,12 @@ public class LogManager extends RepositoryManager {
         logError(getLogger(), message);
     }
 
+    /**
+     * _more_
+     *
+     * @param logger _more_
+     * @param message _more_
+     */
     public void logError(Logger logger, String message) {
         if (logger != null) {
             logger.error(message);
@@ -253,6 +294,12 @@ public class LogManager extends RepositoryManager {
         logWarning(getLogger(), message);
     }
 
+    /**
+     * _more_
+     *
+     * @param logger _more_
+     * @param message _more_
+     */
     public void logWarning(Logger logger, String message) {
         if (logger != null) {
             logger.warn(message);
@@ -274,6 +321,13 @@ public class LogManager extends RepositoryManager {
         exc.printStackTrace();
     }
 
+    /**
+     * _more_
+     *
+     * @param logId _more_
+     * @param message _more_
+     * @param exc _more_
+     */
     public void logError(LogId logId, String message, Throwable exc) {
         logError(getLogger(logId), message, exc);
     }
@@ -304,7 +358,7 @@ public class LogManager extends RepositoryManager {
 
         if (log == null) {
             System.err.println("RAMADDA ERROR:" + message + " " + thr);
-        } else  if (thr != null) {
+        } else if (thr != null) {
             if ((thr instanceof RepositoryUtil.MissingEntryException)
                     || (thr instanceof AccessException)) {
                 log.error(message + " " + thr);
@@ -333,6 +387,7 @@ public class LogManager extends RepositoryManager {
         s = s.replaceAll("([sS][cC][rR][iI][pP][tT])", "_$1_");
         s = s.replace("<", "&lt;");
         s = s.replace(">", "&gt;");
+
         return s;
     }
 
@@ -610,6 +665,7 @@ public class LogManager extends RepositoryManager {
                     StringUtil.split(logString, "\n", false, false)) {
                 if ( !didOne) {
                     didOne = true;
+
                     continue;
                 }
                 line = line.trim();
@@ -676,10 +732,8 @@ public class LogManager extends RepositoryManager {
 
         sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
         sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.b(msg("User")),
-                                             HtmlUtils.b(msg("Date")),
-                                             HtmlUtils.b(msg("Path")),
-                                             HtmlUtils.b(msg("IP")),
-                                             HtmlUtils.b(msg("User agent")))));
+                HtmlUtils.b(msg("Date")), HtmlUtils.b(msg("Path")),
+                HtmlUtils.b(msg("IP")), HtmlUtils.b(msg("User agent")))));
         List<LogManager.LogEntry> log = getLogManager().getLog();
         for (int i = log.size() - 1; i >= 0; i--) {
             LogManager.LogEntry logEntry = log.get(i);
@@ -692,11 +746,11 @@ public class LogManager extends RepositoryManager {
             if (logEntry.getUrl() != null) {
                 path = HtmlUtils.href(logEntry.getUrl(), path);
             }
-            String  userAgent = logEntry.getUserAgent();
+            String userAgent = logEntry.getUserAgent();
             if (userAgent == null) {
                 userAgent = "";
             }
-            boolean isBot     = true;
+            boolean isBot = true;
             if (userAgent.indexOf("Googlebot") >= 0) {
                 userAgent = "Googlebot";
             } else if (userAgent.indexOf("Slurp") >= 0) {
@@ -722,33 +776,65 @@ public class LogManager extends RepositoryManager {
             String user = logEntry.getUser().getLabel();
             user = user.replace(" ", "&nbsp;");
             String cols = HtmlUtils.cols(user, dttm, path, logEntry.getIp(),
-                                        userAgent);
+                                         userAgent);
             sb.append(HtmlUtils.row(cols,
-                                   HtmlUtils.attr(HtmlUtils.ATTR_VALIGN, "top")
-                                   + ( !isBot
-                                       ? ""
-                                       : HtmlUtils.attr(HtmlUtils.ATTR_BGCOLOR,
-                                       "#eeeeee"))));
+                                    HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
+                                        "top") + ( !isBot
+                    ? ""
+                    : HtmlUtils.attr(HtmlUtils.ATTR_BGCOLOR, "#eeeeee"))));
 
         }
         sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Aug 20, '12
+     * @author         Enter your name here...    
+     */
     public static class LogId {
+
+        /** _more_          */
         private String id;
+
+        /**
+         * _more_
+         *
+         * @param id _more_
+         */
         public LogId(String id) {
             this.id = id;
         }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public String getId() {
             return id;
         }
 
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         @Override
         public int hashCode() {
             return id.hashCode();
         }
 
+        /**
+         * _more_
+         *
+         * @param that _more_
+         *
+         * @return _more_
+         */
         public boolean equals(Object that) {
             return id.equals(that);
         }

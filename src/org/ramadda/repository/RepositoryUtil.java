@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,6 +23,7 @@ package org.ramadda.repository;
 
 
 import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -95,6 +97,7 @@ public class RepositoryUtil implements Constants {
             md.update(password.getBytes("UTF-8"));
             byte[] bytes  = md.digest();
             String result = encodeBase64(bytes);
+
             return result.trim();
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
@@ -125,6 +128,7 @@ public class RepositoryUtil implements Constants {
                 }
                 hexString.append(hex);
             }
+
             //            System.out.println(hexString.toString());
             return hexString.toString();
         } catch (NoSuchAlgorithmException nsae) {
@@ -172,6 +176,7 @@ public class RepositoryUtil implements Constants {
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         dateFormat.setTimeZone(TIMEZONE_DEFAULT);
         dateFormat.applyPattern(formatString);
+
         return dateFormat;
     }
 
@@ -208,6 +213,7 @@ public class RepositoryUtil implements Constants {
             fileName = fileName.substring(idx + 1);
         }
         String tail = IOUtil.getFileTail(fileName);
+
         return tail;
 
 
@@ -256,6 +262,7 @@ public class RepositoryUtil implements Constants {
     public static final String encodeInput(String s) {
         s = HtmlUtils.urlEncode(s);
         s = s.replace("+", " ");
+
         return s;
     }
 
@@ -284,6 +291,7 @@ public class RepositoryUtil implements Constants {
         for (RequestUrl r : urls) {
             l.add(r);
         }
+
         return l;
     }
 

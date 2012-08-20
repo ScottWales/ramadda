@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,9 +22,11 @@
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.util.ServerInfo;
-
 import org.ramadda.repository.database.*;
+
+
+import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -34,7 +37,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -158,8 +160,8 @@ public class RegistryManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         if (request.exists(ARG_REGISTRY_ADD)) {
             if (request.defined(ARG_REGISTRY_URL)) {
-                String url = request.getString(ARG_REGISTRY_URL, "");
-                URL fullUrl =
+                String url     = request.getString(ARG_REGISTRY_URL, "");
+                URL    fullUrl =
                     new URL(
                         HtmlUtils.url(
                             url + getRepository().URL_INFO.getPath(),
@@ -179,6 +181,7 @@ public class RegistryManager extends RepositoryManager {
                         ServerInfo serverInfo = new ServerInfo(root);
                         serverInfo.setSelected(true);
                         addRemoteServer(serverInfo, true);
+
                         return new Result(
                             request.url(URL_REGISTRY_REMOTESERVERS));
                     }
@@ -204,6 +207,7 @@ public class RegistryManager extends RepositoryManager {
             sb.append(HtmlUtils.submit("Add New Server", ARG_REGISTRY_ADD));
             sb.append(HtmlUtils.submit("Cancel", ARG_CANCEL));
             sb.append(HtmlUtils.formClose());
+
             return getAdmin().makeResult(request, msg("Remote Servers"), sb);
 
         } else if (request.exists(ARG_REGISTRY_RELOAD)) {
@@ -249,7 +253,7 @@ public class RegistryManager extends RepositoryManager {
         sb.append(HtmlUtils.submit(msg("Delete Selected"), ARG_DELETE));
         sb.append(HtmlUtils.submit(msg("Add New Server"), ARG_REGISTRY_ADD));
         sb.append(HtmlUtils.submit(msg("Reload from Registry Servers"),
-                                  ARG_REGISTRY_RELOAD));
+                                   ARG_REGISTRY_RELOAD));
         sb.append(HtmlUtils.open(HtmlUtils.TAG_UL));
         List<ServerInfo> remoteServers = getRemoteServers();
         if (remoteServers.size() == 0) {
@@ -264,16 +268,16 @@ public class RegistryManager extends RepositoryManager {
 
         for (ServerInfo serverInfo : remoteServers) {
             sb.append(HtmlUtils.hidden(ARG_REGISTRY_SERVER,
-                                      serverInfo.getId()));
+                                       serverInfo.getId()));
             String cbxId = ARG_REGISTRY_SELECTED + "_" + (idCnt++);
-            String call = HtmlUtils.attr(
-                              HtmlUtils.ATTR_ONCLICK,
-                              HtmlUtils.call(
-                                  "checkboxClicked",
-                                  HtmlUtils.comma(
-                                      "event",
-                                      HtmlUtils.squote(ARG_REGISTRY_SELECTED),
-                                      HtmlUtils.squote(cbxId))));
+            String call  =
+                HtmlUtils.attr(
+                    HtmlUtils.ATTR_ONCLICK,
+                    HtmlUtils.call(
+                        "checkboxClicked",
+                        HtmlUtils.comma(
+                            "event", HtmlUtils.squote(ARG_REGISTRY_SELECTED),
+                            HtmlUtils.squote(cbxId))));
 
 
             sb.append(
@@ -294,7 +298,7 @@ public class RegistryManager extends RepositoryManager {
         sb.append(HtmlUtils.submit("Delete Selected", ARG_DELETE));
         sb.append(HtmlUtils.submit("Add New Server", ARG_REGISTRY_ADD));
         sb.append(HtmlUtils.submit("Reload from Registry Servers",
-                                  ARG_REGISTRY_RELOAD));
+                                   ARG_REGISTRY_RELOAD));
         sb.append(HtmlUtils.formClose());
 
 
@@ -315,10 +319,10 @@ public class RegistryManager extends RepositoryManager {
             throws Exception {
         String msg = msgLabel("Servers this server registers with");
         msg = HtmlUtils.space(1)
-              + HtmlUtils.href(HELP_ROOT
-                              + "/userguide/remoteservers.html", msg("Help"),
-                                  HtmlUtils.attr(HtmlUtils.ATTR_TARGET,
-                                      "_help"));
+              + HtmlUtils.href(HELP_ROOT + "/userguide/remoteservers.html",
+                               msg("Help"),
+                               HtmlUtils.attr(HtmlUtils.ATTR_TARGET,
+                                   "_help"));
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Registry Servers"),
@@ -329,8 +333,7 @@ public class RegistryManager extends RepositoryManager {
                         PROP_REGISTRY_SERVERS,
                         getRepository().getProperty(
                             PROP_REGISTRY_DEFAULTSERVER,
-                            "http://ramadda.org/repository")), 5,
-                                60)));
+                            "http://ramadda.org/repository")), 5, 60)));
     }
 
     /**
@@ -442,10 +445,12 @@ public class RegistryManager extends RepositoryManager {
     public void addAdminConfig(Request request, StringBuffer csb) {
         String helpLink =
             HtmlUtils.href(getRepository().getUrlBase()
-                          + "/userguide/remoteservers.html", msg("Help"),
-                              HtmlUtils.attr(HtmlUtils.ATTR_TARGET, "_help"));
+                           + "/userguide/remoteservers.html", msg("Help"),
+                               HtmlUtils.attr(HtmlUtils.ATTR_TARGET,
+                                   "_help"));
         csb.append(
-            HtmlUtils.row(HtmlUtils.colspan(msgHeader("Server Registry"), 2)));
+            HtmlUtils.row(
+                HtmlUtils.colspan(msgHeader("Server Registry"), 2)));
 
         csb.append(
             HtmlUtils.formEntry(
@@ -547,6 +552,7 @@ public class RegistryManager extends RepositoryManager {
                                        isRegistry, false));
         }
         registeredServers = servers;
+
         return servers;
     }
 
@@ -585,8 +591,10 @@ public class RegistryManager extends RepositoryManager {
         if (id.equals(ServerInfo.ID_THIS)) {
             ServerInfo serverInfo = getRepository().getServerInfo();
             serverInfo.setSelected(true);
+
             return serverInfo;
         }
+
         return getRemoteServerMap().get(id);
     }
 
@@ -610,6 +618,7 @@ public class RegistryManager extends RepositoryManager {
             }
         }
         selectedRemoteServers = selected;
+
         return selected;
     }
 
@@ -628,6 +637,7 @@ public class RegistryManager extends RepositoryManager {
             getRemoteServers();
             map = remoteServerMap;
         }
+
         return map;
     }
 
@@ -643,16 +653,17 @@ public class RegistryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private ServerInfo makeRemoteServer(ResultSet results) throws Exception {
-        URL     url        = new URL(results.getString(1));
-        String  title      = results.getString(2);
-        String  desc       = results.getString(3);
-        String  email      = results.getString(4);
-        boolean isRegistry = results.getInt(5) != 0;
-        boolean isSelected = results.getInt(6) != 0;
+        URL        url        = new URL(results.getString(1));
+        String     title      = results.getString(2);
+        String     desc       = results.getString(3);
+        String     email      = results.getString(4);
+        boolean    isRegistry = results.getInt(5) != 0;
+        boolean    isSelected = results.getInt(6) != 0;
 
         ServerInfo serverInfo = new ServerInfo(url.getHost(), url.getPort(),
                                     -1, url.getPath(), title, desc, email,
                                     isRegistry, isSelected);
+
         return serverInfo;
     }
 
@@ -688,6 +699,7 @@ public class RegistryManager extends RepositoryManager {
         clearRemoteServers();
         remoteServerMap = map;
         remoteServers   = servers;
+
         return servers;
     }
 
@@ -704,6 +716,7 @@ public class RegistryManager extends RepositoryManager {
                     PROP_REGISTRY_SERVERS,
                     "http://motherlode.ucar.edu/repository"), "\n", true,
                         true);
+
         return urls;
     }
 
@@ -732,7 +745,7 @@ public class RegistryManager extends RepositoryManager {
         ServerInfo serverInfo = getRepository().getServerInfo();
         url = url + getRepository().URL_REGISTRY_ADD.getPath();
         URL theUrl = new URL(HtmlUtils.url(url, ARG_REGISTRY_CLIENT,
-                                          serverInfo.getUrl()));
+                                           serverInfo.getUrl()));
         try {
             String  contents = getStorageManager().readSystemResource(theUrl);
             Element root     = XmlUtil.getRoot(contents);
@@ -782,6 +795,7 @@ public class RegistryManager extends RepositoryManager {
             logInfo(
                 "RegistryManager.processRegistryAdd: Was asked to register a server when this server is not configured as a registry server. URL = "
                 + request);
+
             return new Result(
                 XmlUtil.tag(
                     TAG_RESPONSE, XmlUtil.attr(ATTR_CODE, CODE_ERROR),
@@ -801,6 +815,7 @@ public class RegistryManager extends RepositoryManager {
                                           XmlUtil.attr(ATTR_CODE, CODE_OK),
                                           "OK"), MIME_XML);
         }
+
         return new Result(XmlUtil.tag(TAG_RESPONSE,
                                       XmlUtil.attr(ATTR_CODE, CODE_ERROR),
                                       "failed"), MIME_XML);
@@ -845,6 +860,7 @@ public class RegistryManager extends RepositoryManager {
                     .equals(requestingServerUrl.getHost()
                         .toLowerCase()) && (myServerPort == requestingPort)) {
                 ok = true;
+
                 break;
             }
         }
@@ -853,6 +869,7 @@ public class RegistryManager extends RepositoryManager {
             logInfo(
                 "RegistryManger.processRegistryInfo: Was asked to register with a server:"
                 + requestingServer + " that is not in our list:" + servers);
+
             return new Result(
                 XmlUtil.tag(
                     TAG_RESPONSE, XmlUtil.attr(ATTR_CODE, CODE_ERROR),
@@ -891,6 +908,7 @@ public class RegistryManager extends RepositoryManager {
         if ( !responseOk(root)) {
             logInfo("RegistryManager.fetchRemoteServers: Bad response from "
                     + serverUrl);
+
             return;
         }
         List<ServerInfo> servers  = new ArrayList<ServerInfo>();
@@ -988,6 +1006,7 @@ public class RegistryManager extends RepositoryManager {
                                        new Boolean(
                                            clientServer.getIsRegistry()) });
                     clearRegisteredServers();
+
                     return true;
                 } else {
                     logInfo("RegistryManager.checkServer: not equals:"
@@ -1014,6 +1033,7 @@ public class RegistryManager extends RepositoryManager {
                     Tables.SERVERREGISTRY.COL_URL, serverInfo.getUrl()));
             clearRegisteredServers();
         }
+
         return false;
     }
 
@@ -1038,8 +1058,8 @@ public class RegistryManager extends RepositoryManager {
             List<ServerInfo> servers = registeredServers;
             //Add myself to the list
             servers.add(0, getRepository().getServerInfo());
-            Document resultDoc = XmlUtil.makeDocument();
-            Element resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
+            Document resultDoc  = XmlUtil.makeDocument();
+            Element  resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
                                      null, new String[] { ATTR_CODE,
                     CODE_OK });
 
@@ -1048,6 +1068,7 @@ public class RegistryManager extends RepositoryManager {
                 resultRoot.appendChild(serverInfo.toXml(getRepository(),
                         resultDoc));
             }
+
             return new Result(XmlUtil.toString(resultRoot, false), MIME_XML);
         }
 
@@ -1072,9 +1093,11 @@ public class RegistryManager extends RepositoryManager {
                         sb.append(msgHeader("Remote Servers"));
                     }
                     sb.append("<table cellspacing=\"0\" cellpadding=\"4\">");
-                    sb.append(HtmlUtils.row(HtmlUtils.headerCols(new String[] {
-                        msg("Repository"),
-                        msg("URL"), msg("Is Registry?") })));
+                    sb.append(
+                        HtmlUtils.row(
+                            HtmlUtils.headerCols(
+                                new String[] { msg("Repository"),
+                            msg("URL"), msg("Is Registry?") })));
                 }
                 didone = true;
                 seen.add(serverInfo);
@@ -1091,7 +1114,7 @@ public class RegistryManager extends RepositoryManager {
                     desc = HtmlUtils.makeShowHideBlock(msg("Description"),
                             desc, false);
                     sb.append(HtmlUtils.row(HtmlUtils.colspan(desc, 3),
-                                           HtmlUtils.cssClass(evenRow
+                                            HtmlUtils.cssClass(evenRow
                             ? "listrow1"
                             : "listrow2")));
                 }
@@ -1107,6 +1130,7 @@ public class RegistryManager extends RepositoryManager {
             }
         }
         Result result = new Result(msg("Registry List"), sb);
+
         return result;
     }
 

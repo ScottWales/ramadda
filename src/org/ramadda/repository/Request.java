@@ -161,18 +161,10 @@ public class Request implements Constants, Cloneable {
      * @param user _more_
      */
     public Request(Repository repository, User user) {
-        this.repository         = repository;
-        this.user               = user;
-        this.type               = "";
-        this.parameters         = new Hashtable();
-    }
-
-
-    public Request(Repository repository, User user, String path) {
-        this.repository         = repository;
-        this.user               = user;
-        this.type               = path;
-        this.parameters         = new Hashtable();
+        this.repository = repository;
+        this.user       = user;
+        this.type       = "";
+        this.parameters = new Hashtable();
     }
 
 
@@ -183,17 +175,34 @@ public class Request implements Constants, Cloneable {
      * @param user _more_
      * @param path _more_
      */
+    public Request(Repository repository, User user, String path) {
+        this.repository = repository;
+        this.user       = user;
+        this.type       = path;
+        this.parameters = new Hashtable();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param user _more_
+     *
+     * @param that _more_
+     * @param path _more_
+     */
     public Request(Request that, String path) {
-        this.repository         = that.getRepository();
-        this.user               = that.getUser();
-        this.type               = path;
-        this.parameters         = new Hashtable();
-        this.originalParameters = new Hashtable();
-        this.isMobile = that.isMobile;
-        this.ip  = that.ip;
-        this.httpServletRequest = that.httpServletRequest;
+        this.repository          = that.getRepository();
+        this.user                = that.getUser();
+        this.type                = path;
+        this.parameters          = new Hashtable();
+        this.originalParameters  = new Hashtable();
+        this.isMobile            = that.isMobile;
+        this.ip                  = that.ip;
+        this.httpServletRequest  = that.httpServletRequest;
         this.httpServletResponse = that.httpServletResponse;
-        this.httpHeaderArgs = that.httpHeaderArgs;
+        this.httpHeaderArgs      = that.httpHeaderArgs;
     }
 
 
@@ -1540,7 +1549,9 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     private Object getValue(Object key, Object dflt) {
-        if(parameters==null) return dflt;
+        if (parameters == null) {
+            return dflt;
+        }
         Object result = parameters.get(key);
         if (result == null) {
             result = getFromPath(key.toString());
@@ -2451,13 +2462,23 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param is _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result returnStream(InputStream is) throws Exception {
         Result result = new Result();
         result.setNeedToWrite(false);
-        OutputStream os  = getHttpServletResponse().getOutputStream();
+        OutputStream os = getHttpServletResponse().getOutputStream();
         IOUtil.writeTo(is, os);
         IOUtil.close(os);
         IOUtil.close(is);
+
         return result;
     }
 

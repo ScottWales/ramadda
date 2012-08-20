@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,6 +30,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.*;
+import org.ramadda.util.HtmlUtils;
 
 
 
@@ -40,7 +42,6 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -89,8 +90,7 @@ public class RepositoryManager implements RepositorySource, Constants,
 
 
     /** _more_ */
-    public static final String HELP_ROOT =
-        "http://ramadda.org/repository";
+    public static final String HELP_ROOT = "http://ramadda.org/repository";
 
 
     /** _more_ */
@@ -109,8 +109,12 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
-    public void shutdown() throws Exception  {
-    }
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    public void shutdown() throws Exception {}
 
 
     /**
@@ -163,7 +167,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public static String formEntryTop(Request request, String label,
-                               String contents) {
+                                      String contents) {
         if (request.isMobile()) {
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"
                    + contents + "</td></tr>";
@@ -183,6 +187,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         if ((repository == null) || !repository.getActive()) {
             return false;
         }
+
         return true;
     }
 
@@ -226,9 +231,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         }
         if (bytes < 1000000) {
             bytes = ((int) ((bytes * 100) / 1000.0)) / 100.0;
+
             return ((int) bytes) + " KB";
         }
         bytes = ((int) ((bytes * 100) / 1000000.0)) / 100.0;
+
         return bytes + " MB";
     }
 
@@ -387,7 +394,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String subHeaderLink(String url, String label) {
         return HtmlUtils.href(url, label,
-                             HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
+                              HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
     }
 
 
@@ -403,12 +410,13 @@ public class RepositoryManager implements RepositorySource, Constants,
     public String subHeaderLink(String url, String label, boolean toggle) {
         //        if(true) return "x";
         String img = HtmlUtils.img(iconUrl(toggle
-                                          ? ICON_MINUS
-                                          : ICON_PLUS));
+                                           ? ICON_MINUS
+                                           : ICON_PLUS));
         label = img + HtmlUtils.space(1) + label;
         String html =
             HtmlUtils.href(url, label,
-                          HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
+                           HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
+
         return html;
         //return "<table border=1><tr valign=bottom><td>" + html +"</table>";
     }
@@ -588,6 +596,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getEntryManager();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public PageHandler getPageHandler() {
         return repository.getPageHandler();
     }
@@ -702,26 +715,54 @@ public class RepositoryManager implements RepositorySource, Constants,
         getRepository().getLogManager().logInfo(message);
     }
 
-    public void adminSettingsChanged() {
-    }
+    /**
+     * _more_
+     */
+    public void adminSettingsChanged() {}
 
 
-    private static int dialogCnt=0;
+    /** _more_          */
+    private static int dialogCnt = 0;
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param message _more_
+     *
+     * @return _more_
+     */
     public String makeFormSubmitDialog(StringBuffer sb, String message) {
-        String id = "dialog-message" + (dialogCnt++);
-        String onSubmit = " onsubmit=\"return submitEntryForm('#" + id +"');\" ";
-        String loadingImage = HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
-        sb.append("<div style=\"display:none;\" id=\"" + id +"\">" + loadingImage +" " + message +"</div>");
+        String id       = "dialog-message" + (dialogCnt++);
+        String onSubmit = " onsubmit=\"return submitEntryForm('#" + id
+                          + "');\" ";
+        String loadingImage =
+            HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
+        sb.append("<div style=\"display:none;\" id=\"" + id + "\">"
+                  + loadingImage + " " + message + "</div>");
+
         return onSubmit;
 
     }
 
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param message _more_
+     *
+     * @return _more_
+     */
     public String makeButtonSubmitDialog(StringBuffer sb, String message) {
-        String id = "dialog-message" + (dialogCnt++);
-        String onSubmit = " onclick=\"return submitEntryForm('#" + id +"');\" ";
-        String loadingImage = HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
-        sb.append("<div style=\"display:none;\" id=\"" + id +"\">" + loadingImage +" " + message +"</div>");
+        String id       = "dialog-message" + (dialogCnt++);
+        String onSubmit = " onclick=\"return submitEntryForm('#" + id
+                          + "');\" ";
+        String loadingImage =
+            HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
+        sb.append("<div style=\"display:none;\" id=\"" + id + "\">"
+                  + loadingImage + " " + message + "</div>");
+
         return onSubmit;
 
     }

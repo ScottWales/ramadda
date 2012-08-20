@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -133,6 +134,7 @@ public class Association {
         if ((name == null) || (name.length() == 0)) {
             return type;
         }
+
         return name;
     }
 
@@ -149,6 +151,7 @@ public class Association {
             return false;
         }
         Association that = (Association) o;
+
         return Misc.equals(this.name, that.name)
                && Misc.equals(this.type, that.type)
                && Misc.equals(this.fromId, that.fromId)

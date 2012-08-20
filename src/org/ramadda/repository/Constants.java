@@ -390,7 +390,7 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_DESCRIPTION = "description";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
     /** _more_ */
@@ -731,6 +731,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ENTRYID = "entryid";
 
+    /** _more_          */
     public static final String ARG_ENTRY_TIMESTAMP = "entry.timestamp";
 
     /** _more_ */
@@ -760,7 +761,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_FILESUFFIX = "filesuffix";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_MAXFILESIZE = "maxfilesize";
 
     /** _more_ */
@@ -967,10 +968,10 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SERVERFILE = "serverfile";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SERVERFILE_HARVEST = "serverfile_harvest";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SERVERFILE_PATTERN = "serverfile_pattern";
 
     /** _more_ */
@@ -1048,14 +1049,18 @@ public interface Constants {
     public static final String PROP_SYSTEM_MESSAGE = "system.message";
 
 
-    public static final String PROP_PASSPHRASE =  "ramadda.passphrase";
+    /** _more_          */
+    public static final String PROP_PASSPHRASE = "ramadda.passphrase";
 
 
     /** _more_ */
     public static final String PROP_MONITOR_ENABLE_EXEC =
         "ramadda.monitor.enable.exec";
 
-    public static final String PROP_PROXY_WHITELIST = "ramadda.proxy.whitelist";
+    /** _more_          */
+    public static final String PROP_PROXY_WHITELIST =
+        "ramadda.proxy.whitelist";
+
     /** _more_ */
     public static final String PROP_READ_ONLY = "ramadda.readonly";
 
@@ -1328,7 +1333,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_TYPE_GUESS = "type.guess";
 
     /** _more_ */
@@ -1549,6 +1554,7 @@ public interface Constants {
     public static final String PROP_ADMIN_INCLUDESQL =
         "ramadda.admin.includesql";
 
+    /** _more_          */
     public static final String ARG_SHUTDOWN_CONFIRM = "shutdown.confirm";
 
     /** _more_ */
@@ -1853,6 +1859,7 @@ public interface Constants {
     /** _more_ */
     public static final String ACTION_ADD = "action.add";
 
+    /** _more_          */
     public static final String ACTION_SHUTDOWN = "action.shutdown";
 
     /** _more_ */

@@ -30,9 +30,9 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlTemplate;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 
@@ -620,8 +620,8 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processGroupShow(Request request,
-                                    OutputHandler outputHandler,
-                                    OutputType outputType, Entry group)
+                                   OutputHandler outputHandler,
+                                   OutputType outputType, Entry group)
             throws Exception {
         boolean doLatest = request.get(ARG_LATEST, false);
         //not sure why we asked the repository for the type
@@ -786,7 +786,8 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
             if (entry != null) {
                 sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-                sb.append(HtmlUtils.hidden(ARG_ENTRY_TIMESTAMP, getEntryTimestamp(entry)));
+                sb.append(HtmlUtils.hidden(ARG_ENTRY_TIMESTAMP,
+                                           getEntryTimestamp(entry)));
                 if (isAnonymousUpload(entry)) {
                     List<Metadata> metadataList =
                         getMetadataManager().findMetadata(entry,
@@ -828,10 +829,18 @@ public class EntryManager extends RepositoryManager {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private String getEntryTimestamp(Entry entry) {
         long changeDate = entry.getChangeDate();
+
         //        System.err.println("timestamp:" +changeDate +" " + new Date(changeDate));
-        return ""+changeDate;
+        return "" + changeDate;
     }
 
 
@@ -1088,11 +1097,18 @@ public class EntryManager extends RepositoryManager {
             }
 
             //If we have a timestampd then check if the user was editing an up to date entry
-            if(request.defined(ARG_ENTRY_TIMESTAMP) && !Misc.equals(request.getString(ARG_ENTRY_TIMESTAMP, ""), getEntryTimestamp(entry))) {
+            if (request.defined(ARG_ENTRY_TIMESTAMP)
+                    && !Misc.equals(request.getString(ARG_ENTRY_TIMESTAMP,
+                        ""), getEntryTimestamp(entry))) {
                 StringBuffer sb = new StringBuffer();
-                sb.append(getRepository().showDialogError(msg("Error: The entry you are editing has been edited since the time you began the edit")));
+                sb.append(
+                    getRepository().showDialogError(
+                        msg(
+                        "Error: The entry you are editing has been edited since the time you began the edit")));
+
                 return addEntryHeader(request, entry,
-                                      new Result(msg("Entry Edit Error"), sb));
+                                      new Result(msg("Entry Edit Error"),
+                                          sb));
             }
 
             if (request.exists(ARG_DELETE_CONFIRM)) {
@@ -1510,12 +1526,15 @@ public class EntryManager extends RepositoryManager {
                 TypeHandler typeHandlerToUse = typeHandler;
                 //See if we can figure out the type 
                 if (figureOutType) {
-                    File newFile = new File(theResource);
+                    File   newFile   = new File(theResource);
                     String shortName = newFile.getName();
                     for (TypeHandler otherTypeHandler :
-                             getRepository().getTypeHandlers()) {
-                        if (otherTypeHandler.canHandleResource(theResource.toLowerCase(), shortName.toLowerCase())) {
+                            getRepository().getTypeHandlers()) {
+                        if (otherTypeHandler.canHandleResource(
+                                theResource.toLowerCase(),
+                                shortName.toLowerCase())) {
                             typeHandlerToUse = otherTypeHandler;
+
                             break;
                         }
                     }
@@ -2605,7 +2624,7 @@ public class EntryManager extends RepositoryManager {
                 .href(request
                     .url(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
                         .getId(), ARG_TYPE, typeHandler.getType()), img + " "
-                      + msg(typeHandler.getLabel())));
+                            + msg(typeHandler.getLabel())));
 
             buffer.append(HtmlUtils.br());
         }
@@ -2614,9 +2633,9 @@ public class EntryManager extends RepositoryManager {
         for (String cat : categories) {
             sb.append(
                 HtmlUtils.col(
-                              HtmlUtils.b(msg(cat))
+                    HtmlUtils.b(msg(cat))
                     + HtmlUtils.insetDiv(
-                                         catMap.get(cat).toString(), 3, 15, 0, 0)));
+                        catMap.get(cat).toString(), 3, 15, 0, 0)));
             colCnt++;
             if (colCnt > 3) {
                 sb.append("</tr><tr valign=top>");
@@ -5037,9 +5056,9 @@ public class EntryManager extends RepositoryManager {
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
                 //HtmlUtils.span(msg(categoryName), menuClass),
-                categoryMenu = getRepository().makePopupLink(
-                                                             msg(categoryName), 
-                                                             categoryMenu.toString(), menuClass, false, true);
+                categoryMenu =
+                    getRepository().makePopupLink(msg(categoryName),
+                        categoryMenu.toString(), menuClass, false, true);
 
                 break;
             }
@@ -5069,10 +5088,8 @@ public class EntryManager extends RepositoryManager {
                 //                menuName="Folder";
             }
             //HtmlUtils.span(msg(menuName), menuClass), 
-            menuItems.add(
-                getRepository().makePopupLink(msg(menuName),  entryMenu,
-                                              menuClass,
-                                              false, true));
+            menuItems.add(getRepository().makePopupLink(msg(menuName),
+                    entryMenu, menuClass, false, true));
 
         }
 
@@ -5081,10 +5098,8 @@ public class EntryManager extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(
-                getRepository().makePopupLink(
-                                              msg("Edit"), editMenu, menuClass,  false,
-                    true));
+            menuItems.add(getRepository().makePopupLink(msg("Edit"),
+                    editMenu, menuClass, false, true));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FEEDS)
@@ -5092,10 +5107,8 @@ public class EntryManager extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(
-                getRepository().makePopupLink(
-                                              msg("Connect"),  exportMenu,menuClass, 
-                    false, true));
+            menuItems.add(getRepository().makePopupLink(msg("Connect"),
+                    exportMenu, menuClass, false, true));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_VIEW)
@@ -5103,10 +5116,8 @@ public class EntryManager extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(
-                getRepository().makePopupLink(
-                                              msg("View"),  viewMenu, menuClass, false,
-                    true));
+            menuItems.add(getRepository().makePopupLink(msg("View"),
+                    viewMenu, menuClass, false, true));
         }
 
         if (pageStyle.okToShowMenu(entry, PageStyle.MENU_OTHER)
@@ -5347,11 +5358,12 @@ public class EntryManager extends RepositoryManager {
             ancestor = findGroup(request, ancestor.getParentEntryId());
         }
         titleList.add(entry.getLabel());
-        String nav;
+        String       nav;
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
 
-        String separator = htmlTemplate.getTemplateProperty("ramadda.template.breadcrumbs.separator",
-                                                            BREADCRUMB_SEPARATOR);
+        String       separator    = htmlTemplate.getTemplateProperty(
+                               "ramadda.template.breadcrumbs.separator",
+                               BREADCRUMB_SEPARATOR);
 
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
@@ -5407,12 +5419,14 @@ public class EntryManager extends RepositoryManager {
             if (showEntryHeader) {
                 entryHeader =
                     "<table border=0 cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
-                    + HtmlUtils.rowBottom("<td><div class=\"entryname\" >" + img
-                                          + entryLink
+                    + HtmlUtils.rowBottom("<td><div class=\"entryname\" >"
+                                          + img + entryLink
                                           + "</div></td><td align=\"right\">"
                                           + (showLayoutToolbar
-                                             ? HtmlUtils.div(htmlViewLinks,
-                                                             HtmlUtils.cssClass("ramadda-header-layoutbar"))
+                                             ? HtmlUtils.div(
+                                             htmlViewLinks,
+                                             HtmlUtils.cssClass(
+                                                 "ramadda-header-layoutbar"))
                                              : "") + "</td>") + "</table>";
             }
 
@@ -5421,10 +5435,11 @@ public class EntryManager extends RepositoryManager {
             }
 
             //getRepository().getProperty("ramadda.html.menubarontop", true)
-            boolean menuBarOnTop = htmlTemplate.getTemplateProperty("menubar.position",
-                                                                    getProperty("ramadda.html.menubar.position",
-                                                                                "bottom")).equals("top");
-            if(menuBarOnTop) {
+            boolean menuBarOnTop =
+                htmlTemplate.getTemplateProperty("menubar.position",
+                    getProperty("ramadda.html.menubar.position",
+                                "bottom")).equals("top");
+            if (menuBarOnTop) {
                 nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
                                     style);
             } else {
@@ -6147,8 +6162,7 @@ public class EntryManager extends RepositoryManager {
         //We always set the change date here. Make sure we set it on the entry as well
         //because the entry object sticks around in memory
         entry.setChangeDate(getRepository().currentTime());
-        getDatabaseManager().setDate(statement, col++,
-                                     entry.getChangeDate());
+        getDatabaseManager().setDate(statement, col++, entry.getChangeDate());
         try {
             getDatabaseManager().setDate(statement, col,
                                          entry.getStartDate());
@@ -6549,6 +6563,16 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param full _more_
+     * @param addPath _more_
+     *
+     * @return _more_
+     */
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean full, boolean addPath) {
         if (entry.getResource().isUrl()) {
@@ -6837,8 +6861,16 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
     public List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
-                                         final boolean descending) {
+            final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;

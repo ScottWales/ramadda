@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,16 +30,16 @@ import org.ramadda.repository.type.*;
 
 
 
+
+import org.ramadda.util.HtmlUtils;
+
+
+
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 
 import ucar.unidata.sql.SqlUtil;
-
-
-
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -120,6 +121,7 @@ public class AssociationManager extends RepositoryManager {
             }
             request.ensureAuthToken();
             addAssociation(request, fromEntry, toEntry, name, type);
+
             //            return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW, fromEntry));
             return new Result(
                 request.entryUrl(
@@ -141,7 +143,7 @@ public class AssociationManager extends RepositoryManager {
         sb.append(HtmlUtils.formTable());
 
         sb.append(HtmlUtils.formEntry(msgLabel("Association Name"),
-                                     HtmlUtils.input(ARG_NAME)));
+                                      HtmlUtils.input(ARG_NAME)));
 
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject("None", ""));
@@ -150,9 +152,9 @@ public class AssociationManager extends RepositoryManager {
                          : HtmlUtils.select(ARG_TYPE, types)
                            + HtmlUtils.space(1) + "Or:" + HtmlUtils.space(1));
         sb.append(HtmlUtils.formEntry(msgLabel("Type"),
-                                     select
-                                     + HtmlUtils.input(ARG_TYPE_FREEFORM, "",
-                                         HtmlUtils.SIZE_20)));
+                                      select
+                                      + HtmlUtils.input(ARG_TYPE_FREEFORM,
+                                          "", HtmlUtils.SIZE_20)));
 
         sb.append(HtmlUtils.formTableClose());
 
@@ -206,6 +208,7 @@ public class AssociationManager extends RepositoryManager {
             getDatabaseManager().delete(Tables.ASSOCIATIONS.NAME, clause);
             fromEntry.setAssociations(null);
             toEntry.setAssociations(null);
+
             return new Result(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, fromEntry));
         }
@@ -226,6 +229,7 @@ public class AssociationManager extends RepositoryManager {
         sb.append(fromEntry.getLabel());
         sb.append(HtmlUtils.pad(HtmlUtils.img(iconUrl(ICON_ARROW))));
         sb.append(toEntry.getLabel());
+
         return new Result(msg("Delete Associations"), sb);
     }
 
@@ -266,6 +270,7 @@ public class AssociationManager extends RepositoryManager {
                     "Could not find to entry:" + toId);
             }
         }
+
         return addAssociation(request, fromEntry, toEntry,
                               XmlUtil.getAttribute(node, ATTR_NAME, ""),
                               XmlUtil.getAttribute(node, ATTR_TYPE, ""));
@@ -307,6 +312,7 @@ public class AssociationManager extends RepositoryManager {
                                            toEntry.getId()));
         fromEntry.clearAssociations();
         toEntry.clearAssociations();
+
         return result;
     }
 
@@ -330,6 +336,7 @@ public class AssociationManager extends RepositoryManager {
                 association.getName(), association.getType(),
                 association.getFromId(),
                 association.getToId() });
+
         return id;
     }
 
@@ -353,6 +360,7 @@ public class AssociationManager extends RepositoryManager {
             types = (List<String>) Misc.toList(values);
             types.remove("");
         }
+
         return new ArrayList<String>(types);
     }
 
@@ -467,6 +475,7 @@ public class AssociationManager extends RepositoryManager {
             }
             results.add(association);
         }
+
         return results;
     }
 
@@ -497,6 +506,7 @@ public class AssociationManager extends RepositoryManager {
                 results.add(otherEntry);
             }
         }
+
         return results;
     }
 
@@ -526,6 +536,7 @@ public class AssociationManager extends RepositoryManager {
                 results.add(otherEntry);
             }
         }
+
         return results;
     }
 
@@ -548,6 +559,7 @@ public class AssociationManager extends RepositoryManager {
             throw new IllegalArgumentException(
                 "getAssociations Entry is null:" + entryId);
         }
+
         return getAssociations(request, entry);
     }
 
@@ -581,6 +593,7 @@ public class AssociationManager extends RepositoryManager {
                             Tables.ASSOCIATIONS.COL_TO_ENTRY_ID,
                             entry.getId())));
         entry.setAssociations(associations);
+
         return associations;
     }
 
@@ -597,7 +610,7 @@ public class AssociationManager extends RepositoryManager {
      */
     public List<Association> getAssociations(Request request, Clause clause)
             throws Exception {
-        int max = request.get(ARG_MAX, DB_MAX_ROWS);
+        int    max     = request.get(ARG_MAX, DB_MAX_ROWS);
         String orderBy = " ORDER BY " + Tables.ASSOCIATIONS.COL_TYPE
                          + " ASC ," + Tables.ASSOCIATIONS.COL_NAME + " ASC ";
         Statement stmt = getDatabaseManager().select(
@@ -624,6 +637,7 @@ public class AssociationManager extends RepositoryManager {
                 associations.add(association);
             }
         }
+
         return associations;
     }
 
@@ -671,11 +685,11 @@ public class AssociationManager extends RepositoryManager {
     public String processText(Request request, Entry entry, String text) {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {
-            String first  = text.substring(0, idx);
-            String base   = "" + (HtmlUtils.blockCnt++);
-            String divId  = "morediv_" + base;
-            String linkId = "morelink_" + base;
-            String second = text.substring(idx + "<more>".length());
+            String first    = text.substring(0, idx);
+            String base     = "" + (HtmlUtils.blockCnt++);
+            String divId    = "morediv_" + base;
+            String linkId   = "morelink_" + base;
+            String second   = text.substring(idx + "<more>".length());
             String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
                               + ")";
             String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)
@@ -686,6 +700,7 @@ public class AssociationManager extends RepositoryManager {
                    + HtmlUtils.id(divId) + ">" + second + "<br>" + "<a href="
                    + HtmlUtils.quote(lessLink) + ">...Less</a>" + "</div>";
         }
+
         return text;
     }
 
@@ -710,8 +725,10 @@ public class AssociationManager extends RepositoryManager {
             getAssociationManager().getAssociations(request, entry);
         if (associations.size() == 0) {
             StringBuffer sb = new StringBuffer();
+
             return sb;
         }
+
         return getAssociationList(request, associations, entry, canEdit);
     }
 
@@ -732,8 +749,8 @@ public class AssociationManager extends RepositoryManager {
                                            Entry entry, boolean canEdit)
             throws Exception {
 
-        List cols1 = new ArrayList();
-        List cols2 = new ArrayList();
+        List                            cols1  = new ArrayList();
+        List                            cols2  = new ArrayList();
 
         Hashtable<String, StringBuffer> rowMap = new Hashtable<String,
                                                      StringBuffer>();
@@ -818,7 +835,8 @@ public class AssociationManager extends RepositoryManager {
         cols.addAll(cols2);
 
         return HtmlUtils.table(cols, 5,
-                              HtmlUtils.attr(HtmlUtils.ATTR_CELLSPACING, "3"));
+                               HtmlUtils.attr(HtmlUtils.ATTR_CELLSPACING,
+                                   "3"));
     }
 
 
@@ -891,6 +909,7 @@ public class AssociationManager extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         getAssociationsSearchForm(request, sb);
+
         return getSearchManager().makeResult(request,
                                              msg("Search Associations"), sb);
     }
@@ -920,18 +939,18 @@ public class AssociationManager extends RepositoryManager {
                                  request.get(ARG_EXACT, false)) + " "
                                      + msg("Match exactly");
         sb.append(HtmlUtils.formEntry(msgLabel("Name"),
-                                     HtmlUtils.input(ARG_NAME,
-                                         request.getString(ARG_NAME, ""),
-                                         HtmlUtils.SIZE_40) + searchExact));
+                                      HtmlUtils.input(ARG_NAME,
+                                          request.getString(ARG_NAME, ""),
+                                          HtmlUtils.SIZE_40) + searchExact));
 
 
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject(msg("None"), ""));
         if (types.size() > 1) {
             sb.append(HtmlUtils.formEntry(msgLabel("Type"),
-                                         HtmlUtils.select(ARG_TYPE, types,
-                                             request.getString(ARG_TYPE,
-                                                 ""))));
+                                          HtmlUtils.select(ARG_TYPE, types,
+                                              request.getString(ARG_TYPE,
+                                                  ""))));
         }
 
 

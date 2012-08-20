@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -167,8 +168,7 @@ public class ApiMethod {
                      String request, String name, Method method,
                      boolean mustBeAdmin, boolean requiresAuthToken,
                      boolean needsSsl, String authMethod,
-                     boolean checkAuthMethod,
-                     boolean isTopLevel) {
+                     boolean checkAuthMethod, boolean isTopLevel) {
         this.repository        = repository;
         this.requestHandler    = requestHandler;
         this.request           = request;
@@ -225,6 +225,7 @@ public class ApiMethod {
                 }
             }
         }
+
         return true;
     }
 
@@ -299,6 +300,7 @@ public class ApiMethod {
         if (url == null) {
             url = new RequestUrl(repository, request);
         }
+
         return url;
     }
 

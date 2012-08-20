@@ -127,6 +127,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private static final org.ramadda.util.EntryGroup dummyField3ToForceCompile =
         null;
 
+    /** _more_          */
     private static final org.ramadda.util.GeoUtils dummyField4ToForceCompile =
         null;
 
@@ -709,7 +710,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         shutdown();
     }
 
-    /** _more_          */
+    /** _more_ */
     private boolean shutdownEnabled = false;
 
     /**
@@ -929,8 +930,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else {
                 //A hack to run on unavco facility server
                 if (new File("/export/home/jeffmc/ramaddadev").exists()) {
-                    println(
-                        "RAMADDA:  Using /export/home/jeffmc/ramaddadev");
+                    println("RAMADDA:  Using /export/home/jeffmc/ramaddadev");
                     properties.put(PROP_REPOSITORY_HOME,
                                    "/export/home/jeffmc/ramaddadev");
                 }
@@ -963,7 +963,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             if (new File(localPropertyFile).exists()) {
                 println("RAMADDA: loading local property file:"
-                                   + localPropertyFile);
+                        + localPropertyFile);
                 loadProperties(properties, localPropertyFile);
             } else {}
 
@@ -2045,8 +2045,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Statement statement =
             getDatabaseManager().select(Tables.GLOBALS.COLUMNS,
                                         Tables.GLOBALS.NAME, new Clause[] {});
-        Properties tmp =  new Properties();
-        ResultSet results = statement.getResultSet();
+        Properties tmp     = new Properties();
+        ResultSet  results = statement.getResultSet();
         while (results.next()) {
             String name  = results.getString(1);
             String value = results.getString(2);
@@ -4085,39 +4085,57 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processClearState(Request request) throws Exception {
-        StringBuffer sb = new StringBuffer("");
-        String  passPhrase = getProperty(PROP_PASSPHRASE,"").trim();
-        if (passPhrase.length()>0 && request.defined(PROP_PASSPHRASE)) {
-            if(request.getString(PROP_PASSPHRASE,"").trim().equals(passPhrase)) {
+        StringBuffer sb         = new StringBuffer("");
+        String       passPhrase = getProperty(PROP_PASSPHRASE, "").trim();
+        if ((passPhrase.length() > 0) && request.defined(PROP_PASSPHRASE)) {
+            if (request.getString(PROP_PASSPHRASE,
+                                  "").trim().equals(passPhrase)) {
                 clearAllCaches();
                 readGlobals();
                 //Tell the other repositoryManagers that the settings changed
-                for(RepositoryManager repositoryManager: getRepository().getRepositoryManagers()) {
+                for (RepositoryManager repositoryManager :
+                        getRepository().getRepositoryManagers()) {
                     repositoryManager.adminSettingsChanged();
                 }
                 sb.append("OK, state is cleared");
+
                 return new Result("", sb);
             }
             sb.append("Bad pass phrase");
             sb.append(HtmlUtils.p());
         }
         sb.append(HtmlUtils.p());
-        sb.append("This form allows you to clear any caches and have RAMADDA reload properties");
+        sb.append(
+            "This form allows you to clear any caches and have RAMADDA reload properties");
         sb.append(HtmlUtils.br());
-        if(passPhrase.length()==0) {
-            sb.append("The pass phrase needs to be set as a property on your server - <i>ramadda.passphrase</i>");
+        if (passPhrase.length() == 0) {
+            sb.append(
+                "The pass phrase needs to be set as a property on your server - <i>ramadda.passphrase</i>");
             sb.append(HtmlUtils.br());
         }
-        sb.append("Note: The pass phrase is not meant to be secure, it is just used so anonymous users can't be clearing your repository state");
+        sb.append(
+            "Note: The pass phrase is not meant to be secure, it is just used so anonymous users can't be clearing your repository state");
         sb.append(HtmlUtils.hr());
         sb.append(HtmlUtils.formTable());
         sb.append(request.formPost(URL_CLEARSTATE));
         sb.append(HtmlUtils.formEntry(msgLabel("Pass Phrase"),
                                       HtmlUtils.input(PROP_PASSPHRASE)));
-        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Clear Repository State")));
+        sb.append(
+            HtmlUtils.formEntry(
+                "", HtmlUtils.submit("Clear Repository State")));
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
+
         return new Result("", sb);
     }
 
@@ -4550,16 +4568,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getTmpRequest(UserManager.USER_ANONYMOUS);
     }
 
+    /**
+     * _more_
+     *
+     * @param userId _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Request getTmpRequest(String userId) throws Exception {
         User user = getUserManager().findUser(userId);
 
-        if(user == null) {
-            throw new IllegalArgumentException ("Could not find user:" + userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Could not find user:"
+                    + userId);
 
         }
         Request request = new Request(getRepository(), "", new Hashtable());
         request.setUser(user);
         request.setSessionId(getGUID());
+
         return request;
     }
 
@@ -5740,6 +5769,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getPluginManager().getPythonLibs();
     }
 
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
     public static void println(String msg) {
         System.err.println(msg);
     }
@@ -5752,7 +5786,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String getSystemMessage() {
-        return getProperty(PROP_SYSTEM_MESSAGE,(String) null);
+        return getProperty(PROP_SYSTEM_MESSAGE, (String) null);
     }
 
     /**
