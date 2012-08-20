@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,6 +22,9 @@
 package org.ramadda.util;
 
 
+import org.ramadda.util.HtmlUtils;
+
+
 import org.w3c.dom.*;
 
 
@@ -30,7 +34,6 @@ import ucar.unidata.sql.SqlUtil;
 
 
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -102,6 +105,7 @@ public class EntryGroup {
             map.put(key, group);
             keys.add(key);
         }
+
         return group;
     }
 

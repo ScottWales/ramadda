@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -99,7 +100,12 @@ public class MultiJarClassLoader extends ClassLoader {
     }
 
 
-    public void shutdown()  throws Exception {
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
+    public void shutdown() throws Exception {
         loadedClasses = null;
     }
 
@@ -124,6 +130,7 @@ public class MultiJarClassLoader extends ClassLoader {
                 oldJarFile.close();
                 jarFiles.set(i, jarFile);
                 replacedJarFile = true;
+
                 break;
             }
         }
@@ -248,7 +255,7 @@ public class MultiJarClassLoader extends ClassLoader {
         try {
             //            System.err.println("   entry:" + entryName);
             jarEntry = findJarEntry(entryName);
-            Class      c        = loadedClasses.get(entryName);
+            Class c = loadedClasses.get(entryName);
             if (c != null) {
                 return c;
             }
@@ -261,10 +268,13 @@ public class MultiJarClassLoader extends ClassLoader {
             loadedClasses.put(entryName, c);
             loadedClasses.put(jarEntry.jarEntry.getName(), c);
             checkClass(c);
+
             return c;
         } catch (Exception exc) {
-            System.err.println ("RAMADDA: Error loading class from:" +jarEntry.jarFile +" class:" + entryName);
+            System.err.println("RAMADDA: Error loading class from:"
+                               + jarEntry.jarFile + " class:" + entryName);
             exc.printStackTrace();
+
             throw new IllegalArgumentException("Could not load class:"
                     + entryName + "\n" + exc);
         }
@@ -295,6 +305,7 @@ public class MultiJarClassLoader extends ClassLoader {
                 return new MyJarEntry(jarFile, jarEntry);
             }
         }
+
         return null;
     }
 
@@ -357,6 +368,7 @@ public class MultiJarClassLoader extends ClassLoader {
         canonicalNames.put(path = PLUGIN_PROTOCOL + ":" + jarFilePath + "!"
                                   + name, entryName);
         canonicalNames.put(PLUGIN_PROTOCOL + ":" + name, entryName);
+
         return path;
     }
 
@@ -410,6 +422,7 @@ public class MultiJarClassLoader extends ClassLoader {
                     jarEntry.jarFile.getJarEntry(jarEntryName));
             } catch (Exception exc) {}
         }
+
         return null;
     }
 
@@ -427,6 +440,7 @@ public class MultiJarClassLoader extends ClassLoader {
         CodeSource codeSource = new CodeSource((URL) null,
                                     (java.security.cert.Certificate[]) null);
         ProtectionDomain pd = new ProtectionDomain(codeSource, pc);
+
         return defineClass((String) null, bytes, 0, bytes.length, pd);
     }
 }

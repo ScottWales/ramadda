@@ -1,22 +1,23 @@
 /*
- * Copyright 1997-2010 Unidata Program Center/University Corporation for Atmospheric Research
- * Copyright 2010- Jeff McWhirter
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 // $Id: StringUtil.java,v 1.53 2007/06/01 17:02:44 jeffmc Exp $
 
@@ -24,11 +25,13 @@
 package org.ramadda.util;
 
 
-import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.TwoFacedObject;
+
+
+import ucar.unidata.xml.XmlUtil;
 
 
 import java.awt.Color;
@@ -196,6 +199,8 @@ public class HtmlUtils {
 
     /** _more_ */
     public static final String TAG_SCRIPT = "script";
+
+    /** _more_          */
     public static final String TAG_STYLE = "style";
 
     /** _more_ */
@@ -776,6 +781,7 @@ public class HtmlUtils {
         while (cnt-- > 0) {
             s = s + ENTITY_NBSP;
         }
+
         return s;
     }
 
@@ -839,6 +845,7 @@ public class HtmlUtils {
                        attrs(ATTR_BORDER, "0", ATTR_SRC, path, ATTR_TITLE,
                              title, ATTR_ALT, title) + " " + extra);
         }
+
         return tag(TAG_IMG,
                    attrs(ATTR_BORDER, "0", ATTR_SRC, path) + " " + extra);
     }
@@ -1167,6 +1174,7 @@ public class HtmlUtils {
             }
             addAmpersand = true;
         }
+
         return url;
     }
 
@@ -1183,6 +1191,7 @@ public class HtmlUtils {
         for (int i = 0; i < args.length; i += 2) {
             a.add(arg(args[i], args[i + 1]));
         }
+
         return StringUtil.join("&", a);
     }
 
@@ -1209,6 +1218,7 @@ public class HtmlUtils {
                 a.add(arg(key.toString(), value.toString()));
             }
         }
+
         return StringUtil.join("&", a);
     }
 
@@ -1242,6 +1252,7 @@ public class HtmlUtils {
         } catch (Exception exc) {
             System.err.println("error encoding arg(2):" + value + " " + exc);
             exc.printStackTrace();
+
             return "";
         }
     }
@@ -1396,6 +1407,7 @@ public class HtmlUtils {
         for (int i = 0; i < columns.length; i++) {
             sb.append(cols(HtmlUtils.b(columns[i].toString())));
         }
+
         return sb.toString();
     }
 
@@ -1412,6 +1424,7 @@ public class HtmlUtils {
         for (int i = 0; i < columns.length; i++) {
             sb.append(cols(columns[i].toString()));
         }
+
         return sb.toString();
     }
 
@@ -1524,6 +1537,7 @@ public class HtmlUtils {
         if (v == v) {
             return "" + v;
         }
+
         return "";
     }
 
@@ -1764,10 +1778,19 @@ public class HtmlUtils {
                          label, ATTR_CLASS, CLASS_SUBMIT));
     }
 
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param name _more_
+     * @param extra _more_
+     *
+     * @return _more_
+     */
     public static String submit(String label, String name, String extra) {
         return tag(TAG_INPUT,
                    attrs(ATTR_NAME, name, ATTR_TYPE, TYPE_SUBMIT, ATTR_VALUE,
-                         label, ATTR_CLASS, CLASS_SUBMIT)+extra);
+                         label, ATTR_CLASS, CLASS_SUBMIT) + extra);
     }
 
     /**
@@ -1911,6 +1934,7 @@ public class HtmlUtils {
                     : value.toString())) + " " + extra);
 
         }
+
         return tag(TAG_INPUT,
                    attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_INPUT,
                          ATTR_VALUE, ((value == null)
@@ -1934,6 +1958,7 @@ public class HtmlUtils {
         if (extra.indexOf("class=") < 0) {
             classAttr = cssClass(CLASS_DISABLEDINPUT);
         }
+
         return tag(TAG_INPUT,
                    " " + ATTR_READONLY + " "
                    + attrs(ATTR_NAME, name, ATTR_VALUE, ((value == null)
@@ -2066,6 +2091,7 @@ public class HtmlUtils {
         if (selected != null) {
             selectedList = Misc.newList(selected);
         }
+
         return select(name, values, selectedList, extra, maxLength);
     }
 
@@ -2178,14 +2204,13 @@ public class HtmlUtils {
     public static String select(String name, List values, List selected,
                                 String extra, int maxLength) {
         StringBuffer sb = new StringBuffer();
-        String attrs;
-        if(extra !=null && extra.indexOf(ATTR_CLASS)<0) {
+        String       attrs;
+        if ((extra != null) && (extra.indexOf(ATTR_CLASS) < 0)) {
             attrs = attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_SELECT);
         } else {
             attrs = attrs(ATTR_NAME, name);
         }
-        sb.append(open(TAG_SELECT,
-                       attrs + extra));
+        sb.append(open(TAG_SELECT, attrs + extra));
 
         HashSet seenSelected = new HashSet();
         for (int i = 0; i < values.size(); i++) {
@@ -2231,6 +2256,7 @@ public class HtmlUtils {
                                   value), label));
         }
         sb.append(close(TAG_SELECT));
+
         return sb.toString();
     }
 
@@ -2275,6 +2301,7 @@ public class HtmlUtils {
                                   + textColor), label));
         }
         sb.append(close(TAG_SELECT));
+
         return sb.toString();
     }
 
@@ -2382,6 +2409,7 @@ public class HtmlUtils {
             sb.append(formEntryTop(cols[i], cols[i + 1]));
         }
         sb.append(formTableClose());
+
         return sb.toString();
     }
 
@@ -2399,6 +2427,7 @@ public class HtmlUtils {
             sb.append(formEntry(cols[i], cols[i + 1]));
         }
         sb.append(formTableClose());
+
         return sb.toString();
     }
 
@@ -2415,6 +2444,7 @@ public class HtmlUtils {
         for (int i = 0; i < cols.length; i += 2) {
             sb.append(formEntryTop(cols[i], cols[i + 1]));
         }
+
         return sb.toString();
     }
 
@@ -2452,7 +2482,17 @@ public class HtmlUtils {
     }
 
 
-    public static String leftRightBottom(String left, String right, String attrs) {
+    /**
+     * _more_
+     *
+     * @param left _more_
+     * @param right _more_
+     * @param attrs _more_
+     *
+     * @return _more_
+     */
+    public static String leftRightBottom(String left, String right,
+                                         String attrs) {
         return tag(TAG_TABLE,
                    attrs(ATTR_WIDTH, "100%", ATTR_CELLPADDING, "0",
                          ATTR_CELLSPACING,
@@ -2508,7 +2548,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String table(Object[] columns, int spacing) {
-        return table(row(cols(columns), ""/*attr(ATTR_VALIGN, VALUE_TOP)*/),
+        return table(row(cols(columns), "" /*attr(ATTR_VALIGN, VALUE_TOP)*/),
                      attrs(ATTR_CELLSPACING, "" + spacing));
     }
 
@@ -2546,6 +2586,7 @@ public class HtmlUtils {
         sb.append(close(TAG_TR));
 
         sb.append(close(TAG_TABLE));
+
         return sb;
     }
 
@@ -2557,7 +2598,8 @@ public class HtmlUtils {
      */
     public static String formTable() {
         return open(TAG_TABLE,
-                    cssClass("formtable") +attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
+                    cssClass("formtable")
+                    + attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
     }
 
 
@@ -2637,11 +2679,10 @@ public class HtmlUtils {
     public static String formEntryTop(String left, String right,
                                       String trExtra, boolean dummy) {
         left = div(left, cssClass(CLASS_FORMLABEL_TOP));
-        String label = tag(TAG_TD,
-                           attrs(ATTR_ALIGN, VALUE_RIGHT), left);
+        String label = tag(TAG_TD, attrs(ATTR_ALIGN, VALUE_RIGHT), left);
+
         // attrs(ATTR_VALIGN, VALUE_TOP)
-        return tag(TAG_TR, trExtra,
-                   label+ tag(TAG_TD, "", right));
+        return tag(TAG_TR, trExtra, label + tag(TAG_TD, "", right));
     }
 
     /**
@@ -2656,10 +2697,9 @@ public class HtmlUtils {
     public static String formEntryTop(String col1, String left,
                                       String right) {
         return tag(TAG_TR, /*attrs(ATTR_VALIGN, VALUE_TOP)*/ "",
-                   col(col1, ""/*attr(ATTR_VALIGN, VALUE_TOP)*/)
+                   col(col1, "" /*attr(ATTR_VALIGN, VALUE_TOP)*/)
                    + col(left,
-                         attrs(ATTR_ALIGN,
-                               VALUE_RIGHT, ATTR_CLASS,
+                         attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
                                CLASS_FORMLABEL_TOP)) + col(right));
     }
 
@@ -2700,6 +2740,7 @@ public class HtmlUtils {
         for (int i = 0; i < pairs.length; i += 2) {
             sb.append(attrs(pairs[i], pairs[i + 1]));
         }
+
         return sb.toString();
     }
 
@@ -2956,6 +2997,13 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param css _more_
+     *
+     * @return _more_
+     */
     public static String cssBlock(String css) {
         return tag(TAG_STYLE, "", css);
     }
@@ -3042,6 +3090,7 @@ public class HtmlUtils {
             String title = titles.get(i).toString();
             if (title.startsWith("selected:")) {
                 selectedOne = title;
+
                 break;
             }
         }
@@ -3062,8 +3111,8 @@ public class HtmlUtils {
                 title = title.substring("selected:".length());
             }
             contentSB.append(HtmlUtils.div(content,
-                                          HtmlUtils.cssClass(tabContentClass
-                                              + (selected
+                                           HtmlUtils.cssClass(tabContentClass
+                                               + (selected
                     ? "_on"
                     : "_off")) + HtmlUtils.id("content_" + tabId)
                                + HtmlUtils.style("display:" + (selected
@@ -3072,9 +3121,10 @@ public class HtmlUtils {
                     ? "visible"
                     : "hidden"))));
             String link = HtmlUtils.href("javascript:" + "tabPress("
-                                        + HtmlUtils.squote(id) + "," + idArray
-                                        + "," + HtmlUtils.squote(tabId)
-                                        + ")", title);
+                                         + HtmlUtils.squote(id) + ","
+                                         + idArray + ","
+                                         + HtmlUtils.squote(tabId)
+                                         + ")", title);
             titleSB.append(HtmlUtils.span(link, (selected
                     ? HtmlUtils.cssClass("tab_title_on")
                     : HtmlUtils.cssClass("tab_title_off")) + HtmlUtils.id(
@@ -3158,10 +3208,10 @@ public class HtmlUtils {
                                            boolean visible,
                                            String headerExtra) {
         return HtmlUtils.makeShowHideBlock(label, content, visible,
-                                          headerExtra,
-                                          HtmlUtils.cssClass(CLASS_BLOCK),
-                                          blockHideImageUrl,
-                                          blockShowImageUrl);
+                                           headerExtra,
+                                           HtmlUtils.cssClass(CLASS_BLOCK),
+                                           blockHideImageUrl,
+                                           blockShowImageUrl);
     }
 
 
@@ -3184,9 +3234,9 @@ public class HtmlUtils {
                                            String headerExtra,
                                            String blockExtra) {
         return HtmlUtils.makeShowHideBlock(label, content, visible,
-                                          headerExtra, blockExtra,
-                                          blockHideImageUrl,
-                                          blockShowImageUrl);
+                                           headerExtra, blockExtra,
+                                           blockHideImageUrl,
+                                           blockShowImageUrl);
     }
 
 
@@ -3221,13 +3271,13 @@ public class HtmlUtils {
         //        System.err.println ("show image:" + showImg);
         if ((showImg != null) && (showImg.length() > 0)) {
             img = HtmlUtils.img(visible
-                               ? hideImg
-                               : showImg, "", " id='" + id + "img' ");
+                                ? hideImg
+                                : showImg, "", " id='" + id + "img' ");
         }
         String link =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
-                + "')"), img  + label,
+                + "')"), img + label,
                          HtmlUtils.cssClass("toggleblocklabellink"));
 
         //        link = link + " " + label;
@@ -3238,7 +3288,8 @@ public class HtmlUtils {
         sb.append(HtmlUtils.div(link, headerExtra));
         sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
                   + HtmlUtils.id(id)
-                  + HtmlUtils.style("display:block;visibility:visible") + ">");
+                  + HtmlUtils.style("display:block;visibility:visible")
+                  + ">");
         if ( !visible) {
             sb.append(HtmlUtils.script(HtmlUtils.call("hide",
                     HtmlUtils.squote(id))));
@@ -3247,6 +3298,7 @@ public class HtmlUtils {
         sb.append(content.toString());
         sb.append(close(TAG_DIV));
         sb.append(close(TAG_DIV));
+
         return sb.toString();
     }
 
@@ -3278,10 +3330,10 @@ public class HtmlUtils {
      */
     public static String[] getToggle(String label, boolean visible,
                                      String hideImg, String showImg) {
-        String id  = "block_" + (blockCnt++);
-        String img = HtmlUtils.img(visible
-                                  ? hideImg
-                                  : showImg, "", HtmlUtils.id(id + "img"));
+        String id   = "block_" + (blockCnt++);
+        String img  = HtmlUtils.img(visible
+                                    ? hideImg
+                                    : showImg, "", HtmlUtils.id(id + "img"));
         String link =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
@@ -3317,18 +3369,20 @@ public class HtmlUtils {
         String       id         = "block_" + (blockCnt++);
         StringBuffer sb         = contentSB;
         String       img        = "";
-        String js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
+        String       js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
                         squote(id) + "," + squote(id + "img") + ","
                         + squote("") + "," + squote("")));
         sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
                   + HtmlUtils.id(id)
-                  + HtmlUtils.style("display:block;visibility:visible") + ">");
+                  + HtmlUtils.style("display:block;visibility:visible")
+                  + ">");
         if ( !visible) {
             sb.append(HtmlUtils.script(HtmlUtils.call("hide",
                     HtmlUtils.squote(id))));
         }
         sb.append(content.toString());
         sb.append(close(TAG_DIV));
+
         return js;
     }
 
@@ -3361,16 +3415,18 @@ public class HtmlUtils {
         String       img = "";
         if ((showImg != null) && (showImg.length() > 0)) {
             img = HtmlUtils.img(visible
-                               ? hideImg
-                               : showImg, "",
-                                          " id='" + id
-                                          + "img' ") + HtmlUtils.space(1);
+                                ? hideImg
+                                : showImg, "",
+                                           " id='" + id
+                                           + "img' ") + HtmlUtils.space(1);
         }
-        String link =
-            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleInlineVisibility('"
-                + id + "','" + id + "img','" + hideImg + "','" + showImg
-                + "')"), img + label,
-                         HtmlUtils.cssClass("toggleblocklabellink"));
+        String link = HtmlUtils.jsLink(
+                          HtmlUtils.onMouseClick(
+                              "toggleInlineVisibility('" + id + "','" + id
+                              + "img','" + hideImg + "','" + showImg
+                              + "')"), img + label,
+                                       HtmlUtils.cssClass(
+                                           "toggleblocklabellink"));
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append(link);
@@ -3386,6 +3442,7 @@ public class HtmlUtils {
 
         sb.append(content.toString());
         sb.append(close(TAG_SPAN));
+
         return sb.toString();
     }
 
@@ -3409,23 +3466,25 @@ public class HtmlUtils {
         if (showImg == null) {
             showImg = blockShowImageUrl;
         }
-        String id = "block_" + (blockCnt++);
+        String       id = "block_" + (blockCnt++);
         StringBuffer sb =
             new StringBuffer(
                 "<table border=0 width=\"100%\"><tr valign=top>");
         String img = "";
         if ((showImg != null) && (showImg.length() > 0)) {
             img = HtmlUtils.img(visible
-                               ? hideImg
-                               : showImg, "",
-                                          " id='" + id
-                                          + "img' ") + HtmlUtils.space(1);
+                                ? hideImg
+                                : showImg, "",
+                                           " id='" + id
+                                           + "img' ") + HtmlUtils.space(1);
         }
-        String link =
-            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleInlineVisibility('"
-                + id + "','" + id + "img','" + hideImg + "','" + showImg
-                + "')"), img + label,
-                         HtmlUtils.cssClass("toggleblocklabellink"));
+        String link = HtmlUtils.jsLink(
+                          HtmlUtils.onMouseClick(
+                              "toggleInlineVisibility('" + id + "','" + id
+                              + "img','" + hideImg + "','" + showImg
+                              + "')"), img + label,
+                                       HtmlUtils.cssClass(
+                                           "toggleblocklabellink"));
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append("<td width=1%>");
@@ -3443,6 +3502,7 @@ public class HtmlUtils {
         sb.append(content.toString());
         sb.append(close(TAG_DIV));
         sb.append("</td></tr></table>");
+
         return sb.toString();
     }
 
@@ -3460,9 +3520,9 @@ public class HtmlUtils {
      */
     public static String makeShowHideBlock(String clickHtml, String label,
                                            String content, boolean visible) {
-        String       id = "block_" + (blockCnt++);
-        StringBuffer sb = new StringBuffer();
-        String link =
+        String       id   = "block_" + (blockCnt++);
+        StringBuffer sb   = new StringBuffer();
+        String       link =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + "" + "','" + ""
                 + "')"), clickHtml,
@@ -3470,9 +3530,10 @@ public class HtmlUtils {
 
         //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append(link);
-        sb.append(open(TAG_SPAN,
-                       HtmlUtils.cssClass("hideshowblock") + HtmlUtils.id(id)
-                       + HtmlUtils.style("display:block;visibility:visible")));
+        sb.append(
+            open(TAG_SPAN,
+                 HtmlUtils.cssClass("hideshowblock") + HtmlUtils.id(id)
+                 + HtmlUtils.style("display:block;visibility:visible")));
         if ( !visible) {
             sb.append(HtmlUtils.script(HtmlUtils.call("hide",
                     HtmlUtils.squote(id))));
@@ -3480,6 +3541,7 @@ public class HtmlUtils {
 
         sb.append(content.toString());
         sb.append(close(TAG_SPAN));
+
         return sb.toString();
     }
 
@@ -3501,6 +3563,7 @@ public class HtmlUtils {
         } catch (Exception exc) {
             System.err.println("error encoding arg(3):" + s + " " + exc);
             exc.printStackTrace();
+
             return "";
         }
     }
@@ -3519,10 +3582,12 @@ public class HtmlUtils {
             s = s.replace(" ", "_SPACE_");
             s = java.net.URLEncoder.encode(s, "UTF-8");
             s = s.replace("_SPACE_", " ");
+
             return s;
         } catch (Exception exc) {
             System.err.println("error encoding arg(4):" + s + " " + exc);
             exc.printStackTrace();
+
             return "";
         }
     }
@@ -3547,6 +3612,7 @@ public class HtmlUtils {
                 sb.append("&#" + (int) ch + ";");
             }
         }
+
         return sb.toString();
     }
 

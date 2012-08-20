@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -90,6 +91,7 @@ public class SelectionRectangle {
                 new SelectionRectangle(getNorth(), getWest(), getSouth(),
                                        getEast()), };
         }
+
         return new SelectionRectangle[] {
             new SelectionRectangle(getNorth(), getWest(), getSouth(), 180),
             new SelectionRectangle(getNorth(), -180, getSouth(), getEast()) };
@@ -117,6 +119,7 @@ public class SelectionRectangle {
         if (haveLongitudeRange && (getWest() > getEast())) {
             return true;
         }
+
         return false;
     }
 
@@ -160,6 +163,7 @@ public class SelectionRectangle {
                 nwse[i] = "" + values[i];
             }
         }
+
         return nwse;
     }
 
@@ -196,6 +200,7 @@ public class SelectionRectangle {
         if (idx == 3) {
             return east;
         }
+
         throw new IllegalArgumentException("Bad index:" + idx);
     }
 

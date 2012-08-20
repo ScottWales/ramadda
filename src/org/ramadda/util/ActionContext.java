@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,28 +30,50 @@ package org.ramadda.util;
  */
 public abstract class ActionContext {
 
+    /** _more_          */
     private String actionID;
+
+    /** _more_          */
     private String status;
 
-    public ActionContext() {
-    }
+    /**
+     * _more_
+     */
+    public ActionContext() {}
 
 
+    /**
+     * _more_
+     *
+     * @param actionID _more_
+     */
     public ActionContext(String actionID) {
         this.actionID = actionID;
     }
 
+    /**
+     * _more_
+     *
+     * @param message _more_
+     */
     public void setStatus(String message) {
         this.status = message;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getStatus() {
         return status;
     }
 
 
     /**
+     *
+     * @return _more_
      */
     public String toString() {
         return getStatus();

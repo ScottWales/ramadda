@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -234,6 +235,7 @@ public class LdmListener {
             if (debug) {
                 System.err.println("no match:" + line);
             }
+
             return;
         }
 
@@ -342,6 +344,7 @@ public class LdmListener {
                     bufferOS = null;
                     System.out.println("error:" + exc);
                     addFile(f);
+
                     return false;
                 }
             }
@@ -360,13 +363,16 @@ public class LdmListener {
                         System.out.println("connection not successful:"
                                            + results);
                     }
+
                     return false;
                 }
             } catch (Exception exc) {
                 System.out.println("error:" + exc);
                 addFile(f);
+
                 return false;
             }
+
             return true;
         }
     }

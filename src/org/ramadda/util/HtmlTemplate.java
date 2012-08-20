@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,6 +25,7 @@ package org.ramadda.util;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.monitor.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -36,7 +38,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.JobManager;
@@ -63,8 +64,9 @@ import java.lang.reflect.*;
 
 import java.net.*;
 
-import java.util.Hashtable;
 import java.util.ArrayList;
+
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -86,7 +88,9 @@ import java.util.zip.*;
  */
 public class HtmlTemplate {
 
-    public static final String PROP_PROPERTIES = "ramadda.template.properties";
+    /** _more_          */
+    public static final String PROP_PROPERTIES =
+        "ramadda.template.properties";
 
 
     /** _more_ */
@@ -108,6 +112,7 @@ public class HtmlTemplate {
     private Hashtable properties = new Hashtable();
 
 
+    /** _more_          */
     private List<String> propertyIds = new ArrayList<String>();
 
     /**
@@ -139,9 +144,9 @@ public class HtmlTemplate {
             }
             name = (String) properties.get("name");
             id   = (String) properties.get("id");
-            String tmp = (String)properties.get(PROP_PROPERTIES);
-            if(tmp!=null) {
-                propertyIds = StringUtil.split(tmp,",",true,true);
+            String tmp = (String) properties.get(PROP_PROPERTIES);
+            if (tmp != null) {
+                propertyIds = StringUtil.split(tmp, ",", true, true);
             }
 
             if (name == null) {
@@ -156,7 +161,12 @@ public class HtmlTemplate {
 
     }
 
-    public  List<String> getPropertyIds() {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<String> getPropertyIds() {
         return propertyIds;
     }
 
@@ -217,6 +227,7 @@ public class HtmlTemplate {
         if (Misc.equals(id, templateId)) {
             return true;
         }
+
         return false;
     }
 
@@ -233,6 +244,7 @@ public class HtmlTemplate {
         if (value != null) {
             return value;
         }
+
         return propertyProvider.getProperty(name, dflt);
 
     }

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -270,6 +271,7 @@ public class HttpFormField {
         if (type == TYPE_LABEL) {
             return true;
         }
+
         return !required || (getValue().trim().length() > 0);
     }
 
@@ -347,6 +349,7 @@ public class HttpFormField {
         if (component != null) {
             return ((JTextComponent) component).getText();
         }
+
         return value;
     }
 
@@ -397,6 +400,7 @@ public class HttpFormField {
             ((HttpFormField) entries.get(i)).addToGui(guiComps);
         }
         GuiUtils.tmpInsets = new Insets(5, 5, 5, 5);
+
         return GuiUtils.doLayout(guiComps, 2, GuiUtils.WT_NY, GuiUtils.WT_N);
     }
 
@@ -413,9 +417,11 @@ public class HttpFormField {
             if ( !formEntry.ok()) {
                 LogUtil.userMessage("The entry: \"" + formEntry.getLabel()
                                     + "\" is required");
+
                 return false;
             }
         }
+
         return true;
     }
 
@@ -464,9 +470,9 @@ public class HttpFormField {
                                  JComponent extraBottom) {
 
         JDialog dialog = GuiUtils.createDialog(parent, title, true);
-        boolean ok     = showUI(entries, extraTop, extraBottom, dialog,
-                                false);
+        boolean ok     = showUI(entries, extraTop, extraBottom, dialog, false);
         dialog.dispose();
+
         return ok;
     }
 
@@ -536,6 +542,7 @@ public class HttpFormField {
                 Misc.sleep(100);
             }
         }
+
         return ok[0];
     }
 
@@ -548,6 +555,7 @@ public class HttpFormField {
     private FilePart getFilePart() {
         if (filePartSource == null) {
             final String file = getValue();
+
             return new FilePart(getName(), new PartSource() {
                 public InputStream createInputStream() {
                     try {
@@ -565,6 +573,7 @@ public class HttpFormField {
                 }
             });
         }
+
         return new FilePart(getName(), filePartSource);
     }
 
@@ -583,6 +592,7 @@ public class HttpFormField {
                 return new File(getValue()).exists();
             }
         }
+
         return true;
     }
 
@@ -639,8 +649,10 @@ public class HttpFormField {
                             "Warning: form post has been permanently moved to:"
                             + urlPath);
                     }
+
                     continue;
                 }
+
                 //Done
                 break;
             }
@@ -654,6 +666,7 @@ public class HttpFormField {
             }
         } catch (Exception exc) {
             System.err.println("EXC:" + exc);
+
             throw new WrapperException("doing post", exc);
         }
 

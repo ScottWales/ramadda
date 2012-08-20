@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -42,6 +43,7 @@ public class KmlToRamadda implements org.ramadda.repository.Constants {
     /** _more_ */
     static int counter = 0;
 
+    /** _more_          */
     static int count = 0;
 
     /**
@@ -113,13 +115,12 @@ public class KmlToRamadda implements org.ramadda.repository.Constants {
                 String descNode = XmlUtil.tag("wikitext", "",
                                       XmlUtil.getCdata(desc));
 
-                String attrs =  XmlUtil.attrs(new String[] {
-                        ATTR_ID, id, ATTR_NAME, name,  ATTR_TYPE,
-                        "wikipage"
-                    });
+                String attrs = XmlUtil.attrs(new String[] {
+                    ATTR_ID, id, ATTR_NAME, name, ATTR_TYPE, "wikipage"
+                });
                 if (parentId != null) {
-                    attrs+= XmlUtil.attrs(new String[] {
-                            ATTR_PARENT, parentId});
+                    attrs += XmlUtil.attrs(new String[] { ATTR_PARENT,
+                            parentId });
                 }
                 if (category != null) {
                     descNode = descNode

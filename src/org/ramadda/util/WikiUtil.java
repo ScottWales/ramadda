@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,6 +23,7 @@ package org.ramadda.util;
 
 
 import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -50,39 +52,54 @@ import java.util.regex.*;
  */
 public class WikiUtil {
 
-    public static final String ATTR_OPEN ="open";
-    public static final String ATTR_DECORATE =   "decorate";
-    public static final String ATTR_TITLE ="title";
-    public static final String ATTR_SHOW ="show";
+    /** _more_          */
+    public static final String ATTR_OPEN = "open";
+
+    /** _more_          */
+    public static final String ATTR_DECORATE = "decorate";
+
+    /** _more_          */
+    public static final String ATTR_TITLE = "title";
+
+    /** _more_          */
+    public static final String ATTR_SHOW = "show";
 
 
 
 
 
+    /** _more_          */
     public static final String PROP_NOHEADING = "noheading";
+
+    /** _more_          */
     public static final String PROP_HEADING = "heading";
 
+    /** _more_          */
     public static final String TAG_PREFIX = "{{";
+
+    /** _more_          */
     public static final String TAG_SUFFIX = "}}";
 
 
     /** _more_ */
     private Hashtable properties;
 
-    /** _more_          */
+    /** _more_ */
     private List categoryLinks = new ArrayList();
 
-    /** _more_          */
+    /** _more_ */
     private List floatBoxes = new ArrayList();
 
-    /** _more_          */
+    /** _more_ */
     private boolean makeHeadings = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean replaceNewlineWithP = true;
 
+    /** _more_          */
     private boolean mobile = false;
 
+    /** _more_          */
     private String user;
 
     /**
@@ -145,6 +162,7 @@ public class WikiUtil {
         if (properties == null) {
             return null;
         }
+
         return properties.get(key);
     }
 
@@ -189,7 +207,7 @@ public class WikiUtil {
      * @return _more_
      */
     public String getInfoBox(String property) {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb   = new StringBuffer();
         List<String> toks = (List<String>) StringUtil.split(property, "\n",
                                 true, true);
         String firstLine = toks.get(0);
@@ -243,6 +261,7 @@ public class WikiUtil {
                          HtmlUtils.cssClass("wiki-infobox"));
         div = wikify(div, null);
         floatBoxes.add(div);
+
         return "";
         //        return "<table class=\"wiki-toc-wrapper\" align=\"right\" width=\"30%\"><tr><td>"
         //                + div + "</td></tr></table><br clear=right>";
@@ -278,7 +297,7 @@ public class WikiUtil {
 
         if (getReplaceNewlineWithP()) {
             s = s.replaceAll("\r\n\r\n", "\n<p>\n");
-            s = s.replaceAll("\r\r","\n<p>\n");
+            s = s.replaceAll("\r\r", "\n<p>\n");
         }
         //        System.err.println (s);
         s = s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
@@ -385,6 +404,7 @@ public class WikiUtil {
             if (tline.equals("----")) {
                 buff.append("<hr>");
                 buff.append("\n");
+
                 continue;
             }
             int starCnt = 0;
@@ -408,6 +428,7 @@ public class WikiUtil {
                 buff.append(tline);
                 buff.append("</li> ");
                 buff.append("\n");
+
                 continue;
             }
             while (ulCnt > 0) {
@@ -436,6 +457,7 @@ public class WikiUtil {
                 buff.append("<li> ");
                 buff.append(tline);
                 buff.append("\n");
+
                 continue;
             }
 
@@ -468,12 +490,14 @@ public class WikiUtil {
             if (idx1 < 0) {
                 //                System.err.println("no idx1");
                 sb.append(s.substring(baseIdx));
+
                 break;
             }
             int idx2 = s.indexOf(TAG_SUFFIX, idx1);
             if (idx2 <= idx1) {
                 //                System.err.println("no idx2");
                 sb.append(s.substring(baseIdx));
+
                 break;
             }
             sb.append(s.substring(baseIdx, idx1));
@@ -515,42 +539,47 @@ public class WikiUtil {
             if (idx3 < 0) {
                 break;
             }
-            String    first = s.substring(0, idx1);
-            String    attrs = s.substring(idx1 + 6, idx2);
-            String    inner = s.substring(idx2 + 1, idx3);
-            Hashtable props = StringUtil.parseHtmlProperties(attrs);
+            String    first    = s.substring(0, idx1);
+            String    attrs    = s.substring(idx1 + 6, idx2);
+            String    inner    = s.substring(idx2 + 1, idx3);
+            Hashtable props    = StringUtil.parseHtmlProperties(attrs);
 
 
-            boolean   open  = Misc.getProperty(props, ATTR_OPEN, true);
-            boolean   decorate  = Misc.getProperty(props, ATTR_DECORATE, true);
-            String    title = Misc.getProperty(props, ATTR_TITLE, "");
+            boolean   open     = Misc.getProperty(props, ATTR_OPEN, true);
+            boolean   decorate = Misc.getProperty(props, ATTR_DECORATE, true);
+            String    title    = Misc.getProperty(props, ATTR_TITLE, "");
             sb.append(first);
 
             //<block show="ismobile"
-            String show =  Misc.getProperty(props, ATTR_SHOW, (String) null);
+            String  show = Misc.getProperty(props, ATTR_SHOW, (String) null);
             boolean shouldShow = true;
 
-            if(show!=null) {
-                if(show.equals("mobile")) {
-                    if(!getMobile()) shouldShow = false;
-                } else if(show.equals("!mobile")) {
-                    if(getMobile()) shouldShow = false;
-                } else if(show.equals("none")) {
-                    shouldShow = false;
-                } else if(show.startsWith("user")) {
-                    if(user == null)
+            if (show != null) {
+                if (show.equals("mobile")) {
+                    if ( !getMobile()) {
                         shouldShow = false;
-                    else 
+                    }
+                } else if (show.equals("!mobile")) {
+                    if (getMobile()) {
+                        shouldShow = false;
+                    }
+                } else if (show.equals("none")) {
+                    shouldShow = false;
+                } else if (show.startsWith("user")) {
+                    if (user == null) {
+                        shouldShow = false;
+                    } else {
                         shouldShow = true;
+                    }
                 }
             }
 
 
-            if(shouldShow) {
-                if(decorate) {
+            if (shouldShow) {
+                if (decorate) {
                     sb.append(HtmlUtils.makeShowHideBlock(title, inner, open,
-                                                          HtmlUtils.cssClass("wiki-blockheader"),
-                                                          HtmlUtils.cssClass("wiki-block")));
+                            HtmlUtils.cssClass("wiki-blockheader"),
+                            HtmlUtils.cssClass("wiki-block")));
                 } else {
                     sb.append(inner);
                 }
@@ -615,6 +644,7 @@ public class WikiUtil {
             int      level = ((Integer) pair[0]).intValue();
             if ((level > currentLevel) && (currentLevel >= 0)) {
                 makeHeadings(headings, toc, currentLevel, prefix);
+
                 continue;
             } else if (level < currentLevel) {
                 if (parentLevel >= 0) {
@@ -695,40 +725,40 @@ public class WikiUtil {
     }
 
     /**
-       Set the Mobile property.
-
-       @param value The new value for Mobile
-    **/
-    public void setMobile (boolean value) {
-	mobile = value;
+     *  Set the Mobile property.
+     *
+     *  @param value The new value for Mobile
+     */
+    public void setMobile(boolean value) {
+        mobile = value;
     }
 
     /**
-       Get the Mobile property.
-
-       @return The Mobile
-    **/
-    public boolean getMobile () {
-	return mobile;
+     *  Get the Mobile property.
+     *
+     *  @return The Mobile
+     */
+    public boolean getMobile() {
+        return mobile;
     }
 
-/**
-Set the User property.
+    /**
+     * Set the User property.
+     *
+     * @param value The new value for User
+     */
+    public void setUser(String value) {
+        user = value;
+    }
 
-@param value The new value for User
-**/
-public void setUser (String value) {
-	user = value;
-}
-
-/**
-Get the User property.
-
-@return The User
-**/
-public String getUser () {
-	return user;
-}
+    /**
+     * Get the User property.
+     *
+     * @return The User
+     */
+    public String getUser() {
+        return user;
+    }
 
 
 

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -71,39 +72,39 @@ public class AtomUtil {
     /** _more_ */
     public static final String REL_ALTERNATE = "alternate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String REL_ESIP_DOCUMENTATION =
         "http://esipfed.org/ns/discovery/1.1/documentation#";
 
-    /** _more_          */
+    /** _more_ */
     public static final String REL_ESIP_BROWSE =
         "http://esipfed.org/ns/discovery/1.1/browse#";
 
-    /** _more_          */
+    /** _more_ */
     public static final String REL_ESIP_METADATA =
         "http://esipfed.org/ns/discovery/1.1/metadata#";
 
-    /** _more_          */
+    /** _more_ */
     public static final String REL_ESIP_DATA =
         "http://esipfed.org/ns/discovery/1.1/data#";
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_GML_TIMEPERIOD = "gml:TimePeriod";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_GML_BEGIN = "gml:begin";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_GML_END = "gml:end";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TIME_START = "time:start";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TIME_END = "time:end";
 
     /** _more_ */
@@ -241,6 +242,7 @@ public class AtomUtil {
         if ((link.title != null) && (link.title.length() > 0)) {
             attrs.append(XmlUtil.attrs(ATTR_TITLE, link.title));
         }
+
         return XmlUtil.tag(TAG_LINK,
                            attrs + XmlUtil.attrs(ATTR_HREF, link.url));
 
@@ -286,6 +288,7 @@ public class AtomUtil {
     public static String openFeed(String id) {
         String blobOfNamespaces =
             " xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:time=\"http://a9.com/-/opensearch/extensions/time/1.0/\"  xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gmi=\"http://www.isotc211.org/2005/gmi\" xmlns:gml=\"http://www.opengis.net/gml\" ";
+
         return XmlUtil.openTag(
             TAG_FEED,
             XmlUtil.attrs(ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEORSS, XMLNS_GEORSS)
@@ -399,6 +402,7 @@ public class AtomUtil {
         }
         sb.append(XmlUtil.closeTag(TAG_ENTRY));
         sb.append("\n");
+
         return sb.toString();
     }
 
@@ -422,7 +426,7 @@ public class AtomUtil {
         /** _more_ */
         private String title;
 
-        /** _more_          */
+        /** _more_ */
         private String mimeType;
 
         /**
