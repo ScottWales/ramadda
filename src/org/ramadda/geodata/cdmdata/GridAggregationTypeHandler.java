@@ -76,6 +76,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     /** Pattern index for GUI */
     public static final int INDEX_PATTERN = 4;
 
+    /** _more_          */
     public static final int INDEX_RECURSE = 5;
 
 
@@ -179,8 +180,16 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         return Misc.equals(entry.getValue(INDEX_INGEST, ""), "true");
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private boolean getRecurse(Entry entry) {
-        Object [] values  = entry.getValues();
+        Object[] values = entry.getValues();
+
         return Misc.equals(entry.getValue(INDEX_RECURSE, ""), "true");
     }
 
@@ -211,7 +220,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         String        files           = entry.getValue(INDEX_FILES, "").trim();
         String        pattern = entry.getValue(INDEX_PATTERN, "").trim();
         boolean       ingest          = getIngest(entry);
-        boolean       recurse          = getRecurse(entry);
+        boolean       recurse         = getRecurse(entry);
         final boolean harvestMetadata =
             Misc.equals(entry.getValue(INDEX_ADDSHORTMETADATA, ""), "true");
         final boolean harvestFullMetadata =
@@ -264,22 +273,22 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 throw new IllegalArgumentException(
                     "When using the files list in the grid aggregation you must be an administrator");
             }
-            List<Entry> dummyEntries = new ArrayList<Entry>();
-            List<File>  filesToUse   = new ArrayList<File>();
-            PatternFileFilter filter = null;
+            List<Entry>       dummyEntries = new ArrayList<Entry>();
+            List<File>        filesToUse   = new ArrayList<File>();
+            PatternFileFilter filter       = null;
             if ((pattern != null) && (pattern.length() > 0)) {
                 filter = new PatternFileFilter(
-                                               StringUtil.wildcardToRegexp(pattern));
+                    StringUtil.wildcardToRegexp(pattern));
             }
 
             for (String f : StringUtil.split(files, "\n", true, true)) {
                 File file = new File(f);
                 if (file.isDirectory()) {
                     List<File> childFiles = IOUtil.getFiles(new ArrayList(),
-                                                            file, recurse, filter);
+                                                file, recurse, filter);
                     for (File child : childFiles) {
-                        if (child.isDirectory()) {
-                        } else if (child.isFile()) {
+                        if (child.isDirectory()) {}
+                        else if (child.isFile()) {
                             filesToUse.add(child);
                         }
                     }
@@ -305,7 +314,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             }
 
             if (ingest) {
-                
+
                 //See if we have all of the files
                 HashSet seen = new HashSet();
                 for (Entry existingEntry : childrenEntries) {
@@ -427,11 +436,13 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request  the Request
      * @param entry    the Entry
+     * @param services _more_
      *
      * @return  the List of services
      */
     @Override
-    public void getServices(Request request, Entry entry, List<Service> services) {
+    public void getServices(Request request, Entry entry,
+                            List<Service> services) {
         super.getServices(request, entry, services);
 
         /*

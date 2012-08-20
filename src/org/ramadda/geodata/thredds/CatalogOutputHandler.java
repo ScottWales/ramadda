@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,10 +25,11 @@ package org.ramadda.geodata.thredds;
 import org.ramadda.geodata.cdmdata.*;
 
 import org.ramadda.repository.*;
-import org.ramadda.util.EntryGroup;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.EntryGroup;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -36,7 +38,6 @@ import org.w3c.dom.*;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -78,6 +79,7 @@ import java.util.zip.*;
  */
 public class CatalogOutputHandler extends OutputHandler {
 
+    /** _more_          */
     public static final String ICON_OPENDAP = "/cdmdata/opendap.gif";
 
     /** _more_ */
@@ -177,7 +179,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                        List<Metadata> metadataList,
                                        Element node, String tab)
             throws Exception {
-        NodeList elements = XmlUtil.getElements(node);
+        NodeList              elements         = XmlUtil.getElements(node);
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
 
@@ -221,6 +223,7 @@ public class CatalogOutputHandler extends OutputHandler {
                     }
                     if (metadata != null) {
                         metadataList.add(metadata);
+
                         break;
                     }
                 }
@@ -249,20 +252,20 @@ public class CatalogOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
-        throws Exception {
+            throws Exception {
         if (state.getEntry() != null) {
-            Link       link;
-            if(getEntryManager().isSynthEntry(state.getEntry().getId())) {
+            Link link;
+            if (getEntryManager().isSynthEntry(state.getEntry().getId())) {
                 link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
             } else {
                 String url = getRepository().getUrlBase() + "/thredds/"
-                    + state.getEntry().getFullName(true) + ".xml";
+                             + state.getEntry().getFullName(true) + ".xml";
                 OutputType outputType = OUTPUT_CATALOG;
                 link = new Link(url, (outputType.getIcon() == null)
-                                ? null
-                                : iconUrl(outputType
-                                          .getIcon()), outputType
-                                .getLabel(), outputType);
+                                     ? null
+                                     : iconUrl(outputType
+                                         .getIcon()), outputType.getLabel(),
+                                             outputType);
             }
             links.add(link);
         }
@@ -309,6 +312,7 @@ public class CatalogOutputHandler extends OutputHandler {
                     metadataHandler.addMetadataToXml(request,
                             MetadataTypeBase.TEMPLATETYPE_THREDDS, entry,
                             metadata, catalogInfo.doc, datasetNode);
+
                     break;
                 }
             }
@@ -347,7 +351,7 @@ public class CatalogOutputHandler extends OutputHandler {
                           ? entries.get(0).getName()
                           : group.getName());
         Document doc   = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
+        Element  root  = XmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
                                       new String[] {
             "xmlns",
             "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
@@ -376,6 +380,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 if (canDataLoad(request, entry)) {
                     outputEntry(entry, request, catalogInfo, root);
                     didone = true;
+
                     break;
                 }
             }
@@ -430,7 +435,7 @@ public class CatalogOutputHandler extends OutputHandler {
                            getRepository().URL_ENTRY_SHOW.getFullUrl(),
                            "Resolver");
 
-                Node firstChild = topDataset.getFirstChild();
+                Node    firstChild    = topDataset.getFirstChild();
                 Element latestDataset = XmlUtil.create(catalogInfo.doc,
                                             CatalogUtil.TAG_DATASET, null,
                                             new String[] {
@@ -458,6 +463,7 @@ public class CatalogOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root));
+
         return new Result(title, sb, "text/xml");
     }
 
@@ -510,17 +516,32 @@ public class CatalogOutputHandler extends OutputHandler {
                                              catalogInfo.root, attrs);
 
         catalogInfo.serviceMap.put(service, serviceNode);
+
         return true;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public CdmManager getCdmManager() throws Exception {
         return getDataOutputHandler().getCdmManager();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public CdmDataOutputHandler getDataOutputHandler() throws Exception {
         return (CdmDataOutputHandler) getRepository().getOutputHandler(
-                                                                    CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
+            CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
 
@@ -573,6 +594,7 @@ public class CatalogOutputHandler extends OutputHandler {
                        new String[] { CatalogUtil.ATTR_NAME,
                                       "ramadda.host", CatalogUtil.ATTR_VALUE,
                                       getRepository().getHostname() });
+
         return dataset;
     }
 
@@ -595,17 +617,21 @@ public class CatalogOutputHandler extends OutputHandler {
         String path = f.toString();
         path = path.replace("\\", "/");
 
-        int cnt = 0;
+        int           cnt      = 0;
         List<Service> services = new ArrayList<Service>();
-        entry.getTypeHandler().getServices(request,
-                                           entry, services);
+        entry.getTypeHandler().getServices(request, entry, services);
         boolean didOpendap = false;
 
         if (canDataLoad(request, entry)
                 && !entry.getType().equals(
                     OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
-            String urlPath = getDataOutputHandler().getOpendapHandler().getOpendapSuffix(entry);
-            addService(catalogInfo, SERVICE_OPENDAP,getDataOutputHandler().getOpendapHandler().getOpendapPrefix(entry));
+            String urlPath =
+                getDataOutputHandler().getOpendapHandler().getOpendapSuffix(
+                    entry);
+            addService(
+                catalogInfo, SERVICE_OPENDAP,
+                getDataOutputHandler().getOpendapHandler().getOpendapPrefix(
+                    entry));
             Element opendapDataDataset = dataset;
             cnt++;
             if (getCdmManager().isAggregation(entry)) {
@@ -657,7 +683,7 @@ public class CatalogOutputHandler extends OutputHandler {
         if (entry.getTypeHandler().canDownload(request, entry)) {
             String urlPath =
                 HtmlUtils.url("/" + getStorageManager().getFileTail(entry),
-                             ARG_ENTRYID, entry.getId());
+                              ARG_ENTRYID, entry.getId());
             addService(catalogInfo, SERVICE_HTTP,
                        getRepository().URL_ENTRY_GET.getFullUrl());
             Element subDataset;
@@ -677,7 +703,7 @@ public class CatalogOutputHandler extends OutputHandler {
             XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY,
                            subDataset, new String[] { CatalogUtil.ATTR_NAME,
                     "icon", CatalogUtil.ATTR_VALUE,
-                                                      request.getAbsoluteUrl(
+                    request.getAbsoluteUrl(
                         getRepository().iconUrl(ICON_FILE)) });
 
         }
@@ -736,6 +762,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                              entry.getName(),
                                              CatalogUtil.ATTR_XLINK_HREF,
                                              entry.getResource().getPath() });
+
             return;
         }
 
@@ -752,6 +779,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                              "WMS: " + entry.getName(),
                                              CatalogUtil.ATTR_XLINK_HREF,
                                              url });
+
             return;
 
         }

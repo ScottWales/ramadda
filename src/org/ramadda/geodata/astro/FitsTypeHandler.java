@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -30,12 +31,12 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 
 
@@ -142,7 +143,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
-        super.initializeEntryFromForm(request, entry,parent, newEntry);
+        super.initializeEntryFromForm(request, entry, parent, newEntry);
         if (newEntry) {
             initializeNewEntry(entry);
         }
@@ -221,6 +222,7 @@ public class FitsTypeHandler extends GenericTypeHandler {
             synchronized (sdf) {
                 try {
                     fromDate = toDate = sdf.parse(dateString);
+
                     break;
                 } catch (Exception exc) {}
             }
@@ -274,6 +276,13 @@ public class FitsTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param header _more_
+     * @param values _more_
+     */
     public void processHeader(Entry entry, Header header, Object[] values) {
         for (int i = 0; i < FITS_PROPS.length; i++) {
             String value = header.getStringValue(FITS_PROPS[i]);

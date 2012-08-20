@@ -237,8 +237,8 @@ public class CdmDataOutputHandler extends OutputHandler {
     /** CDL Output Type */
     public static final OutputType OUTPUT_CDL =
         new OutputType("File Metadata", "data.cdl", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, "/cdmdata/page_white_text.png",
-                       GROUP_DATA);
+                       OutputType.SUFFIX_NONE,
+                       "/cdmdata/page_white_text.png", GROUP_DATA);
 
     /** WCS Output Type */
     public static final OutputType OUTPUT_WCS = new OutputType("WCS",

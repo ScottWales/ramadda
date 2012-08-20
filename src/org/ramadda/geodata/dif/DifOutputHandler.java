@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,12 +28,12 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.util.DifUtil;
+import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -169,8 +170,8 @@ public class DifOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc, DifUtil.TAG_DIF, null,
+        Document doc  = XmlUtil.makeDocument();
+        Element  root = XmlUtil.create(doc, DifUtil.TAG_DIF, null,
                                       new String[] {
             "xmlns", "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/",
             "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance",
@@ -212,6 +213,7 @@ public class DifOutputHandler extends OutputHandler {
                     metadataHandler.addMetadataToXml(request,
                             MetadataTypeBase.TEMPLATETYPE_DIF, entry,
                             metadata, doc, root);
+
                     break;
                 }
             }
@@ -221,10 +223,12 @@ public class DifOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         if (outputType.equals(OUTPUT_DIF_TEXT)) {
             XmlUtil.toHtml(sb, root);
+
             return new Result("DIF-Text", sb);
         } else {
             sb.append(XmlUtil.XML_HEADER);
             sb.append(XmlUtil.toString(root));
+
             return new Result("dif", sb, "text/xml");
         }
     }

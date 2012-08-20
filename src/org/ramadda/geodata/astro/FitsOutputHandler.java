@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,13 +29,13 @@ import nom.tam.util.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -148,6 +149,7 @@ public class FitsOutputHandler extends OutputHandler {
         if (request.exists(ARG_FITS_SUBSET)) {
             return outputEntrySubset(request, entry);
         }
+
         return outputEntryInfo(request, entry);
     }
 
@@ -173,7 +175,7 @@ public class FitsOutputHandler extends OutputHandler {
         }
         OutputStream os = request.getHttpServletResponse().getOutputStream();
 
-        String filename =
+        String       filename =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry));
         filename = IOUtil.stripExtension(filename);
         request.setReturnFilename(filename + "_subset.fits");
@@ -190,6 +192,7 @@ public class FitsOutputHandler extends OutputHandler {
         }
         bdos.close();
         os.close();
+
         return result;
     }
 
@@ -206,14 +209,15 @@ public class FitsOutputHandler extends OutputHandler {
     public Result outputEntryViewer(Request request, Entry entry)
             throws Exception {
 
-        StringBuffer sb = new StringBuffer();
-        String fileUrl = getEntryManager().getEntryResourceUrl(request,
+        StringBuffer sb      = new StringBuffer();
+        String       fileUrl = getEntryManager().getEntryResourceUrl(request,
                              entry, false);
         //TODO: set the path right
         sb.append(
             "<applet archive=\"/repository/fits/fits1.3.jar\" code=\"eap.fitsbrowser.BrowserApplet\" width=700 height=700 ><param name=\"FILE\" value=\""
             + fileUrl
             + "\">Your browser is ignoring the applet tag</applet>");
+
         return new Result("", sb);
     }
 
@@ -244,6 +248,7 @@ public class FitsOutputHandler extends OutputHandler {
                 BasicHDU hdu = fits.getHDU(hduIdx);
                 if (hdu instanceof ImageHDU) {
                     imageHdu = (ImageHDU) hdu;
+
                     break;
                 }
             }
@@ -260,6 +265,7 @@ public class FitsOutputHandler extends OutputHandler {
         File imageFile = getStorageManager().getTmpFile(request,
                              "fitsimage.png");
         ImageUtils.writeImageToFile(image, imageFile);
+
         return new Result("",
                           getStorageManager().getFileInputStream(imageFile),
                           getRepository().getMimeTypeFromSuffix("png"));
@@ -372,11 +378,12 @@ public class FitsOutputHandler extends OutputHandler {
                 int[]    axes     = imageHdu.getAxes();
                 if ((axes != null) && (axes.length > 1)) {
                     String imageUrl =
-                        HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
-                                     + IOUtil.stripExtension(entry.getName())
-                                     + ".png", ARG_ENTRYID, entry.getId(),
-                                         ARG_OUTPUT, OUTPUT_IMAGE,
-                                         ARG_FITS_HDU, "" + hduIdx);
+                        HtmlUtils.url(
+                            getRepository().URL_ENTRY_SHOW + "/"
+                            + IOUtil.stripExtension(entry.getName())
+                            + ".png", ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+                                      OUTPUT_IMAGE, ARG_FITS_HDU,
+                                      "" + hduIdx);
 
                     hduLink = HtmlUtils.href(imageUrl, msg("View Image"))
                               + HtmlUtils.br();
@@ -441,7 +448,8 @@ public class FitsOutputHandler extends OutputHandler {
                         card = card.substring(1);
                     }
                     subSB.append("<td colspan=3><i>"
-                                 + HtmlUtils.entityEncode(card) + "</i></td>");
+                                 + HtmlUtils.entityEncode(card)
+                                 + "</i></td>");
                 } else {
                     String key     = toks.get(0).trim();
                     String comment = "";
@@ -473,12 +481,13 @@ public class FitsOutputHandler extends OutputHandler {
             }
             subSB.append("</table>");
             subSB.append("</div>");
-            String label = HtmlUtils.checkbox(ARG_FITS_HDU, "" + hduIdx, true)
-                           + " " + hduType;
+            String label = HtmlUtils.checkbox(ARG_FITS_HDU, "" + hduIdx,
+                               true) + " " + hduType;
             sb.append(HtmlUtils.makeShowHideBlock(label, subSB.toString(),
                     false));
         }
         sb.append(HtmlUtils.formClose());
+
         return new Result("", sb);
 
 
@@ -497,6 +506,7 @@ public class FitsOutputHandler extends OutputHandler {
             if (length > 0) {
                 return Array.get(item, 0).toString();
             }
+
             return item.toString();
         } catch (Exception exc) {
             return item.toString();

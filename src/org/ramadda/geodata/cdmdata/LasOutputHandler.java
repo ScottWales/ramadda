@@ -273,7 +273,7 @@ public class LasOutputHandler extends OutputHandler {
             throws Exception {
 
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        Document          doc               = XmlUtil.makeDocument();
+        Document             doc               = XmlUtil.makeDocument();
 
         //create the root element
         Element root = XmlUtil.create(doc, TAG_LASDATA, null,

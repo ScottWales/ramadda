@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -36,7 +38,6 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -412,6 +413,7 @@ Two ASCII files are available for each year for freeze depth and thaw depth, res
             }
             results.add(metadata);
         }
+
         return results;
     }
 

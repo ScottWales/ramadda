@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,6 +26,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.IsoUtil;
 
@@ -33,7 +35,6 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -164,7 +165,7 @@ public class IsoOutputHandler extends OutputHandler {
         Document doc  = XmlUtil.makeDocument();
         Element  root = IsoUtil.makeRoot();
 
-        String url =
+        String   url  =
             request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                 ARG_ENTRYID, entry.getId()));
 
@@ -204,6 +205,7 @@ public class IsoOutputHandler extends OutputHandler {
                     metadataHandler.addMetadataToXml(request,
                             MetadataTypeBase.TEMPLATETYPE_ISO, entry,
                             metadata, doc, root);
+
                     break;
                 }
             }
@@ -213,6 +215,7 @@ public class IsoOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root, true));
+
         return new Result("iso", sb, "text/xml");
     }
 

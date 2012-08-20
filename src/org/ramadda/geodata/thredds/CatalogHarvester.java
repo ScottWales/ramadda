@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,6 +29,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 
@@ -39,7 +41,6 @@ import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -171,9 +172,14 @@ public class CatalogHarvester extends Harvester {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     */
     private void setTopUrl(String url) {
-        if(url.endsWith(".html")) {
-            url = url.replace(".html",".xml");
+        if (url.endsWith(".html")) {
+            url = url.replace(".html", ".xml");
         }
         this.topUrl = url;
     }
@@ -246,29 +252,39 @@ public class CatalogHarvester extends Harvester {
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 
         sb.append(HtmlUtils.formEntry(msgLabel("Catalog URL"),
-                                     HtmlUtils.input(ATTR_TOPURL, topUrl,
-                                         HtmlUtils.SIZE_60)));
+                                      HtmlUtils.input(ATTR_TOPURL, topUrl,
+                                          HtmlUtils.SIZE_60)));
         sb.append(HtmlUtils.formEntry("",
-                                     HtmlUtils.checkbox(ATTR_RECURSE, "true",
-                                         recurse) + " " + msg("Recurse")));
+                                      HtmlUtils.checkbox(ATTR_RECURSE,
+                                          "true", recurse) + " "
+                                              + msg("Recurse")));
         sb.append(HtmlUtils.formEntry("",
-                                     HtmlUtils.checkbox(ATTR_DOWNLOAD, "true",
-                                         download) + " "
-                                             + msg("Download Files")));
+                                      HtmlUtils.checkbox(ATTR_DOWNLOAD,
+                                          "true", download) + " "
+                                              + msg("Download Files")));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Metadata"),
-                HtmlUtils.checkbox(ATTR_ADDMETADATA, "true", getAddMetadata())
-                + HtmlUtils.space(1) + msg("Add full metadata")
-                + HtmlUtils.space(4)
-                + HtmlUtils.checkbox(ATTR_ADDSHORTMETADATA, "true",
-                    getAddShortMetadata()) + HtmlUtils.space(1)
-                        + msg("Just add spatial/temporal metadata")));
+        sb.append(
+            HtmlUtils
+                .formEntry(
+                    msgLabel("Metadata"),
+                    HtmlUtils
+                        .checkbox(
+                            ATTR_ADDMETADATA, "true",
+                            getAddMetadata()) + HtmlUtils.space(1)
+                                + msg("Add full metadata")
+                                + HtmlUtils.space(4)
+                                + HtmlUtils
+                                    .checkbox(
+                                        ATTR_ADDSHORTMETADATA, "true",
+                                        getAddShortMetadata()) + HtmlUtils
+                                            .space(1) + msg(
+                                                "Just add spatial/temporal metadata")));
 
         sb.append(HtmlUtils.formEntry(msgLabel("User"),
-                                     HtmlUtils.input(ATTR_USER,
-                                         (getUserName() != null)
-                                         ? getUserName().trim()
-                                         : "", HtmlUtils.SIZE_30)));
+                                      HtmlUtils.input(ATTR_USER,
+                                          (getUserName() != null)
+                                          ? getUserName().trim()
+                                          : "", HtmlUtils.SIZE_30)));
 
     }
 
@@ -342,10 +358,12 @@ public class CatalogHarvester extends Harvester {
         }
         if (depth > 10) {
             logHarvesterInfo("Catalogs go too deep:" + url);
+
             return true;
         }
         if (url.indexOf("hyrax/LBA") >= 0) {
             logHarvesterInfo("hyrax/LBA bad catalog");
+
             return true;
         }
         catalogCnt++;
@@ -354,6 +372,7 @@ public class CatalogHarvester extends Harvester {
             Element root = XmlUtil.getRoot(url, getClass());
             if (root == null) {
                 logHarvesterInfo("Could not load catalog:" + url);
+
                 //                System.err.println("xml:"
                 //                                   + IOUtil.readContents(url, getClass()));
                 return true;
@@ -381,9 +400,11 @@ public class CatalogHarvester extends Harvester {
                 recurseCatalog((Element) root, parent, url, 0, depth,
                                timestamp);
             }
+
             return true;
         } catch (Exception exc) {
             logHarvesterError("Error harvesting catalog:" + url, exc);
+
             return false;
         }
     }
@@ -403,6 +424,7 @@ public class CatalogHarvester extends Harvester {
                     logHarvesterInfo("Too long metadata:"
                                      + metadata.getAttr1().substring(0, 100)
                                      + "...");
+
                     continue;
                 }
                 getMetadataManager().insertMetadata(metadata);
@@ -435,8 +457,10 @@ public class CatalogHarvester extends Harvester {
         if ((jobId != null) && !getActionManager().getActionOk(jobId)) {
             getActionManager().setActionMessage(jobId,
                     "Catalog import canceled");
+
             return false;
         }
+
         return true;
     }
 
@@ -467,12 +491,12 @@ public class CatalogHarvester extends Harvester {
             tab = tab + "  ";
         }
 
-        URL catalogUrl = new URL(catalogUrlPath);
-        String name =
+        URL    catalogUrl = new URL(catalogUrlPath);
+        String name       =
             XmlUtil.getAttribute(node, ATTR_NAME,
                                  IOUtil.getFileTail(catalogUrlPath));
         NodeList elements = XmlUtil.getElements(node);
-        String urlPath = XmlUtil.getAttribute(node, CatalogUtil.ATTR_URLPATH,
+        String   urlPath = XmlUtil.getAttribute(node, CatalogUtil.ATTR_URLPATH,
                              (String) null);
         if (urlPath == null) {
             Element accessNode = XmlUtil.findChild(node,
@@ -488,6 +512,7 @@ public class CatalogHarvester extends Harvester {
             Element child = (Element) elements.item(i);
             if (XmlUtil.isTag(child, CatalogUtil.TAG_DATASET)) {
                 haveChildDatasets = true;
+
                 break;
             }
         }
@@ -516,6 +541,7 @@ public class CatalogHarvester extends Harvester {
                 getEntryManager().findEntriesWithName(null, parent, name)) {
             if (newGroup.isGroup()) {
                 group = (Entry) newGroup;
+
                 break;
             }
         }
@@ -583,9 +609,11 @@ public class CatalogHarvester extends Harvester {
                               String name)
             throws Exception {
 
-        URL catalogUrl = new URL(catalogUrlPath);
+        URL     catalogUrl  = new URL(catalogUrlPath);
         Element serviceNode = CatalogUtil.findServiceNodeForDataset(node,
-                                                                    false, (download?CatalogUtil.SERVICE_HTTP:null));
+                                  false, (download
+                                          ? CatalogUtil.SERVICE_HTTP
+                                          : null));
 
 
         boolean isOpendap = false;
@@ -621,6 +649,7 @@ public class CatalogHarvester extends Harvester {
                         tmpEntries, getAddMetadata(), getAddShortMetadata());
                 getEntryManager().insertEntries(tmpEntries, false);
             }
+
             return false;
         }
 
@@ -639,7 +668,7 @@ public class CatalogHarvester extends Harvester {
                 URL           fromUrl    = new URL(urlPath);
                 URLConnection connection = fromUrl.openConnection();
                 InputStream   fromStream = connection.getInputStream();
-                OutputStream toStream =
+                OutputStream  toStream   =
                     getStorageManager().getFileOutputStream(newFile);
                 int bytes = IOUtil.writeTo(fromStream, toStream);
                 toStream.close();
@@ -697,6 +726,7 @@ public class CatalogHarvester extends Harvester {
 
         }
         checkToAddEntries();
+
         return true;
 
     }
@@ -744,6 +774,7 @@ public class CatalogHarvester extends Harvester {
             sb.append(HtmlUtils.makeShowHideBlock("Entries",
                     groupSB.toString(), false));
         }
+
         return sb.toString();
     }
 

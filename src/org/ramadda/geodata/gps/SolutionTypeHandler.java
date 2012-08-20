@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -35,6 +36,7 @@ import java.io.File;
 
 import java.util.List;
 import java.util.Properties;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 
@@ -62,7 +64,7 @@ public class SolutionTypeHandler extends GenericTypeHandler {
     public static final int IDX_UTM_Y = COLCNT++;
 
     /** _more_ */
-    public static final int IDX_REFERENCE_FRAME= COLCNT++;
+    public static final int IDX_REFERENCE_FRAME = COLCNT++;
 
 
     /** _more_ */

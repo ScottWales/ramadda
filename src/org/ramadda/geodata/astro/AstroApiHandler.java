@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -53,7 +54,7 @@ public class AstroApiHandler extends SpecialSearch {
      * @throws Exception On badness
      */
     public AstroApiHandler(Repository repository, Element node,
-                          Hashtable props)
+                           Hashtable props)
             throws Exception {
         super(repository, node, props);
     }

@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -20,9 +21,11 @@
 
 package org.ramadda.geodata.idv;
 
+
 import org.ramadda.repository.Constants;
 
 import ucar.unidata.util.TwoFacedObject;
+
 
 /**
  *
@@ -100,7 +103,7 @@ public interface IdvConstants {
 
     /** output products */
     public static TwoFacedObject[] products = { new TwoFacedObject("Image",
-                                                   PRODUCT_IMAGE),
+                                                  PRODUCT_IMAGE),
             new TwoFacedObject("Quicktime Movie", PRODUCT_MOV),
             new TwoFacedObject("Google Earth KMZ", PRODUCT_KMZ) };
 
@@ -254,10 +257,13 @@ public interface IdvConstants {
 
     /** _more_ */
     public static final String[] NOTARGS = {
-        ARG_SUBMIT_SAVE, Constants.ARG_SUBMIT_PUBLISH, Constants.ARG_PUBLISH_NAME,
-        Constants.ARG_PUBLISH_ENTRY, Constants.ARG_PUBLISH_ENTRY + "_hidden",
-        Constants.ARG_PUBLISH_DESCRIPTION, ARG_SAVE_ATTACH, ARG_SAVE_NAME, ARG_IDV_ACTION
+        ARG_SUBMIT_SAVE, Constants.ARG_SUBMIT_PUBLISH,
+        Constants.ARG_PUBLISH_NAME, Constants.ARG_PUBLISH_ENTRY,
+        Constants.ARG_PUBLISH_ENTRY + "_hidden",
+        Constants.ARG_PUBLISH_DESCRIPTION, ARG_SAVE_ATTACH, ARG_SAVE_NAME,
+        ARG_IDV_ACTION
     };
+
     /** _more_ */
     public static final String ACTION_ERROR = "action.error";
 

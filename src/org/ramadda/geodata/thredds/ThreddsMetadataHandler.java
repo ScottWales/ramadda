@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -30,6 +31,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.metadata.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -55,7 +57,6 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -237,6 +238,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         double[] result = new double[] { toUnit.toThis(minmax.min, fromUnit),
                                          toUnit.toThis(minmax.max,
                                              fromUnit) };
+
         return result;
     }
 
@@ -284,6 +286,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         try {
             u = u.clone(unitName);
         } catch (UnitException ue) {}
+
         return u;
     }
 
@@ -315,6 +318,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             dates.add(new Date((long) (1000 * toUnit.toThis(val, fromUnit))));
 
         }
+
         return dates;
     }
 
@@ -339,6 +343,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
             }
         }
+
         return null;
     }
 
@@ -360,6 +365,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             throws Exception {
         double[] minmax = getRange(var, ca.read(),
                                    visad.CommonUnit.secondsSinceTheEpoch);
+
         return new Date[] { new Date((long) minmax[0] * 1000),
                             new Date((long) minmax[1] * 1000) };
     }
@@ -381,9 +387,13 @@ public class ThreddsMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String ATTR_KEYWORDS = "keywords";
 
+    /** _more_          */
     public static final String ATTR_TITLE = "title";
 
+    /** _more_          */
     public static final String ATTR_DESCRIPTION = "description";
+
+    /** _more_          */
     public static final String ATTR_ABSTRACT = "abstract";
 
 
@@ -413,11 +423,11 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {
 
-        Metadata      metadata = null;
-        String        varName  = null;
-        NetcdfDataset dataset  = null;
-        boolean       haveDate = false;
-        StringBuffer descriptionAttr = new StringBuffer();
+        Metadata      metadata        = null;
+        String        varName         = null;
+        NetcdfDataset dataset         = null;
+        boolean       haveDate        = false;
+        StringBuffer  descriptionAttr = new StringBuffer();
         try {
             CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
             super.getInitialMetadata(request, entry, metadataList, extra,
@@ -440,21 +450,25 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 if (ATTR_MAXLON.equals(name)) {
                     //                    System.err.println ("maxlon:" + value);
                     extra.put(ARG_MAXLON, new Double(value));
+
                     continue;
                 }
                 if (ATTR_MINLON.equals(name)) {
                     //                    System.err.println ("minlon:" + value);
                     extra.put(ARG_MINLON, new Double(value));
+
                     continue;
                 }
                 if (ATTR_MAXLAT.equals(name)) {
                     //                    System.err.println ("maxlat:" + value);
                     extra.put(ARG_MAXLAT, new Double(value));
+
                     continue;
                 }
                 if (ATTR_MINLAT.equals(name)) {
                     //                    System.err.println ("minlat:" + value);
                     extra.put(ARG_MINLAT, new Double(value));
+
                     continue;
                 }
 
@@ -467,6 +481,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         extra.put(ARG_FROMDATE, date);
                     }
                     haveDate = true;
+
                     continue;
                 }
                 if (shortForm) {
@@ -487,30 +502,37 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     if ( !entry.hasMetadata(metadata)) {
                         metadataList.add(metadata);
                     }
+
                     continue;
                 }
 
 
-                if(entry.getDescription().length()==0) {
-                    if(ATTR_ABSTRACT.equals(name)) {
+                if (entry.getDescription().length() == 0) {
+                    if (ATTR_ABSTRACT.equals(name)) {
                         descriptionAttr.append(value);
+
                         continue;
-                    } else if(ATTR_DESCRIPTION.equals(name)) {
+                    } else if (ATTR_DESCRIPTION.equals(name)) {
                         descriptionAttr.append(value);
+
                         continue;
                     }
                 }
 
                 //Only set the name if its not different from the file name
                 //                if(ATTR_TITLE.equals(name) && entry.getTypeHandler().entryHasDefaultName(entry)) {
-                    //                    entry.setName(value);
-                    //                    continue;
+                //                    entry.setName(value);
+                //                    continue;
                 //                }
 
                 if (ATTR_KEYWORDS.equals(name)) {
-                    List<String> keywords = (List<String>) StringUtil.split(value, ";", true,true);
-                    if(keywords.size()==1) {
-                        keywords.addAll((List<String>) StringUtil.split(value, ",", true,true));
+                    List<String> keywords =
+                        (List<String>) StringUtil.split(value, ";", true,
+                            true);
+                    if (keywords.size() == 1) {
+                        keywords.addAll(
+                            (List<String>) StringUtil.split(
+                                value, ",", true, true));
                     }
                     for (String keyword : keywords) {
                         try {
@@ -526,12 +548,14 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                             getRepository().getLogManager().logInfo(
                                 "ThreddsMetadataHandler: Unable to add keyword metadata:"
                                 + keyword);
+
                             continue;
                         }
                         if ( !entry.hasMetadata(metadata)) {
                             metadataList.add(metadata);
                         }
                     }
+
                     continue;
                 }
 
@@ -544,6 +568,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     getRepository().getLogManager().logInfo(
                         "ThreddsMetadataHandler: Unable to add attribute:"
                         + name);
+
                     continue;
                 }
 
@@ -631,6 +656,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     } else {
                         // System.err.println("unknown axis:" + axisType + " for var:" + var.getName());
                     }
+
                     continue;
                 }
 
@@ -647,6 +673,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         getRepository().getLogManager().logInfo(
                             "ThreddsMetadataHandler: Unable to add variable metadata:"
                             + varName);
+
                         continue;
                     }
                     if ( !entry.hasMetadata(metadata)) {
@@ -673,6 +700,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                             getRepository().getLogManager().logInfo(
                                 "ThreddsMetadataHandler: Unable to add variable metadata:"
                                 + varName);
+
                             continue;
                         }
                         if ( !entry.hasMetadata(metadata)) {
@@ -728,6 +756,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                             extra.put(ARG_MINLON, llr.getLonMin());
                             extra.put(ARG_MAXLON, llr.getLonMax());
                         }
+
                         break;
                     }
 
@@ -747,7 +776,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         }
 
         //Set the description
-        if(entry.getDescription().length()==0 && descriptionAttr.length()>0) {
+        if ((entry.getDescription().length() == 0)
+                && (descriptionAttr.length() > 0)) {
             entry.setDescription(descriptionAttr.toString());
         }
     }
@@ -793,6 +823,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             }
             endTimeAttrs = tmp;
         }
+
         return endTimeAttrs.contains(name);
     }
 
@@ -817,6 +848,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             }
             startTimeAttrs = tmp;
         }
+
         return startTimeAttrs.contains(name);
     }
 
@@ -834,6 +866,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         if (idx < 0) {
             return type;
         }
+
         return type.substring(idx + 1);
     }
 
@@ -869,6 +902,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             XmlUtil.create(doc, getTag(TYPE_VARIABLE), variablesNode,
                            metadata.getAttr2(), new String[] { ATTR_NAME,
                     metadata.getAttr1(), ATTR_UNITS, metadata.getAttr3() });
+
             return true;
         } else {
             return super.addMetadataToXml(request, xmlType, entry, metadata,
@@ -904,6 +938,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
         if (isTag(tag, TYPE_DOCUMENTATION)) {
             if (XmlUtil.hasAttribute(child, "xlink:href")) {
                 String url = XmlUtil.getAttribute(child, "xlink:href");
+
                 return new Metadata(getRepository().getGUID(), "", TYPE_LINK,
                                     DFLT_INHERITED,
                                     XmlUtil.getAttribute(child,
@@ -914,6 +949,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             } else {
                 String type = XmlUtil.getAttribute(child, "type", "summary");
                 String text = XmlUtil.getChildText(child).trim();
+
                 return new Metadata(getRepository().getGUID(), "",
                                     TYPE_DOCUMENTATION, DFLT_INHERITED, type,
                                     text, Metadata.DFLT_ATTR,
@@ -921,6 +957,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             }
         } else if (isTag(tag, TYPE_PROJECT)) {
             String text = XmlUtil.getChildText(child).trim();
+
             return new Metadata(getRepository().getGUID(), "", TYPE_PROJECT,
                                 DFLT_INHERITED, text,
                                 XmlUtil.getAttribute(child, ATTR_VOCABULARY,
@@ -929,6 +966,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                          Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_CONTRIBUTOR)) {
             String text = XmlUtil.getChildText(child).trim();
+
             return new Metadata(getRepository().getGUID(), "",
                                 TYPE_CONTRIBUTOR, DFLT_INHERITED, text,
                                 XmlUtil.getAttribute(child, ATTR_ROLE, ""),
@@ -936,17 +974,18 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                 Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_PUBLISHER) || isTag(tag, TYPE_CREATOR)) {
             Element nameNode = XmlUtil.findChild(child, CatalogUtil.TAG_NAME);
-            String  name     = XmlUtil.getChildText(nameNode).trim();
-            String vocabulary = XmlUtil.getAttribute(nameNode,
+            String  name       = XmlUtil.getChildText(nameNode).trim();
+            String  vocabulary = XmlUtil.getAttribute(nameNode,
                                     ATTR_VOCABULARY, "");
-            String email = "";
-            String url   = "";
+            String  email       = "";
+            String  url         = "";
             Element contactNode = XmlUtil.findChild(child,
                                       CatalogUtil.TAG_CONTACT);
             if (contactNode != null) {
                 email = XmlUtil.getAttribute(contactNode, ATTR_EMAIL, "");
                 url   = XmlUtil.getAttribute(contactNode, ATTR_URL, "");
             }
+
             return new Metadata(getRepository().getGUID(), "",
                                 getType("thredds." + tag), DFLT_INHERITED,
                                 name, vocabulary, email, url,
@@ -956,6 +995,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             //Some of the catalogs have new lines in the keyword
             text = text.replace("\r\n", " ");
             text = text.replace("\n", " ");
+
             return new Metadata(getRepository().getGUID(), "", TYPE_KEYWORD,
                                 DFLT_INHERITED, text,
                                 XmlUtil.getAttribute(child, ATTR_VOCABULARY,
@@ -967,6 +1007,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                    || isTag(tag, TYPE_DATAFORMAT)) {
             String text = XmlUtil.getChildText(child).trim();
             text = text.replace("\n", "");
+
             return new Metadata(getRepository().getGUID(), "",
                                 getType("thredds." + tag), DFLT_INHERITED,
                                 text, Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
@@ -979,6 +1020,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                 Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
                                 Metadata.DFLT_EXTRA);
         }
+
         return null;
     }
 

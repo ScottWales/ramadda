@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,10 +26,11 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
 
+import org.ramadda.util.HtmlUtils;
+
+
 import org.w3c.dom.*;
 
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.util.Date;
@@ -72,7 +74,9 @@ public class HoroscopeTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("<script type=\"text/javascript\" src=\"http://www.albinoblacksheep.com/horoscope/embed.js\"></script><noscript><a href=\"http://www.albinoblacksheep.com/horoscope/\">Horoscopes</a></noscript>");
+        sb.append(
+            "<script type=\"text/javascript\" src=\"http://www.albinoblacksheep.com/horoscope/embed.js\"></script><noscript><a href=\"http://www.albinoblacksheep.com/horoscope/\">Horoscopes</a></noscript>");
+
         return new Result(msg("Horoscope"), sb);
     }
 

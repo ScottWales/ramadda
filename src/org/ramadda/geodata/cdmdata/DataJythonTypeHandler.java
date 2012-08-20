@@ -124,7 +124,7 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
             throws Exception {
         super.processEntry(request, interp, info, processInfo, theEntry);
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        DataProcessInfo   dataProcessInfo   = (DataProcessInfo) processInfo;
+        DataProcessInfo      dataProcessInfo   = (DataProcessInfo) processInfo;
 
         String path = dataOutputHandler.getCdmManager().getPath(theEntry);
         if (path != null) {
@@ -173,7 +173,7 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
             throws Exception {
         super.cleanup(request, entry, interp, processInfo);
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        DataProcessInfo   dataProcessInfo   = (DataProcessInfo) processInfo;
+        DataProcessInfo      dataProcessInfo   = (DataProcessInfo) processInfo;
         for (DataSource dataSource : dataProcessInfo.dataSources) {
             dataSource.doRemove();
         }

@@ -57,43 +57,43 @@ import java.util.List;
 public class NCOOutputHandler extends OutputHandler {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_NCWA_PATH = "nco.ncwa.path";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_FORMAT = "nco.format";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_OPERATION = "nco.operation";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_VARIABLE = "nco.variable";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_VARIABLE_EXCLUDE =
         "nco.variable.exclude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_COORD = "nco.coord";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_MASK_VARIABLE = "nco.mask.variable";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_MASK_COMP = "nco.mask.comp";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_MASK_VALUE = "nco.mask.value";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_WEIGHT = "nco.weight";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_RDD = "nco.rdd";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NCO_HISTORY = "nco.history";
 
 
@@ -106,38 +106,38 @@ public class NCOOutputHandler extends OutputHandler {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_AVG = "avg";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_SQRAVG = "sqravg";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_AVGSQR = "avgsqr";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_MAX = "max";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_MIN = "min";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_RMS = "rms";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_RMSSDN = "rmssdn";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_SQRT = "sqrt";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OP_TTL = "ttl";
 
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     List<TwoFacedObject> OPERATION_TYPES = Misc.toList(new Object[] {
         new TwoFacedObject("Mean value", OP_AVG),
         new TwoFacedObject("Square of the mean", OP_SQRAVG),
@@ -151,25 +151,25 @@ public class NCOOutputHandler extends OutputHandler {
     });
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String COMP_EQ = "eq";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COMP_NE = "ne";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COMP_GT = "gt";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COMP_LT = "lt";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COMP_GE = "ge";
 
-    /** _more_          */
+    /** _more_ */
     public static final String COMP_LE = "LE";
 
-    /** _more_          */
+    /** _more_ */
     List<TwoFacedObject> COMPARATORS = Misc.toList(new Object[] {
         new TwoFacedObject("&lt;", COMP_LT),
         new TwoFacedObject("&lt;=", COMP_LE),
@@ -185,7 +185,7 @@ public class NCOOutputHandler extends OutputHandler {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private String ncwaPath;
 
     /**
@@ -296,7 +296,7 @@ public class NCOOutputHandler extends OutputHandler {
         }
 
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        NetcdfDataset     dataset           =
+        NetcdfDataset        dataset           =
             NetcdfDataset.openDataset(entry.getResource().getPath());
         List<Variable>       variables  = dataset.getVariables();
         List<TwoFacedObject> coordNames = new ArrayList<TwoFacedObject>();

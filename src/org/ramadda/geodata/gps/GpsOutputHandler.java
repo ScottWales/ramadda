@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,13 +30,13 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 import org.ramadda.util.HttpFormField;
 
 import org.ramadda.util.TempDir;
 
 import org.w3c.dom.*;
-
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -51,8 +52,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
 
@@ -66,10 +67,15 @@ import java.util.zip.*;
  */
 public class GpsOutputHandler extends OutputHandler {
 
+    /** _more_          */
     public static final String PROP_TEQC = "gps.teqc";
+
+    /** _more_          */
     public static final String PROP_RUNPKR = "gps.runpkr";
 
-    public static final String OPUS_URL =  "http://www.ngs.noaa.gov/OPUS-cgi/OPUS/prod/upload.prl";
+    /** _more_          */
+    public static final String OPUS_URL =
+        "http://www.ngs.noaa.gov/OPUS-cgi/OPUS/prod/upload.prl";
 
     /** _more_ */
     private static final String TEQC_FLAG_QC = "+qcq";
@@ -87,13 +93,17 @@ public class GpsOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String URL_ADDOPUS = "/gps/addopus";
 
+    /** _more_          */
     public static final String ARG_COORD_LONLATALT = "coord.lonlatalt";
+
+    /** _more_          */
     public static final String ARG_COORD_XYZ = "coord.xyz";
 
 
     /** _more_ */
     public static final String ARG_OPUS = "opus";
 
+    /** _more_          */
     public static final String ARG_RINEX_ID = "rinex.id";
 
     /** _more_ */
@@ -150,9 +160,14 @@ public class GpsOutputHandler extends OutputHandler {
     /** _more_ */
     private static final String ARG_GPS_FILE = "gps.file";
 
-    private static final String ARG_GPS_SELECTED  = "gps.selected";
-    private static final String ARG_GPS_ANTENNA_TYPE  = "gps.antenna.type";
-    private static final String ARG_GPS_ANTENNA_HEIGHT  = "gps.antenna.height";
+    /** _more_          */
+    private static final String ARG_GPS_SELECTED = "gps.selected";
+
+    /** _more_          */
+    private static final String ARG_GPS_ANTENNA_TYPE = "gps.antenna.type";
+
+    /** _more_          */
+    private static final String ARG_GPS_ANTENNA_HEIGHT = "gps.antenna.height";
 
     /** _more_ */
     private static final String ARG_RINEX_DOWNLOAD = "rinex.download";
@@ -173,6 +188,7 @@ public class GpsOutputHandler extends OutputHandler {
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/gps/gps.png", "Field Project");
 
+    /** _more_          */
     public static final OutputType OUTPUT_GPS_BULKEDIT =
         new OutputType("Edit GPS Metadata", "gps.bulkedit",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
@@ -186,9 +202,9 @@ public class GpsOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_GPS_QC =
-        new OutputType("Show GPS QC", "gps.qc",
-                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/gps/gps.png", "Field Project");
+        new OutputType("Show GPS QC", "gps.qc", OutputType.TYPE_OTHER,
+                       OutputType.SUFFIX_NONE, "/gps/gps.png",
+                       "Field Project");
 
     /** _more_ */
     public static final OutputType OUTPUT_GPS_OPUS =
@@ -198,8 +214,7 @@ public class GpsOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_GPS_CONTROLPOINTS =
-        new OutputType("Make Control Points",
-                       "gps.gps.controlpoints",
+        new OutputType("Make Control Points", "gps.gps.controlpoints",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/icons/csv.png", "Field Project");
 
@@ -220,7 +235,7 @@ public class GpsOutputHandler extends OutputHandler {
         addType(OUTPUT_GPS_QC);
         addType(OUTPUT_GPS_OPUS);
         addType(OUTPUT_GPS_CONTROLPOINTS);
-        teqcPath = getProperty(PROP_TEQC, null);
+        teqcPath   = getProperty(PROP_TEQC, null);
         runPkrPath = getProperty(PROP_RUNPKR, null);
     }
 
@@ -239,6 +254,7 @@ public class GpsOutputHandler extends OutputHandler {
             tempDir.setMaxAge(1000 * 60 * 60 * 24 * 7);
             productDir = tempDir;
         }
+
         return productDir.getDir();
     }
 
@@ -255,6 +271,7 @@ public class GpsOutputHandler extends OutputHandler {
         File theProductDir = new File(IOUtil.joinDir(getProductDir(),
                                  jobId.toString()));
         IOUtil.makeDir(theProductDir);
+
         return theProductDir;
     }
 
@@ -271,6 +288,13 @@ public class GpsOutputHandler extends OutputHandler {
         return entry.getTypeHandler().isType(GpsTypeHandler.TYPE_RAW);
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     private boolean isGps(Entry entry) {
         return entry.getTypeHandler().isType(GpsTypeHandler.TYPE_GPS);
     }
@@ -283,7 +307,8 @@ public class GpsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private boolean isSolution(Entry entry) {
-        return entry.getTypeHandler().isType(SolutionTypeHandler.TYPE_SOLUTION);
+        return entry.getTypeHandler().isType(
+            SolutionTypeHandler.TYPE_SOLUTION);
     }
 
     /**
@@ -307,6 +332,11 @@ public class GpsOutputHandler extends OutputHandler {
         return teqcPath != null;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean haveRunPkr() {
         return runPkrPath != null;
     }
@@ -332,16 +362,18 @@ public class GpsOutputHandler extends OutputHandler {
                     if (isRawGps(child)) {
                         links.add(makeLink(request, state.group,
                                            OUTPUT_GPS_TORINEX));
+
                         break;
                     }
                 }
             }
 
             for (Entry child : entries) {
-                if(isGps(child)) {
-                    if(getAccessManager().canEditEntry(request,child)) {
+                if (isGps(child)) {
+                    if (getAccessManager().canEditEntry(request, child)) {
                         links.add(makeLink(request, state.group,
                                            OUTPUT_GPS_BULKEDIT));
+
                         break;
                     }
                 }
@@ -350,6 +382,7 @@ public class GpsOutputHandler extends OutputHandler {
                 if (isRinex(child)) {
                     links.add(makeLink(request, state.group,
                                        OUTPUT_GPS_OPUS));
+
                     break;
                 }
             }
@@ -357,6 +390,7 @@ public class GpsOutputHandler extends OutputHandler {
                 if (isSolution(child)) {
                     links.add(makeLink(request, state.group,
                                        OUTPUT_GPS_CONTROLPOINTS));
+
                     break;
                 }
             }
@@ -403,6 +437,7 @@ public class GpsOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_GPS_CONTROLPOINTS)) {
             return outputControlpoint(request, group, entries);
         }
+
         return outputOpus(request, group, entries);
     }
 
@@ -454,7 +489,7 @@ public class GpsOutputHandler extends OutputHandler {
         OutputStream os = request.getHttpServletResponse().getOutputStream();
         request.getHttpServletResponse().setContentType("application/zip");
         ZipOutputStream zos = new ZipOutputStream(os);
-        File[] files = getWorkDir(request.getString(ARG_RINEX_DOWNLOAD,
+        File[] files        = getWorkDir(request.getString(ARG_RINEX_DOWNLOAD,
                            "bad")).listFiles();
         for (File f : files) {
             if ( !f.getName().endsWith(RINEX_SUFFIX) || (f.length() == 0)) {
@@ -469,6 +504,7 @@ public class GpsOutputHandler extends OutputHandler {
         IOUtil.close(zos);
         Result result = new Result();
         result.setNeedToWrite(false);
+
         return result;
     }
 
@@ -506,6 +542,7 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append("</tr>");
         }
         sb.append(HtmlUtils.formTableClose());
+
         return new Result("GPS Metadata", sb);
     }
 
@@ -541,6 +578,7 @@ public class GpsOutputHandler extends OutputHandler {
                     state = STATE_PLOT;
                     sb.append("<pre>");
                 }
+
                 continue;
             }
             if (state == STATE_PLOT) {
@@ -557,6 +595,7 @@ public class GpsOutputHandler extends OutputHandler {
                 if (trimmed.startsWith("*******")) {
                     state = STATE_LIST;
                 }
+
                 continue;
             }
             if (state == STATE_LIST) {
@@ -572,6 +611,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
         }
         sb.append(HtmlUtils.formTableClose());
+
         return new Result("GPS Metadata", sb);
     }
 
@@ -601,13 +641,13 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
             sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                      OUTPUT_GPS_TORINEX.getId()));
+                                       OUTPUT_GPS_TORINEX.getId()));
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
             sb.append(HtmlUtils.hidden(ARG_RINEX_PROCESS, "true"));
 
             if (entries.size() == 1) {
                 sb.append(HtmlUtils.hidden(ARG_GPS_FILE,
-                                          entries.get(0).getId()));
+                                           entries.get(0).getId()));
             } else {
                 sb.append(msgHeader("Select entries"));
                 for (Entry entry : entries) {
@@ -623,7 +663,9 @@ public class GpsOutputHandler extends OutputHandler {
                                         .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
                                             .TYPE_RINEX).size() > 0;
 
-                    if(request.isAnonymous()) hasRinex = false;
+                    if (request.isAnonymous()) {
+                        hasRinex = false;
+                    }
                     sb.append(HtmlUtils.checkbox(ARG_GPS_FILE, entry.getId(),
                             !hasRinex));
                     sb.append(" ");
@@ -648,6 +690,7 @@ public class GpsOutputHandler extends OutputHandler {
 
             sb.append(HtmlUtils.submit("Make RINEX"));
             sb.append(HtmlUtils.formClose());
+
             return new Result("", sb);
         }
 
@@ -660,8 +703,8 @@ public class GpsOutputHandler extends OutputHandler {
         boolean anyOK = false;
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
-        String uniqueId = getRepository().getGUID();
-        File   workDir  = getWorkDir(uniqueId);
+        String                   uniqueId       = getRepository().getGUID();
+        File                     workDir        = getWorkDir(uniqueId);
 
         Hashtable<String, Entry> fileToEntryMap = new Hashtable<String,
                                                       Entry>();
@@ -676,17 +719,19 @@ public class GpsOutputHandler extends OutputHandler {
                 sb.append("<li>");
                 sb.append("Skipping:" + rawEntry.getName());
                 sb.append(HtmlUtils.p());
+
                 continue;
             }
 
             File rawFile = rawEntry.getFile();
             if ( !rawFile.exists()) {
-                throw new IllegalStateException("File does not exist:" + rawFile);
+                throw new IllegalStateException("File does not exist:"
+                        + rawFile);
             }
 
-            String inputFile = getRawFile(rawFile.toString());
+            String            inputFile = getRawFile(rawFile.toString());
 
-            GregorianCalendar cal =
+            GregorianCalendar cal       =
                 new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
             cal.setTime(new Date(rawEntry.getStartDate()));
 
@@ -702,18 +747,20 @@ public class GpsOutputHandler extends OutputHandler {
             File rinexFile = new File(IOUtil.joinDir(workDir, tail));
             fileToEntryMap.put(rinexFile.toString(), rawEntry);
 
-            List<String> args  = new ArrayList<String>();
+            List<String> args = new ArrayList<String>();
             args.add(teqcPath);
-            String antenna = rawEntry.getValue(IDX_ANTENNA_TYPE, (String)null);
-            double height = rawEntry.getValue(IDX_ANTENNA_HEIGHT,0.0);
+            String antenna = rawEntry.getValue(IDX_ANTENNA_TYPE,
+                                 (String) null);
+            double height = rawEntry.getValue(IDX_ANTENNA_HEIGHT, 0.0);
 
-            if(height!=0) { 
+            if (height != 0) {
                 args.add("-O.pe");
-                args.add(""+height);
+                args.add("" + height);
                 args.add("0");
                 args.add("0");
             }
-            if(antenna!=null && antenna.length()>0 && !antenna.equalsIgnoreCase(Antenna.NONE)) {
+            if ((antenna != null) && (antenna.length() > 0)
+                    && !antenna.equalsIgnoreCase(Antenna.NONE)) {
                 args.add("-O.at");
                 args.add(antenna);
             }
@@ -722,8 +769,8 @@ public class GpsOutputHandler extends OutputHandler {
             args.add(inputFile);
             ProcessBuilder pb = new ProcessBuilder(args);
             pb.directory(workDir);
-            Process process = pb.start();
-            String errorMsg =
+            Process process  = pb.start();
+            String  errorMsg =
                 new String(IOUtil.readBytes(process.getErrorStream()));
             String outMsg =
                 new String(IOUtil.readBytes(process.getInputStream()));
@@ -824,96 +871,121 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
             sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                      OUTPUT_GPS_TORINEX.getId()));
+                                       OUTPUT_GPS_TORINEX.getId()));
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
             sb.append(HtmlUtils.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
             sb.append(HtmlUtils.submit(msg("Download Results")));
             sb.append(HtmlUtils.formClose());
         }
+
         return new Result("", sb);
     }
 
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private Result outputBulkEdit(Request request, Entry mainEntry,
                                   List<Entry> entries)
-        throws Exception {
+            throws Exception {
 
-        HashSet selected = null;
-        HashSet changed = new HashSet();
-        StringBuffer sb = new StringBuffer();
+        HashSet      selected = null;
+        HashSet      changed  = new HashSet();
+        StringBuffer sb       = new StringBuffer();
         if (request.get(ARG_RINEX_PROCESS, false)) {
-            selected=  new HashSet();
-            int cnt = 0;
-            Double overrideHeight = null;
+            selected = new HashSet();
+            int    cnt             = 0;
+            Double overrideHeight  = null;
             String overrideAntenna = null;
-            if(request.defined(ARG_GPS_ANTENNA_TYPE) && !request.getString(ARG_GPS_ANTENNA_TYPE,"").trim().equals(Antenna.NONE.trim())) {
-                overrideAntenna = request.getString(ARG_GPS_ANTENNA_TYPE,"");
+            if (request.defined(ARG_GPS_ANTENNA_TYPE)
+                    && !request.getString(
+                        ARG_GPS_ANTENNA_TYPE, "").trim().equals(
+                        Antenna.NONE.trim())) {
+                overrideAntenna = request.getString(ARG_GPS_ANTENNA_TYPE, "");
             }
-            if(request.defined(ARG_GPS_ANTENNA_HEIGHT)) {
-                overrideHeight =  new Double(request.get(ARG_GPS_ANTENNA_HEIGHT,0.0));
+            if (request.defined(ARG_GPS_ANTENNA_HEIGHT)) {
+                overrideHeight =
+                    new Double(request.get(ARG_GPS_ANTENNA_HEIGHT, 0.0));
             }
 
-            while(true) {
+            while (true) {
                 cnt++;
                 String suffix = "_" + cnt;
-                if(!request.defined(ARG_GPS_FILE+suffix)) {
+                if ( !request.defined(ARG_GPS_FILE + suffix)) {
                     break;
                 }
-                String entryId = request.getString(ARG_GPS_FILE+suffix,"");
-                Entry entry = getEntryManager().getEntry(request, entryId);
+                String entryId = request.getString(ARG_GPS_FILE + suffix, "");
+                Entry  entry   = getEntryManager().getEntry(request, entryId);
                 if (entry == null) {
                     throw new IllegalArgumentException("No entry:" + entryId);
                 }
 
                 if ( !isGps(entry)) {
                     sb.append(HtmlUtils.p());
+
                     continue;
                 }
-                if(!request.get(ARG_GPS_SELECTED +suffix,false)) {
+                if ( !request.get(ARG_GPS_SELECTED + suffix, false)) {
                     continue;
                 }
-                if(!getAccessManager().canEditEntry(request, entry)) {
+                if ( !getAccessManager().canEditEntry(request, entry)) {
                     continue;
                 }
 
-                if(!getAccessManager().canEditEntry(request, entry)) {
-                    throw new AccessException("Cannot edit:" + entry.getLabel(),
-                                              request);
+                if ( !getAccessManager().canEditEntry(request, entry)) {
+                    throw new AccessException("Cannot edit:"
+                            + entry.getLabel(), request);
                 }
-                Object [] values = ((GenericTypeHandler)entry.getTypeHandler()).getEntryValues(entry);
+                Object[] values =
+                    ((GenericTypeHandler) entry.getTypeHandler())
+                        .getEntryValues(entry);
                 Object oldAntenna = values[IDX_ANTENNA_TYPE];
-                Object oldHeight = values[IDX_ANTENNA_HEIGHT];
+                Object oldHeight  = values[IDX_ANTENNA_HEIGHT];
                 selected.add(entry.getId());
-                if(overrideAntenna!=null) {
+                if (overrideAntenna != null) {
                     values[IDX_ANTENNA_TYPE] = overrideAntenna;
-                } else if(request.defined(ARG_GPS_ANTENNA_TYPE+suffix)) {
-                    values[IDX_ANTENNA_TYPE] = request.getString(ARG_GPS_ANTENNA_TYPE+suffix,"");
+                } else if (request.defined(ARG_GPS_ANTENNA_TYPE + suffix)) {
+                    values[IDX_ANTENNA_TYPE] =
+                        request.getString(ARG_GPS_ANTENNA_TYPE + suffix, "");
                 }
-                if(overrideHeight!=null) {
+                if (overrideHeight != null) {
                     values[IDX_ANTENNA_HEIGHT] = overrideHeight;
-                } else if(request.defined(ARG_GPS_ANTENNA_HEIGHT+suffix)) {
-                    values[IDX_ANTENNA_HEIGHT] = new Double(request.get(ARG_GPS_ANTENNA_HEIGHT+suffix,0.0));
+                } else if (request.defined(ARG_GPS_ANTENNA_HEIGHT + suffix)) {
+                    values[IDX_ANTENNA_HEIGHT] =
+                        new Double(request.get(ARG_GPS_ANTENNA_HEIGHT
+                            + suffix, 0.0));
                 }
                 entry.setValues(values);
-                if(!Misc.equals(oldAntenna,values[IDX_ANTENNA_TYPE]) ||
-                   !Misc.equals(oldHeight, values[IDX_ANTENNA_HEIGHT])) {
+                if ( !Misc.equals(oldAntenna, values[IDX_ANTENNA_TYPE])
+                        || !Misc.equals(oldHeight,
+                                        values[IDX_ANTENNA_HEIGHT])) {
                     changed.add(entry.getId());
                     getEntryManager().storeEntry(entry);
                 }
             }
-            if(changed.size()>0) {
-                sb.append(getRepository().showDialogNote(changed.size() +" " + msg("entries have been updated")));
-            } else if(selected.size()>0) {
-                sb.append(getRepository().showDialogNote(msg("No entries were changed")));
+            if (changed.size() > 0) {
+                sb.append(getRepository().showDialogNote(changed.size() + " "
+                        + msg("entries have been updated")));
+            } else if (selected.size() > 0) {
+                sb.append(
+                    getRepository().showDialogNote(
+                        msg("No entries were changed")));
             }
-        } 
+        }
 
         sb.append(HtmlUtils.p());
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                   OUTPUT_GPS_BULKEDIT.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_GPS_BULKEDIT.getId()));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
         sb.append(HtmlUtils.hidden(ARG_RINEX_PROCESS, "true"));
 
@@ -925,47 +997,49 @@ public class GpsOutputHandler extends OutputHandler {
             if ( !isGps(entry)) {
                 continue;
             }
-            if(!getAccessManager().canEditEntry(request, entry)) {
+            if ( !getAccessManager().canEditEntry(request, entry)) {
                 continue;
             }
 
-            if(cnt==0) {
-                sb.append(HtmlUtils.row(HtmlUtils.cols("","",
-                                                       msg("GPS File"),
-                                                       msg("Antenna Height"),
-                                                       msg("Antenna"))));
+            if (cnt == 0) {
+                sb.append(HtmlUtils.row(HtmlUtils.cols("", "",
+                        msg("GPS File"), msg("Antenna Height"),
+                        msg("Antenna"))));
             }
             cnt++;
             String suffix = "_" + cnt;
-            sb.append(HtmlUtils.hidden(ARG_GPS_FILE+suffix, entry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_GPS_FILE + suffix, entry.getId()));
             boolean entrySelected = true;
-            if(selected!=null)
+            if (selected != null) {
                 entrySelected = selected.contains(entry.getId());
-            sb.append(HtmlUtils.row(HtmlUtils.cols(changed.contains(entry.getId())?"Changed":"",
-                                                   HtmlUtils.checkbox(ARG_GPS_SELECTED +suffix, "true",
-                                                                      entrySelected),
-                                                   entry.getName(),
-                                                   HtmlUtils.input(ARG_GPS_ANTENNA_HEIGHT+suffix,
-                                                                   entry.getValue(IDX_ANTENNA_HEIGHT, ""),
-                                                                   5),
-                                                   HtmlUtils.select(ARG_GPS_ANTENNA_TYPE + suffix,
-                                                                    Antenna.getAntennas(),
-                                                                    entry.getValue(IDX_ANTENNA_TYPE, "")))));
+            }
+            sb.append(
+                HtmlUtils.row(HtmlUtils.cols(changed.contains(entry.getId())
+                                             ? "Changed"
+                                             : "", HtmlUtils.checkbox(
+                                             ARG_GPS_SELECTED
+                                             + suffix, "true", entrySelected), entry.getName(), HtmlUtils.input(
+                                                 ARG_GPS_ANTENNA_HEIGHT
+                                                     + suffix, entry.getValue(
+                                                         IDX_ANTENNA_HEIGHT, ""), 5), HtmlUtils.select(
+                                                             ARG_GPS_ANTENNA_TYPE
+                                                                 + suffix, Antenna.getAntennas(), entry.getValue(
+                                                                     IDX_ANTENNA_TYPE, "")))));
 
         }
 
-        sb.append(HtmlUtils.row(HtmlUtils.cols("",
-                                               "",
-                                               msgLabel("Override values"),
-                                               HtmlUtils.input(ARG_GPS_ANTENNA_HEIGHT,"",5),
-                                               HtmlUtils.select(ARG_GPS_ANTENNA_TYPE,
-                                                                Antenna.getAntennas(), ""))));
+        sb.append(HtmlUtils.row(HtmlUtils.cols("", "",
+                msgLabel("Override values"),
+                HtmlUtils.input(ARG_GPS_ANTENNA_HEIGHT, "", 5),
+                HtmlUtils.select(ARG_GPS_ANTENNA_TYPE, Antenna.getAntennas(),
+                                 ""))));
 
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit("Apply Edits"));
         sb.append(HtmlUtils.formClose());
+
         return new Result("", sb);
 
 
@@ -994,7 +1068,7 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.p());
             sb.append(request.form(getRepository().URL_ENTRY_SHOW));
             sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                      OUTPUT_GPS_CONTROLPOINTS.getId()));
+                                       OUTPUT_GPS_CONTROLPOINTS.getId()));
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
             sb.append(HtmlUtils.hidden(ARG_PROCESS, "true"));
             sb.append(HtmlUtils.formTable());
@@ -1009,16 +1083,19 @@ public class GpsOutputHandler extends OutputHandler {
             StringBuffer entryTable = new StringBuffer("<table>");
             entryTable.append("<tr><td align=center></td>");
             entryTable.append("<td colspan=3 align=center>");
-            entryTable.append(HtmlUtils.checkbox(ARG_COORD_XYZ,"true", true));
+            entryTable.append(HtmlUtils.checkbox(ARG_COORD_XYZ, "true",
+                    true));
             entryTable.append(HtmlUtils.space(1));
             entryTable.append(msg("Include X/Y/Z"));
             entryTable.append("</td>");
             entryTable.append("<td colspan=3 align=center>");
-            entryTable.append(HtmlUtils.checkbox(ARG_COORD_LONLATALT,"true", true));
+            entryTable.append(HtmlUtils.checkbox(ARG_COORD_LONLATALT, "true",
+                    true));
             entryTable.append(HtmlUtils.space(1));
             entryTable.append(msg("Include Lat/Lon/Elev"));
             entryTable.append("</td></tr>");
-            entryTable.append("<tr><td align=center></td><td align=center><b>X</b></td><td align=center><b>Y</b></td><td align=center><b>Z</b></td><td align=center><b>Longitude</b></td><td align=center><b>Latitude</b></td><td align=center><b>Elevation</b></td></tr>");
+            entryTable.append(
+                "<tr><td align=center></td><td align=center><b>X</b></td><td align=center><b>Y</b></td><td align=center><b>Z</b></td><td align=center><b>Longitude</b></td><td align=center><b>Latitude</b></td><td align=center><b>Elevation</b></td></tr>");
 
             for (Entry entry : entries) {
                 if ( !isSolution(entry)) {
@@ -1040,19 +1117,19 @@ public class GpsOutputHandler extends OutputHandler {
                         "NA"));
 
                 entryTable.append("</td><td align=right>");
-                entryTable.append(""+entry.getLongitude());
+                entryTable.append("" + entry.getLongitude());
                 entryTable.append("</td>");
                 entryTable.append("</td><td align=right>");
-                entryTable.append(""+entry.getLatitude());
+                entryTable.append("" + entry.getLatitude());
                 entryTable.append("</td>");
                 entryTable.append("</td><td align=right>");
-                entryTable.append(""+entry.getAltitude());
+                entryTable.append("" + entry.getAltitude());
                 entryTable.append("</td></tr>");
 
             }
             entryTable.append("</table>");
             sb.append(HtmlUtils.formEntryTop(msgLabel("Entries"),
-                                            entryTable.toString()));
+                                             entryTable.toString()));
             addPublishWidget(
                 request, mainEntry, sb,
                 msg(
@@ -1061,6 +1138,7 @@ public class GpsOutputHandler extends OutputHandler {
 
             sb.append(HtmlUtils.submit("Make Control Point File"));
             sb.append(HtmlUtils.formClose());
+
             return new Result("", sb);
         }
 
@@ -1077,12 +1155,13 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
         List<Entry> solutionEntries = new ArrayList<Entry>();
-        double      maxLat      = -90;
-        double      minLat      = 90;
-        double      maxLon      = -180;
-        double      minLon      = 180;
+        double      maxLat          = -90;
+        double      minLat          = 90;
+        double      maxLon          = -180;
+        double      minLon          = 180;
         for (String entryId : entryIds) {
-            Entry solutionEntry = getEntryManager().getEntry(request, entryId);
+            Entry solutionEntry = getEntryManager().getEntry(request,
+                                      entryId);
             if (solutionEntry == null) {
                 throw new IllegalArgumentException("No entry:" + entryId);
             }
@@ -1091,6 +1170,7 @@ public class GpsOutputHandler extends OutputHandler {
                 sb.append("<li>");
                 sb.append("Skipping:" + solutionEntry.getName());
                 sb.append(HtmlUtils.p());
+
                 continue;
             }
 
@@ -1107,16 +1187,19 @@ public class GpsOutputHandler extends OutputHandler {
                 siteCode = solutionEntry.getName();
             }
             buff.append(siteCode);
-            if(request.get(ARG_COORD_XYZ, false)) {
+            if (request.get(ARG_COORD_XYZ, false)) {
                 buff.append(",");
-                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_X, "NA"));
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_X,
+                        "NA"));
                 buff.append(",");
-                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_Y, "NA"));
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_Y,
+                        "NA"));
                 buff.append(",");
-                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_Z, "NA"));
+                buff.append(solutionEntry.getValue(SolutionTypeHandler.IDX_Z,
+                        "NA"));
             }
 
-            if(request.get(ARG_COORD_LONLATALT, false)) {
+            if (request.get(ARG_COORD_LONLATALT, false)) {
                 buff.append(",");
                 buff.append(solutionEntry.getLongitude());
                 buff.append(",");
@@ -1138,6 +1221,7 @@ public class GpsOutputHandler extends OutputHandler {
 
         if ( !doingPublish(request)) {
             request.setReturnFilename("controlpoints.csv");
+
             return new Result("", buff, "text/csv");
         }
 
@@ -1158,7 +1242,8 @@ public class GpsOutputHandler extends OutputHandler {
             }
             //Write the text out
             File f = getStorageManager().getTmpFile(request, fileName);
-            FileOutputStream out = getStorageManager().getUncheckedFileOutputStream(f);
+            FileOutputStream out =
+                getStorageManager().getUncheckedFileOutputStream(f);
             out.write(buff.toString().getBytes());
             out.flush();
             out.close();
@@ -1169,7 +1254,7 @@ public class GpsOutputHandler extends OutputHandler {
 
             final double[] pts = { maxLat, minLon, minLat, maxLon };
 
-            Entry newEntry = getEntryManager().addFileEntry(request, f,
+            Entry newEntry     = getEntryManager().addFileEntry(request, f,
                                  parent, fileName, request.getUser(),
                                  typeHandler, new EntryInitializer() {
                 public void initEntry(Entry entry) {
@@ -1194,6 +1279,7 @@ public class GpsOutputHandler extends OutputHandler {
                         solutionEntry, "", ASSOCIATION_TYPE_GENERATED_FROM);
             }
         }
+
         return new Result("", sb);
     }
 
@@ -1201,29 +1287,49 @@ public class GpsOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     */
     private boolean isTrimble(String file) {
-        return file.endsWith(".t00") ||file.endsWith(".t01");
+        return file.endsWith(".t00") || file.endsWith(".t01");
     }
 
 
 
-    private String getRawFile(String inputFile) 
-            throws Exception {
-        if(isTrimble(inputFile)) {
-            if(!haveRunPkr()) {
+    /**
+     * _more_
+     *
+     * @param inputFile _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String getRawFile(String inputFile) throws Exception {
+        if (isTrimble(inputFile)) {
+            if ( !haveRunPkr()) {
                 return null;
             }
-            File datFile = getStorageManager().getTmpFile(getRepository().getTmpRequest(), IOUtil.getFileTail(IOUtil.stripExtension(inputFile))+".dat");
+            File datFile = getStorageManager().getTmpFile(
+                               getRepository().getTmpRequest(),
+                               IOUtil.getFileTail(
+                                   IOUtil.stripExtension(
+                                       inputFile)) + ".dat");
             ProcessBuilder pb1 = new ProcessBuilder(runPkrPath, "-d", "-g",
-                                                    inputFile, datFile.toString());
+                                     inputFile, datFile.toString());
             Process process1 = pb1.start();
-            String errorMsg =
+            String  errorMsg =
                 new String(IOUtil.readBytes(process1.getErrorStream()));
             String outMsg =
                 new String(IOUtil.readBytes(process1.getInputStream()));
             process1.waitFor();
             inputFile = datFile.toString();
         }
+
         return inputFile;
     }
 
@@ -1242,19 +1348,19 @@ public class GpsOutputHandler extends OutputHandler {
     private String extractGpsMetadata(File rinexFile, String flag)
             throws Exception {
         String inputFile = getRawFile(rinexFile.toString());
-        if(inputFile == null) {
+        if (inputFile == null) {
             //If its a trimble file and we don't have runpkr installed
             return "none";
         }
 
-        ProcessBuilder pb = new ProcessBuilder(teqcPath, flag,
-                                               inputFile);
-        Process process = pb.start();
-        String errorMsg =
+        ProcessBuilder pb = new ProcessBuilder(teqcPath, flag, inputFile);
+        Process        process  = pb.start();
+        String         errorMsg =
             new String(IOUtil.readBytes(process.getErrorStream()));
         String outMsg =
             new String(IOUtil.readBytes(process.getInputStream()));
         int result = process.waitFor();
+
         return outMsg;
     }
 
@@ -1353,9 +1459,11 @@ public class GpsOutputHandler extends OutputHandler {
                 new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             sdf.setTimeZone(getRepository().TIMEZONE_UTC);
             Date dttm = sdf.parse(date);
+
             return dttm;
         } catch (Exception exc) {
             System.err.println("Error:" + exc);
+
             return null;
         }
     }
@@ -1384,23 +1492,35 @@ public class GpsOutputHandler extends OutputHandler {
         if ( !request.defined(ARG_OPUS_EMAIL)) {
             sb.append(
                 getRepository().showDialogWarning("No email specified"));
+
             return outputOpusForm(request, mainEntry, entries, sb);
         }
 
         ActionManager.Action action = new ActionManager.Action() {
-                public void run(Object actionId) throws Exception {
-                    submitToOpus(request, mainEntry, entries, actionId);
-                }
-            };
-        
+            public void run(Object actionId) throws Exception {
+                submitToOpus(request, mainEntry, entries, actionId);
+            }
+        };
+
         return getActionManager().doAction(request, action,
                                            "Uploading to OPUS", "");
     }
 
 
-    private void submitToOpus(Request request,  Entry mainEntry,
-                                List<Entry> entries, Object actionId)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param entries _more_
+     * @param actionId _more_
+     *
+     * @throws Exception _more_
+     */
+    private void submitToOpus(Request request, Entry mainEntry,
+                              List<Entry> entries, Object actionId)
+            throws Exception {
+
         StringBuffer sb = new StringBuffer();
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
@@ -1425,6 +1545,7 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append(entry.getName());
             if ( !isRinex(entry)) {
                 sb.append(" ... skipping - not rinex");
+
                 continue;
             }
 
@@ -1473,7 +1594,7 @@ public class GpsOutputHandler extends OutputHandler {
             postEntries.add(HttpFormField.hidden("opusOption", "0"));
             postEntries.add(HttpFormField.hidden("frameValue", "2011"));
             //Use the entry id so when we get the opus back we can look up the original entry
-            String filename = request.getUser().getId()+"_" + entry.getId();
+            String filename = request.getUser().getId() + "_" + entry.getId();
             filename = entry.getId();
             postEntries.add(
                 new HttpFormField(
@@ -1482,7 +1603,7 @@ public class GpsOutputHandler extends OutputHandler {
                         getStorageManager().getFileInputStream(f))));
 
 
-            String url = OPUS_URL;
+            String   url      = OPUS_URL;
             String[] result   = { "", "" };
             String   errorMsg = null;
             try {
@@ -1518,6 +1639,7 @@ public class GpsOutputHandler extends OutputHandler {
                 sb.append("</pre>");
                 sb.append("</ul>");
                 getActionManager().setActionMessage(actionId, sb.toString());
+
                 break;
             } else {
                 if (html.indexOf("Upload successful") >= 0) {
@@ -1533,19 +1655,25 @@ public class GpsOutputHandler extends OutputHandler {
                     //                    System.out.println(result[1]);
                 }
             }
-            getActionManager().setActionMessage(actionId, sb.toString()+"</ul>");
-            if(!getActionManager().getActionOk(actionId)) break;
+            getActionManager().setActionMessage(actionId,
+                    sb.toString() + "</ul>");
+            if ( !getActionManager().getActionOk(actionId)) {
+                break;
+            }
         }
 
         sb.append("</ul>");
         sb.append("When you get the results in your email click ");
         sb.append(HtmlUtils.href(getRepository().getUrlBase()
-                                + "/gps/addopus", "here"));
+                                 + "/gps/addopus", "here"));
         sb.append(" to upload the OPUS solutions");
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW, mainEntry),
-                                 msg("Return to Folder")));
+        sb.append(
+            HtmlUtils.href(
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, mainEntry),
+                msg("Return to Folder")));
         getActionManager().setContinueHtml(actionId, sb.toString());
+
     }
 
 
@@ -1575,10 +1703,13 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.submit("Submit to OPUS"));
 
         sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("Email"),
-                                     HtmlUtils.input(ARG_OPUS_EMAIL,
-                                         request.getString(ARG_OPUS_EMAIL,
-                                             request.getUser().getEmail()))));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Email"),
+                HtmlUtils.input(
+                    ARG_OPUS_EMAIL,
+                    request.getString(
+                        ARG_OPUS_EMAIL, request.getUser().getEmail()))));
 
         sb.append(HtmlUtils.formTableClose());
         //request.getString(ARG_OPUS_ANTENNA, entry.getValue(IDX_ANTENNA_TYPE,"")
@@ -1588,6 +1719,7 @@ public class GpsOutputHandler extends OutputHandler {
                 continue;
             }
             selectedAntenna = (String) entry.getValue(IDX_ANTENNA_TYPE, "");
+
             break;
         }
 
@@ -1625,9 +1757,10 @@ public class GpsOutputHandler extends OutputHandler {
                             GpsOutputHandler
                                 .ASSOCIATION_TYPE_GENERATED_FROM), OpusTypeHandler
                                     .TYPE_OPUS).size() > 0) {
-                if(!request.isAnonymous()) {
+                if ( !request.isAnonymous()) {
                     selected = false;
-                    comment.append(HtmlUtils.italics("Already has an OPUS entry"));
+                    comment.append(
+                        HtmlUtils.italics("Already has an OPUS entry"));
                 }
             }
 
@@ -1660,8 +1793,7 @@ public class GpsOutputHandler extends OutputHandler {
             entriesSB.append("<td align=right>");
             selectedAntenna = (String) entry.getValue(IDX_ANTENNA_TYPE, "");
             entriesSB.append(HtmlUtils.select(ARG_OPUS_ANTENNA + argSuffix,
-                                             Antenna.getAntennas(),
-                                             selectedAntenna));
+                    Antenna.getAntennas(), selectedAntenna));
             entriesSB.append("</td>");
             entriesSB.append("<td align=right>");
             entriesSB.append(
@@ -1686,17 +1818,18 @@ public class GpsOutputHandler extends OutputHandler {
             HtmlUtils.formEntry(
                 "", "If defined use these values for antenna or height"));
         sb.append(HtmlUtils.formEntry(msgLabel("Antenna"),
-                                     HtmlUtils.select(ARG_OPUS_ANTENNA,
-                                         Antenna.getAntennas(), "")));
+                                      HtmlUtils.select(ARG_OPUS_ANTENNA,
+                                          Antenna.getAntennas(), "")));
         sb.append(HtmlUtils.formEntry(msgLabel("Antenna Height"),
-                                     HtmlUtils.input(ARG_OPUS_HEIGHT,
-                                         request.getString(ARG_OPUS_HEIGHT,
-                                             ""), HtmlUtils.SIZE_5)));
+                                      HtmlUtils.input(ARG_OPUS_HEIGHT,
+                                          request.getString(ARG_OPUS_HEIGHT,
+                                              ""), HtmlUtils.SIZE_5)));
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit("Submit to OPUS"));
         sb.append(HtmlUtils.formClose());
+
         return new Result("", sb);
     }
 
@@ -1717,14 +1850,18 @@ public class GpsOutputHandler extends OutputHandler {
             sb.append(
                 getRepository().showDialogError(
                     "You need to be logged in to add OPUS"));
+
             return new Result(OPUS_TITLE, sb);
         }
         if (request.exists(ARG_OPUS)) {
-            StringBuffer msgBuff = new StringBuffer();
-            Entry newEntry = processAddOpus(request,  request.getString(ARG_OPUS, ""), msgBuff);
-            if(newEntry==null) {
+            StringBuffer msgBuff  = new StringBuffer();
+            Entry        newEntry = processAddOpus(request,
+                                            request.getString(ARG_OPUS, ""),
+                                            msgBuff);
+            if (newEntry == null) {
                 sb.append(
-                          getRepository().showDialogError(msgBuff.toString()));
+                    getRepository().showDialogError(msgBuff.toString()));
+
                 return processOpusForm(request, sb);
             }
             sb.append(HtmlUtils.p());
@@ -1736,6 +1873,7 @@ public class GpsOutputHandler extends OutputHandler {
                         new String[] { ARG_ENTRYID,
                                        newEntry.getId() }), newEntry
                                            .getName()));
+
             return new Result(OPUS_TITLE, sb);
         }
 
@@ -1743,45 +1881,59 @@ public class GpsOutputHandler extends OutputHandler {
 
     }
 
-    public Entry processAddOpus(Request request, String opus, StringBuffer sb) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param opus _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry processAddOpus(Request request, String opus, StringBuffer sb)
+            throws Exception {
 
         //FILE: admin_2cc34996-d976-46d3-88b2-559fe3460f63 0
 
         String suffix = StringUtil.findPattern(opus,
-                                               "FILE:\\s*([^\\s\\.]+)(\\s|\\.rinex)");
+                            "FILE:\\s*([^\\s\\.]+)(\\s|\\.rinex)");
         if (suffix == null) {
             System.err.println("OPUS:" + opus);
             sb.append("Could not find FILE name in the given OPUS");
+
             return null;
         }
 
-        String user = null;
+        String user         = null;
         String rinexEntryId = null;
         //We encode the user id and rinex entry id in the posted filename
-        if(suffix.indexOf("_")>=0) {
-            user = StringUtil.findPattern(suffix,
-                                          "([^_]+)_");
+        if (suffix.indexOf("_") >= 0) {
+            user = StringUtil.findPattern(suffix, "([^_]+)_");
             if (user == null) {
                 sb.append("Could not find user id in: " + suffix);
+
                 return null;
             }
-            rinexEntryId = StringUtil.findPattern(suffix,
-                                          "[^_]+_(.*)$");
+            rinexEntryId = StringUtil.findPattern(suffix, "[^_]+_(.*)$");
             if (rinexEntryId == null) {
                 sb.append("Could not find rinex entry id in: " + suffix);
+
                 return null;
             }
         } else {
             rinexEntryId = suffix;
         }
 
-        if(rinexEntryId == null) {
+        if (rinexEntryId == null) {
             rinexEntryId = suffix;
         }
 
-        if(request == null) {
-            if(user == null) {
+        if (request == null) {
+            if (user == null) {
                 sb.append("Could not find user id in OPUS results");
+
                 return null;
             }
             request = getRepository().getTmpRequest(user);
@@ -1792,36 +1944,40 @@ public class GpsOutputHandler extends OutputHandler {
 
 
         final Entry rinexEntry = getEntryManager().getEntry(request,
-                                                            rinexEntryId);
+                                     rinexEntryId);
         if (rinexEntry == null) {
-            sb.append("Could not find original RINEX entry: "+ rinexEntryId);
+            sb.append("Could not find original RINEX entry: " + rinexEntryId);
+
             return null;
         }
         Entry parentEntry = rinexEntry.getParentEntry();
 
         //Look for the OPUS sibling folder
         for (Entry child :
-                 getEntryManager().getChildrenGroups(request,
-                                                     parentEntry.getParentEntry())) {
+                getEntryManager().getChildrenGroups(request,
+                    parentEntry.getParentEntry())) {
             if (child.getName().toLowerCase().trim().equals("solutions")) {
                 parentEntry = child;
+
                 break;
             }
             if (child.getName().toLowerCase().trim().equals("opus")) {
                 parentEntry = child;
+
                 break;
             }
         }
 
-        if(!getAccessManager().canDoAction(request, parentEntry,
-                                          Permission.ACTION_NEW)) {
+        if ( !getAccessManager().canDoAction(request, parentEntry,
+                                             Permission.ACTION_NEW)) {
             sb.append("You do not have permission to add to:"
-                        + parentEntry.getName());
+                      + parentEntry.getName());
+
             return null;
         }
 
         String opusFileName = IOUtil.stripExtension(rinexEntry.getName())
-            + ".opus";
+                              + ".opus";
         //Write the text out
         File f = getStorageManager().getTmpFile(request, opusFileName);
         FileOutputStream out = getStorageManager().getFileOutputStream(f);
@@ -1833,23 +1989,22 @@ public class GpsOutputHandler extends OutputHandler {
         TypeHandler typeHandler =
             getRepository().getTypeHandler(OpusTypeHandler.TYPE_OPUS);
 
-        final Object     siteCode = rinexEntry.getValue(IDX_SITE_CODE,
-                                                        "");
+        final Object     siteCode    = rinexEntry.getValue(IDX_SITE_CODE, "");
         EntryInitializer initializer = new EntryInitializer() {
-                public void initEntry(Entry entry) {
-                    entry.getTypeHandler().getValues(
-                                                     entry)[OpusTypeHandler.IDX_SITE_CODE] = siteCode;
-                    entry.setStartDate(rinexEntry.getStartDate());
-                    entry.setEndDate(rinexEntry.getEndDate());
-                }
-            };
+            public void initEntry(Entry entry) {
+                entry.getTypeHandler().getValues(
+                    entry)[OpusTypeHandler.IDX_SITE_CODE] = siteCode;
+                entry.setStartDate(rinexEntry.getStartDate());
+                entry.setEndDate(rinexEntry.getEndDate());
+            }
+        };
         Entry newEntry = getEntryManager().addFileEntry(request, f,
-                                                        parentEntry, opusFileName,
-                                                        request.getUser(), typeHandler, initializer);
+                             parentEntry, opusFileName, request.getUser(),
+                             typeHandler, initializer);
 
 
         boolean canEditRinex = getAccessManager().canDoAction(request,
-                                                              rinexEntry, Permission.ACTION_EDIT);
+                                   rinexEntry, Permission.ACTION_EDIT);
 
         //If we figured out location from the opus file then set the rinex entry location
 
@@ -1863,15 +2018,15 @@ public class GpsOutputHandler extends OutputHandler {
             }
 
             for (Entry rawEntry :
-                     getEntryManager()
-                     .getEntriesWithType(getAssociationManager()
-                                         .getTailEntriesWithAssociationType(request,
-                                                                            rinexEntry,
-                                                                            GpsOutputHandler
-                                                                            .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
-                                         .TYPE_RAW)) {
+                    getEntryManager()
+                        .getEntriesWithType(getAssociationManager()
+                            .getTailEntriesWithAssociationType(request,
+                                rinexEntry,
+                                GpsOutputHandler
+                                    .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
+                                        .TYPE_RAW)) {
                 if (getAccessManager().canDoAction(request, rawEntry,
-                                                   Permission.ACTION_EDIT)) {
+                        Permission.ACTION_EDIT)) {
                     rawEntry.setLocation(newEntry.getLatitude(),
                                          newEntry.getLongitude(),
                                          newEntry.getAltitude());
@@ -1880,9 +2035,10 @@ public class GpsOutputHandler extends OutputHandler {
             }
         }
         getRepository().addAuthToken(request);
-        getAssociationManager().addAssociation(request, newEntry,
-                                               rinexEntry, "generated rinex",
-                                               GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
+        getAssociationManager().addAssociation(request, newEntry, rinexEntry,
+                "generated rinex",
+                GpsOutputHandler.ASSOCIATION_TYPE_GENERATED_FROM);
+
         return newEntry;
     }
 
@@ -1910,6 +2066,7 @@ public class GpsOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.submit("Add OPUS Solution"));
         sb.append(HtmlUtils.formClose());
+
         return new Result(OPUS_TITLE, sb);
     }
 

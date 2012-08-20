@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,6 +26,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -36,7 +38,6 @@ import ucar.unidata.sql.SqlUtil;
 
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -119,6 +120,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         if (entry.isGroup()) {
             return iconUrl(ICON_FOLDER_CLOSED);
         }
+
         return super.getIconUrl(request, entry);
     }
 
@@ -141,6 +143,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         }
         String[] toks = new String[] { id.substring(0, idx),
                                        id.substring(idx + 4) };
+
         return toks;
     }
 
@@ -179,6 +182,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         if (id == null) {
             id = getNamePath(node);
         }
+
         return id;
     }
 
@@ -202,6 +206,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         if (parentId == null) {
             return name;
         }
+
         return parentId + "::" + name;
     }
 
@@ -232,6 +237,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
             root = XmlUtil.getRoot(url, getClass());
             domCache.put(url, new DomHolder(root));
         }
+
         return root;
     }
 
@@ -246,6 +252,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
      */
     private String getCatalogId(Entry mainEntry, String id) {
         id = RepositoryUtil.encodeBase64(id.getBytes());
+
         return ID_PREFIX_SYNTH + id;
     }
 
@@ -263,6 +270,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
         if (subid == null) {
             return getCatalogId(mainEntry, url);
         }
+
         return getCatalogId(mainEntry, url + ":id:" + subid);
     }
 
@@ -334,7 +342,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
             if (child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
                 //                String datasetId = getId(mainEntry, child);
                 String datasetId = getId(mainEntry, child.getBaseURI(), "");
-                String entryId = getCatalogId(mainEntry,
+                String entryId   = getCatalogId(mainEntry,
                                      url + ":id:" + datasetId);
                 childIdToParent.put(entryId, parentId);
                 ids.add(entryId);
@@ -349,6 +357,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
             }
         }
         System.err.println("ids:" + ids);
+
         return ids;
     }
 
@@ -400,6 +409,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
             if ((now.getTime() - dttm.getTime()) > 1000 * 60 * 5) {
                 return false;
             }
+
             return true;
         }
     }
@@ -505,6 +515,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
                         getUserManager().getLocalFileUser(), resource, "",
                         now.getTime(), now.getTime(), now.getTime(),
                         now.getTime(), null);
+
         return entry;
     }
 

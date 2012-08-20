@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -20,6 +21,7 @@
 
 package org.ramadda.geodata.idv;
 
+
 import org.ramadda.geodata.cdmdata.*;
 
 import org.ramadda.repository.*;
@@ -29,6 +31,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.util.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -69,7 +72,6 @@ import ucar.unidata.util.CacheManager;
 import ucar.unidata.util.ColorTable;
 import ucar.unidata.util.ContourInfo;
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.Range;
@@ -85,11 +87,15 @@ import ucar.unidata.xml.XmlUtil;
 import visad.Unit;
 
 import java.awt.Color;
+
 import java.io.*;
 import java.io.File;
 import java.io.InputStream;
+
 import java.net.*;
+
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -195,7 +201,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             java.awt.GraphicsEnvironment e =
                 java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
             e.getDefaultScreenDevice();
-            idvOk = true;
+            idvOk     = true;
             idvServer =
                 new IdvServer(new File(getStorageManager().getDir("idv")));
             //Only add the output types after we create the server
@@ -224,9 +230,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         return getDataOutputHandler().getCdmManager();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public CdmDataOutputHandler getDataOutputHandler() throws Exception {
         return (CdmDataOutputHandler) getRepository().getOutputHandler(
-                                                                    CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
+            CdmDataOutputHandler.OUTPUT_OPENDAP.toString());
     }
 
     /**
@@ -269,6 +282,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 if (getCdmManager().canLoadAsPoint(entry)) {
                     links.add(makeLink(request, entry, OUTPUT_IDV_POINT));
                 }
+
                 return;
             }
             links.add(makeLink(request, entry, OUTPUT_IDV_GRID));
@@ -299,6 +313,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 }
             }
         }
+
         return null;
     }
 
@@ -325,6 +340,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         if (output.equals(OUTPUT_IDV_POINT)) {
             return outputPoint(request, entry);
         }
+
         return super.outputEntry(request, outputType, entry);
     }
 
@@ -342,14 +358,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     public Result outputGrid(final Request request, Entry entry)
             throws Exception {
         //Check the data file path
-        String path   = getCdmManager().getPath(request, entry);
+        String path = getCdmManager().getPath(request, entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load grid");
+
             return new Result("Grid Displays", sb);
         }
 
-        String action = request.getString(ARG_IDV_ACTION, ACTION_MAKEINITFORM);
+        String action = request.getString(ARG_IDV_ACTION,
+                                          ACTION_MAKEINITFORM);
 
         //Get the dataset and create the data source
         GridDataset dataset = getCdmManager().getGridDataset(entry, path);
@@ -393,6 +411,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         makeGridForm(request, sb, entry, dataSource);
+
         return new Result("Grid Displays", sb);
     }
 
@@ -430,10 +449,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         basic.append(
             HtmlUtils.formEntry(
-                msgLabel("Product"),
-                htmlSelect(request, ARG_IDV_PRODUCT, productList)
-                + HtmlUtils.space(2)
-                + msg("Note: For Google Earth, make sure to set the view bounds")));
+                msgLabel("Product"), htmlSelect(
+                    request, ARG_IDV_PRODUCT, productList) + HtmlUtils.space(
+                    2) + msg(
+                    "Note: For Google Earth, make sure to set the view bounds")));
 
 
         String viewPointHtml = "";
@@ -463,9 +482,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         basic.append(HtmlUtils.formEntry(msgLabel("Make globe"),
-                                        htmlCheckbox(request, ARG_VIEW_GLOBE,
-                                            false) + HtmlUtils.space(2)
-                                                + viewPointHtml));
+                                         htmlCheckbox(request,
+                                             ARG_VIEW_GLOBE,
+                                             false) + HtmlUtils.space(2)
+                                                 + viewPointHtml));
 
 
 
@@ -503,16 +523,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
         basic.append(HtmlUtils.formEntry(msgLabel("Projection"),
-                                        htmlSelect(request,
-                                            ARG_VIEW_PROJECTION,
-                                            projectionOptions)));
+                                         htmlSelect(request,
+                                             ARG_VIEW_PROJECTION,
+                                             projectionOptions)));
 
 
         basic.append(HtmlUtils.formEntry(msgLabel("Azimuth/Tilt"),
-                                        htmlInput(request, ARG_AZIMUTH, "",
-                                            6) + " "
-                                                + htmlInput(request,
-                                                    ARG_TILT, "", 6)));
+                                         htmlInput(request, ARG_AZIMUTH, "",
+                                             6) + " "
+                                                 + htmlInput(request,
+                                                     ARG_TILT, "", 6)));
 
 
         List viewOptions = new ArrayList();
@@ -525,8 +545,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         viewOptions.add(new TwoFacedObject("top"));
 
         basic.append(HtmlUtils.formEntry(msgLabel("View"),
-                                        htmlSelect(request, ARG_VIEWDIR,
-                                            viewOptions)));
+                                         htmlSelect(request, ARG_VIEWDIR,
+                                             viewOptions)));
 
         /*
           basic.append(HtmlUtils.formEntry(msgLabel("Clip image"),
@@ -562,7 +582,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         StringBuffer  mapSB = new StringBuffer();
-        List<MapData> maps =
+        List<MapData> maps  =
             idvServer.getIdv().getResourceManager().getMaps();
         Hashtable<String, List<TwoFacedObject>> mapCatMap =
             new Hashtable<String, List<TwoFacedObject>>();
@@ -586,9 +606,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
         //      mapSB.append(msgHeader("Maps"));
-        String mapSelect = htmlSelect(request, ARG_MAPS, mapOptions,
-                                      HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE,
-                                          "true", HtmlUtils.ATTR_SIZE, "10"));
+        String mapSelect =
+            htmlSelect(request, ARG_MAPS, mapOptions,
+                       HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE, "true",
+                                       HtmlUtils.ATTR_SIZE, "10"));
         StringBuffer mapAttrs = new StringBuffer();
         mapAttrs.append(HtmlUtils.formTable());
         mapAttrs.append(
@@ -630,15 +651,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         mapAttrs.append(HtmlUtils.formEntry(msgLabel("Background Image"),
-                                           htmlSelect(request,
-                                               ARG_VIEW_BACKGROUNDIMAGE,
-                                                   backgrounds)));
+                                            htmlSelect(request,
+                                                ARG_VIEW_BACKGROUNDIMAGE,
+                                                    backgrounds)));
 
-        mapAttrs.append(HtmlUtils.formEntry(msgLabel("Wireframe"),
-                                           HtmlUtils.checkbox(ARG_WIREFRAME,
-                                               "true",
-                                                   request.get(ARG_WIREFRAME,
-                                                       false))));
+        mapAttrs.append(
+            HtmlUtils.formEntry(
+                msgLabel("Wireframe"),
+                HtmlUtils.checkbox(
+                    ARG_WIREFRAME, "true",
+                    request.get(ARG_WIREFRAME, false))));
 
         mapAttrs.append(
             HtmlUtils.formEntry(
@@ -654,7 +676,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         mapAttrs.append(HtmlUtils.formTableClose());
 
         mapSB.append(HtmlUtils.table(new Object[] { mapSelect, mapAttrs },
-                                    10));
+                                     10));
         //      basic =new StringBuffer(HtmlUtils.table(new Object[]{basic, mapSB},10));
         List<String> tabLabels   = new ArrayList<String>();
         List<String> tabContents = new ArrayList<String>();
@@ -662,7 +684,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         tabContents.add(basic.toString());
 
         StringBuffer bounds = new StringBuffer();
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo      map = getRepository().getMapManager().createMap(request,
                           true);
         map.addBox(entry, new MapProperties("blue", false));
         map.centerOn(entry);
@@ -774,7 +796,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 innerTabContents.add(htmlSelect(request,
                         ARG_TIMES + displayIdx, tfoTimes, true,
                         HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE, "true",
-                                       HtmlUtils.ATTR_SIZE, "5")));
+                                        HtmlUtils.ATTR_SIZE, "5")));
             }
 
             List levels       = choice.getAllLevels();
@@ -822,7 +844,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 idvServer.getIdv().getDisplayConventions().getParamRange(
                     choice.getName(), null);
 
-            List<String> ctCats = new ArrayList<String>();
+            List<String>                    ctCats   = new ArrayList<String>();
             Hashtable<String, StringBuffer> ctCatMap = new Hashtable<String,
                                                            StringBuffer>();
             for (ColorTable colorTable : (List<ColorTable>) colorTables) {
@@ -839,7 +861,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                              + getRepository().getUrlBase() + "/colortables/"
                              + icon + ">";
                 String div = HtmlUtils.div(img + " " + colorTable.getName(),
-                                          "");
+                                           "");
                 String call1 = HtmlUtils.call(
                                    "setFormValue",
                                    HtmlUtils.squote(
@@ -888,23 +910,24 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     IOUtil.cleanFileName(request.getString(ARG_COLORTABLE
                         + displayIdx, "")) + ".png";
                 String img = HtmlUtils.img(getRepository().getUrlBase()
-                                          + "/colortables/" + icon);
+                                           + "/colortables/" + icon);
                 ctDiv = request.getString(ARG_COLORTABLE + displayIdx,
                                           "-default-") + " " + img;
 
             }
-            ctsb.append(HtmlUtils.table(new Object[] { msgLabel("Color Table"),
-                    HtmlUtils.div(ctDiv,
-                                 HtmlUtils.id(ARG_COLORTABLE + "_html"
-                                             + displayIdx)) }, 2));
+            ctsb.append(HtmlUtils.table(new Object[] {
+                msgLabel("Color Table"),
+                HtmlUtils.div(ctDiv,
+                              HtmlUtils.id(ARG_COLORTABLE + "_html"
+                                           + displayIdx)) }, 2));
 
             String call = HtmlUtils.call("setFormValue",
-                                        "'" + ARG_COLORTABLE + displayIdx
-                                        + "','" + "" + "'") + ";"
-                                            + HtmlUtils.call("setHtml",
-                                                "'" + ARG_COLORTABLE
-                                                + "_html" + displayIdx
-                                                + "','" + "-default-" + "'");
+                                         "'" + ARG_COLORTABLE + displayIdx
+                                         + "','" + "" + "'") + ";"
+                                             + HtmlUtils.call("setHtml",
+                                                 "'" + ARG_COLORTABLE
+                                                 + "_html" + displayIdx
+                                                 + "','" + "-default-" + "'");
             ctsb.append(HtmlUtils.mouseClickHref(call, "Use default"));
             for (String ctcat : ctCats) {
                 ctsb.append(HtmlUtils.makeShowHideBlock(ctcat,
@@ -929,7 +952,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
             StringBuffer contoursb = new StringBuffer();
-            ContourInfo ci =
+            ContourInfo  ci        =
                 idvServer.getIdv().getDisplayConventions()
                     .findDefaultContourInfo(choice.getName());
             contoursb.append(HtmlUtils.formTable());
@@ -973,20 +996,20 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             StringBuffer misc = new StringBuffer();
             misc.append(HtmlUtils.formTable());
             misc.append(HtmlUtils.formEntry(msgLabel("Display List Label"),
-                                           htmlInput(request,
-                                               ARG_DISPLAYLISTLABEL
-                                                   + displayIdx, "", 30)));
-            String unitString = "";
-            Unit displayUnit =
+                                            htmlInput(request,
+                                                ARG_DISPLAYLISTLABEL
+                                                    + displayIdx, "", 30)));
+            String unitString  = "";
+            Unit   displayUnit =
                 idvServer.getIdv().getDisplayConventions().getDisplayUnit(
                     choice.getName(), null);
             if (displayUnit != null) {
                 unitString = displayUnit.toString();
             }
             misc.append(HtmlUtils.formEntry(msgLabel("Display Unit"),
-                                           htmlInput(request,
-                                               ARG_DISPLAYUNIT + displayIdx,
-                                                   unitString, 6)));
+                                            htmlInput(request,
+                                                ARG_DISPLAYUNIT + displayIdx,
+                                                    unitString, 6)));
 
             misc.append(
                 HtmlUtils.formEntry(
@@ -999,9 +1022,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
             misc.append(HtmlUtils.formEntry(msgLabel("Isosurface Value"),
-                                           htmlInput(request,
-                                               ARG_ISOSURFACEVALUE
-                                                   + displayIdx, "", 3)));
+                                            htmlInput(request,
+                                                ARG_ISOSURFACEVALUE
+                                                    + displayIdx, "", 3)));
             misc.append(
                 HtmlUtils.formEntry(
                     msgLabel("XS Selector"),
@@ -1016,17 +1039,17 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
             misc.append(HtmlUtils.formEntry(msgLabel("Vector/Barb Size"),
-                                           htmlInput(request,
-                                               ARG_FLOW_SCALE + displayIdx,
-                                                   "4", 3)));
+                                            htmlInput(request,
+                                                ARG_FLOW_SCALE + displayIdx,
+                                                    "4", 3)));
             misc.append(HtmlUtils.formEntry(msgLabel("Streamline Density"),
-                                           htmlInput(request,
-                                               ARG_FLOW_DENSITY + displayIdx,
-                                                   "1", 3)));
+                                            htmlInput(request,
+                                                ARG_FLOW_DENSITY
+                                                    + displayIdx, "1", 3)));
             misc.append(HtmlUtils.formEntry(msgLabel("Flow Skip"),
-                                           htmlInput(request,
-                                               ARG_FLOW_SKIP + displayIdx,
-                                                   "0", 3)));
+                                            htmlInput(request,
+                                                ARG_FLOW_SKIP + displayIdx,
+                                                    "0", 3)));
 
 
             misc.append(HtmlUtils.formTableClose());
@@ -1060,13 +1083,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 msg("Select a folder to publish the product to"));
             publishSB.append(HtmlUtils.formEntry("",
                     HtmlUtils.submit(msg("Publish image"),
-                                    ARG_SUBMIT_PUBLISH)));
+                                     ARG_SUBMIT_PUBLISH)));
 
             if (getAccessManager().canDoAction(request, entry,
                     Permission.ACTION_EDIT)) {
 
-                publishSB.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.p(),
-                        2)));
+                publishSB.append(
+                    HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.p(), 2)));
                 publishSB.append(
                     HtmlUtils.row(
                         HtmlUtils.colspan(
@@ -1079,7 +1102,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                         HtmlUtils.checkbox(ARG_SAVE_ATTACH, "true", false)));
                 publishSB.append(HtmlUtils.formEntry("",
                         HtmlUtils.submit(msg("Save settings"),
-                                        ARG_SUBMIT_SAVE)));
+                                         ARG_SUBMIT_SAVE)));
 
             }
             publishSB.append(HtmlUtils.formTableClose());
@@ -1128,7 +1151,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         StringBuffer fields  = new StringBuffer();
         List         options = new ArrayList();
         //            options.add(new TwoFacedObject("--Pick one--", ""));
-        List<String> cats = new ArrayList<String>();
+        List<String>                            cats = new ArrayList<String>();
         Hashtable<String, List<TwoFacedObject>> catMap =
             new Hashtable<String, List<TwoFacedObject>>();
         for (DataChoice dataChoice : choices) {
@@ -1179,10 +1202,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             for (Metadata metadata : metadataList) {
                 String url =
                     HtmlUtils.url(getRepository().URL_ENTRY_SHOW.toString(),
-                                 new String[] {
+                                  new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
-                    OUTPUT_IDV_GRID.toString(), ARG_IDV_ACTION, ACTION_MAKEPAGE,
-                    ARG_PREDEFINED, metadata.getId()
+                    OUTPUT_IDV_GRID.toString(), ARG_IDV_ACTION,
+                    ACTION_MAKEPAGE, ARG_PREDEFINED, metadata.getId()
                 });
                 sb.append(HtmlUtils.li(HtmlUtils.href(url,
                         metadata.getAttr1()), ""));
@@ -1239,6 +1262,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         if (request.exists(ARG_SUBMIT_PUBLISH) && doingPublish(request)) {
             File imageFile = (File) generateGridImage(request, entry,
                                  dataSource);
+
             return getEntryManager().processEntryPublish(request, imageFile,
                     null, entry, "derived product");
         }
@@ -1254,6 +1278,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     if (metadata.getId().equals(
                             request.getString(ARG_PREDEFINED, ""))) {
                         args = metadata.getAttr2();
+
                         break;
                     }
                 }
@@ -1310,7 +1335,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
         String args = request.getUrlArgs(exceptArgs, null, ".*_gvdflt");
-        url = url + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE + "&" + args;
+        url = url + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE + "&"
+              + args;
 
         if (request.defined(ARG_SUBMIT_SAVE)) {
             if ( !getAccessManager().canDoAction(request, entry,
@@ -1341,6 +1367,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                                  ""), args, fileName, "", "");
             getMetadataManager().insertMetadata(metadata);
             entry.addMetadata(metadata);
+
             return new Result(
                 request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
@@ -1350,22 +1377,23 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         islUrl = islUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE + "&"
                  + args + "&" + ARG_IDV_TARGET + "=" + TARGET_ISL;
-        jnlpUrl = jnlpUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE + "&"
-                  + args + "&" + ARG_IDV_TARGET + "=" + TARGET_JNLP;
+        jnlpUrl = jnlpUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_MAKEIMAGE
+                  + "&" + args + "&" + ARG_IDV_TARGET + "=" + TARGET_JNLP;
 
         boolean showForm = true;
 
         if (product.equals(PRODUCT_IMAGE)) {
             sb.append(HtmlUtils.img(url, "Image is being processed...",
-                                   HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                       request.getString(ARG_IMAGE_WIDTH,
-                                           "600"))));
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                        request.getString(ARG_IMAGE_WIDTH,
+                                            "600"))));
             showForm = false;
         } else if (product.equals(PRODUCT_MOV)) {
-            sb.append(HtmlUtils.href(url, "Click here to retrieve the movie"));
+            sb.append(HtmlUtils.href(url,
+                                     "Click here to retrieve the movie"));
         } else if (product.equals(PRODUCT_KMZ)) {
             sb.append(HtmlUtils.href(url,
-                                    "Click here to retrieve the KMZ file"));
+                                     "Click here to retrieve the KMZ file"));
         } else if (product.equals(PRODUCT_GEPLUGIN)) {
             url = url.replace(PRODUCT_GEPLUGIN, PRODUCT_KMZ);
             String id = getMapManager().getGoogleEarthPlugin(request, sb,
@@ -1381,8 +1409,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         StringBuffer formSB = new StringBuffer();
         makeGridForm(request, formSB, entry, dataSource);
         sb.append(HtmlUtils.div("",
-                               HtmlUtils.cssClass("image_edit_box")
-                               + HtmlUtils.id("image_edit_box")));
+                                HtmlUtils.cssClass("image_edit_box")
+                                + HtmlUtils.id("image_edit_box")));
 
         formSB.append(HtmlUtils.space(2));
         formSB.append(HtmlUtils.href(jnlpUrl, msg("Launch in the IDV")));
@@ -1393,7 +1421,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         sb.append("\n");
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.makeShowHideBlock(msg("Image Settings"),
-                                             formSB.toString(), showForm));
+                formSB.toString(), showForm));
 
         return new Result("Grid Displays", sb);
 
@@ -1422,6 +1450,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
         File   imageFile = (File) fileOrResult;
         String extension = IOUtil.getFileExtension(imageFile.toString());
+
         return new Result("",
                           getStorageManager().getFileInputStream(imageFile),
                           getRepository().getMimeTypeFromSuffix(extension));
@@ -1445,7 +1474,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String  id      = entry.getId();
         String  product = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
         boolean forIsl  = request.getString(ARG_IDV_TARGET,
-                                            "").equals(TARGET_ISL);
+                                           "").equals(TARGET_ISL);
         boolean forJnlp = request.getString(ARG_IDV_TARGET,
                                             "").equals(TARGET_JNLP);
         if (forJnlp) {
@@ -1592,7 +1621,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String bgTrans  = "";
         String bgSuffix = "";
         if (request.get(ARG_BACKGROUND_TRANSPARENT, false)) {
-            bgTrans = XmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
+            bgTrans  = XmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
             bgSuffix = XmlUtil.attr(ImageSequenceGrabber.ATTR_IMAGESUFFIX,
                                     ".png");
         }
@@ -1979,10 +2008,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 IdvWebstartOutputHandler.getJnlpTemplate(getRepository());
             StringBuffer args = new StringBuffer();
             args.append("<argument>-b64isl</argument>");
-            args.append("<argument>"
-                        + RepositoryUtil.encodeBase64(isl.toString().getBytes())
-                        + "</argument>");
+            args.append(
+                "<argument>"
+                + RepositoryUtil.encodeBase64(isl.toString().getBytes())
+                + "</argument>");
             jnlp = jnlp.replace("${args}", args.toString());
+
             return new Result("data.jnlp", new StringBuffer(jnlp),
                               "application/x-java-jnlp-file");
         }
@@ -2005,6 +2036,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
             imageCache.put(imageKey, imageFile);
         }
+
         return imageFile;
     }
 
@@ -2031,6 +2063,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 GridAggregationTypeHandler.TYPE_GRIDAGGREGATION)) {
             return outputEntry(request, outputType, group);
         }
+
         return super.outputGroup(request, outputType, group, subGroups,
                                  entries);
     }
@@ -2066,7 +2099,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         formSB.append(HtmlUtils.p());
         formSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         formSB.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_POINT));
-        formSB.append(HtmlUtils.hidden(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE));
+        formSB.append(HtmlUtils.hidden(ARG_IDV_ACTION,
+                                       ACTION_POINT_MAKEPAGE));
         formSB.append(HtmlUtils.formTable());
         StationModelManager smm = idvServer.getIdv().getStationModelManager();
         List                layoutModels     = smm.getStationModels();
@@ -2077,29 +2111,29 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         formSB.append(HtmlUtils.formEntry(msgLabel("Layout Model"),
-                                         htmlSelect(request,
-                                             ARG_POINT_LAYOUTMODEL,
-                                             layoutModelNames)));
+                                          htmlSelect(request,
+                                              ARG_POINT_LAYOUTMODEL,
+                                                  layoutModelNames)));
 
         formSB.append(HtmlUtils.formEntry(msgLabel("Animate"),
-                                         htmlCheckbox(request,
-                                             ARG_POINT_DOANIMATION, false)));
+                                          htmlCheckbox(request,
+                                              ARG_POINT_DOANIMATION, false)));
 
 
         formSB.append(HtmlUtils.formEntry(msgLabel("Image Size"),
-                                         htmlInput(request, ARG_IMAGE_WIDTH,
-                                             "600") + HtmlUtils.space(1) + "X"
-                                                 + HtmlUtils.space(1)
-                                                     + htmlInput(request,
-                                                         ARG_IMAGE_HEIGHT,
-                                                             "400")));
+                                          htmlInput(request, ARG_IMAGE_WIDTH,
+                                              "600") + HtmlUtils.space(1)
+                                                  + "X" + HtmlUtils.space(1)
+                                                      + htmlInput(request,
+                                                          ARG_IMAGE_HEIGHT,
+                                                              "400")));
 
 
         formSB.append(HtmlUtils.formTableClose());
         formSB.append(HtmlUtils.formClose());
 
 
-        String url = getRepository().URL_ENTRY_SHOW.getFullUrl();
+        String url    = getRepository().URL_ENTRY_SHOW.getFullUrl();
         String islUrl = url + "/" + IOUtil.stripExtension(entry.getName())
                         + ".isl";
         String jnlpUrl = url + "/" + IOUtil.stripExtension(entry.getName())
@@ -2114,15 +2148,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
               + args;
         islUrl = islUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_POINT_MAKEIMAGE
                  + "&" + args + "&" + ARG_IDV_TARGET + "=" + TARGET_ISL;
-        jnlpUrl = jnlpUrl + "?" + ARG_IDV_ACTION + "=" + ACTION_POINT_MAKEIMAGE
-                  + "&" + args + "&" + ARG_IDV_TARGET + "=" + TARGET_JNLP;
+        jnlpUrl = jnlpUrl + "?" + ARG_IDV_ACTION + "="
+                  + ACTION_POINT_MAKEIMAGE + "&" + args + "&"
+                  + ARG_IDV_TARGET + "=" + TARGET_JNLP;
 
         StringBuffer imageSB = new StringBuffer();
 
         imageSB.append(HtmlUtils.img(url, "",
-                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                        request.getString(ARG_IMAGE_WIDTH,
-                                            "400"))));
+                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                         request.getString(ARG_IMAGE_WIDTH,
+                                             "400"))));
 
         if ( !request.exists(ARG_SUBMIT)) {
             sb.append(formSB);
@@ -2160,17 +2195,19 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
 
-        String action = request.getString(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE);
-        String path   = getCdmManager().getPath(entry);
+        String action = request.getString(ARG_IDV_ACTION,
+                                          ACTION_POINT_MAKEPAGE);
+        String path = getCdmManager().getPath(entry);
         if (path == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("Could not load point data");
+
             return new Result("", sb);
         }
 
 
-        FeatureDatasetPoint dataset =
-            getCdmManager().getPointDataset(entry, path);
+        FeatureDatasetPoint dataset = getCdmManager().getPointDataset(entry,
+                                          path);
         DataSourceDescriptor descriptor =
             idvServer.getIdv().getDataManager().getDescriptor("NetCDF.POINT");
         NetcdfPointDataSource dataSource = new NetcdfPointDataSource(dataset,
@@ -2178,8 +2215,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         try {
 
 
-            String id = entry.getId();
-            File image = getStorageManager().getThumbFile("preview_"
+            String id    = entry.getId();
+            File   image = getStorageManager().getThumbFile("preview_"
                              + id.replace("/", "_") + ".gif");
 
             boolean forIsl = request.getString(ARG_IDV_TARGET,
@@ -2247,7 +2284,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                             "id", "datasource", "url",
                             request.getAbsoluteUrl(
                                 getRepository().URL_ENTRY_SHOW
-                                + getDataOutputHandler().getOpendapUrl(entry)))));
+                                + getDataOutputHandler().getOpendapUrl(
+                                    entry)))));
             } else {
                 isl.append(XmlUtil.openTag(ImageGenerator.TAG_DATASOURCE,
                                            XmlUtil.attrs("id",
@@ -2294,10 +2332,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                         "/org/ramadda/repository/idv/template.jnlp");
                 StringBuffer args = new StringBuffer();
                 args.append("<argument>-b64isl</argument>");
-                args.append("<argument>"
-                            + RepositoryUtil.encodeBase64(isl.toString().getBytes())
-                            + "</argument>");
+                args.append(
+                    "<argument>"
+                    + RepositoryUtil.encodeBase64(isl.toString().getBytes())
+                    + "</argument>");
                 jnlp = jnlp.replace("${args}", args.toString());
+
                 return new Result("data.jnlp", new StringBuffer(jnlp),
                                   "application/x-java-jnlp-file");
             }
@@ -2312,6 +2352,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             System.err.println("isl time:" + (t2 - t1));
 
             Trace.stopTrace();
+
             return new Result("preview.gif",
                               getStorageManager().getFileInputStream(image),
                               "image/gif");
@@ -2333,7 +2374,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      */
     public Result outputPoint(final Request request, Entry entry)
             throws Exception {
-        String action = request.getString(ARG_IDV_ACTION, ACTION_POINT_MAKEPAGE);
+        String action = request.getString(ARG_IDV_ACTION,
+                                          ACTION_POINT_MAKEPAGE);
         if (action.equals(ACTION_POINT_MAKEPAGE)) {
             return outputPointPage(request, entry);
         } else {
@@ -2374,7 +2416,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * utility method 
+     * utility method
      *
      * @param request The request
      * @param arg _more_
@@ -2389,13 +2431,14 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         } else if (request.exists(arg + "_gvdflt")) {
             value = false;
         }
+
         return HtmlUtils.checkbox(arg, "true", value)
                + HtmlUtils.hidden(arg + "_gvdflt", "" + value);
     }
 
 
     /**
-     * utility method 
+     * utility method
      *
      * @param request The request
      * @param arg _more_
@@ -2411,12 +2454,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         if ((selected.size() == 0) && selectFirstOne && (items.size() > 0)) {
             selected.add(items.get(0));
         }
+
         return HtmlUtils.select(arg, items, selected, extra);
     }
 
 
     /**
-     * utility method 
+     * utility method
      *
      * @param request The request
      * @param arg _more_
@@ -2431,7 +2475,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     }
 
     /**
-     * utility method 
+     * utility method
      *
      * @param request The request
      * @param arg _more_

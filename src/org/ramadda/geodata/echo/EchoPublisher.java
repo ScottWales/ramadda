@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -31,13 +32,13 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
-
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -190,11 +191,11 @@ public class EchoPublisher extends Harvester {
 
         super.createEditForm(request, sb);
         sb.append(HtmlUtils.formEntry("ECHO FTP URL",
-                                     HtmlUtils.input(ATTR_FTP_URL, ftpUrl,
-                                         60)));
+                                      HtmlUtils.input(ATTR_FTP_URL, ftpUrl,
+                                          60)));
         sb.append(HtmlUtils.formEntry("ECHO User",
-                                     HtmlUtils.input(ATTR_FTP_USER, ftpUser,
-                                         60)));
+                                      HtmlUtils.input(ATTR_FTP_USER, ftpUser,
+                                          60)));
     }
 
     /**
@@ -218,6 +219,7 @@ public class EchoPublisher extends Harvester {
             if ( !getMonitor()) {
                 status.append("Done<br>");
                 logHarvesterInfo("Ran one time only. Exiting loop");
+
                 break;
             }
 
@@ -284,9 +286,9 @@ public class EchoPublisher extends Harvester {
     public void writeCollections(List<Entry> collections, OutputStream os,
                                  boolean includeGranules)
             throws Exception {
-        ZipOutputStream zos = new ZipOutputStream(os);
-        Document        doc = XmlUtil.makeDocument();
-        Element root = XmlUtil.create(doc,
+        ZipOutputStream zos  = new ZipOutputStream(os);
+        Document        doc  = XmlUtil.makeDocument();
+        Element         root = XmlUtil.create(doc,
                                       EchoUtil.TAG_COLLECTIONMETADATAFILE,
                                       null, new String[] { "xmlns:xsi",
                 "http://www.w3.org/2001/XMLSchema-instance",
@@ -319,8 +321,8 @@ public class EchoPublisher extends Harvester {
      */
     private void makeCollectionNode(Entry entry, Element collectionsNode)
             throws Exception {
-        Document doc = collectionsNode.getOwnerDocument();
-        Element collectionNode = XmlUtil.create(doc, EchoUtil.TAG_COLLECTION,
+        Document doc            = collectionsNode.getOwnerDocument();
+        Element  collectionNode = XmlUtil.create(doc, EchoUtil.TAG_COLLECTION,
                                      collectionsNode);
 
         /*
@@ -374,6 +376,7 @@ public class EchoPublisher extends Harvester {
                 if (metadataHandler.canHandle(metadata)) {
                     metadataHandler.addMetadataToXml(getRequest(), "echo",
                             entry, metadata, doc, collectionNode);
+
                     break;
                 }
             }

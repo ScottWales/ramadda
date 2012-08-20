@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -30,12 +31,12 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 
 
@@ -63,16 +64,25 @@ import java.util.List;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
-public class EclipseTypeHandler extends FitsTypeHandler  {
+public class EclipseTypeHandler extends FitsTypeHandler {
 
+    /** _more_          */
     public static final int IDX_BASE = FITS_PROPS.length;
 
-    public static final int IDX_LOCATION = IDX_BASE  + 0;
-    public static final int IDX_SOURCE = IDX_BASE  + 1;
-    public static final int IDX_SOURCETYPE = IDX_BASE  + 2;
-    public static final int IDX_MAGNITUDE = IDX_BASE  + 3;
+    /** _more_          */
+    public static final int IDX_LOCATION = IDX_BASE + 0;
 
-    public static final String PROP_MAGNITUDE  ="MAGNITUD";
+    /** _more_          */
+    public static final int IDX_SOURCE = IDX_BASE + 1;
+
+    /** _more_          */
+    public static final int IDX_SOURCETYPE = IDX_BASE + 2;
+
+    /** _more_          */
+    public static final int IDX_MAGNITUDE = IDX_BASE + 3;
+
+    /** _more_          */
+    public static final String PROP_MAGNITUDE = "MAGNITUD";
 
 
 
@@ -90,16 +100,24 @@ public class EclipseTypeHandler extends FitsTypeHandler  {
 
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param header _more_
+     * @param values _more_
+     */
     public void processHeader(Entry entry, Header header, Object[] values) {
         super.processHeader(entry, header, values);
 
-        values[IDX_MAGNITUDE] = new Double(header.getDoubleValue(PROP_MAGNITUDE,0));
+        values[IDX_MAGNITUDE] =
+            new Double(header.getDoubleValue(PROP_MAGNITUDE, 0));
         values[IDX_LOCATION] = header.getStringValue("LOCATION");
         String source = header.getStringValue("SOURCE");
-        if(source!=null) {
-            List<String> tuples = StringUtil.splitUpTo(source," ",2);
-            if(tuples.size()==2) {
-                values[IDX_SOURCE] = tuples.get(1).trim();
+        if (source != null) {
+            List<String> tuples = StringUtil.splitUpTo(source, " ", 2);
+            if (tuples.size() == 2) {
+                values[IDX_SOURCE]     = tuples.get(1).trim();
                 values[IDX_SOURCETYPE] = tuples.get(0).trim();
             }
         }

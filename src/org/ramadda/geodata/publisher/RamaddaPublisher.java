@@ -1,5 +1,6 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,6 +23,7 @@ package org.ramadda.geodata.publisher;
 
 
 import org.ramadda.repository.client.InteractiveRepositoryClient;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.Document;
@@ -40,7 +42,6 @@ import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.ui.RovingProgress;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -178,6 +179,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         if (repositoryClient != null) {
             return repositoryClient.getName();
         }
+
         return super.getName();
     }
 
@@ -203,6 +205,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         if (repositoryClient == null) {
             repositoryClient = new InteractiveRepositoryClient();
         }
+
         return repositoryClient.showConfigDialog();
     }
 
@@ -226,6 +229,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         if (repositoryClient == null) {
             repositoryClient = new InteractiveRepositoryClient();
         }
+
         return repositoryClient.showConfigDialog();
     }
 
@@ -239,6 +243,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         if (repositoryClient == null) {
             repositoryClient = new InteractiveRepositoryClient();
         }
+
         return repositoryClient.doConnect();
     }
 
@@ -274,7 +279,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
             treeComp = new JLabel(repositoryClient.getDefaultGroupName());
         }
 
-        Insets i = new Insets(1, 1, 1, 1);
+        Insets     i        = new Insets(1, 1, 1, 1);
         JComponent bboxComp = GuiUtils.vbox(
                                   GuiUtils.wrap(GuiUtils.inset(northFld, i)),
                                   GuiUtils.hbox(
@@ -285,7 +290,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
 
 
-        Dimension dim = new Dimension(200, 50);
+        Dimension   dim          = new Dimension(200, 50);
         JScrollPane descScroller = GuiUtils.makeScrollPane(descFld,
                                        (int) dim.getWidth(),
                                        (int) dim.getHeight());
@@ -352,17 +357,19 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
             List      dataSources        = getIdv().getDataSources();
             for (int i = 0; i < dataSources.size(); i++) {
                 DataSource dataSource = (DataSource) dataSources.get(i);
-                String ramaddaId =
+                String     ramaddaId  =
                     (String) dataSource.getProperty("ramadda.id");
                 String ramaddaHost =
                     (String) dataSource.getProperty("ramadda.host");
                 if ((ramaddaId == null) || (ramaddaHost == null)) {
                     notMineDataSources.add(dataSource);
+
                     continue;
                 }
                 if ( !Misc.equals(ramaddaHost,
                                   repositoryClient.getHostname())) {
                     notMineDataSources.add(dataSource);
+
                     continue;
                 }
                 myDataSources.add(dataSource);
@@ -444,8 +451,8 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
             if (fromViewManager != null) {
                 if ((fromViewManager instanceof MapViewManager)) {
-                    MapViewManager   mvm = (MapViewManager) fromViewManager;
-                    NavigatedDisplay navDisplay = mvm.getNavigatedDisplay();
+                    MapViewManager     mvm = (MapViewManager) fromViewManager;
+                    NavigatedDisplay   navDisplay = mvm.getNavigatedDisplay();
                     Rectangle2D.Double bbox = navDisplay.getLatLonBox(false,
                                                   false);
                     if (bbox != null) {
@@ -545,7 +552,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                 Document doc = XmlUtil.makeDocument();
                 //Create the top level node
                 Element root = XmlUtil.create(doc, TAG_ENTRIES);
-                List tags = StringUtil.split(tagFld.getText().trim(), ",",
+                List    tags = StringUtil.split(tagFld.getText().trim(), ",",
                                              true, true);
 
                 String mainId    = (cnt++) + "";
@@ -644,11 +651,11 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     ZipInputStream zin = new ZipInputStream(
                                              new FileInputStream(
                                                  new File(zidvFile)));
-                    ZipEntry ze;
+                    ZipEntry         ze;
                     SimpleDateFormat sdf =
                         new SimpleDateFormat(DataSource.DATAPATH_DATE_FORMAT);
                     while ((ze = zin.getNextEntry()) != null) {
-                        String entryName = ze.getName();
+                        String entryName  = ze.getName();
                         String dateString =
                             StringUtil.findPattern(entryName,
                                 "(" + DataSource.DATAPATH_DATE_PATTERN + ")");
@@ -715,6 +722,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                 if (result[0] != null) {
                     LogUtil.userErrorMessage("Error publishing:\n"
                                              + result[0]);
+
                     return;
                 }
 
@@ -733,6 +741,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                         }
                     }
                     LogUtil.userMessage("Publication was successful");
+
                     return;
                 }
                 String body = XmlUtil.getChildText(response).trim();
@@ -777,6 +786,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         if ((repositoryClient != null) && repositoryClient.hasSession()) {
             return super.toString() + "  (connected)";
         }
+
         return super.getName();
     }
 
