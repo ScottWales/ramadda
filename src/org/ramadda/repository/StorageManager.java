@@ -96,6 +96,7 @@ public class StorageManager extends RepositoryManager {
     /** thumbnails directory */
     public static final String DIR_THUMBNAILS = "thumbnails";
 
+
     /** the directory depth property */
     public static final String PROP_DIRDEPTH = "ramadda.storage.dirdepth";
 
@@ -664,12 +665,16 @@ public class StorageManager extends RepositoryManager {
             if (getRepository().isReadOnly()) {
                 System.out.println("RAMADDA: skipping log4j");
                 logDir = tmpLogDir;
+                return logDir;
+            }
 
+            if (!getLogManager().isLoggingEnabled()) {
+                System.out.println("RAMADDA: skipping log4j");
+                logDir = tmpLogDir;
                 return logDir;
             }
 
             System.out.println("RAMADDA: log directory:" + tmpLogDir);
-
             File log4JFile = new File(tmpLogDir + "/" + "log4j.properties");
             //For now always write out the log from the jar
             //            System.out.println("RAMADDA: log4j file=" + log4JFile);

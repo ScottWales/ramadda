@@ -63,6 +63,8 @@ import java.util.List;
 public class LogManager extends RepositoryManager {
 
 
+    public static final String PROP_USELOG4J = "ramadda.logging.uselog4j";
+
     /** _more_ */
     private boolean LOGGER_OK = true;
 
@@ -91,6 +93,8 @@ public class LogManager extends RepositoryManager {
      */
     public LogManager(Repository repository) {
         super(repository);
+        LOGGER_OK  = repository.getProperty(PROP_USELOG4J, true);
+        System.err.println("logging:" + LOGGER_OK);
     }
 
 
@@ -156,6 +160,12 @@ public class LogManager extends RepositoryManager {
 
         return logger;
     }
+
+
+    public boolean isLoggingEnabled() {
+        return LOGGER_OK;
+    }
+
 
 
     /**
