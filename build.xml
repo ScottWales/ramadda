@@ -4,7 +4,10 @@
 
     <target name="init">
         <property file="${basedir}/build.properties"/>
-        <property name="allplugins" value="${dist_dir}/allplugins.zip"/>
+        <property name="allpluginszip" value="${dist_dir}/allplugins.zip"/>
+        <property name="allpluginsjar" value="${dist_dir}/allplugins.jar"/>
+        <property name="noclasses_allpluginsjar" value="${dist_dir}/allplugins_noclasses.jar"/>
+        <property name="classes_allpluginsjar" value="${dist_dir}/allplugins_classes.jar"/>
         <mkdir dir="${dist_dir}"/>
     </target>
 
@@ -20,7 +23,11 @@
     <target name="release" depends="init">
       <antcall target="purge"/>
       <antcall target="plugins"/>
-      <copy overwrite="true" file="${allplugins}"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+<!--
+      <copy overwrite="true" file="${allpluginszip}"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+-->
+
+      <copy overwrite="true" file="${allpluginsjar}"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
     </target>
 
@@ -48,9 +55,38 @@
 
 
     <target name="allplugins.zip" depends="init">
-      <zip destfile="${allplugins}">
+<!-- Make the .zip -->
+      <zip destfile="${allpluginszip}">
           <zipfileset dir="${dist_dir}/plugins" includes="*"/>
       </zip>
+      <property name="allpluginsdir" value="${dist_dir}/allplugins"/>
+      <delete dir="${allpluginsdir}"/>
+      <mkdir dir="${allpluginsdir}"/>
+      <unjar dest="${allpluginsdir}">
+          <fileset dir="${dist_dir}/plugins">
+             <include name="**/*.jar"/>
+         </fileset>
+      </unjar>
+      <jar 
+         basedir="${allpluginsdir}"
+         update="false"
+         compress="true"
+         jarfile="${allpluginsjar}">
+      </jar>
+      <jar 
+         basedir="${allpluginsdir}"
+         update="false"
+         compress="true"
+         excludes="**/*.class"
+         jarfile="${noclasses_allpluginsjar}">
+      </jar>
+      <jar 
+         basedir="${allpluginsdir}"
+         update="false"
+         compress="true"
+         includes="**/*.class"
+         jarfile="${classes_allpluginsjar}">
+      </jar>
     </target>
 
 

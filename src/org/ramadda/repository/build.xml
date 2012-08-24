@@ -28,10 +28,9 @@
     </target>
 
 
-
     <target name="initcore" if="core">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar"/>
-       <property name="manifestjars" value="${tika_jar} ramaddalib.jar   servlet-api.jar"/>
+       <property name="manifestjars" value="${tika_jar} ramaddalib.jar   servlet-api.jar allplugins_classes.jar"/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
        <property name="lib3" value="${lib_dir}/dummy.jar"/>
@@ -39,7 +38,7 @@
 
     <target name="initfull">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
-       <property name="manifestjars" value="idv.jar ${tika_jar}  ramaddalib.jar   ramaddatds.jar servlet-api.jar"/>
+       <property name="manifestjars" value="idv.jar ${tika_jar}  ramaddalib.jar   ramaddatds.jar servlet-api.jar allplugins_classes.jar" />
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
     </target>
