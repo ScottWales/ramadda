@@ -503,7 +503,7 @@ public class Admin extends RepositoryManager {
 
                     if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
                         String plugin =
-                            "/org/ramadda/repository/resources/plugins/allplugins.zip";
+                            "/org/ramadda/repository/resources/plugins/allplugins.jar";
                         getRepository().installPlugin(plugin);
                     }
 
