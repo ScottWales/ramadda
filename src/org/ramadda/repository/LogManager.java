@@ -94,7 +94,6 @@ public class LogManager extends RepositoryManager {
     public LogManager(Repository repository) {
         super(repository);
         LOGGER_OK  = repository.getProperty(PROP_USELOG4J, true);
-        System.err.println("logging:" + LOGGER_OK);
     }
 
 
