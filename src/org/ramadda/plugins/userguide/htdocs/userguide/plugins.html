@@ -67,11 +67,16 @@ This allows you to include documentation within your plugin.
 
 
 <li> <i>.class</i><br> 
-Any .class file is loaded via a classloader. Some classes are special:
+Any .class file is loaded via a classloader. 
+Some classes are special in that RAMADDA needs to know about them and instantiate them. This includes any harvesters, User authenticators, page decorators, etc.  You need to define the full class paths for these classes in a file that ends with "classes.txt", e.g.:
+<pre>
+org.ramadda.plugins.ldap.LDAPAdminHandler
+org.ramadda.plugins.ldap.LDAPUserAuthenticator
+</pre>
 <ul>
 <li>
- If the class is an instanceof a org.ramadda.repository.auth.UserAuthenticator then the class is instantiated and it is used to handle user login and authentication.
-<li> If the class is an instanceof org.ramadda.repository.AdminHandler then the class is instantiated. You can use this to add new apis into the repository and to add admin configuration options. Note: this is a work in progress.
+If the class is an instanceof a org.ramadda.repository.auth.UserAuthenticator then the class is instantiated and it is used to handle user login and authentication.
+<li> If the class is an instanceof org.ramadda.repository.AdminHandler then the class is instantiated. You can use this to add new apis into the repository and to add admin configuration options. 
 </ul>
 
 <li><i>api.xml</i><br>

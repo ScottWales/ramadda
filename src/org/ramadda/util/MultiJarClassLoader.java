@@ -268,7 +268,6 @@ public class MultiJarClassLoader extends ClassLoader {
             loadedClasses.put(entryName, c);
             loadedClasses.put(jarEntry.jarEntry.getName(), c);
             checkClass(c);
-
             return c;
         } catch (Exception exc) {
             System.err.println("RAMADDA: Error loading class from:"
@@ -288,7 +287,7 @@ public class MultiJarClassLoader extends ClassLoader {
      *
      * @throws Exception _more_
      */
-    protected void checkClass(Class c) throws Exception {}
+    public void checkClass(Class c) throws Exception {}
 
     /**
      * _more_

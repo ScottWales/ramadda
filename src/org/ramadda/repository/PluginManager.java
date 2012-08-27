@@ -104,7 +104,7 @@ public class PluginManager extends RepositoryManager {
         new ArrayList<MultiJarClassLoader>();
 
     /** _more_ */
-    private MultiJarClassLoader classLoader;
+    private MyClassLoader classLoader;
 
     /** _more_ */
     private Properties properties;
@@ -120,6 +120,9 @@ public class PluginManager extends RepositoryManager {
 
     /** _more_ */
     private List<String> outputDefFiles = new ArrayList<String>();
+
+
+    private List<String> classDefFiles = new ArrayList<String>();
 
 
     /** _more_ */
@@ -220,6 +223,10 @@ public class PluginManager extends RepositoryManager {
             0, getRepository().getResourcePaths(PROP_OUTPUTHANDLERS));
         metadataDefFiles.addAll(
             0, getRepository().getResourcePaths(PROP_METADATA));
+
+
+
+
     }
 
 
@@ -249,6 +256,17 @@ public class PluginManager extends RepositoryManager {
                               tmpPluginsDir);
         }
         loadPropertyFiles();
+
+        //Now check for any special classes that need loading
+        for(String classDefFile: classDefFiles) {
+            for(String classToLoad: StringUtil.split(getStorageManager().readSystemResource(classDefFile),"\n", true, true)) {
+                Class c  = Misc.findClass(classToLoad);
+                classLoader.checkSpecialClass(c);
+            }
+        }
+
+
+
     }
 
     /**
@@ -338,7 +356,6 @@ public class PluginManager extends RepositoryManager {
         boolean contains = seenThings.contains(file);
         seenThings.remove(file);
         checkFile(file);
-
         return contains;
     }
 
@@ -446,6 +463,11 @@ public class PluginManager extends RepositoryManager {
                 pluginStat("Output", file);
             }
             outputDefFiles.add(file);
+        } else if (file.indexOf("classes.txt") >= 0) {
+            if (fromPlugin) {
+                pluginStat("Output", file);
+            }
+            classDefFiles.add(file);
         } else if (file.indexOf("metadata.xml") >= 0) {
             if (fromPlugin) {
                 pluginStat("Metadata", file);
@@ -490,6 +512,8 @@ public class PluginManager extends RepositoryManager {
      */
     private class MyClassLoader extends MultiJarClassLoader {
 
+        private HashSet seenClasses = new HashSet();
+
         /**
          * _more_
          *
@@ -532,6 +556,14 @@ public class PluginManager extends RepositoryManager {
         }
 
 
+        /*
+        public void checkClass(Class c) throws Exception {
+            this.checkSpecialClass(c);
+            super.checkClass(c);
+        }
+        */
+
+
         /**
          * Check if this class is one of the special classes, e.g., ImportHandler, PageDecorator, etc.
          *
@@ -539,8 +571,14 @@ public class PluginManager extends RepositoryManager {
          *
          * @throws Exception On badness
          */
-        protected void checkClass(Class c) throws Exception {
+        public void checkSpecialClass(Class c) throws Exception {
+            if(seenClasses.contains(c)) {
+                //                System.out.println ("class: Seen it:" + c.getName());
+                return;
+            }
+            seenClasses.add(c);
             if (ImportHandler.class.isAssignableFrom(c)) {
+                //                System.out.println("class:" + c.getName());
                 pluginStat("Import handler", c.getName());
                 Constructor ctor = Misc.findConstructor(c,
                                        new Class[] { Repository.class });
@@ -555,8 +593,8 @@ public class PluginManager extends RepositoryManager {
                 return;
             }
 
-
             if (UserAuthenticator.class.isAssignableFrom(c)) {
+                //                System.out.println("class:" + c.getName());
                 pluginStat("Authenticator", c.getName());
                 Constructor ctor = Misc.findConstructor(c,
                                        new Class[] { Repository.class });
@@ -570,18 +608,19 @@ public class PluginManager extends RepositoryManager {
                         (UserAuthenticator) c.newInstance());
                 }
             } else if (PageDecorator.class.isAssignableFrom(c)) {
+                //                                System.out.println("class:" + c.getName());
                 pluginStat("Page decorator", c.getName());
                 PageDecorator pageDecorator = (PageDecorator) c.newInstance();
                 pageDecorators.add(pageDecorator);
             } else if (AdminHandler.class.isAssignableFrom(c)) {
+                //                                System.out.println("class:" + c.getName());
                 pluginStat("Admin handler", c.getName());
                 adminHandlerClasses.add(c);
             } else if (Harvester.class.isAssignableFrom(c)) {
+                //                                System.out.println("class:" + c.getName());
                 pluginStat("Harvester", c.getName());
                 getHarvesterManager().addHarvesterType(c);
             }
-
-            super.checkClass(c);
         }
 
         /**
