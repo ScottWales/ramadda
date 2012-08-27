@@ -116,6 +116,7 @@ import java.util.Properties;
  */
 public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
+    private static Object INIT_MUTEX = new Object();
 
 
     /** grid output id */
@@ -196,25 +197,29 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      * Check if there is a graphics environment
      */
     public void checkIdv() {
-        try {
-            //See if we have a graphics environment
-            java.awt.GraphicsEnvironment e =
-                java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
-            e.getDefaultScreenDevice();
-            idvOk     = true;
-            idvServer =
-                new IdvServer(new File(getStorageManager().getDir("idv")));
-            //Only add the output types after we create the server
-            addType(OUTPUT_IDV_GRID);
-            addType(OUTPUT_IDV_POINT);
-        } catch (java.awt.HeadlessException jahe) {
-            idvOk = false;
-            jahe.printStackTrace();
-            getRepository().getLogManager().logWarning(
-                "To run the IdvOutputHandler a graphics environment is needed");
-        } catch (Throwable exc) {
-            idvOk = false;
-            logError("Creating IdvOutputHandler", exc);
+        //Synchronize for the case where we have multiple ramadda  servlets under the same server
+        //See if that fixes the problem with too many jythons being initialized at once
+        synchronized(INIT_MUTEX) {
+            try {
+                //See if we have a graphics environment
+                java.awt.GraphicsEnvironment e =
+                    java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
+                e.getDefaultScreenDevice();
+                idvOk     = true;
+                idvServer =
+                    new IdvServer(new File(getStorageManager().getDir("idv")));
+                //Only add the output types after we create the server
+                addType(OUTPUT_IDV_GRID);
+                addType(OUTPUT_IDV_POINT);
+            } catch (java.awt.HeadlessException jahe) {
+                idvOk = false;
+                jahe.printStackTrace();
+                getRepository().getLogManager().logWarning(
+                                                           "To run the IdvOutputHandler a graphics environment is needed");
+            } catch (Throwable exc) {
+                idvOk = false;
+                logError("Creating IdvOutputHandler", exc);
+            }
         }
     }
 
