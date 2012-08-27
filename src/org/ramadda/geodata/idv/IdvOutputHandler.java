@@ -116,6 +116,8 @@ import java.util.Properties;
  */
 public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
+    public static final String PROP_IDV_ENABLED = "ramadda.idv.enabled";
+
     private static Object INIT_MUTEX = new Object();
 
 
@@ -187,9 +189,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             exceptArgs.add(notArg);
         }
 
+        //To turn off the idv define the property ramadda.idv.enabled=false
+
         //Call this in a thread because if there is any problem with xvfb this will just hang
         //Run in a couple of seconds because we are deadlocking deep down in Java on the mac
-        Misc.runInABit(2000, this, "checkIdv", null);
+        if(getRepository().getProperty(PROP_IDV_ENABLED,true)) {
+            Misc.runInABit(2000, this, "checkIdv", null);
+        } 
     }
 
 
