@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -61,6 +60,8 @@ public class Scheduler extends RepositoryManager implements RequestHandler {
     public static final String ARG_PLAYERSPERGAME = "playerspergame";
     public static final String ARG_NAMES = "names";
     public static final String ARG_SEED = "seed";
+    public static final String ARG_MAXWITHOUT = "maxwithout";
+    public static final String ARG_ASCSV = "ascsv";
 
     /**
      *     ctor
@@ -88,21 +89,24 @@ public class Scheduler extends RepositoryManager implements RequestHandler {
      * @throws Exception on badness
      */
     public Result processScheduleRequest(Request request) throws Exception {
+        boolean asCsv = request.get(ARG_ASCSV,false);
         StringBuffer sb = new StringBuffer();
         String       base   = getRepository().getUrlBase();
-        sb.append(msgHeader("Scheduler"));
-        sb.append(HtmlUtils.form(base+"/scheduler/schedule"));
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("# Weeks"),HtmlUtils.input(ARG_WEEKS,request.getString(ARG_WEEKS,"12"), HtmlUtils.SIZE_6)));
-        sb.append(HtmlUtils.formEntry(msgLabel("# Players"),HtmlUtils.input(ARG_NUMPLAYERS,request.getString(ARG_NUMPLAYERS, "8"), HtmlUtils.SIZE_6)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Or enter names"),HtmlUtils.textArea(ARG_NAMES,request.getString(ARG_NAMES, ""), 8,40)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Players per week"),HtmlUtils.input(ARG_PLAYERSPERGAME,request.getString(ARG_PLAYERSPERGAME, "4"), HtmlUtils.SIZE_6)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Random seed"),HtmlUtils.input(ARG_SEED,request.getString(ARG_SEED, ""), HtmlUtils.SIZE_6)+" Enter a number for repeatable results"));
+        if(!request.defined(ARG_SEED)) {
+            sb.append(msgHeader("Scheduler"));
+            sb.append(HtmlUtils.form(base+"/scheduler/schedule"));
+            sb.append(HtmlUtils.formTable());
+            sb.append(HtmlUtils.formEntry(msgLabel("# Weeks"),HtmlUtils.input(ARG_WEEKS,request.getString(ARG_WEEKS,"12"), HtmlUtils.SIZE_6)));
+            sb.append(HtmlUtils.formEntry(msgLabel("# Players"),HtmlUtils.input(ARG_NUMPLAYERS,request.getString(ARG_NUMPLAYERS, "8"), HtmlUtils.SIZE_6)));
+            sb.append(HtmlUtils.formEntry(msgLabel("Or enter names"),HtmlUtils.textArea(ARG_NAMES,request.getString(ARG_NAMES, ""), 8,40)));
+            sb.append(HtmlUtils.formEntry(msgLabel("Players per week"),HtmlUtils.input(ARG_PLAYERSPERGAME,request.getString(ARG_PLAYERSPERGAME, "4"), HtmlUtils.SIZE_6)));
+
+            sb.append(HtmlUtils.formEntry("",HtmlUtils.submit("Generate Schedule")));
+            sb.append(HtmlUtils.formTableClose());
+            sb.append(HtmlUtils.formClose());
+        }
 
 
-        sb.append(HtmlUtils.formEntry("",HtmlUtils.submit("Generate Schedule")));
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.formClose());
         if(request.defined(ARG_WEEKS)) {
             List<Player> players = new ArrayList<Player>();
             if(request.defined(ARG_NAMES)) {
@@ -115,20 +119,32 @@ public class Scheduler extends RepositoryManager implements RequestHandler {
                     players.add(new Player("Player " + (i+1)));
                 }
             }
-            Random random = new Random();
+
+            Random random;
+            long seed;
+            String url;
             if(request.defined(ARG_SEED)) {
-                random = new Random((long) request.get(ARG_SEED,0));
+                random = new Random(seed = (long) request.get(ARG_SEED,0));
+            } else {
+                seed  = (long)(Math.random()*100000);
+                request.put(ARG_SEED,""+seed);
+                random = new Random(seed);
+                sb.append(HtmlUtils.href(request.getUrl(),"Link to these results"));
             }
-            schedule(sb, players, request.get(ARG_WEEKS, 12), request.get(ARG_PLAYERSPERGAME,4), random);
+            schedule(sb, players, request.get(ARG_WEEKS,0), request.get(ARG_PLAYERSPERGAME,4), random, asCsv);
         }
         return new Result("Scheduler", sb);
     }
 
-    public void schedule(StringBuffer sb, List<Player> players, int weeks, int playersPerGame, Random random) {
-        sb.append("<pre>");
+    public void schedule(StringBuffer sb, List<Player> players, int weeks, int playersPerGame, Random random, boolean asCsv) {
+        if(!asCsv) {
+            sb.append("<pre>");
+        }
         for(int week=0;week<weeks;week++) {
-            sb.append("Week " + (week+1));
-            sb.append("\n");
+            if(!asCsv) {
+                sb.append("Week " + (week+1));
+                sb.append("\n");
+            }
             schedule(week, players, playersPerGame, random);
             for(Player player: players) {
                 if(player.playing) {
@@ -138,25 +154,51 @@ public class Scheduler extends RepositoryManager implements RequestHandler {
                             player.yourPlayingWith(otherPlayer);
                         }
                     }
-                    sb.append("\t"+ player);
-                    sb.append("\n");
+                    if(!asCsv) {
+                        sb.append("\t"+ player);
+                        sb.append("\n");
+                    } else {
+                    }
                 }
             }
         }
 
-        for(Player player: players) {
-            if(player.playedWith.size()!= players.size()-1) {
-                sb.append ("Player:" + player +" not played with all players:" + player.playedWith);
-                sb.append("\n");
+        if(!asCsv) {
+            for(Player player: players) {
+                if(player.playedWith.size()!= players.size()-1) {
+                    sb.append ("Player:" + player +" not played with all players:" + player.playedWith);
+                    sb.append("\n");
+                }
             }
+            sb.append("</pre>");
+            sb.append("\nSummary\n");
+            sb.append("<table cellpadding=4 cellspacing=0 border=1><tr><td>&nbsp;</td><td align=center colspan=" + weeks+"><b>Weeks</b></td></tr>");
+            sb.append("<tr><td>&nbsp;</td>");
+            for (int i=0;i<weeks;i++) {
+                sb.append("<td>");
+                if(i<10)
+                    sb.append("&nbsp;");
+                sb.append(""+(i+1));
+                sb.append("</td>");
+            }
+
+            for(Player player: players) {
+                sb.append("<tr><td>");
+                sb.append(player.toString());
+                sb.append("</td>");
+                for (int i=0;i<weeks;i++) {
+                    if(player.isPlaying(i)) {
+                        sb.append("<td bgcolor=#888>&nbsp;</td>");
+                    } else {
+                        sb.append("<td>&nbsp;</td>");
+                    }
+                }
+                //                sb.append(StringUtil.join(" ", player.games));
+                //                sb.append("</td></tr>");
+                sb.append("</tr>");
+            }
+            sb.append("</table>");
         }
-        sb.append("\nSummary\n");
-        sb.append("Player\t#Games\n");
-        for(Player player: players) {
-            sb.append(player +"\t" + player.numGamesPlayed);
-            sb.append("\n");
-        }
-        sb.append("</pre>");
 
     }
 
@@ -224,6 +266,8 @@ public class Scheduler extends RepositoryManager implements RequestHandler {
         int lastPlayed=-1;
         HashSet<Player> playedWith = new HashSet<Player>();
         int numGamesPlayed = 0;
+        List<Integer> games = new ArrayList<Integer>();
+        HashSet<Integer> gamesPlayed = new HashSet<Integer>();
 
         public Player(String name) {
             this.name = name;
@@ -234,6 +278,12 @@ public class Scheduler extends RepositoryManager implements RequestHandler {
             lastPlayed = week;
             this.playing  = playing;
             numGamesPlayed ++;
+            games.add(week+1);
+            gamesPlayed.add(week+1);
+        }
+
+        public boolean isPlaying(int week) {
+            return gamesPlayed.contains(week);
         }
 
         public void yourPlayingWith(Player player) {
