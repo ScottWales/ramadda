@@ -65,6 +65,8 @@ public class RepositoryClient extends RepositoryBase {
     /** _more_          */
     public static final String CMD_FETCH = "-fetch";
 
+    public static final String CMD_SEARCH = "-search";
+
     /** _more_          */
     public static final String CMD_PRINT = "-print";
 
@@ -135,6 +137,9 @@ public class RepositoryClient extends RepositoryBase {
     /** _more_          */
     private String importParentId;
 
+    private boolean doingSearch = false;
+
+    private List<String[]> searchArgs  = new ArrayList<String[]>();
 
     /**
      * _more_
@@ -1260,6 +1265,7 @@ public class RepositoryClient extends RepositoryBase {
                 + argLine(CMD_PRINT, "<entry id> Create and print the given entry")
                 + argLine(CMD_PRINTXML, " <entry id> Print out the xml for the given entry id")
                 + argLine(CMD_FETCH, "<entry id> <destination file or directory>")
+                + argLine(CMD_SEARCH, "<any number of search arguments pairs>")
                 + "\n" + "For creating a new folder:\n"
                 + argLine(CMD_FOLDER, "<folder name> <parent folder id (see below)>")
                 + "\n" + "For uploading files:\n"
@@ -1342,6 +1348,28 @@ public class RepositoryClient extends RepositoryBase {
     }
 
 
+    private void doSearch() throws Exception {
+        RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this,
+                                                     "/search/do", "Search");
+        List<String> argList = new ArrayList<String>();
+        for(String[] args : searchArgs) {
+            if(args[0].startsWith("-")) {
+                args[0] = args[0].substring(1);
+            }
+            argList.add(args[0]);
+            argList.add(args[1]);
+        }
+        checkSession();
+        argList.add(ARG_OUTPUT);
+        argList.add("xml.xml");
+        argList.add(ARG_SESSIONID);
+        argList.add(getSessionId());
+        String url = HtmlUtils.url(URL_ENTRY_SEARCH.getFullUrl(), argList);
+        String xml = IOUtil.readContents(url, getClass());
+        System.out.println(xml);
+    }
+
+
     /**
      * _more_
      *
@@ -1365,6 +1393,20 @@ public class RepositoryClient extends RepositoryBase {
         for (int i = 3; i < args.length; i++) {
             String arg = args[i];
 
+            if (arg.equals(CMD_SEARCH)) {
+                doingSearch = true;
+                continue;
+            }
+
+            if(doingSearch) {
+                if (i >= args.length - 1) {
+                    usage("Bad search argument: " + arg);
+                }
+                searchArgs.add(new String[]{arg,args[i + 1]});
+                i++;
+                continue;
+            }
+
             if (arg.equals(CMD_FETCH)) {
                 if (i >= args.length - 1) {
                     usage("Bad argument: " + arg);
@@ -1374,7 +1416,6 @@ public class RepositoryClient extends RepositoryBase {
                 }
                 File f = writeFile(args[i + 1], new File(args[i + 2]));
                 System.err.println("Wrote file to:" + f);
-
                 return;
             }
 
@@ -1493,6 +1534,11 @@ public class RepositoryClient extends RepositoryBase {
                 }
                 files.add(new File(args[i]));
             }
+        }
+
+        if(doingSearch) {
+            doSearch();
+            return;
         }
 
 
