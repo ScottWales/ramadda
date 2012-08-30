@@ -1,8 +1,8 @@
 
 ##
 ## Call this with:
-## tclsh zipandclean.tct <directories to walk>
-##
+## tclsh zipandclean.tcl args  <directories to walk>
+## 
 
 ##
 ##This script recurses down a given set of directories and replaces spaces with "_" in file and directory names
@@ -10,7 +10,7 @@
 ##
 
 
-set ::test 0
+set ::test 1
 
 
 
@@ -102,7 +102,7 @@ set skip  [list]
 for {set i 0} {$i<$argc} {incr i} {
     set arg [lindex $argv $i]
     if {$arg =="-help"} {
-        puts "usage: zipandclean.tcl <-test> <-convert from to> <-zip pattern> <-skip pattern> \[directories to recurse\]"
+        puts "usage: zipandclean.tcl <-doit> <-convert from to> <-zip pattern> <-skip pattern> \[directories to recurse\]"
         exit
     }
 
@@ -112,8 +112,8 @@ for {set i 0} {$i<$argc} {incr i} {
         incr i
         set to [lindex $argv $i]
         lappend patterns [list $from $to]
-   } elseif {$arg =="-test"} {
-       set ::test 1
+   } elseif {$arg =="-doit"} {
+       set ::test 0
     } elseif {$arg =="-zip"} {
         incr i
         lappend zipPatterns [lindex $argv $i]
@@ -121,6 +121,10 @@ for {set i 0} {$i<$argc} {incr i} {
         incr i
         lappend skip [lindex $argv $i]
     } else {
+        if {![file exists $arg]} {
+            puts "Directory does not exist: $arg"
+            exit
+        }
         checkFile $arg $patterns $zipPatterns $skip
     }
 }
