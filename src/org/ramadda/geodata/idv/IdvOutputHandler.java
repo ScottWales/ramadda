@@ -219,7 +219,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 addType(OUTPUT_IDV_POINT);
             } catch (java.awt.HeadlessException jahe) {
                 idvOk = false;
-                jahe.printStackTrace();
+                //                jahe.printStackTrace();
                 getRepository().getLogManager().logWarning(
                                                            "To run the IdvOutputHandler a graphics environment is needed");
             } catch (Throwable exc) {
