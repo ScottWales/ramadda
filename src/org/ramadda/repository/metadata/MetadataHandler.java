@@ -512,8 +512,9 @@ public class MetadataHandler extends RepositoryManager {
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
-            throw new IllegalStateException("Unknown metadata type:"
-                                            + metadata.getType());
+            getRepository().getLogManager().logWarning("Unknown metadata type:"
+                                                      + metadata.getType());
+            return;
         }
 
         Document doc          = node.getOwnerDocument();
