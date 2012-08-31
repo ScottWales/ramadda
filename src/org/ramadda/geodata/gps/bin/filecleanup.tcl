@@ -10,6 +10,8 @@
 ##
 
 
+set ::spaces 0
+set ::dates 0
 set ::test 1
 
 
@@ -32,16 +34,19 @@ proc checkFile {f patterns zipPatterns skip} {
     }
 
 
-#change spaces for "_"
-    regsub -all { +} $newFile _ newFile
+    if {$::spaces} {
+        #change spaces for "_"
+        regsub -all { +} $newFile _ newFile
+    }
 
-    set exp {(.*|^)(20(08|09|10|11|12))-(01|02|03|04|05|06|07|08|09|10|11|12)-([012]\d|30|31)(.*)}
-    regsub  $exp $newFile {\1\2_\4_\5\6} newFile
+    if {$::dates} {
+        set exp {(.*|^)(20(08|09|10|11|12))-(01|02|03|04|05|06|07|08|09|10|11|12)-([012]\d|30|31)(.*)}
+        regsub  $exp $newFile {\1\2_\4_\5\6} newFile
 
-
-#Check for yyyymmdd and convert it to yyyy_mm_dd
-    set exp {(.*|^)(20(08|09|10|11|12))(01|02|03|04|05|06|07|08|09|10|11|12)([012]\d|30|31)(.*)}
-    regsub  $exp $newFile {\1\2_\4_\5\6} newFile
+        #Check for yyyymmdd and convert it to yyyy_mm_dd
+        set exp {(.*|^)(20(08|09|10|11|12))(01|02|03|04|05|06|07|08|09|10|11|12)([012]\d|30|31)(.*)}
+        regsub  $exp $newFile {\1\2_\4_\5\6} newFile
+    }
 
 
 #If the name changed then move the file
@@ -58,7 +63,7 @@ proc checkFile {f patterns zipPatterns skip} {
     if  {[file isdirectory $f]} {
         foreach pattern $skip {
             if  {[regexp $pattern $f]} {
-                puts "skipping: $f"
+#                puts "skipping: $f"
                 return
             }
         }
@@ -114,6 +119,10 @@ for {set i 0} {$i<$argc} {incr i} {
         lappend patterns [list $from $to]
    } elseif {$arg =="-doit"} {
        set ::test 0
+   } elseif {$arg =="-spaces"} {
+       set ::spaces 1
+   } elseif {$arg =="-dates"} {
+       set ::dates 1
     } elseif {$arg =="-zip"} {
         incr i
         lappend zipPatterns [lindex $argv $i]
