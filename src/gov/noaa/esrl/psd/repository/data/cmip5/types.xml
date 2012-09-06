@@ -6,9 +6,9 @@
      <property name="form.resource.show" value="true"/>
      <property name="form.date.show" value="true"/>
      <column name="variable" type="string"  label="Variable"/>
-     <column name="miptable" type="string"  label="MIP Table"/>
-     <column name="model" type="enumerationplus"  label="Model" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/models.txt" showinhtml="true" />
-     <column name="experiment" type="enumerationplus"  label="Experiment" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/experiments.txt" showinhtml="true" />
+     <column name="miptable" type="enumeration"  label="MIP Table" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/miptable.txt" showinhtml="true" />
+     <column name="model" type="enumeration"  label="Model" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/models.txt" showinhtml="true" />
+     <column name="experiment" type="enumeration"  label="Experiment" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/experiments.txt" showinhtml="true" />
      <column name="ensemble" type="string"  label="Ensemble Member"/>
      <column name="frequency" type="enumerationplus"  label="Frequency" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/frequency.txt" showinhtml="true" />
    </type>
