@@ -7,8 +7,8 @@
 <!--     <property name="form.area.show" value="false"/> -->
      <property name="form.datatype.show" value="false"/>
      <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
-</type>
 
+   </type>
 
 
 </types>

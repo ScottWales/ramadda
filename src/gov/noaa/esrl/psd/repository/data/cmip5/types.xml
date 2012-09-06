@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+
+  <type name="cmip5data"  description="CMIP5 Data" handler="org.ramadda.repository.type.GenericTypeHandler" category="Climate Data" foruser="false">
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <column name="variable" type="string"  label="Variable"/>
+     <column name="miptable" type="string"  label="MIP Table"/>
+     <column name="model" type="enumerationplus"  label="Model" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/models.txt" showinhtml="true" />
+     <column name="experiment" type="enumerationplus"  label="Experiment" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="string"  label="Ensemble Member"/>
+     <column name="frequency" type="enumerationplus"  label="Frequency" values="file:/gov/noaa/esrl/psd/repository/data/cmip5/frequency.txt" showinhtml="true" />
+   </type>
+
+  <type name="cmip5grid"  description="CMIP5 Gridded Data" super="cmip5data" foruser="true"/>
+
+  <type name="cmip5point"  description="CMIP5 Point Data" super="cmip5data"  foruser="true"/>
+
+</types>
+

@@ -1,0 +1,77 @@
+#
+# CMIP5 model identifiers from
+# http://esg-pcmdi.llnl.gov/internal/esg-data-node-documentation/cmip5_controlled_vocab.txt/view
+#
+# format:
+# model id:Model name:institution
+#
+access1-0:ACCESS1.0:Commonwealth Scientific and Industrial Research Organization (CSIRO) and Bureau of Meteorology (BOM), Australia
+access1-3:ACCESS1.3:Commonwealth Scientific and Industrial Research Organization (CSIRO) and Bureau of Meteorology (BOM), Australia
+bcc-csm1-1:BCC-CSM1.1:Beijing Climate Center, China Meteorological Administration
+bcc-csm1-1-m:BCC-CSM1.1-m:Beijing Climate Center, China Meteorological Administration
+bnu-esm:BNU-ESM:College of Global Change and Earth System Science, Beijing Normal University
+canam4:CanAM4:Canadian Centre for Climate Modelling and Analysis
+cancm4:CanCM4:Canadian Centre for Climate Modelling and Analysis
+canesm2:CanESM2:Canadian Centre for Climate Modelling and Analysis
+ccsm4:CCSM4:National Center for Atmospheric Research
+ccsm4-rsmas:CCSM4(RSMAS):University of Miami - RSMAS
+cesm1-bgc:CESM1(BGC):Community Earth System Model Contributors
+cesm1-cam5:CESM1(CAM5):Community Earth System Model Contributors
+cesm1-chem:CESM1(CHEM):Community Earth System Model Contributors
+cesm1-chem-cam5:CESM1(CHEM,CAM5):Community Earth System Model Contributors
+cesm1-waccm:CESM1(WACCM):Community Earth System Model Contributors
+cfsv2-2011:CFSv2-2011:National Centers for Environmental Prediction
+cmcc-cesm:CMCC-CESM:Centro Euro-Mediterraneo per I Cambiamenti Climatici
+cmcc-cm:CMCC-CM:Centro Euro-Mediterraneo per I Cambiamenti Climatici
+cmcc-cms:CMCC-CMS:Centro Euro-Mediterraneo per I Cambiamenti Climatici
+cnrm-cm5:CNRM-CM5:Centre National de Recherches Meteorologiques / Centre Europeen de Recherche et Formation Avancees en Calcul Scientifique (CNRM/CERFACS)
+csiro-mk3-5A:CSIRO-Mk3.5A:Commonwealth Scientific and Industrial Research Organization/Queensland Climate Change Centre of Excellence (CSIRO-QCCCE)
+csiro-mk3-6-0:CSIRO-Mk3.6.0:Commonwealth Scientific and Industrial Research Organization/Queensland Climate Change Centre of Excellence (CSIRO-QCCCE)
+ec-earth:EC-Earth:EC-EARTH consortium
+fgoals-g2:FGOALS-g2:LASG, Institute of Atmospheric Physics, Chinese Academy of Sciences
+fgoals-gl:FGOALS-gl:LASG, Institute of Atmospheric Physics, Chinese Academy of Sciences
+fgoals-s2:FGOALS-S2:LASG, Institute of Atmospheric Physics, Chinese Academy of Sciences
+fio-esm:FIO-ESM:First Institute of Oceanography, SOA, China
+geos-5:GEOS-5:NASA Global Modeling and Assimilation Office
+gfdl-cm2p1:GFDL-CM2.1:NOAA Geophysical Fluid Dynamics Laboratory
+gfdl-cm3:GFDL-CM3:NOAA Geophysical Fluid Dynamics Laboratory
+gfdl-esm2g:GFDL-ESM2G:NOAA Geophysical Fluid Dynamics Laboratory
+gfdl-esm2m:GFDL-ESM2M:NOAA Geophysical Fluid Dynamics Laboratory
+gfdl-hiram-c180:GFDL-HIRAM-C180:NOAA Geophysical Fluid Dynamics Laboratory
+gfdl-hiram-c360:GFDL-HIRAM-C360:NOAA Geophysical Fluid Dynamics Laboratory
+giss-e2-h:GISS-E2-H:NASA Goddard Institute for Space Studies
+giss-e2-h-cc:GISS-E2-H-CC:NASA Goddard Institute for Space Studies
+giss-e2-r:GISS-E2-R:NASA Goddard Institute for Space Studies
+giss-e2-r-cc:GISS-E2-R-CC:NASA Goddard Institute for Space Studies
+giss-e2cs-h:GISS-e2CS-H:NASA Goddard Institute for Space Studies
+giss-e2cs-r:GISS-E2CS-R:NASA Goddard Institute for Space Studies
+hadcm3:HadCM3:Met Office Hadley Centre
+hadcm3q:HadCM3Q:Met Office Hadley Centre
+hadgem2-ao:HadGEM2-AO:National Institute of Meteorological Research/Korea Meteorological Administration
+hadgem2-cc:HadGEM2-CC:Met Office Hadley Centre
+hadgem2-es:HadGEM2-ES:Met Office Hadley Centre
+hadgem2-a:HadGEM2-A:Met Office Hadley Centre
+higem1-2:HiGEM1.2:Natural and Environmental Research Council/Met Office Hadley Centre
+inmcm4:INM-CM4:Institute for Numerical Mathematics
+ipsl-cm5a-lr:IPSL-CM5A-LR:Institut Pierre-Simon Laplace
+ipsl-cm5a-mr:IPSL-CM5A-MR:Institut Pierre-Simon Laplace
+ipsl-cm5b-lr:IPSL-CM5B-LR:Institut Pierre-Simon Laplace
+miroc-esm:MIROC-ESM:Japan Agency for Marine-Earth Science and Technology, Atmosphere and Ocean Research Institute (The University of Tokyo), and National Institute for Environmental Studies
+miroc-esm-chem:MIROC-ESM-CHEM:Japan Agency for Marine-Earth Science and Technology, Atmosphere and Ocean Research Institute (The University of Tokyo), and National Institute for Environmental Studies
+miroc4h:MIROC4h:Atmosphere and Ocean Research Institute (The University of Tokyo), National Institute for Environmental Studies, and Japan Agency for Marine-Earth Science and Technology
+miroc4m:MIROC4m:Atmosphere and Ocean Research Institute (The University of Tokyo), National Institute for Environmental Studies, and Japan Agency for Marine-Earth Science and Technology
+miroc5:MIROC5:Atmosphere and Ocean Research Institute (The University of Tokyo), National Institute for Environmental Studies, and Japan Agency for Marine-Earth Science and Technology
+mpi-esm-hr:MPI-ESM-HR:Max Planck Institute for Meteorology (MPI-M)
+mpi-esm-lr:MPI-ESM-LR:Max Planck Institute for Meteorology (MPI-M)
+mpi-esm-mr:MPI-ESM-MR:Max Planckck Institute for Meteorology (MPI-M)
+mpi-esm-p:MPI-ESM-P:Max Planck Institute for Meteorology (MPI-M)
+mri-agcm3-2h:mri-agcm3.2H:Meteorological Research Institute
+mri-agcm3-2s:MRI-AGCM3.2S:Meteorological Research Institute
+mri-cgcm3:MRI-CGCM3:Meteorological Research Institute
+mri-esm1:MRI-ESM1:Meteorological Research Institute
+noresm-m:NorESM-M:Norwegian Climate Centre (NorClim)
+# website has a 1 in the name
+#noresm-me:NorESM-ME:Norwegian Climate Centre (NorClim)
+#noresm-l:NorESM-L:Norwegian Climate Centre (NorClim)
+noresm1-m:NorESM-M:Norwegian Climate Centre (NorClim)
+noresm1-me:NorESM-ME:Norwegian Climate Centre (NorClim)
