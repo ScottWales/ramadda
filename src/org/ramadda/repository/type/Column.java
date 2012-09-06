@@ -340,6 +340,9 @@ public class Column implements DataTypes, Constants {
                                            true, true);
                     enumValues = new ArrayList();
                     for (String tok : tmp) {
+                        if (tok.startsWith("#")) {
+                            continue;
+                        }
                         if (tok.indexOf(":") >= 0) {
                             List<String> toks = StringUtil.splitUpTo(tok,
                                                     ":", 2);
