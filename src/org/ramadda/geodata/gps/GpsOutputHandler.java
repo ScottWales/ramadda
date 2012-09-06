@@ -1295,7 +1295,7 @@ public class GpsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private boolean isTrimble(String file) {
-        return file.endsWith(".t00") || file.endsWith(".t01");
+        return file.endsWith(".t00") || file.endsWith(".t01") || file.endsWith(".t03");
     }
 
 
