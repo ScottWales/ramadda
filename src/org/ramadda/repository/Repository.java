@@ -3148,7 +3148,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = urlBase + path;
         }
 
-        //        System.err.println("path:" + path);
+        //        if(path.indexOf(".js")>=0) 
+        //            System.err.println("path:" + path);
         /*
        if ((path.indexOf("/gantt") >= 0) && path.endsWith(".jar")) {
             path = "/repository/applets/gantt/gantt.jar";
@@ -3262,8 +3263,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             }
 
-            return new Result(request.url(URL_ENTRY_SHOW, ARG_ENTRYID,
-                                          entry.getId()));
+            request.put(ARG_ENTRYID, entry.getId());
+            //For now, don't redirect
+            return getEntryManager().processEntryShow(request);
+            //            return new Result(request.url(URL_ENTRY_SHOW, ARG_ENTRYID,
+            //                                          entry.getId()));
         }
 
 
