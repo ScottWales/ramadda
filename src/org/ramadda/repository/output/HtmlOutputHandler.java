@@ -1327,6 +1327,15 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
 
 
+        //This is a terrible hack but check if the request is for the timeline xml. If it is let the 
+        //CalendarOutputHandler handle it.
+        if (request.get("timelinexml", false)) {
+            Result timelineResult = getCalendarOutputHandler().handleIfTimelineXml(request,  group, subGroups, entries);
+            return timelineResult;
+        }
+
+
+
         boolean     isSearchResults = group.isDummy();
         TypeHandler typeHandler     =
             getRepository().getTypeHandler(group.getType());

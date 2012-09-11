@@ -184,6 +184,20 @@ public class CalendarOutputHandler extends OutputHandler {
     }
 
 
+    public Result handleIfTimelineXml(Request request, 
+                                      Entry group, List<Entry> subGroups,
+                                      List<Entry> entries)
+        throws Exception {
+        if (request.get("timelinexml", false)) {
+            List<Entry> allEntries = new ArrayList<Entry>();
+            allEntries.addAll(subGroups);
+            allEntries.addAll(entries);
+            return outputTimelineXml(request, group, allEntries);
+        }
+        return null;
+    }
+
+
     /**
      * _more_
      *
@@ -202,13 +216,11 @@ public class CalendarOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
-        if (request.get("timelinexml", false)) {
-            List<Entry> allEntries = new ArrayList<Entry>();
-            allEntries.addAll(subGroups);
-            allEntries.addAll(entries);
-
-            return outputTimelineXml(request, group, allEntries);
+        Result timelineResult = handleIfTimelineXml(request,  group, subGroups, entries);
+        if(timelineResult!=null) {
+            return timelineResult;
         }
+
 
 
         StringBuffer sb = new StringBuffer();
@@ -222,7 +234,8 @@ public class CalendarOutputHandler extends OutputHandler {
             //            sb.append(getHtmlHeader(request,  group));
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
-            makeTimeline(request, allEntries, sb, "height: 300px;");
+            //            makeTimeline(request, allEntries, sb, "height: 300px;");
+            makeTimeline(request, group, allEntries, sb, "height: 300px;");
             result = makeLinksResult(request, msg("Timeline"), sb,
                                      new State(group, subGroups, entries));
 
@@ -303,7 +316,7 @@ public class CalendarOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public void makeTimeline(Request request, List<Entry> entries,
+    public void makeTimeline(Request request, Entry mainEntry,  List<Entry> entries,
                              StringBuffer sb, String style)
             throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");

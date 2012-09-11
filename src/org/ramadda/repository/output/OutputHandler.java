@@ -2027,5 +2027,15 @@ public class OutputHandler extends RepositoryManager {
         }
     }
 
+    public CalendarOutputHandler getCalendarOutputHandler() {
+        try {
+            return (CalendarOutputHandler) getRepository().getOutputHandler(
+                CalendarOutputHandler.OUTPUT_CALENDAR);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
 
 }
