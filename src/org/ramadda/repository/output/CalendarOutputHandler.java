@@ -344,7 +344,7 @@ public class CalendarOutputHandler extends OutputHandler {
                 sdf.format(new Date(minDate)));
         timelineApplet = timelineApplet.replace("${intervalUnit}", interval);
         timelineApplet = timelineApplet.replace("${style}", style);
-        System.out.println(timelineApplet);
+        //        System.out.println(timelineApplet);
         sb.append(timelineApplet);
     }
 
