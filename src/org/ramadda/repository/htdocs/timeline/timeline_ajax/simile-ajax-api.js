@@ -164,6 +164,7 @@ if (typeof SimileAjax == "undefined") {
         return to;
     };
 
+
     (function() {
         var javascriptFiles = [
             "jquery-1.2.6.min.js",
@@ -195,7 +196,6 @@ if (typeof SimileAjax == "undefined") {
                 SimileAjax.error = new Error("Failed to derive URL prefix for Simile Ajax API code files");
                 return;
             }
-
             SimileAjax.urlPrefix = url.substr(0, url.indexOf("simile-ajax-api.js"));
         }
 

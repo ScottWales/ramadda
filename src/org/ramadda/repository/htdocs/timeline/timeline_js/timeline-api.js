@@ -52,6 +52,7 @@
  *================================================== 
  */
 
+
 (function() {
     var useLocalResources = false;
     if (document.location.search.length > 0) {
@@ -69,7 +70,9 @@
         }
         
         window.Timeline = new Object();
-        window.Timeline.DateTime = window.SimileAjax.DateTime; // for backward compatibility
+
+        //        window.Timeline.DateTime = window.SimileAjax.DateTime; // for backward compatibility
+        //        console.log("dttm:" + window.Timeline.DateTime);
     
         var bundle = false;
         var javascriptFiles = [
@@ -229,8 +232,11 @@
             for (var l = 0; l < supportedLocales.length; l++) {
                 var locale = supportedLocales[l];
                 if (loadLocale[locale]) {
-                    includeJavascriptFiles(Timeline.urlPrefix + "scripts/l10n/" + locale + "/", localizedJavascriptFiles);
-                    includeCssFiles(Timeline.urlPrefix + "styles/l10n/" + locale + "/", localizedCssFiles);
+                    //jeffmc: don't dynamically load the locales. See bottom of timeline-bundle.js
+                    //console.log("loading localized js");
+                    //                    includeJavascriptFiles(Timeline.urlPrefix + "scripts/l10n/" + locale + "/", localizedJavascriptFiles);
+                    //                    includeCssFiles(Timeline.urlPrefix + "styles/l10n/" + locale + "/", localizedCssFiles);
+                    //console.log("done loading localized js");
                 }
             }
             
@@ -244,6 +250,7 @@
         } catch (e) {
             alert(e);
         }
+        window.Timeline.loaded = true;
     };
     
     /*
@@ -251,7 +258,6 @@
      */
     if (typeof SimileAjax == "undefined") {
         window.SimileAjax_onLoad = loadMe;
-        
         var url = useLocalResources ?
             "http://127.0.0.1:9999/ajax/api/simile-ajax-api.js?bundle=false" :
             "http://static.simile.mit.edu/ajax/api-2.2.0/simile-ajax-api.js";
@@ -264,6 +270,7 @@
             script.language = "JavaScript";
             script.src = url;
             document.getElementsByTagName("head")[0].appendChild(script);
+            //            document.write("<script src='" + url + "' type='text/javascript'></script>");
         }
         if (document.body == null) {
             try {

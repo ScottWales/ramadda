@@ -2546,6 +2546,7 @@ this.mouseWheel="zoom";
 };
 
 
+
 /* timeline.js */
 Timeline.version="2.3.0";
 Timeline.ajax_lib_version=SimileAjax.version;
@@ -2840,3 +2841,29 @@ Timeline.NativeDateUnit.later=function(B,A){return Timeline.NativeDateUnit.compa
 };
 Timeline.NativeDateUnit.change=function(A,B){return new Date(A.getTime()+B);
 };
+
+
+
+
+
+//
+//jeffmc: added this here instead of in the <locale>/timeline.js/labellers.js because of problems with 
+//asynchronous loading of the script files
+//
+
+Timeline.strings["en"] = {
+    wikiLinkLabel:  "Discuss"
+};
+
+
+Timeline.GregorianDateLabeller.monthNames["en"] = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
+Timeline.GregorianDateLabeller.dayNames["en"] = [
+    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+];
+
+window.Timeline.DateTime = window.SimileAjax.DateTime; // for backward compatibility
+Timeline.allLoaded = true;
+//console.log("window.Timeline.DateTime:" + window.Timeline.DateTime);

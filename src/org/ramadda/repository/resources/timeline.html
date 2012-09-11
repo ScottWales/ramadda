@@ -2,12 +2,20 @@
 
 <div id="timeline" class="timeline-default" style="${style}   overflow-x:hidden; overflow-y:scroll;"></div>
 
-<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>
-<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />
 <script>
+      var SimileAjax_urlPrefix='${root}/timeline/timeline_ajax/';
       var Timeline_urlPrefix='${root}/timeline/timeline_js/';
       var Timeline_ajax_url = '${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';
       Timeline_parameters='bundle=true';
+</script>
+
+<!--
+<script src='${root}/timeline/timeline_ajax/simile-ajax-api.js?bundle=true' type='text/javascript'></script>
+-->
+
+<script src='${root}/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>
+<link rel='stylesheet' href='${root}/timeline/timeline_js/timeline-bundle.css' type='text/css' />
+<script>
       function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
             if(!timelineIntervalUnit) {
                  timelineIntervalUnit = SimileAjax.DateTime.DECADE;
@@ -81,17 +89,20 @@
             }
         }
 
-//MILLISECOND,SECOND,MINUTE,HOUR,DAY,WEEK,MONTH,YEAR,DECADE,CENTURY,MILLENNIUM,EPOCH,ERA
     function waitForTimeline() {
-      var isDefined = typeof Timeline;
-      if(isDefined == 'undefined') {
-         setTimeout(waitForTimeline, 100);
+      var waitTime = 200;
+      if(typeof Timeline == 'undefined') {
+         setTimeout(waitForTimeline, waitTime);
          return;
-     }
-     setTimeout(initTimeline, 750);
+       }
+      if(!Timeline.allLoaded) {
+         setTimeout(waitForTimeline, waitTime);
+         return;
+      }
+      initTimeline();
    }
 
-    function initTimeline() {
+   function initTimeline() {
      var url = "${timelineurl}";
      var baseDate = "${basedate}";
      var intervalUnit = ${intervalUnit};
@@ -107,9 +118,7 @@
         }
    }
 
-$(document).ready(function() {
    waitForTimeline();
-});
 
 </script>
   
