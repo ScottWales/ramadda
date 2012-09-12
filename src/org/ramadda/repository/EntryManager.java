@@ -3596,8 +3596,6 @@ public class EntryManager extends RepositoryManager {
                 //Check the import handlers
                 for (ImportHandler importHandler :
                         getRepository().getImportHandlers()) {
-                    System.err.println("    "
-                                       + importHandler.getClass().getName());
                     InputStream newStream = importHandler.getStream(file,
                                                 entriesStream);
                     if ((newStream != null) && (newStream != entriesStream)) {
