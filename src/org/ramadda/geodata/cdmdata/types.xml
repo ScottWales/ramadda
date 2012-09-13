@@ -10,9 +10,9 @@
 
 
   <type name="gridaggregation"  description="Grid Aggregation" handler="org.ramadda.geodata.cdmdata.GridAggregationTypeHandler" category="Geo Data">
-     <column name="type" type="enumeration" values="JoinExisting,Union"  label="Aggregation type" cansearch="false" showinhtml="true"/>
+     <column name="type" type="enumeration" values="JoinExisting,Union,Ensemble"  label="Aggregation type" cansearch="false" showinhtml="true"/>
      <column name="coordinate" type="string" default="time"  label="Time Coordinate" cansearch="false" showinhtml="true"/>
-     <column name="fields" rows="5" type="string"  label="Ensemble Fields" cansearch="false" showinhtml="true" suffix="Not implemented yet"/>
+     <column name="fields" rows="5" type="string"  label="Ensemble Fields" cansearch="false" showinhtml="true"/>
      <column name="files" rows="5" type="string"  label="Files" cansearch="false" showinhtml="true" suffix="Only allowed for admin"/>
      <column name="pattern"  type="string"  label="File Pattern" cansearch="false" showinhtml="true" suffix=""/>
      <column name="recurse"  type="boolean"  default="false" label="Recurse" suffix="Recurse down any directories"  />

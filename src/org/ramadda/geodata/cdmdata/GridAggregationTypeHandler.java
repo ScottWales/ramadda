@@ -76,7 +76,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     /** Pattern index for GUI */
     public static final int INDEX_PATTERN = 4;
 
-    /** _more_          */
+    /** Flag for recursing directories */
     public static final int INDEX_RECURSE = 5;
 
 
@@ -181,16 +181,36 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
     /**
-     * _more_
+     * Get the recurse property
      *
-     * @param entry _more_
+     * @param entry  the Entry
      *
-     * @return _more_
+     * @return true if we should recurse
      */
     private boolean getRecurse(Entry entry) {
-        Object[] values = entry.getValues();
-
+        //Object[] values = entry.getValues();
         return Misc.equals(entry.getValue(INDEX_RECURSE, ""), "true");
+    }
+
+    /**
+     * Get the fields values
+     *
+     * @param entry  the Entry
+     *
+     * @return  the list of variables
+     */
+    private List<String> getFields(Entry entry) {
+        String       fieldString = entry.getValue(INDEX_FIELDS, "");
+        List<String> fields      = new ArrayList<String>();
+        List<String> lines = StringUtil.split(fieldString, "/", true, true);
+        for (String line : lines) {
+            List<String> words = StringUtil.split(line, ",", true, true);
+            for (String word : words) {
+                fields.add(word);
+            }
+        }
+
+        return fields;
     }
 
 
@@ -221,6 +241,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         String        pattern = entry.getValue(INDEX_PATTERN, "").trim();
         boolean       ingest          = getIngest(entry);
         boolean       recurse         = getRecurse(entry);
+        List<String>  fields          = getFields(entry);
         final boolean harvestMetadata =
             Misc.equals(entry.getValue(INDEX_ADDSHORTMETADATA, ""), "true");
         final boolean harvestFullMetadata =
@@ -240,7 +261,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(XmlUtil.openTag(NcmlUtil.TAG_AGGREGATION,
                                       XmlUtil.attrs(new String[] {
                                           NcmlUtil.ATTR_TYPE,
-                                          NcmlUtil.AGG_UNION })));
+                                          NcmlUtil.AGG_UNION, })));
         } else if (ncmlUtil.isJoinNew()) {
             //TODO here
         } else if (ncmlUtil.isEnsemble()) {
@@ -252,11 +273,13 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                           ensembleDimName,
                                           NcmlUtil.ATTR_TYPE,
                                           NcmlUtil.AGG_JOINNEW })));
-            //TODO: What name here
-            sb.append(XmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
-                                  XmlUtil.attrs(new String[] {
-                                      NcmlUtil.ATTR_NAME,
-                                      "tasmax" })));
+            List<String> vars = getFields(entry);
+            for (String var : vars) {
+                sb.append(XmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
+                                      XmlUtil.attrs(new String[] {
+                                          NcmlUtil.ATTR_NAME,
+                                          var })));
+            }
         } else {
             throw new IllegalArgumentException("Unknown aggregation type:"
                     + ncmlUtil);
@@ -436,7 +459,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request  the Request
      * @param entry    the Entry
-     * @param services _more_
+     * @param services the list of services
      *
      * @return  the List of services
      */
