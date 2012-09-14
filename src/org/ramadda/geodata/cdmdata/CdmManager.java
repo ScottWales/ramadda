@@ -274,7 +274,7 @@ public class CdmManager extends RepositoryManager {
     /** point close counter */
     Counter pointCloseCounter = new Counter();
 
-    /** _more_ */
+    /** the cdm manager id */
     public static final String CDMMANAGER_ID = "cdmmanager";
 
 
@@ -282,7 +282,6 @@ public class CdmManager extends RepositoryManager {
      * Create a new CdmManager
      *
      * @param repository  the repository
-     * @param name        the name of this handler
      *
      * @throws Exception problem creating class
      */
@@ -472,25 +471,25 @@ public class CdmManager extends RepositoryManager {
     };
 
     /**
-     * _more_
+     * Create a netCDF file from the location
      *
-     * @param location _more_
+     * @param location  the path
      *
-     * @return _more_
+     * @return the NetcdfFile
      *
-     * @throws Exception _more_
+     * @throws Exception  problem getting data
      */
     public NetcdfFile createNetcdfFile(String location) throws Exception {
         return ncFilePool.get(location);
     }
 
     /**
-     * _more_
+     * Return the NetcdfFile object for the location to the pool
      *
-     * @param location _more_
-     * @param ncf _more_
+     * @param location  the the path
+     * @param ncf       the NetcdfFile object
      *
-     * @throws Exception _more_
+     * @throws Exception  problem adding to the pool
      */
     public void returnNetcdfFile(String location, NetcdfFile ncf)
             throws Exception {
@@ -1061,11 +1060,11 @@ public class CdmManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Get the NetcdfDataset from the pool for the given file path
      *
-     * @param path _more_
+     * @param path  the file path
      *
-     * @return _more_
+     * @return  the corresponding NetcdfDataset
      */
     public NetcdfDataset createNetcdfDataset(String path) {
         return ncDatasetPool.get(path);
@@ -1124,21 +1123,21 @@ public class CdmManager extends RepositoryManager {
     }
 
     /**
-     * _more_
+     * Get the TrajectoryDataset
      *
-     * @param path _more_
+     * @param path  the path to the file
      *
-     * @return _more_
+     * @return  the Trajectory Dataset
      */
     public TrajectoryObsDataset getTrajectoryDataset(String path) {
         return trajectoryPool.get(path);
     }
 
     /**
-     * _more_
+     * Return the TrajectoryDataset to the pool
      *
-     * @param path _more_
-     * @param tod _more_
+     * @param path  the file path
+     * @param tod   the dataset
      */
     public void returnTrajectoryDataset(String path,
                                         TrajectoryObsDataset tod) {

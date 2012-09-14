@@ -884,7 +884,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                                qp.acceptType);
                 //Set return filename sets the Content-Disposition http header so the browser saves the file
                 //with the correct name and suffix
-                result.setReturnFilename(baseName + suffix);
+                result.setReturnFilename(baseName + "_pointsubset" + suffix);
             }
 
             return result;
@@ -1260,9 +1260,13 @@ public class CdmDataOutputHandler extends OutputHandler {
                             newEntry, entry, "subset of");
                 }
 
-                return new Result(entry.getName() + ".nc",
-                                  getStorageManager().getFileInputStream(f),
-                                  "application/x-netcdf");
+                Result result =
+                    new Result(entry.getName() + ".nc",
+                               getStorageManager().getFileInputStream(f),
+                               "application/x-netcdf");
+                result.setReturnFilename(entry.getName() + "_subset.nc");
+
+                return result;
             }
         }
 
