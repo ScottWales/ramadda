@@ -26,30 +26,74 @@ import ucar.unidata.xml.XmlUtil;
 
 
 /**
- * Class description
- *
- *
+ * A utility class for Ncml for handling NcML generation for
+ * aggregations.
  */
 public class NcmlUtil {
 
-    /** _more_ */
+    /** JoinExisting Aggregation type */
     public static final String AGG_JOINEXISTING = "joinExisting";
 
-    /** _more_ */
+    /** JoinNew Aggregation type */
     public static final String AGG_JOINNEW = "joinNew";
 
-    /** _more_ */
+    /** Union Aggregation type */
     public static final String AGG_UNION = "union";
 
-    /** _more_ */
+    /** Ensemble Aggregation type */
     public static final String AGG_ENSEMBLE = "ensemble";
 
+    /** The NcML XML namespace identifier */
+    public static final String XMLNS_XMLNS =
+        "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
 
-    /** _more_ */
-    public String aggType;
+    /** The netcdf tag */
+    public static final String TAG_NETCDF = "netcdf";
+
+    /** The variable tag */
+    public static final String TAG_VARIABLE = "variable";
+
+    /** The attribute tag */
+    public static final String TAG_ATTRIBUTE = "attribute";
+
+    /** The aggregation tag */
+    public static final String TAG_AGGREGATION = "aggregation";
+
+    /** The variableAgg tag */
+    public static final String TAG_VARIABLEAGG = "variableAgg";
+
+    /** The name attribute */
+    public static final String ATTR_NAME = "name";
+
+    /** The shape attribute */
+    public static final String ATTR_SHAPE = "shape";
+
+    /** The type attribute */
+    public static final String ATTR_TYPE = "type";
+
+    /** The value attribute */
+    public static final String ATTR_VALUE = "value";
+
+    /** The dimName attribute */
+    public static final String ATTR_DIMNAME = "dimName";
+
+    /** The coordValue attribute */
+    public static final String ATTR_COORDVALUE = "coordValue";
+
+    /** The location attribute */
+    public static final String ATTR_LOCATION = "location";
+
+    /** The enhance attribute */
+    public static final String ATTR_ENHANCE = "enhance";
+
+    /** The timeUnitsChange attribute */
+    public static final String ATTR_TIMEUNITSCHANGE = "timeUnitsChange";
+
+    /** the aggregation type */
+    private String aggType;
 
     /**
-     * _more_
+     * Create a new NcML utility with the aggregation type
      *
      * @param aggType _more_
      */
@@ -58,45 +102,45 @@ public class NcmlUtil {
     }
 
     /**
-     * _more_
+     * Create a String identifier for this object
      *
-     * @return _more_
+     * @return  the String identifier
      */
     public String toString() {
         return aggType;
     }
 
     /**
-     * _more_
+     * Is this a JoinExisting aggregation?
      *
-     * @return _more_
+     * @return true if this is a JoinExisting aggregation
      */
     public boolean isJoinExisting() {
         return aggType.equalsIgnoreCase(AGG_JOINEXISTING);
     }
 
     /**
-     * _more_
+     * Is this a JoinNew aggregation?
      *
-     * @return _more_
+     * @return  true if JoinNew
      */
     public boolean isJoinNew() {
         return aggType.equalsIgnoreCase(AGG_JOINNEW);
     }
 
     /**
-     * _more_
+     * Is this an Union aggregation?
      *
-     * @return _more_
+     * @return true if Union
      */
     public boolean isUnion() {
         return aggType.equalsIgnoreCase(AGG_UNION);
     }
 
     /**
-     * _more_
+     * Is this an Ensemble aggregation?
      *
-     * @return _more_
+     * @return true if ensemble aggregation
      */
     public boolean isEnsemble() {
         return aggType.equalsIgnoreCase(AGG_ENSEMBLE);
@@ -104,9 +148,9 @@ public class NcmlUtil {
 
 
     /**
-     * _more_
+     * Create an open Ncml tag
      *
-     * @param sb _more_
+     * @param sb  the StringBuffer to add to
      */
     public static void openNcml(StringBuffer sb) {
         sb.append(XmlUtil.openTag(TAG_NETCDF,
@@ -116,10 +160,10 @@ public class NcmlUtil {
 
 
     /**
-     * _more_
+     * Add the ensemble variable and attributes
      *
-     * @param sb _more_
-     * @param name _more_
+     * @param sb the StringBuffer to add to
+     * @param name  the name of the ensemble variable
      */
     public static void addEnsembleVariables(StringBuffer sb, String name) {
         /*
@@ -130,7 +174,7 @@ public class NcmlUtil {
         */
 
         sb.append(XmlUtil.tag(TAG_VARIABLE, XmlUtil.attrs(new String[] {
-            ATTR_NAME, name, ATTR_TYPE, "String", ATTR_SHAPE, "ens"
+            ATTR_NAME, name, ATTR_TYPE, "String", ATTR_SHAPE, name
         }), XmlUtil.tag(TAG_ATTRIBUTE, XmlUtil.attrs(new String[] { ATTR_NAME,
                 "long_name", ATTR_VALUE,
                 "ensemble coordinate" })) + XmlUtil.tag(TAG_ATTRIBUTE,
@@ -138,53 +182,5 @@ public class NcmlUtil {
                 "_CoordinateAxisType", ATTR_VALUE, "Ensemble" }))));
     }
 
-
-    /** _more_ */
-    public static final String XMLNS_XMLNS =
-        "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
-
-
-
-    /** _more_ */
-    public static final String TAG_NETCDF = "netcdf";
-
-    /** _more_ */
-    public static final String TAG_VARIABLE = "variable";
-
-    /** _more_ */
-    public static final String TAG_ATTRIBUTE = "attribute";
-
-    /** _more_ */
-    public static final String TAG_AGGREGATION = "aggregation";
-
-    /** _more_ */
-    public static final String TAG_VARIABLEAGG = "variableAgg";
-
-    /** _more_ */
-    public static final String ATTR_NAME = "name";
-
-    /** _more_ */
-    public static final String ATTR_SHAPE = "shape";
-
-    /** _more_ */
-    public static final String ATTR_TYPE = "type";
-
-    /** _more_ */
-    public static final String ATTR_VALUE = "value";
-
-    /** _more_ */
-    public static final String ATTR_DIMNAME = "dimName";
-
-    /** _more_ */
-    public static final String ATTR_COORDVALUE = "coordValue";
-
-    /** _more_ */
-    public static final String ATTR_LOCATION = "location";
-
-    /** _more_ */
-    public static final String ATTR_ENHANCE = "enhance";
-
-    /** _more_ */
-    public static final String ATTR_TIMEUNITSCHANGE = "timeUnitsChange";
 
 }

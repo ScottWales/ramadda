@@ -12,11 +12,11 @@
   <type name="gridaggregation"  description="Grid Aggregation" handler="org.ramadda.geodata.cdmdata.GridAggregationTypeHandler" category="Geo Data">
      <column name="type" type="enumeration" values="JoinExisting,Union,Ensemble"  label="Aggregation type" cansearch="false" showinhtml="true"/>
      <column name="coordinate" type="string" default="time"  label="Time Coordinate" cansearch="false" showinhtml="true"/>
-     <column name="fields" rows="5" type="string"  label="Ensemble Fields" cansearch="false" showinhtml="true"/>
+     <column name="fields" rows="5" type="string"  label="Fields" cansearch="false" showinhtml="true" suffix="Non-time variables to aggregate"/>
      <column name="files" rows="5" type="string"  label="Files" cansearch="false" showinhtml="true" suffix="Only allowed for admin"/>
      <column name="pattern"  type="string"  label="File Pattern" cansearch="false" showinhtml="true" suffix=""/>
      <column name="recurse"  type="boolean"  default="false" label="Recurse" suffix="Recurse down any directories"  />
-     <column name="ingest"  type="boolean"  default="false"  label="Ingest Files" suffix="Ingest any files found to the repository"  />
+     <column name="ingest"  type="boolean"  default="false"  label="Ingest Files" suffix="Ingest any files and metadata into the repository"  />
      <column name="addshortmetadata"  type="boolean"  label="Spatial/Temporal Metadata" suffix="Add just the spatial/temporal metadata of the ingested files"  />
      <column name="addmetadata" default="false"  type="boolean"  label="All Metadata" suffix="Add all metadata of the ingested files"  />
 

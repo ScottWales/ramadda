@@ -273,8 +273,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                           ensembleDimName,
                                           NcmlUtil.ATTR_TYPE,
                                           NcmlUtil.AGG_JOINNEW })));
-            List<String> vars = getFields(entry);
-            for (String var : vars) {
+            for (String var : fields) {
                 sb.append(XmlUtil.tag(NcmlUtil.TAG_VARIABLEAGG,
                                       XmlUtil.attrs(new String[] {
                                           NcmlUtil.ATTR_NAME,
@@ -402,7 +401,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             sortedChillens.add(child.getResource().getPath());
         }
 
-        if (ncmlUtil.isJoinExisting()) {
+        if (ncmlUtil.isJoinExisting() || ncmlUtil.isEnsemble()) {
             Collections.sort(sortedChillens);
         }
         //        System.err.println("making ncml:");

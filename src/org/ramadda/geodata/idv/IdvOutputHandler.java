@@ -116,8 +116,10 @@ import java.util.Properties;
  */
 public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
+    /** IDV enabled property identifier */
     public static final String PROP_IDV_ENABLED = "ramadda.idv.enabled";
 
+    /** mutex */
     private static Object INIT_MUTEX = new Object();
 
 
@@ -142,7 +144,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     /** background images available */
     private List backgrounds;
 
-    /** _more_ */
+    /** except arguments */
     private HashSet<String> exceptArgs = new HashSet<String>();
 
 
@@ -193,9 +195,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         //Call this in a thread because if there is any problem with xvfb this will just hang
         //Run in a couple of seconds because we are deadlocking deep down in Java on the mac
-        if(getRepository().getProperty(PROP_IDV_ENABLED,true)) {
+        if (getRepository().getProperty(PROP_IDV_ENABLED, true)) {
             Misc.runInABit(2000, this, "checkIdv", null);
-        } 
+        }
     }
 
 
@@ -205,15 +207,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     public void checkIdv() {
         //Synchronize for the case where we have multiple ramadda  servlets under the same server
         //See if that fixes the problem with too many jythons being initialized at once
-        synchronized(INIT_MUTEX) {
+        synchronized (INIT_MUTEX) {
             try {
                 //See if we have a graphics environment
                 java.awt.GraphicsEnvironment e =
-                    java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
+                    java.awt.GraphicsEnvironment
+                        .getLocalGraphicsEnvironment();
                 e.getDefaultScreenDevice();
                 idvOk     = true;
-                idvServer =
-                    new IdvServer(new File(getStorageManager().getDir("idv")));
+                idvServer = new IdvServer(
+                    new File(getStorageManager().getDir("idv")));
                 //Only add the output types after we create the server
                 addType(OUTPUT_IDV_GRID);
                 addType(OUTPUT_IDV_POINT);
@@ -221,7 +224,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 idvOk = false;
                 //                jahe.printStackTrace();
                 getRepository().getLogManager().logWarning(
-                                                           "To run the IdvOutputHandler a graphics environment is needed");
+                    "To run the IdvOutputHandler a graphics environment is needed");
             } catch (Throwable exc) {
                 idvOk = false;
                 logError("Creating IdvOutputHandler", exc);
@@ -242,11 +245,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     }
 
     /**
-     * _more_
+     * Get the data output handler for this object
      *
-     * @return _more_
+     * @return the data output handler
      *
-     * @throws Exception _more_
+     * @throws Exception  problem getting output handler
      */
     public CdmDataOutputHandler getDataOutputHandler() throws Exception {
         return (CdmDataOutputHandler) getRepository().getOutputHandler(
@@ -304,11 +307,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Get the DataSourceDescriptor for the entry
      *
      * @param entry The entry
      *
-     * @return _more_
+     * @return  the DataSourceDescriptor
      *
      * @throws Exception On badness
      */
@@ -1232,11 +1235,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Get the request arguments
      *
      * @param request The request
      *
-     * @return _more_
+     * @return  the arguments to use
      */
     private Hashtable getRequestArgs(Request request) {
         Hashtable requestArgs = new Hashtable(request.getArgs());
@@ -1255,13 +1258,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Output the grid page
      *
      * @param request The request
      * @param entry The entry
      * @param dataSource The IDV DataSource
      *
-     * @return _more_
+     * @return  the result
      *
      * @throws Exception On badness
      */
@@ -1468,13 +1471,13 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     }
 
     /**
-     * _more_
+     * Generate the grid image
      *
      * @param request The request
      * @param entry The entry
      * @param dataSource The IDV DataSource
      *
-     * @return _more_
+     * @return the result
      *
      * @throws Exception On badness
      */
@@ -1784,9 +1787,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                          + request.getString(ARG_CONTOUR_WIDTH + displayIdx,
                                              "1") + ";");
                 if (request.defined(ARG_CONTOUR_INTERVAL + displayIdx)) {
-                    s.append("interval="
-                             + request.getString(ARG_CONTOUR_INTERVAL
-                                 + displayIdx, "") + ";");
+                    String intString = request.getString(ARG_CONTOUR_INTERVAL
+                                           + displayIdx, "");
+                    if ((intString.indexOf(";") >= 0)
+                            || (intString.indexOf("/") >= 0)) {
+                        intString = intString.replaceAll(";", ",");
+                        s.append("levels=");
+                    } else {
+                        s.append("interval=");
+                    }
+                    s.append(intString + ";");
                 }
                 if (request.defined(ARG_CONTOUR_BASE + displayIdx)) {
                     s.append("base="
@@ -2053,15 +2063,15 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Output the group
      *
      * @param request The request
-     * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param outputType  the output type
+     * @param group  the group
+     * @param subGroups  any subgroups
+     * @param entries    the entries
      *
-     * @return _more_
+     * @return  the Result
      *
      * @throws Exception On badness
      */
@@ -2085,12 +2095,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Output a point data page
      *
      * @param request The request
      * @param entry The entry
      *
-     * @return _more_
+     * @return the Result
      *
      * @throws Exception On badness
      */
@@ -2185,12 +2195,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Output a point image
      *
      * @param request The request
      * @param entry The entry
      *
-     * @return _more_
+     * @return  the Result
      *
      * @throws Exception On badness
      */
@@ -2374,12 +2384,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Output the point
      *
      * @param request The request
      * @param entry The entry
      *
-     * @return _more_
+     * @return the Result
      *
      * @throws Exception On badness
      */
@@ -2398,12 +2408,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Make a boolean property string
      *
-     * @param name _more_
-     * @param value _more_
+     * @param name the property name
+     * @param value  the property value
      *
-     * @return _more_
+     * @return  the property as a String
      */
     private String makeProperty(String name, boolean value) {
         return makeProperty(name, "" + value);
@@ -2413,12 +2423,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
     /**
-     * _more_
+     * Make a String property
      *
-     * @param name _more_
-     * @param value _more_
+     * @param name the property name
+     * @param value  the property value
      *
-     * @return _more_
+     * @return  the property as a String
      */
     private String makeProperty(String name, String value) {
         return XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
@@ -2430,10 +2440,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      * utility method
      *
      * @param request The request
-     * @param arg _more_
-     * @param dflt _more_
+     * @param arg     the argument identifier
+     * @param dflt    the default value
      *
-     * @return _more_
+     * @return  the checkbox HTML
      */
     private String htmlCheckbox(Request request, String arg, boolean dflt) {
         boolean value = dflt;
@@ -2452,12 +2462,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      * utility method
      *
      * @param request The request
-     * @param arg _more_
-     * @param items _more_
-     * @param selectFirstOne _more_
-     * @param extra _more_
+     * @param arg     the argument identifier
+     * @param items   the list of items
+     * @param selectFirstOne  true to select the first one
+     * @param extra   extra properties
      *
-     * @return _more_
+     * @return  the select box HTML
      */
     private String htmlSelect(Request request, String arg, List items,
                               boolean selectFirstOne, String extra) {
@@ -2474,11 +2484,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      * utility method
      *
      * @param request The request
-     * @param arg _more_
-     * @param items _more_
-     * @param extra _more_
+     * @param arg     the argument identifier
+     * @param items   the list of items
+     * @param extra   extra special sauce
      *
-     * @return _more_
+     * @return  the select box HTML
      */
     private String htmlSelect(Request request, String arg, List items,
                               String extra) {
@@ -2489,10 +2499,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      * utility method
      *
      * @param request The request
-     * @param arg _more_
-     * @param items _more_
+     * @param arg     the argument identifier
+     * @param items   the list of items
      *
-     * @return _more_
+     * @return  the select box HTML
      */
     private String htmlSelect(Request request, String arg, List items) {
         return htmlSelect(request, arg, items, "");
