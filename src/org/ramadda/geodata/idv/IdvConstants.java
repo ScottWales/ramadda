@@ -211,51 +211,54 @@ public interface IdvConstants {
     /** scale placement arg id */
     public static final String ARG_SCALE_PLACEMENT = "s_p";
 
-    /** _more_ */
+    /** range min arg id */
     public static final String ARG_RANGE_MIN = "r_mn";
 
-    /** _more_ */
+    /** range max arg id */
     public static final String ARG_RANGE_MAX = "r_mx";
 
-    /** _more_ */
+    /** ensemble arg id */
+    public static final String ARG_ENS = "ens";
+
+    /** display arg id */
     public static final String ARG_DISPLAY = "dsp";
 
-    /** _more_ */
+    /** idv action arg id */
     public static final String ARG_IDV_ACTION = "idv.action";
 
-    /** _more_ */
+    /** times arg id */
     public static final String ARG_TIMES = "times";
 
-    /** _more_ */
+    /** maps arg id */
     public static final String ARG_MAPS = "maps";
 
-    /** _more_ */
+    /** map width arg id */
     public static final String ARG_MAPWIDTH = "mapwidth";
 
-    /** _more_ */
+    /** map color arg id */
     public static final String ARG_MAPCOLOR = "mapcolor";
 
 
-    /** _more_ */
+    /** clip arg id */
     public static final String ARG_CLIP = "clip";
 
-    /** _more_ */
+    /** view background color arg id */
     public static final String ARG_VIEW_BACKGROUND = "bg";
 
-    /** _more_ */
+    /** levels arg id */
     public static final String ARG_LEVELS = "levels";
 
-    /** _more_ */
+    /** width arg id */
     public static final String ARG_IMAGE_WIDTH = "width";
 
-    /** _more_ */
+    /** height arg id */
     public static final String ARG_IMAGE_HEIGHT = "height";
 
-    /** _more_ */
+    /** transparent background arg id */
     public static final String ARG_BACKGROUND_TRANSPARENT = "bgTrans";
 
 
-    /** _more_ */
+    /** not args */
     public static final String[] NOTARGS = {
         ARG_SUBMIT_SAVE, Constants.ARG_SUBMIT_PUBLISH,
         Constants.ARG_PUBLISH_NAME, Constants.ARG_PUBLISH_ENTRY,
@@ -264,70 +267,65 @@ public interface IdvConstants {
         ARG_IDV_ACTION
     };
 
-    /** _more_ */
+    /** error action id */
     public static final String ACTION_ERROR = "action.error";
 
 
-    /** _more_ */
+    /** make init form id */
     public static final String ACTION_MAKEINITFORM = "action.makeinitform";
 
-    /** _more_ */
+    /** make form action id */
     public static final String ACTION_MAKEFORM = "action.makeform";
 
 
-    /** _more_ */
+    /** make page action id */
     public static final String ACTION_MAKEPAGE = "action.makepage";
 
-    /** _more_ */
+    /** make image action id */
     public static final String ACTION_MAKEIMAGE = "action.makeimage";
 
 
-    /** _more_ */
+    /** make point page action id */
     public static final String ACTION_POINT_MAKEPAGE =
         "action.point.makepage";
 
-    /** _more_ */
+    /** make point image action id */
     public static final String ACTION_POINT_MAKEIMAGE =
         "action.point.makeimage";
 
 
-
-    /** _more_ */
+    /** contour cross section display id */
     public static final String DISPLAY_XS_CONTOUR = "contourxs";
 
-    /** _more_ */
+    /** color cross section display id */
     public static final String DISPLAY_XS_COLOR = "colorxs";
 
-    /** _more_ */
+    /** color filled contour cross section display id */
     public static final String DISPLAY_XS_FILLEDCONTOUR = "contourxsfilled";
 
-
-
-    /** _more_ */
+    /** plan view flow display id */
     public static final String DISPLAY_PLANVIEWFLOW = "planviewflow";
 
-    /** _more_ */
+    /** plan view streamlines display id */
     public static final String DISPLAY_STREAMLINES = "streamlines";
 
-    /** _more_ */
+    /** plan view windbarb display id */
     public static final String DISPLAY_WINDBARBPLAN = "windbarbplan";
 
-    /** _more_ */
+    /** plan view contour display id */
     public static final String DISPLAY_PLANVIEWCONTOUR = "planviewcontour";
 
-    /** _more_ */
+    /** plan view color-filled contour display id */
     public static final String DISPLAY_PLANVIEWCONTOURFILLED =
         "planviewcontourfilled";
 
-    /** _more_ */
+    /** plan view color-shaded display id */
     public static final String DISPLAY_PLANVIEWCOLOR = "planviewcolor";
 
-    /** _more_ */
+    /** isosurface display id */
     public static final String DISPLAY_ISOSURFACE = "isosurface";
 
-
-    /** _more_ */
+    /** data group id */
     public static final String GROUP_DATA = "Data";
-
 
 }

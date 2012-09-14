@@ -22,63 +22,53 @@
 package org.ramadda.geodata.idv;
 
 
-import org.ramadda.geodata.cdmdata.*;
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.util.*;
+import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
+import org.ramadda.geodata.cdmdata.CdmManager;
+import org.ramadda.geodata.cdmdata.GridAggregationTypeHandler;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Link;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.RepositoryUtil;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.map.MapInfo;
+import org.ramadda.repository.map.MapProperties;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataType;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
 
-
-import org.w3c.dom.*;
-
+import org.w3c.dom.Element;
 
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 
-import ucar.unidata.data.*;
-
-import ucar.unidata.data.DataManager;
-import ucar.unidata.data.DataSourceDescriptor;
+import ucar.unidata.data.DataCategory;
+import ucar.unidata.data.DataChoice;
+import ucar.unidata.data.DataSource;
 import ucar.unidata.data.DataSourceDescriptor;
 import ucar.unidata.data.gis.WmsSelection;
-import ucar.unidata.data.grid.*;
+import ucar.unidata.data.grid.GeoGridDataSource;
 import ucar.unidata.data.point.NetcdfPointDataSource;
-
-import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.gis.maps.MapData;
-import ucar.unidata.idv.*;
-
-
-import ucar.unidata.idv.IdvBase;
+import ucar.unidata.idv.ControlDescriptor;
 import ucar.unidata.idv.IdvServer;
 import ucar.unidata.idv.IntegratedDataViewer;
-import ucar.unidata.idv.VMManager;
 import ucar.unidata.idv.ViewState;
 import ucar.unidata.idv.ui.ImageGenerator;
 import ucar.unidata.idv.ui.ImageSequenceGrabber;
-
-
-
 import ucar.unidata.ui.symbol.StationModel;
 import ucar.unidata.ui.symbol.StationModelManager;
-import ucar.unidata.util.CacheManager;
 import ucar.unidata.util.ColorTable;
 import ucar.unidata.util.ContourInfo;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.Range;
-
-import ucar.unidata.util.StringBufferCollection;
 import ucar.unidata.util.StringUtil;
-
 import ucar.unidata.util.ThreeDSize;
 import ucar.unidata.util.Trace;
 import ucar.unidata.util.TwoFacedObject;
@@ -86,24 +76,17 @@ import ucar.unidata.xml.XmlUtil;
 
 import visad.Unit;
 
+
 import java.awt.Color;
 
-import java.io.*;
 import java.io.File;
-import java.io.InputStream;
-
-import java.net.*;
-
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -843,6 +826,18 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 strideComp = strideComp + HtmlUtils.br() + size;
             }
             spatialComps.add(strideComp);
+
+            List ensMembers = (List) choice.getProperty(
+                                  GeoGridDataSource.PROP_ENSEMBLEMEMBERS);
+            if ((ensMembers != null) && !ensMembers.isEmpty()) {
+                spatialComps.add(msgLabel("Ensemble Member"));
+                String ensComp =
+                    htmlSelect(request, ARG_ENS + displayIdx, ensMembers,
+                               false,
+                               HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE,
+                                   "true", HtmlUtils.ATTR_SIZE, "5"));
+                spatialComps.add(ensComp);
+            }
             String spatial =
                 HtmlUtils.table(Misc.listToStringArray(spatialComps), 5);
             innerTabTitles.add(msg("Spatial"));
@@ -1970,6 +1965,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                                + displayIdx, "1")));
             }
 
+            List members = request.get(ARG_ENS + displayIdx, new ArrayList());
+            if ( !members.isEmpty()) {
+                attrs.append(XmlUtil.attrs(ImageGenerator.ATTR_ENSEMBLES,
+                                           StringUtil.join(",", members)));
+            }
 
             List times = request.get(ARG_TIMES + displayIdx, new ArrayList());
             if (times.size() > 0) {
