@@ -69,9 +69,10 @@ mri-agcm3-2h:mri-agcm3.2H
 mri-agcm3-2s:MRI-AGCM3.2S
 mri-cgcm3:MRI-CGCM3
 mri-esm1:MRI-ESM1
-noresm-m:NorESM-M
 # website has a 1 in the name
+#noresm-m:NorESM-M
 #noresm-me:NorESM-ME
 #noresm-l:NorESM-L
-noresm1-m:NorESM-M
-noresm1-me:NorESM-ME
+noresm1-m:NorESM1-M
+noresm1-me:NorESM1-ME
+noresm1-l:NorESM1-L
