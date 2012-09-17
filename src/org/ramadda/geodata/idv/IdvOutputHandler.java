@@ -796,9 +796,21 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                         HtmlUtils.ATTR_SIZE, "5")));
             }
 
-            List levels       = choice.getAllLevels();
 
             List spatialComps = new ArrayList();
+            List ensMembers   = (List) choice.getProperty(
+                                  GeoGridDataSource.PROP_ENSEMBLEMEMBERS);
+            if ((ensMembers != null) && !ensMembers.isEmpty()) {
+                spatialComps.add(msgLabel("Ensemble Member"));
+                String ensComp =
+                    htmlSelect(request, ARG_ENS + displayIdx, ensMembers,
+                               false,
+                               HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE,
+                                   "true", HtmlUtils.ATTR_SIZE, "5"));
+                spatialComps.add(ensComp);
+            }
+
+            List levels = choice.getAllLevels();
             if ((levels != null) && (levels.size() > 0)) {
                 List tfoLevels = new ArrayList();
                 int  cnt       = 0;
@@ -827,24 +839,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
             spatialComps.add(strideComp);
 
-            List ensMembers = (List) choice.getProperty(
-                                  GeoGridDataSource.PROP_ENSEMBLEMEMBERS);
-            if ((ensMembers != null) && !ensMembers.isEmpty()) {
-                spatialComps.add(msgLabel("Ensemble Member"));
-                String ensComp =
-                    htmlSelect(request, ARG_ENS + displayIdx, ensMembers,
-                               false,
-                               HtmlUtils.attrs(HtmlUtils.ATTR_MULTIPLE,
-                                   "true", HtmlUtils.ATTR_SIZE, "5"));
-                spatialComps.add(ensComp);
-            }
             String spatial =
                 HtmlUtils.table(Misc.listToStringArray(spatialComps), 5);
             innerTabTitles.add(msg("Spatial"));
             innerTabContents.add(spatial);
-
-
-
 
             ColorTable dfltColorTable =
                 idvServer.getIdv().getDisplayConventions().getParamColorTable(
