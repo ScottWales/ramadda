@@ -22,44 +22,20 @@
 package org.ramadda.plugins.faq;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.*;
-
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.type.ExtensibleGroupTypeHandler;
 import org.ramadda.util.HtmlUtils;
 
-
-import org.w3c.dom.*;
-
-
-import ucar.unidata.sql.Clause;
-
-
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HttpServer;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.WikiUtil;
-import ucar.unidata.xml.XmlUtil;
-
-import java.sql.PreparedStatement;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
+import org.w3c.dom.Element;
 
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -69,16 +45,16 @@ import java.util.Properties;
 public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
 
-    /** _more_ */
+    /** the FAQ type id */
     public static String TYPE_FAQ = "faq";
 
     /**
-     * _more_
+     * Create a new FaqTypeHandler
      *
-     * @param repository _more_
-     * @param entryNode _more_
+     * @param repository  the Repository
+     * @param entryNode   the Entry node XML
      *
-     * @throws Exception _more_
+     * @throws Exception  problems creating handler
      */
     public FaqTypeHandler(Repository repository, Element entryNode)
             throws Exception {
@@ -87,16 +63,16 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /**
-     * _more_
+     * Get the HTML display for this type
      *
-     * @param request _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request  the Request
+     * @param group    the group
+     * @param subGroups    the subgroups
+     * @param entries      the Entries
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception  problem getting the HTML
      */
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
@@ -153,16 +129,19 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
                 cats.add(cat);
             }
             catQuestionSB.append("<li class=\"faq_question\">");
-            String link = HtmlUtils.href(
-                              request.entryUrl(
-                                  getRepository().URL_ENTRY_SHOW,
-                                  entry), HtmlUtils.img(
-                                      getRepository().iconUrl(ICON_ENTRY),
-                                      msg("View entry details")));
-            //            catQuestionSB.append(" ");
-            catQuestionSB.append(link);
-
-            catQuestionSB.append(" ");
+            boolean includeLink = group.getValue(0, true);
+            if (canAdd || includeLink) {
+                String link = HtmlUtils.href(
+                                  request.entryUrl(
+                                      getRepository().URL_ENTRY_SHOW,
+                                      entry), HtmlUtils.img(
+                                          getRepository().iconUrl(
+                                              ICON_ENTRY), msg(
+                                              "View entry details")));
+                //            catQuestionSB.append(" ");
+                catQuestionSB.append(link);
+                catQuestionSB.append(" ");
+            }
             catQuestionSB.append(HtmlUtils.href("#" + entry.getId(),
                     entry.getName()));
 
@@ -204,12 +183,6 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             //            sb.append(catAnswerSB);
 
         }
-
-
-
-
-
-
 
         return new Result(msg("FAQ"), sb);
 

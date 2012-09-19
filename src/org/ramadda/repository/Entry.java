@@ -22,179 +22,168 @@
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.auth.*;
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.auth.User;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.type.TypeHandler;
 
-
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.type.*;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
-import java.awt.geom.Rectangle2D;
 
+import java.awt.geom.Rectangle2D;
 
 import java.io.File;
 
 import java.util.ArrayList;
-
-
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
 
 /**
- * Class Entry _more_
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
+ * The class to hold Entry information
  */
 public class Entry implements Cloneable {
 
-    /** _more_ */
+    /** ID delimiter */
     public static final String IDDELIMITER = ":";
 
-    /** _more_ */
+    /** path delimiter */
     public static final String PATHDELIMITER = "/";
 
-    /** _more_ */
+    /** non-geo identifier */
     public static final double NONGEO = -999999;
 
 
 
-    /** _more_ */
+    /** List of comments */
     List<Comment> comments;
 
-    /** _more_ */
+    /** List of permissions */
     List<Permission> permissions = null;
 
-    /** _more_ */
+    /** permission map */
     Hashtable permissionMap = new Hashtable();
 
-    /** _more_ */
+    /** List of associations */
     List<Association> associations;
 
 
-    /** _more_ */
+    /** Entry metadata */
     List<Metadata> metadata;
 
-    /** _more_ */
+    /** the id */
     private String id;
 
-    /** _more_ */
+    /** the name */
     private String name = "";
 
-    /** _more_ */
+    /** the description */
     private String description = "";
 
-    /** _more_ */
+    /** the parent entry */
     private Entry parentEntry;
 
-    /** _more_ */
+    /** the parent entry id */
     private String parentEntryId;
 
-    /** _more_ */
+    /** the tree id */
     private String treeId;
 
 
-    /** _more_ */
+    /** the user (owner) */
     private User user;
 
-    /** _more_ */
+    /** the create date */
     private long createDate = 0L;
 
-    /** _more_ */
+    /** the change date */
     private long changeDate = 0L;
 
-
-    /** _more_ */
+    /** is this a stoopid entry */
     boolean isDummy = false;
 
-    /** _more_ */
+    /** the associated values (columns) */
     Object[] values;
 
-    /** _more_ */
+    /** the resource */
     private Resource resource = new Resource();
 
-    /** _more_ */
+    /** the category */
     private String category;
 
-    /** _more_ */
+    /** the type handler for this entry */
     private TypeHandler typeHandler;
 
-    /** _more_ */
+    /** the start date */
     private long startDate;
 
-    /** _more_ */
+    /** the end date */
     private long endDate;
 
-    /** _more_ */
+    /** the south value */
     private double south = NONGEO;
 
-    /** _more_ */
+    /** the north value */
     private double north = NONGEO;
 
-    /** _more_ */
+    /** the east value */
     private double east = NONGEO;
 
-    /** _more_ */
+    /** the west value */
     private double west = NONGEO;
 
-    /** _more_ */
+    /** the altitude bottom value */
     private double altitudeBottom = NONGEO;
 
-    /** _more_ */
+    /** the altitude top value */
     private double altitudeTop = NONGEO;
 
-    /** _more_ */
+    /** is this a local file */
     private boolean isLocalFile = false;
 
-    /** _more_ */
+    /** is this a remote entry */
     private boolean isRemoteEntry = false;
 
-    /** _more_ */
+    /** the remote server */
     private String remoteServer;
 
-    /** _more_ */
+    /** the icon for this Entry */
     private String icon;
 
-    /** _more_ */
+    /** the Entry properties */
     private Hashtable properties;
 
-    /** _more_ */
+    /** the Entry properties string */
     private String propertiesString;
 
-    /** _more_ */
+    /** transient properties */
     private Hashtable transientProperties = new Hashtable();
 
-
-    /** _more_ */
+    /** the group property */
     private boolean isGroup = false;
 
 
-    /** _more_ */
+    /** List of subgroups */
     List<Entry> subGroups;
 
-    /** _more_ */
+    /** List of subentries */
     List<Entry> subEntries;
 
 
-    /** _more_ */
+    /** the chillens ids */
     private List<String> childIds;
 
 
     /**
-     * _more_
+     * Default constructor
      */
     public Entry() {}
 
     /**
-     * _more_
+     * Copy constructor
      *
-     * @param that _more_
+     * @param that  the Entry to copy
      */
     public Entry(Entry that) {
         //        super(that);
@@ -203,9 +192,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Create an Entry with the id
      *
-     * @param id _more_
+     * @param id  the id
      */
     public Entry(String id) {
         setId(id);
@@ -213,10 +202,10 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Create a new Entry with the type and dummy flag
      *
-     * @param handler _more_
-     * @param isDummy _more_
+     * @param handler  the type handler
+     * @param isDummy  true if stoopid
      */
     public Entry(TypeHandler handler, boolean isDummy) {
         this(handler, isDummy, "Search Results");
@@ -224,11 +213,11 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Create a new Entry with the type and dummy flag
      *
-     * @param handler _more_
-     * @param isDummy _more_
-     * @param dummyName _more_
+     * @param handler  the type handler
+     * @param isDummy  true if stoopid
+     * @param dummyName  the dummy name
      */
     public Entry(TypeHandler handler, boolean isDummy, String dummyName) {
         this("", handler);
@@ -237,13 +226,11 @@ public class Entry implements Cloneable {
         setDescription("");
     }
 
-
-
     /**
-     * _more_
+     * Create an Entry with the id and type handler
      *
-     * @param id _more_
-     * @param typeHandler _more_
+     * @param id  the Entry id
+     * @param typeHandler  the type handler
      */
     public Entry(String id, TypeHandler typeHandler) {
         this(id);
@@ -251,11 +238,11 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Create an Entry with the id and type handler
      *
-     * @param id _more_
-     * @param typeHandler _more_
-     * @param isGroup _more_
+     * @param id  the Entry id
+     * @param typeHandler  the type handler
+     * @param isGroup  true if a group
      */
     public Entry(String id, TypeHandler typeHandler, boolean isGroup) {
         this(id);
@@ -264,14 +251,13 @@ public class Entry implements Cloneable {
     }
 
 
-
     /**
-     * _more_
+     * Create a generated Entry
      *
-     * @param request _more_
-     * @param id _more_
+     * @param request  the Request
+     * @param id       the id
      *
-     * @return _more_
+     * @return  the new Entry
      */
     public Entry createGeneratedEntry(Request request, String id) {
         return null;
@@ -300,11 +286,11 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Clone this Entry
      *
-     * @return _more_
+     * @return  a clone
      *
-     * @throws CloneNotSupportedException _more_
+     * @throws CloneNotSupportedException  on badness
      */
     public Object clone() throws CloneNotSupportedException {
         Entry that = (Entry) super.clone();
@@ -314,20 +300,20 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the full name of the entry
      *
-     * @return _more_
+     * @return  the full name
      */
     public String getFullName() {
         return getFullName(false);
     }
 
     /**
-     * _more_
+     * Get the full name of the Entry
      *
-     * @param encodeForUrl _more_
+     * @param encodeForUrl  encode it for the URL
      *
-     * @return _more_
+     * @return  the full name (encoded or not based on encodeForUrl)
      */
     public String getFullName(boolean encodeForUrl) {
         String name = getName();
@@ -352,11 +338,11 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Encode the name
      *
-     * @param name _more_
+     * @param name  the name
      *
-     * @return _more_
+     * @return  the encoded name
      */
     public static String encodeName(String name) {
         name = name.replaceAll("\\/", "%2F");
@@ -368,11 +354,11 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Decode the name
      *
-     * @param name _more_
+     * @param name the encoded name
      *
-     * @return _more_
+     * @return  the decoded name
      */
     public static String decodeName(String name) {
         name = name.replaceAll("%2F", "/");
@@ -383,9 +369,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the File associated with this Entry
      *
-     * @return _more_
+     * @return  the file or null if no file
      */
     public File getFile() {
         return getTypeHandler().getFileForEntry(this);
@@ -394,9 +380,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     *  _more_
+     *  Initialize the Entry with the template
      *
-     *  @param template _more_
+     *  @param template  the template
      */
     public void initWith(Entry template) {
         setName(template.getName());
@@ -423,9 +409,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the geographic bounds
      *
-     * @return _more_
+     * @return  the bounds
      */
     public Rectangle2D.Double getBounds() {
         return new Rectangle2D.Double(west, south, east - west,
@@ -434,9 +420,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Set the geographic bounds
      *
-     * @param rect _more_
+     * @param rect  the bounds
      */
     public void setBounds(Rectangle2D.Double rect) {
         west  = rect.getX();
@@ -446,23 +432,20 @@ public class Entry implements Cloneable {
     }
 
 
-
-
     /**
-     * _more_
+     * Initialize the Entry with these values
      *
-     * @param name _more_
-     * @param description _more_
-     * @param group _more_
-     * @param parentEntry _more_
-     * @param user _more_
-     * @param resource _more_
-     * @param category _more_
-     * @param createDate _more_
-     * @param changeDate _more_
-     * @param startDate _more_
-     * @param endDate _more_
-     * @param values _more_
+     * @param name         The Entry name
+     * @param description  The Entry description
+     * @param parentEntry  the parent Entry
+     * @param user         the loser
+     * @param resource     the resource
+     * @param category     the category
+     * @param createDate   the creation date
+     * @param changeDate   the change date
+     * @param startDate    the start date
+     * @param endDate      the start date
+     * @param values       the Entry values
      */
     public void initEntry(String name, String description, Entry parentEntry,
                           User user, Resource resource, String category,
@@ -493,16 +476,10 @@ public class Entry implements Cloneable {
     }
 
 
-
-
-
-
-
-
     /**
-     * _more_
+     * Is this a File
      *
-     * @return _more_
+     * @return  true if a File
      */
     public boolean isFile() {
         return (resource != null) && resource.isFile();
@@ -536,13 +513,10 @@ public class Entry implements Cloneable {
         return resource;
     }
 
-
-
-
     /**
-     * _more_
+     * Set the date for this Entry
      *
-     * @param value _more_
+     * @param value  the date (seconds)
      */
     public void setDate(long value) {
         setCreateDate(value);
@@ -592,18 +566,18 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Is this the top (first) entry?
      *
-     * @return _more_
+     * @return true if it is
      */
     public boolean isTopEntry() {
         return isGroup() && (getParentEntryId() == null);
     }
 
     /**
-     * _more_
+     * Is this the top (first) group?
      *
-     * @return _more_
+     * @return true if it is
      * @deprecated use isTopEntry
      */
     public boolean isTopGroup() {
@@ -612,9 +586,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Is this a Group?
      *
-     * @return _more_
+     * @return true if this is a Group?
      */
     public boolean isGroup() {
         if (isGroup) {
@@ -628,9 +602,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Set the Group Property
      *
-     * @param g _more_
+     * @param g   true if a Group
      */
     public void setGroup(boolean g) {
         isGroup = g;
@@ -646,20 +620,20 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the type
      *
-     * @return _more_
+     * @return  the type
      */
     public String getType() {
         return typeHandler.getType();
     }
 
     /**
-     * _more_
+     * Is this Entry of the type specified
      *
-     * @param type _more_
+     * @param type  the type to check
      *
-     * @return _more_
+     * @return true if it is one
      */
     public boolean isType(String type) {
         return getType().equals(type);
@@ -696,12 +670,12 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the string value of the values index
      *
-     * @param index _more_
-     * @param dflt _more_
+     * @param index  the values index
+     * @param dflt   the default value
      *
-     * @return _more_
+     * @return  a String representation of the indexed value
      */
     public String getValue(int index, String dflt) {
         if ((values == null) || (index >= values.length)
@@ -713,36 +687,64 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the indexed value as a double
      *
-     * @param index _more_
-     * @param dflt _more_
+     * @param index  index in getValues array;
+     * @param dflt   the default value
      *
-     * @return _more_
+     * @return  the double value (or dflt)
      */
     public double getValue(int index, double dflt) {
         String sValue = getValue(index, "");
         if (sValue.length() == 0) {
             return dflt;
         }
+        double retval = dflt;
+        try {
+            retval = Double.parseDouble(sValue);
+        } catch (Exception e) {
+            retval = dflt;
+        }
 
-        return Double.parseDouble(sValue);
+        return retval;
     }
 
+    /**
+     * Get the indexed value as a double
+     *
+     * @param index  index in getValues array;
+     * @param dflt   the default value
+     *
+     * @return  the boolean value (or dflt)
+     */
+    public boolean getValue(int index, boolean dflt) {
+        String sValue = getValue(index, "");
+        if (sValue.length() == 0) {
+            return dflt;
+        }
+        boolean retval = dflt;
+        try {
+            retval = Boolean.parseBoolean(sValue);
+        } catch (Exception e) {
+            retval = dflt;
+        }
+
+        return retval;
+    }
 
     /**
-     * _more_
+     * Return a String representation of this Object
      *
-     * @return _more_
+     * @return a String representation of this Object
      */
     public String toString() {
         return name + " id:" + id + "  type:" + getTypeHandler();
     }
 
     /**
-     * _more_
+     * Does this entry have a location defined
      *
-     * @return _more_
+     * @return true if this entry has a location defined
      */
     public boolean hasLocationDefined() {
         if ((south != NONGEO) && (east != NONGEO) && !hasAreaDefined()) {
@@ -753,27 +755,27 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the location (lat,lon) of the entry
      *
-     * @return _more_
+     * @return the location (lat,lon)
      */
     public double[] getLocation() {
         return new double[] { south, east };
     }
 
     /**
-     * _more_
+     * Get the latitude of the entry
      *
-     * @return _more_
+     * @return the latitude of the entry
      */
     public double getLatitude() {
         return south;
     }
 
     /**
-     * _more_
+     * Get the longitude of the entry
      *
-     * @return _more_
+     * @return the longitude of the entry
      */
     public double getLongitude() {
         return east;
@@ -781,9 +783,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Get the center of the location
      *
-     * @return _more_
+     * @return the center of the location
      */
     public double[] getCenter() {
         return new double[] { south + (north - south) / 2,
@@ -791,9 +793,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Does this entry have an area defined?
      *
-     * @return _more_
+     * @return true if this entry has an area defined
      */
     public boolean hasAreaDefined() {
         if ((south != NONGEO) && (east != NONGEO) && (north != NONGEO)
@@ -809,7 +811,7 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Trim the area resolution
      */
     public void trimAreaResolution() {
         double diff = (south - north);
@@ -826,7 +828,7 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Clear the geographic bounds
      */
     public void clearArea() {
         south = north = east = west = NONGEO;
@@ -834,9 +836,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Get the label for this Entry
      *
-     * @return _more_
+     * @return  the label
      */
     public String getLabel() {
         String label = getBaseLabel();
@@ -848,9 +850,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the base label
      *
-     * @return _more_
+     * @return the base label
      */
     public String getBaseLabel() {
         if ((name != null) && (name.trim().length() > 0)) {
@@ -867,9 +869,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Set the location from the other Entry
      *
-     * @param that _more_
+     * @param that  the other Entry
      */
     public void setLocation(Entry that) {
         this.north          = that.north;
@@ -882,11 +884,11 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Set the location
      *
-     * @param lat _more_
-     * @param lon _more_
-     * @param alt _more_
+     * @param lat  the latitude
+     * @param lon  the longitude
+     * @param alt  the altitude
      */
     public void setLocation(double lat, double lon, double alt) {
         this.north          = lat;
@@ -939,9 +941,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Set the Latitude Property
      *
-     * @param value _more_
+     * @param value the Latitude Property
      */
     public void setLatitude(double value) {
         north = value;
@@ -949,9 +951,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Set the Longitude Property
      *
-     * @param value _more_
+     * @param value  the Longitude Property
      */
     public void setLongitude(double value) {
         east = value;
@@ -959,9 +961,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Set the Altitude Property
      *
-     * @param value _more_
+     * @param value the Altitude Property
      */
     public void setAltitude(double value) {
         altitudeTop    = value;
@@ -1005,9 +1007,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the Altitude Property
      *
-     * @return _more_
+     * @return the Altitude Property
      */
     public double getAltitude() {
         return altitudeTop;
@@ -1015,9 +1017,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Does this have a top altitude?
      *
-     * @return _more_
+     * @return  true if it does
      */
     public boolean hasAltitudeTop() {
         return (altitudeTop == altitudeTop) && (altitudeTop != NONGEO);
@@ -1025,9 +1027,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Does this have a bottom altitude
      *
-     * @return _more_
+     * @return true if this has a bottom altitude
      */
     public boolean hasAltitudeBottom() {
         return (altitudeBottom == altitudeBottom)
@@ -1036,9 +1038,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Does this have an altitude defined?
      *
-     * @return _more_
+     * @return true if this has an altitude defined?
      */
     public boolean hasAltitude() {
         return hasAltitudeTop() && hasAltitudeBottom()
@@ -1047,36 +1049,36 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Does this have a north defined?
      *
-     * @return _more_
+     * @return true if it does
      */
     public boolean hasNorth() {
         return (north == north) && (north != NONGEO);
     }
 
     /**
-     * _more_
+     * Does this have a south value defined?
      *
-     * @return _more_
+     * @return true if it does
      */
     public boolean hasSouth() {
         return (south == south) && (south != NONGEO);
     }
 
     /**
-     * _more_
+     * Does this have an east value defined?
      *
-     * @return _more_
+     * @return true if it does
      */
     public boolean hasEast() {
         return (east == east) && (east != NONGEO);
     }
 
     /**
-     * _more_
+     * Does this have a west value defined?
      *
-     * @return _more_
+     * @return true if it does
      */
     public boolean hasWest() {
         return (west == west) && (west != NONGEO);
@@ -1104,9 +1106,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the lat/lon bounds
      *
-     * @return _more_
+     * @return  the bounds (NW,NE,SE,SW,NW)
      */
     public double[][] getLatLonBounds() {
         return new double[][] {
@@ -1229,47 +1231,45 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the transient property
      *
-     * @param key _more_
+     * @param key  the property key
      *
-     * @return _more_
+     * @return  the property or null
      */
     public Object getTransientProperty(Object key) {
         return transientProperties.get(key);
     }
 
     /**
-     * _more_
+     * Add a transient property
      *
-     * @param key _more_
-     * @param value _more_
+     * @param key   the key
+     * @param value   the value
      */
     public void putTransientProperty(Object key, Object value) {
         transientProperties.put(key, value);
     }
 
     /**
-     *  Set the Properties property.
+     * Add a property
+     * @param key   the property key
+     * @param value The new value for property
      *
-     *
-     * @param key _more_
-     *  @param value The new value for Properties
-     *
-     * @throws Exception _more_
+     * @throws Exception  problems
      */
     public void putProperty(String key, Object value) throws Exception {
         getProperties(true).put(key, value);
     }
 
     /**
-     * _more_
+     * Get the property
      *
-     * @param key _more_
+     * @param key  the key
      *
-     * @return _more_
+     * @return  the property value or null
      *
-     * @throws Exception _more_
+     * @throws Exception  No properties
      */
     public Object getProperty(String key) throws Exception {
         Hashtable properties = getProperties();
@@ -1294,13 +1294,13 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Get the Properties property
      *
-     * @param force _more_
+     * @param force  create if necessary
      *
-     * @return _more_
+     * @return  the properties
      *
-     * @throws Exception _more_
+     * @throws Exception  problems
      */
     public Hashtable getProperties(boolean force) throws Exception {
         if (properties == null) {
@@ -1371,14 +1371,14 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Initialize the Entry with these values
      *
-     * @param name _more_
-     * @param description _more_
-     * @param parentEntry _more_
-     * @param user _more_
-     * @param createDate _more_
-     * @param changeDate _more_
+     * @param name         The Entry name
+     * @param description  The Entry description
+     * @param parentEntry  the parent Entry
+     * @param user         the loser
+     * @param createDate   the creation date
+     * @param changeDate   the change date
      */
     public void init(String name, String description, Entry parentEntry,
                      User user, long createDate, long changeDate) {
@@ -1391,16 +1391,12 @@ public class Entry implements Cloneable {
     }
 
 
-
-
-
-
     /**
-     * _more_
+     * Is this equal to the other Object?
      *
-     * @param o _more_
+     * @param o  the other Object
      *
-     * @return _more_
+     * @return  true if they are equal
      */
     public boolean equals(Object o) {
         if ( !o.getClass().equals(getClass())) {
@@ -1469,9 +1465,9 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Get the parent Entry
      *
-     * @return _more_
+     * @return the parent Entry
      */
     public Entry getParentEntry() {
         return parentEntry;
@@ -1480,18 +1476,18 @@ public class Entry implements Cloneable {
 
 
     /**
-     * Set the ParentId property.
+     * Set the ParentGroupId property.
      *
-     * @param value The new value for ParentId
+     * @param value The new value for ParentGroupId
      */
     public void setParentGroupId(String value) {
         setParentEntryId(value);
     }
 
     /**
-     * _more_
+     * Set the ParentEntryId property.
      *
-     * @param value _more_
+     * @param value The new value for ParentEntryId
      */
     public void setParentEntryId(String value) {
         parentEntryId = value;
@@ -1508,9 +1504,9 @@ public class Entry implements Cloneable {
     }
 
     /**
-     * _more_
+     * Get the ParenEntryId
      *
-     * @return _more_
+     * @return the ParenEntryId
      */
     public String getParentEntryId() {
         return ((parentEntry != null)
@@ -1602,7 +1598,7 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Clear the metadata
      */
     public void clearMetadata() {
         metadata = null;
@@ -1610,22 +1606,22 @@ public class Entry implements Cloneable {
 
 
     /**
-     * _more_
+     * Add metadata
      *
-     * @param value _more_
+     * @param value the new Metadata
      *
-     * @return _more_
+     * @return  true if successful
      */
     public boolean addMetadata(Metadata value) {
         return addMetadata(value, false);
     }
 
     /**
-     * _more_
+     * Does this have any metaddata like value
      *
-     * @param value _more_
+     * @param value  the metadata to check
      *
-     * @return _more_
+     * @return  true if it does
      */
     public boolean hasMetadata(Metadata value) {
         if (metadata == null) {
