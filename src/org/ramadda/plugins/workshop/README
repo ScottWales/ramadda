@@ -20,5 +20,10 @@ To generate and install the workshop plugin, run:
 To view the content in RAMADDA just go to:
 http://localhost:8080/repository/workshop/index.html
 
+You can also view the generated html files directly in:
+htdocs/workshop/index.html
+
+
+
 
 
