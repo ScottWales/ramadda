@@ -495,7 +495,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
         comps.add(GuiUtils.inset(pathFld, 4));
         comps.add(GuiUtils.rLabel("User Name:"));
         comps.add(GuiUtils.inset(GuiUtils.hbox(userFld,
-                new JLabel(" Leave blank for anonyous")), 4));
+                new JLabel(" Leave blank for anonymous")), 4));
         comps.add(GuiUtils.rLabel("Password:"));
         comps.add(GuiUtils.inset(passwordFld, 4));
         JPanel contents = GuiUtils.doLayout(comps, 2, GuiUtils.WT_Y,
