@@ -58,10 +58,10 @@ public class LDAPManager {
     private String ldapUrl;
 
     /** _more_          */
-    private String username;
+    private String mainUserId;
 
     /** _more_          */
-    private String password;
+    private String mainPassword;
 
 
     /** _more_          */
@@ -95,13 +95,13 @@ public class LDAPManager {
         this.ldapUrl    = ldapUrl;
         this.userPath   = userPath;
         this.groupsPath = groupsPath;
-        this.username   = username;
-        this.password   = password;
+        this.mainUserId   = username;
+        this.mainPassword   = password;
         //Try it
         if (ldapUrl != null) {
             getContext();
         } else {
-            System.err.println("RAMADDA: No ldap properties defined");
+            log("No ldap properties defined");
         }
     }
 
@@ -130,7 +130,8 @@ public class LDAPManager {
 
         //Create the first time
         if (localContext == null) {
-            localContext = getInitialContext(ldapUrl, username, password);
+            log("Creating initial context:" + ldapUrl);
+            localContext = getInitialContext(ldapUrl, mainUserId, mainPassword);
         }
 
         //Try to connect with a dummy path
@@ -146,7 +147,7 @@ public class LDAPManager {
 
         if (localContext == null) {
             //            System.err.println ("Trying again");
-            localContext = getInitialContext(ldapUrl, username, password);
+            localContext = getInitialContext(ldapUrl, mainUserId, mainPassword);
             //            System.err.println ("OK");
         }
         theContext = localContext;
@@ -208,18 +209,17 @@ public class LDAPManager {
      * @return _more_
      */
     public boolean isValidUser(String username, String password) {
+        String userDN = getUserDN(username);
         try {
             DirContext tmpContext = getInitialContext(ldapUrl,
-                                        getUserDN(username), password);
+                                        userDN, password);
 
             return true;
         } catch (javax.naming.NameNotFoundException e) {
-            debug("Name or password not found:" + username);
-
+            log("Name or password not found:" + userDN);
             return false;
         } catch (NamingException e) {
-            log("Error validating user:" + username + " " + e);
-
+            log("Error validating user:" + userDN + " " + e);
             return false;
         }
     }
@@ -236,23 +236,29 @@ public class LDAPManager {
      */
     public boolean userInGroup(String username, String groupName)
             throws NamingException {
-
         // Set up attributes to search for
         String[] searchAttributes = new String[1];
         searchAttributes[0] = "uniqueMember";
+        String groupDN = getGroupDN(groupName);
         Attributes attributes =
-            getContext().getAttributes(getGroupDN(groupName),
+            getContext().getAttributes(groupDN,
                                        searchAttributes);
-        if (attributes != null) {
-            Attribute memberAtts = attributes.get("uniqueMember");
-            if (memberAtts != null) {
-                for (NamingEnumeration vals = memberAtts.getAll();
-                        vals.hasMoreElements(); ) {
-                    if (username.equalsIgnoreCase(
-                            getUserUID((String) vals.nextElement()))) {
-                        return true;
-                    }
-                }
+        if (attributes == null) {
+            log("Could not find group attributes:" + groupDN);
+            return false;
+        }
+
+        Attribute memberAtts = attributes.get("uniqueMember");
+        if (memberAtts == null) {
+            log("Could not find group member attributes:" + groupDN);
+            return false;
+        }
+
+        for (NamingEnumeration vals = memberAtts.getAll();
+             vals.hasMoreElements(); ) {
+            if (username.equalsIgnoreCase(
+                                          getUserUID((String) vals.nextElement()))) {
+                return true;
             }
         }
 
@@ -315,75 +321,52 @@ public class LDAPManager {
      *
      * @throws NamingException _more_
      */
-    public List<String> getGroups(String username,
+    public List<String> getGroupsForUser(String username,
                                   String groupMemberAttribute)
-            throws NamingException {
-        List<String>                     groups  = new LinkedList<String>();
-        DirContext                       context = getContext();
-        NamingEnumeration<NameClassPair> enums   = context.list(groupsPath);
-        String[] searchAttributes = new String[] { groupMemberAttribute };
-        while (enums.hasMoreElements()) {
-            NameClassPair key        = enums.nextElement();
-            String        id         = key.getName();
-            String        groupId    = getGroupCN(id);
-            Attributes    attributes =
-                context.getAttributes(getGroupDN(groupId), searchAttributes);
-            if (attributes == null) {
-                continue;
-            }
-            Attribute memberAtts = attributes.get(groupMemberAttribute);
-            if (memberAtts == null) {
-                continue;
-            }
-            for (NamingEnumeration vals = memberAtts.getAll();
-                    vals.hasMoreElements(); ) {
-                if (username.equalsIgnoreCase(
-                        getUserUID((String) vals.nextElement()))) {
-                    groups.add(groupId);
+        throws Exception {
+        
+        try {
+            List<String>                     groups  = new LinkedList<String>();
+            DirContext                       context = getContext();
+            NamingEnumeration<NameClassPair> enums   = context.list(groupsPath);
+            String[] searchAttributes = new String[] { groupMemberAttribute };
+            while (enums.hasMoreElements()) {
+                NameClassPair key        = enums.nextElement();
+                String        id         = key.getName();
+                String        groupId    = getGroupCN(id);
+                Attributes    attributes =
+                    context.getAttributes(getGroupDN(groupId), searchAttributes);
+                if (attributes == null) {
+                    continue;
+                }
+                Attribute memberAtts = attributes.get(groupMemberAttribute);
+                if (memberAtts == null) {
+                    //                    log("Failed to find group member attribute:" + groupMemberAttribute);
+                    continue;
+                }
+                for (NamingEnumeration vals = memberAtts.getAll();
+                     vals.hasMoreElements(); ) {
+                    if (username.equalsIgnoreCase(
+                                                  getUserUID((String) vals.nextElement()))) {
+                        groups.add(groupId);
 
-                    break;
+                        break;
+                    }
                 }
             }
+            if(groups.size()==0) {
+                log("No groups found for user:" + username +" groups path:" + groupsPath +" member attr:" + groupMemberAttribute);
+            }
+            return groups;
+        } catch(Exception exc) {
+            log("Error reading groups:" + groupsPath +" member attribute:" + groupMemberAttribute +" error:" + exc.toString());
+            throw exc;
         }
 
-        return groups;
+
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param username _more_
-     *
-     * @return _more_
-     *
-     * @throws NamingException _more_
-     */
-    public List OLDgetGroups(String username) throws NamingException {
-        List groups = new LinkedList();
-
-        // Set up criteria to search on
-        String filter = new StringBuffer().append("(&").append(
-                            "(objectClass=groupOfForethoughtNames)").append(
-                            "(uniqueMember=").append(
-                            getUserDN(username)).append(")").append(
-                            ")").toString();
-
-        // Set up search constraints
-        SearchControls cons = new SearchControls();
-        cons.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-
-        NamingEnumeration results = getContext().search(groupsPath, filter,
-                                        cons);
-
-        while (results.hasMore()) {
-            SearchResult result = (SearchResult) results.next();
-            groups.add(getGroupCN(result.getName()));
-        }
-
-        return groups;
-    }
 
 
     /** _more_          */
@@ -450,8 +433,12 @@ public class LDAPManager {
      * @return _more_
      */
     private String getGroupDN(String name) {
-        return new StringBuffer().append("cn=").append(name).append(
-            ",").append(groupsPath).toString();
+        StringBuffer sb = new StringBuffer();
+        sb.append("cn=");
+        sb.append(name);
+        sb.append(",");
+        sb.append(groupsPath);
+        return sb.toString();
     }
 
     /**
@@ -464,7 +451,6 @@ public class LDAPManager {
     private String getGroupCN(String groupDN) {
         int start = groupDN.indexOf("=");
         int end   = groupDN.indexOf(",");
-
         if (end == -1) {
             end = groupDN.length();
         }
@@ -478,7 +464,8 @@ public class LDAPManager {
      *
      * @param msg _more_
      */
-    private static void debug(String msg) {
+    public static void debug(String msg) {
+        log(msg);
         //        System.err.println("LDAP:" + msg);
     }
 
@@ -487,7 +474,7 @@ public class LDAPManager {
      *
      * @param msg _more_
      */
-    private static void log(String msg) {
+    public static void log(String msg) {
         System.err.println("LDAP:" + msg);
     }
 
@@ -509,7 +496,6 @@ public class LDAPManager {
             String username, String password)
             throws NamingException {
 
-
         log("Connecting to:" + ldapUrl);
         Properties props = new Properties();
         props.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -517,6 +503,7 @@ public class LDAPManager {
         props.put(Context.PROVIDER_URL, ldapUrl);
 
         if ((username != null) && ( !username.equals(""))) {
+            log("User path:" + username);
             props.put(Context.SECURITY_AUTHENTICATION, "simple");
             props.put(Context.SECURITY_PRINCIPAL, username);
             props.put(Context.SECURITY_CREDENTIALS, ((password == null)
@@ -579,6 +566,7 @@ public class LDAPManager {
             walk(context, id + "," + path, tab + "  ");
         }
     }
+
 
 
 }

@@ -91,7 +91,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      * constructor.
      */
     public LDAPUserAuthenticator() {
-        log("LDAPUserAuthenticator created");
+        LDAPManager.log("LDAPUserAuthenticator created");
     }
 
     /**
@@ -101,27 +101,10 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      */
     public LDAPUserAuthenticator(Repository repository) {
         super(repository);
-        log("LDAPUserAuthenticator created");
-    }
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
-    public void log(String msg) {
-        System.err.println("LDAP:" + msg);
+        LDAPManager.log("LDAPUserAuthenticator created");
     }
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
-    public void debug(String msg) {
-        //        System.err.println ("LDAP:" + msg);
-    }
 
     /**
      * If not already created then create and return the LDAPManager.
@@ -157,11 +140,11 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
      * @return has valid manager
      */
     public boolean isEnabled() {
-        if (getManager() == null) {
+        LDAPManager manager = getManager();
+        if (manager == null) {
             return false;
         }
-
-        return getManager().isEnabled();
+        return manager.isEnabled();
     }
 
     /**
@@ -182,11 +165,11 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         if (userId.length() == 0) {
             return null;
         }
-        debug("authenticate user: " + userId);
+        LDAPManager.debug("Authenticate user: " + userId);
         if ( !isEnabled()) {
+            LDAPManager.debug("LDAP not enabled");
             return null;
         }
-
         userCache.remove(userId);
         if (getManager().isValidUser(userId, password)) {
             return findUser(repository, userId);
@@ -217,7 +200,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
             if (user != null) {
                 return user;
             }
-            debug("findUser: " + userId);
+            LDAPManager.debug("findUser: " + userId);
 
             // Hashtable with attributes names and their values
             Hashtable<String, List<String>> userAttr =
@@ -251,8 +234,8 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
             String groupMemberAttribute = getProperty(PROP_GROUP_ATTR,
                                               DFLT_GROUP_ATTR);
 
-            List<String> groups = getManager().getGroups(userId,
-                                      groupMemberAttribute);
+            List<String> groups = getManager().getGroupsForUser(userId,
+                                                         groupMemberAttribute);
             for (String group : groups) {
                 //Is this user a member of the ramadda admin group?
                 if (group.equals(adminGroup)) {
@@ -275,12 +258,10 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
 
             return user;
         } catch (javax.naming.NameNotFoundException nnfe) {
-            debug("Could not find user: " + userId + " " + nnfe);
-
+            LDAPManager.log("Could not find user: " + userId + " " + nnfe);
             return null;
         } catch (Exception exc) {
             logError("LDAP Error: finding user", exc);
-
             return null;
         }
     }
@@ -300,8 +281,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         try {
             return getManager().getAllGroups();
         } catch (Exception exception) {
-            log("LDAPUserAuthenticatorgetAllRoles:" + exception);
-
+            LDAPManager.log("LDAPUserAuthenticatorgetAllRoles:" + exception);
             return null;
         }
     }
