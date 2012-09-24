@@ -427,6 +427,170 @@ public class RepositoryClient extends RepositoryBase {
 
 
 
+    public void uploadFiles(List<EntryFile> files)
+            throws Exception {
+        checkSession();
+
+        Document doc = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+                new String[]{});
+        for (EntryFile f : files) {
+            Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
+                    new String[]{});
+            /*
+             * name
+             */
+            entryNode.setAttribute(ATTR_NAME, f.entryName);
+
+            /*
+             * description
+             */
+            Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, entryNode);
+            descNode.appendChild(XmlUtil.makeCDataNode(doc, f.entryDescription,
+                    false));
+            /*
+             * parent
+             */
+            entryNode.setAttribute(ATTR_PARENT, f.parent);
+            /*
+             * file
+             */
+
+
+            entryNode.setAttribute(ATTR_FILE, IOUtil.getFileTail(f.filePath));
+
+//            entryNode.setAttribute(ATTR_EAST, f.east);
+//            entryNode.setAttribute(ATTR_WEST, f.west);
+//            entryNode.setAttribute(ATTR_NORTH, f.north);
+//            entryNode.setAttribute(ATTR_SOUTH, f.south);
+
+            /*
+             * addmetadata
+             */
+            //entryNode.setAttribute(ATTR_ADDMETADATA, "true");
+        }
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(bos);
+
+        /*
+         * write the xml definition into the zip file
+         */
+        String xml = XmlUtil.toString(root);
+        //        System.out.println(xml);
+        zos.putNextEntry(new ZipEntry("entries.xml"));
+        byte[] bytes = xml.getBytes("UTF-8");
+        zos.write(bytes, 0, bytes.length);
+        zos.closeEntry();
+
+        /*
+         * add all the files
+         */
+        for (EntryFile f : files) {
+            File file = new File(f.filePath);
+            String file2string = file.toString();
+            zos.putNextEntry(new ZipEntry(IOUtil.getFileTail(file2string)));
+            bytes = IOUtil.readBytes(new FileInputStream(file));
+            zos.write(bytes, 0, bytes.length);
+            zos.closeEntry();
+        }
+        zos.close();
+        bos.close();
+
+        List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
+
+        addUrlArgs(postEntries);
+        
+        postEntries.add(new HttpFormEntry(ARG_FILE, "entries.zip",
+                bos.toByteArray()));
+
+        RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
+                "/entry/xmlcreate");
+        String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
+
+        if (result[0] != null) {
+            throw new EntryErrorException(result[0]);
+        }
+
+        Element response = XmlUtil.getRoot(result[1]);
+        if (!responseOk(response)) {
+            String body = XmlUtil.getChildText(response);
+            throw new EntryErrorException(body);
+        }
+        Element newEntryNode = XmlUtil.findChild(response, TAG_ENTRY);
+        if (newEntryNode == null) {
+            throw new IllegalStateException("No entry node found in:"
+                    + XmlUtil.toString(response));
+        }
+    }
+
+
+
+    public boolean newFile(String entryName, String entryDescription,
+            String parent) {
+        checkSession();
+        try {
+            Document doc = XmlUtil.makeDocument();
+            Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+                    new String[]{});
+            Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
+                    new String[]{});
+
+            /*
+             * name
+             */
+            entryNode.setAttribute(ATTR_NAME, entryName);
+
+            /*
+             * description
+             */
+            Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, entryNode);
+            descNode.appendChild(XmlUtil.makeCDataNode(doc, entryDescription,
+                    false));
+            /*
+             * parent
+             */
+            entryNode.setAttribute(ATTR_PARENT, parent);
+
+            /*
+             * addmetadata
+             */
+            entryNode.setAttribute(ATTR_ADDMETADATA, "true");
+
+            /*
+             * write the xml definition into the zip file
+             */
+            String xml = XmlUtil.toString(root);
+            //        System.out.println(xml);
+
+
+            List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
+
+            addUrlArgs(postEntries);
+
+
+            postEntries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
+                    xml.getBytes("UTF-8")));
+
+            String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
+
+            if (result[0] != null) {
+                handleError("Error creating file:\n" + result[0], null);
+                return false;
+            }
+            Element response = XmlUtil.getRoot(result[1]);
+            if (responseOk(response)) {
+                handleMessage("file created");
+                return true;
+            }
+            String body = XmlUtil.getChildText(response).trim();
+            handleError("Error creating file:" + body, null);
+        } catch (Exception exc) {
+            handleError("Error creating file", exc);
+        }
+        return false;
+    }
+
 
 
 
@@ -1034,6 +1198,20 @@ public class RepositoryClient extends RepositoryBase {
 
 
 
+    public boolean login() {
+        try {
+            String[] msg = {"login ok!", "login fail!"};
+            if (doLogin(msg)) {
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("login fail !");
+        }
+        return false;
+    }
+
+
+
     /**
      * _more_
      *
@@ -1208,6 +1386,12 @@ public class RepositoryClient extends RepositoryBase {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+        //        if (rc.login()) {
+        //            rc.uploadFile("testImg.jpg", "", "69dff72c-c0ea-479e-a4dd-22cd4dc5bba6", "d:/test1.jpg");
+        //        }
+
+
 
         if (args.length < 3) {
             usage("Incorrect number of arguments");
@@ -1607,6 +1791,32 @@ public class RepositoryClient extends RepositoryBase {
     }
 
 
+
+    public boolean deleteEntry(String entryId) {
+        try {
+            if (entryId == null) {
+                return false;
+            }
+            List entries = new ArrayList();
+            addUrlArgs(entries);
+            entries.add(HttpFormEntry.hidden(ARG_ENTRYID, entryId));
+            entries.add(HttpFormEntry.hidden(ARG_DELETE_CONFIRM, "OK"));
+            String[] result = doPost(URL_ENTRY_DELETE, entries);
+            if (result[0] != null) {
+                handleError("Error deleting entry:\n" + result[0], null);
+                return false;
+            }
+            return true;
+        } catch (Exception exc) {
+            handleError("Error deleting entry", exc);
+        }
+        return false;
+
+    }
+
+
+
+
     /**
      * Class InvalidSession _more_
      *
@@ -1627,7 +1837,7 @@ public class RepositoryClient extends RepositoryBase {
 
 
     /**
-     * Class EntryErrorException _more_
+    * Class EntryErrorException _more_
      *
      *
      * @author RAMADDA Development Team
@@ -1645,7 +1855,22 @@ public class RepositoryClient extends RepositoryBase {
     }
 
 
+    public static class EntryFile {
+        private String entryName;
+        private String entryDescription;
+        private String parent;
+        private String filePath;
 
+        public EntryFile(String entryName,
+                         String entryDescription,
+                         String filePath,
+                         String parent) {
+            this.entryName=entryName;
+            this.entryDescription=entryDescription;
+            this.parent=parent;
+            this.filePath=filePath;        
+        }
+    }
 
 
 }
