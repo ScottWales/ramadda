@@ -33,6 +33,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.IOUtil;
 
 
 import ucar.unidata.xml.XmlUtil;
@@ -86,6 +87,16 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public String getDefaultEntryName(String path) {
+        String html = IOUtil.readContents(path, "");
+        String title =  StringUtil.findPattern(html,"<title>(.*)</title>");
+        if(title == null) {
+            title =  StringUtil.findPattern(html,"<TITLE>(.*)</TITLE>");
+        }
+        System.err.println("title:" + title);
+        if(title!=null) {
+            title = title.replace("- YouTube", "");
+            return title;
+        }
         //TODO: fetch the web page and get the title
         return "YouTube Video";
     }
