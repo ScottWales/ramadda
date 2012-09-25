@@ -1527,6 +1527,18 @@ public class Column implements DataTypes, Constants {
                               (Double) values[offset + 1] };
     }
 
+    public boolean hasLatLon(Object[] values) {
+        if(values[offset]==null || ((Double)values[offset]).doubleValue() == Entry.NONGEO) return false;
+        if(values[offset+1]==null || ((Double)values[offset+1]).doubleValue() == Entry.NONGEO) return false;
+        return true;
+    }
+    public boolean hasLatLonBox(Object[] values) {
+        for(int i=0;i<4;i++) {
+            if(values[offset+i]==null || ((Double)values[offset+i]).doubleValue() == Entry.NONGEO) return false;
+        }
+        return true;
+    }
+
 
     /**
      * _more_
@@ -1677,8 +1689,12 @@ public class Column implements DataTypes, Constants {
 
         if (isType(DATATYPE_LATLON)) {
             List<String> toks = StringUtil.split(value, ";", true, true);
-            values[offset]     = new Double(toks.get(0));
-            values[offset + 1] = new Double(toks.get(1));
+            if(toks.size()==2) {
+                values[offset]     = new Double(toks.get(0));
+                values[offset + 1] = new Double(toks.get(1)); 
+            } else {
+                //What to do here
+            }
         } else if (isType(DATATYPE_LATLONBBOX)) {
             List<String> toks = StringUtil.split(value, ";", true, true);
             values[offset]     = new Double(toks.get(0));
