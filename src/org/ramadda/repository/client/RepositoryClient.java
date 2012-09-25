@@ -1855,22 +1855,4 @@ public class RepositoryClient extends RepositoryBase {
     }
 
 
-    public static class EntryFile {
-        private String entryName;
-        private String entryDescription;
-        private String parent;
-        private String filePath;
-
-        public EntryFile(String entryName,
-                         String entryDescription,
-                         String filePath,
-                         String parent) {
-            this.entryName=entryName;
-            this.entryDescription=entryDescription;
-            this.parent=parent;
-            this.filePath=filePath;        
-        }
-    }
-
-
 }
