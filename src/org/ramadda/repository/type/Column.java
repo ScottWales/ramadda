@@ -356,6 +356,7 @@ public class Column implements DataTypes, Constants {
                     }
 
                 } else {
+                    enumValues = new ArrayList();
                     for(String tok:StringUtil.split(valueString, ",", true,
                                                     true)) {
                         enumValues.add(new TwoFacedObject(tok,tok));
