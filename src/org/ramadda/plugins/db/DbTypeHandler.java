@@ -1831,6 +1831,8 @@ public class DbTypeHandler extends BlobTypeHandler {
             for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
                 Column column = columnsToUse.get(colIdx);
                 String value  = toks.get(colIdx).trim();
+                value = value.replaceAll("_COMMA_", ",");
+                value = value.replaceAll("_NEWLINE_", "\n");
                 column.setValue(entry, values, value);
             }
             valueList.add(values);
