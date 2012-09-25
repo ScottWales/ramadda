@@ -351,13 +351,15 @@ public class Column implements DataTypes, Constants {
                                     toks.get(0)));
                             enumMap.put(toks.get(0), toks.get(1));
                         } else {
-                            enumValues.add(tok);
+                            enumValues.add(new TwoFacedObject(tok,tok));
                         }
                     }
 
                 } else {
-                    enumValues = StringUtil.split(valueString, ",", true,
-                            true);
+                    for(String tok:StringUtil.split(valueString, ",", true,
+                                                    true)) {
+                        enumValues.add(new TwoFacedObject(tok,tok));
+                    }
                 }
             }
         }
