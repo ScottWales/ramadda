@@ -840,8 +840,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             spatialComps.add(strideComp);
 
             String spatial =
-                HtmlUtils.table(Misc.listToStringArray(spatialComps), 5);
-            innerTabTitles.add(msg("Spatial"));
+                HtmlUtils.table(StringUtil.listToStringArray(spatialComps), 5);
+            innerTabTitles.add(msg("Coordinates"));
             innerTabContents.add(spatial);
 
             ColorTable dfltColorTable =
