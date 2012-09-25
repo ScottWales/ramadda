@@ -1,7 +1,7 @@
 
 ##
 ## Call this with:
-## tclsh zipandclean.tcl args  <directories to walk>
+## tclsh filecleanup.tcl args  <directories to walk>
 ## 
 
 ##
@@ -23,7 +23,7 @@ proc getFlag {flag dflt}  {
     return $dflt
 }
 
-proc checkFile {f patterns zipPatterns skip} {
+proc checkFile {f patterns zipPatterns unzipPatterns skip} {
 
 # Clean up the name
     set newFile $f
@@ -60,6 +60,34 @@ proc checkFile {f patterns zipPatterns skip} {
         }
     }
 
+        #If its one of the zip patterns then zip it up and return
+        set unzipit 0
+        foreach pattern $unzipPatterns {
+            if  {[regexp $pattern $f]} {
+                set unzipit 1
+                break
+            }
+        }
+        if {$unzipit} {
+            set dir [file dirname $f]
+            set name [file tail $f]
+            set zipName $name.zip
+            if {$::test} {
+                puts "test: Unzipping file: $f"
+                puts "test: Deleting original file"
+            } else {
+                puts "Unipping file: $f"
+                set cwd [pwd]
+                cd [file dirname $f]
+                exec jar  -xvf [file tail $f]
+                puts "Deleting original file"
+                file delete -force [file tail $f]
+                cd $cwd
+            }
+            return
+        }
+
+
     if  {[file isdirectory $f]} {
         foreach pattern $skip {
             if  {[regexp $pattern $f]} {
@@ -92,22 +120,25 @@ proc checkFile {f patterns zipPatterns skip} {
             return
         }
 
+
+
 #Recurse down the tree
         foreach child [glob -nocomplain $f/*] {
-            checkFile $child $patterns $zipPatterns $skip
+            checkFile $child $patterns $zipPatterns $unzipPatterns  $skip
         }
     }
 }
 
 set patterns [list]
 set zipPatterns  [list]
+set unzipPatterns  [list]
 set skip  [list]
 
 
 for {set i 0} {$i<$argc} {incr i} {
     set arg [lindex $argv $i]
     if {$arg =="-help"} {
-        puts "usage: zipandclean.tcl <-doit> <-convert from to> <-zip pattern> <-skip pattern> \[directories to recurse\]"
+        puts "usage: filecleanup.tcl <-doit> <-convert from to> <-zip pattern> <-skip pattern> \[directories to recurse\]"
         exit
     }
 
@@ -126,6 +157,9 @@ for {set i 0} {$i<$argc} {incr i} {
     } elseif {$arg =="-zip"} {
         incr i
         lappend zipPatterns [lindex $argv $i]
+    } elseif {$arg =="-unzip"} {
+        incr i
+        lappend unzipPatterns [lindex $argv $i]
     } elseif {$arg =="-skip"} {
         incr i
         lappend skip [lindex $argv $i]
@@ -134,6 +168,6 @@ for {set i 0} {$i<$argc} {incr i} {
             puts "Directory does not exist: $arg"
             exit
         }
-        checkFile $arg $patterns $zipPatterns $skip
+        checkFile $arg $patterns $zipPatterns $unzipPatterns $skip
     }
 }
