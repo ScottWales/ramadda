@@ -409,7 +409,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         for (String s : sortedChillens) {
             //            System.err.println("   file:" + s);
             File f = new File(s);
-            timestamp[0] = timestamp[0] ^ f.lastModified();
+            timestamp[0] = timestamp[0] ^ f.lastModified() ^ s.hashCode();
             sb.append(
                 XmlUtil.tag(
                     NcmlUtil.TAG_NETCDF,
