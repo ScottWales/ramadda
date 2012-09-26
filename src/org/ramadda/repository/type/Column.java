@@ -883,10 +883,11 @@ public class Column implements DataTypes, Constants {
      */
     private void defineColumn(Statement statement, String name, String type)
             throws Exception {
+
+
         String sql = "alter table " + getTableName() + " add column " + name
                      + " " + type;
         SqlUtil.loadSql(sql, statement, true);
-
 
         if (changeType) {
             if (typeHandler.getDatabaseManager().isDatabaseDerby()) {
@@ -896,7 +897,7 @@ public class Column implements DataTypes, Constants {
                 sql = "alter table " + getTableName() + " modify column "
                       + name + " " + type + ";";
             }
-            System.err.println("altering table: " + sql);
+            //            System.err.println("altering table: " + sql);
             SqlUtil.loadSql(sql, statement, true);
         }
     }
@@ -1050,6 +1051,14 @@ public class Column implements DataTypes, Constants {
     private boolean latLonOk(double v) {
         return ((v == v) && (v != Entry.NONGEO));
     }
+
+    public void addGeoExclusion(List<Clause> clauses) {
+        if (isType(DATATYPE_LATLON)) {
+            String id = getFullName();
+            clauses.add(Clause.neq(id + "_lat",Entry.NONGEO));
+        }
+    }
+
 
     /**
      * _more_
