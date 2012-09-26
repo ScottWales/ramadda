@@ -197,12 +197,21 @@ public class RepositoryUtil implements Constants {
                We had this here for files from old versions of RAMADDA where we did not add the StorageManager.FILE_SEPARATOR delimiter
             */
             int idx1 = fileName.indexOf("-");
+            /*
+              Uggh, look for 4 dashes followed by an underscore
+             */
             if (idx1 >= 0) {
                 int idx2 = fileName.indexOf("-", idx1);
-                if (idx2 >= 0) {
-                    idx = fileName.indexOf("_");
-                    if (idx >= 0) {
-                        fileName = fileName.substring(idx + 1);
+                if (idx2 > idx1) {
+                    int idx3 = fileName.indexOf("-", idx2);
+                    if (idx3 >idx2) {
+                        int idx4 = fileName.indexOf("-", idx3);
+                        if (idx4 >idx3) {
+                            idx = fileName.indexOf("_");
+                            if (idx >= 0) {
+                                fileName = fileName.substring(idx + 1);
+                            }
+                        }
                     }
                 }
             }
