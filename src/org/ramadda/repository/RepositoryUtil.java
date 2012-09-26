@@ -54,30 +54,32 @@ public class RepositoryUtil implements Constants {
     public static final TimeZone TIMEZONE_DEFAULT =
         TimeZone.getTimeZone("UTC");
 
-    /** _more_ */
+    /** the file separator id */
     public static final String FILE_SEPARATOR = "_file_";
 
+    /** the old file separator id */
+    public static final String OLD_FILE_SEPARATOR = "----_";
 
     /**
-     * _more_
+     * Make some buttons (should probably be in HTML util);
      *
-     * @param b1 _more_
-     * @param b2 _more_
+     * @param b1  button 1 html
+     * @param b2  button 2 html
      *
-     * @return _more_
+     * @return  the buttons as one
      */
     public static String buttons(String b1, String b2) {
         return b1 + HtmlUtils.space(2) + b2;
     }
 
     /**
-     * _more_
+     * Make some buttons (should probably be in HTML util);
      *
-     * @param b1 _more_
-     * @param b2 _more_
-     * @param b3 _more_
+     * @param b1  button 1 html
+     * @param b2  button 2 html
+     * @param b3  button 3 html
      *
-     * @return _more_
+     * @return the buttons as one
      */
     public static String buttons(String b1, String b2, String b3) {
         return b1 + HtmlUtils.space(2) + b2 + HtmlUtils.space(2) + b3;
@@ -85,11 +87,11 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * _more_
+     * Make a hash of the plain text password
      *
-     * @param password _more_
+     * @param password  the password
      *
-     * @return _more_
+     * @return  the hashed pw
      */
     public static String hashPassword(String password) {
         try {
@@ -141,11 +143,11 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * _more_
+     * Encode the byte string as a base64 encoded string
      *
-     * @param b _more_
+     * @param b  the bytes
      *
-     * @return _more_
+     * @return  the encoded string
      */
     public static String encodeBase64(byte[] b) {
         return javax.xml.bind.DatatypeConverter.printBase64Binary(b);
@@ -166,11 +168,11 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * _more_
+     * Make a date format from the format string
      *
-     * @param formatString _more_
+     * @param formatString  the format string
      *
-     * @return _more_
+     * @return  the date formatter
      */
     public static SimpleDateFormat makeDateFormat(String formatString) {
         SimpleDateFormat dateFormat = new SimpleDateFormat();
@@ -184,9 +186,9 @@ public class RepositoryUtil implements Constants {
     /**
      * This will prune out any leading &lt;unique id&gt;_file_&lt;actual file name&gt;
      *
-     * @param fileName _more_
+     * @param fileName the filename
      *
-     * @return _more_
+     * @return  the pruned filename
      */
     public static String getFileTail(String fileName) {
         int idx = fileName.indexOf(FILE_SEPARATOR);
@@ -194,26 +196,12 @@ public class RepositoryUtil implements Constants {
             fileName = fileName.substring(idx + FILE_SEPARATOR.length());
         } else {
             /*
-               We had this here for files from old versions of RAMADDA where we did not add the StorageManager.FILE_SEPARATOR delimiter
+               We have this here for files from old versions of RAMADDA where we did not add the StorageManager.FILE_SEPARATOR delimiter
             */
-            int idx1 = fileName.indexOf("-");
-            /*
-              Uggh, look for 4 dashes followed by an underscore
-             */
-            if (idx1 >= 0) {
-                int idx2 = fileName.indexOf("-", idx1);
-                if (idx2 > idx1) {
-                    int idx3 = fileName.indexOf("-", idx2);
-                    if (idx3 >idx2) {
-                        int idx4 = fileName.indexOf("-", idx3);
-                        if (idx4 >idx3) {
-                            idx = fileName.indexOf("_");
-                            if (idx >= 0) {
-                                fileName = fileName.substring(idx + 1);
-                            }
-                        }
-                    }
-                }
+            idx = fileName.indexOf(OLD_FILE_SEPARATOR);
+            if (idx >= 0) {
+                fileName = fileName.substring(idx
+                        + OLD_FILE_SEPARATOR.length());
             }
         }
         //Check for Rich's problem
@@ -230,18 +218,16 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * Class MissingEntryException _more_
-     *
+     * MissingEntry Exception
      *
      * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
      */
     public static class MissingEntryException extends Exception {
 
         /**
-         * _more_
+         * Create an exception with the message
          *
-         * @param msg _more_
+         * @param msg  the message
          */
         public MissingEntryException(String msg) {
             super(msg);
@@ -250,11 +236,11 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * _more_
+     * Make a header from the String
      *
-     * @param h _more_
+     * @param h  the header text
      *
-     * @return _more_
+     * @return  the header
      */
     public static String header(String h) {
         return HtmlUtils.div(h, HtmlUtils.cssClass(CSS_CLASS_HEADING_1));
@@ -262,11 +248,11 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * _more_
+     * Encode the input string
      *
-     * @param s _more_
+     * @param s  the string to encode
      *
-     * @return _more_
+     * @return  the encoded String
      */
     public static final String encodeInput(String s) {
         s = HtmlUtils.urlEncode(s);
@@ -277,9 +263,9 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * _more_
+     * Test this class
      *
-     * @param args _more_
+     * @param args the arguments
      */
     public static void main(String[] args) {
         for (String s : args) {
@@ -289,11 +275,11 @@ public class RepositoryUtil implements Constants {
 
 
     /**
-     * _more_
+     * Create a list of RequestUrl's from the array
      *
-     * @param urls _more_
+     * @param urls  the array of RequestUrls
      *
-     * @return _more_
+     * @return  the array as a list
      */
     public static List<RequestUrl> toList(RequestUrl[] urls) {
         List<RequestUrl> l = new ArrayList<RequestUrl>();
@@ -305,27 +291,27 @@ public class RepositoryUtil implements Constants {
     }
 
     /**
-     * _more_
+     * Indent/inset the html
      *
-     * @param html _more_
-     * @param left _more_
+     * @param html  the html
+     * @param left  how much to indent
      *
-     * @return _more_
+     * @return  the indented html
      */
     public static String leftIndset(String html, int left) {
         return inset(html, 0, left, 0, 0);
     }
 
     /**
-     * _more_
+     * Inset the html
      *
-     * @param html _more_
-     * @param top _more_
-     * @param left _more_
-     * @param bottom _more_
-     * @param right _more_
+     * @param html  the html to inset
+     * @param top   the top inset
+     * @param left  the left inset
+     * @param bottom  the bottom inset
+     * @param right   the right inset
      *
-     * @return _more_
+     * @return  the html insetted
      */
     public static String inset(String html, int top, int left, int bottom,
                                int right) {
@@ -339,10 +325,6 @@ public class RepositoryUtil implements Constants {
                 ? ""
                 : "margin-right:" + top + "px;")));
     }
-
-
-
-
 
 
 }
