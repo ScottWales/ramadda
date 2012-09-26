@@ -22,50 +22,20 @@
 package org.ramadda.repository.output;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
-
-
-import org.w3c.dom.*;
-
-import ucar.unidata.sql.Clause;
-
-
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
-
-
-import java.io.*;
-
-import java.io.File;
-
-import java.net.*;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-
-
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
+import java.util.zip.ZipOutputStream;
 
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Resource;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.auth.Permission;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-
-import java.util.regex.*;
-
-import java.util.zip.*;
+import ucar.unidata.xml.XmlUtil;
 
 
 /**
@@ -77,14 +47,14 @@ import java.util.zip.*;
  */
 public class XmlOutputHandler extends OutputHandler {
 
-    /** _more_ */
+    /** XML Output type */
     public static final OutputType OUTPUT_XML =
         new OutputType("XML", "xml.xml",
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
                        ICON_XML);
 
 
-    /** _more_ */
+    /** XML Entry output type */
     public static final OutputType OUTPUT_XMLENTRY =
         new OutputType("XML Entry", "xml.xmlentry",
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
@@ -93,11 +63,11 @@ public class XmlOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Create an XML output handler
      *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
+     * @param repository   the Repository
+     * @param element      the Element
+     * @throws Exception   problem creating the handler
      */
     public XmlOutputHandler(Repository repository, Element element)
             throws Exception {
@@ -107,19 +77,12 @@ public class XmlOutputHandler extends OutputHandler {
     }
 
 
-
-
-
-
-
-
-
     /**
-     * _more_
+     * Get the MIME type for the output type
      *
-     * @param output _more_
+     * @param output  the output type
      *
-     * @return _more_
+     * @return  the mimetype
      */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_XML) || output.equals(OUTPUT_XMLENTRY)) {
@@ -131,15 +94,15 @@ public class XmlOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output the entry
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request   the Request
+     * @param outputType the outputType
+     * @param entry      the Entry
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception problem creating the result
      */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
@@ -155,17 +118,17 @@ public class XmlOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output a group of entries
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request      the Request
+     * @param outputType   the output type
+     * @param group        the group Entry
+     * @param subGroups    the subgroups
+     * @param entries      Entrys in the group
      *
-     * @return _more_
+     * @return  the Result
      *
-     * @throws Exception _more_
+     * @throws Exception  couldn't generate the Result
      */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
@@ -192,20 +155,20 @@ public class XmlOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the entry element as XML
      *
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param zos _more_
-     * @param doc _more_
-     * @param parent _more_
-     * @param forExport _more_
-     * @param includeParentId _more_
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param zos       the output
+     * @param doc       the document to add to
+     * @param parent    the parent Entry
+     * @param forExport true for export
+     * @param includeParentId  true to include the parent ID
      *
-     * @return _more_
+     * @return  the XML
      *
-     * @throws Exception _more_
+     * @throws Exception problem creating the tag
      */
     public Element getEntryTag(Request request, Entry entry,
                                ZipOutputStream zos, Document doc,
@@ -312,17 +275,17 @@ public class XmlOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the tag for the group
      *
      *
-     * @param request _more_
-     * @param group _more_
-     * @param doc _more_
-     * @param parent _more_
+     * @param request   the Request
+     * @param group     the group Entry
+     * @param doc       the document to append to
+     * @param parent    the parent Element
      *
-     * @return _more_
+     * @return the XML Element
      *
-     * @throws Exception _more_
+     * @throws Exception  unable to create group tag
      */
     private Element getGroupTag(Request request, Entry group, Document doc,
                                 Element parent)

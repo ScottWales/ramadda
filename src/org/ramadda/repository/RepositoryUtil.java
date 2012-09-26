@@ -57,9 +57,6 @@ public class RepositoryUtil implements Constants {
     /** the file separator id */
     public static final String FILE_SEPARATOR = "_file_";
 
-    /** the old file separator id */
-    public static final String OLD_FILE_SEPARATOR = "----_";
-
     /**
      * Make some buttons (should probably be in HTML util);
      *
@@ -198,12 +195,27 @@ public class RepositoryUtil implements Constants {
             /*
                We have this here for files from old versions of RAMADDA where we did not add the StorageManager.FILE_SEPARATOR delimiter
             */
-            idx = fileName.indexOf(OLD_FILE_SEPARATOR);
-            if (idx >= 0) {
-                fileName = fileName.substring(idx
-                        + OLD_FILE_SEPARATOR.length());
+            int idx1 = fileName.indexOf("-");
+            /*
+              Uggh, look for 4 dashes followed by an underscore
+             */
+            if (idx1 >= 0) {
+                int idx2 = fileName.indexOf("-", idx1);
+                if (idx2 > idx1) {
+                    int idx3 = fileName.indexOf("-", idx2);
+                    if (idx3 > idx2) {
+                        int idx4 = fileName.indexOf("-", idx3);
+                        if (idx4 > idx3) {
+                            idx = fileName.indexOf("_", idx4);
+                            if (idx > 0 ) {
+                                fileName = fileName.substring(idx + 1);
+                            }
+                        }
+                    }
+                }
             }
         }
+
         //Check for Rich's problem
         idx = fileName.lastIndexOf("\\");
         if (idx >= 0) {
