@@ -193,12 +193,13 @@ public class RepositoryUtil implements Constants {
             fileName = fileName.substring(idx + FILE_SEPARATOR.length());
         } else {
             /*
-               We have this here for files from old versions of RAMADDA where we did not add the StorageManager.FILE_SEPARATOR delimiter
+               We have this here for files from old versions of RAMADDA where we did 
+               not add the StorageManager.FILE_SEPARATOR delimiter and it looked something like:  
+                     "62712e31-6123-4474-a96a-5e4edb608fd5_<filename>" 
+               Look for 4 dashes followed by an underscore.  There couldn't possibly be a filename
+               that has that pattern, could there ( temp.1999-02-04.2000-05-12_daily.nc)
             */
             int idx1 = fileName.indexOf("-");
-            /*
-              Uggh, look for 4 dashes followed by an underscore
-             */
             if (idx1 >= 0) {
                 int idx2 = fileName.indexOf("-", idx1);
                 if (idx2 > idx1) {
