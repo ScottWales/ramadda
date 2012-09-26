@@ -78,6 +78,8 @@ import java.util.List;
 
 public class DbTypeHandler extends BlobTypeHandler {
 
+    public static final int DEFAULT_MAX = DB_VIEW_ROWS;
+
     /** _more_ */
     public static final String ATTR_RSS_VERSION = "version";
 
@@ -458,7 +460,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     public void addToEntryNode(Entry entry, Element node) throws Exception {
         super.addToEntryNode(entry, node);
         List<Object[]> valueList = readValues(Clause.eq(COL_ID,
-                                       entry.getId()), "", -1);
+                                                        entry.getId()), "", -1);
         Element dbvalues = XmlUtil.create(TAG_DBVALUES, node);
         XmlUtil.createCDataNode(dbvalues, xmlEncoder.toXml(valueList, false));
     }
@@ -719,7 +721,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         request.remove(ARG_OUTPUT);
         List<Object[]> valueList = readValues(request, entry,
-                                       Clause.eq(COL_ID, entry.getId()));
+                                              Clause.eq(COL_ID, entry.getId()));
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                     + "/db/dbstyle.css"));
@@ -951,12 +953,11 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         if (addNext[0]) {
             if ((numValues > 0)
-                    && ((numValues == request.get(ARG_MAX, DB_MAX_ROWS))
+                && ((numValues == getMax(request))
                         || request.defined(ARG_SKIP))) {
                 getRepository().getHtmlOutputHandler().showNext(request,
                         numValues, sb);
                 sb.append(HtmlUtils.br());
-
             }
         }
 
@@ -1180,8 +1181,21 @@ public class DbTypeHandler extends BlobTypeHandler {
                     Clause.le(dateColumns.get(0).getName(), date2)));
 
         }
-        valueList = readValues(request, entry, clause);
+        boolean doingGeo  = view.equals(VIEW_KML) || view.equals(VIEW_MAP);
 
+        if(doingGeo) {
+            List<Clause> geoClauses = new ArrayList<Clause>();
+            for (Column column : columns) {
+                column.addGeoExclusion(geoClauses);
+            }
+            if(geoClauses.size()>0) {
+                clause = Clause.and(clause, Clause.and(geoClauses));
+            }
+        }
+        if(view.equals(VIEW_KML) && !request.defined(ARG_MAX)) {
+            request.put(ARG_MAX, "10000");
+        }
+        valueList = readValues(request, entry, clause);
         return makeListResults(request, entry, view, action, fromSearch,
                                valueList);
     }
@@ -1563,7 +1577,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         sb.append(formEntry(request, msgLabel("Count"),
                             HtmlUtils.input(ARG_MAX,
-                                            request.get(ARG_MAX, 100),
+                                            getMax(request),
                                             HtmlUtils.SIZE_5)));
         sb.append(formEntry(request, "",
                             HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
@@ -1816,6 +1830,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     public Result handleBulkUpload(Request request, Entry entry, String bulk)
             throws Exception {
         List<Object[]> valueList = new ArrayList<Object[]>();
+        int cnt = 0;
         for (String line : StringUtil.split(bulk, "\n", true, true)) {
             if (line.startsWith("#")) {
                 continue;
@@ -1839,7 +1854,9 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
         for (Object[] tuple : valueList) {
             doStore(entry, tuple, true);
+            cnt++;
         }
+        System.err.println("cnt:" + cnt);
         //Remove these so any links that get made with the request don't point to the BULK upload
         request.remove(ARG_DB_NEWFORM);
         request.remove(ARG_DB_BULK_TEXT);
@@ -2699,10 +2716,17 @@ public class DbTypeHandler extends BlobTypeHandler {
                    east  = 0;
 
             if ( !bbox) {
+                //Check if the lat/lon is defined
+                if(!theColumn.hasLatLon(values)) {
+                    continue;
+                }
                 double[] ll = theColumn.getLatLon(values);
                 lat = ll[0];
                 lon = ll[1];
             } else {
+                if(!theColumn.hasLatLonBox(values)) {
+                    continue;
+                }
                 double[] ll = theColumn.getLatLonBbox(values);
                 north = ll[0];
                 west  = ll[1];
@@ -3789,11 +3813,16 @@ public class DbTypeHandler extends BlobTypeHandler {
                         : " desc ");
             }
         }
-        int max  = request.get(ARG_MAX, 100);
+        int max  = getMax(request);
         int skip = request.get(ARG_SKIP, 0);
         extra += getDatabaseManager().getLimitString(skip, max);
 
         return readValues(clause, extra, max);
+    }
+
+
+    private int getMax(Request request) {
+        return  request.get(ARG_MAX, DEFAULT_MAX);
     }
 
 
@@ -4045,8 +4074,10 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             StringBuffer tmpSb = new StringBuffer();
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
+            String tmp = tmpSb.toString();
+            tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":",
-                                tmpSb.toString()));
+                                tmp));
         }
         sb.append(HtmlUtils.formTableClose());
 
@@ -4143,8 +4174,10 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             StringBuffer tmpSb = new StringBuffer();
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
+            String tmp  = tmpSb.toString();
+            tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":",
-                                tmpSb.toString()));
+                                tmp));
         }
         sb.append(HtmlUtils.formTableClose());
 
