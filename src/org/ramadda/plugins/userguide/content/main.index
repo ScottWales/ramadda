@@ -17,11 +17,12 @@ index.html
 
 
 >title:Entries:Documentation for how to use the different types of entries available
->>localfileview.html
->>ftpview.html
->>repositoryscript.html
+#>>localfileview.html
+#>>ftpview.html
 >>wiki.html
 >>wikitext.html
+>>gridaggregation.html
+>>repositoryscript.html
 >>pagestyle.html
 
 
