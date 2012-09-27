@@ -2240,7 +2240,7 @@ public class CdmDataOutputHandler extends OutputHandler {
      * @return  the handler
      */
     public OpendapApiHandler getOpendapHandler() {
-        return (OpendapApiHandler) getRepository().getApiHandler(
+        return (OpendapApiHandler) getRepository().getApiManager().getApiHandler(
             OpendapApiHandler.API_ID);
     }
 
