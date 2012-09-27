@@ -57,6 +57,10 @@ public class RepositoryUtil implements Constants {
     /** the file separator id */
     public static final String FILE_SEPARATOR = "_file_";
 
+    /** The regular expression that matches the entry id */
+    public static final String ENTRY_ID_REGEX =
+        "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
+
     /**
      * Make some buttons (should probably be in HTML util);
      *
@@ -193,28 +197,11 @@ public class RepositoryUtil implements Constants {
             fileName = fileName.substring(idx + FILE_SEPARATOR.length());
         } else {
             /*
-               We have this here for files from old versions of RAMADDA where we did 
-               not add the StorageManager.FILE_SEPARATOR delimiter and it looked something like:  
-                     "62712e31-6123-4474-a96a-5e4edb608fd5_<filename>" 
-               Look for 4 dashes followed by an underscore.  There couldn't possibly be a filename
-               that has that pattern, could there ( temp.1999-02-04.2000-05-12_daily.nc)
+               We have this here for files from old versions of RAMADDA where we did
+               not add the StorageManager.FILE_SEPARATOR delimiter and it looked something like:
+                     "62712e31-6123-4474-a96a-5e4edb608fd5_<filename>"
             */
-            int idx1 = fileName.indexOf("-");
-            if (idx1 >= 0) {
-                int idx2 = fileName.indexOf("-", idx1);
-                if (idx2 > idx1) {
-                    int idx3 = fileName.indexOf("-", idx2);
-                    if (idx3 > idx2) {
-                        int idx4 = fileName.indexOf("-", idx3);
-                        if (idx4 > idx3) {
-                            idx = fileName.indexOf("_", idx4);
-                            if (idx > 0 ) {
-                                fileName = fileName.substring(idx + 1);
-                            }
-                        }
-                    }
-                }
-            }
+            fileName = fileName.replaceFirst(ENTRY_ID_REGEX, "");
         }
 
         //Check for Rich's problem
