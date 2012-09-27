@@ -222,6 +222,7 @@
         <copy  file="${tika_jar}" todir="${release_dir}/lib" overwrite="true" />
         <copy  todir="${release_dir}" overwrite="true">
           <fileset dir="${ramadda_dir}/release/standalone">
+              <exclude name="**/init.sh"/>
           </fileset>
           <filterset>
               <filter token="REPOSITORYJAR" value="${ramadda_jar}"/>
