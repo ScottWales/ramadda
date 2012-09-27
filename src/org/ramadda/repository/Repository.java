@@ -245,6 +245,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private StorageManager storageManager;
 
+    private ApiManager apiManager;
+
     /** _more_ */
     private PluginManager pluginManager;
 
@@ -371,24 +373,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private List<File> localFilePaths = new ArrayList<File>();
 
 
-    /** _more_ */
-    ApiMethod homeApi;
 
     /** _more_ */
     private Hashtable<String, RequestHandler> apiHandlers =
         new Hashtable<String, RequestHandler>();
-
-    /** _more_ */
-    Hashtable<String, ApiMethod> requestMap = new Hashtable();
-
-    /** _more_ */
-    ArrayList<ApiMethod> apiMethods = new ArrayList();
-
-    /** _more_ */
-    ArrayList<ApiMethod> wildCardApiMethods = new ArrayList();
-
-    /** _more_ */
-    ArrayList<ApiMethod> topLevelMethods = new ArrayList();
 
 
     /** _more_ */
@@ -763,6 +751,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             metadataManager    = null;
             registryManager    = null;
             storageManager     = null;
+            apiManager     = null;
             pluginManager      = null;
             databaseManager    = null;
             ftpManager         = null;
@@ -1230,7 +1219,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         loadTypeHandlers();
         loadOutputHandlers();
         getMetadataManager().loadMetadataHandlers(getPluginManager());
-        loadApi();
+        getApiManager().loadApi();
         getPageHandler().loadLanguagePacks();
         loadSql();
         loadAdminHandlers();
@@ -1379,24 +1368,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
-    private void loadApi() throws Exception {
-        for (String file : getPluginManager().getApiDefFiles()) {
-            file = getStorageManager().localizePath(file);
-            if (getPluginManager().haveSeen(file)) {
-                continue;
-            }
-            Element   apiRoot = XmlUtil.getRoot(file, getClass());
-            Hashtable props   = new Hashtable();
-            processApiNode(apiRoot, apiHandlers, props, "repository");
-        }
-    }
 
 
 
@@ -1598,6 +1569,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return sessionManager;
+    }
+
+    protected ApiManager doMakeApiManager() {
+        return new ApiManager(this);
+    }
+
+    public ApiManager getApiManager() {
+        if (apiManager == null) {
+            apiManager = doMakeApiManager();
+        }
+        return apiManager;
     }
 
     /**
@@ -2083,8 +2065,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-
-
     /**
      * _more_
      *
@@ -2101,7 +2081,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                           getUrlBase()
                                           + requestUrl.getPath());
             super.initRequestUrl(requestUrl);
-            ApiMethod apiMethod = findApiMethod(request);
+            ApiMethod apiMethod = getApiManager().findApiMethod(request);
             if (apiMethod == null) {
                 getLogManager().logError("Could not find api for: "
                                          + requestUrl.getPath());
@@ -2143,200 +2123,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getUrlBase() + requestUrl.getPath();
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param props _more_
-     * @param handlers _more_
-     * @param defaultHandler _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void addRequest(Element node, Hashtable props,
-                              Hashtable handlers, String defaultHandler)
-            throws Exception {
-
-        String  request = XmlUtil.getAttribute(node, ApiMethod.ATTR_REQUEST);
-
-        String  methodName = XmlUtil.getAttribute(node, ApiMethod.ATTR_METHOD);
-        boolean needsSsl   = XmlUtil.getAttributeFromTree(node,
-                               ApiMethod.ATTR_NEEDS_SSL, false);
-        boolean checkAuthMethod = XmlUtil.getAttributeFromTree(node,
-                                      ApiMethod.ATTR_CHECKAUTHMETHOD, false);
-
-        String authMethod = XmlUtil.getAttributeFromTree(node,
-                                ApiMethod.ATTR_AUTHMETHOD, "");
-
-        boolean admin = XmlUtil.getAttributeFromTree(node,
-                            ApiMethod.ATTR_ADMIN,
-                            Misc.getProperty(props, ApiMethod.ATTR_ADMIN,
-                                             true));
-
-
-        boolean requiresAuthToken = XmlUtil.getAttributeFromTree(node,
-                                        ApiMethod.ATTR_REQUIRESAUTHTOKEN,
-                                        Misc.getProperty(props,
-                                            ApiMethod.ATTR_REQUIRESAUTHTOKEN,
-                                            false));
-
-
-        String handlerName = XmlUtil.getAttributeFromTree(node,
-                                 ApiMethod.ATTR_HANDLER,
-                                 Misc.getProperty(props,
-                                     ApiMethod.ATTR_HANDLER, defaultHandler));
-
-        String handlerId = XmlUtil.getAttributeFromTree(node,
-                               ApiMethod.ATTR_ID, handlerName);
-        RequestHandler handler = (RequestHandler) handlers.get(handlerId);
-
-        if (handler == null) {
-            handler = this;
-            if (handlerName.equals("usermanager")) {
-                handler = getUserManager();
-            } else if (handlerName.equals("monitormanager")) {
-                handler = getMonitorManager();
-            } else if (handlerName.equals("admin")) {
-                handler = getAdmin();
-            } else if (handlerName.equals("logmanager")) {
-                handler = getLogManager();
-            } else if (handlerName.equals("harvestermanager")) {
-                handler = getHarvesterManager();
-            } else if (handlerName.equals("actionmanager")) {
-                handler = getActionManager();
-            } else if (handlerName.equals("graphmanager")) {
-                handler = getOutputHandler(GraphOutputHandler.OUTPUT_GRAPH);
-            } else if (handlerName.equals("accessmanager")) {
-                handler = getAccessManager();
-            } else if (handlerName.equals("searchmanager")) {
-                handler = getSearchManager();
-            } else if (handlerName.equals("entrymanager")) {
-                handler = getEntryManager();
-            } else if (handlerName.equals("associationmanager")) {
-                handler = getAssociationManager();
-            } else if (handlerName.equals("metadatamanager")) {
-                handler = getMetadataManager();
-            } else if (handlerName.equals("registrymanager")) {
-                handler = getRegistryManager();
-            } else if (handlerName.equals("repository")) {
-                handler = this;
-            } else {
-                Class       handlerClass = Misc.findClass(handlerName);
-                Constructor ctor         = null;
-                Object[]    params       = null;
-
-                ctor = Misc.findConstructor(handlerClass,
-                                            new Class[] { Repository.class,
-                        Element.class, Hashtable.class });
-                params = new Object[] { this, node, props };
-
-                if (ctor == null) {
-                    ctor = Misc.findConstructor(handlerClass,
-                            new Class[] { Repository.class,
-                                          Element.class });
-                    params = new Object[] { this, node };
-                }
-
-                if (ctor == null) {
-                    ctor = Misc.findConstructor(handlerClass,
-                            new Class[] { Repository.class });
-                    params = new Object[] { this };
-                }
-
-                if (ctor == null) {
-                    throw new IllegalStateException("Could not find ctor:"
-                            + handlerClass.getName());
-                }
-                handler = (RequestHandler) ctor.newInstance(params);
-            }
-            if (handler == null) {
-                getLogManager().logInfo("Could not find handler for:"
-                                        + handlerName + ":");
-
-                return;
-            }
-            handlers.put(handlerId, handler);
-        }
-
-
-        String    url       = request;
-        ApiMethod oldMethod = requestMap.get(url);
-        if (oldMethod != null) {
-            requestMap.remove(url);
-        }
-
-
-        Class[] paramTypes = new Class[] { Request.class };
-        Method  method     = Misc.findMethod(handler.getClass(), methodName,
-                                        paramTypes);
-        if (method == null) {
-            throw new IllegalArgumentException("Unknown request method:"
-                    + methodName + " in class:"
-                    + handler.getClass().getName());
-        }
-
-
-        ApiMethod apiMethod =
-            new ApiMethod(this, handler, request,
-                          XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
-                              request), method, admin, requiresAuthToken,
-                                        needsSsl, authMethod,
-                                        checkAuthMethod,
-                                        XmlUtil.getAttribute(node,
-                                            ApiMethod.ATTR_TOPLEVEL, false));
-        List actions = StringUtil.split(XmlUtil.getAttribute(node,
-                           ApiMethod.ATTR_ACTIONS, BLANK), ",", true, true);
-        if ( !Permission.isValidActions(actions)) {
-            throw new IllegalArgumentException("Bad actions:" + actions
-                    + " for api method:" + apiMethod.getName());
-        }
-        apiMethod.setActions(actions);
-        if (XmlUtil.getAttribute(node, ApiMethod.ATTR_ISHOME, false)) {
-            homeApi = apiMethod;
-        }
-        requestMap.put(url, apiMethod);
-        if (oldMethod != null) {
-            int index = apiMethods.indexOf(oldMethod);
-            apiMethods.remove(index);
-            apiMethods.add(index, apiMethod);
-            if (apiMethod.isWildcard()) {
-                index = wildCardApiMethods.indexOf(oldMethod);
-                wildCardApiMethods.remove(index);
-                wildCardApiMethods.add(index, apiMethod);
-            }
-        } else {
-            apiMethods.add(apiMethod);
-            if (apiMethod.isWildcard()) {
-                wildCardApiMethods.add(apiMethod);
-            }
-        }
-        if (apiMethod.getIsTopLevel()
-                && !topLevelMethods.contains(apiMethod)) {
-            topLevelMethods.add(apiMethod);
-        }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
-    public RequestHandler getApiHandler(String id) {
-        return apiHandlers.get(id);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public List<ApiMethod> getApiMethods() {
-        return apiMethods;
-    }
 
 
 
@@ -2366,41 +2152,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param apiRoot _more_
-     * @param handlers _more_
-     * @param props _more_
-     * @param defaultHandler _more_
-     *
-     * @throws Exception _more_
-     */
-    private void processApiNode(Element apiRoot, Hashtable handlers,
-                                Hashtable props, String defaultHandler)
-            throws Exception {
-        if (apiRoot == null) {
-            return;
-        }
-        NodeList children = XmlUtil.getElements(apiRoot);
-        for (int i = 0; i < children.getLength(); i++) {
-            Element node = (Element) children.item(i);
-            String  tag  = node.getTagName();
-            if (tag.equals(ApiMethod.TAG_PROPERTY)) {
-                props.put(XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME),
-                          XmlUtil.getAttribute(node, ApiMethod.ATTR_VALUE));
-            } else if (tag.equals(ApiMethod.TAG_API)) {
-                addRequest(node, props, handlers, defaultHandler);
-            } else if (tag.equals(ApiMethod.TAG_GROUP)) {
-                processApiNode(node, handlers, props,
-                               XmlUtil.getAttribute(node,
-                                   ApiMethod.ATTR_HANDLER, defaultHandler));
-            } else {
-                throw new IllegalArgumentException("Unknown api.xml tag:"
-                        + tag);
-            }
-        }
-    }
 
 
 
@@ -2879,69 +2630,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    protected ApiMethod findApiMethod(Request request) throws Exception {
-        String incoming = request.getRequestPath().trim();
-        if (incoming.endsWith("/")) {
-            incoming = incoming.substring(0, incoming.length() - 1);
-        }
-        String urlBase = getUrlBase();
-        if (incoming.equals("/") || incoming.equals("")) {
-            incoming = urlBase;
-        }
-        while (incoming.startsWith("//")) {
-            incoming = incoming.substring(1);
-        }
-        if ( !incoming.startsWith(urlBase)) {
-            return null;
-        }
-        incoming = incoming.substring(urlBase.length());
-        if (incoming.length() == 0) {
-            return homeApi;
-        }
-
-
-
-        ApiMethod apiMethod = (ApiMethod) requestMap.get(incoming);
-        if (apiMethod == null) {
-            for (ApiMethod tmp : wildCardApiMethods) {
-                String path = tmp.getRequest();
-                path = path.substring(0, path.length() - 2);
-                if (incoming.startsWith(path)) {
-                    apiMethod = tmp;
-
-                    break;
-                }
-            }
-        }
-        if ((apiMethod == null) && incoming.equals(urlBase)) {
-            apiMethod = homeApi;
-        }
-
-        return apiMethod;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
-    public ApiMethod getApiMethod(String path) {
-        return requestMap.get(path);
-    }
-
-
 
     /**
      * _more_
@@ -2972,8 +2660,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getResult(Request request) throws Exception {
 
-        ApiMethod apiMethod = findApiMethod(request);
-
+        ApiMethod apiMethod = getApiManager().findApiMethod(request);
         if (apiMethod == null) {
             return getHtdocsFile(request);
         }
@@ -4519,7 +4206,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String template = getPageHandler().getTemplateProperty(request,
                               "ramadda.template.link.wrapper", "");
 
-        for (ApiMethod apiMethod : topLevelMethods) {
+        ApiMethod homeApi  = getApiManager().getHomeApi();
+        for (ApiMethod apiMethod : getApiManager().getTopLevelMethods()) {
             if (apiMethod.getMustBeAdmin() && !isAdmin) {
                 continue;
             }

@@ -843,7 +843,7 @@ public class Admin extends RepositoryManager {
      */
     public Result adminActions(Request request) throws Exception {
         StringBuffer    sb         = new StringBuffer();
-        List<ApiMethod> apiMethods = getRepository().getApiMethods();
+        List<ApiMethod> apiMethods = getRepository().getApiManager().getApiMethods();
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols("Name", "Admin", "Actions")));
         for (ApiMethod apiMethod : apiMethods) {
@@ -1755,7 +1755,7 @@ public class Admin extends RepositoryManager {
         StringBuffer   apiSB  = new StringBuffer();
         List<Object[]> tuples = new ArrayList<Object[]>();
         apiSB.append(HtmlUtils.formTable());
-        for (ApiMethod apiMethod : getRepository().getApiMethods()) {
+        for (ApiMethod apiMethod : getRepository().getApiManager().getApiMethods()) {
             if (apiMethod.getNumberOfCalls() < 1) {
                 continue;
             }

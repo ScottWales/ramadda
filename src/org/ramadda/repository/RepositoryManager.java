@@ -663,6 +663,10 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getStorageManager();
     }
 
+    public PluginManager getPluginManager() {
+        return repository.getPluginManager();
+    }
+
     /**
      * _more_
      *

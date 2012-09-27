@@ -426,7 +426,7 @@ public class RegistryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkApi() throws Exception {
-        ApiMethod apiMethod = getRepository().getApiMethod("/registry/list");
+        ApiMethod apiMethod = getRepository().getApiManager().getApiMethod("/registry/list");
         if (apiMethod != null) {
             apiMethod.setIsTopLevel(
                 (isEnabledAsServer() && (getRegisteredServers().size() > 0))
