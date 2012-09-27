@@ -292,7 +292,7 @@ public class StorageManager extends RepositoryManager {
         repositoryDir = new File(repositoryDirProperty);
         System.out.println("RAMADDA: home directory: " + repositoryDir);
         if ( !repositoryDir.exists()) {
-            IOUtil.makeDirRecursive(repositoryDir);
+            makeDirRecursive(repositoryDir);
         }
 
         if ( !repositoryDir.exists()) {
@@ -313,9 +313,9 @@ public class StorageManager extends RepositoryManager {
 
 
         htdocsDir = IOUtil.joinDir(repositoryDir, DIR_HTDOCS);
-        IOUtil.makeDir(htdocsDir);
+        makeDir(htdocsDir);
         String resourcesDir = IOUtil.joinDir(repositoryDir, DIR_RESOURCES);
-        IOUtil.makeDir(resourcesDir);
+        makeDir(resourcesDir);
 
         dirDepth = getRepository().getProperty(PROP_DIRDEPTH, dirDepth);
         dirRange = getRepository().getProperty(PROP_DIRRANGE, dirRange);
@@ -452,12 +452,52 @@ public class StorageManager extends RepositoryManager {
      */
     public TempDir makeTempDir(String dir, boolean shouldScour) {
         TempDir tmpDir = new TempDir(IOUtil.joinDir(getTmpDir(), dir));
-        IOUtil.makeDirRecursive(tmpDir.getDir());
+        makeDirRecursive(tmpDir.getDir());
         if (shouldScour) {
             addTempDir(tmpDir);
         }
 
         return tmpDir;
+    }
+
+
+    public static void makeDirRecursive(File f) {
+        //try a number of times to make the directory.  This is just guess work to attempt 
+        //solve Mr He's transient file writing problem
+        if(f.exists()) {
+            return;
+        }
+        int cnt =0;
+        while(++cnt<10) {
+            f.mkdirs();
+            if(f.exists()) {
+                return;
+            }
+            Misc.sleep(100);
+        }
+        throw new RuntimeException("Could not create directory:" + f);
+    }
+
+
+    public static void makeDir(File f) {
+        //try a number of times to make the directory.  This is just guess work to attempt 
+        //solve Mr He's transient file writing problem
+        if(f.exists()) {
+            return;
+        }
+        int cnt =0;
+        while(++cnt<10) {
+            f.mkdir();
+            if(f.exists()) {
+                return;
+            }
+            Misc.sleep(100);
+        }
+        throw new RuntimeException("Could not create directory:" + f);
+    }
+
+    public static void makeDir(String f) {
+        makeDir(new File(f));
     }
 
 
@@ -497,7 +537,7 @@ public class StorageManager extends RepositoryManager {
     private String getIconsDir() {
         if (iconsDir == null) {
             iconsDir = IOUtil.joinDir(htdocsDir, DIR_ICONS);
-            IOUtil.makeDirRecursive(new File(iconsDir));
+            makeDirRecursive(new File(iconsDir));
         }
 
         return iconsDir;
@@ -600,7 +640,7 @@ public class StorageManager extends RepositoryManager {
      */
     public File getThumbDir(String file) {
         File f = getTmpDirFile(getThumbDir(), file);
-        IOUtil.makeDirRecursive(f);
+        makeDirRecursive(f);
 
         return f;
     }
@@ -819,7 +859,7 @@ public class StorageManager extends RepositoryManager {
         if (anonymousDir == null) {
             anonymousDir = IOUtil.joinDir(getStorageDir(),
                                           DIR_ANONYMOUSUPLOAD);
-            IOUtil.makeDirRecursive(new File(anonymousDir));
+            makeDirRecursive(new File(anonymousDir));
         }
 
         return anonymousDir;
@@ -840,7 +880,7 @@ public class StorageManager extends RepositoryManager {
                     + property + " not defined");
         }
         File f = new File(localizePath(path));
-        IOUtil.makeDirRecursive(f);
+        makeDirRecursive(f);
 
         return f;
     }
@@ -869,7 +909,7 @@ public class StorageManager extends RepositoryManager {
         if (indexDir == null) {
             indexDir = new File(IOUtil.joinDir(getRepositoryDir(),
                     DIR_INDEX));
-            IOUtil.makeDirRecursive(indexDir);
+            makeDirRecursive(indexDir);
         }
 
         return indexDir.toString();
@@ -895,7 +935,7 @@ public class StorageManager extends RepositoryManager {
      */
     public String getBackupsDir() {
         String dir = IOUtil.joinDir(getRepositoryDir(), DIR_BACKUPS);
-        IOUtil.makeDirRecursive(new File(dir));
+        makeDirRecursive(new File(dir));
 
         return dir;
     }
@@ -909,7 +949,7 @@ public class StorageManager extends RepositoryManager {
      */
     public String getDir(String name) {
         String dir = IOUtil.joinDir(getRepositoryDir(), name);
-        IOUtil.makeDirRecursive(new File(dir));
+        makeDirRecursive(new File(dir));
 
         return dir;
     }
@@ -992,7 +1032,7 @@ public class StorageManager extends RepositoryManager {
                                                IOUtil.joinDir(dir2, id))));
         //        System.err.println("entrydir:" + entryDir);
         if (createIfNeeded) {
-            IOUtil.makeDirRecursive(entryDir);
+            makeDirRecursive(entryDir);
         }
 
         return entryDir;
@@ -1011,7 +1051,7 @@ public class StorageManager extends RepositoryManager {
         id = IOUtil.cleanFileName(id);
         if (usersDir == null) {
             usersDir = IOUtil.joinDir(getRepositoryDir(), DIR_USERS);
-            IOUtil.makeDirRecursive(new File(usersDir));
+            makeDirRecursive(new File(usersDir));
         }
 
         String dir1    = "user_" + ((id.length() >= 2)
@@ -1023,7 +1063,7 @@ public class StorageManager extends RepositoryManager {
         File   userDir = new File(IOUtil.joinDir(usersDir,
                            IOUtil.joinDir(dir1, IOUtil.joinDir(dir2, id))));
         if (createIfNeeded) {
-            IOUtil.makeDirRecursive(userDir);
+            makeDirRecursive(userDir);
         }
 
         return userDir;
@@ -1093,10 +1133,16 @@ public class StorageManager extends RepositoryManager {
      */
     public File copyToEntryDir(Entry entry, File original, String newName)
             throws Exception {
-        File newFile = new File(IOUtil.joinDir(getEntryDir(entry.getId(),
-                           true), newName));
-        copyFile(original, newFile);
-
+        File entryDir = getEntryDir(entry.getId(), true);
+        File newFile = new File(IOUtil.joinDir(entryDir, newName));
+        try {
+            copyFile(original, newFile);
+        } catch(Exception exc) {
+            System.err.println("ERROR: StorageManager.copyToEntryDir: "+ exc);
+            System.err.println("ERROR: Original file:" + original +" exists:" + original.exists());
+            System.err.println("ERROR: Entry dir:" + entryDir +" exists:" + entryDir.exists());
+            throw exc;
+        }
         return newFile;
     }
 
@@ -1181,22 +1227,31 @@ public class StorageManager extends RepositoryManager {
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         cal.setTime(new Date());
         storageDir = IOUtil.joinDir(storageDir, "y" + cal.get(cal.YEAR));
-        IOUtil.makeDir(storageDir);
+        makeDir(storageDir);
         storageDir = IOUtil.joinDir(storageDir,
                                     "m" + (cal.get(cal.MONTH) + 1));
-        IOUtil.makeDir(storageDir);
+        makeDir(storageDir);
         storageDir = IOUtil.joinDir(storageDir,
                                     "d" + cal.get(cal.DAY_OF_MONTH));
-        IOUtil.makeDir(storageDir);
+        makeDir(storageDir);
 
         for (int depth = 0; depth < dirDepth; depth++) {
             int index = (int) (dirRange * Math.random());
             storageDir = IOUtil.joinDir(storageDir, "data" + index);
-            IOUtil.makeDir(storageDir);
+            makeDir(storageDir);
         }
 
         File newFile = new File(IOUtil.joinDir(storageDir, targetName));
-        moveFile(original, newFile);
+
+
+        try {
+            moveFile(original, newFile);
+        } catch(Exception exc) {
+            System.err.println ("ERROR: StorageManager.moveToStorage:" + exc);
+            System.err.println ("ERROR: original:" + original +" exists:" + original.exists());
+            System.err.println ("ERROR: new:" + newFile +" dir exists:" + newFile.getParentFile().exists());
+            throw exc;
+        }
 
         return newFile;
     }
@@ -1282,19 +1337,19 @@ public class StorageManager extends RepositoryManager {
         cal.setTime(new Date());
 
         storageDir = IOUtil.joinDir(storageDir, "y" + cal.get(cal.YEAR));
-        IOUtil.makeDir(storageDir);
+        makeDir(storageDir);
         storageDir = IOUtil.joinDir(storageDir,
                                     "m" + (cal.get(cal.MONTH) + 1));
-        IOUtil.makeDir(storageDir);
+        makeDir(storageDir);
         storageDir = IOUtil.joinDir(storageDir,
                                     "d" + cal.get(cal.DAY_OF_MONTH));
-        IOUtil.makeDir(storageDir);
+        makeDir(storageDir);
 
 
         for (int depth = 0; depth < dirDepth; depth++) {
             int index = (int) (dirRange * Math.random());
             storageDir = IOUtil.joinDir(storageDir, "data" + index);
-            IOUtil.makeDir(storageDir);
+            makeDir(storageDir);
         }
 
         File newFile = new File(IOUtil.joinDir(storageDir, targetName));
@@ -1792,6 +1847,15 @@ public class StorageManager extends RepositoryManager {
         return new FileOutputStream(file);
     }
 
+
+    public static void main(String[]args) {
+        StorageManager storageManager = new StorageManager(null);
+        storageManager.makeDir(new File("/Users/jeffmc/test"));
+        storageManager.makeDir(new File("/Users/jeffmc/test/foo"));
+        storageManager.makeDirRecursive(new File("/Users/jeffmc/test/foo"));
+        storageManager.makeDirRecursive(new File("/Users/jeffmc/test/foo/bar/foo/bar"));
+        storageManager.makeDirRecursive(new File("/Users/jeffmc/test/foo/bar/foo/bar"));
+    }
 
 
 }

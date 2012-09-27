@@ -105,7 +105,9 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public RepositoryManager(Repository repository) {
         this.repository = repository;
-        this.repository.addRepositoryManager(this);
+        if(this.repository!=null) {
+            this.repository.addRepositoryManager(this);
+        }
     }
 
 

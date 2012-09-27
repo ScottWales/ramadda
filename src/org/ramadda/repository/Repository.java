@@ -1010,7 +1010,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (derbyHome != null) {
             derbyHome = getStorageManager().localizePath(derbyHome);
             File dir = new File(derbyHome);
-            IOUtil.makeDirRecursive(dir);
+            StorageManager.makeDirRecursive(dir);
             System.setProperty("derby.system.home", derbyHome);
         }
 
