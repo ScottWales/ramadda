@@ -462,36 +462,18 @@ public class StorageManager extends RepositoryManager {
 
 
     public static void makeDirRecursive(File f) {
-        //try a number of times to make the directory.  This is just guess work to attempt 
-        //solve Mr He's transient file writing problem
+        f.mkdirs();
         if(f.exists()) {
             return;
-        }
-        int cnt =0;
-        while(++cnt<10) {
-            f.mkdirs();
-            if(f.exists()) {
-                return;
-            }
-            Misc.sleep(100);
         }
         throw new RuntimeException("Could not create directory:" + f);
     }
 
 
     public static void makeDir(File f) {
-        //try a number of times to make the directory.  This is just guess work to attempt 
-        //solve Mr He's transient file writing problem
+        f.mkdir();
         if(f.exists()) {
             return;
-        }
-        int cnt =0;
-        while(++cnt<10) {
-            f.mkdir();
-            if(f.exists()) {
-                return;
-            }
-            Misc.sleep(100);
         }
         throw new RuntimeException("Could not create directory:" + f);
     }
