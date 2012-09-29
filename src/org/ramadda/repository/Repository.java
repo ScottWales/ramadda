@@ -290,13 +290,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Properties dbProperties = new Properties();
 
-
-
-
-    /** _more_ */
-    private static XmlEncoder xmlEncoder;
-
-
     /** _more_ */
     private long baseTime = System.currentTimeMillis();
 
@@ -432,7 +425,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void init(String[] args, int port) throws Exception {
         setPort(port);
-        xmlEncoder = getEncoder();
         LogUtil.setTestMode(true);
         try {
             java.net.InetAddress localMachine =
@@ -5424,7 +5416,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public XmlEncoder getEncoder() {
+    public static XmlEncoder getEncoder() {
         XmlEncoder xmlEncoder = new XmlEncoder();
         xmlEncoder.addClassPatternReplacement("ucar.unidata.repository",
                 "org.ramadda.repository");
@@ -5443,7 +5435,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public static String encodeObject(Object object) {
-        return xmlEncoder.toXml(object);
+        return getEncoder().toXml(object);
     }
 
     /**
@@ -5456,7 +5448,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public static Object decodeObject(String xml) throws Exception {
-        return xmlEncoder.toObject(xml);
+        return getEncoder().toObject(xml);
     }
 
     /**
