@@ -48,8 +48,10 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.PropertyProvider;
-
 import org.ramadda.util.TempDir;
+
+
+
 
 
 import org.w3c.dom.*;
@@ -129,6 +131,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_          */
     private static final org.ramadda.util.GeoUtils dummyField4ToForceCompile =
+        null;
+
+    private static final org.ramadda.data.point.PointRecord dummyField5ToForceCompile =
         null;
 
 

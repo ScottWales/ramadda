@@ -19,7 +19,7 @@ proc extraInit {var type} {
 
 
 
-generateRecordClass org.unavco.data.point.LatLonPointRecord -super org.unavco.data.record.GeoRecord -fields  { 
+generateRecordClass org.ramadda.data.point.LatLonPointRecord -super org.ramadda.data.record.GeoRecord -fields  { 
     { latitude double}
     { longitude double}
     { altitude double}

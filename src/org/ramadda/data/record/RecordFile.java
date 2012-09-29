@@ -45,6 +45,12 @@ import java.util.zip.*;
  */
 public abstract class RecordFile {
 
+    private static final RecordVisitorGroup dummy1=null;
+    private static final RecordCountVisitor dummy2=null;
+    private static final GeoRecord dummy3=null;
+
+
+
     /** debug */
     public static boolean debug = false;
 

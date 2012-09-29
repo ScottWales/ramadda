@@ -26,7 +26,7 @@ import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
 
-import org.unavco.util.GeoUtils;
+import org.ramadda.util.GeoUtils;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -46,6 +46,9 @@ import java.util.Properties;
 /**
  */
 public abstract class PointFile extends RecordFile implements Cloneable {
+
+    private static final org.ramadda.data.point.LatLonPointRecord dummyField1 = null;
+
 
     /** _more_          */
     public static final String CRS_GEOGRAPHIC = "geographic";

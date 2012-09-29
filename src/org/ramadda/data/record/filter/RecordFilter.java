@@ -38,6 +38,14 @@ import java.util.List;
  */
 public interface RecordFilter {
 
+    public static final AltitudeFilter dummy1 = null;
+    public static final BitmaskRecordFilter dummy2 = null;
+    public static final CollectionRecordFilter dummy3 = null;
+    public static final LatLonBoundsFilter dummy4 = null;
+    public static final NumericRecordFilter dummy5 = null;
+    public static final RandomizedFilter dummy6 = null;
+
+
     /**
      * _more_
      *
