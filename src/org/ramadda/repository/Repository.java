@@ -797,7 +797,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         CacheManager.setDoCache(false);
         initProperties(properties);
         initServer();
-        getLogManager().logInfoAndPrint("RAMADDA: repository started");
+        StringBuffer statusMsg = new StringBuffer("RAMADDA: repository started");
+        statusMsg.append("  --  Version:"+getProperty(PROP_BUILD_VERSION, "1.0"));
+        statusMsg.append("  --  Build Date:"+ getProperty(PROP_BUILD_DATE, "N/A"));
+        getLogManager().logInfoAndPrint(statusMsg.toString());
     }
 
     /**
