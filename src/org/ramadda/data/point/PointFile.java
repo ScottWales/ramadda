@@ -47,6 +47,13 @@ import java.util.Properties;
  */
 public abstract class PointFile extends RecordFile implements Cloneable {
 
+    public static final String DFLT_PROPERTIES_FILE = "point.properties";
+
+    public static final String ACTION_GRID = "action.grid";
+    public static final String ACTION_DECIMATE = "action.decimate";
+    public static final String ACTION_TRACKS = "action.tracks";
+
+
     private static final org.ramadda.data.point.LatLonPointRecord dummyField1 = null;
 
 
@@ -83,7 +90,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     public static final int IDX_ALT = 2;
 
 
-
     /** _more_          */
     private String crs = CRS_GEOGRAPHIC;
 
@@ -111,6 +117,12 @@ public abstract class PointFile extends RecordFile implements Cloneable {
      * _more_
      */
     public PointFile() {}
+
+
+    @Override
+    public String getPropertiesFileName() {
+        return DFLT_PROPERTIES_FILE;
+    }
 
 
     /**
@@ -304,44 +316,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
-    public abstract boolean canLoad(String file);
-
-    public static final String ACTION_GRID = "action.grid";
-    public static final String ACTION_DECIMATE = "action.decimate";
-    public static final String ACTION_TRACKS = "action.tracks";
-
-
-    public boolean isCapable(String action) {
-        return false;
-        //        if(action.equals(ACTION_
-    }
-
-
-    public boolean canLoad(String file, String[] suffixes, boolean checkForNumberSuffix) {
-        for(String suffix: suffixes) {
-            if(file.endsWith(suffix)) {
-                return true;
-            }
-        }
-        if(!checkForNumberSuffix) return false;
-        file = file.trim();
-        while(file.matches(".*\\.\\d+\\z")) {
-            file = IOUtil.stripExtension(file);
-            for(String suffix: suffixes) {
-                if(file.endsWith(suffix)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
 
     /**
@@ -397,53 +371,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @return _more_
-     */
-    public static Hashtable getProperties(File[] files) {
-        Properties p = new Properties();
-        //        System.err.println ("NLASTOOLS: Looking for .properties files");
-        for (File f : files) {
-            if ( !f.exists()) {
-                //                System.err.println ("\tfile does not exist:" + f);
-                continue;
-            }
-            //            System.err.println ("NLAS: loading property file:" + f); 
-            try {
-                FileInputStream fis = new FileInputStream(f);
-                p.load(fis);
-                fis.close();
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-        return p;
-    }
-
-    public static final String DFLT_PROPERTIES_FILE = "point.properties";
-
-    public static Hashtable getPropertiesForFile(String file) {
-        File f = new File(file);
-        File parent = f.getParentFile();
-        String commonFile;
-        if(parent == null) {
-            commonFile = DFLT_PROPERTIES_FILE;
-        } else {
-            commonFile = parent+File.separator + DFLT_PROPERTIES_FILE;
-        }
-        File[] propertiesFiles =
-            new File[] {
-            new File(commonFile),
-            new File(IOUtil.stripExtension(file) + ".properties"), 
-            new File(file + ".properties"), 
-        };
-        return getProperties(propertiesFiles);
-    }
 
 
 
