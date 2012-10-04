@@ -267,6 +267,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         if (isGeographic) {
             //Do nothing
         } else if(jhProjection !=null) {
+            //TODO: keep src and dst around as class members?
             Point2D.Double src = new Point2D.Double(x,y);
             Point2D.Double dst = new Point2D.Double(0,0);
             dst = jhProjection.inverseTransform(src,dst);
@@ -280,8 +281,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
                 System.out.println("" + x +", " +  y +", " + dst.getX() +", " + dst.getY());
             }
             */
-
-
         } else if (isUtm) {
             ProjectionPointImpl ppi  = pointRecord.getFromPoint();
             LatLonPointImpl     llpi = pointRecord.getToPoint();
@@ -289,10 +288,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
             llpi = (LatLonPointImpl) projection.projToLatLon(ppi, llpi);
             work[IDX_LON] = llpi.getLongitude();
             work[IDX_LAT] = llpi.getLatitude();
-
-
-
-
         } else if (isWgs84) {
             work = GeoUtils.wgs84XYZToLatLonAlt(x, y, z, work);
             if(cnt++<100) {
@@ -317,6 +312,17 @@ public abstract class PointFile extends RecordFile implements Cloneable {
      * @return _more_
      */
     public abstract boolean canLoad(String file);
+
+    public static final String ACTION_GRID = "action.grid";
+    public static final String ACTION_DECIMATE = "action.decimate";
+    public static final String ACTION_TRACKS = "action.tracks";
+
+
+    public boolean isCapable(String action) {
+        return false;
+        //        if(action.equals(ACTION_
+    }
+
 
     public boolean canLoad(String file, String[] suffixes, boolean checkForNumberSuffix) {
         for(String suffix: suffixes) {
