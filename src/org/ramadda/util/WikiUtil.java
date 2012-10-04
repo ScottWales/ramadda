@@ -282,6 +282,31 @@ public class WikiUtil {
         return null;
     }
 
+    private static List<String> splitOnNoWiki(String s) {
+        List<String> content = new ArrayList<String>();
+        int idx = s.indexOf("<nowiki>");
+        int tagLength1 = "<nowiki>".length();
+        int tagLength2 = "</nowiki>".length();
+        //.... <nowiki>.....</nowiki> ....
+        while(idx>=0 && s.length()>0) {
+            content.add(s.substring(0,idx));
+            s=s.substring(idx+tagLength1);
+            int idx2 = s.indexOf("</nowiki>");
+            if(idx2<0) {
+                content.add(s);
+                s = "";
+                break;
+            }
+            String nowiki = s.substring(0, idx2);
+            content.add(nowiki);
+            s = s.substring(idx2+tagLength2);
+            idx = s.indexOf("<nowiki>");
+        }
+        content.add(s);
+        return content;
+    }
+
+
     /**
      * _more_
      *
@@ -290,9 +315,26 @@ public class WikiUtil {
      *
      * @return _more_
      */
-    public String wikify(String s, WikiPageHandler handler) {
+    public String wikify(String text, WikiPageHandler handler) {
 
 
+        StringBuffer mainBuffer = new StringBuffer();
+        List<String> toks = splitOnNoWiki(text);
+        boolean isText = true;
+        for(String s: toks) {
+            if(!isText) {
+                isText = true;
+                mainBuffer.append(s);
+                continue;
+            }
+            isText = false;
+            s = wikifyInner(s, handler);
+            mainBuffer.append(s);
+        }
+        return mainBuffer.toString();
+    }
+
+    private  String wikifyInner(String s, WikiPageHandler handler) {
         s = s.replace("\\\\[", "_BRACKETOPEN_");
 
         if (getReplaceNewlineWithP()) {
@@ -307,7 +349,7 @@ public class WikiUtil {
         Matcher matcher;
 
 
-
+        //<nowiki>
 
 
 
@@ -679,9 +721,20 @@ public class WikiUtil {
      */
     public static void main(String[] args) {
         try {
-            String contents = IOUtil.readContents(new java.io.File(args[0]));
-            contents = new WikiUtil().wikify(contents, null);
-            System.out.println("\ncontents:" + contents);
+            //            String contents = IOUtil.readContents(new java.io.File(args[0]));
+            //            contents = new WikiUtil().wikify(contents, null);
+            //            System.out.println("\ncontents:" + contents);
+            for(String c: new String[]{ 
+                    "just text",
+                    "<nowiki>no wiki</nowiki>",
+                    "text<nowiki>no wiki</nowiki>",
+                    "text<nowiki>no wiki</nowiki>more text",
+                    "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>",
+                    "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>and more text"
+                }) {
+                System.out.println("Content:" + c);
+                System.out.println(splitOnNoWiki(c));
+            }
         } catch (Exception exc) {
             exc.printStackTrace();
         }
