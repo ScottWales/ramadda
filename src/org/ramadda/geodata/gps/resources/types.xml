@@ -13,7 +13,7 @@
      <column name="antenna_height" label="Antenna Height"  type="double" suffix="meters"/>
    </type>
 
-  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern="(.*\.obs|.*\.rinex|.*\.\d\do)"
+  <type name="project_gps_rinex"  description="RINEX File" category="Field Project" pattern="(.*\.obs|.*\.rinex|.*\.\d\do|.*\.o)"
         super="project_gps">
      <property name="icon" value="/gps/unavco.png"/>
    </type>

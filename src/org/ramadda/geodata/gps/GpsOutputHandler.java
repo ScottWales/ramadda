@@ -1003,7 +1003,7 @@ public class GpsOutputHandler extends OutputHandler {
 
             if (cnt == 0) {
                 sb.append(HtmlUtils.row(HtmlUtils.cols("", "",
-                        msg("GPS File"), msg("Antenna Height"),
+                        msg("GPS File"), msg("Antenna Height (meters)"),
                         msg("Antenna"))));
             }
             cnt++;
@@ -1732,7 +1732,7 @@ public class GpsOutputHandler extends OutputHandler {
         StringBuffer entriesSB =
             new StringBuffer("<table cellpadding=3 cellspacing=3>");
         entriesSB.append(
-            "<tr><td><b>Entry</b></td><td><b>Duration</b></td><td><b>Antenna Height</b></td></tr>");
+            "<tr><td><b>Entry</b></td><td><b>Duration</b></td><td><b>Antenna</td></b<td><b>Height (meters)</b></td></tr>");
         List<String> selectedIds = request.get(ARG_RINEX_FILE,
                                        new ArrayList<String>());
         int cnt = 0;
