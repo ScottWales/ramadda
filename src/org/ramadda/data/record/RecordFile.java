@@ -22,6 +22,7 @@ package org.ramadda.data.record;
 
 
 import org.ramadda.data.record.filter.*;
+import ucar.unidata.util.IOUtil;
 
 import java.io.*;
 
@@ -29,6 +30,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.*;
@@ -38,7 +40,6 @@ import java.util.zip.*;
  * The core class. This represents a file that can either be read or written.
  * It holds a filename and will create a RecordIO when dealing with files.
  * Derived classes need to overwrite the doMakeRecord method.
- *
  *
  *
  * @author Jeff McWhirter
@@ -92,6 +93,120 @@ public abstract class RecordFile {
     public RecordFile(String filename) {
         this.filename = filename;
     }
+
+    public RecordFile cloneMe(String filename, Hashtable properties)
+            throws CloneNotSupportedException {
+        RecordFile that = cloneMe();
+        that.setFilename(filename);
+        if(properties == null) {
+            properties = getPropertiesForFile(filename, that.getPropertiesFileName());
+        }
+        that.setProperties(properties);
+        return that;
+    }
+
+    public String getPropertiesFileName() {
+        return "record.properties";
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param files _more_
+     *
+     * @return _more_
+     */
+    public static Hashtable getProperties(File[] files) {
+        Properties p = new Properties();
+        //        System.err.println ("NLASTOOLS: Looking for .properties files");
+        for (File f : files) {
+            if ( !f.exists()) {
+                //                System.err.println ("\tfile does not exist:" + f);
+                continue;
+            }
+            //            System.err.println ("NLAS: loading property file:" + f); 
+            try {
+                FileInputStream fis = new FileInputStream(f);
+                p.load(fis);
+                fis.close();
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+        return p;
+    }
+
+
+
+
+    public static Hashtable getPropertiesForFile(String file, String defaultCommonFile) {
+        File f = new File(file);
+        File parent = f.getParentFile();
+        String commonFile;
+        if(parent == null) {
+            commonFile = defaultCommonFile;
+        } else {
+            commonFile = parent+File.separator + defaultCommonFile;
+        }
+        File[] propertiesFiles =
+            new File[] {
+            new File(commonFile),
+            new File(IOUtil.stripExtension(file) + ".properties"), 
+            new File(file + ".properties"), 
+        };
+        return getProperties(propertiesFiles);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws CloneNotSupportedException _more_
+     */
+    public RecordFile cloneMe() throws CloneNotSupportedException {
+        return (RecordFile) super.clone();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     */
+    public abstract boolean canLoad(String file);
+
+    public boolean isCapable(String action) {
+        return false;
+        //        if(action.equals(ACTION_
+    }
+
+    public boolean canLoad(String file, String[] suffixes, boolean checkForNumberSuffix) {
+        for(String suffix: suffixes) {
+            if(file.endsWith(suffix)) {
+                return true;
+            }
+        }
+        if(!checkForNumberSuffix) return false;
+        file = file.trim();
+        while(file.matches(".*\\.\\d+\\z")) {
+            file = IOUtil.stripExtension(file);
+            for(String suffix: suffixes) {
+                if(file.endsWith(suffix)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
     /**
      * Get a property
