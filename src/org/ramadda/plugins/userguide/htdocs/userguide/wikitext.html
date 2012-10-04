@@ -40,7 +40,7 @@ or the wiki text might be coming from a <a href="pagestyle.html">Page Style</a>.
 
 <a name="editor"></a><div class="pagesubtitle">10.1.0 Wiki Editor</div> 
 In any of these cases RAMADDA provides a wiki text editor:
-<p>&nbsp;<center><img src="images/wikiedit.png" alt="Wiki Text Editor"><br><i>Wiki Text Editor</i></center>&nbsp;<p>
+<a name="image1"></a><div class="cimg"><a href="images/wikiedit.png"><img  src="images/wikiedit.png" border=0 width=600 alt="Wiki Text Editor" ></a><br><span class="caption">Image 1: Wiki Text Editor</span></div>
 <ul>
 <li>
 The  buttons allow you to add basic wiki markup.
@@ -76,6 +76,15 @@ Lists:
 * bullet 3
 </pre></blockquote>
 
+
+You can escape your wiki text and include raw, unprocessed text with the &lt;nowiki&gt; tag:
+<blockquote><pre>
+Some wiki text
+&lt;nowiki&gt;
+This is text that does not get formatted
+&lt;/nowiki&gt;
+more wiki text
+</pre></blockquote>
 
 See the 
 <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
@@ -128,7 +137,7 @@ For example, if we want to import the information block with it open:
 <blockquote><pre>{{information <i>open="true"</i>}}</pre></blockquote>
 
 This would give us:
-<p>&nbsp;<center><img src="images/wikiinformation.png" alt="images/wikiinformation.png"></center>&nbsp;<p>
+<div class="cimg"><a href="images/wikiinformation.png"><img  src="images/wikiinformation.png" border=0 alt="images/wikiinformation.png" ></a></div>
 
 
 Normally, all property tags refer to the relevant entry. However, you can specify another entry:
