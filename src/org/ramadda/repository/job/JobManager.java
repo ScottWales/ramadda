@@ -42,6 +42,8 @@ import java.sql.Statement;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.TTLCache;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -130,13 +132,10 @@ public class JobManager extends RepositoryManager  {
     /** _more_ */
     protected int currentJobs = 0;
 
-    /** Keeps track of the currently executing jobs */
-    protected Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
-                                                         JobInfo>();
+    private TTLCache<String, JobInfo> jobCache = new TTLCache<String, JobInfo>(60*24 * 60 * 1000);
 
-    /** Keeps track of the done jobs */
-    protected Hashtable<Object, JobInfo> doneJobs = new Hashtable<Object,
-                                                      JobInfo>();
+    private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object, JobInfo>();
+
 
     /**
      * ctor
@@ -284,10 +283,7 @@ public class JobManager extends RepositoryManager  {
      */
     public JobInfo getJobInfo(Object jobId) {
         try {
-            JobInfo jobInfo = runningJobs.get(jobId);
-            if (jobInfo == null) {
-                jobInfo = doneJobs.get(jobId);
-            }
+            JobInfo jobInfo = jobCache.get(jobId);
             if (jobInfo == null) {
                 return doMakeJobInfo(jobId);
             }
@@ -329,13 +325,30 @@ public class JobManager extends RepositoryManager  {
         return runningJobs.get(jobId) != null;
     }
 
-    public void  jobIsDone(Object jobId, JobInfo jobInfo) {
-        runningJobs.remove(jobId);        
-        if (doneJobs.size() > 100) {
-            doneJobs = new Hashtable<Object, JobInfo>();
-        }
-        doneJobs.put(jobId, jobInfo);
+    public void  jobHasStarted(JobInfo jobInfo) {
+        runningJobs.put(jobInfo.getJobId(), jobInfo);
+        writeJobInfo(jobInfo, true);
     }
+
+
+    public void  jobHasFinished(JobInfo jobInfo) {
+        removeJob(jobInfo);
+        jobInfo.setStatus(jobInfo.STATUS_DONE);
+        jobInfo.setEndDate(new Date());
+        writeJobInfo(jobInfo);
+    }
+
+
+    public void  jobWasCancelled(JobInfo jobInfo) {
+        removeJob(jobInfo);
+        jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
+        writeJobInfo(jobInfo);
+    }
+
+    public void  removeJob(JobInfo jobInfo) {
+        runningJobs.remove(jobInfo.getJobId());        
+    }
+
 
     /**
      * utility to execute the list of callable objects
@@ -433,7 +446,6 @@ public class JobManager extends RepositoryManager  {
         StringBuffer sb  = new StringBuffer();
         StringBuffer xml = new StringBuffer();
         addHtmlHeader(request, sb);
-
         JobInfo jobInfo = getJobInfo(jobId);
         if (jobInfo == null) {
             return makeRequestErrorResult(request,
@@ -452,7 +464,6 @@ public class JobManager extends RepositoryManager  {
                                           "The job has been cancelled.");
         }
 
-
         if (jobInfo.isInError() && request.responseInXml()) {
             return makeRequestErrorResult(request,
                                           "An error has occurred:"
@@ -462,7 +473,6 @@ public class JobManager extends RepositoryManager  {
 
         if (request.get(ARG_CANCEL, false)) {
             runningJobs.remove(jobId);
-            doneJobs.remove(jobId);
             jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
             writeJobInfo(jobInfo);
             return makeRequestOKResult(request,

@@ -361,15 +361,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getHtmlDescription() {
-        return "";
-    }
-
 
 
 

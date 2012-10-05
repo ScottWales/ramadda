@@ -910,5 +910,15 @@ public abstract class RecordFile {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getHtmlDescription() {
+        return "";
+    }
+
+
 
 }
