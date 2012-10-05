@@ -424,4 +424,99 @@ public class JobManager extends RepositoryManager  {
         }
     }
 
+
+    public Result handleJobStatusRequest(Request request, Entry entry)
+        throws Exception {
+        String jobId     = request.getString(JobInfo.ARG_JOB_ID, (String) null);
+        StringBuffer sb  = new StringBuffer();
+        StringBuffer xml = new StringBuffer();
+        addHtmlHeader(request, sb);
+
+        JobInfo jobInfo = getJobInfo(jobId);
+        if (jobInfo == null) {
+            return makeRequestErrorResult(request,
+                                          "No job found with id = " + jobId);
+        }
+
+        if (jobInfo.isCancelled()) {
+            if (request.responseInXml()) {
+                xml.append(XmlUtil.tag(TAG_JOB,
+                                       XmlUtil.attrs(new String[] {
+                                               JobManager.ATTR_STATUS,
+                                               STATUS_CANCELLED })));
+                return makeRequestOKResult(request, xml.toString());
+            }
+            return makeRequestErrorResult(request,
+                                          "The job has been cancelled.");
+        }
+
+
+        if (jobInfo.isInError() && request.responseInXml()) {
+            return makeRequestErrorResult(request,
+                                          "An error has occurred:"
+                                          + jobInfo.getError());
+        }
+
+
+        if (request.get(ARG_CANCEL, false)) {
+            runningJobs.remove(jobId);
+            doneJobs.remove(jobId);
+            jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
+            writeJobInfo(jobInfo);
+            return makeRequestOKResult(request,
+                                       "The job has been cancelled.");
+        }
+
+        return null;
+    }
+
+
+    public Result makeRequestErrorResult(Request request, String message)
+        throws Exception {
+        if (request.responseInXml()) {
+            return makeRequestErrorResult(request,
+                                          message);
+        }
+        StringBuffer sb = new StringBuffer();
+        addHtmlHeader(request, sb);
+        sb.append(getRepository().showDialogNote(message));
+        return new Result("", sb);
+    }
+
+    /**                                                                                                                            
+     * This creates the appropriate response for an NLAS API request.                                                              
+     * If its the NLAS API this creates the response  xml. If its the browser                                                      
+     * then this creates a web page                                                                                                
+     *                                                                                                                             
+     * @param request http request                                                                                                 
+     * @param message error message                                                                                                
+     *                                                                                                                             
+     * @return xml or html result                                                                                                  
+     */
+    public Result makeRequestOKResult(Request request, String message) {
+        if (request.responseInXml()) {
+            return new Result(XmlUtil.tag(TAG_RESPONSE,
+                                          XmlUtil.attr(ATTR_CODE, CODE_OK),
+                                          message), MIME_XML);
+
+        }
+        if (request.responseInText()) {
+            return new Result(message, "text");
+        }
+        return new Result("", new StringBuffer(message));
+    }
+
+
+
+
+
+
+
+    public void addHtmlHeader(Request request, StringBuffer sb) {
+
+    }
+
+
+
+
 }
