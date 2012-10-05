@@ -125,17 +125,17 @@ public class JobManager extends RepositoryManager  {
     private Object MUTEX = new Object();
 
     /** _more_ */
-    private int totalJobs = 0;
+    protected int totalJobs = 0;
 
     /** _more_ */
-    private int currentJobs = 0;
+    protected int currentJobs = 0;
 
     /** Keeps track of the currently executing jobs */
-    private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
+    protected Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
                                                          JobInfo>();
 
     /** Keeps track of the done jobs */
-    private Hashtable<Object, JobInfo> doneJobs = new Hashtable<Object,
+    protected Hashtable<Object, JobInfo> doneJobs = new Hashtable<Object,
                                                       JobInfo>();
 
     /**
@@ -162,7 +162,7 @@ public class JobManager extends RepositoryManager  {
     public void shutdown() {
         running = false;
         if (executor != null) {
-            System.err.println("NLAS: Shutting down the executor");
+            System.err.println("RAMADDA: Shutting down the executor");
             executor.shutdownNow();
             executor    = null;
             currentJobs = 0;
@@ -175,7 +175,7 @@ public class JobManager extends RepositoryManager  {
      *
      * @return thread  pool
      */
-    private ExecutorService getExecutor() {
+    public ExecutorService getExecutor() {
         if (executor == null) {
             synchronized (MUTEX) {
                 if (executor != null) {
@@ -212,7 +212,7 @@ public class JobManager extends RepositoryManager  {
      *
      * @throws Exception On badness
      */
-    private JobInfo doMakeJobInfo(Object jobId) throws Exception {
+    public JobInfo doMakeJobInfo(Object jobId) throws Exception {
         Statement stmt =
             getDatabaseManager().select(JobInfo.DB_COL_JOB_INFO_BLOB,
                                         JobInfo.DB_TABLE,
@@ -232,7 +232,7 @@ public class JobManager extends RepositoryManager  {
      *
      * @param jobInfo job info to write
      */
-    private void writeJobInfo(JobInfo jobInfo) {
+    public void writeJobInfo(JobInfo jobInfo) {
         writeJobInfo(jobInfo, false);
     }
 
@@ -242,7 +242,7 @@ public class JobManager extends RepositoryManager  {
      * @param jobInfo job info
      * @param newOne is this a new job
      */
-    private void writeJobInfo(JobInfo jobInfo, boolean newOne) {
+    public void writeJobInfo(JobInfo jobInfo, boolean newOne) {
         try {
 
             String blob =
@@ -327,6 +327,13 @@ public class JobManager extends RepositoryManager  {
         return runningJobs.get(jobId) != null;
     }
 
+    public void  jobIsDone(Object jobId, JobInfo jobInfo) {
+        runningJobs.remove(jobId);        
+        if (doneJobs.size() > 100) {
+            doneJobs = new Hashtable<Object, JobInfo>();
+        }
+        doneJobs.put(jobId, jobInfo);
+    }
 
     /**
      * utility to execute the list of callable objects
@@ -337,7 +344,7 @@ public class JobManager extends RepositoryManager  {
      *
      * @throws Exception On badness
      */
-    private void invokeAndWait(Request request, Callable<Boolean> callable)
+    public void invokeAndWait(Request request, Callable<Boolean> callable)
             throws Exception {
         List<Callable<Boolean>> callables =
             new ArrayList<Callable<Boolean>>();
@@ -382,7 +389,7 @@ public class JobManager extends RepositoryManager  {
      *
      * @throws Exception On badness
      */
-    private void invokeAndWait(Request request,
+    public void invokeAndWait(Request request,
                                List<Callable<Boolean>> callables)
             throws Exception {
         checkNewJobOK();
