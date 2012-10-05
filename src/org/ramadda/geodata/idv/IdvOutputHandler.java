@@ -369,7 +369,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         //Get the dataset and create the data source
         GridDataset dataset = getCdmManager().getGridDataset(entry, path);
         DataSourceDescriptor descriptor =
-            idvServer.getIdv().getDataManager().getDescriptor("File.Grid");
+            getIdv().getDataManager().getDescriptor("File.Grid");
         DataSource dataSource = new GeoGridDataSource(descriptor, dataset,
                                     entry.getName(), path);
 
@@ -453,7 +453,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         String viewPointHtml = "";
-        List   vms           = idvServer.getIdv().getVMManager().getVMState();
+        List   vms           = getIdv().getVMManager().getVMState();
         if (vms.size() >= 0) {
             List viewPoints = new ArrayList<String>();
             viewPoints.add(new TwoFacedObject("--none--", ""));
@@ -487,7 +487,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         List projections =
-            idvServer.getIdv().getIdvProjectionManager().getProjections();
+            getIdv().getIdvProjectionManager().getProjections();
 
         Hashtable<String, List> projCatMap = new Hashtable<String, List>();
         List<String>            projCats   = new ArrayList<String>();
@@ -580,7 +580,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         StringBuffer  mapSB = new StringBuffer();
         List<MapData> maps  =
-            idvServer.getIdv().getResourceManager().getMaps();
+            getIdv().getResourceManager().getMaps();
         Hashtable<String, List<TwoFacedObject>> mapCatMap =
             new Hashtable<String, List<TwoFacedObject>>();
         List<String> mapCats = new ArrayList<String>();
@@ -700,7 +700,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         tabContents.add(mapSB.toString());
 
         List colorTables =
-            idvServer.getIdv().getColorTableManager().getColorTables();
+            getIdv().getColorTableManager().getColorTables();
 
 
         Hashtable<String, DataChoice> idToChoice = new Hashtable<String,
@@ -736,7 +736,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 new ArrayList(
                     ControlDescriptor.getApplicableControlDescriptors(
                         choice.getCategories(),
-                        idvServer.getIdv().getControlDescriptors(true)));
+                        getIdv().getControlDescriptors(true)));
 
 
             List<TwoFacedObject> displays = new ArrayList<TwoFacedObject>();
@@ -845,10 +845,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             innerTabContents.add(spatial);
 
             ColorTable dfltColorTable =
-                idvServer.getIdv().getDisplayConventions().getParamColorTable(
+                getIdv().getDisplayConventions().getParamColorTable(
                     choice.getName());
             Range range =
-                idvServer.getIdv().getDisplayConventions().getParamRange(
+                getIdv().getDisplayConventions().getParamRange(
                     choice.getName(), null);
 
             List<String>                    ctCats   = new ArrayList<String>();
@@ -960,7 +960,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             StringBuffer contoursb = new StringBuffer();
             ContourInfo  ci        =
-                idvServer.getIdv().getDisplayConventions()
+                getIdv().getDisplayConventions()
                     .findDefaultContourInfo(choice.getName());
             contoursb.append(HtmlUtils.formTable());
             contoursb.append(HtmlUtils.formEntry(msgLabel("Interval"),
@@ -1008,7 +1008,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                                     + displayIdx, "", 30)));
             String unitString  = "";
             Unit   displayUnit =
-                idvServer.getIdv().getDisplayConventions().getDisplayUnit(
+                getIdv().getDisplayConventions().getDisplayUnit(
                     choice.getName(), null);
             if (displayUnit != null) {
                 unitString = displayUnit.toString();
@@ -2121,7 +2121,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         formSB.append(HtmlUtils.hidden(ARG_IDV_ACTION,
                                        ACTION_POINT_MAKEPAGE));
         formSB.append(HtmlUtils.formTable());
-        StationModelManager smm = idvServer.getIdv().getStationModelManager();
+        StationModelManager smm = getIdv().getStationModelManager();
         List                layoutModels     = smm.getStationModels();
         List                layoutModelNames = new ArrayList();
         for (StationModel sm : (List<StationModel>) layoutModels) {
@@ -2228,7 +2228,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         FeatureDatasetPoint dataset = getCdmManager().getPointDataset(entry,
                                           path);
         DataSourceDescriptor descriptor =
-            idvServer.getIdv().getDataManager().getDescriptor("NetCDF.POINT");
+            getIdv().getDataManager().getDescriptor("NetCDF.POINT");
         NetcdfPointDataSource dataSource = new NetcdfPointDataSource(dataset,
                                                descriptor, new Hashtable());
         try {
