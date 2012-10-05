@@ -230,6 +230,20 @@ public class SessionManager extends RepositoryManager {
     }
 
 
+    public Entry getLastEntry(Request request) 
+            throws Exception {
+        return (Entry) getSessionProperty(request,
+                                          "lastentry");
+    }
+
+    public void setLastEntry(Request request, Entry entry) 
+            throws Exception {
+        if(entry !=null && request!=null) {
+            putSessionProperty(request, "lastentry", entry);
+        }
+    }
+
+
     /**
      * _more_
      *
@@ -241,6 +255,9 @@ public class SessionManager extends RepositoryManager {
      */
     public void putSessionProperty(Request request, Object key, Object value)
             throws Exception {
+        //JIC
+        if(request == null) return;
+
         String id = request.getSessionId();
         if (id == null) {
             return;
@@ -280,6 +297,9 @@ public class SessionManager extends RepositoryManager {
      */
     public Object getSessionProperty(Request request, Object key, Object dflt)
             throws Exception {
+        //JIC
+        if(request == null) return dflt;
+
         String id = request.getSessionId();
         if (id == null) {
             return dflt;

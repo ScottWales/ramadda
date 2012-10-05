@@ -398,6 +398,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        getSessionManager().setLastEntry(request, entry);
         return entry;
     }
 
@@ -425,7 +426,7 @@ public class EntryManager extends RepositoryManager {
             fatalError(request, "No entry specified");
         }
 
-        getSessionManager().putSessionProperty(request, "lastentry", entry);
+
 
         if (entry.getIsRemoteEntry()) {
             String redirectUrl = entry.getRemoteServer()
@@ -5554,6 +5555,9 @@ public class EntryManager extends RepositoryManager {
                 "Could not find entry:" + request.getString(urlArg, BLANK));
         }
 
+        if(entry!=null) {
+            getSessionManager().setLastEntry(request, entry);
+        }
         return entry;
     }
 

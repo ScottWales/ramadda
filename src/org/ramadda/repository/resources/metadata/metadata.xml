@@ -118,6 +118,14 @@
       <element name="namepattern" label="Name Pattern" datatype="string" suffix="Only apply to entries that match this pattern"/>
     </type>
 
+
+    <type
+       name="Page Template"
+       showinhtml="false"
+       id="content.pagetemplate">
+      <element name="template" label="Template" datatype="enumeration" />
+    </type>
+
     <type
        name="Logo"
        id="content.logo">

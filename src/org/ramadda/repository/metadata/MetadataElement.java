@@ -224,7 +224,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 || dataType.equals(
                     MetadataElement.DATATYPE_ENUMERATIONPLUS)) {
             String       delimiter = ":";
-            String       values    = XmlUtil.getAttribute(node, ATTR_VALUES);
+            String       values    = XmlUtil.getAttribute(node, ATTR_VALUES,"");
+            if(values.length() == 0) {
+                values = getHandler().getEnumerationValues(this);
+            }
             List<String> tmpValues = null;
             if (values.startsWith("file:")) {
                 //If it is a .properties file then the delimiter is =

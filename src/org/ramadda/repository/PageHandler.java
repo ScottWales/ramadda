@@ -23,6 +23,7 @@ package org.ramadda.repository;
 
 
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
@@ -219,15 +220,13 @@ public class PageHandler extends RepositoryManager {
         }
 
         Repository repository   = getRepository();
-        Entry      currentEntry =
-            (Entry) getSessionManager().getSessionProperty(request,
-                "lastentry");
+        Entry      currentEntry = getSessionManager().getLastEntry(request);
         String       template = null;
         HtmlTemplate htmlTemplate;
         if (request.isMobile()) {
             htmlTemplate = getMobileTemplate();
         } else {
-            htmlTemplate = getTemplate(request);
+            htmlTemplate = getTemplate(request, currentEntry);
         }
         template = htmlTemplate.getTemplate();
 
@@ -378,7 +377,6 @@ public class PageHandler extends RepositoryManager {
         }
 
         for (String property : htmlTemplate.getPropertyIds()) {
-            System.err.println("PROP:" + property);
             html = html.replace("${" + property + "}",
                                 getRepository().getProperty(property, ""));
         }
@@ -681,7 +679,7 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    private List<HtmlTemplate> getTemplates() {
+    public List<HtmlTemplate> getTemplates() {
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if (theTemplates == null) {
             //            System.err.println ("Loading templates");
@@ -901,6 +899,19 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    public HtmlTemplate getTemplate(Request request) {
+        Entry      currentEntry = null;
+        if(request!=null) {
+            try {
+                currentEntry = getSessionManager().getLastEntry(request);
+            }catch(Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+        return getTemplate(request, currentEntry);
+    }
+
+
     /**
      * Find the html template for the given request
      *
@@ -908,15 +919,35 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public HtmlTemplate getTemplate(Request request) {
+    public HtmlTemplate getTemplate(Request request, Entry entry) {
         if (request.isMobile()) {
             return getMobileTemplate();
         }
+
         List<HtmlTemplate> theTemplates = getTemplates();
         if ((request == null) && (defaultTemplate != null)) {
             return defaultTemplate;
         }
+
+
         String templateId = request.getHtmlTemplateId();
+        if((templateId==null || templateId.length()==0)  && entry!=null) {
+            try {
+                List<Metadata> metadataList =
+                    getMetadataManager().findMetadata(entry,
+                                                      ContentMetadataHandler.TYPE_TEMPLATE, true);
+                if(metadataList!=null) {
+                    for(Metadata metadata: metadataList) {
+                        templateId = metadata.getAttr1();
+                        request.put(ARG_TEMPLATE, templateId);
+                        break;
+                    }
+                }
+            } catch(Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
 
         User   user       = request.getUser();
 

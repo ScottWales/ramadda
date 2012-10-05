@@ -23,6 +23,7 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -107,6 +108,7 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_ALIAS = "content.alias";
 
+    public static final String TYPE_TEMPLATE = "content.pagetemplate";
 
     /**
      * _more_
@@ -119,5 +121,19 @@ public class ContentMetadataHandler extends MetadataHandler {
         super(repository);
     }
 
+
+    public String getEnumerationValues(MetadataElement element) {
+        if(element.getName().equals("template")) {
+            StringBuffer sb = new StringBuffer();
+            for (HtmlTemplate htmlTemplate : getRepository().getPageHandler().getTemplates()) {
+                sb.append(htmlTemplate.getId());
+                sb.append(":");
+                sb.append(htmlTemplate.getName());
+                sb.append(",");
+            }
+            return sb.toString();
+        }
+        return "";
+    }
 
 }

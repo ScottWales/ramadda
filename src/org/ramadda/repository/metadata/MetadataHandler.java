@@ -997,6 +997,11 @@ public class MetadataHandler extends RepositoryManager {
     }
 
 
+    public String getEnumerationValues(MetadataElement element) {
+        return "";
+    }
+
+
     /**
      * _more_
      *
