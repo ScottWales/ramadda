@@ -81,15 +81,16 @@ public class RecordOutputHandler extends OutputHandler {
      * @param element the xml from outputhandlers.xml
      * @throws Exception on badness
      */
-    public RecordOutputHandler(Repository repository, Element element, JobManager jobManager)
+    public RecordOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        this.jobManager = jobManager;
         getProductDir();
     }
 
 
-
+    protected void setJobManager(JobManager jobManager) {
+        this.jobManager = jobManager;
+    }
 
     /**
      */
@@ -114,16 +115,22 @@ public class RecordOutputHandler extends OutputHandler {
     public File getProductDir() throws Exception {
         if (productDir == null) {
             TempDir tempDir =
-                getStorageManager().makeTempDir("recordproducts");
+                getStorageManager().makeTempDir(getProductDirName());
             //keep things around for 7 day
-            int days = getRepository().getProperty(PROP_TTL, 7);
+            int days = getProductDirTTL();
             tempDir.setMaxAge(1000 * 60 * 60 * 24 * days);
             productDir = tempDir;
         }
         return productDir.getDir();
     }
 
+    public String getProductDirName() {
+        return "recordproducts";
+    }
 
+    public int getProductDirTTL() {
+        return getRepository().getProperty(PROP_TTL, 7);
+    }
 
 
     /**
@@ -343,7 +350,7 @@ public class RecordOutputHandler extends OutputHandler {
 
 
 
-    private void memoryCheck(String msg) {
+    public void memoryCheck(String msg) {
         //        Runtime.getRuntime().gc();
         //        getLogManager().logInfoAndPrint(msg + ((int)(Misc.usedMemory()/1000000.0))+"MB");
     }
@@ -413,6 +420,11 @@ public class RecordOutputHandler extends OutputHandler {
     }
 
 
+    public RecordFilter getFilter(Request request, Entry entry,
+                                  RecordFile recordFile) {
+        return null;
+    }
+
 
 
     /**
@@ -440,9 +452,27 @@ public class RecordOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private String getOutputFilename(Entry entry, String ext) {
+    public String getOutputFilename(Entry entry, String ext) {
         return IOUtil.stripExtension(entry.getName()) + ext;
     }
+
+    /**                                                                                 
+     * _more_                                                                           
+     *                                                                                  
+     * @param request _more_                                                            
+     * @param entry _more_                                                              
+     *                                                                                  
+     * @return _more_                                                                   
+     *                                                                                  
+     * @throws Exception _more_                                                         
+     */
+    public Result outputEntryBounds(Request request, Entry entry)
+        throws Exception {
+        return new Result(entry.getNorth() + "," + entry.getWest() + ","
+                          + entry.getSouth() + "," + entry.getEast(), "text");
+    }
+
+
 
     /**
      * _more_
@@ -522,7 +552,7 @@ public class RecordOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private Result getDummyResult() {
+    public Result getDummyResult() {
         Result result = new Result();
         result.setNeedToWrite(false);
         return result;
@@ -537,12 +567,12 @@ public class RecordOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private int getSkip(Request request, int dflt) {
-        String skip = request.getString(ARG_SKIP, "");
+    public int getSkip(Request request, int dflt, String arg) {
+        String skip = request.getString(arg, "");
         if (skip.equals("${skip}")) {
             return dflt;
         }
-        return request.get(ARG_SKIP, dflt);
+        return request.get(arg, dflt);
     }
 
 
