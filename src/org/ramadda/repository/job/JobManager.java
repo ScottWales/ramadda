@@ -223,7 +223,9 @@ public class JobManager extends RepositoryManager  {
         if ((values == null) || (values.length == 0)) {
             return null;
         }
-        return (JobInfo) getRepository().decodeObject(values[0]);
+        String blob = values[0];
+        blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo","org.ramadda.repository.job.JobInfo");
+        return (JobInfo) getRepository().decodeObject(blob);
     }
 
 

@@ -49,7 +49,7 @@ public class JobInfo implements Constants {
 
 
     /** db column for jobs table */
-    public static final String DB_TABLE = "processing_jobs";
+    public static final String DB_TABLE = "nlas_jobs";
 
     /** db column for jobs table */
     public static final String DB_COL_ID = "id";
