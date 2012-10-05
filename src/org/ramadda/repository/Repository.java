@@ -137,6 +137,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         null;
 
 
+    private static final org.ramadda.repository.job.JobManager dummyField6ToForceCompile = null;
+
 
 
     /** _more_ */
