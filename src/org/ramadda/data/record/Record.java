@@ -240,6 +240,12 @@ public abstract class Record implements Cloneable {
         return b;
     }
 
+
+    public boolean haveValueInSet(String what, HashSet<String> values) {
+        return false;
+    }
+
+
     /**
      * _more_
      *

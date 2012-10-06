@@ -53,6 +53,10 @@ import java.util.List;
  */
 public class RecordFormHandler extends RepositoryManager  {
 
+    public static final String ARG_START = "start";
+
+    public static final String ARG_NUMPOINTS = "numpoints";
+
     /** an array of colors */
     public static final Color[] COLORS = {
         Color.blue, Color.black, Color.red, Color.green, Color.orange,
@@ -89,6 +93,11 @@ public class RecordFormHandler extends RepositoryManager  {
     }
 
 
+    public  RecordOutputHandler getOutputHandler() {
+        return recordOutputHandler;
+    }
+
+
     /**
      * get the job manager
      *
@@ -96,6 +105,16 @@ public class RecordFormHandler extends RepositoryManager  {
      */
     public JobManager getJobManager() {
         return recordOutputHandler.getJobManager();
+    }
+
+
+    /**
+     * get the job manager
+     *
+     * @return the job manager
+     */
+    public RecordJobManager getRecordJobManager() {
+        return (RecordJobManager)recordOutputHandler.getJobManager();
     }
 
 
@@ -166,11 +185,60 @@ public class RecordFormHandler extends RepositoryManager  {
 
 
 
+
+    /**                                                                                                           
+     * list the metadata for the given lidarentry                                                                 
+     *                                                                                                            
+     * @param request request                                                                                     
+     * @param outputType output type                                                                              
+     * @param lidarEntry lidar entry                                                                              
+     *                                                                                                            
+     * @return ramadda result                                                                                     
+     *                                                                                                            
+     * @throws Exception On badness                                                                               
+     */
+    public Result outputEntryMetadata(Request request, OutputType outputType,
+                                      RecordEntry recordEntry)
+        throws Exception {
+        StringBuffer sb = new StringBuffer();
+        getEntryMetadata(request, recordEntry, sb);
+        return new Result("", sb);
+    }
+
+
+
+    /**
+     * make a color object
+     *
+     * @param request the request
+     * @param arg which url arg
+     * @param colorCnt colors
+     *
+     * @return the color
+     */
+    public Color getColor(Request request, String arg, int[] colorCnt) {
+        Color c = null;
+        if (request.defined(arg)) {
+            String cs = request.getString(arg, null);
+            if ( !cs.startsWith("#")) {
+                cs = "#" + cs;
+            }
+            c = GuiUtils.decodeColor(cs, (Color) null);
+        }
+        if (c == null) {
+            c = COLORS[colorCnt[0] % COLORS.length];
+            colorCnt[0]++;
+        }
+        return c;
+    }
+
+
+
     /**
      * _more_
      *
      * @param request _more_
-     * @param recordEntry _more_
+     * @param lidarEntry _more_
      * @param sb _more_
      *
      * @throws Exception _more_
@@ -221,30 +289,143 @@ public class RecordFormHandler extends RepositoryManager  {
 
 
     /**
-     * make a color object
+     * _more_
      *
-     * @param request the request
-     * @param arg which url arg
-     * @param colorCnt colors
+     * @param request _more_
+     * @param outputType _more_
+     * @param lidarEntry _more_
      *
-     * @return the color
+     * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public Color getColor(Request request, String arg, int[] colorCnt) {
-        Color c = null;
-        if (request.defined(arg)) {
-            String cs = request.getString(arg, null);
-            if ( !cs.startsWith("#")) {
-                cs = "#" + cs;
+    public Result outputEntryView(Request request, OutputType outputType,
+                                  final RecordEntry recordEntry)
+            throws Exception {
+
+        final StringBuffer      sb     = new StringBuffer();
+        final List<RecordField> fields =
+            recordEntry.getRecordFile().getFields();
+        int start = request.get(ARG_START, 0);
+        request.put(ARG_START, start + 50);
+        int step = 50;
+        sb.append(HtmlUtils.href(request.getUrl(), msg("Next") + " " + step));
+        sb.append(HtmlUtils.br());
+        sb.append("<table cellspacing=0 cellpadding=5 border=1>");
+        final int[]   cnt     = { 0 };
+        RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record) {
+                if (cnt[0] == 0) {
+                    String style = HtmlUtils.style("background: #c3d9ff;");
+                    sb.append("<tr valign=bottom>");
+                    sb.append("<td " + style + ">");
+                    sb.append(HtmlUtils.b("Index"));
+                    sb.append("</td>");
+                    for (int fieldCnt = 0; fieldCnt < fields.size();
+                            fieldCnt++) {
+                        RecordField field = fields.get(fieldCnt);
+                        if (field.getSynthetic()) {
+                            continue;
+                        }
+                        if (field.isBitField()) {
+                            String[] bitFields = field.getBitFields();
+                            for (int i = 0; i < bitFields.length; i++) {
+                                sb.append("<td align=center " + style + ">");
+                                sb.append(HtmlUtils.b("Bit #" + i + "<br>"
+                                        + bitFields[i]));
+                                sb.append("</td>");
+                            }
+
+                        } else {
+                            sb.append("<td align=center " + style + ">");
+                            if (field.getArity() > 1) {
+                                sb.append(HtmlUtils.b(field.getName()
+                                        + "&nbsp;[" + field.getArity()
+                                        + "]"));
+                            } else {
+                                sb.append(HtmlUtils.b(field.getName()));
+                            }
+                            sb.append("</td>");
+                        }
+                    }
+                    sb.append("</tr>");
+                }
+                sb.append("<tr>");
+                sb.append("<td>");
+                sb.append(visitInfo.getRecordIndex());
+                sb.append("</td>");
+                for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
+                    RecordField field = fields.get(fieldCnt);
+                    if (field.getSynthetic()) {
+                        continue;
+                    }
+                    if (field.isBitField()) {
+                        String[] bitFields = field.getBitFields();
+                        int value = (int) record.getValue(field.getParamId());
+                        for (int i = 0; i < bitFields.length; i++) {
+                            sb.append("<td align=right>");
+                            if ((value & 1 << i) != 0) {
+                                sb.append("1");
+                            } else {
+                                sb.append("0");
+                            }
+                            sb.append("</td>");
+                        }
+                        continue;
+                    }
+
+
+                    sb.append("<td align=right>");
+                    if (field.getArity() > 1) {
+                        sb.append("...");
+                    } else {
+                        ValueGetter getter = field.getValueGetter();
+                        if (getter == null) {
+                            double value =
+                                record.getValue(field.getParamId());
+                            sb.append("" + value);
+                        } else {
+                            sb.append(getter.getStringValue(record, field,
+                                    visitInfo));
+                        }
+                    }
+                    sb.append("</td>");
+                }
+                cnt[0]++;
+                return true;
             }
-            c = GuiUtils.decodeColor(cs, (Color) null);
-        }
-        if (c == null) {
-            c = COLORS[colorCnt[0] % COLORS.length];
-            colorCnt[0]++;
-        }
-        return c;
+        };
+
+        VisitInfo visitInfo = new VisitInfo();
+        visitInfo.setStart(start);
+        visitInfo.setStop(start + step);
+        getRecordJobManager().visitSequential(request, recordEntry, visitor,
+                                        visitInfo);
+
+        sb.append("</table>");
+
+        return new Result("", sb);
+
     }
 
+
+    /**
+     * get the product formats selected in the request
+     *
+     * @param request the request
+     *
+     * @return product formats
+     */
+    public HashSet<String> getFormats(Request request) {
+        HashSet<String> formats = new HashSet<String>();
+        for (String format :
+                (List<String>) request.get(ARG_PRODUCT,
+                                           new ArrayList<String>())) {
+            formats.add(format);
+        }
+        return formats;
+    }
 
 
 
