@@ -130,6 +130,8 @@ public class JobInfo implements Constants {
 
     private String jobUrl;
 
+    private String jobStatusUrl;
+
     /** job description the user gave */
     private String description;
 
@@ -558,6 +560,25 @@ public class JobInfo implements Constants {
     public void setNumPoints(int p) {
         numPoints = p;
     }
+
+    /**
+       Set the JobStatusUrl property.
+
+       @param value The new value for JobStatusUrl
+    **/
+    public void setJobStatusUrl (String value) {
+	jobStatusUrl = value;
+    }
+
+    /**
+       Get the JobStatusUrl property.
+
+       @return The JobStatusUrl
+    **/
+    public String getJobStatusUrl () {
+	return jobStatusUrl;
+    }
+
 
 
 }

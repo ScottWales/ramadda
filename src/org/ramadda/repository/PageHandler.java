@@ -214,11 +214,9 @@ public class PageHandler extends RepositoryManager {
      */
     public void decorateResult(Request request, Result result)
             throws Exception {
-
         if ( !request.get(ARG_DECORATE, true)) {
             return;
         }
-
         Repository repository   = getRepository();
         Entry      currentEntry = getSessionManager().getLastEntry(request);
         String       template = null;
