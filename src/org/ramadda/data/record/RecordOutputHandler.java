@@ -72,6 +72,9 @@ public class RecordOutputHandler extends OutputHandler {
     private JobManager jobManager;
 
 
+    private RecordFormHandler formHandler;
+
+
     /**
      * constructor. This gets called by the Repository via reflection
      * This class is specified in outputhandlers.xml
@@ -141,6 +144,26 @@ public class RecordOutputHandler extends OutputHandler {
     public JobManager getJobManager() {
         return jobManager;
     }
+
+/**
+Set the FormHandler property.
+
+@param value The new value for FormHandler
+**/
+public void setFormHandler (RecordFormHandler value) {
+	formHandler = value;
+}
+
+/**
+Get the FormHandler property.
+
+@return The FormHandler
+**/
+public RecordFormHandler getFormHandler () {
+	return formHandler;
+}
+
+
 
 
     /**
