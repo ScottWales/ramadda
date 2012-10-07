@@ -866,17 +866,16 @@ public class GpsOutputHandler extends OutputHandler {
                         rawEntry, "generated rinex",
                         ASSOCIATION_TYPE_GENERATED_FROM);
             }
-
-
-            sb.append(HtmlUtils.p());
-            sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-            sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                       OUTPUT_GPS_TORINEX.getId()));
-            sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
-            sb.append(HtmlUtils.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
-            sb.append(HtmlUtils.submit(msg("Download Results")));
-            sb.append(HtmlUtils.formClose());
         }
+
+        sb.append(HtmlUtils.p());
+        sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT,
+                                   OUTPUT_GPS_TORINEX.getId()));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
+        sb.append(HtmlUtils.submit(msg("Download Results")));
+        sb.append(HtmlUtils.formClose());
 
         return new Result("", sb);
     }
