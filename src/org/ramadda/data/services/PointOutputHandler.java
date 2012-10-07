@@ -68,6 +68,18 @@ public class PointOutputHandler extends RecordOutputHandler {
         super(repository, element);
     }
 
+
+/**
+Get the FormHandler property.
+
+@return The FormHandler
+**/
+public PointFormHandler getPointFormHandler () {
+    return (PointFormHandler) super.getFormHandler();
+}
+
+
+
     /**
      * Gets the approximate point count of the given lidar files. It figures out
      * the  area  of the of the clipping box intersection with each file.
