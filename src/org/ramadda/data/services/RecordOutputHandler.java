@@ -55,6 +55,7 @@ public class RecordOutputHandler extends OutputHandler {
 
     public static final String ARG_SKIP = "skip";
 
+    public static final String ARG_PARAMETER = "parameter";
     public static final String ARG_FIELD_USE = "field_use";
 
     public static final String SESSION_PREFIX = "record.";

@@ -58,6 +58,7 @@ public class PointFormHandler extends RecordFormHandler   {
     private static ObjectGrid dummyField2  = null;
     private static GridUtils dummyField3  = null;
     private static Gridder dummyField4  = null;
+    private static GridVisitor dummyField5  = null;
 
     /**
      * ctor

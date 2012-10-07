@@ -53,6 +53,8 @@ import java.util.zip.*;
  */
 public class PointOutputHandler extends RecordOutputHandler {
 
+    public static final String ARG_FILLMISSING = "fillmissing";
+
 
     /**
      * constructor. This gets called by the Repository via reflection
