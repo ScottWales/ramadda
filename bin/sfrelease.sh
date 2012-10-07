@@ -15,7 +15,7 @@ fi
 
 
 #Make the release
-ant release
+#ant release
 
 #scp the top level build products to SF
 
