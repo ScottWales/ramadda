@@ -24,10 +24,6 @@ package org.ramadda.util.grid;
 import org.ramadda.repository.*;
 
 
-import org.unavco.util.GridUtils;
-import org.unavco.util.LatLonGrid;
-
-
 
 /**
  * This originally held a number of gridding utilities but those  have been moved into the IdwGrid

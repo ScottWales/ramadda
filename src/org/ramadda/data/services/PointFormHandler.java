@@ -9,6 +9,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.grid.*;
 
 
 import org.ramadda.data.point.PointFile;
@@ -53,6 +54,10 @@ import java.util.List;
  */
 public class PointFormHandler extends RecordFormHandler   {
 
+    private static IdwGrid dummyField1  = null;
+    private static ObjectGrid dummyField2  = null;
+    private static GridUtils dummyField3  = null;
+    private static Gridder dummyField4  = null;
 
     /**
      * ctor
