@@ -1,8 +1,9 @@
 
-package org.ramadda.data.record;
+package org.ramadda.data.services;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.data.record.*;
 
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.job.JobInfo;

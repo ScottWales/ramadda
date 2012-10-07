@@ -133,7 +133,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private static final org.ramadda.util.GeoUtils dummyField4ToForceCompile =
         null;
 
-    private static final org.ramadda.data.point.PointRecord dummyField5ToForceCompile =
+    private static final org.ramadda.data.services.PointOutputHandler dummyField5ToForceCompile =
         null;
 
 

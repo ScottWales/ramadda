@@ -1,6 +1,8 @@
 
-package org.ramadda.data.point;
+package org.ramadda.data.services;
 
+import org.ramadda.data.record.*;
+import org.ramadda.data.point.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.job.*;
