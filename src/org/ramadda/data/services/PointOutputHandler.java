@@ -79,7 +79,7 @@ Get the FormHandler property.
 
 @return The FormHandler
 **/
-public PointFormHandler getPointFormHandler () {
+ public PointFormHandler getPointFormHandler () {
     return (PointFormHandler) super.getFormHandler();
 }
 

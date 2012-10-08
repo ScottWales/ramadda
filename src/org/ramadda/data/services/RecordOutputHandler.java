@@ -98,6 +98,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         this.jobManager = jobManager;
     }
 
+
     /**
      */
     public void shutdown() {

@@ -51,12 +51,25 @@ import java.util.zip.*;
  */
 public class RecordJobManager extends JobManager  {
 
-    /**
+
+    private RecordOutputHandler recordOutputHandler;
+
+
+       /**
      * ctor
      *
      */
-    public RecordJobManager(Repository repository) {
-        super(repository);
+    public RecordJobManager(RecordOutputHandler recordOutputHandler) {
+        super(recordOutputHandler.getRepository());
+    }
+
+
+    public RecordOutputHandler getRecordOutputHandler() {
+        return recordOutputHandler;
+    }
+
+    public RecordFormHandler getRecordFormHandler() {
+        return  recordOutputHandler.getFormHandler();
     }
 
 
