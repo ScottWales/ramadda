@@ -52,7 +52,7 @@ import java.util.List;
  *
  * @author         Jeff McWhirter
  */
-public class RecordFormHandler extends RepositoryManager  {
+public class RecordFormHandler extends RepositoryManager  implements RecordConstants {
 
     public static final String ARG_START = "start";
 
@@ -426,6 +426,25 @@ public class RecordFormHandler extends RepositoryManager  {
             formats.add(format);
         }
         return formats;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param bounds _more_
+     *
+     * @return _more_
+     */
+    public double getDefaultRadiusDegrees(Request request,
+                                          Rectangle2D.Double bounds) {
+        int width = request.get(ARG_WIDTH, DFLT_WIDTH);
+        if ((bounds != null) && (width != 0)) {
+            double degreesPerCell = bounds.getWidth() / width;
+            return (degreesPerCell * 2);
+        }
+        return 0;
     }
 
 

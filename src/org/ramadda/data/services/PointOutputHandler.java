@@ -1,6 +1,8 @@
 
 package org.ramadda.data.services;
 
+import org.ramadda.util.grid.*;
+
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 
@@ -168,6 +170,71 @@ public PointFormHandler getPointFormHandler () {
             }
         }
         return result;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request The request
+     * @param lidarEntries The entries to process
+     * @param bounds _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception On badness
+     */
+    public GridVisitor makeGridVisitor(Request request,
+                                       List<? extends PointEntry> recordEntries,
+                                       Rectangle2D.Double bounds)
+            throws Exception {
+        int imageWidth  = request.get(ARG_WIDTH, DFLT_WIDTH);
+        int imageHeight = request.get(ARG_HEIGHT, DFLT_HEIGHT);
+
+        if ((imageWidth > 2500) || (imageHeight > 2500)) {
+            throw new IllegalArgumentException("Too large image dimension: "
+                    + imageWidth + " X " + imageHeight);
+        }
+        //        System.err.println("Grid BOUNDS: " + bounds);
+
+        IdwGrid llg = new IdwGrid(imageWidth, imageHeight, bounds.y,
+                                  bounds.x, bounds.y + bounds.height,
+                                  bounds.x + bounds.width);
+
+        //        System.err.println("NLAS Request:" + request.getFullUrl());
+        //llg.fillValue(Double.NaN);
+        //If nothing specified then default to 2 grid cells radius
+        if ( !request.defined(ARG_GRID_RADIUS_DEGREES)
+                && !request.defined(ARG_GRID_RADIUS_CELLS)) {
+            llg.setRadius(0.0);
+            llg.setNumCells(2);
+        } else {
+            //If the user did not change the degrees radius then get the default radius from the bounds
+            if (request.getString(ARG_GRID_RADIUS_DEGREES, "").equals(
+                    request.getString(ARG_GRID_RADIUS_DEGREES_ORIG, ""))) {
+                //                System.err.println("getting default:" +
+                //                                   getFormHandler().getDefaultRadiusDegrees(request, bounds));
+                llg.setRadius(getFormHandler().getDefaultRadiusDegrees(request,
+                        bounds));
+            } else {
+                //                System.err.println("using arg:" +
+                //                                   request.get(ARG_GRID_RADIUS_DEGREES, 0.0));
+                llg.setRadius(request.get(ARG_GRID_RADIUS_DEGREES, 0.0));
+            }
+            llg.setNumCells(request.get(ARG_GRID_RADIUS_CELLS, 0));
+        }
+        if (llg.getCellIndexDelta() > 100) {
+            System.err.println("NLAS bad grid neighborhood size: "
+                               + llg.getCellIndexDelta());
+            System.err.println("NLAS llg: " + llg);
+            System.err.println("NLAS request:" + request.getFullUrl());
+            throw new IllegalArgumentException("bad grid neighborhood size: "
+                    + llg.getCellIndexDelta());
+        }
+
+        GridVisitor visitor = new GridVisitor(this, request, llg);
+        return visitor;
     }
 
 
