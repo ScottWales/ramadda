@@ -105,7 +105,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
      * @return the job manager
      */
     public JobManager getJobManager() {
-        return recordOutputHandler.getJobManager();
+        return recordOutputHandler.getRecordJobManager();
     }
 
 
@@ -115,7 +115,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
      * @return the job manager
      */
     public RecordJobManager getRecordJobManager() {
-        return (RecordJobManager)recordOutputHandler.getJobManager();
+        return (RecordJobManager)recordOutputHandler.getRecordJobManager();
     }
 
 

@@ -72,7 +72,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     private TempDir productDir;
 
 
-    private JobManager jobManager;
+    private RecordJobManager jobManager;
 
 
     private RecordFormHandler formHandler;
@@ -94,7 +94,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     }
 
 
-    protected void setJobManager(JobManager jobManager) {
+    protected void setRecordJobManager(RecordJobManager jobManager) {
         this.jobManager = jobManager;
     }
 
@@ -144,7 +144,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      *
      * @return the job manager
      */
-    public JobManager getJobManager() {
+    public RecordJobManager getRecordJobManager() {
         return jobManager;
     }
 
