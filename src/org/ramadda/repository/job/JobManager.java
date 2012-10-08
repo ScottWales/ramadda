@@ -132,7 +132,7 @@ public class JobManager extends RepositoryManager  {
     /** _more_ */
     protected int currentJobs = 0;
 
-    private TTLCache<String, JobInfo> jobCache = new TTLCache<String, JobInfo>(60*24 * 60 * 1000);
+    private TTLCache<Object, JobInfo> jobCache = new TTLCache<Object, JobInfo>(60*24 * 60 * 1000);
 
     private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object, JobInfo>();
 
@@ -245,7 +245,7 @@ public class JobManager extends RepositoryManager  {
      */
     public void writeJobInfo(JobInfo jobInfo, boolean newOne) {
         try {
-
+            jobCache.put(jobInfo.getJobId(), jobInfo);
             String blob =
                 getRepository().getRepository().encodeObject(jobInfo);
             if (newOne) {
@@ -285,7 +285,9 @@ public class JobManager extends RepositoryManager  {
         try {
             JobInfo jobInfo = jobCache.get(jobId);
             if (jobInfo == null) {
-                return doMakeJobInfo(jobId);
+                jobInfo =  doMakeJobInfo(jobId);
+                jobCache.put(jobInfo.getJobId(), jobInfo);
+                return jobInfo;
             }
             return jobInfo;
         } catch (Exception exc) {
