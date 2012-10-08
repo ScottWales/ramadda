@@ -61,6 +61,7 @@ public class RecordJobManager extends JobManager  {
      */
     public RecordJobManager(RecordOutputHandler recordOutputHandler) {
         super(recordOutputHandler.getRepository());
+        this.recordOutputHandler = recordOutputHandler;
     }
 
 
