@@ -1,23 +1,46 @@
+/*
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.services;
 
 
-import org.ramadda.repository.*;
 import org.ramadda.data.record.*;
-
-import org.ramadda.repository.job.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.util.SelectionRectangle;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.TypeHandler;
-
-import org.ramadda.util.TempDir;
 
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+
+import org.ramadda.repository.job.*;
+import org.ramadda.repository.map.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.SelectionRectangle;
+
+import org.ramadda.util.TempDir;
 
 import org.w3c.dom.*;
 
@@ -25,7 +48,6 @@ import ucar.unidata.data.gis.KmlUtil;
 
 
 import ucar.unidata.ui.ImageUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -53,14 +75,20 @@ import java.util.zip.*;
  */
 public class RecordOutputHandler extends OutputHandler implements RecordConstants {
 
+    /** _more_ */
     public static final String ARG_SKIP = "skip";
 
+    /** _more_ */
     public static final String ARG_PARAMETER = "parameter";
+
+    /** _more_ */
     public static final String ARG_FIELD_USE = "field_use";
 
+    /** _more_ */
     public static final String SESSION_PREFIX = "record.";
 
-    public static final String PROP_TTL =  "record.files.ttl";
+    /** _more_ */
+    public static final String PROP_TTL = "record.files.ttl";
 
     /** Max number of points an anonymous user is allowed to access */
     public static final long POINT_LIMIT_ANONYMOUS = 200000000;
@@ -72,9 +100,11 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     private TempDir productDir;
 
 
+    /** _more_ */
     private RecordJobManager jobManager;
 
 
+    /** _more_ */
     private RecordFormHandler formHandler;
 
 
@@ -94,10 +124,27 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     }
 
 
+    /**
+     * _more_
+     *
+     * @param jobManager _more_
+     */
     protected void setRecordJobManager(RecordJobManager jobManager) {
         this.jobManager = jobManager;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public RecordEntry doMakeEntry(Request request, Entry entry) {
+        return new RecordEntry(this, request, entry);
+    }
 
     /**
      */
@@ -128,13 +175,24 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             tempDir.setMaxAge(1000 * 60 * 60 * 24 * days);
             productDir = tempDir;
         }
+
         return productDir.getDir();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getProductDirName() {
         return "recordproducts";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public int getProductDirTTL() {
         return getRepository().getProperty(PROP_TTL, 7);
     }
@@ -149,23 +207,23 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return jobManager;
     }
 
-/**
-Set the FormHandler property.
+    /**
+     * Set the FormHandler property.
+     *
+     * @param value The new value for FormHandler
+     */
+    public void setFormHandler(RecordFormHandler value) {
+        formHandler = value;
+    }
 
-@param value The new value for FormHandler
-**/
-public void setFormHandler (RecordFormHandler value) {
-	formHandler = value;
-}
-
-/**
-Get the FormHandler property.
-
-@return The FormHandler
-**/
-public RecordFormHandler getFormHandler () {
-	return formHandler;
-}
+    /**
+     * Get the FormHandler property.
+     *
+     * @return The FormHandler
+     */
+    public RecordFormHandler getFormHandler() {
+        return formHandler;
+    }
 
 
 
@@ -297,6 +355,7 @@ public RecordFormHandler getFormHandler () {
                 entry)) {
             throw new AccessException("Cannot access data", request);
         }
+
         return null;
 
     }
@@ -345,6 +404,7 @@ public RecordFormHandler getFormHandler () {
                     message), MIME_XML);
 
         }
+
         return new Result("", new StringBuffer(message));
     }
 
@@ -368,15 +428,21 @@ public RecordFormHandler getFormHandler () {
         if (request.responseInText()) {
             return new Result(message, "text");
         }
+
         return new Result("", new StringBuffer(message));
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private int callCnt = 0;
 
 
 
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
     public void memoryCheck(String msg) {
         //        Runtime.getRuntime().gc();
         //        getLogManager().logInfoAndPrint(msg + ((int)(Misc.usedMemory()/1000000.0))+"MB");
@@ -410,6 +476,7 @@ public RecordFormHandler getFormHandler () {
                                            new ArrayList<String>())) {
             formats.add(format);
         }
+
         return formats;
     }
 
@@ -447,6 +514,15 @@ public RecordFormHandler getFormHandler () {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param recordFile _more_
+     *
+     * @return _more_
+     */
     public RecordFilter getFilter(Request request, Entry entry,
                                   RecordFile recordFile) {
         return null;
@@ -467,6 +543,7 @@ public RecordFormHandler getFormHandler () {
         File theProductDir = new File(IOUtil.joinDir(getProductDir(),
                                  jobId.toString()));
         IOUtil.makeDir(theProductDir);
+
         return theProductDir;
     }
 
@@ -483,18 +560,18 @@ public RecordFormHandler getFormHandler () {
         return IOUtil.stripExtension(entry.getName()) + ext;
     }
 
-    /**                                                                                 
-     * _more_                                                                           
-     *                                                                                  
-     * @param request _more_                                                            
-     * @param entry _more_                                                              
-     *                                                                                  
-     * @return _more_                                                                   
-     *                                                                                  
-     * @throws Exception _more_                                                         
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
      */
     public Result outputEntryBounds(Request request, Entry entry)
-        throws Exception {
+            throws Exception {
         return new Result(entry.getNorth() + "," + entry.getWest() + ","
                           + entry.getSouth() + "," + entry.getEast(), "text");
     }
@@ -528,6 +605,7 @@ public RecordFormHandler getFormHandler () {
         }
         //        System.err.println ("NLAS: writing to file");
         File file = new File(IOUtil.joinDir(getProductDir(jobId), fileName));
+
         //return  getStorageManager().getUncheckedFileOutputStream(file);
         return new BufferedOutputStream(
             getStorageManager().getUncheckedFileOutputStream(file), 100000);
@@ -582,6 +660,7 @@ public RecordFormHandler getFormHandler () {
     public Result getDummyResult() {
         Result result = new Result();
         result.setNeedToWrite(false);
+
         return result;
     }
 
@@ -591,6 +670,7 @@ public RecordFormHandler getFormHandler () {
      *
      * @param request the request
      * @param dflt _more_
+     * @param arg _more_
      *
      * @return _more_
      */
@@ -599,6 +679,7 @@ public RecordFormHandler getFormHandler () {
         if (skip.equals("${skip}")) {
             return dflt;
         }
+
         return request.get(arg, dflt);
     }
 

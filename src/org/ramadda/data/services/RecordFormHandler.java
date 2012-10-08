@@ -1,22 +1,45 @@
+/*
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
+
 package org.ramadda.data.services;
+
+
+import org.ramadda.data.point.PointFile;
+import org.ramadda.data.record.*;
+
+
+
+import org.ramadda.data.record.*;
 
 
 
 
 import org.ramadda.repository.*;
-import org.ramadda.data.record.*;
-import org.ramadda.repository.job.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.job.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
-
-import org.ramadda.data.point.PointFile;
-
-
-
-import org.ramadda.data.record.*;
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
@@ -24,7 +47,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.GuiUtils;
-import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -52,10 +74,12 @@ import java.util.List;
  *
  * @author         Jeff McWhirter
  */
-public class RecordFormHandler extends RepositoryManager  implements RecordConstants {
+public class RecordFormHandler extends RepositoryManager implements RecordConstants {
 
+    /** _more_ */
     public static final String ARG_START = "start";
 
+    /** _more_ */
     public static final String ARG_NUMPOINTS = "numpoints";
 
     /** an array of colors */
@@ -68,7 +92,8 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
 
 
     /** formats # points */
-    private static DecimalFormat pointCountFormat = new DecimalFormat("#,##0");
+    private static DecimalFormat pointCountFormat =
+        new DecimalFormat("#,##0");
 
     /** formats size */
     private DecimalFormat sizeFormat = new DecimalFormat("####0.00");
@@ -86,7 +111,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
     /**
      * ctor
      *
-     * @param lidarOutputHandler output handler
+     * @param recordOutputHandler _more_
      */
     public RecordFormHandler(RecordOutputHandler recordOutputHandler) {
         super(recordOutputHandler.getRepository());
@@ -94,7 +119,12 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
     }
 
 
-    public  RecordOutputHandler getOutputHandler() {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public RecordOutputHandler getOutputHandler() {
         return recordOutputHandler;
     }
 
@@ -115,7 +145,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
      * @return the job manager
      */
     public RecordJobManager getRecordJobManager() {
-        return (RecordJobManager)recordOutputHandler.getRecordJobManager();
+        return (RecordJobManager) recordOutputHandler.getRecordJobManager();
     }
 
 
@@ -136,6 +166,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
         if (bytes < 1000000000) {
             return sizeFormat.format(bytes / 1000000.0) + "&nbsp;MB";
         }
+
         return sizeFormat.format(bytes / 1000000000.0) + "&nbsp;GB";
     }
 
@@ -153,6 +184,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
                 t.getLabel(), t.getId(),
                 getRepository().iconUrl(t.getIcon()));
         }
+
         return new HtmlUtils.Selector(t.getLabel(), t.getId(), null);
     }
 
@@ -187,22 +219,23 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
 
 
 
-    /**                                                                                                           
-     * list the metadata for the given lidarentry                                                                 
-     *                                                                                                            
-     * @param request request                                                                                     
-     * @param outputType output type                                                                              
-     * @param lidarEntry lidar entry                                                                              
-     *                                                                                                            
-     * @return ramadda result                                                                                     
-     *                                                                                                            
-     * @throws Exception On badness                                                                               
+    /**
+     * list the metadata for the given entry
+     *
+     * @param request request
+     * @param outputType output type
+     * @param recordEntry _more_
+     *
+     * @return ramadda result
+     *
+     * @throws Exception On badness
      */
     public Result outputEntryMetadata(Request request, OutputType outputType,
                                       RecordEntry recordEntry)
-        throws Exception {
+            throws Exception {
         StringBuffer sb = new StringBuffer();
         getEntryMetadata(request, recordEntry, sb);
+
         return new Result("", sb);
     }
 
@@ -230,6 +263,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
             c = COLORS[colorCnt[0] % COLORS.length];
             colorCnt[0]++;
         }
+
         return c;
     }
 
@@ -239,7 +273,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
      * _more_
      *
      * @param request _more_
-     * @param lidarEntry _more_
+     * @param recordEntry _more_
      * @param sb _more_
      *
      * @throws Exception _more_
@@ -279,12 +313,12 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
         }
         sb.append(HtmlUtils.formTableClose());
 
-	StringBuffer info = new StringBuffer();
-	recordEntry.getRecordFile().getInfo(info);
-	if(info.length()>0) {
-	    sb.append(msgHeader("Extra"));
-	    sb.append(HtmlUtils.pre(info.toString()));
-	}
+        StringBuffer info = new StringBuffer();
+        recordEntry.getRecordFile().getInfo(info);
+        if (info.length() > 0) {
+            sb.append(msgHeader("Extra"));
+            sb.append(HtmlUtils.pre(info.toString()));
+        }
     }
 
 
@@ -294,7 +328,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
      *
      * @param request _more_
      * @param outputType _more_
-     * @param lidarEntry _more_
+     * @param recordEntry _more_
      *
      * @return _more_
      *
@@ -373,6 +407,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
                             }
                             sb.append("</td>");
                         }
+
                         continue;
                     }
 
@@ -394,6 +429,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
                     sb.append("</td>");
                 }
                 cnt[0]++;
+
                 return true;
             }
         };
@@ -402,7 +438,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
         visitInfo.setStart(start);
         visitInfo.setStop(start + step);
         getRecordJobManager().visitSequential(request, recordEntry, visitor,
-                                        visitInfo);
+                visitInfo);
 
         sb.append("</table>");
 
@@ -425,6 +461,7 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
                                            new ArrayList<String>())) {
             formats.add(format);
         }
+
         return formats;
     }
 
@@ -442,8 +479,10 @@ public class RecordFormHandler extends RepositoryManager  implements RecordConst
         int width = request.get(ARG_WIDTH, DFLT_WIDTH);
         if ((bounds != null) && (width != 0)) {
             double degreesPerCell = bounds.getWidth() / width;
+
             return (degreesPerCell * 2);
         }
+
         return 0;
     }
 

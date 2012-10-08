@@ -1,27 +1,50 @@
+/*
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.services;
 
 
-import org.ramadda.repository.*;
 import org.ramadda.data.record.*;
-
-import org.ramadda.repository.job.JobManager;
-import org.ramadda.repository.job.JobInfo;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.TypeHandler;
 
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
 
-import org.w3c.dom.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+import org.ramadda.repository.job.JobInfo;
+
+import org.ramadda.repository.job.JobManager;
+import org.ramadda.repository.map.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.TypeHandler;
 
 
 
 import org.ramadda.util.HtmlUtils;
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -49,15 +72,18 @@ import java.util.zip.*;
 
 /**
  */
-public class RecordJobManager extends JobManager  {
+public class RecordJobManager extends JobManager {
 
 
+    /** _more_ */
     private RecordOutputHandler recordOutputHandler;
 
 
-       /**
+    /**
      * ctor
      *
+     *
+     * @param recordOutputHandler _more_
      */
     public RecordJobManager(RecordOutputHandler recordOutputHandler) {
         super(recordOutputHandler.getRepository());
@@ -65,12 +91,22 @@ public class RecordJobManager extends JobManager  {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public RecordOutputHandler getRecordOutputHandler() {
         return recordOutputHandler;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public RecordFormHandler getRecordFormHandler() {
-        return  recordOutputHandler.getFormHandler();
+        return recordOutputHandler.getFormHandler();
     }
 
 
@@ -100,10 +136,10 @@ public class RecordJobManager extends JobManager  {
      *
      * @throws Exception on badness
      */
-    public void visitSequential(final Request request,
-                                final List<? extends RecordEntry> recordEntries,
-                                final RecordVisitor visitor,
-                                final VisitInfo visitInfo)
+    public void visitSequential(
+            final Request request,
+            final List<? extends RecordEntry> recordEntries,
+            final RecordVisitor visitor, final VisitInfo visitInfo)
             throws Exception {
         Callable<Boolean> callable = new Callable<Boolean>() {
             public Boolean call() {
@@ -117,9 +153,11 @@ public class RecordJobManager extends JobManager  {
                     visitor.close(visitInfo);
                     System.err.println("NLAS: processing done time:"
                                        + (t2 - t1));
+
                     return Boolean.TRUE;
                 } catch (Exception exc) {
                     System.err.println("Badness:" + exc);
+
                     throw new RuntimeException(exc);
                 }
             }
@@ -164,8 +202,8 @@ public class RecordJobManager extends JobManager  {
             throws Exception {
         for (RecordEntry recordEntry : recordEntries) {
             recordEntry.setVisitInfo(visitor, (visitInfo != null)
-                                             ? new VisitInfo(visitInfo)
-                                             : null);
+                    ? new VisitInfo(visitInfo)
+                    : null);
         }
         invokeAndWait(request, makeCallables(recordEntries));
         visitor.close(visitInfo);
@@ -185,6 +223,7 @@ public class RecordJobManager extends JobManager  {
         for (RecordEntry recordEntry : recordEntries) {
             callables.add(recordEntry);
         }
+
         return callables;
     }
 

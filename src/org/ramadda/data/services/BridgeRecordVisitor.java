@@ -1,11 +1,35 @@
+/*
+* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.services;
 
-import org.ramadda.data.record.*;
+
 import org.ramadda.data.point.*;
-import org.ramadda.repository.*;
+
 import org.ramadda.data.record.*;
+import org.ramadda.data.record.*;
+import org.ramadda.repository.*;
+
 import ucar.unidata.util.IOUtil;
+
 import java.io.*;
 
 
@@ -17,9 +41,9 @@ import java.io.*;
  *
  * @author Jeff McWhirter
  */
-public abstract class BridgeRecordVisitor extends RecordVisitor  {
+public abstract class BridgeRecordVisitor extends RecordVisitor {
 
-    /** Have we closed   */
+    /** Have we closed */
     private boolean closed = false;
 
     /** The output handler */
@@ -37,7 +61,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
     /** User request */
     Request request;
 
-    /** The entry we are dealing with*/
+    /** The entry we are dealing with */
     Entry mainEntry;
 
     /** File suffix when creating product files */
@@ -70,7 +94,8 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
      * @param handler The output handler
      * @param processId job id
      */
-    public BridgeRecordVisitor(RecordOutputHandler handler, Object processId) {
+    public BridgeRecordVisitor(RecordOutputHandler handler,
+                               Object processId) {
         this.handler   = handler;
         this.processId = processId;
     }
@@ -87,8 +112,8 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
      * @param suffix file suffix we're writing to
      */
     public BridgeRecordVisitor(RecordOutputHandler handler, Request request,
-                              Object processId, Entry mainEntry,
-                              String suffix) {
+                               Object processId, Entry mainEntry,
+                               String suffix) {
         this.handler   = handler;
         this.request   = request;
         this.processId = processId;
@@ -114,6 +139,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
                 }
             }
         }
+
         return dos;
     }
 
@@ -134,6 +160,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
                 }
             }
         }
+
         return pw;
     }
 
@@ -154,6 +181,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
                 }
             }
         }
+
         return os;
     }
 
@@ -162,8 +190,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
      */
     private void checkState() {
         if (closed) {
-            throw new IllegalStateException(
-                                            "RecordVisitor has been closed");
+            throw new IllegalStateException("RecordVisitor has been closed");
         }
     }
 
@@ -233,7 +260,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
      throws Exception;
 
     /**
-     * We can keep a string buffer attached to the file to use. 
+     * We can keep a string buffer attached to the file to use.
      *
      * @param file record file
      *
@@ -244,6 +271,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor  {
         if (buffer == null) {
             file.putProperty("buffer", buffer = new StringBuffer());
         }
+
         return buffer;
     }
 
