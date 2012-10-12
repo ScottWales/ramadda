@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.plugins.doi.DoiApiHandler" id="doi">
+      <api request="/doi"    method="processDoi" admin="false"/>
+</api>
