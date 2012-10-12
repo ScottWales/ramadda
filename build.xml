@@ -223,5 +223,38 @@
     </target>
 
 
+    <target name="ramaddadata" depends="init,clean">
+        <echo message="${src_dir}/org/ramadda/data/**"/>
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}">
+        <include name="org/ramadda/data/record/**"/>
+        <include name="org/ramadda/data/point/**"/>
+        <include name="org/ramadda/util/**"/>
+        </javac>
+
+        <jar 
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/ramaddadata.jar">
+          <include name="org/ramadda/data/point/**/*.class"/>
+          <include name="org/ramadda/data/record/**/*.class"/>
+          <include name="org/ramadda/util/**/*.class"/>
+       </jar>
+    </target>
+
+
+
 
 </project>
