@@ -254,6 +254,7 @@ public class AtomOutputHandler extends OutputHandler {
             List<Metadata> inheritedMetadata =
                 getMetadataManager().getInheritedMetadata(entry);
 
+
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
             List<MetadataHandler> metadataHandlers =
@@ -349,18 +350,21 @@ public class AtomOutputHandler extends OutputHandler {
                              Element root, Metadata metadata,
                              List<MetadataHandler> metadataHandlers)
             throws Exception {
-        for (MetadataHandler metadataHandler : metadataHandlers) {
-            if (metadataHandler.canHandle(metadata)) {
-                if ( !metadataHandler.addMetadataToXml(request, "atom",
-                        entry, metadata, doc, root)) {
-                    metadataHandler.addMetadataToXml(request, "dif", entry,
-                            metadata, doc, root);
-
-                }
-
-                break;
-            }
+        MetadataHandler metadataHandler = getMetadataManager().findHandler(metadata.getType());
+        if(metadataHandler == null) {
+            logError("Could not find metadata handler for:" + metadata, null);
+            return;
         }
+
+        System.err.println ("addMetadata:" + metadata);
+        if (!metadataHandler.addMetadataToXml(request, "atom",
+                                              entry, metadata, doc, root)) {
+            if(!metadataHandler.addMetadataToXml(request, "dif", entry,
+                                                 metadata, doc, root)) {
+                System.err.println ("could not add metadata to ATOM");
+            }
+            
+        } 
     }
 
 

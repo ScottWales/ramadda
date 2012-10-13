@@ -186,6 +186,13 @@ public class MetadataManager extends RepositoryManager {
         return typeMap.get(stringType);
     }
 
+
+    public MetadataHandler findHandler(String stringType) {
+        MetadataType type = findType(stringType);
+        if(type==null) return null;
+        return type.getHandler();
+    }
+
     /**
      * _more_
      *

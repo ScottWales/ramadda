@@ -205,6 +205,12 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getEntryFromAlias(Request request, String alias)
             throws Exception {
+        return getEntryFromMetadata(request, ContentMetadataHandler.TYPE_ALIAS, alias);
+    }
+
+
+    public Entry getEntryFromMetadata(Request request, String metadataType, String value)
+            throws Exception {
 
         Statement statement =
             getDatabaseManager().select(
@@ -215,9 +221,9 @@ public class EntryManager extends RepositoryManager {
                         Clause.join(
                             Tables.ENTRIES.COL_ID,
                             Tables.METADATA.COL_ENTRY_ID),
-                        Clause.eq(Tables.METADATA.COL_ATTR1, alias),
+                        Clause.eq(Tables.METADATA.COL_ATTR1, value),
                         Clause.eq(Tables.METADATA.COL_TYPE,
-                                  ContentMetadataHandler.TYPE_ALIAS) }), "",
+                                  metadataType) }), "",
                                       1);
 
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
@@ -226,10 +232,8 @@ public class EntryManager extends RepositoryManager {
         while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
             iter.close();
-
             return getEntry(request, id);
         }
-
         return null;
     }
 

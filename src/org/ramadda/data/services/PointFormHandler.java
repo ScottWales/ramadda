@@ -93,6 +93,8 @@ public class PointFormHandler extends RecordFormHandler {
     /** _more_ */
     private static GridVisitor dummyField5 = null;
 
+    private RecordFileFactory dummyField6 = null;
+
     /**
      * ctor
      *
