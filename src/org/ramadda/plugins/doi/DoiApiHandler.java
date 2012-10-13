@@ -56,6 +56,8 @@ import java.util.regex.*;
 public class DoiApiHandler extends RepositoryManager implements RequestHandler {
 
 
+    public static final String ARG_DOI = "doi";
+
     /**
      *     ctor
      *    
@@ -82,8 +84,33 @@ public class DoiApiHandler extends RepositoryManager implements RequestHandler {
      */
     public Result processDoi(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        return new Result("", sb, "text/xml");
+        sb.append(HtmlUtils.p());
+        if(!request.defined(ARG_DOI)) {
+            makeForm(request, sb);
+            return new Result("", sb);
+        }
+        
+        Entry entry =  getEntryManager().getEntryFromMetadata(request, "doi", request.getString(ARG_DOI,""));
+        if(entry==null) {
+            sb.append("Could not find DOI:" + request.getString(ARG_DOI, ""));
+            sb.append(HtmlUtils.p());
+            makeForm(request, sb);
+            return new Result("",sb);
+        }
+        request.put(ARG_ENTRYID, entry.getId());
+        return getEntryManager().processEntryShow(request);
     }
 
+    private void makeForm(Request request, StringBuffer sb) {
+        String       base   = getRepository().getUrlBase();
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.form(base + "/doi"));
+        sb.append(HtmlUtils.formEntry("DOI",
+                                      HtmlUtils.input(ARG_DOI,request.getString(ARG_DOI, ""))));
+
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Find DOI","")));
+        sb.append(HtmlUtils.formClose());
+        sb.append(HtmlUtils.formTableClose());
+    }
 
 }
