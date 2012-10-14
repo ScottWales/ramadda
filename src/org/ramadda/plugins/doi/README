@@ -11,3 +11,8 @@ ezid.password=
 doi.prefix=
 #e.g.:
 doi.prefix=doi:10.5072/FK2
+
+
+ezid.profile=erc
+#ezid.profile=datacite
+#ezid.profile=dc

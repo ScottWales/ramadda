@@ -35,6 +35,7 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.xml.XmlUtil;
+import ucar.unidata.util.Misc;
 
 
 import java.text.SimpleDateFormat;
@@ -52,11 +53,15 @@ import java.util.List;
 public class DoiOutputHandler extends OutputHandler {
 
 
+
+
     public static final String PROP_EZID_USERNAME = "ezid.username";
     public static final String PROP_EZID_PASSWORD = "ezid.password";
     public static final String PROP_DOI_PREFIX = "doi.prefix";
     //"doi:10.5072/FK2
 
+
+    public static final String PROP_EZID_PROFILE = "ezid.profile";
 
     public static final String METADATA_TARGET = "_target";
     public static final String METADATA_PROFILE = "_profile";
@@ -130,18 +135,16 @@ public class DoiOutputHandler extends OutputHandler {
         "Date",
     };
 
-    public static final String[] METADATA_ARGS = METADATA_DATACITE_ARGS; 
-    public static final String[] METADATA_LABELS = METADATA_DATACITE_LABELS; 
-
-
     private boolean enabled =  false;
 
+    private List<String> dataciteResources;
 
     /** Map output type */
     public static final OutputType OUTPUT_DOI_CREATE =
         new OutputType("Create DOI", "doi.create",
                        OutputType.TYPE_EDIT, "",
                        ICON_MAP);
+
 
 
 
@@ -160,8 +163,53 @@ public class DoiOutputHandler extends OutputHandler {
             getProperty(PROP_EZID_PASSWORD,(String)null) !=null &&
             getProperty(PROP_DOI_PREFIX,(String)null) !=null;
         addType(OUTPUT_DOI_CREATE);
+
+        dataciteResources = Misc.toList(new String[]{
+                "Collection",
+                "Dataset",
+                "Event",
+                "Film",
+                "Image",
+                "InteractiveResource",
+                "Model",
+                "PhysicalObject",
+                "Service",
+                "Software",
+                "Sound",
+                "Text",
+            });
     }
 
+    private String getMetadataLabel(String profile) {
+        if(profile.equals(PROFILE_ERC)) {
+            return  "ERC";
+        } else if(profile.equals(PROFILE_DATACITE)) {
+            return  "Datacite";
+        } else {
+            return "DC";
+        }
+    }
+
+
+    private String[] getMetadataArgs(String profile) {
+        if(profile.equals(PROFILE_ERC)) {
+            return  METADATA_ERC_ARGS; 
+        } else if(profile.equals(PROFILE_DATACITE)) {
+            return  METADATA_DATACITE_ARGS; 
+        } else {
+            return METADATA_DC_ARGS; 
+        }
+    }
+
+    private String[] getMetadataLabels(String profile) {
+        if(profile.equals(PROFILE_ERC)) {
+            return METADATA_ERC_LABELS; 
+        } else if(profile.equals(PROFILE_DATACITE)) {
+            return METADATA_DATACITE_LABELS; 
+        } else {
+            return METADATA_DC_LABELS; 
+        }
+    }
 
 
     /**
@@ -203,14 +251,42 @@ public class DoiOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         
-
+        String profile =  getProperty(PROP_EZID_PROFILE, PROFILE_ERC);
+        if(request.defined(PROP_EZID_PROFILE)) { 
+            profile =request.getString(PROP_EZID_PROFILE, profile);
+        } else if(request.defined(PROFILE_ERC)) { 
+            profile =PROFILE_ERC;
+        } else if(request.defined(PROFILE_DC)) { 
+            profile =PROFILE_DC;
+        } else {
+            profile =PROFILE_DATACITE;
+        }
         if(!request.exists(ARG_SUBMIT)) {
             sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             sb.append(HtmlUtils.hidden(ARG_OUTPUT,OUTPUT_DOI_CREATE.toString()));
-            addToForm(request, entry, sb, METADATA_ARGS, METADATA_LABELS);
-            sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Create DOI",ARG_SUBMIT)));
+            sb.append(HtmlUtils.formEntry(msgLabel("Profile"), getMetadataLabel(profile)));
+            addToForm(request, entry, sb, getMetadataArgs(profile), getMetadataLabels(profile));
+            StringBuffer buttons = new StringBuffer(HtmlUtils.submit("Create DOI",ARG_SUBMIT));
+            if(profile.equals(PROFILE_ERC)) {
+                buttons.append(HtmlUtils.space(1));
+                buttons.append(HtmlUtils.submit("Use Datacite", PROFILE_DATACITE));
+                buttons.append(HtmlUtils.space(1));
+                buttons.append(HtmlUtils.submit("Use DC", PROFILE_DC));
+            } else if(profile.equals(PROFILE_DC)) {
+                buttons.append(HtmlUtils.space(1));
+                buttons.append(HtmlUtils.submit("Use Datacite", PROFILE_DATACITE));
+                buttons.append(HtmlUtils.space(1));
+                buttons.append(HtmlUtils.submit("Use ERC", PROFILE_ERC));
+            } else {
+                buttons.append(HtmlUtils.space(1));
+                buttons.append(HtmlUtils.submit("Use DC", PROFILE_DC));
+                buttons.append(HtmlUtils.space(1));
+                buttons.append(HtmlUtils.submit("Use ERC", PROFILE_ERC));
+            }
+            sb.append(HtmlUtils.formEntry("", buttons.toString()));
+            sb.append(HtmlUtils.formEntry(HtmlUtils.space(25),""));
             sb.append(HtmlUtils.formClose());
             sb.append(HtmlUtils.formTableClose());
         } else {
@@ -219,17 +295,17 @@ public class DoiOutputHandler extends OutputHandler {
                        getProperty(PROP_EZID_PASSWORD,""));
             HashMap<String, String> doiMetadata = new HashMap<String, String>();
             String entryUrl = request.getAbsoluteUrl(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
-            doiMetadata.put(METADATA_PROFILE, PROFILE_ERC);
-            doiMetadata.put("_target", entryUrl);
-            addMetadata(request, doiMetadata, METADATA_ARGS);
+            doiMetadata.put(METADATA_PROFILE, profile);
+            doiMetadata.put(METADATA_TARGET, entryUrl);
+            addMetadata(request, doiMetadata, getMetadataArgs(profile));
             String doi =  ezid.mintIdentifier(getProperty(PROP_DOI_PREFIX, ""), null);
-            //            http://dx.doi.org/10.5072/FK2Z322C8
-            //            doi:10.5072/FK2TB19N4
             Metadata metadata = new Metadata(getRepository().getGUID(),
-                                                             entry.getId(), "doi",
+                                                             entry.getId(), 
+                                             DoiMetadataHandler.TYPE_DOI,
                                              false, doi, "", "", "", "");
             getMetadataManager().insertMetadata(metadata);
             entry.addMetadata(metadata);
+
             sb.append(HtmlUtils.p());
             sb.append("DOI has been created");
             sb.append(HtmlUtils.p());
@@ -244,19 +320,26 @@ public class DoiOutputHandler extends OutputHandler {
         for(int i=0;i<args.length;i++) {
             String arg = args[i];
             String value = "";
-            if(arg.indexOf("title")>=0 || arg.indexOf("what")>=0) {
+            if(arg.equals(ARG_DC_TITLE) || arg.equals(ARG_DATACITE_TITLE) || arg.equals(ARG_ERC_WHAT)) {
                 value  = entry.getName();
-            } else if(arg.indexOf("when")>=0 || arg.indexOf("date")>=0) {
-                value = new Date(entry.getStartDate()).toString();
-            } else if(arg.indexOf("year")>=0) {
-                //TODO: does this need to be just a year
-                value = new Date(entry.getStartDate()).toString();
-            } else if(arg.indexOf("creator")>=0 || arg.indexOf("who")>=0) {
-                value  = entry.getUser().getName();
+            } else if(arg.equals(ARG_ERC_WHEN) || arg.equals(ARG_DC_DATE)) {
+                value = formatDate(request, new Date(entry.getStartDate()));
+            } else if(arg.equals(ARG_DATACITE_PUBLICATIONYEAR)) {
+                //TODO: does this need to be just a year?
+                value = formatDate(request, new Date(entry.getStartDate()));
+            } else if(arg.equals(ARG_DATACITE_CREATOR) || arg.equals(ARG_DC_CREATOR) || arg.equals(ARG_ERC_WHO)) {
+                value  = entry.getUser().getLabel();
+            } else if(arg.equals(ARG_DATACITE_PUBLISHER)|| arg.equals(ARG_DC_PUBLISHER)) {
+                value  = request.getUser().getLabel();
             }
             String widget = null;
+
+            if(arg.equals(ARG_DATACITE_RESOURCETYPE)) {
+                widget = HtmlUtils.select(arg, dataciteResources);
+            }
+
             if(widget == null) {
-                widget = HtmlUtils.input(args[i], value);
+                widget = HtmlUtils.input(args[i], value, HtmlUtils.SIZE_30);
             }
             sb.append(HtmlUtils.formEntry(msgLabel(labels[i]),
                                           widget));
