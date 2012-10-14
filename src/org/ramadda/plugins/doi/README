@@ -13,6 +13,7 @@ doi.prefix=
 doi.prefix=doi:10.5072/FK2
 
 
+#What metadata profile to use as the default
 ezid.profile=erc
 #ezid.profile=datacite
 #ezid.profile=dc

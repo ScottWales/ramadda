@@ -58,9 +58,6 @@ public class DoiOutputHandler extends OutputHandler {
     public static final String PROP_EZID_USERNAME = "ezid.username";
     public static final String PROP_EZID_PASSWORD = "ezid.password";
     public static final String PROP_DOI_PREFIX = "doi.prefix";
-    //"doi:10.5072/FK2
-
-
     public static final String PROP_EZID_PROFILE = "ezid.profile";
 
     public static final String METADATA_TARGET = "_target";
@@ -69,11 +66,10 @@ public class DoiOutputHandler extends OutputHandler {
     public static final String PROFILE_ERC = "erc";
     public static final String PROFILE_DATACITE = "datacite";
     public static final String PROFILE_DC = "dc";
+    public static final String[] PROFILES = {PROFILE_ERC, PROFILE_DATACITE, PROFILE_DC};
 
 
     public static final String ARG_SUBMIT = "submit";
-
-
     public static final String ARG_DATACITE_CREATOR = "datacite.creator";
     public static final String ARG_DATACITE_TITLE = "datacite.title";
     public static final String ARG_DATACITE_PUBLISHER = "datacite.publisher";
@@ -146,10 +142,7 @@ public class DoiOutputHandler extends OutputHandler {
                        ICON_MAP);
 
 
-
-
     /**
-     * Create a MapOutputHandler
      *
      *
      * @param repository  the repository
@@ -182,11 +175,11 @@ public class DoiOutputHandler extends OutputHandler {
 
     private String getMetadataLabel(String profile) {
         if(profile.equals(PROFILE_ERC)) {
-            return  "ERC";
+            return  "ERC Profile";
         } else if(profile.equals(PROFILE_DATACITE)) {
-            return  "Datacite";
+            return  "Datacite Profile";
         } else {
-            return "DC";
+            return "DC Profile";
         }
     }
 
@@ -269,21 +262,11 @@ public class DoiOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.formEntry(msgLabel("Profile"), getMetadataLabel(profile)));
             addToForm(request, entry, sb, getMetadataArgs(profile), getMetadataLabels(profile));
             StringBuffer buttons = new StringBuffer(HtmlUtils.submit("Create DOI",ARG_SUBMIT));
-            if(profile.equals(PROFILE_ERC)) {
-                buttons.append(HtmlUtils.space(1));
-                buttons.append(HtmlUtils.submit("Use Datacite", PROFILE_DATACITE));
-                buttons.append(HtmlUtils.space(1));
-                buttons.append(HtmlUtils.submit("Use DC", PROFILE_DC));
-            } else if(profile.equals(PROFILE_DC)) {
-                buttons.append(HtmlUtils.space(1));
-                buttons.append(HtmlUtils.submit("Use Datacite", PROFILE_DATACITE));
-                buttons.append(HtmlUtils.space(1));
-                buttons.append(HtmlUtils.submit("Use ERC", PROFILE_ERC));
-            } else {
-                buttons.append(HtmlUtils.space(1));
-                buttons.append(HtmlUtils.submit("Use DC", PROFILE_DC));
-                buttons.append(HtmlUtils.space(1));
-                buttons.append(HtmlUtils.submit("Use ERC", PROFILE_ERC));
+            for(String otherProfile: PROFILES) {
+                if(!profile.equals(otherProfile)) {
+                    buttons.append(HtmlUtils.space(1));
+                    buttons.append(HtmlUtils.submit("Use " + getMetadataLabel(otherProfile), otherProfile));
+                }
             }
             sb.append(HtmlUtils.formEntry("", buttons.toString()));
             sb.append(HtmlUtils.formEntry(HtmlUtils.space(25),""));
