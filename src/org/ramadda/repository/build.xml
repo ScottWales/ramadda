@@ -289,7 +289,7 @@
         <unjar src="${lib_dir}/unidatacommon.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/idvmaps.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/extra.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/doi.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/ezid.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jython.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/gdata.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/external.jar" dest="${tmpjar_dir}"/>

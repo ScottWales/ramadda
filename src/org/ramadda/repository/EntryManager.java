@@ -205,12 +205,16 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getEntryFromAlias(Request request, String alias)
             throws Exception {
-        return getEntryFromMetadata(request, ContentMetadataHandler.TYPE_ALIAS, alias);
+        return getEntryFromMetadata(request, ContentMetadataHandler.TYPE_ALIAS, alias,1);
     }
 
 
-    public Entry getEntryFromMetadata(Request request, String metadataType, String value)
+    public Entry getEntryFromMetadata(Request request, String metadataType, String value, int attrIndex)
             throws Exception {
+        String column = (attrIndex==1?Tables.METADATA.COL_ATTR1:
+                         attrIndex==2?Tables.METADATA.COL_ATTR2:
+                         attrIndex==3?Tables.METADATA.COL_ATTR3:
+                         Tables.METADATA.COL_ATTR3);
 
         Statement statement =
             getDatabaseManager().select(
@@ -221,7 +225,7 @@ public class EntryManager extends RepositoryManager {
                         Clause.join(
                             Tables.ENTRIES.COL_ID,
                             Tables.METADATA.COL_ENTRY_ID),
-                        Clause.eq(Tables.METADATA.COL_ATTR1, value),
+                        Clause.eq(column, value),
                         Clause.eq(Tables.METADATA.COL_TYPE,
                                   metadataType) }), "",
                                       1);
