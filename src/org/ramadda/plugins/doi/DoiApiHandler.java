@@ -90,7 +90,7 @@ public class DoiApiHandler extends RepositoryManager implements RequestHandler {
             return new Result("", sb);
         }
         
-        Entry entry =  getEntryManager().getEntryFromMetadata(request, "doi", request.getString(ARG_DOI,""));
+        Entry entry =  getEntryManager().getEntryFromMetadata(request, DoiMetadataHandler.TYPE_DOI, request.getString(ARG_DOI,""), 2);
         if(entry==null) {
             sb.append("Could not find DOI:" + request.getString(ARG_DOI, ""));
             sb.append(HtmlUtils.p());

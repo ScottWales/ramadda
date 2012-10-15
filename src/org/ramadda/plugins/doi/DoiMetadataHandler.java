@@ -79,10 +79,11 @@ import java.util.List;
  */
 public class DoiMetadataHandler extends MetadataHandler {
 
-
+    public static final String ID_TYPE_DOI = "doi";
+    public static final String ID_TYPE_ARK = "ark";
 
     /** _more_ */
-    public static final String TYPE_DOI = "doi";
+    public static final String TYPE_DOI = "doi_identifier";
 
 
     /**
@@ -112,15 +113,23 @@ public class DoiMetadataHandler extends MetadataHandler {
 
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
         throws Exception {
-        return new String[]{"DOI",getHref(metadata.getAttr1())};
+        String type = metadata.getAttr1();
+        String label = (type.equals(ID_TYPE_DOI)?"DOI":"ARK");
+        return new String[]{label, getHref(metadata.getAttr2())};
     }
 
-    public static String getUrl(String doi) {
-        return doi.replace("doi:", "http://dx.doi.org/");
+    //http://n2t.net/ark:/99999/fk47h23wj
+    //ark:/99999/fk47h23wj
+    //http://dx.doi.org/
+
+    public static String getUrl(String id) {
+        if(id.startsWith("doi:")) 
+            return id.replace("doi:", "http://dx.doi.org/");
+        return id.replace("ark:", "http://n2t.net/ark:");
     }
 
-    public static String getHref(String doi) {
-        return HtmlUtils.href(doi.replace("doi:", "http://dx.doi.org/"), doi);
+    public static String getHref(String id) {
+        return HtmlUtils.href(getUrl(id), id);
     }
 
 

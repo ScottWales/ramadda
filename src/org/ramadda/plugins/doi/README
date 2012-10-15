@@ -1,16 +1,20 @@
 To enable the DOI plugin you must have an account with EZID http://www.cdlib.org/services/uc3/ezid/
 
 You need to specify the following properties in some property file in your RAMADDA home dir, 
-e.g. doi.properties:
+e.g. ezid.properties:
 
 
 ##Account information 
 ezid.username=
 ezid.password=
 
+doi.adminonly=true
+
 doi.prefix=
+ark.prefix=
+
 #e.g.:
-doi.prefix=doi:10.5072/FK2
+doi.prefixes=doi:10.5072/FK2,ark:/99999/fk4
 
 
 #What metadata profile to use as the default

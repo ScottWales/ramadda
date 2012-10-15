@@ -35,7 +35,9 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.xml.XmlUtil;
+
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
 
 
 import java.text.SimpleDateFormat;
@@ -55,9 +57,15 @@ public class DoiOutputHandler extends OutputHandler {
 
 
 
+
+
     public static final String PROP_EZID_USERNAME = "ezid.username";
     public static final String PROP_EZID_PASSWORD = "ezid.password";
-    public static final String PROP_DOI_PREFIX = "doi.prefix";
+
+    public static final String PROP_DOI_ADMINONLY = "doi.adminonly";
+
+
+    public static final String PROP_DOI_PREFIXES = "doi.prefixes";
     public static final String PROP_EZID_PROFILE = "ezid.profile";
 
     public static final String METADATA_TARGET = "_target";
@@ -69,7 +77,10 @@ public class DoiOutputHandler extends OutputHandler {
     public static final String[] PROFILES = {PROFILE_ERC, PROFILE_DATACITE, PROFILE_DC};
 
 
-    public static final String ARG_SUBMIT = "submit";
+
+    public static final String ARG_CREATE = "doi.create";
+    public static final String ARG_PREFIX = "prefix";
+
     public static final String ARG_DATACITE_CREATOR = "datacite.creator";
     public static final String ARG_DATACITE_TITLE = "datacite.title";
     public static final String ARG_DATACITE_PUBLISHER = "datacite.publisher";
@@ -133,13 +144,15 @@ public class DoiOutputHandler extends OutputHandler {
 
     private boolean enabled =  false;
 
+    private boolean adminOnly = true;
+
     private List<String> dataciteResources;
 
     /** Map output type */
     public static final OutputType OUTPUT_DOI_CREATE =
-        new OutputType("Create DOI", "doi.create",
+        new OutputType("Create Identifier", "doi.create",
                        OutputType.TYPE_EDIT, "",
-                       ICON_MAP);
+                       "/doi/ezid.png");
 
 
     /**
@@ -152,9 +165,10 @@ public class DoiOutputHandler extends OutputHandler {
     public DoiOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
+        adminOnly = getProperty(PROP_DOI_ADMINONLY, adminOnly);
         enabled = getProperty(PROP_EZID_USERNAME,(String)null) !=null &&
             getProperty(PROP_EZID_PASSWORD,(String)null) !=null &&
-            getProperty(PROP_DOI_PREFIX,(String)null) !=null;
+            getProperty(PROP_DOI_PREFIXES,(String)null) !=null;
         addType(OUTPUT_DOI_CREATE);
 
         dataciteResources = Misc.toList(new String[]{
@@ -216,12 +230,21 @@ public class DoiOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if(!enabled) return;
-        if(getAccessManager().canEditEntry(request, state.getEntry())) {
+        if(canAccess(request, state.getEntry())) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_DOI_CREATE));
         }
     }
 
+    private boolean canAccess(Request request, Entry entry) throws Exception {
+        if(!enabled) return false;
+        if(!getAccessManager().canEditEntry(request, entry)) {
+            return false;
+        }
+        if(adminOnly) {
+            return request.getUser().getAdmin();
+        }
+        return true;
+    }
 
     /**
      * Output the entry
@@ -237,7 +260,7 @@ public class DoiOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        if(!getAccessManager().canEditEntry(request, entry)) {
+        if(!canAccess(request, entry)) {
             throw new AccessException("Cannot edit:" + entry.getLabel(),
                                       request);
         }
@@ -254,14 +277,19 @@ public class DoiOutputHandler extends OutputHandler {
         } else {
             profile =PROFILE_DATACITE;
         }
-        if(!request.exists(ARG_SUBMIT)) {
+        if(!request.exists(ARG_CREATE)) {
             sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.form(getRepository().URL_ENTRY_SHOW.toString()));
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             sb.append(HtmlUtils.hidden(ARG_OUTPUT,OUTPUT_DOI_CREATE.toString()));
             sb.append(HtmlUtils.formEntry(msgLabel("Profile"), getMetadataLabel(profile)));
+            sb.append(HtmlUtils.formEntry(msgLabel("Prefix"), HtmlUtils.select(ARG_PREFIX,
+                                                                               StringUtil.split(
+                                                                                                getProperty(PROP_DOI_PREFIXES,""), ",",true,true))));
+
             addToForm(request, entry, sb, getMetadataArgs(profile), getMetadataLabels(profile));
-            StringBuffer buttons = new StringBuffer(HtmlUtils.submit("Create DOI",ARG_SUBMIT));
+
+            StringBuffer buttons = new StringBuffer(HtmlUtils.submit("Create Identifier",ARG_CREATE));
             for(String otherProfile: PROFILES) {
                 if(!profile.equals(otherProfile)) {
                     buttons.append(HtmlUtils.space(1));
@@ -281,11 +309,12 @@ public class DoiOutputHandler extends OutputHandler {
             doiMetadata.put(METADATA_PROFILE, profile);
             doiMetadata.put(METADATA_TARGET, entryUrl);
             addMetadata(request, doiMetadata, getMetadataArgs(profile));
-            String doi =  ezid.mintIdentifier(getProperty(PROP_DOI_PREFIX, ""), null);
+            String prefix = request.getString(ARG_PREFIX);
+            String doi =  ezid.mintIdentifier(prefix, null);
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                                              entry.getId(), 
                                              DoiMetadataHandler.TYPE_DOI,
-                                             false, doi, "", "", "", "");
+                                             false, DoiMetadataHandler.ID_TYPE_DOI, doi, "", "", "");
             getMetadataManager().insertMetadata(metadata);
             entry.addMetadata(metadata);
 
@@ -317,8 +346,11 @@ public class DoiOutputHandler extends OutputHandler {
             }
             String widget = null;
 
+            if(request.defined(arg)) {
+                value = request.getString(arg,"");
+            }
             if(arg.equals(ARG_DATACITE_RESOURCETYPE)) {
-                widget = HtmlUtils.select(arg, dataciteResources);
+                widget = HtmlUtils.select(arg,  dataciteResources, value);
             }
 
             if(widget == null) {
