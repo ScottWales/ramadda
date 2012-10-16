@@ -1048,6 +1048,34 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
 
+    /**
+     * This handles the ajax request for the geolocation of an index in the given lidar file
+     *
+     * @param request the request
+     * @param pointEntry The entry
+     *
+     * @return result
+     *
+     * @throws Exception on badness
+     */
+    public Result outputEntryGetLatLon(Request request, PointEntry pointEntry)
+            throws Exception {
+        long numRecords = pointEntry.getNumRecords();
+        int  index      = (int) Math.min(numRecords - 1,
+                                   request.get(ARG_POINTINDEX, 0));
+        //Use the extra short binary file
+        PointRecord record =
+            (PointRecord) pointEntry.getBinaryPointFile().getRecord(index);
+        StringBuffer sb = new StringBuffer("<result>");
+        sb.append("{\"latitude\":" + record.getLatitude() + ",\"longitude\":"
+                  + record.getLongitude() + "}");
+        sb.append("</result>");
+        Result result = new Result("", sb, "text/xml");
+
+        return result;
+    }
+
+
 
 
 }

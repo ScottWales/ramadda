@@ -683,6 +683,41 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return request.get(arg, dflt);
     }
 
+    /**
+     * This subsets the lidar file. The return format is the same format as the input file
+     *
+     * @param request the request
+     * @param mainEntry Either the LiDAR Collection or File Entry
+     * @param lidarEntries _more_
+     * @param jobInfo processing job
+     *
+     * @return result
+     *
+     * @throws Exception on badness
+     */
+    public Result outputEntrySubset(Request request, Entry mainEntry,
+                                    List<?extends RecordEntry> recordEntries,
+                                    JobInfo jobInfo)
+            throws Exception {
+        RecordEntry recordEntry = recordEntries.get(0);
+        String     ext        =
+            IOUtil.getFileExtension(recordEntry.getRecordFile().getFilename());
+        VisitInfo    visitInfo = recordEntry.getRecordFile().doMakeVisitInfo();
+        OutputStream outputStream = getOutputStream(request,
+                                        jobInfo.getJobId(), mainEntry, ext);
+        RecordIO recordOutput = new RecordIO(outputStream);
+        recordEntry.getRecordFile().write(recordOutput, visitInfo,
+                                        recordEntry.getFilter(), true);
+        for (int i = 1; i < recordEntries.size(); i++) {
+            recordEntry = recordEntries.get(i);
+            recordEntry.getRecordFile().write(recordOutput, visitInfo,
+                                            recordEntry.getFilter(), false);
+        }
+        recordOutput.close();
+        jobInfo.setNumPoints(visitInfo.getCount());
+
+        return getDummyResult();
+    }
 
 
 

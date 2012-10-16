@@ -137,6 +137,14 @@ public interface RecordConstants extends Constants {
     public static final String ARG_JOB_USER = "job.user";
 
     /** url arg */
+    public static final String ARG_RECORDENTRY_CHECK = "recordrentrycheck";
+
+    /** url arg */
+    public static final String ARG_RECORDENTRY = "recordentry";
+
+
+
+    /** url arg */
     public static final String ARG_CHART_WAVEFORM_COLORTABLE =
         "waveform.colortable";
 
