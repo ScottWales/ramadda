@@ -23,8 +23,8 @@ package org.ramadda.data.services;
 
 
 import org.ramadda.data.record.*;
-
-import org.ramadda.data.record.*;
+import org.ramadda.data.point.*;
+import org.ramadda.data.point.binary.*;
 import org.ramadda.data.record.filter.*;
 
 
@@ -44,6 +44,9 @@ import java.util.concurrent.*;
  */
 public class PointEntry extends RecordEntry {
 
+    /** This points to the  short lat/lon/alt binary file ramadda creates on the fly */
+    private PointFile binaryPointFile;
+
 
 
     /**
@@ -57,6 +60,91 @@ public class PointEntry extends RecordEntry {
                       Entry entry) {
         super(outputHandler, request, entry);
     }
+
+
+
+    public PointOutputHandler getPointOutputHandler() {
+        return (PointOutputHandler) getPointOutputHandler();
+    }
+
+    public PointFile getPointFile() throws Exception {
+        return (PointFile) getRecordFile();
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public File getQuickScanFile() {
+        File entryDir = getOutputHandler().getStorageManager().getEntryDir(
+                            getEntry().getId(), true);
+        File quickscanFile = new File(IOUtil.joinDir(entryDir,
+                                 "lightweight.llab"));
+
+        return quickscanFile;
+    }
+
+
+
+    /**
+     * apply the visitor to the lidarfile
+     *
+     * @param visitor visitor
+     * @param visitInfo visit info
+     *
+     * @throws Exception On badness
+     */
+    public void visit(RecordVisitor visitor, VisitInfo visitInfo)
+            throws Exception {
+        if ((visitInfo != null) && visitInfo.getQuickScan()) {
+            PointFile quickscanFile = getBinaryPointFile();
+            System.err.println("POINT: Using quick scan file #records = "
+                               + quickscanFile.getNumRecords());
+            quickscanFile.visit(visitor, visitInfo, getFilter());
+            return;
+        }
+        super.visit(visitor, visitInfo);
+    }
+
+
+
+    /**
+     * get the Lidar File for the short lat/lon/alt binary file
+     *
+     * @return short binary file
+     *
+     * @throws Exception On badness
+     */
+    public PointFile getBinaryPointFile() throws Exception {
+        PointFile pointFile = getPointFile();
+        if (pointFile instanceof DoubleLatLonAltBinaryFile) {
+            return pointFile;
+        }
+        if (binaryPointFile == null) {
+            File entryDir =
+                getOutputHandler().getStorageManager().getEntryDir(
+                    getEntry().getId(), true);
+            File quickscanFile = getQuickScanFile();
+            if ( !quickscanFile.exists()) {
+                //Write to a tmp file and only move it over when we are done
+                File tmpFile = new File(IOUtil.joinDir(entryDir,
+                                   "lightweight.llab.tmp"));
+                pointFile.setDefaultSkip(0);
+                System.err.println("POINT: making quickscan file ");
+                getPointOutputHandler().writeBinaryFile(quickscanFile,
+                        pointFile);
+                tmpFile.renameTo(quickscanFile);
+                System.err.println("POINT: done making quickscan file");
+            }
+
+            binaryPointFile =
+                new DoubleLatLonAltBinaryFile(quickscanFile.toString());
+        }
+
+        return binaryPointFile;
+    }
+
 
 
 }

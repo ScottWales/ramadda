@@ -100,9 +100,29 @@ public class PointFormHandler extends RecordFormHandler {
      *
      * @param recordOutputHandler _more_
      */
-    public PointFormHandler(RecordOutputHandler recordOutputHandler) {
+    public PointFormHandler(PointOutputHandler recordOutputHandler) {
         super(recordOutputHandler);
     }
+
+    public PointOutputHandler getPointOutputHandler() {
+        return (PointOutputHandler) getOutputHandler();
+    }
+
+    /**
+     * Adds the grid oriented output formats
+     *
+     * @param outputs List of html selectors (which hold id, label and icon)
+     * @param forCollection Are the grid formats for a lidar collection
+     */
+    public void getGridFormats(List<HtmlUtils.Selector> outputs,
+                               boolean forCollection) {
+        outputs.add(getSelect(getPointOutputHandler().OUTPUT_IMAGE));
+        outputs.add(getSelect(getPointOutputHandler().OUTPUT_HILLSHADE));
+        outputs.add(getSelect(getPointOutputHandler().OUTPUT_KMZ));
+        outputs.add(getSelect(getPointOutputHandler().OUTPUT_ASC));
+        //        outputs.add(getSelect(getPointOutputHandler().OUTPUT_NC));
+    }
+
 
 
     /**

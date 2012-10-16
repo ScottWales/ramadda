@@ -23,6 +23,7 @@ package org.ramadda.data.services;
 
 
 import org.ramadda.data.point.*;
+import org.ramadda.data.point.binary.*;
 
 import org.ramadda.data.record.*;
 
@@ -80,6 +81,40 @@ public class PointOutputHandler extends RecordOutputHandler {
 
     /** _more_ */
     public static final String ARG_FILLMISSING = "fillmissing";
+
+    /** The category for the all of the output types */
+    public static final String OUTPUT_CATEGORY = "LiDAR Data";
+
+
+    /** output type */
+    public static final OutputType OUTPUT_IMAGE = new OutputType("Image",
+                                                      "points.image",
+                                                      OutputType.TYPE_OTHER,
+                                                      "png", ICON_IMAGE,
+                                                      OUTPUT_CATEGORY);
+
+    /** output type */
+    public static final OutputType OUTPUT_HILLSHADE =
+        new OutputType("Hill Shade Image", "points.hillshade",
+                       OutputType.TYPE_OTHER, "png", ICON_IMAGE,
+                       OUTPUT_CATEGORY);
+
+    /** output type */
+    public static final OutputType OUTPUT_KMZ =
+        new OutputType("Google Earth", "points.kmz", OutputType.TYPE_OTHER,
+                       "kmz", ICON_KML, OUTPUT_CATEGORY);
+
+
+    /** output type */
+    public static final OutputType OUTPUT_KML =
+        new OutputType("Google Earth", "points.kml", OutputType.TYPE_OTHER,
+                       "kml", ICON_KML, OUTPUT_CATEGORY);
+
+
+    /** output type */
+    public static final OutputType OUTPUT_ASC =
+        new OutputType("ARC ASCII Grid", "points.asc", OutputType.TYPE_OTHER,
+                       "asc", ICON_DATA, OUTPUT_CATEGORY);
 
 
     /**
@@ -308,6 +343,416 @@ public class PointOutputHandler extends RecordOutputHandler {
         GridVisitor visitor = new GridVisitor(this, request, llg);
 
         return visitor;
+    }
+
+
+
+    /**
+     * make the visitor for latlonalt binary formats
+     *
+     * @param request the request
+     * @param mainEntry Either the LiDAR Collection or File Entry
+     * @param lidarEntries entries to process
+     * @param jobId The job ID
+     * @param inputDos _more_
+     *
+     * @return the visitor
+     *
+     * @throws Exception on badness
+     */
+    public RecordVisitor makeLatLonAltBinVisitor(Request request,
+            Entry mainEntry, List<? extends PointEntry> lidarEntries,
+            final Object jobId, final DataOutputStream inputDos)
+            throws Exception {
+
+
+        RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record) {
+                try {
+                    if ( !jobOK(jobId)) {
+                        return false;
+                    }
+                    GeoRecord geoRecord = (GeoRecord) record;
+                    synchronized (MUTEX) {
+                        DataOutputStream dos = inputDos;
+                        if (dos == null) {
+                            dos = getTheDataOutputStream();
+                        }
+                        dos.writeDouble(geoRecord.getLatitude());
+                        dos.writeDouble(geoRecord.getLongitude());
+                        dos.writeDouble(geoRecord.getAltitude());
+                    }
+
+                    return true;
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+        };
+
+        return visitor;
+    }
+
+
+
+
+
+
+    /**
+     * Make a record visitor that creates a CSV file
+     *
+     * @param request the request
+     * @param mainEntry Either the  Collection or File Entry
+     * @param entries entries to process
+     * @param jobId The job ID
+     *
+     * @return visitor
+     *
+     * @throws Exception on badness
+     */
+    public RecordVisitor makeLatLonAltCsvVisitor(Request request,
+            Entry mainEntry, List<? extends PointEntry> entries,
+            final Object jobId)
+            throws Exception {
+        RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
+                                    mainEntry, "latlonalt.csv") {
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record)
+                    throws Exception {
+                if ( !jobOK(jobId)) {
+                    return false;
+                }
+                StringBuffer buffer      = getBuffer(file);
+                PointRecord  pointRecord = (PointRecord) record;
+                float[]      altitudes   = pointRecord.getAltitudes();
+                if (altitudes != null) {
+                    for (int i = 0; i < altitudes.length; i++) {
+                        buffer.append(pointRecord.getLatitude());
+                        buffer.append(',');
+                        buffer.append(pointRecord.getLongitude());
+                        buffer.append(',');
+                        buffer.append(altitudes[i]);
+                        buffer.append("\n");
+                    }
+                } else {
+                    ((PointRecord) record).printLatLonAltCsv(visitInfo,
+                            buffer);
+                }
+                if (buffer.length() > 100000) {
+                    write(buffer);
+                }
+
+                return true;
+            }
+            private void write(StringBuffer buffer) {
+                synchronized (MUTEX) {
+                    try {
+                        byte[] bytes = buffer.toString().getBytes();
+                        getTheOutputStream().write(bytes, 0, bytes.length);
+                        buffer.setLength(0);
+                    } catch (Exception exc) {
+                        throw new RuntimeException(exc);
+                    }
+                }
+            }
+
+            public void finished(RecordFile file, VisitInfo visitInfo) {
+                write(getBuffer(file));
+                super.finished(file, visitInfo);
+            }
+        };
+
+        return visitor;
+    }
+
+
+
+
+
+    /**
+     * make the visitor that creates netcdf point files
+     *
+     * @param request The request
+     * @param mainEntry Either the LiDAR Collection or File Entry
+     * @param lidarEntries The entries to process
+     * @param jobId The job ID
+     *
+     * @return the visitor
+     *
+     * @throws Exception On badness
+     */
+    public RecordVisitor makeNcVisitor(Request request, Entry mainEntry,
+                                       List<?extends PointEntry> lidarEntries,
+                                       final Object jobId)
+            throws Exception {
+
+        final OutputStream outputStream = getOutputStream(request, jobId,
+                                              mainEntry, ".nc");
+
+        //      List<Attribute> globalAtts = new ArrayList<Attribute>();
+        //      List<PointObVar> dataVars = new ArrayList<PointObVar>();
+        //      final CFPointObWriter writer;
+
+        RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
+
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record) {
+                try {
+                    if ( !jobOK(jobId)) {
+                        return false;
+                    }
+                    GeoRecord geoRecord = (GeoRecord) record;
+                    synchronized (MUTEX) {}
+
+                    return true;
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+            public void finished(RecordFile file, VisitInfo visitInfo) {
+                super.finished(file, visitInfo);
+                try {
+                    //                      if(writer!=null) {
+
+                    //  writer.finish();
+                    //                      }
+                    outputStream.close();
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+        };
+
+        return visitor;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request the request
+     * @param mainEntry Either the LiDAR Collection or File Entry
+     * @param llg latlongrid
+     * @param formats _more_
+     * @param jobId The job ID
+     *
+     * @return _more_
+     *
+     * @throws Exception on badness
+     */
+    public Result outputEntryGrid(Request request, Entry mainEntry,
+                                  IdwGrid llg, HashSet<String> formats,
+                                  Object jobId)
+            throws Exception {
+
+        boolean doKmz          = formats.contains(OUTPUT_KMZ.getId());
+        boolean doImage        = formats.contains(OUTPUT_IMAGE.getId());
+        boolean doHillshade    = formats.contains(OUTPUT_HILLSHADE.getId());
+        boolean doAsc          = formats.contains(OUTPUT_ASC.getId());
+        boolean forceHillshade = false;
+
+        if (doKmz && !doImage && !doHillshade) {
+            forceHillshade = true;
+        }
+
+        Element         root   = null;
+        Element         folder = null;
+        String          desc   = mainEntry.getDescription();
+        ZipOutputStream zos    = null;
+        if (doKmz) {
+            zos = new ZipOutputStream(getOutputStream(request, jobId,
+                    mainEntry, ".kmz"));
+            root   = KmlUtil.kml(mainEntry.getName());
+            folder = KmlUtil.folder(root, mainEntry.getName(), true);
+            if (desc.length() > 0) {
+                KmlUtil.description(folder, desc);
+            }
+
+            /*            String trackUrl = request.getAbsoluteUrl(
+                                  request.entryUrl(
+                                      getRepository().URL_ENTRY_SHOW,
+                                      mainEntry, new String[] { ARG_OUTPUT,
+                    OUTPUT_KML_TRACK.toString() }));
+            Element trackNode = KmlUtil.networkLink(folder, "Track",
+                                    trackUrl);
+            KmlUtil.open(trackNode, false);
+            KmlUtil.visible(trackNode, false);
+            */
+        }
+
+
+        int     imageWidth      = llg.getWidth();
+        int     imageHeight     = llg.getHeight();
+
+
+        boolean anyGridsDefined = false;
+        for (int i = 0; i < GRID_ARGS.length; i++) {
+            if (request.get(GRID_ARGS[i], false)) {
+                anyGridsDefined = true;
+
+                break;
+            }
+        }
+
+        if ( !anyGridsDefined) {
+            request.put(ARG_GRID_IDW, "true");
+        }
+        for (int i = 0; i < GRID_ARGS.length; i++) {
+            String whatGrid = GRID_ARGS[i];
+            if ( !request.get(whatGrid, false)) {
+                continue;
+            }
+            double     missingValue    = Double.NaN;
+            double[][] grid            = null;
+            boolean    isAltitudeValue = true;
+            if (whatGrid.equals(ARG_GRID_MIN)) {
+                grid = llg.getMinGrid();
+            } else if (whatGrid.equals(ARG_GRID_MAX)) {
+                grid = llg.getMaxGrid();
+            } else if (whatGrid.equals(ARG_GRID_AVERAGE)) {
+                grid = llg.getValueGrid();
+            } else if (whatGrid.equals(ARG_GRID_COUNT)) {
+                isAltitudeValue = false;
+                grid            = Misc.toDouble(llg.getCountGrid());
+                //                missingValue = 0;
+                missingValue = Double.NaN;
+            } else if (whatGrid.equals(ARG_GRID_IDW)) {
+                grid = llg.getWeightedValueGrid();
+            }
+            if (grid == null) {
+                System.err.println("NLAS: No grid found for:" + whatGrid);
+
+                continue;
+            }
+
+            String fileSuffix  = "." + whatGrid.replace(ARG_GRID_PREFIX, "");
+            String imageSuffix = fileSuffix + ".png";
+            String imageLabel  = GRID_LABELS[i];
+
+            if (doAsc) {
+                writeAsciiArcGrid(request, jobId, mainEntry, llg, grid,
+                                  missingValue, fileSuffix + ".asc");
+            }
+
+            if (doImage) {
+                File imageFile =
+                    getRepository().getStorageManager().getTmpFile(request,
+                        "lidarimage.png");
+                writeImage(request, imageFile, llg, grid, missingValue);
+                InputStream imageInputStream =
+                    getStorageManager().getFileInputStream(imageFile);
+                OutputStream os = getOutputStream(request, jobId, mainEntry,
+                                      imageSuffix);
+                int bytes = IOUtil.writeTo(imageInputStream, os);
+                IOUtil.close(os);
+                IOUtil.close(imageInputStream);
+                if (doKmz) {
+                    String  imageFileName = imageSuffix;
+                    Element groundOverlay = KmlUtil.groundOverlay(folder,
+                                                imageLabel, desc,
+                                                imageFileName,
+                                                llg.getNorth(),
+                                                llg.getSouth(),
+                                                llg.getEast(), llg.getWest());
+                    if (request.get(ARG_KML_VISIBLE, true)) {
+                        KmlUtil.visible(groundOverlay, true);
+                    }
+                    imageInputStream =
+                        getStorageManager().getFileInputStream(imageFile);
+                    zos.putNextEntry(new ZipEntry(imageFileName));
+                    IOUtil.writeTo(imageInputStream, zos);
+                    IOUtil.close(imageInputStream);
+                    zos.closeEntry();
+                }
+            }
+
+            //Only do hillshade for altitude values
+            if (isAltitudeValue && (doHillshade || forceHillshade)) {
+                File imageFile =
+                    getRepository().getStorageManager().getTmpFile(request,
+                        "lidarimage.png");
+                LatLonGrid hillshadeGrid =
+                    org.ramadda.util.grid.Gridder.doHillShade(llg, grid,
+                        (float) request.get(ARG_HILLSHADE_AZIMUTH, 315.0f),
+                        (float) request.get(ARG_HILLSHADE_ANGLE, 45.0f));
+                String destFileName = "hillshade" + imageSuffix;
+                if (forceHillshade) {
+                    request.putExtraProperty(getOutputFilename(mainEntry,
+                            destFileName), new Boolean(false));
+                }
+                writeImage(request, imageFile, hillshadeGrid,
+                           hillshadeGrid.getValueGrid(), missingValue);
+                InputStream imageInputStream =
+                    getStorageManager().getFileInputStream(imageFile);
+                OutputStream os = getOutputStream(request, jobId, mainEntry,
+                                      destFileName);
+                int bytes = IOUtil.writeTo(imageInputStream, os);
+                IOUtil.close(os);
+                IOUtil.close(imageInputStream);
+
+                if (doKmz) {
+                    String  imageFileName = "hillshade" + imageSuffix;
+                    Element groundOverlay = KmlUtil.groundOverlay(folder,
+                                                "Hill shaded  image "
+                                                + imageLabel, desc,
+                                                    imageFileName,
+                                                    llg.getNorth(),
+                                                    llg.getSouth(),
+                                                    llg.getEast(),
+                                                    llg.getWest());
+                    if (request.get(ARG_KML_VISIBLE, true)) {
+                        KmlUtil.visible(groundOverlay, true);
+                    }
+                    imageInputStream =
+                        getStorageManager().getFileInputStream(imageFile);
+                    zos.putNextEntry(new ZipEntry(imageFileName));
+                    IOUtil.writeTo(imageInputStream, zos);
+                    IOUtil.close(imageInputStream);
+                    zos.closeEntry();
+                }
+            }
+        }
+
+
+        if (doKmz) {
+            request.getHttpServletResponse().setContentType(
+                "application/vnd.google-earth.kmz");
+            zos.putNextEntry(new ZipEntry("lidar.kml"));
+            String xml   = XmlUtil.toString(root);
+            byte[] bytes = xml.getBytes();
+            zos.write(bytes, 0, bytes.length);
+            zos.closeEntry();
+            IOUtil.close(zos);
+        }
+
+        return getDummyResult();
+    }
+
+
+
+
+    /**
+     * Gets called from the main RAMADDA map view to add extra marking to the map
+     *
+     * @param request The request
+     * @param entry The entry
+     * @param map The map
+     */
+    public void addToMap(Request request, Entry entry, MapInfo map) {
+        try {
+            //Don't include the tracks if it has  polygon metadata
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(entry,
+                    MetadataHandler.TYPE_SPATIAL_POLYGON, true);
+
+            if ((metadataList == null) || (metadataList.size() > 0)) {
+                return;
+            }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+        getPointFormHandler().addToMap(request, entry, map);
     }
 
 
@@ -583,6 +1028,24 @@ public class PointOutputHandler extends RecordOutputHandler {
         return new Rectangle2D.Double(west, north, east - west,
                                       south - north);
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param outputFile file to write to
+     * @param lidarFile file to read from
+     *
+     * @throws Exception On badness
+     */
+    public void writeBinaryFile(File outputFile, PointFile pointFile)
+            throws Exception {
+        DoubleLatLonAltBinaryFile.writeBinaryFile(pointFile,
+                getStorageManager().getUncheckedFileOutputStream(outputFile),
+                null);
+    }
+
 
 
 
