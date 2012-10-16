@@ -3483,6 +3483,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new ArrayList<OutputHandler>(outputHandlers);
     }
 
+    public OutputHandler getOutputHandler(Class handlerClass) {
+        for(OutputHandler handler: outputHandlers) {
+            if(handler.getClass().equals(handlerClass)) return handler;
+        }
+        return null;
+    }
+
+
     /**
      * _more_
      *
