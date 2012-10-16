@@ -82,7 +82,7 @@ public class DoiApiHandler extends RepositoryManager implements RequestHandler {
      *
      * @throws Exception on badness
      */
-    public Result processDoi(Request request) throws Exception {
+    public Result processDoiSearch(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.p());
         if(!request.defined(ARG_DOI)) {
