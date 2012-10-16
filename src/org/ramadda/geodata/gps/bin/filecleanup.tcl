@@ -79,8 +79,7 @@ proc checkFile {f patterns zipPatterns unzipPatterns skip} {
                 puts "Unipping file: $f"
                 set cwd [pwd]
                 cd [file dirname $f]
-#The -0 says to not compress. This is much faster
-                exec jar  -0xvf [file tail $f]
+                exec jar  -xvf [file tail $f]
                 puts "Deleting original file"
                 file delete -force [file tail $f]
                 cd $cwd
@@ -114,7 +113,8 @@ proc checkFile {f patterns zipPatterns unzipPatterns skip} {
                 puts "test: Deleting original directory"
             } else {
                 puts "Zipping  directory: $f"
-                exec jar  -cvfM $dir/$zipName  -C $dir $name
+#The -0 says to not compress. This is much faster
+                exec jar  -0cvfM $dir/$zipName  -C $dir $name
                 puts "Deleting original directory"
                 file delete -force $f
             }
