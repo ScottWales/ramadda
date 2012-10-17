@@ -23,6 +23,11 @@ package org.ramadda.data.record;
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
+
+
 import java.io.File;
 import java.util.List;
 import java.util.Hashtable;
@@ -44,9 +49,22 @@ public class RecordFileFactory {
     public RecordFileFactory() {
     }
 
+    public RecordFileFactory(String classListFile) throws Exception {
+        addPrototypes(classListFile);
+    }
+
     public void addPrototype(RecordFile file) {
         prototypes.add(file);
     }
+
+    public void addPrototypes(String classListFile) throws Exception {
+        for(String line: StringUtil.split(IOUtil.readContents(classListFile,getClass()),"\n",true,true)) {
+            if(line.startsWith("#")) continue;
+            Class c = Misc.findClass(line);
+            addPrototype((RecordFile)c.newInstance());
+        }
+    }
+
 
     public RecordFile doMakeRecordFile(String path) throws Exception {
         return doMakeRecordFile(path, null);

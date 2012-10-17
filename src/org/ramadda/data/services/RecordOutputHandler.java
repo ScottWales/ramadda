@@ -75,6 +75,8 @@ import java.util.zip.*;
  */
 public class RecordOutputHandler extends OutputHandler implements RecordConstants {
 
+
+
     /** _more_ */
     public static final String ARG_SKIP = "skip";
 
@@ -356,6 +358,9 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             throw new AccessException("Cannot access data", request);
         }
 
+
+
+
         return null;
 
     }
@@ -575,6 +580,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return new Result(entry.getNorth() + "," + entry.getWest() + ","
                           + entry.getSouth() + "," + entry.getEast(), "text");
     }
+
 
 
 

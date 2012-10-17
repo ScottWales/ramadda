@@ -92,6 +92,26 @@ public class RecordJobManager extends JobManager {
 
 
     /**
+     * get the url that lists the job status
+     *
+     * @param request The request
+     * @param entry the entry
+     * @param jobId The job ID
+     *
+     * @return url to job status page
+     */
+    public String getJobUrl(Request request, Entry entry, Object jobId, OutputType output) {
+        String actionUrl = request.getAbsoluteUrl(
+                               request.entryUrl(
+                                   getRepository().URL_ENTRY_SHOW, entry,
+                                   new String[] { ARG_OUTPUT,
+                                                  output.getId(), JobInfo.ARG_JOB_ID, jobId.toString() }));
+        return actionUrl;
+    }
+
+
+
+    /**
      * _more_
      *
      * @return _more_

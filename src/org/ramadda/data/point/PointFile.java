@@ -67,6 +67,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
     /** _more_          */
     public static final String CRS_WGS84 = "wgs84";
+    public static final String CRS_ECEF = "ecef";
 
     /** _more_          */
     public static final String PROP_CRS = "crs";
@@ -224,7 +225,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         crs          = getProperty(PROP_CRS, crs);
         isGeographic = crs.equals(CRS_GEOGRAPHIC);
         isUtm        = crs.equals(CRS_UTM);
-        isWgs84      = crs.equals(CRS_WGS84);
+        isWgs84      = crs.equals(CRS_WGS84) || crs.equals(CRS_ECEF);
 
         //        crs =  "epsg:32611";
         if(crs.startsWith("epsg:")) {

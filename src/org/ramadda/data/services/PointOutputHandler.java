@@ -86,12 +86,61 @@ public class PointOutputHandler extends RecordOutputHandler {
     public static final String OUTPUT_CATEGORY = "LiDAR Data";
 
 
+    /** This is used to create a product for a lidar collection or a lidar file. */
+    public static final OutputType OUTPUT_PRODUCT =
+        new OutputType("Results", "points.product", OutputType.TYPE_OTHER);
+
+    /** output type */
+    public static final OutputType OUTPUT_RESULTS =
+        new OutputType("Results", "points.results", OutputType.TYPE_OTHER);
+
+
+    /** output type */
+    public static final OutputType OUTPUT_VIEW = new OutputType("View Data",
+                                                     "points.view",
+                                                     OutputType.TYPE_OTHER,
+                                                     "", ICON_METADATA,
+                                                     OUTPUT_CATEGORY);
+
+    /** output type */
+    public static final OutputType OUTPUT_METADATA =
+        new OutputType("Metadata ", "points.metadata",
+                       OutputType.TYPE_OTHER, "", ICON_METADATA,
+                       OUTPUT_CATEGORY);
+
+
+    /** output type */
+    public static final OutputType OUTPUT_GETPOINTINDEX =
+        new OutputType("LiDAR Point index query", "points.getpointindex",
+                       OutputType.TYPE_OTHER, "", ICON_DATA,
+                       OUTPUT_CATEGORY);
+
+    /** output type */
+    public static final OutputType OUTPUT_GETLATLON =
+        new OutputType("LiDAR Lat/Lon query", "points.getlatlon",
+                       OutputType.TYPE_OTHER, "", ICON_DATA,
+                       OUTPUT_CATEGORY);
+
+
+
     /** output type */
     public static final OutputType OUTPUT_IMAGE = new OutputType("Image",
                                                       "points.image",
                                                       OutputType.TYPE_OTHER,
                                                       "png", ICON_IMAGE,
                                                       OUTPUT_CATEGORY);
+
+    /** _more_ */
+    public static final OutputType OUTPUT_BOUNDS =
+        new OutputType("Point Bounds", "points.bounds",
+                       OutputType.TYPE_OTHER);
+
+    /** output type */
+    public static final OutputType OUTPUT_NC = new OutputType("NetCDF Grid",
+                                                   "points.nc",
+                                                   OutputType.TYPE_OTHER,
+                                                   "nc", ICON_DATA,
+                                                   OUTPUT_CATEGORY);
 
     /** output type */
     public static final OutputType OUTPUT_HILLSHADE =
@@ -106,9 +155,43 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
     /** output type */
+    public static final OutputType OUTPUT_KML_TRACK =
+        new OutputType("Google Earth", "points.kml.track",
+                       OutputType.TYPE_OTHER, "kml", ICON_KML,
+                       OUTPUT_CATEGORY);
+
+    /** output type */
+    public static final OutputType OUTPUT_SUBSET =
+        new OutputType("Native format", "points.subset",
+                       OutputType.TYPE_OTHER, "", ICON_DATA,
+                       OUTPUT_CATEGORY);
+
+
+    /** output type */
     public static final OutputType OUTPUT_KML =
         new OutputType("Google Earth", "points.kml", OutputType.TYPE_OTHER,
                        "kml", ICON_KML, OUTPUT_CATEGORY);
+
+
+    /** output type */
+    public static final OutputType OUTPUT_LATLONALTBIN =
+        new OutputType("Binary - Lat/Lon/Alt", "points.latlonaltbin",
+                       OutputType.TYPE_OTHER, "llab", ICON_CSV,
+                       OUTPUT_CATEGORY);
+
+
+
+    /** output type */
+    public static final OutputType OUTPUT_LATLONALTCSV =
+        new OutputType("CSV - Lat/Lon/Alt", "points.latlonaltcsv",
+                       OutputType.TYPE_OTHER, "csv", ICON_CSV,
+                       OUTPUT_CATEGORY);
+
+    /** output type */
+    public static final OutputType OUTPUT_CSV =
+        new OutputType("CSV - all fields", "points.csv",
+                       OutputType.TYPE_OTHER, "csv", ICON_CSV,
+                       OUTPUT_CATEGORY);
 
 
     /** output type */
@@ -275,6 +358,376 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         return result;
+    }
+
+
+    /**
+     * Finally, this does the real work of extracting data and generating products
+     *
+     * @param request The request
+     * @param entry the entry
+     * @param asynch Is this an asynchronous request
+     * @param lidarEntries List of entries to process
+     * @param jobId The job ID
+     *
+     * @return the result
+     *
+     * @throws Exception On badness
+     */
+    public Result processEntries(Request request, Entry entry,
+                                 boolean asynch,
+                                 List<? extends PointEntry> lidarEntries, Object jobId)
+            throws Exception {
+
+        if ( !getRecordJobManager().canAcceptJob()) {
+            return makeRequestErrorResult(request,
+                                          "Too many processing requests");
+        }
+
+        //Get the product formats
+        HashSet<String> formats = getProductFormats(request);
+
+        //If nothing selected then flake out
+        if (formats.size() == 0) {
+            return makeRequestErrorResult(request,
+                                          "No product formats were selected");
+        }
+
+        //If more than one format is selected and this is a synchronous call then raise an error
+        if ((formats.size() > 1) && !asynch) {
+            return makeRequestErrorResult(
+                                   request,
+                "Cannot have more than one product format selected when doing an aysnchronous request");
+        }
+
+
+        List<RecordVisitor> visitors    = new ArrayList<RecordVisitor>();
+        GridVisitor         gridVisitor = null;
+        boolean             quickScan   = false;
+        boolean             needFull    = false;
+        Result              result      = null;
+
+        JobInfo             info        = null;
+        if (jobId != null) {
+            info = getRecordJobManager().getJobInfo(jobId);
+        }
+        if (info == null) {
+            info = new JobInfo();
+        }
+        final JobInfo theJobInfo = info;
+
+        try {
+            //Make a RecordVisitor for each point product type
+            if (formats.contains(OUTPUT_CSV.getId())) {
+                needFull = true;
+                visitors.add(makeCsvVisitor(request, entry, lidarEntries,
+                                            jobId));
+            }
+            if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
+                quickScan = true;
+                visitors.add(makeLatLonAltCsvVisitor(request, entry,
+                        lidarEntries, jobId));
+            }
+            if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
+                quickScan = true;
+                visitors.add(makeLatLonAltBinVisitor(request, entry,
+                        lidarEntries, jobId, null));
+            }
+
+            if (formats.contains(OUTPUT_NC.getId())) {
+                needFull = true;
+                visitors.add(makeNcVisitor(request, entry, lidarEntries,
+                                           jobId));
+
+            }
+
+
+            if (formats.contains(OUTPUT_NC.getId())) {
+                //            result = outputEntryNc(request, entry,  lidarEntries,
+                //                                    jobId);
+            }
+
+            //Tracks just do them
+            if (formats.contains(OUTPUT_KML_TRACK.getId())) {
+                result = outputEntryKmlTrack(request, entry, lidarEntries,
+                                             jobId);
+            }
+
+            //TODO: Subset we just do directly
+            //We need to do a visitor based approach
+            if (formats.contains(OUTPUT_SUBSET.getId())) {
+                //This is the subset to the original format
+                info.setCurrentStatus("Creating LiDAR file...");
+                result = outputEntrySubset(request, entry, lidarEntries,
+                                           info);
+                info.addStatusItem("LiDAR file created");
+                if ( !jobOK(jobId)) {
+                    return result;
+                }
+            }
+
+
+            //Check if we need to make a grid
+            if (formats.contains(OUTPUT_ASC.getId())
+                    || formats.contains(OUTPUT_IMAGE.getId())
+                    || formats.contains(OUTPUT_KMZ.getId())
+                    || formats.contains(OUTPUT_HILLSHADE.getId())) {
+                needFull = true;
+                if (gridVisitor == null) {
+                    gridVisitor = makeGridVisitor(request, lidarEntries,
+                            getBounds(request, lidarEntries));
+                    visitors.add(gridVisitor);
+                }
+            }
+
+            if (needFull) {
+                quickScan = false;
+            }
+
+            //For now don't use the quickscan file as things get screwed up with the Glas track search
+            quickScan = false;
+
+            if ( !jobOK(jobId)) {
+                return result;
+            }
+
+
+            //Run through the visitors
+            if (visitors.size() > 0) {
+                RecordVisitorGroup groupVisitor =
+                    new RecordVisitorGroup(visitors) {
+                    public boolean visitRecord(RecordFile file,
+                            VisitInfo visitInfo, Record record) {
+                        if ( !super.visitRecord(file, visitInfo, record)) {
+                            return false;
+                        }
+                        if (getCount() == 1) {
+                            theJobInfo.setCurrentStatus("Reading points...");
+                        } else if ((getCount() % 100000) == 0) {
+                            theJobInfo.setCurrentStatus("Read "
+                                    + (getCount() / 1000) + "K points");
+                        }
+
+                        return true;
+                    }
+
+                };
+                info.setCurrentStatus("Staging request...");
+
+                memoryCheck("NLAS: memory before:");
+                getRecordJobManager().visitSequential(request, lidarEntries,
+                        groupVisitor, new VisitInfo(quickScan));
+                if ( !jobOK(jobId)) {
+                    return result;
+                }
+
+                info.addStatusItem("Point reading complete");
+                info.setNumPoints(groupVisitor.getCount());
+
+                visitors     = null;
+                groupVisitor = null;
+                lidarEntries = null;
+                memoryCheck("NLAS: memory after visit:");
+
+                info.setCurrentStatus("Processing products...");
+
+                //If doing a grid then go and make the grid and image products
+                if (gridVisitor != null) {
+                    gridVisitor.finishedWithAllFiles();
+                    outputEntryGrid(request, entry, gridVisitor.getGrid(),
+                                    formats, jobId);
+                    gridVisitor = null;
+                    memoryCheck("NLAS: memory after grid:");
+                }
+                info.addStatusItem("Product processing complete");
+            }
+            if (request.responseInXml()) {
+                return new Result(XmlUtil.tag(TAG_RESPONSE,
+                        XmlUtil.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
+            }
+            return getDummyResult();
+        } catch (Exception exc) {
+            try {
+                getRecordJobManager().setError(info, exc.toString());
+            } catch (Exception noop) {}
+            getLogManager().logError("processing lidar request", exc);
+            return makeRequestErrorResult(request, exc.getMessage());
+        }
+    }
+
+
+    /**
+     * Main entry point for LiDAR Files. This methods handles things like the lidar map, the lat/lon web services,
+     * the product form and product requests.
+     *
+     * @param request the request
+     * @param outputType The type of output
+     * @param entry The entry
+     *
+     * @return the result
+     *
+     * @throws Exception on badness
+     */
+    public Result outputEntry(Request request, OutputType outputType,
+                              final Entry entry)
+            throws Exception {
+
+        Result parentResult = super.outputEntry(request, outputType, entry);
+        if (parentResult != null) {
+            return parentResult;
+        }
+
+        if (outputType.equals(OUTPUT_BOUNDS)) {
+            return outputEntryBounds(request, entry);
+        }
+
+        if (outputType.equals(OUTPUT_GETPOINTINDEX)) {
+            return outputEntryGetPointIndex(request, entry);
+        }
+
+        if (outputType.equals(OUTPUT_GETLATLON)) {
+            return outputEntryGetLatLon(request,
+                                        (PointEntry) doMakeEntry(request,
+                                            entry));
+        }
+
+        if (outputType.equals(OUTPUT_VIEW)) {
+            return getFormHandler().outputEntryView(request, outputType,
+                                                    doMakeEntry(request, entry));
+        }
+
+        if (outputType.equals(OUTPUT_METADATA)) {
+            return getFormHandler().outputEntryMetadata(request, outputType,
+                                                        doMakeEntry(request, entry));
+        }
+
+        return null;
+    }
+
+
+    public Result createVisitors(Request request, Entry entry,
+                                 boolean asynch,
+                                 List<? extends PointEntry> lidarEntries, JobInfo jobInfo,
+                                 HashSet<String> formats,
+                                 List<RecordVisitor> visitors)
+        throws Exception {
+        GridVisitor         gridVisitor = null;
+        Result              result      = null;
+            //Make a RecordVisitor for each point product type
+            if (formats.contains(OUTPUT_CSV.getId())) {
+                visitors.add(makeCsvVisitor(request, entry, lidarEntries,
+                                            jobInfo.getJobId()));
+            }
+            if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
+                visitors.add(makeLatLonAltCsvVisitor(request, entry,
+                                                     lidarEntries, jobInfo.getJobId()));
+            }
+            if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
+                visitors.add(makeLatLonAltBinVisitor(request, entry,
+                                                     lidarEntries, jobInfo.getJobId(), null));
+            }
+
+            if (formats.contains(OUTPUT_NC.getId())) {
+                visitors.add(makeNcVisitor(request, entry, lidarEntries,
+                                           jobInfo.getJobId()));
+
+            }
+
+            if (formats.contains(OUTPUT_NC.getId())) {
+                //            result = outputEntryNc(request, entry,  lidarEntries,
+                //                                    jobInfo.getJobId());
+            }
+
+            //Tracks just do them
+            if (formats.contains(OUTPUT_KML_TRACK.getId())) {
+                result = outputEntryKmlTrack(request, entry, lidarEntries,
+                                             jobInfo.getJobId());
+            }
+
+            //TODO: Subset we just do directly
+            //We need to do a visitor based approach
+            if (formats.contains(OUTPUT_SUBSET.getId())) {
+                //This is the subset to the original format
+                jobInfo.setCurrentStatus("Creating LiDAR file...");
+                result = outputEntrySubset(request, entry, lidarEntries,
+                                           jobInfo);
+                jobInfo.addStatusItem("LiDAR file created");
+                if ( !jobOK(jobInfo.getJobId())) {
+                    return result;
+                }
+            }
+
+
+            //Check if we need to make a grid
+            if (formats.contains(OUTPUT_ASC.getId())
+                || formats.contains(OUTPUT_IMAGE.getId())
+                || formats.contains(OUTPUT_KMZ.getId())
+                || formats.contains(OUTPUT_HILLSHADE.getId())) {
+                if (gridVisitor == null) {
+                    gridVisitor = makeGridVisitor(request, lidarEntries,
+                                                  getBounds(request, lidarEntries));
+                    visitors.add(gridVisitor);
+                }
+            }
+            return null;
+        }
+
+
+
+    /**
+     * Make a record visitor that creates a CSV file
+     *
+     * @param request the request
+     * @param mainEntry Either the LiDAR Collection or File Entry
+     * @param lidarEntries entries to process
+     * @param jobId The job ID
+     *
+     * @return visitor
+     *
+     * @throws Exception on badness
+     */
+    public RecordVisitor makeCsvVisitor(final Request request,
+                                        Entry mainEntry,
+                                        List<? extends PointEntry> lidarEntries,
+                                        final Object jobId)
+            throws Exception {
+
+        RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
+                                    mainEntry, ".csv") {
+            private CsvVisitor csvVisitor;
+            int                cnt = 0;
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record)
+                    throws Exception {
+                if (csvVisitor == null) {
+                    //Set the georeference flag
+                    if (request.get(ARG_GEOREFERENCE, false)) {
+                        visitInfo.putProperty("georeference",
+                                              new Boolean(true));
+                    }
+                    csvVisitor = new CsvVisitor(getThePrintWriter(),
+                            getFields(request, record.getFields()));
+                }
+                if ( !jobOK(jobId)) {
+                    return false;
+                }
+                synchronized (visitInfo) {
+                    if (visitInfo.getCount() == 0) {
+                        visitInfo.putProperty(Record.PROP_INCLUDEVECTOR,
+                                new Boolean(request.get(ARG_INCLUDEWAVEFORM,
+                                    false)));
+                    }
+                    try {
+                        csvVisitor.visitRecord(file, visitInfo, record);
+                    } catch (Exception exc) {
+                        System.err.println("ERROR:" + exc);
+                        throw exc;
+                    }
+                }
+                return true;
+            }
+        };
+        return visitor;
     }
 
 
