@@ -411,49 +411,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
     public void getServices(Request request, Entry entry,
                             List<Service> services) {
         super.getServices(request, entry, services);
-        String url;
-        String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
-                          + entry.getEast() + "," + entry.getNorth();
-
-
-        RecordOutputHandler outputHandler = getRecordOutputHandler();
-        //TODO: let the output handler add services
-        /****** 
-        String[][] values = {
-            { outputHandler.OUTPUT_LATLONALTCSV.toString(),
-              "Lat/Lon/Alt CSV", ".csv", outputHandler.ICON_POINTS },
-            { outputHandler.OUTPUT_LAS.toString(), "LAS 1.2", ".las",
-              outputHandler.ICON_POINTS },
-            //            {outputHandler.OUTPUT_ASC.toString(),
-            //             "ARC Ascii Grid",
-            //             ".asc",null},
-            { outputHandler.OUTPUT_KMZ.toString(), ".kmz",
-              "Google Earth KMZ", getIconUrl(request, ICON_KML) }
-        };
-
-
-
-
-        for (String[] tuple : values) {
-            String product = tuple[0];
-            String name    = tuple[1];
-            String suffix  = tuple[2];
-            String icon    = tuple[3];
-            url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
-                                + entry.getName() + suffix, new String[] {
-                ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
-                outputHandler.OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
-                //ARG_ASYNCH, "false", 
-                //                LidarOutputHandler.ARG_LIDAR_SKIP,
-                //                macro(LidarOutputHandler.ARG_LIDAR_SKIP), 
-                //                ARG_BBOX,  macro(ARG_BBOX), 
-                //                ARG_DEFAULTBBOX, dfltBbox
-            }, false);
-            services.add(new Service(product, name,
-                                     request.getAbsoluteUrl(url), icon));
-        }
-
-        *****/
+        getRecordOutputHandler().getServices(request, entry, services);
     }
 
 
@@ -470,5 +428,6 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
     public String getIconUrl(Request request, String icon) {
         return request.getAbsoluteUrl(getRepository().iconUrl(icon));
     }
+
 
 }

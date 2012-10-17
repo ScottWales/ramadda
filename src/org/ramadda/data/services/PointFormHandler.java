@@ -252,5 +252,113 @@ public class PointFormHandler extends RecordFormHandler {
         return polyLine;
     }
 
+    /**
+     * Show the products form
+     *
+     * @param request the request
+     * @param group the entry group
+     * @param subGroups sub groups
+     * @param entries sub entries
+     *
+     * @return the ramadda result
+     *
+     * @throws Exception on badness
+     */
+    public Result outputGroupForm(Request request, Entry group,
+                                  List<Entry> subGroups, List<Entry> entries)
+            throws Exception {
+        return outputGroupForm(request, group, subGroups, entries,
+                               new StringBuffer());
+    }
+
+
+    /**
+     * Show the products form
+     *
+     * @param request the request
+     * @param group the group
+     * @param subGroups sub groups
+     * @param entries sub entries
+     * @param sb buffer
+     *
+     * @return the ramadda result
+     *
+     * @throws Exception on badness
+     */
+    public Result outputGroupForm(Request request, Entry group,
+                                  List<Entry> subGroups, List<Entry> entries,
+                                  StringBuffer sb)
+            throws Exception {
+        boolean showUrl = request.get(ARG_SHOWURL, false);
+
+        sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, group.getId()));
+        sb.append(HtmlUtils.hidden(ARG_RECORDENTRY_CHECK, "true"));
+
+        List<? extends RecordEntry> recordEntries =
+            getOutputHandler().makeRecordEntries(request, entries, false);
+
+        StringBuffer entrySB = new StringBuffer();
+        entrySB.append("<table width=100%>");
+        entrySB.append(
+            "<tr><td><b>File</b></td><td><b># Points</b></td></tr>");
+        long totalSize = 0;
+
+        for (RecordEntry recordEntry : recordEntries) {
+            Entry entry = recordEntry.getEntry();
+            entrySB.append("<tr><td>");
+
+            entrySB.append(HtmlUtils.checkbox(ARG_RECORDENTRY, entry.getId(),
+                    true));
+            entrySB.append(getOutputHandler().getEntryLink(request, entry));
+            entrySB.append("</td><td align=right>");
+            long numRecords = recordEntry.getNumRecords();
+            totalSize += numRecords;
+            entrySB.append(formatPointCount(numRecords));
+            entrySB.append("</td></tr>");
+        }
+        if (recordEntries.size() > 1) {
+            entrySB.append("<tr><td>" + msgLabel("Total")
+                           + "</td><td align=right>"
+                           + formatPointCount(totalSize));
+            entrySB.append("</td></tr>");
+        }
+        entrySB.append("</table>");
+
+        if (recordEntries.size() == 0) {
+            sb.append(getRepository().showDialogNote(msg("No data files")));
+
+            return new Result("", sb);
+        }
+
+
+        String files;
+        if (recordEntries.size() == 1) {
+            files = "<table width=100%><tr><td width=75%>"
+                    + entrySB.toString()
+                    + "</td><td width=25%>&nbsp;</td><tr></table>";
+
+        } else {
+            files =
+                "<table width=100%><tr><td width=75%>"
+                + HtmlUtils.div(entrySB.toString(), HtmlUtils.style("max-height:100px;  overflow-y: auto; border: 1px #999999 solid;"))
+                + "</td><td width=25%>&nbsp;</td><tr></table>";
+        }
+
+        String extra = HtmlUtils.formEntryTop((recordEntries.size() == 1)
+                ? ""
+                : msgLabel("Files"), files);
+
+        addToGroupForm(request, group, sb, recordEntries, extra);
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
+        sb.append(HtmlUtils.formClose());
+        return new Result("", sb);
+    }
+
+    public void addToGroupForm(Request request, Entry group, StringBuffer sb, List<? extends RecordEntry> recordEntries, String extra) throws Exception  {
+
+    }
+
 
 }

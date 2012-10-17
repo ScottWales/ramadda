@@ -1,3 +1,4 @@
+
 /*
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
@@ -94,6 +95,9 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public OutputType OUTPUT_METADATA;
 
+
+    /** output type */
+    public  OutputType OUTPUT_LAS;
 
     /** output type */
     public OutputType OUTPUT_GETPOINTINDEX;
@@ -1601,6 +1605,130 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         return result;
     }
+
+    public void getServices(Request request, Entry entry,
+                            List<Service> services) {
+        super.getServices(request, entry, services);
+        String url;
+        String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
+                          + entry.getEast() + "," + entry.getNorth();
+
+        PointOutputHandler outputHandler = this;
+        String[][] values = {
+            { outputHandler.OUTPUT_LATLONALTCSV.toString(),
+              "Lat/Lon/Alt CSV", ".csv", ICON_POINTS },
+            { outputHandler.OUTPUT_LAS.toString(), "LAS 1.2", ".las",
+              outputHandler.ICON_POINTS },
+            /*
+            {outputHandler.OUTPUT_ASC.toString(),
+             "ARC Ascii Grid",
+             ".asc",null},
+            */
+            { outputHandler.OUTPUT_KMZ.toString(), ".kmz",
+              "Google Earth KMZ", getIconUrl(request, ICON_KML) }
+        };
+
+
+
+
+        for (String[] tuple : values) {
+            String product = tuple[0];
+            String name    = tuple[1];
+            String suffix  = tuple[2];
+            String icon    = tuple[3];
+            url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
+                                + entry.getName() + suffix, new String[] {
+                ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+                outputHandler.OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
+                //ARG_ASYNCH, "false", 
+                //                LidarOutputHandler.ARG_LIDAR_SKIP,
+                //                macro(LidarOutputHandler.ARG_LIDAR_SKIP), 
+                //                ARG_BBOX,  macro(ARG_BBOX), 
+                //                ARG_DEFAULTBBOX, dfltBbox
+            }, false);
+            services.add(new Service(product, name,
+                                     request.getAbsoluteUrl(url), icon));
+        }
+    }
+
+
+    /*
+      public Result outputEntryNc(Request request, Entry mainEntry,
+      OutputType outputType,
+      List<LidarEntry> lidarEntries,
+      Object jobId)
+      throws Exception {
+      if ( !request.defined(ARG_FILLMISSING)) {
+      request.put(ARG_FILLMISSING, "true");
+      }
+
+      String    mimeType    = "application/x-netcdf";
+      Rectangle2D.Double  bounds      = getBounds(request, lidarEntries);
+
+
+      GridVisitor gridVisitor  =  makeGridVisitor(request,
+      lidarEntries,
+      bounds);
+      getLidarJobManager().visitConcurrent(request, lidarEntries, gridVisitor, new VisitInfo(false));
+      IdwGrid latLonGrid = gridVisitor.getGrid();
+
+
+      if(request.get(ARG_FILLMISSING, false)) {
+      llg.fillMissing();
+      }
+
+      double [][]grid = llg.getValueGrid();
+
+      try {
+      float[] xVals = new float[imageWidth];
+      float[] yVals = new float[imageHeight];
+
+      String filename = "foo";
+      NetcdfFileWriteable ncfile =
+      NetcdfFileWriteable.createNew(filename, false);
+      List<Dimension> dims           = new ArrayList<Dimension>();
+      //            Dimension xDim  = new Dimension(xName, sizeX, true);
+      //            ncfile.addDimension(null, xDim);
+
+      Variable v  = new Variable(ncfile, null, null, "elevation");
+      v.addAttribute(new Attribute("units", "m"));
+      if (projVar != null) {
+      v.addAttribute(new Attribute("grid_mapping",
+      "geographic"));
+      }
+      v.setDataType(DataType.FLOAT);
+      v.setDimensions(dims);
+      ncfile.addVariable(null, v);
+      ncfile.addGlobalAttribute(new Attribute("Conventions", "CF-1.X"));
+      ncfile.addGlobalAttribute(new Attribute("History",
+      "Generated from NLAS/RAMADDA LiDAR Data"));
+      ncfile.create();
+      for (Iterator it = keys.iterator(); it.hasNext(); ) {
+      Variable v = (Variable) it.next();
+      ncfile.write(v.getName(), varData.get(v));
+      }
+      int   numDims = dims.size();
+      int[] sizes   = new int[numDims];
+      int   index   = 0;
+      for (Dimension dim : dims) {
+      sizes[index++] = dim.getLength();
+      }
+
+      // write the data
+      Array arr = null;
+      float[][] samples = ((FlatField) grid).getFloats();
+      for (int j = 0; j < rTypes.length; j++) {
+      Variable v = ncfile.findVariable(getVarName(rTypes[j]));
+      arr = Array.factory(DataType.FLOAT, sizes, samples[j]);
+      ncfile.write(v.getName(), arr);
+      }
+      // write the file
+      ncfile.close();
+
+      return getDummyResult();
+      }
+
+    */
 
 
 

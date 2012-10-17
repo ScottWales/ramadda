@@ -149,6 +149,53 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return new RecordEntry(this, request, entry);
     }
 
+
+    /**
+     * This makes  a list of RecordEntry which is a wrapper around Entry.
+     *
+     * @param request the request
+     * @param entries The entries to process
+     * @param checkIfSelected If true then check if the request has a ARG_RECORDENTRY is for the given Entry
+     *
+     * @return List of RecordEntry
+     */
+    public List<RecordEntry> makeRecordEntries(Request request,
+                                             List<Entry> entries,
+                                             boolean checkIfSelected) {
+        List<RecordEntry> recordEntries = new ArrayList<RecordEntry>();
+        boolean          hasAnyArgs   = request.exists(ARG_RECORDENTRY_CHECK);
+        List<String>     ids          = request.get(ARG_RECORDENTRY,
+                                                    new ArrayList<String>());
+
+        for (Entry entry : entries) {
+            if ( !canHandleEntry(entry)) {
+                continue;
+            }
+            if (checkIfSelected && hasAnyArgs
+                && !ids.contains(entry.getId())) {
+                continue;
+            }
+            if (entry.getTypeHandler() instanceof RecordTypeHandler) {
+                recordEntries.add(doMakeEntry(request, entry));
+            } else {
+            }
+        }
+        return recordEntries;
+    }
+
+
+    /**
+     * Is the given entry a lidar type or a lidar collection type
+     *
+     * @param entry The entry
+     *
+     * @return Is the entry some lidar type
+     */
+    public boolean canHandleEntry(Entry entry) {
+        return false;
+    }
+
+
     /**
      */
     public void shutdown() {
@@ -323,7 +370,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_LATLONALTBIN, path + ".llab"));
             }
-
             links.add(makeLink(request, state.getEntry(), OUTPUT_LAS,
                                path + ".las"));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ASC,
@@ -747,6 +793,26 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return (RecordFile)type.doMakeRecordFile(entry);
     }
 
+    public void getServices(Request request, Entry entry,
+                            List<Service> services) {
+    }
+
+
+    public String getIconUrl(Request request, String icon) {
+        return request.getAbsoluteUrl(getRepository().iconUrl(icon));
+    }
+
+    /**
+     * Make the header links for the top-level NLAS search and job info pages
+     *
+     * @param request The request
+     * @param sb buffer
+     *
+     * @throws Exception On badness
+     */
+    public void makeApiHeader(Request request, StringBuffer sb)
+        throws Exception {
+    }
 
 
 }

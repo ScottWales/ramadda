@@ -266,6 +266,16 @@ public interface RecordConstants extends Constants {
     /** url argument */
     public static final String ARG_LIDAR_PRODUCT = "lidar.product";
 
+    public static final String ARG_RECORD_PRODUCT = "record.product";
+
+    /** property key for an icon */
+    public static final String ICON_POINTS = "nlas.icon.points";
+
+    /** _more_          */
+    public static final String ARG_RECORD_SKIPZ = "record.skipz";
+
+    /** url arg */
+    public static final String ARG_RECORD_SKIP = "record.skip";
 
 
 

@@ -118,6 +118,39 @@ public abstract  class PointTypeHandler extends RecordTypeHandler {
         return new PointMetadataHarvester();
     }
 
+
+
+    /**
+     * _more_
+     *
+     * @param f _more_
+     *
+     * @param path _more_
+     * @param filename _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public boolean canHandleResource(String path, String filename) {
+        try {
+            if (filename.endsWith(".csv") || filename.endsWith(".txt")) {
+                //Look to see if there is also a properties file
+                Hashtable props = RecordFile.getPropertiesForFile(path,
+                                      PointFile.DFLT_PROPERTIES_FILE);
+                if (props.size() == 0) {
+                    return false;
+                }
+            }
+            return super.canHandleResource(path, filename);
+        } catch (Exception exc) {
+            //If the loading flaked out then just keep going
+            //            logException("Harvesting file:" + f, exc);
+            return false;
+        }
+    }
+
+
+
     /**
      * _more_
      *
