@@ -72,7 +72,7 @@ import java.util.zip.*;
 
 /**
  */
-public class RecordJobManager extends JobManager {
+public class RecordJobManager extends JobManager implements RecordConstants {
 
 
     /** _more_ */
@@ -246,6 +246,414 @@ public class RecordJobManager extends JobManager {
 
         return callables;
     }
+
+    /**
+     * done processing
+     *
+     * @param request The request
+     * @param entry the entry
+     * @param lidarEntries _more_
+     * @param outputType the output type
+     * @param jobId The job ID
+     *
+     * @throws Exception On badness
+     */
+    public void asynchRequestFinished(
+            final Request request, final Entry entry,
+            final List<? extends RecordEntry> recordEntries,
+            OutputType outputType, Object jobId)
+            throws Exception {
+
+        JobInfo jobInfo = getJobInfo(jobId);
+        if (jobInfo == null) {
+            logError("ERROR: Could not find JobInfo: " + jobId,
+                     new IllegalStateException(""));
+
+            return;
+        }
+        if (jobInfo.isInError()) {
+            return;
+        }
+
+        final File productDir = getRecordOutputHandler().getProductDir(jobId);
+        StringBuffer status   = new StringBuffer();
+        boolean doingPublish  = getRecordOutputHandler().doingPublish(request);
+        if (doingPublish) {
+            Entry parent = getEntryManager().findGroup(request,
+                               request.getString(ARG_PUBLISH_ENTRY
+                                   + "_hidden", ""));
+            if (parent == null) {
+                throw new IllegalArgumentException("Could not find folder");
+            }
+            if ( !getAccessManager().canDoAction(request, parent,
+                    Permission.ACTION_NEW)) {
+                throw new AccessException("No access", request);
+            }
+            File[] files = productDir.listFiles();
+            for (File f : files) {
+                if (f.getName().startsWith(".")) {
+                    continue;
+                }
+                if (request.getExtraProperty(
+                        IOUtil.getFileTail(f.toString())) != null) {
+                    continue;
+                }
+
+                f = getStorageManager().copyToStorage(request, f,
+                        f.getName());
+
+                String        name = request.getString(ARG_PUBLISH_NAME, "");
+                String        suffix = IOUtil.getFileExtension(f.toString());
+                TypeHandler   typeHandler = null;
+
+                final boolean isLidarFile = false;
+                //TODO: get the actual type handler
+                //                    LidarTypeHandler.isLidarFile(f.toString());
+                if (isLidarFile) {
+                    typeHandler =
+                        recordEntries.get(0).getEntry().getTypeHandler();
+                } else if (Resource.isImage(f.getName())) {
+                    //Check if the latlonimage entry type is loaded
+                    TypeHandler latLonImageTypeHandler =
+                        getRepository().getTypeHandler("latlonimage");
+                    if (latLonImageTypeHandler != null) {
+                        typeHandler = latLonImageTypeHandler;
+                    }
+                }
+                if (name.length() == 0) {
+                    name = f.getName();
+                }
+
+                //The initializer gets called by the EntryManager to do any initialization
+                //of the entry before it gets added to the repository
+                EntryInitializer initializer = new EntryInitializer() {
+                    public void initEntry(Entry newEntry) {
+                        if ( !isLidarFile) {
+                            newEntry.setNorth(request.get(ARG_AREA_NORTH,
+                                    entry.getNorth()));
+                            newEntry.setWest(request.get(ARG_AREA_WEST,
+                                    entry.getWest()));
+                            newEntry.setSouth(request.get(ARG_AREA_SOUTH,
+                                    entry.getSouth()));
+                            newEntry.setEast(request.get(ARG_AREA_EAST,
+                                    entry.getEast()));
+                        }
+                    }
+                };
+
+
+                Entry newEntry = getEntryManager().addFileEntry(request, f,
+                                     parent, name, request.getUser(),
+                                     typeHandler, initializer);
+
+                if (status.length() == 0) {
+                    status.append(msgHeader("Published Entries"));
+                }
+                status.append(
+                    HtmlUtils.href(
+                        HtmlUtils.url(
+                            getRepository().URL_ENTRY_SHOW.toString(),
+                            new String[] { ARG_ENTRYID,
+                                           newEntry.getId() }), newEntry
+                                           .getName()));
+
+                status.append("<br>");
+                getRepository().addAuthToken(request);
+                getRepository().getAssociationManager().addAssociation(
+                    request, newEntry, entry, "generated product",
+                    "product generated from");
+            }
+        }
+        if (status.length() > 0) {
+            status.append(HtmlUtils.p());
+        }
+
+        final String email = request.getString(ARG_JOB_EMAIL, "");
+        if ((email.length() > 0) && getAdmin().isEmailCapable()) {
+            final String actionUrl     = jobInfo.getJobStatusUrl();
+            final String emailContents =
+                "Your NLAS/RAMADDA processing job has completed:\n" + actionUrl;
+            //Put the mail sending in a thread
+            Misc.run(new Runnable() {
+                public void run() {
+                    try {
+                        getRepository().getAdmin().sendEmail(email,
+                                "NLAS/RAMADDA processing job", emailContents, false);
+                    } catch (Exception exc) {}
+                }
+            });
+        }
+
+
+        long   productSize = 0;
+        File[] files       = productDir.listFiles();
+        //TODO: Should zip them here.
+        for (File f : files) {
+            if (f.getName().startsWith(".")
+                    || f.getName().endsWith("_all.zip")) {
+                continue;
+            }
+            productSize = f.length();
+        }
+        jobInfo.setProductSize(productSize);
+        jobHasFinished(jobInfo);
+    }
+
+
+    /**
+     * this shows either the html or xml listing of the job status
+     *
+     * @param request The request
+     * @param entry the entry
+     *
+     * @return the ramadda result
+     *
+     * @throws Exception On badness
+     */
+    public Result handleJobStatusRequest(Request request, Entry entry)
+            throws Exception {
+
+        Result parentResult = super.handleJobStatusRequest(request, entry);
+        if (parentResult != null) {
+            return parentResult;
+        }
+
+
+        String jobId     = request.getString(ARG_JOB_ID, (String) null);
+        String productId = request.getString(ARG_LIDAR_PRODUCT,
+                                             (String) null);
+
+        StringBuffer sb  = new StringBuffer();
+        StringBuffer xml = new StringBuffer();
+        addHtmlHeader(request, sb);
+        JobInfo jobInfo    = getJobInfo(jobId);
+        File    productDir = getRecordOutputHandler().getProductDir(jobId);
+        if ( !productDir.exists()) {
+            return makeRequestErrorResult(
+                request,
+                "The results have expired. Please try your query again");
+        }
+
+        sb.append(jobInfo.getDescription().replaceAll("\n", "<br>"));
+
+        if (productId != null) {
+            if (productId.equals("zip")) {
+                OutputStream os =
+                    request.getHttpServletResponse().getOutputStream();
+                request.getHttpServletResponse().setContentType(
+                    "application/zip");
+
+                ZipOutputStream zos   = new ZipOutputStream(os);
+
+                File[]          files = productDir.listFiles();
+                for (File f : files) {
+                    if (f.getName().startsWith(".")) {
+                        continue;
+
+                    }
+                    zos.putNextEntry(new ZipEntry(f.getName()));
+                    InputStream fis =
+                        getStorageManager().getFileInputStream(f.toString());
+                    IOUtil.writeTo(fis, zos);
+                    IOUtil.close(fis);
+                }
+                IOUtil.close(zos);
+                Result result = new Result();
+                result.setNeedToWrite(false);
+
+                return result;
+            }
+
+            return new Result(
+                "",
+                getStorageManager().getFileInputStream(
+                    IOUtil.joinDir(productDir, productId)), "");
+        }
+
+
+        boolean stillRunning = jobInfo.isRunning();
+        long    startTime    = jobInfo.getStartDate().getTime();
+        long    endTime      = (stillRunning
+                                ? new Date().getTime()
+                                : jobInfo.getEndDate().getTime());
+
+        if (request.responseInXml()) {
+            //            return handleJobStatusRequestXml(request, entry);
+        }
+
+        String jobAttrs;
+        if (stillRunning) {
+            jobAttrs = XmlUtil.attrs(new String[] { JobManager.ATTR_STATUS,
+                    STATUS_RUNNING, ATTR_ELAPSEDTIME,
+                    "" + ((endTime - startTime) / 1000) });
+        } else {
+            jobAttrs = XmlUtil.attrs(new String[] {
+                ATTR_STATUS, STATUS_DONE, ATTR_NUMBEROFPOINTS,
+                "" + jobInfo.getNumPoints(), ATTR_ELAPSEDTIME,
+                "" + ((endTime - startTime) / 1000),
+            });
+        }
+        xml.append(XmlUtil.openTag(TAG_JOB, jobAttrs));
+        if (jobInfo.isInError()) {
+            sb.append(
+                getRepository().showDialogError(
+                    "An error occurred while processing the request:<br>"
+                    + jobInfo.getError()));
+        } else if (stillRunning) {
+            sb.append(getRepository().progress("Job is running"));
+        } else {
+            sb.append(
+                getRepository().showDialogNote("Processing is complete"));
+        }
+        sb.append(HtmlUtils.formTable());
+        //set the column width
+        sb.append(
+            "<tr><td width=20%>&nbsp;</a><td width=80%>&nbsp;</td></tr>");
+        if (stillRunning) {
+            String cancelUrl =
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+                                 new String[] {
+                ARG_OUTPUT, getOutputResults().getId(), ARG_JOB_ID, jobId,
+                ARG_CANCEL, "true"
+            });
+            sb.append(HtmlUtils.formEntry("",
+                                          HtmlUtils.href(cancelUrl,
+                                              msg("Cancel job"))));
+        }
+
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Job ID"), jobId));
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Job Name"),
+                                      jobInfo.getJobName()));
+
+        if (jobInfo.getJobUrl() != null) {
+            sb.append(HtmlUtils.formEntry(msgLabel("Job URL"),
+                                          jobInfo.getJobUrl()));
+        }
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Start time"),
+                getRecordFormHandler().formatDate(jobInfo.getStartDate())));
+
+        if ( !stillRunning) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    msgLabel("End time"),
+                    getRecordFormHandler().formatDate(jobInfo.getEndDate())));
+        }
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Run time"),
+                                      ((endTime - startTime) / 1000)
+                                      + " seconds"));
+
+
+        if (stillRunning) {
+            StringBuffer statusSB = new StringBuffer();
+            for (String statusItem : jobInfo.getStatusItems()) {
+                statusSB.append(statusItem);
+                statusSB.append("<br>");
+            }
+            String currentStatus = jobInfo.getCurrentStatus();
+            if (currentStatus != null) {
+                statusSB.append(currentStatus);
+            }
+
+            sb.append("<meta http-equiv=\"refresh\" content=\"1\">");
+            sb.append(HtmlUtils.formEntry(msgLabel("Status"),
+                                          statusSB.toString()));
+
+        }
+
+
+        if (jobInfo.getNumPoints() != 0) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Processed"),
+                    getRecordFormHandler().formatPointCount(
+                        jobInfo.getNumPoints()) + " points"));
+        }
+
+        if ( !stillRunning) {
+            StringBuffer productSB = new StringBuffer();
+
+            //List the files available
+            int    fileCnt = 0;
+            File[] files   = productDir.listFiles();
+            xml.append(XmlUtil.openTag(TAG_PRODUCTS));
+            for (File f : files) {
+                if (f.getName().startsWith(".")) {
+                    continue;
+                }
+                if (fileCnt == 0) {
+                    productSB.append("<table>");
+                }
+                fileCnt++;
+                String fileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
+                                     + "/" + f.getName(), new String[] {
+                    ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+                    getOutputResults().getId(), ARG_JOB_ID, jobId,
+                    ARG_LIDAR_PRODUCT, f.getName()
+                });
+                //                xml.append(XmlUtil.openTag(TAG_URL));
+                xml.append("<" + TAG_URL + ">");
+                XmlUtil.appendCdata(xml, request.getAbsoluteUrl(fileUrl));
+                xml.append(XmlUtil.closeTag(TAG_URL));
+                productSB.append("<tr><td>");
+                productSB.append(HtmlUtils.href(fileUrl, f.getName()));
+                productSB.append("</td><td align=right>");
+                productSB.append(
+                    getRecordFormHandler().formatFileSize(f.length()));
+                productSB.append("</td></tr>");
+            }
+
+
+
+            xml.append(XmlUtil.closeTag(TAG_PRODUCTS));
+            if (fileCnt > 1) {
+                String fileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
+                                     + "/all.zip", new String[] {
+                    ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+                    getOutputResults().getId(), ARG_JOB_ID, jobId,
+                    ARG_LIDAR_PRODUCT, "zip"
+                });
+                productSB.append("<tr><td>");
+                productSB.append(HtmlUtils.href(fileUrl, "Zip products"));
+                productSB.append("</td></tr>");
+            }
+
+
+            if (fileCnt > 0) {
+                productSB.append("</table>");
+            } else {
+                productSB.append(
+                    getRepository().showDialogNote(
+                        msg("No product files found")));
+            }
+
+            if (productSB.length() > 0) {
+                sb.append(HtmlUtils.formEntryTop(msgLabel("Products"),
+                        productSB.toString()));
+            }
+        }
+
+        xml.append(XmlUtil.closeTag(TAG_JOB));
+        sb.append(HtmlUtils.formTableClose());
+
+        if (request.responseInXml()) {
+            return makeRequestOKResult(request, xml.toString());
+        }
+
+        return new Result("Products", sb);
+
+    }
+
+
+    public OutputType getOutputResults() {
+        return getRecordOutputHandler().OUTPUT_RESULTS;
+    }
+
+
 
 
 }

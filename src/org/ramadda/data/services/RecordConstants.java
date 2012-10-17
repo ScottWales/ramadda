@@ -263,5 +263,10 @@ public interface RecordConstants extends Constants {
     /** _more_ */
     public static final int TIMESERIES_AXIS_WIDTHPER = 75;
 
+    /** url argument */
+    public static final String ARG_LIDAR_PRODUCT = "lidar.product";
+
+
+
 
 }

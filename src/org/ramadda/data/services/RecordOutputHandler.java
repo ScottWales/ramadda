@@ -75,7 +75,8 @@ import java.util.zip.*;
  */
 public class RecordOutputHandler extends OutputHandler implements RecordConstants {
 
-
+    /** output type */
+    public OutputType OUTPUT_RESULTS;
 
     /** _more_ */
     public static final String ARG_SKIP = "skip";

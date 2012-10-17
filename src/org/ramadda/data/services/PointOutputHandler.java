@@ -87,8 +87,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** This is used to create a product for a lidar collection or a lidar file. */
     public OutputType OUTPUT_PRODUCT;
 
-    /** output type */
-    public OutputType OUTPUT_RESULTS;
 
     /** output type */
     public OutputType OUTPUT_VIEW;
