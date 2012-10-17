@@ -48,6 +48,9 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_ASYNCH = "asynch";
 
+
+
+
     /** _more_ */
     public static final String ARG_GEOREFERENCE = "georeference";
 
@@ -75,6 +78,9 @@ public interface RecordConstants extends Constants {
 
     /** url argument */
     public static final String ARG_GRID_PREFIX = "grid.";
+
+    /** _more_ */
+    public static final String ARG_FILLMISSING = "fillmissing";
 
     /** url argument */
     public static final String ARG_GRID_MIN = ARG_GRID_PREFIX + "min";

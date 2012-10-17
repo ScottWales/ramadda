@@ -160,6 +160,9 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
 
 
 
+
+
+
     /**
      * Creates the directory in the ramadda home dir where we write products to
      * It sets up a scour so files older than 7 days get removed
@@ -187,7 +190,11 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return _more_
      */
     public String getProductDirName() {
-        return "recordproducts";
+        return getDomainBase() +"_products";
+    }
+
+    public String getDomainBase() {
+        return "record";
     }
 
     /**

@@ -79,131 +79,80 @@ import java.util.zip.*;
  */
 public class PointOutputHandler extends RecordOutputHandler {
 
-    /** _more_ */
-    public static final String ARG_FILLMISSING = "fillmissing";
 
     /** The category for the all of the output types */
-    public static final String OUTPUT_CATEGORY = "LiDAR Data";
+    public static final String OUTPUT_CATEGORY = "Point Data";
 
 
     /** This is used to create a product for a lidar collection or a lidar file. */
-    public static final OutputType OUTPUT_PRODUCT =
-        new OutputType("Results", "points.product", OutputType.TYPE_OTHER);
+    public OutputType OUTPUT_PRODUCT;
 
     /** output type */
-    public static final OutputType OUTPUT_RESULTS =
-        new OutputType("Results", "points.results", OutputType.TYPE_OTHER);
-
+    public OutputType OUTPUT_RESULTS;
 
     /** output type */
-    public static final OutputType OUTPUT_VIEW = new OutputType("View Data",
-                                                     "points.view",
-                                                     OutputType.TYPE_OTHER,
-                                                     "", ICON_METADATA,
-                                                     OUTPUT_CATEGORY);
+    public OutputType OUTPUT_VIEW;
 
     /** output type */
-    public static final OutputType OUTPUT_METADATA =
-        new OutputType("Metadata ", "points.metadata",
-                       OutputType.TYPE_OTHER, "", ICON_METADATA,
-                       OUTPUT_CATEGORY);
+    public OutputType OUTPUT_METADATA;
 
 
     /** output type */
-    public static final OutputType OUTPUT_GETPOINTINDEX =
-        new OutputType("LiDAR Point index query", "points.getpointindex",
-                       OutputType.TYPE_OTHER, "", ICON_DATA,
-                       OUTPUT_CATEGORY);
+    public OutputType OUTPUT_GETPOINTINDEX;
+
 
     /** output type */
-    public static final OutputType OUTPUT_GETLATLON =
-        new OutputType("LiDAR Lat/Lon query", "points.getlatlon",
-                       OutputType.TYPE_OTHER, "", ICON_DATA,
-                       OUTPUT_CATEGORY);
+    public OutputType OUTPUT_GETLATLON;
 
 
 
     /** output type */
-    public static final OutputType OUTPUT_IMAGE = new OutputType("Image",
-                                                      "points.image",
-                                                      OutputType.TYPE_OTHER,
-                                                      "png", ICON_IMAGE,
-                                                      OUTPUT_CATEGORY);
+    public OutputType OUTPUT_IMAGE;
+
 
     /** _more_ */
-    public static final OutputType OUTPUT_BOUNDS =
-        new OutputType("Point Bounds", "points.bounds",
-                       OutputType.TYPE_OTHER);
+    public OutputType OUTPUT_BOUNDS;
 
     /** output type */
-    public static final OutputType OUTPUT_NC = new OutputType("NetCDF Grid",
-                                                   "points.nc",
-                                                   OutputType.TYPE_OTHER,
-                                                   "nc", ICON_DATA,
-                                                   OUTPUT_CATEGORY);
+    public OutputType OUTPUT_NC;
 
     /** output type */
-    public static final OutputType OUTPUT_HILLSHADE =
-        new OutputType("Hill Shade Image", "points.hillshade",
-                       OutputType.TYPE_OTHER, "png", ICON_IMAGE,
-                       OUTPUT_CATEGORY);
+    public OutputType OUTPUT_HILLSHADE;
 
     /** output type */
-    public static final OutputType OUTPUT_KMZ =
-        new OutputType("Google Earth", "points.kmz", OutputType.TYPE_OTHER,
-                       "kmz", ICON_KML, OUTPUT_CATEGORY);
+    public OutputType OUTPUT_KMZ;
+
+    /** output type */
+    public OutputType OUTPUT_KML_TRACK;
 
 
     /** output type */
-    public static final OutputType OUTPUT_KML_TRACK =
-        new OutputType("Google Earth", "points.kml.track",
-                       OutputType.TYPE_OTHER, "kml", ICON_KML,
-                       OUTPUT_CATEGORY);
-
-    /** output type */
-    public static final OutputType OUTPUT_SUBSET =
-        new OutputType("Native format", "points.subset",
-                       OutputType.TYPE_OTHER, "", ICON_DATA,
-                       OUTPUT_CATEGORY);
+    public OutputType OUTPUT_SUBSET;
 
 
     /** output type */
-    public static final OutputType OUTPUT_KML =
-        new OutputType("Google Earth", "points.kml", OutputType.TYPE_OTHER,
-                       "kml", ICON_KML, OUTPUT_CATEGORY);
-
+    public OutputType OUTPUT_KML;
 
     /** output type */
-    public static final OutputType OUTPUT_LATLONALTBIN =
-        new OutputType("Binary - Lat/Lon/Alt", "points.latlonaltbin",
-                       OutputType.TYPE_OTHER, "llab", ICON_CSV,
-                       OUTPUT_CATEGORY);
+    public OutputType OUTPUT_LATLONALTBIN;
 
 
 
     /** output type */
-    public static final OutputType OUTPUT_LATLONALTCSV =
-        new OutputType("CSV - Lat/Lon/Alt", "points.latlonaltcsv",
-                       OutputType.TYPE_OTHER, "csv", ICON_CSV,
-                       OUTPUT_CATEGORY);
-
-    /** output type */
-    public static final OutputType OUTPUT_CSV =
-        new OutputType("CSV - all fields", "points.csv",
-                       OutputType.TYPE_OTHER, "csv", ICON_CSV,
-                       OUTPUT_CATEGORY);
+    public OutputType OUTPUT_LATLONALTCSV;
 
 
     /** output type */
-    public static final OutputType OUTPUT_ASC =
-        new OutputType("ARC ASCII Grid", "points.asc", OutputType.TYPE_OTHER,
-                       "asc", ICON_DATA, OUTPUT_CATEGORY);
+    public OutputType OUTPUT_CSV;
+
+
+
+    /** output type */
+    public OutputType OUTPUT_ASC;
 
 
     /**
      * constructor. This gets called by the Repository via reflection
-     * This class is specified in outputhandlers.xml
-     *
      *
      * @param repository the repository
      * @param element the xml from outputhandlers.xml
@@ -212,6 +161,113 @@ public class PointOutputHandler extends RecordOutputHandler {
     public PointOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
+        doMakeOutputTypes();
+    }
+
+
+    protected void doMakeOutputTypes() {
+        String category = getOutputCategory();
+        String base= getDomainBase();
+
+        OUTPUT_PRODUCT =
+            new OutputType("Results", base +".product", OutputType.TYPE_OTHER);
+
+        OUTPUT_RESULTS =
+            new OutputType("Results", base +".results", OutputType.TYPE_OTHER);
+
+        OUTPUT_VIEW = new OutputType("View Data",
+                                     base +".view",
+                                     OutputType.TYPE_OTHER,
+                                     "", ICON_DATA,
+                                     category);
+
+        OUTPUT_METADATA =
+            new OutputType("Metadata ", base +".metadata",
+                           OutputType.TYPE_OTHER, "", ICON_METADATA,
+                           category);
+
+
+        OUTPUT_GETPOINTINDEX =
+            new OutputType("LiDAR Point index query", base +".getpointindex",
+                           OutputType.TYPE_OTHER, "", ICON_DATA,
+                           category);
+
+        OUTPUT_GETLATLON =
+            new OutputType("LiDAR Lat/Lon query", base +".getlatlon",
+                           OutputType.TYPE_OTHER, "", ICON_DATA,
+                           category);
+
+
+
+        OUTPUT_IMAGE = new OutputType("Image",
+                                      base +".image",
+                                      OutputType.TYPE_OTHER,
+                                      "png", ICON_IMAGE,
+                                      category);
+
+        OUTPUT_BOUNDS =
+            new OutputType("Point Bounds", base +".bounds",
+                           OutputType.TYPE_OTHER);
+
+        OUTPUT_NC = new OutputType("NetCDF Grid",
+                                   base +".nc",
+                                   OutputType.TYPE_OTHER,
+                                   "nc", ICON_DATA,
+                                   category);
+
+        OUTPUT_HILLSHADE =
+        new OutputType("Hill Shade Image", base +".hillshade",
+                       OutputType.TYPE_OTHER, "png", ICON_IMAGE,
+                       category);
+
+        OUTPUT_KMZ =
+        new OutputType("Google Earth", base +".kmz", OutputType.TYPE_OTHER,
+                       "kmz", ICON_KML, category);
+
+        OUTPUT_KML_TRACK =
+            new OutputType("Google Earth", base +".kml.track",
+                           OutputType.TYPE_OTHER, "kml", ICON_KML,
+                           category);
+
+        OUTPUT_SUBSET =
+            new OutputType("Native format", base +".subset",
+                           OutputType.TYPE_OTHER, "", ICON_DATA,
+                           category);
+
+
+        OUTPUT_KML =
+            new OutputType("Google Earth", base +".kml", OutputType.TYPE_OTHER,
+                           "kml", ICON_KML, category);
+
+
+        OUTPUT_LATLONALTBIN =
+            new OutputType("Binary - Lat/Lon/Alt", base +".latlonaltbin",
+                           OutputType.TYPE_OTHER, "llab", ICON_CSV,
+                           category);
+
+        OUTPUT_LATLONALTCSV =
+            new OutputType("CSV - Lat/Lon/Alt", base +".latlonaltcsv",
+                           OutputType.TYPE_OTHER, "csv", ICON_CSV,
+                           category);
+
+        OUTPUT_CSV =
+        new OutputType("CSV - all fields", base +".csv",
+                       OutputType.TYPE_OTHER, "csv", ICON_CSV,
+                       category);
+
+
+        OUTPUT_ASC =
+            new OutputType("ARC ASCII Grid", base +".asc", OutputType.TYPE_OTHER,
+                           "asc", ICON_DATA, category);
+
+    }
+
+    public String getOutputCategory() {
+        return OUTPUT_CATEGORY;
+    }
+
+    public String getDomainBase() {
+        return "points";
     }
 
 
@@ -367,7 +423,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param request The request
      * @param entry the entry
      * @param asynch Is this an asynchronous request
-     * @param lidarEntries List of entries to process
+     * @param pointEntries List of entries to process
      * @param jobId The job ID
      *
      * @return the result
@@ -376,7 +432,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public Result processEntries(Request request, Entry entry,
                                  boolean asynch,
-                                 List<? extends PointEntry> lidarEntries, Object jobId)
+                                 List<? extends PointEntry> pointEntries, Object jobId)
             throws Exception {
 
         if ( !getRecordJobManager().canAcceptJob()) {
@@ -420,36 +476,36 @@ public class PointOutputHandler extends RecordOutputHandler {
             //Make a RecordVisitor for each point product type
             if (formats.contains(OUTPUT_CSV.getId())) {
                 needFull = true;
-                visitors.add(makeCsvVisitor(request, entry, lidarEntries,
+                visitors.add(makeCsvVisitor(request, entry, pointEntries,
                                             jobId));
             }
             if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
                 quickScan = true;
                 visitors.add(makeLatLonAltCsvVisitor(request, entry,
-                        lidarEntries, jobId));
+                        pointEntries, jobId));
             }
             if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
                 quickScan = true;
                 visitors.add(makeLatLonAltBinVisitor(request, entry,
-                        lidarEntries, jobId, null));
+                        pointEntries, jobId, null));
             }
 
             if (formats.contains(OUTPUT_NC.getId())) {
                 needFull = true;
-                visitors.add(makeNcVisitor(request, entry, lidarEntries,
+                visitors.add(makeNcVisitor(request, entry, pointEntries,
                                            jobId));
 
             }
 
 
             if (formats.contains(OUTPUT_NC.getId())) {
-                //            result = outputEntryNc(request, entry,  lidarEntries,
+                //            result = outputEntryNc(request, entry,  pointEntries,
                 //                                    jobId);
             }
 
             //Tracks just do them
             if (formats.contains(OUTPUT_KML_TRACK.getId())) {
-                result = outputEntryKmlTrack(request, entry, lidarEntries,
+                result = outputEntryKmlTrack(request, entry, pointEntries,
                                              jobId);
             }
 
@@ -457,10 +513,10 @@ public class PointOutputHandler extends RecordOutputHandler {
             //We need to do a visitor based approach
             if (formats.contains(OUTPUT_SUBSET.getId())) {
                 //This is the subset to the original format
-                info.setCurrentStatus("Creating LiDAR file...");
-                result = outputEntrySubset(request, entry, lidarEntries,
+                info.setCurrentStatus("Creating Point file...");
+                result = outputEntrySubset(request, entry, pointEntries,
                                            info);
-                info.addStatusItem("LiDAR file created");
+                info.addStatusItem("Point file created");
                 if ( !jobOK(jobId)) {
                     return result;
                 }
@@ -474,8 +530,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                     || formats.contains(OUTPUT_HILLSHADE.getId())) {
                 needFull = true;
                 if (gridVisitor == null) {
-                    gridVisitor = makeGridVisitor(request, lidarEntries,
-                            getBounds(request, lidarEntries));
+                    gridVisitor = makeGridVisitor(request, pointEntries,
+                            getBounds(request, pointEntries));
                     visitors.add(gridVisitor);
                 }
             }
@@ -515,7 +571,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 info.setCurrentStatus("Staging request...");
 
                 memoryCheck("NLAS: memory before:");
-                getRecordJobManager().visitSequential(request, lidarEntries,
+                getRecordJobManager().visitSequential(request, pointEntries,
                         groupVisitor, new VisitInfo(quickScan));
                 if ( !jobOK(jobId)) {
                     return result;
@@ -526,7 +582,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
                 visitors     = null;
                 groupVisitor = null;
-                lidarEntries = null;
+                pointEntries = null;
                 memoryCheck("NLAS: memory after visit:");
 
                 info.setCurrentStatus("Processing products...");
@@ -550,14 +606,14 @@ public class PointOutputHandler extends RecordOutputHandler {
             try {
                 getRecordJobManager().setError(info, exc.toString());
             } catch (Exception noop) {}
-            getLogManager().logError("processing lidar request", exc);
+            getLogManager().logError("processing point request", exc);
             return makeRequestErrorResult(request, exc.getMessage());
         }
     }
 
 
     /**
-     * Main entry point for LiDAR Files. This methods handles things like the lidar map, the lat/lon web services,
+     * Main entry point for Point Files. This methods handles things like the point map, the lat/lon web services,
      * the product form and product requests.
      *
      * @param request the request
@@ -607,7 +663,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
     public Result createVisitors(Request request, Entry entry,
                                  boolean asynch,
-                                 List<? extends PointEntry> lidarEntries, JobInfo jobInfo,
+                                 List<? extends PointEntry> pointEntries, JobInfo jobInfo,
                                  HashSet<String> formats,
                                  List<RecordVisitor> visitors)
         throws Exception {
@@ -615,32 +671,32 @@ public class PointOutputHandler extends RecordOutputHandler {
         Result              result      = null;
             //Make a RecordVisitor for each point product type
             if (formats.contains(OUTPUT_CSV.getId())) {
-                visitors.add(makeCsvVisitor(request, entry, lidarEntries,
+                visitors.add(makeCsvVisitor(request, entry, pointEntries,
                                             jobInfo.getJobId()));
             }
             if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
                 visitors.add(makeLatLonAltCsvVisitor(request, entry,
-                                                     lidarEntries, jobInfo.getJobId()));
+                                                     pointEntries, jobInfo.getJobId()));
             }
             if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
                 visitors.add(makeLatLonAltBinVisitor(request, entry,
-                                                     lidarEntries, jobInfo.getJobId(), null));
+                                                     pointEntries, jobInfo.getJobId(), null));
             }
 
             if (formats.contains(OUTPUT_NC.getId())) {
-                visitors.add(makeNcVisitor(request, entry, lidarEntries,
+                visitors.add(makeNcVisitor(request, entry, pointEntries,
                                            jobInfo.getJobId()));
 
             }
 
             if (formats.contains(OUTPUT_NC.getId())) {
-                //            result = outputEntryNc(request, entry,  lidarEntries,
+                //            result = outputEntryNc(request, entry,  pointEntries,
                 //                                    jobInfo.getJobId());
             }
 
             //Tracks just do them
             if (formats.contains(OUTPUT_KML_TRACK.getId())) {
-                result = outputEntryKmlTrack(request, entry, lidarEntries,
+                result = outputEntryKmlTrack(request, entry, pointEntries,
                                              jobInfo.getJobId());
             }
 
@@ -648,10 +704,10 @@ public class PointOutputHandler extends RecordOutputHandler {
             //We need to do a visitor based approach
             if (formats.contains(OUTPUT_SUBSET.getId())) {
                 //This is the subset to the original format
-                jobInfo.setCurrentStatus("Creating LiDAR file...");
-                result = outputEntrySubset(request, entry, lidarEntries,
+                jobInfo.setCurrentStatus("Creating Point file...");
+                result = outputEntrySubset(request, entry, pointEntries,
                                            jobInfo);
-                jobInfo.addStatusItem("LiDAR file created");
+                jobInfo.addStatusItem("Point file created");
                 if ( !jobOK(jobInfo.getJobId())) {
                     return result;
                 }
@@ -664,8 +720,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 || formats.contains(OUTPUT_KMZ.getId())
                 || formats.contains(OUTPUT_HILLSHADE.getId())) {
                 if (gridVisitor == null) {
-                    gridVisitor = makeGridVisitor(request, lidarEntries,
-                                                  getBounds(request, lidarEntries));
+                    gridVisitor = makeGridVisitor(request, pointEntries,
+                                                  getBounds(request, pointEntries));
                     visitors.add(gridVisitor);
                 }
             }
@@ -678,8 +734,8 @@ public class PointOutputHandler extends RecordOutputHandler {
      * Make a record visitor that creates a CSV file
      *
      * @param request the request
-     * @param mainEntry Either the LiDAR Collection or File Entry
-     * @param lidarEntries entries to process
+     * @param mainEntry Either the Point Collection or File Entry
+     * @param pointEntries entries to process
      * @param jobId The job ID
      *
      * @return visitor
@@ -688,7 +744,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public RecordVisitor makeCsvVisitor(final Request request,
                                         Entry mainEntry,
-                                        List<? extends PointEntry> lidarEntries,
+                                        List<? extends PointEntry> pointEntries,
                                         final Object jobId)
             throws Exception {
 
@@ -804,8 +860,8 @@ public class PointOutputHandler extends RecordOutputHandler {
      * make the visitor for latlonalt binary formats
      *
      * @param request the request
-     * @param mainEntry Either the LiDAR Collection or File Entry
-     * @param lidarEntries entries to process
+     * @param mainEntry Either the Point Collection or File Entry
+     * @param pointEntries entries to process
      * @param jobId The job ID
      * @param inputDos _more_
      *
@@ -814,7 +870,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public RecordVisitor makeLatLonAltBinVisitor(Request request,
-            Entry mainEntry, List<? extends PointEntry> lidarEntries,
+            Entry mainEntry, List<? extends PointEntry> pointEntries,
             final Object jobId, final DataOutputStream inputDos)
             throws Exception {
 
@@ -927,8 +983,8 @@ public class PointOutputHandler extends RecordOutputHandler {
      * make the visitor that creates netcdf point files
      *
      * @param request The request
-     * @param mainEntry Either the LiDAR Collection or File Entry
-     * @param lidarEntries The entries to process
+     * @param mainEntry Either the Point Collection or File Entry
+     * @param pointEntries The entries to process
      * @param jobId The job ID
      *
      * @return the visitor
@@ -936,7 +992,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception On badness
      */
     public RecordVisitor makeNcVisitor(Request request, Entry mainEntry,
-                                       List<?extends PointEntry> lidarEntries,
+                                       List<?extends PointEntry> pointEntries,
                                        final Object jobId)
             throws Exception {
 
@@ -985,7 +1041,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * _more_
      *
      * @param request the request
-     * @param mainEntry Either the LiDAR Collection or File Entry
+     * @param mainEntry Either the Point Collection or File Entry
      * @param llg latlongrid
      * @param formats _more_
      * @param jobId The job ID
@@ -1091,7 +1147,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             if (doImage) {
                 File imageFile =
                     getRepository().getStorageManager().getTmpFile(request,
-                        "lidarimage.png");
+                        "pointimage.png");
                 writeImage(request, imageFile, llg, grid, missingValue);
                 InputStream imageInputStream =
                     getStorageManager().getFileInputStream(imageFile);
@@ -1124,7 +1180,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             if (isAltitudeValue && (doHillshade || forceHillshade)) {
                 File imageFile =
                     getRepository().getStorageManager().getTmpFile(request,
-                        "lidarimage.png");
+                        "pointimage.png");
                 LatLonGrid hillshadeGrid =
                     org.ramadda.util.grid.Gridder.doHillShade(llg, grid,
                         (float) request.get(ARG_HILLSHADE_AZIMUTH, 315.0f),
@@ -1171,7 +1227,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (doKmz) {
             request.getHttpServletResponse().setContentType(
                 "application/vnd.google-earth.kmz");
-            zos.putNextEntry(new ZipEntry("lidar.kml"));
+            zos.putNextEntry(new ZipEntry("points.kml"));
             String xml   = XmlUtil.toString(root);
             byte[] bytes = xml.getBytes();
             zos.write(bytes, 0, bytes.length);
@@ -1488,7 +1544,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * _more_
      *
      * @param outputFile file to write to
-     * @param lidarFile file to read from
+     * @param pointFile file to read from
      *
      * @throws Exception On badness
      */
@@ -1502,7 +1558,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
     /**
-     * This handles the ajax request for the geolocation of an index in the given lidar file
+     * This handles the ajax request for the geolocation of an index in the given point file
      *
      * @param request the request
      * @param pointEntry The entry
