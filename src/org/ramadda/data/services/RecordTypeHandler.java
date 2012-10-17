@@ -394,7 +394,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      *
      * @return _more_
      */
-    private String macro(String s) {
+    public String macro(String s) {
         return "${" + s + "}";
     }
 
@@ -467,7 +467,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      *
      * @return _more_
      */
-    private String getIconUrl(Request request, String icon) {
+    public String getIconUrl(Request request, String icon) {
         return request.getAbsoluteUrl(getRepository().iconUrl(icon));
     }
 

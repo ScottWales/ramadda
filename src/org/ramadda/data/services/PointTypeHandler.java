@@ -258,4 +258,29 @@ public abstract  class PointTypeHandler extends RecordTypeHandler {
     }
 
 
+    /**                                                                         
+     * _more_                                                                   
+     *                                                                          
+     * @param request _more_                                                    
+     * @param entry _more_                                                      
+     * @param map _more_                                                        
+     *                                                                          
+     * @return _more_                                                           
+     */
+    @Override
+        public boolean addToMap(Request request, Entry entry, MapInfo map) {
+        try {
+            PointOutputHandler outputHandler = (PointOutputHandler) getRecordOutputHandler();
+            outputHandler.addToMap(request, entry, map);
+            return true;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
+
+
+
+
 }
