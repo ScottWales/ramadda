@@ -95,6 +95,8 @@ public class PointFormHandler extends RecordFormHandler {
 
     private RecordFileFactory dummyField6 = null;
 
+    private PointTypeHandler dummyField7 = null;
+
     /**
      * ctor
      *

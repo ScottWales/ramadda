@@ -390,6 +390,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
                               final List<Entry> entries)
             throws Exception {
 
+
         if (request.defined(JobInfo.ARG_JOB_ID)) {
             return jobManager.handleJobStatusRequest(request, group);
         }
@@ -732,6 +733,18 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return getDummyResult();
     }
 
+    /**
+     *
+     * @param entry The entry
+     *
+     * @return A new LidarFile.
+     *
+     * @throws Exception on badness
+     */
+    public RecordFile doMakeRecordFile(Entry entry) throws Exception {
+        RecordTypeHandler type = (RecordTypeHandler) entry.getTypeHandler();
+        return (RecordFile)type.doMakeRecordFile(entry);
+    }
 
 
 

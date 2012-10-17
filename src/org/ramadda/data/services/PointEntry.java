@@ -33,7 +33,8 @@ import org.ramadda.repository.*;
 import ucar.unidata.util.IOUtil;
 
 import java.io.File;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 
@@ -62,6 +63,12 @@ public class PointEntry extends RecordEntry {
     }
 
 
+
+    public static List<PointEntry> toPointEntryList(List l) {
+        List<PointEntry> pointEntries = new ArrayList<PointEntry>();
+        for(Object o: l) pointEntries.add((PointEntry)o);
+        return pointEntries;
+    }
 
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getPointOutputHandler();

@@ -432,9 +432,10 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public Result processEntries(Request request, Entry entry,
                                  boolean asynch,
-                                 List<? extends PointEntry> pointEntries, Object jobId)
+                                 List<? extends RecordEntry> recordEntries, Object jobId)
             throws Exception {
 
+        List<PointEntry> pointEntries  = PointEntry.toPointEntryList(recordEntries);
         if ( !getRecordJobManager().canAcceptJob()) {
             return makeRequestErrorResult(request,
                                           "Too many processing requests");
@@ -656,6 +657,25 @@ public class PointOutputHandler extends RecordOutputHandler {
             return getFormHandler().outputEntryMetadata(request, outputType,
                                                         doMakeEntry(request, entry));
         }
+
+        return null;
+    }
+
+
+    public Result outputGroup(final Request request,
+                              final OutputType outputType, final Entry group,
+                              final List<Entry> subGroups,
+                              final List<Entry> entries)
+            throws Exception {
+        Result parentResult  = super.outputGroup(request, outputType, group, subGroups, entries);
+        if(parentResult!=null) {
+            return parentResult;
+        }
+
+        if (outputType.equals(OUTPUT_BOUNDS)) {
+            return outputEntryBounds(request, group);
+        }
+
 
         return null;
     }

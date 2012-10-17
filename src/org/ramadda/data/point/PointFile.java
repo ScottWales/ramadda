@@ -52,6 +52,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     public static final String ACTION_GRID = "action.grid";
     public static final String ACTION_DECIMATE = "action.decimate";
     public static final String ACTION_TRACKS = "action.tracks";
+    public static final String ACTION_BOUNDINGPOLYGON = "action.boundingpolygon";
 
 
     private static final org.ramadda.data.point.LatLonPointRecord dummyField1 = null;
@@ -167,8 +168,9 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         super(filename, properties);
     }
 
-    public boolean okToMakeBoundingPolygon() {
-        return true;
+    public boolean isCapable(String action) {
+        if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
+        return super.isCapable(action);
     }
 
     public boolean sameDataType(PointFile that) {
