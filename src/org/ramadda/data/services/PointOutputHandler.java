@@ -1731,6 +1731,141 @@ public class PointOutputHandler extends RecordOutputHandler {
     */
 
 
+    /**
+     * _more_
+     *
+     * @param request the request
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public int getSkip(Request request, int dflt) {
+        return super.getSkip(request, dflt, ARG_RECORD_SKIP);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request the request
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public int getSkipZ(Request request, int dflt) {
+        String skip = request.getString(ARG_RECORD_SKIPZ, "");
+        if (skip.equals("${skipz}")) {
+            return dflt;
+        }
+
+        return request.get(ARG_RECORD_SKIPZ, dflt);
+    }
+
+    /**
+     * Create a record filter from the url args. This can make a spatial bounds filter,
+     * a probabilistic filter, and a value range filter.
+     *
+     * @param request the request
+     * @param entry The entry
+     * @param recordFile _more_
+     *
+     * @return The record filter.
+     */
+    public RecordFilter getFilter(Request request, Entry entry,
+                                  RecordFile recordFile) {
+        List<RecordFilter> filters = new ArrayList<RecordFilter>();
+        getFilters(request, entry, recordFile, filters);
+        if (filters.size() == 0) {
+            return null;
+        }
+        if (filters.size() == 1) {
+            return filters.get(0);
+        }
+        return new CollectionRecordFilter(filters);
+    }
+
+    public void getFilters(Request request, Entry entry,
+                                   RecordFile recordFile, List<RecordFilter> filters) {
+        //      filters.add(new AltitudeFilter(0, Double.NaN));
+
+        SelectionRectangle bbox = TypeHandler.getSelectionBounds(request);
+        if (bbox.anyDefined()) {
+            bbox.normalizeLongitude();
+            //If the request crosses the dateline then split it into to and make an OR filter
+            if (bbox.allDefined() && bbox.crossesDateLine()) {
+                SelectionRectangle[] bboxes     = bbox.splitOnDateLine();
+                RecordFilter         leftFilter =
+                    new LatLonBoundsFilter(bboxes[0].getNorth(),
+                                           bboxes[0].getWest(),
+                                           bboxes[0].getSouth(),
+                                           bboxes[0].getEast());
+                RecordFilter rightFilter =
+                    new LatLonBoundsFilter(bboxes[1].getNorth(),
+                                           bboxes[1].getWest(),
+                                           bboxes[1].getSouth(),
+                                           bboxes[1].getEast());
+                filters.add(CollectionRecordFilter.or(new RecordFilter[] {
+                            leftFilter,
+                            rightFilter }));
+            } else {
+                filters.add(new LatLonBoundsFilter(bbox.getNorth(90),
+                                                   bbox.getWest(-180.0), bbox.getSouth(-90.0),
+                                                   bbox.getEast(180.0)));
+            }
+        }
+
+        if (request.defined(ARG_PROBABILITY)) {
+            filters.add(new RandomizedFilter(request.get(ARG_PROBABILITY,
+                                                         0.5)));
+        }
+
+        for (RecordField field : recordFile.getSearchableFields()) {
+            if (request.defined(ARG_SEARCH_PREFIX + field.getName())) {
+                double v = request.get(ARG_SEARCH_PREFIX + field.getName(),
+                                       0.0);
+                filters.add(
+                            new NumericRecordFilter(
+                                                    NumericRecordFilter.OP_EQUALS, field.getParamId(),
+                                                    v));
+            }
+
+            if (field.isBitField()) {
+                String[] bitFields    = field.getBitFields();
+                String   urlArgPrefix = ARG_SEARCH_PREFIX + field.getName()
+                    + "_" + ARG_BITFIELD + "_";
+                for (int bitIdx = 0; bitIdx < bitFields.length; bitIdx++) {
+                    String bitField = bitFields[bitIdx].trim();
+                    if (bitField.length() == 0) {
+                        continue;
+                    }
+                    if (request.defined(urlArgPrefix + bitIdx)) {
+                        filters.add(new BitmaskRecordFilter(bitIdx,
+                                                            request.get(urlArgPrefix + bitIdx, false),
+                                                            field.getParamId()));
+                        System.err.println("bit:" + bitFields[bitIdx]);
+                    }
+                }
+
+                continue;
+            }
+
+            if (request.defined(ARG_SEARCH_PREFIX + field.getName()
+                                + "_min")) {
+                double v = request.get(ARG_SEARCH_PREFIX + field.getName()
+                                       + "_min", 0.0);
+                filters.add(
+                            new NumericRecordFilter(
+                                                    NumericRecordFilter.OP_GE, field.getParamId(), v));
+            }
+            if (request.defined(ARG_SEARCH_PREFIX + field.getName()
+                                + "_max")) {
+                double v = request.get(ARG_SEARCH_PREFIX + field.getName()
+                                       + "_max", 0.0);
+                filters.add(
+                            new NumericRecordFilter(
+                                                    NumericRecordFilter.OP_LE, field.getParamId(), v));
+            }
+        }
+    }
 
 
 }
