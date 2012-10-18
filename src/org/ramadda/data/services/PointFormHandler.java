@@ -25,6 +25,7 @@ package org.ramadda.data.services;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.*;
 
+import org.ramadda.util.ColorTable;
 
 import org.ramadda.data.point.PointFile;
 
@@ -96,6 +97,13 @@ public class PointFormHandler extends RecordFormHandler {
     private RecordFileFactory dummyField6 = null;
 
     private PointTypeHandler dummyField7 = null;
+    private RecordCollectionTypeHandler dummyField8  = null;
+    private RecordApiHandler dummyField9 = null;
+
+    /** _more_ */
+    public static final String LABEL_ALTITUDE = "Altitude";
+
+
 
     /**
      * ctor
@@ -359,6 +367,203 @@ public class PointFormHandler extends RecordFormHandler {
     public void addToGroupForm(Request request, Entry group, StringBuffer sb, List<? extends RecordEntry> recordEntries, String extra) throws Exception  {
 
     }
+
+    /**
+     * add the Settings
+     *
+     * @param request request
+     * @param entry the entry
+     * @param sb buffer to append to
+     * @param recordEntry the recordentry
+     *
+     * @throws Exception On badness
+     */
+    public void addSettingsForm(Request request, Entry entry,
+                                 StringBuffer sb, RecordEntry recordEntry)
+            throws Exception {
+
+        boolean      showUrl = request.get(ARG_SHOWURL, false);
+        StringBuffer extra   = new StringBuffer();
+        extra.append(HtmlUtils.formTable());
+        String initialDegrees = "" + getDefaultRadiusDegrees(request,
+                                    entry.getBounds());
+
+        if (request.defined(ARG_GRID_RADIUS_DEGREES)) {
+            initialDegrees = request.getString(ARG_GRID_RADIUS_DEGREES, "");
+        }
+
+        String initialCells = "0";
+        if (request.defined(ARG_GRID_RADIUS_CELLS)) {
+            initialCells = request.getString(ARG_GRID_RADIUS_CELLS, "");
+        }
+        extra.append(HtmlUtils.hidden(ARG_GRID_RADIUS_DEGREES_ORIG,
+                                      initialDegrees));
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Grid radius for IDW"),
+                msgLabel("Degrees")
+                + HtmlUtils.input(
+                    ARG_GRID_RADIUS_DEGREES, initialDegrees,
+                    12) + HtmlUtils.space(4) + msgLabel("or # of grid cells")
+                        + HtmlUtils.input(
+                            ARG_GRID_RADIUS_CELLS, initialCells, 4)));
+
+
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Fill missing"),
+                HtmlUtils.checkbox(
+                    PointOutputHandler.ARG_FILLMISSING, "true", false)));
+
+
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Hill shading"),
+                msgLabel("Azimuth")
+                + HtmlUtils.input(ARG_HILLSHADE_AZIMUTH, "315", 4)
+                + HtmlUtils.space(4) + msgLabel("Angle")
+                + HtmlUtils.input(ARG_HILLSHADE_ANGLE, "45", 4)));
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Image Dimensions"),
+                HtmlUtils.input(
+                    ARG_WIDTH, request.getString(ARG_WIDTH, "" + DFLT_WIDTH),
+                    5) + " X "
+                       + HtmlUtils.input(
+                           ARG_HEIGHT,
+                           request.getString(ARG_HEIGHT, "" + DFLT_HEIGHT),
+                           5)));
+
+
+        String paramWidget = null;
+        List   params      = new ArrayList();
+        params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
+        if (recordEntry != null) {
+            for (RecordField attr :
+                    recordEntry.getRecordFile().getChartableFields()) {
+                params.add(new TwoFacedObject(attr.getLabel(),
+                        "" + attr.getParamId()));
+            }
+        }
+
+        if (params.size() > 1) {
+            extra.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Parameter for Image and Grid"),
+                    HtmlUtils.select(
+                        RecordOutputHandler.ARG_PARAMETER, params,
+                        request.getString(
+                            RecordOutputHandler.ARG_PARAMETER,
+                            (String) null))));
+        }
+
+
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Color Table"),
+                HtmlUtils.select(
+                    ARG_COLORTABLE, ColorTable.getColorTableNames(),
+                    request.getString(ARG_COLORTABLE, (String) null))));
+
+
+        extra.append(HtmlUtils.formTableClose());
+
+        sb.append(
+            HtmlUtils.row(
+                HtmlUtils.colspan(formHeader("Advanced Settings"), 2)));
+
+        if (recordEntry.getRecordFile().isCapable(PointFile.ACTION_GRID)) {
+            sb.append(
+                HtmlUtils.formEntryTop(
+                    msgLabel("Gridding"),
+                    HtmlUtils.makeShowHideBlock(
+                        msg(""), extra.toString(), showUrl)));
+        }
+
+
+        StringBuffer points = new StringBuffer();
+        points.append(HtmlUtils.formTable());
+        points.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(ARG_GEOREFERENCE, "true", false) + " "
+                + msg("Convert coordinates to lat/lon if needed")));
+
+        points.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(ARG_INCLUDEWAVEFORM, "true", false) + " "
+                + msg("Include waveforms")));
+
+
+        points.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Points"),
+                                         HtmlUtils.makeShowHideBlock(msg(""),
+                                             points.toString(), false)));
+
+
+
+
+        StringBuffer processSB = new StringBuffer();
+        processSB.append(HtmlUtils.formTable());
+        processSB.append(HtmlUtils.formEntry("",
+                                             HtmlUtils.checkbox(ARG_ASYNCH,
+                                                 "true", true) + " "
+                                                     + msg("Asynchronous")));
+
+        processSB.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(ARG_RESPONSE, RESPONSE_XML, false)
+                + " Return response in XML"));
+
+        processSB.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(ARG_POINTCOUNT, "true", false)
+                + " Just return the estimated point count"));
+
+
+
+        getOutputHandler().addPublishWidget(
+            request, entry, processSB,
+            msg("Select a folder to publish the product to"));
+
+        processSB.append(HtmlUtils.formTableClose());
+
+
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Processing"),
+                                         HtmlUtils.makeShowHideBlock(msg(""),
+                                             processSB.toString(), false)));
+
+
+        sb.append(
+            HtmlUtils.row(
+                HtmlUtils.colspan(formHeader("Job Information"), 2)));
+
+        User user = request.getUser();
+        if (getAdmin().isEmailCapable()) {
+            sb.append(HtmlUtils.formEntry(msgLabel("Send email to"),
+                                          HtmlUtils.input(ARG_JOB_EMAIL,
+                                              user.getEmail(), 40)));
+        }
+        sb.append(HtmlUtils.formEntry(msgLabel("Your name"),
+                                      HtmlUtils.input(ARG_JOB_USER,
+                                          user.getName(), 40)));
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Job name"),
+                                      HtmlUtils.input(ARG_JOB_NAME, "", 40)));
+
+        sb.append(
+            HtmlUtils.formEntryTop(
+                msgLabel("Description"),
+                HtmlUtils.textArea(ARG_JOB_DESCRIPTION, "", 5, 40)));
+
+
+
+    }
+
+
 
 
 }
