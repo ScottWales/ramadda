@@ -181,36 +181,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     /**
      * _more_
      *
-     * @param filename _more_
-     * @param properties _more_
-     *
-     * @return _more_
-     *
-     * @throws CloneNotSupportedException _more_
-     */
-    public PointFile cloneMe(String filename, Hashtable properties)
-            throws CloneNotSupportedException {
-        PointFile that = cloneMe();
-        that.setFilename(filename);
-        that.setProperties(properties);
-        return that;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws CloneNotSupportedException _more_
-     */
-    public PointFile cloneMe() throws CloneNotSupportedException {
-        return (PointFile) super.clone();
-    }
-
-    /**
-     * _more_
-     *
      * @param properties _more_
      */
     public void setProperties(Hashtable properties) {

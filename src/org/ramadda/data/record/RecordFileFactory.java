@@ -71,10 +71,10 @@ public class RecordFileFactory {
     }
 
     public RecordFile doMakeRecordFile(String path, Hashtable properties) throws Exception {
-        //        System.err.println("properties:" + properties);
+        System.err.println("properties:" + properties);
         for(RecordFile f: prototypes) {
             if (f.canLoad(path)) {
-                //                System.err.println("loading " +  f.getClass().getName());
+                System.err.println("loading " +  f.getClass().getName());
                 return  f.cloneMe(path, properties);
             }
         }
