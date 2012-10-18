@@ -85,7 +85,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public static final String OUTPUT_CATEGORY = "Point Data";
 
 
-    /** This is used to create a product for a lidar collection or a lidar file. */
+    /** This is used to create a product for a point collection or a point file. */
     public OutputType OUTPUT_PRODUCT;
 
 
@@ -95,6 +95,17 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public OutputType OUTPUT_METADATA;
 
+    /** output type */
+    public  OutputType OUTPUT_POINTCOUNT;
+
+    /** output type */
+    public  OutputType OUTPUT_MAP;
+
+    /** output type */
+    public  OutputType OUTPUT_FORM;
+
+    /** output type */
+    public  OutputType OUTPUT_TIMESERIES_IMAGE;
 
     /** output type */
     public  OutputType OUTPUT_LAS;
@@ -190,12 +201,12 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         OUTPUT_GETPOINTINDEX =
-            new OutputType("LiDAR Point index query", base +".getpointindex",
+            new OutputType("Point index query", base +".getpointindex",
                            OutputType.TYPE_OTHER, "", ICON_DATA,
                            category);
 
         OUTPUT_GETLATLON =
-            new OutputType("LiDAR Lat/Lon query", base +".getlatlon",
+            new OutputType("Lat/Lon query", base +".getlatlon",
                            OutputType.TYPE_OTHER, "", ICON_DATA,
                            category);
 
@@ -262,6 +273,28 @@ public class PointOutputHandler extends RecordOutputHandler {
             new OutputType("ARC ASCII Grid", base +".asc", OutputType.TYPE_OTHER,
                            "asc", ICON_DATA, category);
 
+        OUTPUT_POINTCOUNT =
+            new OutputType("Point Count", base +".count", OutputType.TYPE_OTHER);
+
+
+        OUTPUT_MAP =
+            new OutputType("Map and Chart ", base +".map",
+                           OutputType.TYPE_OTHER, "", ICON_MAP, category);
+
+        OUTPUT_FORM =
+            new OutputType("Subset and Products", base +".form",
+                           OutputType.TYPE_OTHER, "", ICON_TOOLS,
+                           category);
+
+        OUTPUT_TIMESERIES_IMAGE =
+            new OutputType("", base +".timeseriesimage",
+                           OutputType.TYPE_OTHER, "", ICON_IMAGE,
+                           category);
+
+    }
+
+    public String getDomainName() {
+        return "Points";
     }
 
     public String getOutputCategory() {
@@ -286,7 +319,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     }
 
 
-
     /**
      * Not implemented yet. This will get the point index of a given lat/lon
      *
@@ -307,7 +339,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         return new Result("", sb, "text/xml");
     }
-
 
 
     /**
@@ -1641,8 +1672,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                 outputHandler.OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
                 //ARG_ASYNCH, "false", 
-                //                LidarOutputHandler.ARG_LIDAR_SKIP,
-                //                macro(LidarOutputHandler.ARG_LIDAR_SKIP), 
+                //                ARG_Record_SKIP,
+                //                macro(ARG_RECORD_SKIP), 
                 //                ARG_BBOX,  macro(ARG_BBOX), 
                 //                ARG_DEFAULTBBOX, dfltBbox
             }, false);
@@ -1655,7 +1686,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     /*
       public Result outputEntryNc(Request request, Entry mainEntry,
       OutputType outputType,
-      List<LidarEntry> lidarEntries,
+      List<PointEntry> pointEntries,
       Object jobId)
       throws Exception {
       if ( !request.defined(ARG_FILLMISSING)) {
@@ -1663,13 +1694,13 @@ public class PointOutputHandler extends RecordOutputHandler {
       }
 
       String    mimeType    = "application/x-netcdf";
-      Rectangle2D.Double  bounds      = getBounds(request, lidarEntries);
+      Rectangle2D.Double  bounds      = getBounds(request, pointEntries);
 
 
       GridVisitor gridVisitor  =  makeGridVisitor(request,
-      lidarEntries,
+      pointEntries,
       bounds);
-      getLidarJobManager().visitConcurrent(request, lidarEntries, gridVisitor, new VisitInfo(false));
+      getPointJobManager().visitConcurrent(request, pointEntries, gridVisitor, new VisitInfo(false));
       IdwGrid latLonGrid = gridVisitor.getGrid();
 
 
@@ -1701,7 +1732,7 @@ public class PointOutputHandler extends RecordOutputHandler {
       ncfile.addVariable(null, v);
       ncfile.addGlobalAttribute(new Attribute("Conventions", "CF-1.X"));
       ncfile.addGlobalAttribute(new Attribute("History",
-      "Generated from NLAS/RAMADDA LiDAR Data"));
+      "Generated from NLAS/RAMADDA Point Data"));
       ncfile.create();
       for (Iterator it = keys.iterator(); it.hasNext(); ) {
       Variable v = (Variable) it.next();
@@ -1866,6 +1897,88 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
     }
+
+
+    /**
+     * This gets called to add links into the entry menus in the HTML views.
+     * e.g., Subset form for the Collection, Map, metadata and subset form
+     * links for point files
+     *
+     * @param request the request
+     * @param state This holds the group, entry, children, etc.
+     * @param links list to add to
+     *
+     *
+     * @throws Exception on badness
+     */
+    public void getEntryLinks(Request request, State state, List<Link> links)
+        throws Exception {
+
+        Entry entry = state.getEntry();
+        if (entry == null) {
+            return;
+        }
+        if ( !canHandleEntry(entry)) {
+            return;
+        }
+
+        if (entry.getTypeHandler() instanceof RecordCollectionTypeHandler) {
+            links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
+            return;
+        }
+
+        if ( !state.entry.isFile()) {
+            return;
+        }
+
+        if ( !getRepository().getAccessManager().canAccessFile(request,
+                                                               state.entry)) {
+            return;
+        }
+
+        links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
+        links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
+        links.add(makeLink(request, state.getEntry(), OUTPUT_VIEW));
+        links.add(makeLink(request, state.getEntry(), OUTPUT_METADATA));
+    }
+
+
+
+    /**
+     * make the file object
+     *
+     * @param request the request
+     * @param entry The entry
+     * @param numRecords How many records are in the file. May be < 0.
+     *
+     * @return the file
+     *
+     * @throws Exception on badness
+     */
+    public RecordFile createAndInitializeRecordFile(Request request, Entry entry,
+                                                    long numRecords)
+        throws Exception {
+        RecordFile recordFile = (RecordFile) doMakeRecordFile(entry);
+        if (numRecords < 0) {
+            numRecords = recordFile.getNumRecords();
+        }
+        if (request.defined(ARG_RECORD_SKIP)) {
+            int skip = getSkip(request, 1000);
+            recordFile.setDefaultSkip(skip);
+        } else if (request.defined(RecordFormHandler.ARG_NUMPOINTS)) {
+            recordFile.setDefaultSkip(
+                                     (int) (numRecords
+                                            / request.get(RecordFormHandler.ARG_NUMPOINTS, 1000)));
+        } else if (numRecords < 10000) {
+            recordFile.setDefaultSkip(0);
+        } else {
+            //Default is 10000 points
+            //            recordFile.setDefaultSkip((int)(numRecords/10000));
+        }
+        return recordFile;
+    }
+
+
 
 
 }

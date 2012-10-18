@@ -71,7 +71,7 @@ public class PointEntry extends RecordEntry {
     }
 
     public PointOutputHandler getPointOutputHandler() {
-        return (PointOutputHandler) getPointOutputHandler();
+        return (PointOutputHandler) getOutputHandler();
     }
 
     public PointFile getPointFile() throws Exception {
