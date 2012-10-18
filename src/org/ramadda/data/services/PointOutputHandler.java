@@ -86,83 +86,74 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
     /** This is used to create a product for a point collection or a point file. */
-    public OutputType OUTPUT_PRODUCT;
+    public final OutputType OUTPUT_PRODUCT;
 
 
     /** output type */
-    public OutputType OUTPUT_VIEW;
+    public final OutputType OUTPUT_VIEW;
 
     /** output type */
-    public OutputType OUTPUT_METADATA;
+    public final OutputType OUTPUT_METADATA;
 
     /** output type */
-    public  OutputType OUTPUT_POINTCOUNT;
+    public final  OutputType OUTPUT_POINTCOUNT;
 
     /** output type */
-    public  OutputType OUTPUT_MAP;
+    public final  OutputType OUTPUT_MAP;
 
     /** output type */
-    public  OutputType OUTPUT_FORM;
+    public final  OutputType OUTPUT_FORM;
 
     /** output type */
-    public  OutputType OUTPUT_TIMESERIES_IMAGE;
+    public final  OutputType OUTPUT_TIMESERIES_IMAGE;
 
     /** output type */
-    public  OutputType OUTPUT_LAS;
+    public OutputType OUTPUT_LAS;
 
     /** output type */
-    public OutputType OUTPUT_GETPOINTINDEX;
-
-
-    /** output type */
-    public OutputType OUTPUT_GETLATLON;
-
+    public final OutputType OUTPUT_GETPOINTINDEX;
 
 
     /** output type */
-    public OutputType OUTPUT_IMAGE;
+    public final OutputType OUTPUT_GETLATLON;
 
+    /** output type */
+    public final OutputType OUTPUT_IMAGE;
 
     /** _more_ */
-    public OutputType OUTPUT_BOUNDS;
+    public final OutputType OUTPUT_BOUNDS;
 
     /** output type */
-    public OutputType OUTPUT_NC;
+    public final OutputType OUTPUT_NC;
 
     /** output type */
-    public OutputType OUTPUT_HILLSHADE;
+    public final OutputType OUTPUT_HILLSHADE;
 
     /** output type */
-    public OutputType OUTPUT_KMZ;
+    public final OutputType OUTPUT_KMZ;
 
     /** output type */
-    public OutputType OUTPUT_KML_TRACK;
-
-
-    /** output type */
-    public OutputType OUTPUT_SUBSET;
+    public final OutputType OUTPUT_KML_TRACK;
 
 
     /** output type */
-    public OutputType OUTPUT_KML;
-
-    /** output type */
-    public OutputType OUTPUT_LATLONALTBIN;
-
+    public final OutputType OUTPUT_SUBSET;
 
 
     /** output type */
-    public OutputType OUTPUT_LATLONALTCSV;
-
-
-    /** output type */
-    public OutputType OUTPUT_CSV;
-
-
+    public final OutputType OUTPUT_KML;
 
     /** output type */
-    public OutputType OUTPUT_ASC;
+    public final OutputType OUTPUT_LATLONALTBIN;
 
+    /** output type */
+    public final OutputType OUTPUT_LATLONALTCSV;
+
+    /** output type */
+    public final OutputType OUTPUT_CSV;
+
+    /** output type */
+    public final OutputType OUTPUT_ASC;
 
     /**
      * constructor. This gets called by the Repository via reflection
@@ -174,11 +165,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     public PointOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        doMakeOutputTypes();
-    }
-
-
-    protected void doMakeOutputTypes() {
         String category = getOutputCategory();
         String base= getDomainBase();
 

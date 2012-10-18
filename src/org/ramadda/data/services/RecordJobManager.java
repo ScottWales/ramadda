@@ -672,5 +672,146 @@ public class RecordJobManager extends JobManager implements RecordConstants {
     }
 
 
+    /**
+     * This does the product generation asynchronously. It creates a job id, spawns off a thread to actually
+     * perform the job and returns a redirect to the job status page.
+     *
+     * @param request job ingo
+     * @param entry the entry
+     * @param outputType the output type
+     * @param lidarEntries list of lidar entries to process
+     *
+     * @return the result
+     *
+     * @throws Exception On badness
+     */
+    public Result handleAsynchRequest(Request request, Entry entry,
+                                      OutputType outputType,
+                                      List<? extends RecordEntry> lidarEntries)
+            throws Exception {
+        checkNewJobOK();
+        try {
+            return handleAsynchRequestInner(request, entry, outputType,
+                                            lidarEntries);
+        } catch (Exception exc) {
+            logError("Error processing job", exc);
+
+            return makeRequestErrorResult(request,
+                                          "Error processing job: " + exc);
+        }
+    }
+
+
+    /**
+     * This does the real work of running the processing job
+     *
+     * @param request the request
+     * @param entry the entry (e.g., the collection)
+     * @param outputType the output type
+     * @param recordEntries list of recordentries to processes
+     *
+     * @return the ramadda result
+     *
+     * @throws Exception on badness
+     */
+    private Result handleAsynchRequestInner(
+            final Request request, final Entry entry,
+            final OutputType outputType, final List<? extends RecordEntry> recordEntries)
+            throws Exception {
+
+        final JobInfo jobInfo = new JobInfo(request, entry.getId(),
+                                            getRepository().getGUID());
+        jobInfo.setJobStatusUrl(getJobUrl(request, entry,
+                                          jobInfo.getJobId(),
+                                          getOutputResults()));
+        jobInfo.setJobUrl(makeJobUrl((Request) request.cloneMe()));
+
+        for (RecordEntry recordEntry : recordEntries) {
+            recordEntry.setProcessId(jobInfo.getJobId());
+        }
+        jobHasStarted(jobInfo);
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+                try {
+                    ((PointOutputHandler)getRecordOutputHandler()).processEntries(request, entry,
+                            true, recordEntries, jobInfo.getJobId());
+                    if ( !jobOK(jobInfo.getJobId())) {
+                        return;
+                    }
+                    asynchRequestFinished(request, entry, recordEntries,
+                                          outputType, jobInfo.getJobId());
+                } catch (Exception exc) {
+                    Throwable thr = LogUtil.getInnerException(exc);
+                    System.err.println("** Error:" + thr);
+                    exc.printStackTrace();
+                    thr.printStackTrace();
+                    setError(jobInfo,
+                             "Error:" + thr + "\nStack trace outer:<pre>"
+                             + LogUtil.getStackTrace(exc)
+                             + "\nInner exception:"
+                             + LogUtil.getStackTrace(thr) + "</pre>");
+                    removeJob(jobInfo);
+                    logException("Error processing request", exc);
+                    try {
+                        IOUtil.writeFile(IOUtil
+                            .joinDir(getRecordOutputHandler()
+                                .getProductDir(jobInfo
+                                    .getJobId()), ".error"), "Error processing equest:"
+                                        + thr);
+                    } catch (Exception ignore) {}
+                }
+
+            }
+        };
+
+        Misc.run(runnable);
+        //        getExecutor().submit(runnable);
+        if (request.responseInXml()) {
+            StringBuffer xml       = new StringBuffer();
+            String       statusUrl =
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+                                 new String[] {
+                ARG_OUTPUT, getOutputResults().getId(), ARG_JOB_ID,
+                jobInfo.getJobId().toString(), ARG_RESPONSE, RESPONSE_XML,
+            });
+
+
+            String cancelUrl =
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+                                 new String[] {
+                ARG_OUTPUT, getOutputResults().getId(), ARG_JOB_ID,
+                jobInfo.getJobId().toString(), ARG_RESPONSE, RESPONSE_XML,
+                ARG_CANCEL, "true"
+            });
+
+            xml.append(XmlUtil.openTag(TAG_URL,
+                                       XmlUtil.attrs(new String[] {
+                                           JobManager.ATTR_TYPE,
+                                           TYPE_STATUS })));
+            XmlUtil.appendCdata(xml, request.getAbsoluteUrl(statusUrl));
+            xml.append(XmlUtil.closeTag(TAG_URL));
+
+            xml.append(XmlUtil.openTag(TAG_URL,
+                                       XmlUtil.attrs(new String[] {
+                                           JobManager.ATTR_TYPE,
+                                           TYPE_CANCEL })));
+            XmlUtil.appendCdata(xml, request.getAbsoluteUrl(cancelUrl));
+            xml.append(XmlUtil.closeTag(TAG_URL));
+
+            return makeRequestOKResult(request, xml.toString());
+
+        }
+        String actionUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                            entry, new String[] { ARG_OUTPUT,
+                getOutputResults().getId(), ARG_JOB_ID,
+                jobInfo.getJobId().toString() });
+
+        return new Result(actionUrl);
+    }
+
+
+
+
 
 }
