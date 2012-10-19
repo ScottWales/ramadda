@@ -677,8 +677,65 @@ public class PointOutputHandler extends RecordOutputHandler {
                                                         doMakeEntry(request, entry));
         }
 
-        return null;
+        if (request.defined(ARG_GETDATA)) {
+            if ( !request.defined(ARG_PRODUCT)) {
+                return getPointFormHandler().outputEntryForm(
+                                                             request, entry,
+                                                             new StringBuffer(
+                                                                              getRepository().showDialogError(
+                                                                                                              "No products selected")));
+            }
+        }
+
+        if (outputType.equals(OUTPUT_FORM)) {
+            return getPointFormHandler().outputEntryForm(request, entry);
+        }
+
+        boolean doingPublish = request.defined(ARG_PUBLISH_ENTRY + "_hidden");
+        List<PointEntry> pointEntries = new ArrayList<PointEntry>();
+        pointEntries.add((PointEntry) doMakeEntry(request, entry));
+        if ( !doingPublish && !request.get(ARG_ASYNCH, false)) {
+            Result result = processEntries(request, entry, false,
+                                           pointEntries, null);
+            if (result == null) {
+                StringBuffer sb = new StringBuffer();
+                if ( !outputType.equals(OUTPUT_FORM)) {
+                    sb.append(
+                              getRepository().showDialogError(
+                                                              "Unknown output type:" + outputType));
+                }
+
+                return getPointFormHandler().outputEntryForm(request, entry);
+            }
+            return result;
+        }
+        return getRecordJobManager().handleAsynchRequest(request, entry,
+                                                        outputType, pointEntries);
+
+        //        return null;
     }
+
+
+    /**
+     * Main entry point for Collections. This shows the form for the collection or the job processing
+     * state or dispatches the product request. If doing  the product request it either handles it synchronously
+     * or asynchronously. If asynch then it creates a job id and redirects to a web page that shows the job status.
+     * If synchronously then whatever single product file is requested is returned on the request.
+     *
+     * This spatially subsets at the file level to figure out  children  files it should include.
+     * If the request is to process data then it then does a rough estimate of the number of points
+     * in the request and will return an error if too many.
+     *
+     * @param request the request
+     * @param outputType output type
+     * @param group The group
+     * @param subGroups groups
+     * @param entries entries
+     *
+     * @return The result
+     *
+     * @throws Exception on badness
+     */
 
 
     public Result outputGroup(final Request request,
@@ -696,7 +753,109 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
 
-        return null;
+
+        boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
+            || request.getString(ARG_PRODUCT,
+                                 "").equals(OUTPUT_POINTCOUNT.getId());
+        //If its a getdata request then check if a product type (e.g., csv) has been selected
+        if ( !doingPointCount && request.defined(ARG_GETDATA)) {
+            if ( !request.defined(ARG_PRODUCT)) {
+                return getPointFormHandler().outputGroupForm(
+                                                             request, group, subGroups, entries,
+                                                             new StringBuffer(
+                                                                              getRepository().showDialogError(
+                                                                                                              "No products selected")));
+            }
+        }
+
+
+        if (outputType.equals(OUTPUT_FORM)) {
+            return getPointFormHandler().outputGroupForm(request, group,
+                                                         subGroups, entries, new StringBuffer());
+        }
+
+
+        final List<PointEntry> pointEntries =
+            PointEntry.toPointEntryList(doSubsetEntries(request, makeRecordEntries(request, entries, true)));
+
+        boolean asynch = request.get(ARG_ASYNCH, false);
+        if ( !doingPointCount && (pointEntries.size() == 0) && asynch) {
+            return makeRequestErrorResult(
+                                          request, "No entries found that matched the criteria");
+        }
+
+        long pointCount = getApproximatePointCount(request,
+                                                   pointEntries);
+        if (doingPointCount) {
+            if (request.responseInXml()) {
+                return makeRequestOKResult(request,
+                                           "<pointcount>" + pointCount
+                                           + "</pointcount>");
+            }
+            if (request.responseInText()) {
+                return makeRequestOKResult(request, "" + pointCount);
+            }
+
+            return makeRequestOKResult(request,
+                                       "Estimated point count:" + pointCount);
+        }
+
+        //Check if they've exceeded the threshold
+        boolean tooManyPoints = false;
+        if (request.getUser().getAnonymous()) {
+            if (pointCount > POINT_LIMIT_ANONYMOUS) {
+                tooManyPoints = true;
+            }
+        } else {
+            if (pointCount > POINT_LIMIT_USER) {
+                tooManyPoints = true;
+            }
+        }
+
+
+        if (tooManyPoints) {
+            if (request.responseInXml()) {
+                return makeRequestErrorResult(request,
+                                              "Too many points selected:" + pointCount);
+            }
+            StringBuffer sb = new StringBuffer(
+                                               getRepository().showDialogError(
+                                                                               "Too many points selected: "
+                                                                               + pointCount));
+
+            return getPointFormHandler().outputGroupForm(request, group,
+                                                         subGroups, entries, sb);
+        }
+
+
+        boolean doingPublish = doingPublish(request);
+
+        //If its synchronous
+        if ( !doingPublish && !asynch) {
+            Result result = processEntries(request, group, false,
+                                           pointEntries, null);
+            if (result != null) {
+                return result;
+            }
+            StringBuffer sb = new StringBuffer();
+            if ( !outputType.equals(OUTPUT_FORM)) {
+                sb.append(
+                          getRepository().showDialogError(
+                                                          "Unknown output type:" + outputType));
+            }
+
+            return getPointFormHandler().outputGroupForm(request, group,
+                                                         subGroups, entries, sb);
+        }
+
+        if ( !request.defined(ARG_PRODUCT)) {
+            return makeRequestErrorResult(request,
+                                          "No product formats were selected");
+        }
+
+        return getRecordJobManager().handleAsynchRequest(request, group,
+                                                        outputType, pointEntries);
+
     }
 
 
