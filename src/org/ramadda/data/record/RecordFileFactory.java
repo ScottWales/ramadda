@@ -90,13 +90,11 @@ public class RecordFileFactory {
     }
 
 
-    public static void main(String[] args) throws Exception {
-
-
+    public void test(String[] args) throws Exception {
         for(int i=0;i<args.length;i++) {
 	    final int[]cnt = {0};
-            RecordFile file  = new RecordFileFactory().doMakeRecordFile(args[i]);
-	    
+            RecordFile file  = doMakeRecordFile(args[i]);
+    
 	    final RecordVisitor  visitor = new RecordVisitor() {
 		    public boolean visitRecord(RecordFile file, VisitInfo visitInfo, Record record) {
 			cnt[0]++;
@@ -106,6 +104,11 @@ public class RecordFileFactory {
 	    file.visit(visitor, new VisitInfo(), null);
 	    System.err.println(args[i] +" #points:" + cnt[0]);
         }
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        new RecordFileFactory().test(args);
     }
 
 
