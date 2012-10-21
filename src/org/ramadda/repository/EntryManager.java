@@ -1454,6 +1454,8 @@ public class EntryManager extends RepositoryManager {
                 dateRange[1] = dateRange[0];
             }
 
+            File originalFile = null;
+
             for (int resourceIdx = 0; resourceIdx < resources.size();
                     resourceIdx++) {
                 Entry parent = parents.get(resourceIdx);
@@ -1469,7 +1471,7 @@ public class EntryManager extends RepositoryManager {
                     } else {
                         theResource =
                             getStorageManager().moveToStorage(request,
-                                new File(theResource)).toString();
+                                                              originalFile = new File(theResource)).toString();
                     }
                 }
 

@@ -118,8 +118,13 @@ public class CsvVisitor extends RecordVisitor {
             cnt++;
             ValueGetter getter = field.getValueGetter();
             if (getter == null) {
-                double value = record.getValue(field.getParamId());
-                pw.append("" + value);
+                if(field.isTypeString()) {
+                    String svalue = record.getStringValue(field.getParamId());
+                    pw.append(svalue);
+                } else {
+                    double value = record.getValue(field.getParamId());
+                    pw.append("" + value);
+                }
             } else {
                 pw.append(getter.getStringValue(record, field, visitInfo));
             }

@@ -258,6 +258,11 @@ public abstract class Record implements Cloneable {
     }
 
 
+    public String getStringValue(int attrId) {
+        throw new IllegalArgumentException("Unknown attribute id:" + attrId);
+    }
+
+
     /**
      * _more_
      */
@@ -1449,6 +1454,32 @@ public abstract class Record implements Cloneable {
         return true;
     }
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public long getRecordTime() {
+        return 0;
+    }
+
+    /**
+     * _more_
+     *
+     * @param time _more_
+     */
+    public void setRecordTime(long time) {}
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean hasRecordTime() {
+        return false;
+    }
 
 
 }

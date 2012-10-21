@@ -948,7 +948,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
                                     mainEntry, ".csv") {
-            private CsvVisitor csvVisitor;
+            private CsvVisitor csvVisitor = null;
             int                cnt = 0;
             public boolean doVisitRecord(RecordFile file,
                                          VisitInfo visitInfo, Record record)
@@ -960,7 +960,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                               new Boolean(true));
                     }
                     csvVisitor = new CsvVisitor(getThePrintWriter(),
-                            getFields(request, record.getFields()));
+                                                getFields(request, record.getFields()));
                 }
                 if ( !jobOK(jobId)) {
                     return false;

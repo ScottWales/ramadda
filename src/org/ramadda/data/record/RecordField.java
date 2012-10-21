@@ -51,6 +51,9 @@ public class RecordField {
     public static final String PROP_BITFIELDS = "bitfields";
 
 
+    public static final String TYPE_NUMERIC = "numeric";
+    public static final String TYPE_STRING = "string";
+
     /** _more_ */
     private String name;
 
@@ -89,6 +92,11 @@ public class RecordField {
 
     /** _more_          */
     private boolean synthetic = false;
+
+    private double defaultDoubleValue = Double.NaN;
+
+    private String type = TYPE_NUMERIC;
+
 
     /**
      * _more_
@@ -502,6 +510,56 @@ public class RecordField {
         return synthetic;
     }
 
+    public boolean hasDefaultDoubleValue() {
+        return !Double.isNaN(defaultDoubleValue);
+    }
+
+
+    /**
+       Set the DefaultValue property.
+
+       @param value The new value for DefaultValue
+    **/
+    public void setDefaultDoubleValue (double value) {
+	defaultDoubleValue = value;
+    }
+
+    /**
+       Get the DefaultValue property.
+
+       @return The DefaultValue
+    **/
+    public double getDefaultDoubleValue () {
+	return defaultDoubleValue;
+    }
+
+
+
+    /**
+       Set the Type property.
+
+       @param value The new value for Type
+    **/
+    public void setType (String value) {
+	type = value;
+    }
+
+    /**
+       Get the Type property.
+
+       @return The Type
+    **/
+    public String getType () {
+	return type;
+    }
+
+    public boolean isTypeString() {
+        return type.equals(TYPE_STRING);
+    }
+
+    public boolean isTypeNumeric() {
+        return type.equals(TYPE_NUMERIC);
+    }
 
 
 }

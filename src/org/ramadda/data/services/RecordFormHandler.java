@@ -360,6 +360,9 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                     for (int fieldCnt = 0; fieldCnt < fields.size();
                             fieldCnt++) {
                         RecordField field = fields.get(fieldCnt);
+                        if(field.getSkip()) {
+                            continue;
+                        }
                         if (field.getSynthetic()) {
                             continue;
                         }
@@ -393,6 +396,16 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                 for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
                     RecordField field = fields.get(fieldCnt);
                     if (field.getSynthetic()) {
+                        continue;
+                    }
+                    if(field.getSkip()) {
+                        continue;
+                    }
+
+                    if(field.isTypeString()) {
+                        sb.append("<td align=right>");
+                        sb.append(record.getStringValue(field.getParamId()));
+                        sb.append("</td>");
                         continue;
                     }
                     if (field.isBitField()) {

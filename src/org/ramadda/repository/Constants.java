@@ -1648,7 +1648,6 @@ public interface Constants {
     public static final String PROP_ENTRY_FOOTER = "ramadda.entryfooter";
 
 
-
     /** _more_ */
     public static final String PROP_ENTRY_BREADCRUMBS =
         "ramadda.entry.breadcrumbs";
