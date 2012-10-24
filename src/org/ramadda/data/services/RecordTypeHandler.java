@@ -35,6 +35,10 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import ucar.unidata.util.Misc;
+import java.util.Hashtable;
+import java.lang.reflect.*;
+
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -330,9 +334,31 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      * @throws Exception On badness
      */
     public RecordFile doMakeRecordFile(Entry entry) throws Exception {
+        String recordFileClass= getProperty("record.file.class",(String) null);
+        if(recordFileClass!= null)  {
+            return doMakeRecordFile(entry, recordFileClass);
+        }
         String path = entry.getFile().toString();
         return (RecordFile) getRecordFileFactory().doMakeRecordFile(path,
                                                                     getRecordProperties(entry));
+    }
+
+
+    private RecordFile doMakeRecordFile(Entry entry, String className) throws Exception {
+        Class c = Misc.findClass(className);
+        Constructor ctor = Misc.findConstructor(c,
+                                                new Class[] { String.class, Hashtable.class });
+        if(ctor!=null) {
+            return (RecordFile) ctor.newInstance(new Object[]{entry.getFile().toString(),
+                                                              getRecordProperties(entry)});
+        }
+        ctor = Misc.findConstructor(c,
+                                    new Class[] { String.class});
+        if(ctor!=null) {
+            return (RecordFile) ctor.newInstance(new Object[]{entry.getFile().toString()});
+            
+        }
+        throw new IllegalArgumentException("Could not find constructor for " +className);
     }
 
 

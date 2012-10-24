@@ -106,6 +106,7 @@ public class PointFormHandler extends RecordFormHandler {
     private PointTypeHandler dummyField7 = null;
     private RecordCollectionTypeHandler dummyField8  = null;
     private RecordApiHandler dummyField9 = null;
+    private PointJobManager dummyField10 = null;
 
     /** _more_ */
     public static final String LABEL_ALTITUDE = "Altitude";

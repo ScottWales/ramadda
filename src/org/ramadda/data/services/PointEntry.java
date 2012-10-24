@@ -78,6 +78,28 @@ public class PointEntry extends RecordEntry {
         return (PointFile) getRecordFile();
     }
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public RecordFile getRecordFile() throws Exception {
+        RecordFile recordFile = (RecordFile) super.getRecordFile();
+        if (recordFile == null) {
+            long records = getNumRecordsFromEntry(-1);
+            recordFile = getPointOutputHandler().createAndInitializeRecordFile(getRequest(),
+                                                                               getEntry(), records);
+            setRecordFile(recordFile);
+        }
+        return recordFile;
+    }
+
+
+
     /**
      * _more_
      *
