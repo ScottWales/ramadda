@@ -3755,6 +3755,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             typeHandler = new TypeHandler(this, type);
             typeHandler.setForUser(false);
+            if(type.equals(TypeHandler.TYPE_CONTRIBUTION)) {
+                typeHandler.putProperty("form.date.show","false");
+                typeHandler.putProperty("form.area.show","false");
+            }
             addTypeHandler(type, typeHandler);
         }
 

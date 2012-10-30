@@ -927,7 +927,6 @@ public class PageHandler extends RepositoryManager {
             return defaultTemplate;
         }
 
-
         String templateId = request.getHtmlTemplateId();
         if((templateId==null || templateId.length()==0)  && entry!=null) {
             try {
@@ -965,7 +964,6 @@ public class PageHandler extends RepositoryManager {
             if (defaultTemplate != null) {
                 return defaultTemplate;
             }
-
             return theTemplates.get(0);
         }
 

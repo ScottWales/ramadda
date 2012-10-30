@@ -1435,12 +1435,8 @@ public class EntryManager extends RepositoryManager {
                         getRepository().URL_ENTRY_SHOW, parentEntry));
             }
 
-
-
             String description =
                 request.getAnonymousEncodedString(ARG_DESCRIPTION, BLANK);
-
-
 
             Date   createDate = new Date();
             Date[] dateRange  = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
@@ -2479,24 +2475,23 @@ public class EntryManager extends RepositoryManager {
     private void initUploadedEntry(Request request, Entry entry,
                                    Entry parentEntry)
             throws Exception {
+
+
         String oldType = entry.getCategory();
         entry.setCategory(CATEGORY_UPLOAD);
+        //Note: the name and description have already been encoded to prevent xss attacks
+        //        entry.setName(RepositoryUtil.encodeInput(entry.getName()));
+        //        entry.setDescription(
+        //            RepositoryUtil.encodeInput(entry.getDescription()));
 
-        //Encode the name and description to prevent xss attacks
-        entry.setName(RepositoryUtil.encodeInput(entry.getName()));
-        entry.setDescription(
-            RepositoryUtil.encodeInput(entry.getDescription()));
-
+        //        System.err.println ("after:" + entry.getDescription());
         String fromName = RepositoryUtil.encodeInput(
                               request.getString(
                                   ARG_CONTRIBUTION_FROMNAME, ""));
         String fromEmail = RepositoryUtil.encodeInput(
                                request.getString(
                                    ARG_CONTRIBUTION_FROMEMAIL, ""));
-        String user = request.getUser().getId();
-        if (user.length() == 0) {
-            user = fromName;
-        }
+        String user = fromName;
         entry.addMetadata(
             new Metadata(
                 getRepository().getGUID(), entry.getId(),
@@ -2509,10 +2504,10 @@ public class EntryManager extends RepositoryManager {
                 + " from parent folder:" + parentEntry);
         entry.setUser(parentUser);
 
-        if (true || getAdmin().isEmailCapable()) {
+        if (getAdmin().isEmailCapable()) {
             StringBuffer contents =
                 new StringBuffer(
-                    "A new entry has been uploaded to the RAMADDA server under the folder: ");
+                                 "A new entry has been uploaded to the RAMADDA server under the folder: ");
             String url1 =
                 HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                               ARG_ENTRYID, parentEntry.getId());
@@ -2524,21 +2519,23 @@ public class EntryManager extends RepositoryManager {
                               ARG_ENTRYID, entry.getId());
             contents.append("Edit to confirm: ");
             contents.append(HtmlUtils.href(url, entry.getLabel()));
-            if (getAdmin().isEmailCapable()) {
+            boolean sentNotification = false;
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(parentEntry,
+                                                  ContentMetadataHandler.TYPE_CONTACT, true);
+            if (metadataList != null) {
+                for (Metadata metadata : metadataList) {
+                    sentNotification = true;
+                    getAdmin().sendEmail(metadata.getAttr2(),
+                                         "Uploaded Entry",
+                                         contents.toString(), true);
+
+                }
+               
+            }
+            if(!sentNotification) {
                 getAdmin().sendEmail(parentUser.getEmail(), "Uploaded Entry",
                                      contents.toString(), true);
-
-                List<Metadata> metadataList =
-                    getMetadataManager().findMetadata(parentEntry,
-                        ContentMetadataHandler.TYPE_CONTACT, true);
-                if (metadataList != null) {
-                    for (Metadata metadata : metadataList) {
-                        getAdmin().sendEmail(metadata.getAttr2(),
-                                             "Uploaded Entry",
-                                             contents.toString(), true);
-
-                    }
-                }
             }
         }
     }

@@ -182,6 +182,8 @@
     <type name="Anonymous Upload" id="admin.anonymousupload">
       <element name="From" />
       <element name="IP" />
+      <element name="Type" />
+      <element name="Email" />
     </type>
   </handler>
 

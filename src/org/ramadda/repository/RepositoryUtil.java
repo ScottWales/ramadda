@@ -255,9 +255,17 @@ public class RepositoryUtil implements Constants {
      * @return  the encoded String
      */
     public static final String encodeInput(String s) {
-        s = HtmlUtils.urlEncode(s);
-        s = s.replace("+", " ");
-
+        //        s = s.replaceAll("&","&amp;;");
+        //
+        //Note: if this is wrong then we can get an XSS attack from the anonymous upload.
+        //If we encode possible attack vectors (<,>) as entities then we edit the entry they
+        //get turned into the raw character and we're owned.
+        s = s.replaceAll("&","_AMP_");
+        s = s.replaceAll("<","_LT_");
+        s = s.replaceAll(">","_GT_");
+        s = s.replaceAll("\"","&quot;");
+        //        s = HtmlUtils.urlEncode(s);
+        //       s = s.replace("+", " ");
         return s;
     }
 

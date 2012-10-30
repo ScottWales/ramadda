@@ -816,8 +816,6 @@ public class Request implements Constants, Cloneable {
         return (String) fileUploads.get(arg);
     }
 
-    /** _more_ */
-    public StringBuffer tmp = new StringBuffer();
 
     /**
      * _more_
@@ -1394,8 +1392,8 @@ public class Request implements Constants, Cloneable {
     public String getEncodedString(String key, String dflt) {
         String s = getString(key, dflt);
         if (s != null) {
-            //            s = RepositoryUtil.encodeInput(s);
-            s = HtmlUtils.entityEncode(s);
+            s = RepositoryUtil.encodeInput(s);
+            //            s = HtmlUtils.entityEncode(s);
         }
 
         return s;
@@ -1414,7 +1412,6 @@ public class Request implements Constants, Cloneable {
         if ( !isAnonymous()) {
             return getString(key, dflt);
         }
-
         return getEncodedString(key, dflt);
     }
 

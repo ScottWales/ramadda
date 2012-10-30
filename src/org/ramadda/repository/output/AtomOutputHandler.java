@@ -253,7 +253,7 @@ public class AtomOutputHandler extends OutputHandler {
 
             List<Metadata> inheritedMetadata =
                 getMetadataManager().getInheritedMetadata(entry);
-
+            logInfo("Entry:" + entry +" Inherited metadata:" + inheritedMetadata);
 
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
@@ -301,6 +301,7 @@ public class AtomOutputHandler extends OutputHandler {
             }
 
             for (Metadata metadata : inheritedMetadata) {
+                logInfo("addMetadata with inherited metadata:" + metadata);
                 addMetadata(request, entry, doc, root, metadata,
                             metadataHandlers);
             }
@@ -356,9 +357,10 @@ public class AtomOutputHandler extends OutputHandler {
             return;
         }
 
-        System.err.println ("addMetadata:" + metadata);
+
         if (!metadataHandler.addMetadataToXml(request, "atom",
                                               entry, metadata, doc, root)) {
+            logInfo ("addMetadata:" + metadata +" no mapping to atom");
             if(!metadataHandler.addMetadataToXml(request, "dif", entry,
                                                  metadata, doc, root)) {
                 System.err.println ("could not add metadata to ATOM");
