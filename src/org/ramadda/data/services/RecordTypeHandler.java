@@ -135,7 +135,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
     public void initializeEntry(Entry entry, File originalFile)
             throws Exception {
         Hashtable existingProperties = getRecordProperties(entry);
-        System.err.println("initializeEntry:" + originalFile + " props:" + existingProperties);
+        //        System.err.println("initializeEntry:" + originalFile + " props:" + existingProperties);
         if ((existingProperties != null) && (existingProperties.size() > 0)) {
             return;
         }
@@ -145,7 +145,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         Hashtable properties =
             RecordFile.getPropertiesForFile(originalFile.toString(),
                                             PointFile.DFLT_PROPERTIES_FILE);
-        System.err.println("from file:" + existingProperties +" " + PointFile.DFLT_PROPERTIES_FILE);
+        //        System.err.println("from file:" + existingProperties +" " + PointFile.DFLT_PROPERTIES_FILE);
         //Make the properties string
 
         StringBuffer sb = new StringBuffer();

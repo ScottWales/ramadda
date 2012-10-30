@@ -392,6 +392,7 @@ public class MetadataManager extends RepositoryManager {
     private void findInheritedMetadata(Entry entry, List<Metadata> result)
             throws Exception {
 
+        //        logInfo("
         if (entry == null) {
             return;
         }
