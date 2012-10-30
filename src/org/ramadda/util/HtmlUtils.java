@@ -3627,6 +3627,13 @@ public class HtmlUtils {
      */
     public static void main(String[] args) throws Exception {
         for (String a : args) {
+            System.err.println(a+":"+  java.net.URLDecoder.decode(a, "UTF-8"));
+        }
+        if (true) {
+            return;
+        }
+
+        for (String a : args) {
             System.err.println(a + ":" + entityEncode(a));
             System.err.println(a + ":" + urlEncode(a));
         }

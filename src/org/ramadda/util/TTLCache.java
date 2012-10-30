@@ -122,6 +122,13 @@ public class TTLCache<KEY, VALUE> {
         this.timeThreshold = t;
     }
 
+    public void clearCache() {
+        cache =
+            new Hashtable<KEY, CacheEntry<VALUE>>();
+    }
+
+
+
     /**
      * put the value
      *
