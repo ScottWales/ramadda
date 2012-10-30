@@ -27,6 +27,7 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.TTLCache;
 
 
 import ucar.unidata.sql.Clause;
@@ -89,10 +90,11 @@ public class SessionManager extends RepositoryManager {
     private Hashtable<String, Session> sessionMap = new Hashtable<String,
                                                         Session>();
 
+    //This holds sessions for anonymous users. The timeout is 24 hours. Max size is 1000
+    private TTLCache<String, Session> anonymousSessionMap = new TTLCache<String,
+        Session>(1000*3600*24, 1000);
 
 
-    /** _more_ */
-    private List ipUserList = new ArrayList();
 
 
     /** _more_ */
@@ -108,9 +110,6 @@ public class SessionManager extends RepositoryManager {
      */
     public SessionManager(Repository repository) {
         super(repository);
-        //        ipUserList.add("128.117.156.*");
-        //        ipUserList.add("jeffmc");
-
     }
 
     /**
@@ -132,6 +131,7 @@ public class SessionManager extends RepositoryManager {
      */
     private void deleteAllSessions() throws Exception {
         sessionMap = new Hashtable<String, Session>();
+        anonymousSessionMap.clearCache();
     }
 
 
@@ -255,15 +255,18 @@ public class SessionManager extends RepositoryManager {
      */
     public void putSessionProperty(Request request, Object key, Object value)
             throws Exception {
+
         //JIC
         if(request == null) return;
 
         String id = request.getSessionId();
         if (id == null) {
+            request.putExtraProperty(key, value);
             return;
         }
         Session session = getSession(id);
         if (session == null) {
+            request.putExtraProperty(key, value);
             return;
         }
         session.putProperty(key, value);
@@ -300,15 +303,19 @@ public class SessionManager extends RepositoryManager {
         //JIC
         if(request == null) return dflt;
 
+        //        System.err.println("getSession:" + key);
         String id = request.getSessionId();
         if (id == null) {
+            Object obj  = request.getExtraProperty(key);
+            if(obj!=null) return obj;
             return dflt;
         }
         Session session = getSession(id);
         if (session == null) {
+            Object obj  = request.getExtraProperty(key);
+            if(obj!=null) return obj;
             return dflt;
         }
-
         return session.getProperty(key);
     }
 
@@ -326,38 +333,40 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Session getSession(String sessionId) throws Exception {
-        Session session = sessionMap.get(sessionId);
-        if (session == null) {
-            //            System.err.println ("getSession from db:" + sessionId);
-            Statement stmt = getDatabaseManager().select(
-                                 Tables.SESSIONS.COLUMNS,
-                                 Tables.SESSIONS.NAME,
-                                 Clause.eq(
-                                     Tables.SESSIONS.COL_SESSION_ID,
-                                     sessionId));
-            try {
-                SqlUtil.Iterator iter =
-                    getDatabaseManager().getIterator(stmt);
-                ResultSet results;
-                //COL_SESSION_ID,COL_USER_ID,COL_CREATE_DATE,COL_LAST_ACTIVE_DATE,COL_EXTRA
-                boolean ok = true;
-                while ((results = iter.getNext()) != null && ok) {
-                    session = makeSession(results);
-                    //                    System.err.println ("Got session:" + session);
-                    session.setLastActivity(new Date());
-                    //Remove it from the DB and then readd it so we update the lastActivity
-                    removeSession(session.getId());
-                    addSession(session);
-                    sessionMap.put(sessionId, session);
-                    ok = false;
-                }
-            } finally {
-                getDatabaseManager().closeAndReleaseConnection(stmt);
-            }
-        }
+        return getSession(sessionId, true);
+    }
 
-        //        if(session==null)
-        //            System.err.println ("No session found");
+    public Session getSession(String sessionId, boolean checkAnonymous) throws Exception {
+        Session session =  sessionMap.get(sessionId);
+        if(session!=null) return session;
+        session = anonymousSessionMap.get(sessionId);
+        if(session!=null) return session;
+        //            System.err.println ("getSession from db:" + sessionId);
+        Statement stmt = getDatabaseManager().select(
+                                                     Tables.SESSIONS.COLUMNS,
+                                                     Tables.SESSIONS.NAME,
+                                                     Clause.eq(
+                                                               Tables.SESSIONS.COL_SESSION_ID,
+                                                               sessionId));
+        try {
+            SqlUtil.Iterator iter =
+                getDatabaseManager().getIterator(stmt);
+            ResultSet results;
+            //COL_SESSION_ID,COL_USER_ID,COL_CREATE_DATE,COL_LAST_ACTIVE_DATE,COL_EXTRA
+            boolean ok = true;
+            while ((results = iter.getNext()) != null && ok) {
+                session = makeSession(results);
+                //                    System.err.println ("Got session:" + session);
+                session.setLastActivity(new Date());
+                //Remove it from the DB and then readd it so we update the lastActivity
+                removeSession(session.getId());
+                addSession(session);
+                sessionMap.put(sessionId, session);
+                ok = false;
+            }
+        } finally {
+            getDatabaseManager().closeAndReleaseConnection(stmt);
+        }
         return session;
     }
 
@@ -378,14 +387,13 @@ public class SessionManager extends RepositoryManager {
         if (user == null) {
             user = getUserManager().getAnonymousUser();
         }
-        Date createDate     = getDatabaseManager().getDate(results, col++);
-        Date lastActiveDate = getDatabaseManager().getDate(results, col++);
         //See if we have it in the map
         Session session = sessionMap.get(sessionId);
         if (session != null) {
             return session;
         }
-
+        Date createDate     = getDatabaseManager().getDate(results, col++);
+        Date lastActiveDate = getDatabaseManager().getDate(results, col++);
         return new Session(sessionId, user, createDate, lastActiveDate);
     }
 
@@ -400,6 +408,7 @@ public class SessionManager extends RepositoryManager {
     public void removeSession(String sessionId) throws Exception {
         //        System.err.println("removeSession:" + sessionId);
         sessionMap.remove(sessionId);
+        anonymousSessionMap.remove(sessionId);
         getDatabaseManager().delete(Tables.SESSIONS.NAME,
                                     Clause.eq(Tables.SESSIONS.COL_SESSION_ID,
                                         sessionId));
@@ -453,27 +462,24 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkSession(Request request) throws Exception {
-
         User         user    = request.getUser();
-        List<String> cookies = getCookies(request);
-
+        List<String> cookies  = getCookies(request);
         for (String cookieValue : cookies) {
             request.setSessionId(cookieValue);
             if (user == null) {
-                Session session = getSession(request.getSessionId());
+                Session session = getSession(cookieValue, false);
                 if (session != null) {
                     session.setLastActivity(new Date());
                     user = getUserManager().getCurrentUser(session.getUser());
                     session.setUser(user);
-
                     break;
                 }
             }
         }
 
         //Check for the session id as a url argument
-        if ((user == null) && request.hasParameter(ARG_SESSIONID)) {
-            Session session = getSession(request.getString(ARG_SESSIONID));
+        if (user == null && request.hasParameter(ARG_SESSIONID)) {
+            Session session = getSession(request.getString(ARG_SESSIONID), false);
             if (session != null) {
                 session.setLastActivity(new Date());
                 user = getUserManager().getCurrentUser(session.getUser());
@@ -482,8 +488,8 @@ public class SessionManager extends RepositoryManager {
         }
 
         //Check for url auth
-        if ((user == null) && request.exists(ARG_AUTH_USER)
-                && request.exists(ARG_AUTH_PASSWORD)) {
+        if (user == null && request.exists(ARG_AUTH_USER)
+            && request.exists(ARG_AUTH_PASSWORD)) {
             String userId   = request.getString(ARG_AUTH_USER, "");
             String password = request.getString(ARG_AUTH_PASSWORD, "");
             user = getUserManager().findUser(userId, false);
@@ -517,12 +523,8 @@ public class SessionManager extends RepositoryManager {
                     if (toks.length == 2) {
                         user = getUserManager().findUser(toks[0], false);
                         if (user == null) {
-                            //                            throw new AccessException(
-                            //                                msgLabel("Unknown user") + toks[0],request);
                         } else if ( !getUserManager().isPasswordValid(user,
                                 toks[1])) {
-                            //                            throw new AccessException(
-                            //                                msg("Incorrect password"),request);
                             user = null;
                         } else {}
                     }
@@ -533,26 +535,8 @@ public class SessionManager extends RepositoryManager {
             }
         }
 
-        if (user == null) {
-            String requestIp = request.getIp();
-            if (requestIp != null) {
-                for (int i = 0; i < ipUserList.size(); i += 2) {
-                    String ip       = (String) ipUserList.get(i);
-                    String userName = (String) ipUserList.get(i + 1);
-                    if (requestIp.matches(ip)) {
-                        user = getUserManager().findUser(userName, false);
-                        if (user == null) {
-                            user = new User(userName);
-                            getUserManager().makeOrUpdateUser(user, false);
-                        }
-                    }
-                }
-            }
-        }
-
-
         if (request.getSessionId() == null) {
-            //            request.setSessionId(createSessionId());
+            request.setSessionId(createSessionId());
         }
 
         //Make sure we have the current user state
@@ -560,8 +544,13 @@ public class SessionManager extends RepositoryManager {
 
         if (user == null) {
             user = getUserManager().getAnonymousUser();
+            //Create a temporary session
+            Session session = anonymousSessionMap.get(request.getSessionId());
+            if(session == null) {
+                session  = new Session(request.getSessionId(), user, new Date());
+                anonymousSessionMap.put(request.getSessionId(), session);
+            }
         }
-
 
         request.setUser(user);
     }
@@ -583,7 +572,7 @@ public class SessionManager extends RepositoryManager {
         if (cookie == null) {
             return cookies;
         }
-        request.tmp.append("cookie from header:" + cookie + "<p>");
+
 
         List toks = StringUtil.split(cookie, ";", true, true);
         for (int i = 0; i < toks.size(); i++) {
@@ -598,7 +587,7 @@ public class SessionManager extends RepositoryManager {
                 cookies.add(cookieValue);
             }
         }
-        request.tmp.append("cookies:" + cookies + "<p>");
+
 
         return cookies;
     }
