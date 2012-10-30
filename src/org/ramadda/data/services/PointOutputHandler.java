@@ -155,6 +155,16 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_ASC;
 
+    /** output type */
+    public final  OutputType OUTPUT_WAVEFORM;
+
+    /** output type */
+    public final  OutputType OUTPUT_WAVEFORM_IMAGE;
+
+    /** output type */
+    public final  OutputType OUTPUT_WAVEFORM_CSV;
+
+
     /**
      * constructor. This gets called by the Repository via reflection
      *
@@ -276,6 +286,21 @@ public class PointOutputHandler extends RecordOutputHandler {
             new OutputType("", base +".timeseriesimage",
                            OutputType.TYPE_OTHER, "", ICON_IMAGE,
                            category);
+
+        OUTPUT_WAVEFORM =
+            new OutputType("Waveform", base +".waveform",
+                           OutputType.TYPE_OTHER, "", ICON_DATA,
+                           category);
+        OUTPUT_WAVEFORM_IMAGE =
+            new OutputType("Waveform", base +".waveformimage",
+                           OutputType.TYPE_OTHER, "", ICON_DATA,
+                           category);
+        OUTPUT_WAVEFORM_CSV =
+            new OutputType("Waveform CSV", base +".waveformcsv",
+                           OutputType.TYPE_OTHER, "", ICON_DATA,
+                           category);
+
+
 
     }
 

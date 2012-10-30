@@ -331,4 +331,34 @@ public abstract class PointRecord extends GeoRecord {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String[] getWaveformNames() {
+        return null;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public Waveform getWaveform() {
+        return getWaveform(null);
+    }
+
+    /**
+     * _more_
+     *
+     *
+     * @param name _more_
+     * @return _more_
+     */
+    public Waveform getWaveform(String name) {
+        return null;
+    }
+
+
 }

@@ -52,6 +52,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     public static final String ACTION_GRID = "action.grid";
     public static final String ACTION_DECIMATE = "action.decimate";
     public static final String ACTION_TRACKS = "action.tracks";
+    public static final String ACTION_WAVEFORM = "action.waveform";
     public static final String ACTION_BOUNDINGPOLYGON = "action.boundingpolygon";
 
 
@@ -141,7 +142,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
      * ctor
      *
      *
-     * @param filename lidar data file
+     * @param filename point data file
      *
      * @throws Exception On badness
      *
@@ -156,7 +157,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
      * ctor
      *
      *
-     * @param filename lidar data file
+     * @param filename point data file
      * @param properties _more_
      *
      * @throws Exception On badness
@@ -170,6 +171,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
+        if(action.equals(ACTION_WAVEFORM)) return hasWaveform();
         return super.isCapable(action);
     }
 
@@ -380,23 +382,23 @@ public abstract class PointFile extends RecordFile implements Cloneable {
             try {
                 long        t1  = System.currentTimeMillis();
                 final int[] cnt = { 0 };
-                PointFile file = new LidarFileFactory().doMakeLidarFile(arg,
+                PointFile file = new PointFileFactory().doMakePointFile(arg,
                                      getPropertiesForFile(arg));
                 final RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
                             VisitInfo visitInfo, Record record) {
                         cnt[0]++;
-                        LidarRecord lidarRecord = (LidarRecord) record;
-                        if ((lidarRecord.getLatitude() < -90)
-                                || (lidarRecord.getLatitude() > 90)) {
+                        PointRecord pointRecord = (PointRecord) record;
+                        if ((pointRecord.getLatitude() < -90)
+                                || (pointRecord.getLatitude() > 90)) {
                             System.err.println("Bad lat:"
-                                    + lidarRecord.getLatitude());
+                                    + pointRecord.getLatitude());
                         }
                         if ((cnt[0] % 100000) == 0) {
                             System.err.println(cnt[0] + " lat:"
-                                    + lidarRecord.getLatitude() + " "
-                                    + lidarRecord.getLongitude() + " "
-                                    + lidarRecord.getAltitude());
+                                    + pointRecord.getLatitude() + " "
+                                    + pointRecord.getLongitude() + " "
+                                    + pointRecord.getAltitude());
 
                         }
                         return true;
@@ -413,6 +415,42 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         }
         */
 
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean hasWaveform() {
+        String[] waveforms =  getWaveformNames();
+        return waveforms!=null && waveforms.length>0;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String[] getWaveformNames() {
+        return null;
+    }
+
+    /**
+     * _more_
+     *
+     * @param pointIndex _more_
+     * @param name _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Waveform getWaveform(int pointIndex, String name)
+            throws Exception {
+        PointRecord record = (PointRecord) getRecord(pointIndex);
+        return record.getWaveform(name);
     }
 
 
