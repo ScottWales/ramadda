@@ -392,15 +392,15 @@ public class MetadataManager extends RepositoryManager {
     private void findInheritedMetadata(Entry entry, List<Metadata> result)
             throws Exception {
 
-        //        logInfo("
+        logInfo("METADATA: findInherited: entry=" + entry);
         if (entry == null) {
             return;
         }
         for (Metadata metadata : getMetadata(entry)) {
+            logInfo("METADATA: metadata:" + metadata + " inherited:" + metadata.getInherited());
             if ( !metadata.getInherited()) {
                 continue;
             }
-
             result.add(metadata);
         }
         findInheritedMetadata(getEntryManager().getParent(null, entry),
@@ -484,10 +484,12 @@ public class MetadataManager extends RepositoryManager {
      */
     public List<Metadata> getMetadata(Entry entry) throws Exception {
         if (entry.isDummy()) {
+            logInfo("METADATA:getMetadata entry is dummy");
             return new ArrayList<Metadata>();
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
+            logInfo("METADATA:getMetadata entry has metadata:" + metadataList);
             return metadataList;
         }
 
