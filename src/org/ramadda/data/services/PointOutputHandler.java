@@ -2150,5 +2150,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
 
+    public void getPointFormats(List<HtmlUtils.Selector> outputs,
+                                boolean forCollection) {
+        outputs.add(getPointFormHandler().getSelect(OUTPUT_SUBSET));
+        outputs.add(getPointFormHandler().getSelect(OUTPUT_CSV));
+        outputs.add(getPointFormHandler().getSelect(OUTPUT_LATLONALTCSV));
+    }
 
 }

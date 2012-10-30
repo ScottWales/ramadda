@@ -156,12 +156,6 @@ public class PointFormHandler extends RecordFormHandler {
         //        outputs.add(getSelect(getPointOutputHandler().OUTPUT_NC));
     }
 
-    public void getPointFormats(List<HtmlUtils.Selector> outputs,
-                                boolean forCollection) {
-        outputs.add(getSelect(getPointOutputHandler().OUTPUT_SUBSET));
-        outputs.add(getSelect(getPointOutputHandler().OUTPUT_CSV));
-        outputs.add(getSelect(getPointOutputHandler().OUTPUT_LATLONALTCSV));
-    }
 
 
     /**
@@ -393,10 +387,6 @@ public class PointFormHandler extends RecordFormHandler {
         return new Result("", sb);
     }
 
-    public void addToGroupForm(Request request, Entry group, StringBuffer sb, List<? extends RecordEntry> recordEntries, String extra) throws Exception  {
-
-    }
-
 
 
     /**
@@ -443,8 +433,19 @@ public class PointFormHandler extends RecordFormHandler {
     }
 
 
+
    public void addToEntryForm(Request request, Entry entry, StringBuffer sb,  RecordEntry recordEntry) throws Exception {
+        addSelectForm(request, entry, sb, false, recordEntry, "");
+        addSettingsForm(request, entry, sb, recordEntry);
+
    }
+
+
+   public void addToGroupForm(Request request, Entry group, StringBuffer sb, List<? extends RecordEntry> recordEntries, String extra) throws Exception {
+        addSelectForm(request, group, sb, true, recordEntries.get(0), extra);
+        addSettingsForm(request, group, sb, recordEntries.get(0));
+    }
+
 
 
 
@@ -670,7 +671,7 @@ public class PointFormHandler extends RecordFormHandler {
             new ArrayList<HtmlUtils.Selector>();
         List<HtmlUtils.Selector> gridFormats =
             new ArrayList<HtmlUtils.Selector>();
-        getPointFormats(pointFormats, forGroup);
+        getPointOutputHandler().getPointFormats(pointFormats, forGroup);
         getGridFormats(gridFormats, forGroup);
         List<List<HtmlUtils.Selector>> formatLists =
             new ArrayList<List<HtmlUtils.Selector>>();
