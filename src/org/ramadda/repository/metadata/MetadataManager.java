@@ -364,6 +364,12 @@ public class MetadataManager extends RepositoryManager {
         return result;
     }
 
+    public static boolean debug = false;
+
+    public  void debug(String msg) {
+        if(debug) logInfo(msg);
+    }
+
     /**
      * _more_
      *
@@ -375,9 +381,19 @@ public class MetadataManager extends RepositoryManager {
      */
     public List<Metadata> getInheritedMetadata(Entry entry) throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
-        findInheritedMetadata(getEntryManager().getParent(null, entry),
-                              result);
+        this.debug  = true;
+        EntryManager.debug  =true;
+        Entry parent = getEntryManager().getParent(null, entry);
+        EntryManager.debug  =false;
+        if(parent==null) {
+            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent is NULL");
 
+        } else {
+            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent:" + parent.getName());
+            findInheritedMetadata(parent,
+                                  result);
+        }
+        this.debug  = false;
         return result;
     }
 
@@ -391,13 +407,13 @@ public class MetadataManager extends RepositoryManager {
      */
     private void findInheritedMetadata(Entry entry, List<Metadata> result)
             throws Exception {
-
-        logInfo("METADATA: findInherited: entry=" + entry);
+        debug("METADATA: findInherited: entry=" + entry);
         if (entry == null) {
             return;
         }
-        for (Metadata metadata : getMetadata(entry)) {
-            logInfo("METADATA: metadata:" + metadata + " inherited:" + metadata.getInherited());
+        List<Metadata> metadataList = getMetadata(entry);
+        debug("METADATA: findInheritedMetadata:" + metadataList);
+        for (Metadata metadata : metadataList) {
             if ( !metadata.getInherited()) {
                 continue;
             }
@@ -484,12 +500,12 @@ public class MetadataManager extends RepositoryManager {
      */
     public List<Metadata> getMetadata(Entry entry) throws Exception {
         if (entry.isDummy()) {
-            logInfo("METADATA:getMetadata entry is dummy");
+            //            debug("METADATA:getMetadata entry is dummy");
             return new ArrayList<Metadata>();
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
-            logInfo("METADATA:getMetadata entry has metadata:" + metadataList);
+            debug("METADATA:getMetadata entry:" + entry.getName() + " metadata:" + metadataList);
             return metadataList;
         }
 

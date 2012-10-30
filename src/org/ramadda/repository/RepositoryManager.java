@@ -718,6 +718,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @param message _more_
      */
     public void logInfo(String message) {
+        System.err.println(message);
         getRepository().getLogManager().logInfo(message);
     }
 

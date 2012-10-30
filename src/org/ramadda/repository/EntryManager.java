@@ -107,6 +107,12 @@ import javax.swing.ImageIcon;
  */
 public class EntryManager extends RepositoryManager {
 
+    public static boolean debug = false;
+
+    public  void debug(String msg) {
+        if(debug) logInfo(msg);
+    }
+
     /** How many entries to we keep in the cache */
     public static final int ENTRY_CACHE_LIMIT = 5000;
 
@@ -5475,7 +5481,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getParent(Request request, Entry entry) throws Exception {
-        return (Entry) getEntry(request, entry.getParentEntryId());
+        return  getEntry(request, entry.getParentEntryId());
     }
 
 
@@ -5693,22 +5699,25 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
 
         if (entryId == null) {
+            debug("getEntry: id is null ");
             return null;
         }
         Entry topGroup = getTopGroup();
         if (entryId.equals(topGroup.getId()) || entryId.equals(ID_ROOT)) {
+            debug("getEntry: returning top group");
             return topGroup;
         }
 
         //        synchronized (MUTEX_ENTRY) {
         Entry entry = getEntryFromCache(entryId);
         if (entry != null) {
+            debug("getEntry: from cache:" + entry);
             checkEntryFileTime(entry);
             if ( !andFilter) {
                 return entry;
             }
             entry = getAccessManager().filterEntry(request, entry);
-
+            debug("getEntry: after filter:" + entry);
             return entry;
         }
 
@@ -5740,6 +5749,7 @@ public class EntryManager extends RepositoryManager {
                 }
             } else {
                 entry = createEntryFromDatabase(entryId, abbreviated);
+                debug("getEntry: from database:" + entry);
                 /*
                 for(int i=0;i<1000000;i++) {
                     entry = createEntryFromDatabase(entryId, abbreviated);
@@ -5752,7 +5762,6 @@ public class EntryManager extends RepositoryManager {
             }
         } catch (Exception exc) {
             logError("creating entry:" + entryId, exc);
-
             return null;
         }
 
@@ -5762,6 +5771,7 @@ public class EntryManager extends RepositoryManager {
 
         if (andFilter && (entry != null)) {
             entry = getAccessManager().filterEntry(request, entry);
+            debug("getEntry: after filter 2:" + entry);
         }
 
         return entry;
@@ -8359,6 +8369,7 @@ public class EntryManager extends RepositoryManager {
 
         if (rootCache == null) {
             int cacheTimeMinutes =
+
                 getRepository().getProperty(PROP_CACHE_TTL, 60);
             //Convert to milliseconds
 

@@ -253,8 +253,7 @@ public class AtomOutputHandler extends OutputHandler {
 
             List<Metadata> inheritedMetadata =
                 getMetadataManager().getInheritedMetadata(entry);
-            System.err.println("Entry:" + entry +" Inherited metadata:" + inheritedMetadata);
-            logInfo("Entry:" + entry +" Inherited metadata:" + inheritedMetadata);
+            logInfo("Atom: Entry:" + entry +" Inherited metadata:" + inheritedMetadata);
 
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
