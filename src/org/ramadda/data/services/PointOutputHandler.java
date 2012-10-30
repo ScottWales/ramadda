@@ -712,6 +712,30 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
+        if (outputType.equals(OUTPUT_MAP)) {
+            return getPointFormHandler().outputEntryMap(request, outputType, (PointEntry) doMakeEntry(request, entry));
+        }
+
+        if (outputType.equals(OUTPUT_WAVEFORM)) {
+            return getPointFormHandler().outputEntryWaveform(request,
+                                                             outputType, (PointEntry) doMakeEntry(request, entry));
+        }
+        if (outputType.equals(OUTPUT_WAVEFORM_IMAGE)) {
+            return getPointFormHandler().outputEntryWaveformImage(request,
+                                                                  outputType, (PointEntry) doMakeEntry(request, entry));
+        }
+
+        if (outputType.equals(OUTPUT_WAVEFORM_CSV)) {
+            return getPointFormHandler().outputEntryWaveformCsv(request,
+                                                                outputType, (PointEntry) doMakeEntry(request, entry));
+        }
+
+        if (outputType.equals(OUTPUT_TIMESERIES_IMAGE)) {
+            return getPointFormHandler().outputEntryTimeSeriesImage(request,
+                                                                    outputType, (PointEntry) doMakeEntry(request, entry));
+        }
+
+
         if (outputType.equals(OUTPUT_FORM)) {
             return getPointFormHandler().outputEntryForm(request, entry);
         }
