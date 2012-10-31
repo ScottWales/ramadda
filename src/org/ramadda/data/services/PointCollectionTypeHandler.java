@@ -142,7 +142,7 @@ public abstract class PointCollectionTypeHandler extends RecordCollectionTypeHan
             }
             //Gack, cut-and-paste, add something to metadatamgr sometime
             for (Metadata metadata :
-                    getMetadataManager().getInheritedMetadata(entry)) {
+                     getMetadataManager().getInheritedMetadata(request, entry)) {
                 if (metadata.getType().equals(METADATA_URL)) {
                     //attr3= type, attr2=label, attr1=url
                     services.add(new Service(metadata.getAttr3(),

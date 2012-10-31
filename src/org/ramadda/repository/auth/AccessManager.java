@@ -572,6 +572,13 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    public static boolean debug = false;
+
+    public  void debug(String msg) {
+        if(debug) logInfo(msg);
+    }
+
+
     /**
      * _more_
      *

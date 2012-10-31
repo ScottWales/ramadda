@@ -379,17 +379,16 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Metadata> getInheritedMetadata(Entry entry) throws Exception {
+    public List<Metadata> getInheritedMetadata(Request request, Entry entry) throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
-        this.debug  = true;
-        EntryManager.debug  =true;
-        Entry parent = getEntryManager().getParent(null, entry);
-        EntryManager.debug  =false;
+        //        this.debug  = true;
+        //        EntryManager.debug  =true;
+        Entry parent = getEntryManager().getParent(request, entry);
+        //        EntryManager.debug  =false;
         if(parent==null) {
-            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent is NULL");
-
+            //            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent is NULL");
         } else {
-            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent:" + parent.getName());
+            //            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent:" + parent.getName());
             findInheritedMetadata(parent,
                                   result);
         }
