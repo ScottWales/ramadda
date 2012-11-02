@@ -1488,7 +1488,6 @@ public class OutputHandler extends RepositoryManager {
 
         sb.append("<td>");
         sb.append(extra);
-        //        sb.append(crumbs);
         sb.append(link.getLink());
         sb.append("</td>");
 
@@ -1514,12 +1513,14 @@ public class OutputHandler extends RepositoryManager {
         }
 
         boolean showDate = !request.get(ARG_TREEVIEW, false);
+        //TODO: 
+        showDate = false;
         if(showDate) {
             if (request.isMobile()) {
                 sb.append("<td align=right><div "
                           + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
             } else {
-                sb.append("<td align=right width=200><div "
+                sb.append("<td align=right width=100><div "
                           + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
             }
             sb.append(getRepository().formatDateShort(request,
