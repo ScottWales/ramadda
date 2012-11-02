@@ -1758,3 +1758,13 @@ function submitEntryForm (dialogId) {
 }
 
 
+
+
+function treeViewClick (entryId, url, label) {
+    var href="<a href='" + url +"'>" + label+"</a>";
+    $("#treeview_header").html(href);
+    url = url +"&template=empty";
+    $('#treeview_view').attr("src",url); 
+}
+
+

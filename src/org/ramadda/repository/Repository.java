@@ -3910,6 +3910,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    public Result processBlank(Request request) throws Exception {
+        Result result =  new Result("",new StringBuffer());
+        result.setShouldDecorate(false);
+        return result;
+    }
 
     /**
      * _more_

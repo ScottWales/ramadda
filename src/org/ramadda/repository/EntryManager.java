@@ -4543,12 +4543,20 @@ public class EntryManager extends RepositoryManager {
                                  boolean decorateMetadata)
             throws Exception {
 
-
-
         if (url == null) {
             url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         }
 
+        boolean forTreeView = request.get(ARG_TREEVIEW, false);
+        if(forTreeView) {
+            String label = entry.getName();
+            url = url.replace("%27","'");
+            url = url.replace("'","");
+            label =  label.replace("'","\\'");
+            url = "javascript:" + HtmlUtils.call ("treeViewClick", 
+                                                  HtmlUtils.jsMakeArgs(new String[]{entry.getId(),
+                                                                                    url, label}, true));
+        }
         boolean      showLink       = request.get(ARG_SHOWLINK, true);
         StringBuffer sb             = new StringBuffer();
         String       entryId        = entry.getId();
@@ -4559,6 +4567,10 @@ public class EntryManager extends RepositoryManager {
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
             + HtmlUtils.arg(ARG_OUTPUT, output) + "&"
             + HtmlUtils.arg(ARG_SHOWLINK, "" + showLink);
+
+        if(forTreeView) {
+            folderClickUrl += "&" + ARG_TREEVIEW +"=true";
+        }
 
         String  targetId = "targetspan_" + HtmlUtils.blockCnt++;
 

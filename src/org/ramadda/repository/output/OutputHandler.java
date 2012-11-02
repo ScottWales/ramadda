@@ -1339,6 +1339,8 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
+
+
     /**
      * _more_
      *
@@ -1464,7 +1466,6 @@ public class OutputHandler extends RepositoryManager {
             rowId = "entryrow_" + (HtmlUtils.blockCnt++);
         }
 
-
         sb.append(
             HtmlUtils.open(
                 HtmlUtils.TAG_DIV,
@@ -1512,29 +1513,25 @@ public class OutputHandler extends RepositoryManager {
 
         }
 
-        if (request.isMobile()) {
-            sb.append("<td align=right><div "
-                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
-        } else {
-            sb.append("<td align=right width=200><div "
-                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+        boolean showDate = !request.get(ARG_TREEVIEW, false);
+        if(showDate) {
+            if (request.isMobile()) {
+                sb.append("<td align=right><div "
+                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+            } else {
+                sb.append("<td align=right width=200><div "
+                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+            }
+            sb.append(getRepository().formatDateShort(request,
+                                                      new Date(entry.getStartDate()),
+                                                      getEntryManager().getTimezone(entry), extraAlt.toString()));
+            sb.append("</div></td>");
         }
-        sb.append(getRepository().formatDateShort(request,
-                new Date(entry.getStartDate()),
-                getEntryManager().getTimezone(entry), extraAlt.toString()));
-        sb.append("</div></td><td width=\"1%\" align=right "
+
+
+        sb.append("<td width=\"1%\" align=right "
                   + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
         sb.append(HtmlUtils.space(1));
-
-        //      sb.append(HtmlUtils.jsLink(toggleJS,"X"));
-        /*        String userSearchLink =
-            HtmlUtils.href(
-                HtmlUtils.url(
-                    request.url(getRepository().URL_USER_PROFILE),
-                    ARG_USER_ID, entry.getUser().getId()), userLabel,
-                        "title=\"View user profile\"");
-
-                        sb.append(userSearchLink);*/
         sb.append("  ");
         sb.append(
             HtmlUtils.div(

@@ -293,6 +293,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_TREE = "tree";
 
+    public static final String WIKI_PROP_TREEVIEW = "treeview";
+
     /** the table property */
     public static final String WIKI_PROP_TABLE = "table";
 
@@ -445,6 +447,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
              attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
                    "")),
         WIKI_PROP_LIST, prop(WIKI_PROP_TABS, ATTRS_LAYOUT), WIKI_PROP_TREE,
+        WIKI_PROP_TREEVIEW,
         prop(WIKI_PROP_ACCORDIAN, ATTRS_LAYOUT), WIKI_PROP_GRID,
         WIKI_PROP_TABLE, prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
         WIKI_PROP_GROUP + "Earth",
@@ -1471,6 +1474,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             blockContent = sb.toString();
             blockTitle   = Misc.getProperty(props, ATTR_TITLE, msg("Links"))
                          + link;
+        } else if (include.equals(WIKI_PROP_TREEVIEW)) {
+            doBG = false;
+            List<Entry> children = getEntries(request, wikiUtil, entry,
+                                       props);
+            if (children.size() == 0) {
+                return getMessage(props, "");
+            }
+            getHtmlOutputHandler().makeTreeView(request, children, sb);
+            return sb.toString();
         } else if (include.equals(WIKI_PROP_LINKS)
                    || include.equals(WIKI_PROP_LIST)) {
             boolean     isList   = include.equals(WIKI_PROP_LIST);

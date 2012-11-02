@@ -85,6 +85,11 @@ public class HtmlOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_DATA);
 
+    public static final OutputType OUTPUT_TREEVIEW =
+        new OutputType("Tree View", "html.treeview",
+                       OutputType.TYPE_VIEW , "",
+                       "/icons/application_side_tree.png");
+
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH =
         new OutputType("Graph", "default.graph",
@@ -149,6 +154,7 @@ public class HtmlOutputHandler extends OutputHandler {
         addType(OUTPUT_TREE);
         addType(OUTPUT_TABLE);
         addType(OUTPUT_GRID);
+        addType(OUTPUT_TREEVIEW);
         addType(OUTPUT_GRAPH);
         addType(OUTPUT_INLINE);
         addType(OUTPUT_MAPINFO);
@@ -181,7 +187,8 @@ public class HtmlOutputHandler extends OutputHandler {
             return "";
         }
 
-        return makeHtmlHeader(request, entry, "Layout");
+        //        return makeHtmlHeader(request, entry, "Layout");
+        return makeHtmlHeader(request, entry, "");
     }
 
 
@@ -196,7 +203,7 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
         OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE,
-                OUTPUT_GRID, CalendarOutputHandler.OUTPUT_TIMELINE,
+                                                OUTPUT_GRID, OUTPUT_TREEVIEW, CalendarOutputHandler.OUTPUT_TIMELINE,
                 CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
             new StringBuffer(
@@ -247,6 +254,7 @@ public class HtmlOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_HTML));
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
+                links.add(makeLink(request, state.getEntry(), OUTPUT_TREEVIEW));
                 links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
             }
         }
@@ -540,7 +548,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_TABLE)) {
+        if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_TREEVIEW) || output.equals(OUTPUT_TABLE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
@@ -744,9 +752,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         for (Entry subGroup : subGroups) {
-            if (cnt == 0) {
-                //                sb.append(HtmlUtils.makeToggleInline("...", tabs, false));
-            }
             cnt++;
             addEntryCheckbox(request, subGroup, sb, jsSB);
         }
@@ -754,16 +759,12 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if ( !onlyGroups) {
             for (Entry entry : entries) {
-                if (cnt == 0) {
-                    //                    sb.append(HtmlUtils.makeToggleInline("...", tabs, false));
-                }
                 cnt++;
                 addEntryCheckbox(request, entry, sb, jsSB);
             }
         }
 
 
-        //            sb.append(getInformationTabs(request, parent, true, true));
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
             sb.append(tabs);
@@ -1031,6 +1032,19 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    public Result outputTreeView(Request request, Entry group,
+                                 List<Entry> subGroups, List<Entry> entries)
+            throws Exception {
+        StringBuffer sb         = new StringBuffer();
+        List<Entry>  allEntries = new ArrayList<Entry>();
+        allEntries.addAll(subGroups);
+        allEntries.addAll(entries);
+        makeTreeView(request, allEntries, sb);
+        return makeLinksResult(request, msg("Tree View"), sb,
+                               new State(group, subGroups, entries));
+    }
+
+
     /**
      * _more_
      *
@@ -1136,6 +1150,22 @@ public class HtmlOutputHandler extends OutputHandler {
 
         sb.append("</table>");
 
+    }
+
+
+
+    public void makeTreeView(Request request, List<Entry> children,
+                             StringBuffer sb)
+            throws Exception {
+        request.put(ARG_TREEVIEW, "true");
+        sb.append("<table width=\"100%\"><tr valign=\"top\">");
+        sb.append("<td width=\"350\">");
+        String link = getEntriesList(request, sb,
+                                     children, true, true, true, false);
+        sb.append("</td><td><div id=\"treeview_header\">&nbsp;</div>");
+        sb.append("<iframe id=\"treeview_view\" src=\"/repository/blank\" width=\"750\" height=\"500\"></iframe>");
+        sb.append("</td></tr></table>");
+        request.remove(ARG_TREEVIEW);
     }
 
 
@@ -1373,6 +1403,9 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (outputType.equals(OUTPUT_GRID)) {
             return outputGrid(request, group, subGroups, entries);
+        }
+        if (outputType.equals(OUTPUT_TREEVIEW)) {
+            return outputTreeView(request, group, subGroups, entries);
         }
 
         if (outputType.equals(OUTPUT_TABLE)) {
