@@ -133,7 +133,7 @@ public abstract  class PointTypeHandler extends RecordTypeHandler {
     @Override
     public boolean canHandleResource(String path, String filename) {
         try {
-            if (filename.endsWith(".csv") || filename.endsWith(".txt")) {
+            if (filename.endsWith(".csv") || filename.endsWith(".txt") || filename.endsWith(".xyz")|| filename.endsWith(".tsv")) {
                 //Look to see if there is also a properties file
                 Hashtable props = RecordFile.getPropertiesForFile(path,
                                       PointFile.DFLT_PROPERTIES_FILE);

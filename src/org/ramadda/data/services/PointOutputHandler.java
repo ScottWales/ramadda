@@ -304,6 +304,36 @@ public class PointOutputHandler extends RecordOutputHandler {
 
     }
 
+    protected void addDefaultOutputTypes() {
+        //Add the output types
+        addType(OUTPUT_RESULTS);
+        addType(OUTPUT_PRODUCT);
+        addType(OUTPUT_CSV);
+        addType(OUTPUT_VIEW);
+        addType(OUTPUT_BOUNDS);
+        addType(OUTPUT_METADATA);
+        addType(OUTPUT_SUBSET);
+        addType(OUTPUT_LATLONALTCSV);
+        addType(OUTPUT_LATLONALTBIN);
+        addType(OUTPUT_GETLATLON);
+        addType(OUTPUT_GETPOINTINDEX);
+        addType(OUTPUT_ASC);
+        //addType(OUTPUT_NC);
+        addType(OUTPUT_MAP);
+        addType(OUTPUT_FORM);
+        
+
+        addType(OUTPUT_WAVEFORM);
+        addType(OUTPUT_TIMESERIES_IMAGE);
+        addType(OUTPUT_WAVEFORM_IMAGE);
+        addType(OUTPUT_WAVEFORM_CSV);
+        addType(OUTPUT_IMAGE);
+        addType(OUTPUT_HILLSHADE);
+        addType(OUTPUT_KMZ);
+        addType(OUTPUT_KML_TRACK);
+    }
+
+
     public String getDomainName() {
         return "Points";
     }
