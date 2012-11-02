@@ -4347,10 +4347,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //menus -1, showbreadcrumbs-2, toolbar-3, entry header-4, layout toolbar-5, type-6,  apply to this-7, wiki-8
             Metadata theMetadata = null;
             for (Metadata metadata : metadataList) {
+                if(Misc.equals(metadata.getAttr(7),"false")) {
+                    if(metadata.getEntryId().equals(entry.getId())) {
+                        continue;
+                    }
+                }
                 String types = metadata.getAttr(6);
                 if ((types == null) || (types.trim().length() == 0)) {
                     theMetadata = metadata;
-
                     break;
                 }
                 for (String type : StringUtil.split(types, ",", true, true)) {
