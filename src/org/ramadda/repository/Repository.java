@@ -4980,9 +4980,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             by = sortMetadata.getAttr1();
             String tmp = sortMetadata.getAttr3();
             if(tmp!=null && tmp.length()>0) {
-                max = Integer.parseInt(tmp.trim());
-                if(!request.defined(ARG_MAX)) {
-                    request.put(ARG_MAX,""+max);
+                int tmpMax = Integer.parseInt(tmp.trim());
+                if(tmpMax>0) {
+                    max = tmpMax;
+                    if(!request.defined(ARG_MAX)) {
+                        request.put(ARG_MAX,""+max);
+                    }
                 }
             }
         } else {

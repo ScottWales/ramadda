@@ -151,7 +151,7 @@
          name="Ascending"
          datatype="boolean"/>
       <element
-         default="100"
+         default="-1"
          name="Max Count"
          datatype="int"/>
     </type>
