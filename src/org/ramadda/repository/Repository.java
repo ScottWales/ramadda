@@ -4970,7 +4970,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     forEntry);
         }
 
-        max = request.get(ARG_MAX, max);
         if (sortMetadata != null) {
             haveOrder = true;
             if (Misc.equals(sortMetadata.getAttr2(), "true")) {
@@ -4979,16 +4978,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 order = " DESC ";
             }
             by = sortMetadata.getAttr1();
-            /*            String tmp = sortMetadata.getAttr3();
+            String tmp = sortMetadata.getAttr3();
             if(tmp!=null && tmp.length()>0) {
                 max = Integer.parseInt(tmp.trim());
-                }*/
+                if(!request.defined(ARG_MAX)) {
+                    request.put(ARG_MAX,""+max);
+                }
+            }
         } else {
             by = request.getString(ARG_ORDERBY, (String) null);
             if (request.get(ARG_ASCENDING, false)) {
                 order = " ASC ";
             }
         }
+
+
+        max = request.get(ARG_MAX, max);
+        //        System.err.println ("Max:" + max);
 
         String limitString = BLANK;
         limitString =
