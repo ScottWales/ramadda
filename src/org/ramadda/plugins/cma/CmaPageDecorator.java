@@ -35,8 +35,42 @@ public class CmaPageDecorator extends PageDecorator {
      */
     public CmaPageDecorator() {}
 
+
+
     /**
-     * Decorate the html
+       This is called when no ARG_OUTPUT is specified. It can return the OUTPUT_TYPE to use for the given entry
+    */
+    @Override
+    public String getDefaultOutputType(Repository repository, Request request,
+                                       Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
+        if(entry.isGroup()) {
+            for(Entry child: subEntries) {
+                //If there are any images then use the image player
+                if (child.getResource().isImage()) {
+                    return ImageOutputHandler.OUTPUT_PLAYER.getId();
+                }
+            }
+            return null;
+        }
+
+        //Here we have a single entry
+        if(entry.isFile()) {
+            String file = entry.getResource().getPath();
+            //If its a netcdf or grib file then use
+            //The "data.cdl" is defined in
+            //org/ramadda/geodata/cdmdata/CdmDataOutputHandler.OUTPUT_CDL
+            if(file.endsWith(".nc") || file.endsWith("grb")) {
+                return "data.cdl";
+            }
+        }        
+        return null;
+
+    }
+
+
+
+    /**
+     * Decorate the html. This allows you to do anything with the HTML for the given entry
      *
      * @param repository the repository
      * @param request the request
@@ -45,23 +79,11 @@ public class CmaPageDecorator extends PageDecorator {
      *
      * @return The html
      */
+@Override
     public String decoratePage(Repository repository, Request request,
                                String html, Entry entry) {
-        return null;
+        //Do nothing
+        return super.decoratePage(repository, request, html, entry);
     }
-
-
-    public String getDefaultOutputType(Repository repository, Request request,
-                                       Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
-        if(entry.isGroup()) {
-            for(Entry child: subEntries) {
-                if (child.getResource().isImage()) {
-                    return ImageOutputHandler.OUTPUT_PLAYER.getId();
-                }
-            }
-        }
-        return null;
-    }
-
 
 }
