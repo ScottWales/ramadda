@@ -44,6 +44,7 @@ public class CmaPageDecorator extends PageDecorator {
     public String getDefaultOutputType(Repository repository, Request request,
                                        Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
         if(entry.isGroup()) {
+            //Look at each child entry 
             for(Entry child: subEntries) {
                 //If there are any images then use the image player
                 if (child.getResource().isImage()) {
