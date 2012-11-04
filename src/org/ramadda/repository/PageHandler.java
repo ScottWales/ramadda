@@ -347,8 +347,11 @@ public class PageHandler extends RepositoryManager {
 
         for (PageDecorator pageDecorator :
                 repository.getPluginManager().getPageDecorators()) {
-            template = pageDecorator.decoratePage(repository, request,
+            String tmpTemplate = pageDecorator.decoratePage(repository, request,
                     template, currentEntry);
+            if(tmpTemplate!=null) {
+                template = tmpTemplate;
+            }
         }
         String   html   = template;
         String[] macros = new String[] {

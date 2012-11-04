@@ -609,8 +609,13 @@ public class EntryManager extends RepositoryManager {
         try {
             if (entry.isGroup()) {
                 result = processGroupShow(request, outputHandler, outputType,
-                                          (Entry) entry);
+                                          entry);
             } else {
+                OutputType dfltOutputType = getDefaultOutputType(request, entry, null, null);
+                if(dfltOutputType!=null) {
+                    outputType = dfltOutputType;
+                    outputHandler = getRepository().getOutputHandler(outputType);
+                }
                 result = outputHandler.outputEntry(request, outputType,
                         entry);
             }
@@ -659,7 +664,6 @@ public class EntryManager extends RepositoryManager {
         if (doLatest) {
             if (entries.size() > 0) {
                 entries = sortEntriesOnDate(entries, true);
-
                 return outputHandler.outputEntry(request, outputType,
                         entries.get(0));
             }
@@ -668,15 +672,38 @@ public class EntryManager extends RepositoryManager {
         group.setSubEntries(entries);
         group.setSubGroups(subGroups);
 
+        OutputType dfltOutputType = getDefaultOutputType(request, group, subGroups, entries);
+        if(dfltOutputType!=null) {
+            outputType = dfltOutputType;
+            outputHandler = getRepository().getOutputHandler(outputType);
+        }
         Result result = outputHandler.outputGroup(request, outputType, group,
                             subGroups, entries);
 
         return result;
-        //        return new Result("", new StringBuffer("hello"));
     }
 
 
 
+    private OutputType getDefaultOutputType(Request request, Entry entry,
+                                            List<Entry> subFolders,
+                                            List<Entry> subEntries) {
+        if(!request.defined(ARG_OUTPUT)) {
+            for (PageDecorator pageDecorator :
+                     repository.getPluginManager().getPageDecorators()) {
+                String defaultOutput = pageDecorator.getDefaultOutputType(getRepository(),
+                                                                          request,
+                                                                          entry, subFolders,
+                                                                          subEntries);
+                if(defaultOutput!=null) {
+                    OutputType outputType =  getRepository().findOutputType(defaultOutput);
+                    request.put(ARG_OUTPUT, defaultOutput);
+                    return outputType;
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * _more_

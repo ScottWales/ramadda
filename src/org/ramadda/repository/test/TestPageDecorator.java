@@ -23,7 +23,8 @@ package org.ramadda.repository.test;
 
 
 import org.ramadda.repository.*;
-
+import org.ramadda.repository.output.*;
+import java.util.List;
 
 /**
  * An example of a page decorator. Change the above package to your package structure.
@@ -38,7 +39,7 @@ import org.ramadda.repository.*;
  *
  * @author Jeff McWhirter
  */
-public class TestPageDecorator implements PageDecorator {
+public class TestPageDecorator extends PageDecorator {
 
     /**
      * ctor
@@ -69,5 +70,19 @@ public class TestPageDecorator implements PageDecorator {
         //Just add on XXXXXX so we cna see this working
         return html + "XXXXXX";
     }
+
+
+    public String getDefaultOutputType(Repository repository, Request request,
+                                       Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
+        if(entry.isGroup()) {
+            for(Entry child: subEntries) {
+                if (child.getResource().isImage()) {
+                    return ImageOutputHandler.OUTPUT_PLAYER.getId();
+                }
+            }
+        }
+        return null;
+    }
+
 
 }

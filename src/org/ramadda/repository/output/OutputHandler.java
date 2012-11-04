@@ -340,7 +340,7 @@ public class OutputHandler extends RepositoryManager {
                 sb.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
                         HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)), toks));
             }
-            request.put(ARG_MAX, max);
+            request.put(ARG_MAX, ""+max);
         }
 
     }

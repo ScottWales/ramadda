@@ -22,7 +22,7 @@
 package org.ramadda.repository;
 
 
-
+import java.util.List;
 
 
 
@@ -32,7 +32,7 @@ package org.ramadda.repository;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public interface PageDecorator {
+public class PageDecorator {
 
     /**
      * _more_
@@ -45,5 +45,12 @@ public interface PageDecorator {
      * @return _more_
      */
     public String decoratePage(Repository repository, Request request,
-                               String html, Entry entry);
+                               String html, Entry entry) {
+        return html;
+    }
+
+    public String getDefaultOutputType(Repository repository, Request request,
+                                       Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
+        return null;
+    }
 }
