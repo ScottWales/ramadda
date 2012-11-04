@@ -240,6 +240,7 @@
             target="${javac.version}">
         <include name="org/ramadda/data/record/**"/>
         <include name="org/ramadda/data/point/**"/>
+        <include name="org/ramadda/data/tools/**"/>
         <include name="org/ramadda/util/**"/>
         </javac>
 
@@ -250,6 +251,7 @@
             jarfile="${dist_dir}/ramaddadata.jar">
           <include name="org/ramadda/data/point/**/*.class"/>
           <include name="org/ramadda/data/record/**/*.class"/>
+          <include name="org/ramadda/data/**/*.class"/>
           <include name="org/ramadda/util/**/*.class"/>
        </jar>
     </target>

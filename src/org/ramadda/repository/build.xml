@@ -159,10 +159,7 @@
         <include name="${ramadda_relpath}/type/*.java"/>
         <include name="${ramadda_relpath}/util/*.java"/>
         <include name="org/ramadda/util/*.java"/>
-        <include name="org/ramadda/data/record/*.java"/>
-        <include name="org/ramadda/data/record/filter/*.java"/>
-        <include name="org/ramadda/data/point/*.java"/>
-
+        <include name="org/ramadda/data/**/*.java"/>
         <include name="${ramadda_relpath}/search/*.java"/>
         <include name="${ramadda_relpath}/server/*.java"/>
         <include name="${ramadda_relpath}/services/*.java"/>
