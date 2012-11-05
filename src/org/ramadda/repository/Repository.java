@@ -1392,6 +1392,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         repositoryManagers.add(repositoryManager);
     }
 
+    public RepositoryManager getRepositoryManager(Class c) {
+        for(RepositoryManager manager: repositoryManagers) {
+            if(manager.getClass().equals(c)) return manager;
+        }
+        return null;
+    }
+
 
     /**
      * _more_
