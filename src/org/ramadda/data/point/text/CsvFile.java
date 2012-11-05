@@ -33,6 +33,7 @@ import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 
+import java.text.SimpleDateFormat;
 import java.awt.*;
 import java.awt.image.*;
 
@@ -126,7 +127,7 @@ public class CsvFile extends TextFile {
 
 
     public List<RecordField> getFields() {
-        if(fields == null) {
+       if(fields == null) {
             fields = doMakeFields();
         }
         return fields;
@@ -134,6 +135,13 @@ public class CsvFile extends TextFile {
 
     public List<RecordField>doMakeFields() {
         String fieldString = getProperty(PROP_FIELDS, null);
+        if (fieldString == null) {
+            Record            record = makeRecord(new VisitInfo());
+            List<RecordField> fields = record.getFields();
+            System.err.println ("no fields property:" + fields);
+            return fields;
+        }
+
         if (fieldString == null) {
             throw new IllegalArgumentException("Properties must have a "
                                                + PROP_FIELDS + " value");
@@ -164,6 +172,13 @@ public class CsvFile extends TextFile {
             //            System.err.println("   attrs:" + attrs  + " " + properties);
             RecordField field = new RecordField(name, name, "", paramId++,
                                                 getProperty(properties, "unit", ""));
+            String fmt = getProperty(properties, "fmt", (String) null);
+            if(fmt!=null) {
+                field.setType(field.TYPE_DATE);
+                System.err.println ("FORMAT:" + fmt);
+                field.setDateFormat(new SimpleDateFormat(fmt));
+            }
+
             String value = getProperty(properties,"value",(String)null);
             if(value!=null) {
                 field.setDefaultDoubleValue(Double.parseDouble(value));
@@ -293,7 +308,12 @@ public class CsvFile extends TextFile {
      *
      * @param args _more_
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat(args[0]);
+        System.err.println(sdf.parse(args[1]));
+        if(true) return;
+
+
         for (int argIdx = 0; argIdx < args.length; argIdx++) {
             String arg = args[argIdx];
             try {

@@ -148,22 +148,32 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         //        System.err.println("from file:" + existingProperties +" " + PointFile.DFLT_PROPERTIES_FILE);
         //Make the properties string
 
+        String contents = makePropertiesString(properties);
+        Object[] values   = entry.getValues();
+        if (values == null) {
+            values = new Object[2];
+        }
+        //Append the properties file contents
+        if(values[1]!=null) {
+            values[1] = "\n" + contents;
+        } else {
+            values[1] =  contents;
+        }
+    }
+
+    public String makePropertiesString(Hashtable properties) {
         StringBuffer sb = new StringBuffer();
         for (java.util.Enumeration keys = properties.keys();
-                keys.hasMoreElements(); ) {
+             keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
             sb.append(key);
             sb.append("=");
             sb.append(properties.get(key));
             sb.append("\n");
         }
-        String   contents = sb.toString();
-        Object[] values   = entry.getValues();
-        if (values == null) {
-            values = new Object[2];
-        }
-        values[1] = contents;
+        return  sb.toString();
     }
+
 
     /**
      * _more_

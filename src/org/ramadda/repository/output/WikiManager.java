@@ -608,7 +608,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
 
                 if (theEntry == null) {
-                    return "Unknown entry:" + entryId;
+                    return getMessage(props,
+                                      "Unknown entry:" + entryId);
                 }
             }
 

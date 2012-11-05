@@ -6,6 +6,7 @@ import org.ramadda.data.record.*;
 import org.ramadda.util.grid.LatLonGrid;
 
 import java.io.*;
+import java.util.Properties;
 
 
 /**
@@ -44,6 +45,7 @@ public class PointMetadataHarvester extends RecordVisitor {
     /** _more_ */
     private LatLonGrid llg;
 
+    private Properties properties;
 
     /**
      * _more_
@@ -129,6 +131,7 @@ public class PointMetadataHarvester extends RecordVisitor {
     }
 
     
+
     private double getMin(double value1, double value2) {
         if(Double.isNaN(value1)) return value2;
         if(Double.isNaN(value2)) return value1;
@@ -211,6 +214,16 @@ public class PointMetadataHarvester extends RecordVisitor {
 
     public double getMaxElevation() {
 	return this.maxElevation;
+    }
+
+
+    /**
+       Get the Properties property.
+
+       @return The Properties
+    **/
+    public Properties getProperties () {
+	return properties;
     }
 
 

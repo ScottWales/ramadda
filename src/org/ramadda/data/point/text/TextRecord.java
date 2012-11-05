@@ -24,6 +24,7 @@ import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 
 import java.io.*;
+import java.util.Date;
 
 import ucar.unidata.util.StringUtil;
 import java.util.ArrayList;
@@ -65,6 +66,8 @@ public class TextRecord extends PointRecord {
 
     /** _more_          */
     private int idxZ;
+
+    private int idxTime;
 
     private int idxRed=-1;
     private int idxGreen=-1;
@@ -159,9 +162,13 @@ public class TextRecord extends PointRecord {
         values      = new double[fields.size()];
         objectValues      = new Object[fields.size()];
         tokens      = new String[fields.size()];
-        idxX        = idxY = idxZ = -1;
+        idxX        = idxY = idxZ = idxTime = -1;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
+            if(field.isTypeDate() && idxTime==-1) {
+                idxTime = i;
+                continue;
+            }
             String      name  = field.getName().toLowerCase();
             if(latField!=null && latField.equalsIgnoreCase(name)) {
                 idxY = i;
@@ -204,6 +211,14 @@ public class TextRecord extends PointRecord {
             throw new IllegalArgumentException(
                 "Could not find y index, e.g., latitude, lat, y, etc.");
         }
+    }
+
+    @Override
+    public long getPointTime() {
+        if(idxTime>=0) {
+            return ((Date)objectValues[idxTime]).getTime();
+        }
+        return super.getPointTime();
     }
 
     public short[] getRgb() {
@@ -254,6 +269,7 @@ public class TextRecord extends PointRecord {
     }
 
 
+    @Override
     public String getStringValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
@@ -262,6 +278,18 @@ public class TextRecord extends PointRecord {
             return objectValues[idx].toString();
         }
         return super.getStringValue(attrId);
+    }
+
+
+    @Override
+    public Object getObjectValue(int attrId) {
+        int idx = attrId - ATTR_FIRST;
+        //Offset since the  field ids are 1 based not 0 based
+        idx = idx-1;
+        if ((idx >= 0) && (idx < values.length)) {
+            return objectValues[idx];
+        }
+        return super.getObjectValue(attrId);
     }
 
 
@@ -278,6 +306,7 @@ public class TextRecord extends PointRecord {
      * @throws IOException _more_
      */
     public ReadStatus read(RecordIO recordIO) throws IOException {
+        try {
         ReadStatus status = ReadStatus.OK;
         while (true) {
             line = recordIO.readLine();
@@ -315,11 +344,15 @@ public class TextRecord extends PointRecord {
                 objectValues[fieldCnt] = tok;
                 continue;
             }
+            if(field.isTypeDate()) {
+                objectValues[fieldCnt] = field.getDateFormat().parse(tok);
+                continue;
+            }
             if(tok == null)  {
                 System.err.println("tok null: " +tokenCnt +" " +line);
             }
             //Check for the riscan NaN
-            if(tok.equals("n.v.") || tok.length()==0) {
+            if(tok.equals("n.v.") || tok.length()==0 || tok.equals("null")) {
                 values[fieldCnt] = Double.NaN;
             } else {
                 values[fieldCnt] = (double) Double.parseDouble(tok);
@@ -330,6 +363,9 @@ public class TextRecord extends PointRecord {
                 : 0));
         convertedXYZToLatLonAlt = true;
         return status;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 

@@ -32,6 +32,7 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 
 
 import java.awt.geom.*;
@@ -451,6 +452,46 @@ public abstract class PointFile extends RecordFile implements Cloneable {
             throws Exception {
         PointRecord record = (PointRecord) getRecord(pointIndex);
         return record.getWaveform(name);
+    }
+
+
+    public static void test(String[]args, Class pointFileClass) {
+        for (int argIdx = 0; argIdx < args.length; argIdx++) {
+            String arg = args[argIdx];
+            try {
+                long                t1       = System.currentTimeMillis();
+                final int[]         cnt      = { 0 };
+                final RecordVisitor metadata = new RecordVisitor() {
+                        public boolean visitRecord(RecordFile file,
+                                                   VisitInfo visitInfo, Record record) {
+                            cnt[0]++;
+                            PointRecord pointRecord = (PointRecord) record;
+                            if ((pointRecord.getLatitude() < -90)
+                                || (pointRecord.getLatitude() > 90)) {
+                                System.err.println("Bad lat:"
+                                                   + pointRecord.getLatitude());
+                            }
+                            if ((cnt[0] % 100000) == 0) {
+                                System.err.println(cnt[0] + " lat:"
+                                                   + pointRecord.getLatitude() + " "
+                                                   + pointRecord.getLongitude() + " "
+                                                   + pointRecord.getAltitude());
+
+                            }
+                            return true;
+                        }
+                    };
+
+                PointFile pointFile = (PointFile) Misc.findConstructor(pointFileClass, new Class[]{String.class}).newInstance(new Object[]{arg});
+                pointFile.visit(metadata);
+                long t2 = System.currentTimeMillis();
+                System.err.println("time:" + (t2 - t1) / 1000.0
+                                   + " # record:" + cnt[0]);
+            } catch (Exception exc) {
+                System.err.println("Error:" + exc);
+                exc.printStackTrace();
+            }
+        }
     }
 
 

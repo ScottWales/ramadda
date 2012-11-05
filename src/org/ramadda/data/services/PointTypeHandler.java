@@ -76,6 +76,8 @@ public abstract  class PointTypeHandler extends RecordTypeHandler {
         if ( !file.exists()) {
             return;
         }
+        System.err.println ("initializeNewEntry:" + entry);
+
         log("initializeNewEntry:" + entry.getResource());
         initializeEntry(entry, file);
         PointOutputHandler outputHandler = (PointOutputHandler) getRecordOutputHandler();
@@ -212,6 +214,19 @@ public abstract  class PointTypeHandler extends RecordTypeHandler {
             values = new Object[2];
         }
         values[0] = new Integer(metadata.getCount());
+        Properties properties = metadata.getProperties();
+        if(properties!=null) {
+            String contents = makePropertiesString(properties);
+            //Append the properties file contents
+            if(values[1]!=null) {
+                values[1] = "\n" + contents;
+            } else {
+                values[1] =  contents;
+            }
+        }
+
+        //        xxxxx
+
         entry.setValues(values);
         entry.setNorth(metadata.getMaxLatitude());
         entry.setSouth(metadata.getMinLatitude());

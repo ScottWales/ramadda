@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
+
 
 /**
  * Holds information about the record's parameters
@@ -53,6 +55,12 @@ public class RecordField {
 
     public static final String TYPE_NUMERIC = "numeric";
     public static final String TYPE_STRING = "string";
+    public static final String TYPE_DATE = "date";
+
+    private boolean isTypeNumeric = true;
+    private boolean isTypeString = false;
+    private boolean isTypeDate = false;
+    private SimpleDateFormat dateFormat;
 
     /** _more_ */
     private String name;
@@ -542,6 +550,9 @@ public class RecordField {
     **/
     public void setType (String value) {
 	type = value;
+        isTypeNumeric = value.equals(TYPE_NUMERIC);
+        isTypeString = value.equals(TYPE_STRING);
+        isTypeDate = value.equals(TYPE_DATE);
     }
 
     /**
@@ -554,11 +565,33 @@ public class RecordField {
     }
 
     public boolean isTypeString() {
-        return type.equals(TYPE_STRING);
+        return isTypeString;
     }
 
     public boolean isTypeNumeric() {
-        return type.equals(TYPE_NUMERIC);
+        return isTypeNumeric;
+    }
+
+    public boolean isTypeDate() {
+        return isTypeDate;
+    }
+
+    /**
+       Set the DateFormat property.
+
+       @param value The new value for DateFormat
+    **/
+    public void setDateFormat (SimpleDateFormat value) {
+	dateFormat = value;
+    }
+
+    /**
+       Get the DateFormat property.
+
+       @return The DateFormat
+    **/
+    public SimpleDateFormat getDateFormat () {
+	return dateFormat;
     }
 
 

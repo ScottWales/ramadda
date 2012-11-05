@@ -28,7 +28,13 @@
 <td width="50%">
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="350"}}</td></tr>
+{{mapentry width="350"}}
+<p>
+{{links entry="Links" message=""}}
+</td></tr>
+
+
+
 </table>
 
 ==Properties==

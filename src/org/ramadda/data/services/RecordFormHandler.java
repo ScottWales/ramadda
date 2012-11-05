@@ -408,6 +408,13 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                         sb.append("</td>");
                         continue;
                     }
+                    if(field.isTypeDate()) {
+                        sb.append("<td align=right>");
+                        Date date = (Date) record.getObjectValue(field.getParamId());
+                        sb.append(formatDate(date));
+                        sb.append("</td>");
+                        continue;
+                    }
                     if (field.isBitField()) {
                         String[] bitFields = field.getBitFields();
                         int value = (int) record.getValue(field.getParamId());

@@ -638,7 +638,7 @@ public abstract class RecordFile {
             }
             //            System.err.println("RecordFile:done visiting");
             if (ok) {
-                visitor.finished(this, visitInfo);
+                visitorFinished(visitor, visitInfo);
             }
             long t2 = System.currentTimeMillis();
             if (debug) {
@@ -650,6 +650,11 @@ public abstract class RecordFile {
                 recordIO.close();
             } catch (Exception ignore) {}
         }
+    }
+
+
+    public void visitorFinished(RecordVisitor visitor, VisitInfo visitInfo) {
+        visitor.finished(this, visitInfo);
     }
 
 

@@ -259,6 +259,14 @@ public abstract class Record implements Cloneable {
 
 
     public String getStringValue(int attrId) {
+        Object object = getObjectValue(attrId);
+        if(object == null) {
+            throw new IllegalArgumentException("Unknown attribute id:" + attrId);
+        }
+        return object.toString();
+    }
+
+    public Object getObjectValue(int attrId) {
         throw new IllegalArgumentException("Unknown attribute id:" + attrId);
     }
 

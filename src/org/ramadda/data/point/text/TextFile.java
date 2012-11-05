@@ -140,6 +140,10 @@ public abstract class TextFile extends PointFile {
         }
     }
 
+    public List<String> getHeaderLines() {
+        return headerLines;
+    }
+
     /**
      * _more_
      *
@@ -150,10 +154,13 @@ public abstract class TextFile extends PointFile {
      * @throws IOException _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+        boolean haveReadHeader = headerLines.size()>0;
         int skipCnt = getSkipLines(visitInfo);
         for (int i = 0; i < skipCnt; i++) {
             String line = visitInfo.getRecordIO().readLine();
-            headerLines.add(line);
+            if(!haveReadHeader) {
+                headerLines.add(line);
+            }
         }
         return visitInfo;
     }
