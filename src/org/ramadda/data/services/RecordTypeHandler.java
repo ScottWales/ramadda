@@ -281,7 +281,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
 
 
     public String getEntryCategory(Entry entry) {
-        return "";
+        return getProperty("entry.category", "");
     }
 
     /**

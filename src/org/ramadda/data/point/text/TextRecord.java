@@ -51,7 +51,7 @@ public class TextRecord extends PointRecord {
     /** _more_          */
     private double[] values;
 
-    private String[] stringValues;
+    private Object[] objectValues;
 
     private String[] tokens;
 
@@ -79,7 +79,7 @@ public class TextRecord extends PointRecord {
         super(that);
         this.fields = that.fields;
         values      = null;
-        stringValues = null;
+        objectValues = null;
         tokens      = null;
     }
 
@@ -157,7 +157,7 @@ public class TextRecord extends PointRecord {
         String lonField = (String) getRecordFile().getProperty("field.longitude");
         this.fields = fields;
         values      = new double[fields.size()];
-        stringValues      = new String[fields.size()];
+        objectValues      = new Object[fields.size()];
         tokens      = new String[fields.size()];
         idxX        = idxY = idxZ = -1;
         for (int i = 0; i < fields.size(); i++) {
@@ -259,7 +259,7 @@ public class TextRecord extends PointRecord {
         //Offset since the  field ids are 1 based not 0 based
         idx = idx-1;
         if ((idx >= 0) && (idx < values.length)) {
-            return stringValues[idx];
+            return objectValues[idx].toString();
         }
         return super.getStringValue(attrId);
     }
@@ -312,7 +312,7 @@ public class TextRecord extends PointRecord {
             }
             String tok = tokens[tokenCnt++];
             if(field.isTypeString()) {
-                stringValues[fieldCnt] = tok;
+                objectValues[fieldCnt] = tok;
                 continue;
             }
             if(tok == null)  {
