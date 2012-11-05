@@ -334,7 +334,8 @@ public class HtmlOutputHandler extends OutputHandler {
             OutputHandler.makeTabs(Misc.newList(msg("Information"),
                 msg(LABEL_LINKS)), Misc.newList(sb.toString(), links), true);
 
-        contents = getInformationTabs(request, entry, true, true);
+        contents = links;
+        //        contents = getInformationTabs(request, entry, true, true);
         //        String       contents = sb.toString();
 
         StringBuffer xml = new StringBuffer("<content>\n");
@@ -1158,13 +1159,18 @@ public class HtmlOutputHandler extends OutputHandler {
                              StringBuffer sb)
             throws Exception {
         request.put(ARG_TREEVIEW, "true");
+        StringBuffer listSB = new StringBuffer();
         sb.append("<table width=\"100%\"><tr valign=\"top\">");
-        sb.append("<td width=\"350\">");
-        String link = getEntriesList(request, sb,
+        String link = getEntriesList(request, listSB,
                                      children, true, true, true, false);
-        sb.append("</td><td><div id=\"treeview_header\">&nbsp;</div>");
-        sb.append("<iframe id=\"treeview_view\" src=\"/repository/blank\" width=\"750\" height=\"500\"></iframe>");
-        sb.append("</td></tr></table>");
+        sb.append(HtmlUtils.col(link, HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,"350")));
+        sb.append(HtmlUtils.col("<div id=\"treeview_header\">&nbsp;</div>"));
+
+        
+        sb.append("</tr><tr valign=\"top\">");
+        sb.append(HtmlUtils.col(listSB.toString()));
+        sb.append(HtmlUtils.col("<iframe id=\"treeview_view\" src=\"/repository/blank\" width=\"750\" height=\"500\"></iframe>"));
+        sb.append("</tr></table>");
         request.remove(ARG_TREEVIEW);
     }
 
