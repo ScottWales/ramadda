@@ -1627,7 +1627,8 @@ public class TypeHandler extends RepositoryManager {
                     getRepository().iconUrl(ICON_EDIT), "Edit Entry",
                     OutputType.TYPE_EDIT /* | OutputType.TYPE_TOOLBAR*/));
 
-            if (getEntryManager().isAnonymousUpload(entry)) {
+            //NOTE: Don't add the direct link because the auth token is added
+            if (false && getEntryManager().isAnonymousUpload(entry)) {
                 links.add(
                     new Link(
                         request.entryUrl(
