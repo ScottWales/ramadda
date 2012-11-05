@@ -879,8 +879,13 @@ public class MapManager extends RepositoryManager {
 
         boolean       makeRectangles = cnt <= 100;
         MapProperties mapProperties  = new MapProperties("blue", true);
+        
         makeRectangles = true;
 
+        if(request.get(ARG_MAP_ICONSONLY,false)) {
+            makeRectangles = false;
+        }
+        
         for (Entry entry : entriesToUse) {
             String         idBase       = entry.getId();
             List<Metadata> metadataList =

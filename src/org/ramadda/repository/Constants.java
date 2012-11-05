@@ -1561,6 +1561,9 @@ public interface Constants {
     /** _more_          */
     public static final String ARG_SHUTDOWN_CONFIRM = "shutdown.confirm";
 
+
+    public static final String ARG_MAP_ICONSONLY = "iconsonly";
+
     /** _more_ */
     public static final String PROP_REGISTRY_DEFAULTSERVER =
         "ramadda.registry.defaultserver";

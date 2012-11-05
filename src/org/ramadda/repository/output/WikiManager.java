@@ -1067,11 +1067,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String icon = Misc.getProperty(props, ATTR_ICON, (String) null);
                 if(icon!=null)
                     newRequest.put(ARG_ICON, icon);
+                if(Misc.equals("true", Misc.getProperty(props,ARG_MAP_ICONSONLY,(String) null))) {
+                    newRequest.put(ARG_MAP_ICONSONLY, "true");
+                }
                 MapInfo map = getMapManager().getMap(newRequest, children,
                                   sb, width, height, details,
-                                  haveBearingLines, listEntries);
+                                                     haveBearingLines, listEntries);
                 if(icon!=null)
                     newRequest.remove(ARG_ICON);
+                newRequest.remove(ARG_MAP_ICONSONLY);
             }
 
             return sb.toString();
