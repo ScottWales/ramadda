@@ -389,8 +389,7 @@ public class MetadataManager extends RepositoryManager {
             //            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent is NULL");
         } else {
             //            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent:" + parent.getName());
-            findInheritedMetadata(parent,
-                                  result);
+            findInheritedMetadata(request, parent,  result);
         }
         this.debug  = false;
         return result;
@@ -404,7 +403,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void findInheritedMetadata(Entry entry, List<Metadata> result)
+    private void findInheritedMetadata(Request request, Entry entry, List<Metadata> result)
             throws Exception {
         debug("METADATA: findInherited: entry=" + entry);
         if (entry == null) {
@@ -418,7 +417,7 @@ public class MetadataManager extends RepositoryManager {
             }
             result.add(metadata);
         }
-        findInheritedMetadata(getEntryManager().getParent(null, entry),
+        findInheritedMetadata(request, getEntryManager().getParent(request, entry),
                               result);
     }
 
