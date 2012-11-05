@@ -127,6 +127,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** include icon attribute */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
+    public static final String ATTR_ICON = "icon";
+
     /** attribute in the tabs tag */
     public static final String ATTR_LINKLABEL = "linklabel";
 
@@ -1061,9 +1063,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 //newRequest.putAll(props);
                 boolean details = Misc.getProperty(props, ATTR_DETAILS,
                                       false);
+                String icon = Misc.getProperty(props, ATTR_ICON, (String) null);
+                if(icon!=null)
+                    newRequest.put(ARG_ICON, icon);
                 MapInfo map = getMapManager().getMap(newRequest, children,
                                   sb, width, height, details,
                                   haveBearingLines, listEntries);
+                if(icon!=null)
+                    newRequest.remove(ARG_ICON);
             }
 
             return sb.toString();

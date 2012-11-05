@@ -8346,7 +8346,9 @@ public class EntryManager extends RepositoryManager {
         if (isAnonymousUpload(entry)) {
             return iconUrl(ICON_ENTRY_UPLOAD);
         }
-
+        if(request.defined(ARG_ICON)) {
+            return iconUrl(request.getString(ARG_ICON,""));
+        }
         return entry.getTypeHandler().getIconUrl(request, entry);
     }
 

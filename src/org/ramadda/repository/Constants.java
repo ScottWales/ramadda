@@ -332,6 +332,8 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_ZIPTREE = "ramadda.icon.ziptree";
 
+    public static final String ARG_ICON = "ramadda.icon";
+
 
 
     /** _more_ */

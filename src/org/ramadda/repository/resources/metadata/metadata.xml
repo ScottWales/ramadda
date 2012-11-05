@@ -101,6 +101,14 @@
       <element name="File" datatype="file" thumbnail="false"/>
     </type>
 
+<!--
+    <type
+       name="Icon"
+       id="content.icon">
+      <element name="File" datatype="file" thumbnail="false"/>
+    </type>
+-->
+
     <type
        name="Page Style"
        showinhtml="false"
