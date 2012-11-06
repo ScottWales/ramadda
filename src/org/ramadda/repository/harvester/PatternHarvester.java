@@ -755,6 +755,20 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 continue;
             }
 
+            //check for a ramadda.properties file. 
+            File propFile = new File(IOUtil.joinDir(dirInfo.getFile(),"ramadda.properties"));
+            if(propFile.exists()) {
+                logHarvesterInfo("Checking properties file:" + propFile);
+                Properties properties = new Properties();
+                getRepository().loadProperties(properties, propFile.toString());
+                
+                if(Misc.equals(properties.get("harvester.ok"),"false")) {
+                    logHarvesterInfo("Skipping directory:" + dirInfo.getFile());
+                    continue;
+                }
+            }
+
+
             File[] files = dirInfo.getFile().listFiles();
             dirInfo.clearAddedFiles();
             if ((files == null) || (files.length == 0)) {
