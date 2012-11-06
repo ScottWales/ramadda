@@ -1768,3 +1768,11 @@ function treeViewClick (entryId, url, label) {
 }
 
 
+function treeViewGoTo () {
+    var currentUrl =   $('#treeview_view').attr("src"); 
+    if(currentUrl) {
+        currentUrl = currentUrl.replace("template=","notemplate=");
+        $(location).attr('href',currentUrl);
+    }
+}
+

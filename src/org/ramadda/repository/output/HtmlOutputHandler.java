@@ -314,8 +314,9 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getMetadataXml(Request request, Entry entry)
+    private Result getMetadataXml(Request request, Entry entry, boolean showLinks)
             throws Exception {
+/*
         StringBuffer sb = new StringBuffer();
         request.put(ARG_OUTPUT, OUTPUT_HTML);
         boolean didOne = false;
@@ -327,23 +328,20 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(tfo.getId().toString());
         }
         sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+*/
 
-        String links = getEntryManager().getEntryActionsTable(request, entry,
-                           OutputType.TYPE_ALL);
-        String contents =
-            OutputHandler.makeTabs(Misc.newList(msg("Information"),
-                msg(LABEL_LINKS)), Misc.newList(sb.toString(), links), true);
-
-        contents = links;
-        //        contents = getInformationTabs(request, entry, true, true);
-        //        String       contents = sb.toString();
-
+        String contents;
+        if(showLinks) {
+            int menuType = OutputType.TYPE_VIEW | OutputType.TYPE_FILE | OutputType.TYPE_EDIT | OutputType.TYPE_OTHER;
+            contents =  getEntryManager().getEntryActionsTable(request, entry,
+                                                               menuType);
+        } else  {
+            contents = getInformationTabs(request, entry, true, true);
+        }
         StringBuffer xml = new StringBuffer("<content>\n");
         XmlUtil.appendCdata(xml,
                             getRepository().translate(request, contents));
         xml.append("\n</content>");
-
-        //        System.err.println(xml);
         return new Result("", xml, "text/xml");
 
     }
@@ -396,7 +394,7 @@ public class HtmlOutputHandler extends OutputHandler {
         TypeHandler typeHandler =
             getRepository().getTypeHandler(entry.getType());
         if (outputType.equals(OUTPUT_METADATAXML)) {
-            return getMetadataXml(request, entry);
+            return getMetadataXml(request, entry, true);
         }
         if (outputType.equals(OUTPUT_LINKSXML)) {
             return getLinksXml(request, entry);
@@ -428,7 +426,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 return new Result("", xml, "text/xml");
             }
 
-            return getMetadataXml(request, entry);
+            return getMetadataXml(request, entry, false);
         }
 
 
@@ -1164,9 +1162,10 @@ public class HtmlOutputHandler extends OutputHandler {
         String link = getEntriesList(request, listSB,
                                      children, true, true, true, false);
         sb.append(HtmlUtils.col(link, HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,"350")));
-        sb.append(HtmlUtils.col("<div id=\"treeview_header\">&nbsp;</div>"));
-
-        
+        String gotoHtml = HtmlUtils.mouseClickHref("treeViewGoTo();","Go to","");
+        sb.append(HtmlUtils.col(HtmlUtils.leftRight(
+                                                    HtmlUtils.div("&nbsp;", HtmlUtils.id("treeview_header")),
+                                                    gotoHtml)));
         sb.append("</tr><tr valign=\"top\">");
         sb.append(HtmlUtils.col(listSB.toString()));
         sb.append(HtmlUtils.col("<iframe id=\"treeview_view\" src=\"/repository/blank\" width=\"750\" height=\"500\"></iframe>"));
@@ -1397,7 +1396,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getSelectXml(request, subGroups, entries);
         }
         if (outputType.equals(OUTPUT_METADATAXML)) {
-            return getMetadataXml(request, group);
+            return getMetadataXml(request, group, true);
         }
         if (outputType.equals(OUTPUT_MAPINFO)) {
             return getMapInfo(request, group);
