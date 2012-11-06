@@ -293,6 +293,9 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return is job running and ok
      */
     public boolean jobOK(Object jobId) {
+        if (jobManager == null) {
+            return false;
+        }
         return jobManager.jobOK(jobId);
     }
 
@@ -400,6 +403,10 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     public Result outputEntry(Request request, OutputType outputType,
                               final Entry entry)
             throws Exception {
+
+        if (jobManager == null) {
+            return null;
+        }
 
         //Route any of the processing job requests to the JobManager
         if (request.defined(JobInfo.ARG_JOB_ID)) {

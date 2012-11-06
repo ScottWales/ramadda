@@ -48,7 +48,7 @@ import java.util.Properties;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
-public abstract  class PointTypeHandler extends RecordTypeHandler {
+public   class PointTypeHandler extends RecordTypeHandler {
 
     /**
      * _more_
@@ -61,6 +61,16 @@ public abstract  class PointTypeHandler extends RecordTypeHandler {
             throws Exception {
         super(repository, node);
     }
+
+
+    public  RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
+        RecordOutputHandler poh = (RecordOutputHandler) getRepository().getOutputHandler(PointOutputHandler.class);
+        if(poh == null) {
+            poh = new PointOutputHandler(getRepository(), null);
+        }
+        return poh;
+    }
+
 
 
     /**

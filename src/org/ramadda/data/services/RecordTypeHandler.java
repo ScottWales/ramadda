@@ -55,7 +55,9 @@ import java.util.Properties;
 public abstract  class RecordTypeHandler extends GenericTypeHandler implements RecordConstants {
 
     /** _more_ */
-    private static RecordFileFactory recordFileFactory;
+    private  RecordFileFactory recordFileFactory;
+
+    private RecordOutputHandler recordOutputHandler;
 
 
     /**
@@ -70,7 +72,21 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         super(repository, node);
     }
 
-    public abstract RecordOutputHandler getRecordOutputHandler();
+    public  RecordOutputHandler getRecordOutputHandler() {
+        if(recordOutputHandler==null) {
+            try {
+                recordOutputHandler = doMakeRecordOutputHandler();
+            } catch(Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+        return recordOutputHandler;
+    }
+
+
+    public  RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
+        return new RecordOutputHandler(getRepository(), null);
+    }
 
 
     /**
@@ -87,13 +103,15 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         //        super.addToInformationTabs(request, entry, tabTitles, tabContents);
         try {
             RecordOutputHandler outputHandler = getRecordOutputHandler();
-            tabTitles.add(msg("File Format"));
-            StringBuffer sb         = new StringBuffer();
-            RecordEntry   recordEntry = outputHandler.doMakeEntry(request,
-                                                                  entry);
-            outputHandler.getFormHandler().getEntryMetadata(request,
-                                                            recordEntry, sb);
-            tabContents.add(sb.toString());
+            if(outputHandler!=null) {
+                tabTitles.add(msg("File Format"));
+                StringBuffer sb         = new StringBuffer();
+                RecordEntry   recordEntry = outputHandler.doMakeEntry(request,
+                                                                      entry);
+                outputHandler.getFormHandler().getEntryMetadata(request,
+                                                                recordEntry, sb);
+                tabContents.add(sb.toString());
+            }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
 
@@ -409,7 +427,9 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
     }
 
 
-    public abstract RecordFileFactory doMakeRecordFileFactory();
+    public  RecordFileFactory doMakeRecordFileFactory() {
+        return new RecordFileFactory();
+    }
 
 
     /**
