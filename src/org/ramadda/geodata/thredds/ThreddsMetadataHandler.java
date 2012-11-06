@@ -587,8 +587,10 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
             List<Variable> variables = dataset.getVariables();
             //            System.err.println(entry.getResource());
+            
             for (Variable var : variables) {
                 if (var instanceof CoordinateAxis) {
+                    boolean axisWasRecognized = true;
                     CoordinateAxis ca       = (CoordinateAxis) var;
                     AxisType       axisType = ca.getAxisType();
                     if (axisType == null) {
@@ -654,10 +656,12 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                             System.out.println(exc);
                         }
                     } else {
-                        // System.err.println("unknown axis:" + axisType + " for var:" + var.getName());
+                        axisWasRecognized  = false;
+                        //                        System.err.println("unknown axis:" + axisType + " for var:" + var.getName());
                     }
-
-                    continue;
+                    if(axisWasRecognized) {
+                        continue;
+                    }
                 }
 
 
