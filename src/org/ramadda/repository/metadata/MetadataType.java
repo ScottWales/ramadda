@@ -738,13 +738,14 @@ public class MetadataType extends MetadataTypeBase {
             f = thumb;
         }
 
-        Result result = new Result(
+        
+        /*        Result result = new Result(
                             "thumbnail",
                             IOUtil.readBytes(
                                 getStorageManager().getFileInputStream(f),
-                                null, true), mimeType);
-        result.setShouldDecorate(false);
-
+                                null, true), mimeType);*/
+        InputStream inputStream = getStorageManager().getFileInputStream(f);
+        Result result = new Result(inputStream, mimeType);
         return result;
     }
 
