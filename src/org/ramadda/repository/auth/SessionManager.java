@@ -535,7 +535,7 @@ public class SessionManager extends RepositoryManager {
             }
         }
 
-        if (request.getSessionId() == null) {
+        if (request.getSessionId() == null && !request.defined(ARG_SESSIONID)) {
             request.setSessionId(createSessionId());
         }
 
