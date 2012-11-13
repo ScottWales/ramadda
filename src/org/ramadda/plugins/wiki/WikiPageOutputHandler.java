@@ -250,8 +250,8 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             if (request.get(ARG_WIKI_RAW, false)) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(HtmlUtils.form(""));
-                sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 250,
-                                             60,
+                sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 50,
+                                             80,
                                              HtmlUtils.id(ARG_WIKI_TEXT)));
                 sb.append(HtmlUtils.formClose());
 
