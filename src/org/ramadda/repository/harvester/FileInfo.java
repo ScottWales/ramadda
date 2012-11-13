@@ -29,9 +29,11 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -246,7 +248,7 @@ public class FileInfo {
      *
      * @throws Exception _more_
      */
-    public static List<FileInfo> collectDirs(final File rootDir)
+    public static List<FileInfo> collectDirs(final File rootDir, final Harvester harvester)
             throws Exception {
         final List<FileInfo> dirs       = new ArrayList();
         IOUtil.FileViewer    fileViewer = new IOUtil.FileViewer() {
@@ -254,6 +256,19 @@ public class FileInfo {
                 if (f.isDirectory()) {
                     if (f.getName().startsWith(".")) {
                         return DO_DONTRECURSE;
+                    }
+                    //check for a ramadda.properties file. 
+                    File propFile = new File(IOUtil.joinDir(f,"ramadda.properties"));
+                    if(propFile.exists()) {
+                        harvester.logHarvesterInfo("Checking properties file:" + propFile);
+                        Properties properties = new Properties();
+                        FileInputStream fis = new FileInputStream(propFile);
+                        properties.load(fis);
+                        IOUtil.close(fis);
+                        if(Misc.equals(properties.get("harvester.ok"),"false")) {
+                            harvester.logHarvesterInfo("Skipping directory:" + f);
+                            return DO_DONTRECURSE;
+                        }
                     }
                     dirs.add(new FileInfo(f, rootDir, true));
                 }

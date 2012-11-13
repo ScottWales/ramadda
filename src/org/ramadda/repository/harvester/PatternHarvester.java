@@ -663,7 +663,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 logHarvesterInfo("Root directory does not exist:" + rootDir);
             }
             dirs.add(new FileInfo(rootDir));
-            dirs.addAll(FileInfo.collectDirs(rootDir));
+            dirs.addAll(FileInfo.collectDirs(rootDir, this));
         }
 
         logHarvesterInfo("Found " + dirs.size()
@@ -755,18 +755,6 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 continue;
             }
 
-            //check for a ramadda.properties file. 
-            File propFile = new File(IOUtil.joinDir(dirInfo.getFile(),"ramadda.properties"));
-            if(propFile.exists()) {
-                logHarvesterInfo("Checking properties file:" + propFile);
-                Properties properties = new Properties();
-                getRepository().loadProperties(properties, propFile.toString());
-                
-                if(Misc.equals(properties.get("harvester.ok"),"false")) {
-                    logHarvesterInfo("Skipping directory:" + dirInfo.getFile());
-                    continue;
-                }
-            }
 
 
             File[] files = dirInfo.getFile().listFiles();
@@ -1037,7 +1025,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         if (f.getName().startsWith(".") && !isPlaceholder) {
             logHarvesterInfo("File is hidden file:" + f);
+            return null;
+        }
 
+        if(f.getName().equals("ramadda.properties")) {
             return null;
         }
 
