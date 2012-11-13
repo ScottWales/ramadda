@@ -87,6 +87,8 @@ public class RepositoryClient extends RepositoryBase {
 
     /** _more_          */
     public static final String CMD_FILE = "-file";
+
+    public static final String CMD_FILES = "-files";
     //    public static final String CMD_ = ;
 
 
@@ -1158,6 +1160,7 @@ public class RepositoryClient extends RepositoryBase {
             return true;
         }
         try {
+            System.err.println ("RepositoryClient: doLogin");
             //first get the basic information including the ssl port
             getInfo();
 
@@ -1457,6 +1460,8 @@ public class RepositoryClient extends RepositoryBase {
                 + "\n"
                 + argLine(CMD_FILE, "<entry name> <file to upload> <parent folder id (see below)>")
                 + "\n"
+                + argLine(CMD_FILES, "<parent folder id (see below)> <one or more files to upload>")
+                + "\n"
                 + "The following arguments get applied to the previously created folder or file:\n"
                 + "\t-description <entry description>\n"
                 + "\t-attach <file to attach>\n"
@@ -1641,6 +1646,25 @@ public class RepositoryClient extends RepositoryBase {
                 String parentId = args[++i];
 
                 entryNode = makeGroupNode(root, parentId, name);
+
+            } else if (arg.equals(CMD_FILES)) {
+                if (i >= args.length - 2) {
+                    usage("Bad argument: " + arg);
+                }
+                String parentId = args[++i];
+                
+                for (i++; i < args.length; i++) {
+                    File   f    = new File(args[i]);
+                    if ( !f.exists()) {
+                        usage("File does not exist:" + f);
+                    }
+                    String name = f.getName();
+                    entryCnt++;
+                    entryNode = makeEntryNode(root, name, parentId);
+                    entryNode.setAttribute(ATTR_FILE,
+                                           IOUtil.getFileTail(f.toString()));
+                    files.add(f);
+                }
             } else if (arg.equals(CMD_FILE)) {
                 if (i >= args.length - 2) {
                     usage("Bad argument: " + arg);
