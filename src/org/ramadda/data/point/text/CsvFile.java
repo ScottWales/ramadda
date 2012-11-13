@@ -110,6 +110,13 @@ public class CsvFile extends TextFile {
                || f.endsWith(".xyz")  || f.endsWith(".tsv"));
     }
 
+    public boolean isCapable(String action) {
+        if(action.equals(ACTION_GRID)) return true;
+        if(action.equals(ACTION_DECIMATE)) return true;
+        return super.isCapable(action);
+    }
+
+
 
     public String getDelimiter() {
         if(delimiter == null) {
