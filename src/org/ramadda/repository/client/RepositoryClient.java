@@ -39,6 +39,7 @@ import org.w3c.dom.NodeList;
 
 import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -69,6 +70,8 @@ public class RepositoryClient extends RepositoryBase {
 
     /** _more_          */
     public static final String CMD_PRINT = "-print";
+
+    public static final String CMD_TIMEOUT = "-timeout";
 
     /** _more_          */
     public static final String CMD_PRINTXML = "-printxml";
@@ -142,6 +145,10 @@ public class RepositoryClient extends RepositoryBase {
     private boolean doingSearch = false;
 
     private List<String[]> searchArgs  = new ArrayList<String[]>();
+
+    private int timeout = 0;
+
+    private int callTimestamp = 0;
 
     /**
      * _more_
@@ -258,11 +265,27 @@ public class RepositoryClient extends RepositoryBase {
      */
     public String[] doPost(String url, List<HttpFormEntry> entries)
             throws Exception {
-        return HttpFormEntry.doPost(entries, url);
+        String[]result =  HttpFormEntry.doPost(entries, url);
+        callTimestamp ++;
+        return result;
     }
 
 
-
+    private void doTimeout() {
+        if(timeout==0) return;
+        final int myTimestamp = callTimestamp;
+        Misc.run(new Runnable() {
+                public void run() {
+                    Misc.sleepSeconds(timeout);
+                    if(myTimestamp == callTimestamp) {
+                        System.err.println ("RepositoryClient: call timed out");
+                        System.exit(1);
+                    } else {
+                        //                        System.err.println ("call succeeded within timeout");
+                    }
+                }
+            });
+    }
 
     /**
      * _more_
@@ -1160,7 +1183,7 @@ public class RepositoryClient extends RepositoryBase {
             return true;
         }
         try {
-            System.err.println ("RepositoryClient: doLogin");
+            //            System.err.println ("RepositoryClient: doLogin");
             //first get the basic information including the ssl port
             getInfo();
 
@@ -1169,6 +1192,7 @@ public class RepositoryClient extends RepositoryBase {
             entries.add(HttpFormEntry.hidden(ARG_USER_PASSWORD,
                                              getPassword()));
             entries.add(HttpFormEntry.hidden(ARG_USER_ID, getUser()));
+            doTimeout();
             String[] result = doPost(URL_USER_LOGIN, entries);
             if (result[0] != null) {
                 msg[0] = "Error logging in: " + result[0];
@@ -1226,7 +1250,10 @@ public class RepositoryClient extends RepositoryBase {
                 RESPONSE_XML });
 
         //        System.err.println("url:" + url);
+        doTimeout();
         String contents = IOUtil.readContents(url, getClass());
+        callTimestamp++;
+
         //        System.err.println(contents);
         Element root        = XmlUtil.getRoot(contents);
 
@@ -1406,10 +1433,10 @@ public class RepositoryClient extends RepositoryBase {
             }
             RepositoryClient client = new RepositoryClient(new URL(args[0]),
                                           args[1], args[2]);
+            client.preProcessArgs(args);
             String[] msg = { "" };
             if ( !client.isValidSession(true, msg)) {
                 System.err.println("Error: invalid session:" + msg[0]);
-
                 return;
             }
 
@@ -1461,6 +1488,8 @@ public class RepositoryClient extends RepositoryBase {
                 + argLine(CMD_FILE, "<entry name> <file to upload> <parent folder id (see below)>")
                 + "\n"
                 + argLine(CMD_FILES, "<parent folder id (see below)> <one or more files to upload>")
+                + "\n"
+                + argLine(CMD_TIMEOUT, "<timeout in seconds for server info and login attempts>")
                 + "\n"
                 + "The following arguments get applied to the previously created folder or file:\n"
                 + "\t-description <entry description>\n"
@@ -1559,6 +1588,20 @@ public class RepositoryClient extends RepositoryBase {
     }
 
 
+    private void preProcessArgs(String[] args) throws Exception {
+        for (int i = 3; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.equals(CMD_TIMEOUT)) {
+                if (i >= args.length - 1) {
+                    usage("Bad argument: " + arg);
+                }
+                timeout = new Integer(args[++i]);
+                continue;
+            }
+        }
+    }
+
+
     /**
      * _more_
      *
@@ -1577,11 +1620,9 @@ public class RepositoryClient extends RepositoryBase {
         doc  = XmlUtil.makeDocument();
         root = XmlUtil.create(doc, TAG_ENTRIES, null, new String[] {});
 
-
         int entryCnt = 0;
         for (int i = 3; i < args.length; i++) {
             String arg = args[i];
-
             if (arg.equals(CMD_SEARCH)) {
                 doingSearch = true;
                 continue;
@@ -1593,6 +1634,11 @@ public class RepositoryClient extends RepositoryBase {
                 }
                 searchArgs.add(new String[]{arg,args[i + 1]});
                 i++;
+                continue;
+            }
+
+            if (arg.equals(CMD_TIMEOUT)) {
+                ++i;
                 continue;
             }
 
