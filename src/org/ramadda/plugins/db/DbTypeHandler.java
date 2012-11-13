@@ -552,7 +552,6 @@ public class DbTypeHandler extends BlobTypeHandler {
                     valueIdx = column.readValues(results, values, valueIdx);
                 }
                 //Just set a new id and a new create date
-                System.err.println ("inserting values:" + values[0]);
                 values[IDX_DBID]         = getRepository().getGUID();
                 values[IDX_DBCREATEDATE] = new Date();
                 tableHandler.setStatement(newEntry, values, insertStmt, true);
