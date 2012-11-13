@@ -1999,35 +1999,22 @@ public class TypeHandler extends RepositoryManager {
                                         + HtmlUtils.img(iconUrl(ICON_RANGE))
                                         + HtmlUtils.space(1) + endDate));
                 } else {
-                    String startDate = formatDate(request,
-                                           entry.getStartDate(), entry);
-                    String endDate   = startDate;
-
-                    String searchUrl =
-                        HtmlUtils
-                            .url(request
-                                .url(getRepository().getSearchManager()
-                                    .URL_ENTRY_SEARCH), Misc
-                                        .newList(ARG_DATA_DATE + "."
-                                            + ARG_FROM, startDate,
-                                                ARG_DATA_DATE + "." + ARG_TO,
-                                                endDate));
-                    String searchLink =
-                        HtmlUtils.href(
-                            searchUrl,
-                            HtmlUtils.img(
-                                getRepository().iconUrl(ICON_SEARCH),
-                                "Search for entries with this date range",
-                                " border=0 "));
                     boolean showTime = okToShowInForm(entry, "time", true);
+                    StringBuffer dateSB = new StringBuffer();
+                    dateSB.append(formatDate(request,
+                                             entry.getStartDate(), entry));
+
+
+                    if (okToShowInForm(entry, ARG_TODATE)) {
+                        dateSB.append(" - ");
+                        dateSB.append(formatDate(request,
+                                                 entry.getEndDate(), entry));
+                    }
+                    String formLabel  = msgLabel(getFormLabel(entry,
+                                                              ARG_DATE,
+                                                              "Date"));
                     sb.append(formEntry(request,
-                                        msgLabel(getFormLabel(entry,
-                                            ARG_DATE,
-                                            "Date")), formatDate(request,
-                                                entry.getStartDate(),
-                                                    entry) + searchLink
-                                                        + HtmlUtils.space(1)
-                                                            + startDate));
+                                        formLabel, dateSB.toString()));
                 }
             }
             String typeDesc = entry.getTypeHandler().getDescription();
@@ -2600,22 +2587,23 @@ public class TypeHandler extends RepositoryManager {
                             ? null
                             : getEntryManager().getTimezone(entry));
 
-        Date    fromDate = ((entry != null)
-                            ? new Date(entry.getStartDate())
-                            : null);
-        Date    toDate   = ((entry != null)
-                            ? new Date(entry.getEndDate())
-                            : null);
+        Date[] dateRange = getDefaultDateRange(request, entry);
+        System.err.println ("date: " + dateRange[0]);
+
+
+
+        Date    fromDate = dateRange[0];
+        Date    toDate   =  dateRange[1];
 
         boolean showTime = okToShowInForm(entry, "time", true);
         if (okToShowInForm(entry, ARG_DATE)) {
-
-            String setTimeCbx = (((entry != null) && entry.isGroup())
-                                 ? HtmlUtils.checkbox(
-                                     ARG_SETTIMEFROMCHILDREN, "true",
-                                     false) + " "
-                                         + msg("Set time range from children")
-                                 : "");
+            String setTimeCbx = "";
+            if (okToShowInForm(entry, "settimerange") && entry != null && entry.isGroup()) {
+                setTimeCbx = HtmlUtils.checkbox(
+                                                ARG_SETTIMEFROMCHILDREN, "true",
+                                                false) + " "
+                    + msg("Set time range from children");
+            }
 
             if ( !okToShowInForm(entry, ARG_TODATE)) {
                 sb.append(
@@ -2650,6 +2638,16 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
+
+    public Date[] getDefaultDateRange(Request request, Entry entry) {
+        Date    fromDate = ((entry != null)
+                            ? new Date(entry.getStartDate())
+                            : null);
+        Date    toDate   = ((entry != null)
+                            ? new Date(entry.getEndDate())
+                            : null);
+        return new Date[]{fromDate, toDate};
+    }
 
     /**
      * _more_

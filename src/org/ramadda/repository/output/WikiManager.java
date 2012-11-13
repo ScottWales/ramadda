@@ -1011,7 +1011,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return new String(result.getContent());
         } else if (include.equals(WIKI_PROP_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
-                                       props);
+                                              props);
             boolean doDay = Misc.getProperty(props, ATTR_DAY, false);
             getCalendarOutputHandler().outputCalendar(request,
                     getCalendarOutputHandler().makeCalendarEntries(request,
