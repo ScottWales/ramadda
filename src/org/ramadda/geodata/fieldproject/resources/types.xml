@@ -6,8 +6,9 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
+     <column  name="status"  type="enumerationplus"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt" label="Status"/>
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
-     <column name="location"  type="string"  label="Area" rows="2" columns="60"/>
+     <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
      <wiki><![CDATA[
 {{noheading}}
 <table width="100%">
@@ -50,26 +51,75 @@
    </type>
 
 
-    <type name="project_day" description="Project Day" category="Field Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+    <type name="project_fieldnote" description="Field Note" category="Field Project" handler="org.ramadda.geodata.fieldproject.FieldNoteTypeHandler">
       <property name="icon" value="/fieldproject/notebook.png"/> 
-      <property name="form.name.label" value="Day"/>
-      <property name="form.description.label" value="Notes"/>
+      <property name="form.name.label" value="Title"/>
+      <property name="form.description.label" value="Objective"/>
+      <property name="form.resource.show" value="false"/>
+      <property name="form.todate.show" value="false"/>
+
+      <property name="form.time.show" value="false"/>
+      <property name="form.setbounds.show" value="false"/>
+      <property name="form.settimerange.show" value="false"/>
+<!--
+     <property name="form.location.show" value="true"/>
+-->
 
       <column name="location" label="Where" datatype="enumerationplus" values=""/>
       <column name="who" label="Who" rows="5"/>
-
-Files 
-
-<!--
-      <column name="instruments" label="Instruments" rows="5"/>
--->
+      <column name="instrument1" label="Instrument 1" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="instrument2" label="Instrument 2" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="instrument3" label="Instrument 3" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
       <column name="conditions" label="Conditions" rows="5"/>
-<!--
       <column name="notes" label="Notes" rows="5"/>
--->
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div class="wiki-h3">Field Note  -- {{name}} </div>
+
+{{description wikify="true"}}
+
+===Where===
+{{field name="location"}}
+
+===Who===
+{{field name="who"}}
+
+===Instruments===
+{{field name="instruments1"}}
+{{field name="instruments2"}}
+{{field name="instruments3"}}
+
+
+===Conditions===
+{{field name="conditions"}}
+
+===Notes===
+{{field name="notes""}}
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350"}}
+<p>
+{{tree showtoggle="false" title=""}}
+</td>
+</tr>
+</table>
+
+]]>
+</wiki>
+
 
     </type>
 
+
+<!--
+NOTE: default add properties  = true
+db plugin not copying at all
+-->
 
     <type name="project_surveylocation" description="Survey Location" category="Field Project" >
       <property name="icon" value="/fieldproject/compass.png"/> 
@@ -77,7 +127,7 @@ Files
     <property name="form.resource.show" value="false"/>
 -->
       <property name="form.name.label" value="Location"/>
-      <property name="form.description.show" value="false"/>
+      <property name="form.description.label" value="Notes"/>
       <property name="form.location.show" value="true"/>
       <property name="form.area.show" value="false"/>
 
@@ -92,8 +142,11 @@ features
 
   <type name="project_tls_scan"  description="TLS Scan" category="Field Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
      <property name="icon" value="/fieldproject/tripod.png"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.resource.label" value="Site Photo"/>
      <property name="form.datatype.show" value="false"/>
-     <property name="form.altitude.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
      <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
    </type>
