@@ -527,14 +527,15 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void intializeCopiedEntry(Entry newEntry, Entry oldEntry)
-            throws Exception {
+    @Override
+    public void initializeCopiedEntry(Entry newEntry, Entry oldEntry)
+        throws Exception {
+        System.err.println ("init copied entry " + oldEntry + " " + newEntry);
         super.initializeCopiedEntry(newEntry, oldEntry);
         List<String> colNames = tableHandler.getColumnNames();
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              Clause.eq(COL_ID, oldEntry.getId()), "", -1);
-
 
         String            sql        = makeInsertOrUpdateSql(newEntry, null);
         PreparedStatement insertStmt =
@@ -551,6 +552,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                     valueIdx = column.readValues(results, values, valueIdx);
                 }
                 //Just set a new id and a new create date
+                System.err.println ("inserting values:" + values[0]);
                 values[IDX_DBID]         = getRepository().getGUID();
                 values[IDX_DBCREATEDATE] = new Date();
                 tableHandler.setStatement(newEntry, values, insertStmt, true);

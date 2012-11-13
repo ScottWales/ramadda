@@ -2588,10 +2588,6 @@ public class TypeHandler extends RepositoryManager {
                             : getEntryManager().getTimezone(entry));
 
         Date[] dateRange = getDefaultDateRange(request, entry);
-        System.err.println ("date: " + dateRange[0]);
-
-
-
         Date    fromDate = dateRange[0];
         Date    toDate   =  dateRange[1];
 
@@ -2757,7 +2753,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         boolean showFile         = okToShowInForm(entry, ARG_FILE);
-        boolean showLocalFile    = showFile && request.getUser().getAdmin();
+        boolean showLocalFile    = showFile && request.getUser().getAdmin() && okToShowInForm(entry, ARG_SERVERFILE);
         boolean showUrl          = (forUpload
                                     ? false
                                     : okToShowInForm(entry, ARG_URL));
@@ -2812,7 +2808,8 @@ public class TypeHandler extends RepositoryManager {
                 tabContent.add(HtmlUtils.inset(localFilesSB.toString(), 8));
             }
 
-            String addMetadata = HtmlUtils.checkbox(ARG_METADATA_ADD)
+            String addMetadata = HtmlUtils.checkbox(ARG_METADATA_ADD, "true",
+                                                    Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),"false"))
                                  + HtmlUtils.space(1) + msg("Add properties")
                                  + HtmlUtils.space(1)
                                  + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)

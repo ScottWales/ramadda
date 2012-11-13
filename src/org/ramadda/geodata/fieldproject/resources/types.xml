@@ -88,9 +88,9 @@
 {{field name="who"}}
 
 ===Instruments===
-{{field name="instruments1"}}
-{{field name="instruments2"}}
-{{field name="instruments3"}}
+{{field name="instrument1"}}
+{{field name="instrument2"}}
+{{field name="instrument3"}}
 
 
 ===Conditions===
@@ -116,16 +116,13 @@
     </type>
 
 
-<!--
-NOTE: default add properties  = true
-db plugin not copying at all
--->
 
     <type name="project_surveylocation" description="Survey Location" category="Field Project" >
       <property name="icon" value="/fieldproject/compass.png"/> 
-<!--  
-    <property name="form.resource.show" value="false"/>
--->
+      <property name="form.file.label" value="Location Image"/>
+      <property name="form.url.show" value="false"/>
+      <property name="form.serverfile.show" value="false"/>
+      <property name="form.metdata.add.default" value="true"/>
       <property name="form.name.label" value="Location"/>
       <property name="form.description.label" value="Notes"/>
       <property name="form.location.show" value="true"/>
@@ -137,6 +134,34 @@ features
 
       <column name="survey_type" label="Location Type"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/surveylocation_type.txt"/>
       <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/surveylocation_equipment.txt"/>
+
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+{{description wikify="true"}}
+
+==Information==
+<table>
+<tr><td align="right"><b>Survey Type:</b></td><td>{{field name="survey_type"}}</td></tr>
+<tr><td align="right"><b>Equipment:</b></td><td> {{field name="equipment"}}</td></tr>
+</table>
+<p>
+
+{{image  message="" width="600"}}
+
+</td>
+<td width="50%">
+{{mapentry width="350"}}
+</td></tr>
+</table>
+
+]]>
+</wiki>
+
+
+
     </type>
 
 

@@ -804,7 +804,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             throws Exception {
 
         String src = (String) props.get(ATTR_SRC);
-        if (src == null) {
+        if (src == null || src.length()==0) {
             if ( !entry.getResource().isImage()) {
                 return msg("Not an image");
             }
