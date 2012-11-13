@@ -1911,8 +1911,8 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         if (request.defined(ARG_LOCATION_LATITUDE)
                 && request.defined(ARG_LOCATION_LONGITUDE)) {
-            entry.setLatitude(request.get(ARG_LOCATION_LATITUDE, 0));
-            entry.setLongitude(request.get(ARG_LOCATION_LONGITUDE, 0));
+            entry.setLatitude(request.get(ARG_LOCATION_LATITUDE, 0.0));
+            entry.setLongitude(request.get(ARG_LOCATION_LONGITUDE, 0.0));
         } else if (request.exists(ARG_AREA + "_south")) {
             boolean hasSouth = request.defined(ARG_AREA + "_south");
             boolean hasNorth = request.defined(ARG_AREA + "_north");
