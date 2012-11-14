@@ -65,11 +65,11 @@
      <property name="form.location.show" value="true"/>
 -->
 
-      <column name="location" label="Where" datatype="enumerationplus" values=""/>
+      <column name="location" label="Where" type="enumerationplus" values=""/>
       <column name="who" label="Who" rows="5"/>
-      <column name="instrument1" label="Instrument 1" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
-      <column name="instrument2" label="Instrument 2" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
-      <column name="instrument3" label="Instrument 3" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="instrument1" label="Instrument 1"  type="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="instrument2" label="Instrument 2"  type="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="instrument3" label="Instrument 3"  type="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
       <column name="conditions" label="Conditions" rows="5"/>
       <column name="notes" label="Notes" rows="5"/>
      <wiki><![CDATA[
