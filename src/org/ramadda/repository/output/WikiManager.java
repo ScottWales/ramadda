@@ -806,9 +806,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String src = (String) props.get(ATTR_SRC);
         if (src == null || src.length()==0) {
             if ( !entry.getResource().isImage()) {
-                return msg("Not an image");
+                return getMessage(props, msg("Not an image"));
             }
-
             return getWikiImage(wikiUtil, request,
                                 getHtmlOutputHandler().getImageUrl(request,
                                     entry), entry, props);
