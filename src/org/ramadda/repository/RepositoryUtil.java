@@ -277,7 +277,7 @@ public class RepositoryUtil implements Constants {
      */
     public static void main(String[] args) {
         for (String s : args) {
-            System.err.println(encodeInput(s));
+            System.out.println("password:" + s +" hashed:" + hashPassword(s));
         }
     }
 
