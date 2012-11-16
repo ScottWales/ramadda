@@ -2110,7 +2110,6 @@ public class Admin extends RepositoryManager {
             return adminDbDump(request);
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
-
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
@@ -2146,10 +2145,9 @@ public class Admin extends RepositoryManager {
 
 
             sb.append("<p>");
-            /*            sb.append(
+            sb.append(
                 HtmlUtils.submit(
                     msg("Reinitialize Database Connection"), ACTION_NEWDB));
-            */
 
             if (getRepository().getShutdownEnabled()) {
                 sb.append("<p>");
