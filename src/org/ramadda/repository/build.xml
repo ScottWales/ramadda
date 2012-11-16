@@ -311,7 +311,7 @@
         <unjar src="${lib_dir}/derbytools.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-io-1.4.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-dbcp-1.4.jar" dest="${tmpjar_dir}"/>
-        <unjar src="${lib_dir}/commons-pool-1.5.5.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/commons-pool-1.6.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-fileupload-1.2.2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-httpclient-3.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/httpclient-4.2.1.jar" dest="${tmpjar_dir}"/>

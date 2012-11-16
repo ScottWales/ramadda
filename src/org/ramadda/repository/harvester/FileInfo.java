@@ -257,18 +257,8 @@ public class FileInfo {
                     if (f.getName().startsWith(".")) {
                         return DO_DONTRECURSE;
                     }
-                    //check for a ramadda.properties file. 
-                    File propFile = new File(IOUtil.joinDir(f,"ramadda.properties"));
-                    if(propFile.exists()) {
-                        harvester.logHarvesterInfo("Checking properties file:" + propFile);
-                        Properties properties = new Properties();
-                        FileInputStream fis = new FileInputStream(propFile);
-                        properties.load(fis);
-                        IOUtil.close(fis);
-                        if(Misc.equals(properties.get("harvester.ok"),"false")) {
-                            harvester.logHarvesterInfo("Skipping directory:" + f);
-                            return DO_DONTRECURSE;
-                        }
+                    if(!okToRecurse(f, harvester)) {
+                        return DO_DONTRECURSE;
                     }
                     dirs.add(new FileInfo(f, rootDir, true));
                 }
@@ -280,6 +270,26 @@ public class FileInfo {
 
         return dirs;
     }
+
+    public static boolean okToRecurse(File dir, Harvester harvester) throws Exception {
+        //check for a ramadda.properties file. 
+        File propFile = new File(IOUtil.joinDir(dir,"ramadda.properties"));
+        if(propFile.exists()) {
+            harvester.logHarvesterInfo("Checking properties file:" + propFile);
+            Properties properties = new Properties();
+            FileInputStream fis = new FileInputStream(propFile);
+            properties.load(fis);
+            IOUtil.close(fis);
+            String ok = (String) properties.get("harvester.ok");
+            if(ok!=null && ok.trim().equals("false")) {
+                harvester.logHarvesterInfo("Skipping directory:" + dir);
+                return false;
+            }
+            harvester.logHarvesterInfo("Not Skipping directory:" + ok);
+        }
+        return true;
+    }
+
 
     /**
      * _more_

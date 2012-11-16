@@ -777,10 +777,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     //If this is a directory then check if we already have it 
                     //in the list. If not then add it to the main list and the local list
                     if ( !hasDir(f)) {
-                        logHarvesterInfo("New directory:" + f);
-                        tmpDirs.add(addDir(f, dirInfo.getRootDir()));
+                        if(FileInfo.okToRecurse(f, this)) {
+                            logHarvesterInfo("New directory:" + f);
+                            tmpDirs.add(addDir(f, dirInfo.getRootDir()));
+                        }
                     }
-
                     continue;
                 }
                 long fileTime = f.lastModified();
