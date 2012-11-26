@@ -1,4 +1,3 @@
-
 /*
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
@@ -443,15 +442,13 @@ public class PointOutputHandler extends RecordOutputHandler {
     public List<RecordEntry> doSubsetEntries(
             Request request, List<? extends RecordEntry> recordEntries)
             throws Exception {
-        List<RecordEntry>  result  = new ArrayList<RecordEntry>();
+        List<RecordEntry>  result  = super.doSubsetEntries(request, recordEntries);
 
         SelectionRectangle theBbox = TypeHandler.getSelectionBounds(request);
         if ( !theBbox.anyDefined()) {
             result.addAll(recordEntries);
-
             return result;
         }
-
 
         storeSession(request);
 
@@ -533,11 +530,8 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         List<RecordVisitor> visitors    = new ArrayList<RecordVisitor>();
-        GridVisitor         gridVisitor = null;
         boolean             quickScan   = false;
-        boolean             needFull    = false;
         Result              result      = null;
-
         JobInfo             info        = null;
         if (jobId != null) {
             info = getRecordJobManager().getJobInfo(jobId);
@@ -548,71 +542,11 @@ public class PointOutputHandler extends RecordOutputHandler {
         final JobInfo theJobInfo = info;
 
         try {
-            //Make a RecordVisitor for each point product type
-            if (formats.contains(OUTPUT_CSV.getId())) {
-                needFull = true;
-                visitors.add(makeCsvVisitor(request, entry, pointEntries,
-                                            jobId));
-            }
-            if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
-                quickScan = true;
-                visitors.add(makeLatLonAltCsvVisitor(request, entry,
-                        pointEntries, jobId));
-            }
-            if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
-                quickScan = true;
-                visitors.add(makeLatLonAltBinVisitor(request, entry,
-                        pointEntries, jobId, null));
-            }
-
-            if (formats.contains(OUTPUT_NC.getId())) {
-                needFull = true;
-                visitors.add(makeNcVisitor(request, entry, pointEntries,
-                                           jobId));
-
-            }
-
-
-            if (formats.contains(OUTPUT_NC.getId())) {
-                //            result = outputEntryNc(request, entry,  pointEntries,
-                //                                    jobId);
-            }
-
-            //Tracks just do them
-            if (formats.contains(OUTPUT_KML_TRACK.getId())) {
-                result = outputEntryKmlTrack(request, entry, pointEntries,
-                                             jobId);
-            }
-
-            //TODO: Subset we just do directly
-            //We need to do a visitor based approach
-            if (formats.contains(OUTPUT_SUBSET.getId())) {
-                //This is the subset to the original format
-                info.setCurrentStatus("Creating Point file...");
-                result = outputEntrySubset(request, entry, pointEntries,
-                                           info);
-                info.addStatusItem("Point file created");
-                if ( !jobOK(jobId)) {
-                    return result;
-                }
-            }
-
-
-            //Check if we need to make a grid
-            if (formats.contains(OUTPUT_ASC.getId())
-                    || formats.contains(OUTPUT_IMAGE.getId())
-                    || formats.contains(OUTPUT_KMZ.getId())
-                    || formats.contains(OUTPUT_HILLSHADE.getId())) {
-                needFull = true;
-                if (gridVisitor == null) {
-                    gridVisitor = makeGridVisitor(request, pointEntries,
-                            getBounds(request, pointEntries));
-                    visitors.add(gridVisitor);
-                }
-            }
-
-            if (needFull) {
-                quickScan = false;
+            result = createVisitors(request, entry,
+                                    asynch, pointEntries, theJobInfo,  formats,
+                                    visitors);
+            if(result!=null) {
+                return result;
             }
 
             //For now don't use the quickscan file as things get screwed up with the Glas track search
@@ -654,23 +588,22 @@ public class PointOutputHandler extends RecordOutputHandler {
 
                 info.addStatusItem("Point reading complete");
                 info.setNumPoints(groupVisitor.getCount());
-
+                info.setCurrentStatus("Processing products...");
+                for(RecordVisitor visitor: visitors) {
+                    if(visitor instanceof GridVisitor) {
+                        GridVisitor gridVisitor = (GridVisitor) visitor;
+                        gridVisitor.finishedWithAllFiles();
+                        info.addStatusItem("Generating gridded products");
+                        outputEntryGrid(request, entry, gridVisitor.getGrid(),
+                                        formats, jobId);
+                        memoryCheck("NLAS: memory after grid:");
+                    }
+                }
+                info.addStatusItem("Product processing complete");
                 visitors     = null;
                 groupVisitor = null;
                 pointEntries = null;
                 memoryCheck("NLAS: memory after visit:");
-
-                info.setCurrentStatus("Processing products...");
-
-                //If doing a grid then go and make the grid and image products
-                if (gridVisitor != null) {
-                    gridVisitor.finishedWithAllFiles();
-                    outputEntryGrid(request, entry, gridVisitor.getGrid(),
-                                    formats, jobId);
-                    gridVisitor = null;
-                    memoryCheck("NLAS: memory after grid:");
-                }
-                info.addStatusItem("Product processing complete");
             }
             if (request.responseInXml()) {
                 return new Result(XmlUtil.tag(TAG_RESPONSE,
@@ -944,7 +877,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                  HashSet<String> formats,
                                  List<RecordVisitor> visitors)
         throws Exception {
-        GridVisitor         gridVisitor = null;
+
         Result              result      = null;
             //Make a RecordVisitor for each point product type
             if (formats.contains(OUTPUT_CSV.getId())) {
@@ -996,11 +929,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 || formats.contains(OUTPUT_IMAGE.getId())
                 || formats.contains(OUTPUT_KMZ.getId())
                 || formats.contains(OUTPUT_HILLSHADE.getId())) {
-                if (gridVisitor == null) {
-                    gridVisitor = makeGridVisitor(request, pointEntries,
-                                                  getBounds(request, pointEntries));
-                    visitors.add(gridVisitor);
-                }
+                visitors.add(makeGridVisitor(request, pointEntries,
+                                             getBounds(request, pointEntries)));
             }
             return null;
         }
@@ -2015,31 +1945,10 @@ public class PointOutputHandler extends RecordOutputHandler {
         return request.get(ARG_RECORD_SKIPZ, dflt);
     }
 
-    /**
-     * Create a record filter from the url args. This can make a spatial bounds filter,
-     * a probabilistic filter, and a value range filter.
-     *
-     * @param request the request
-     * @param entry The entry
-     * @param recordFile _more_
-     *
-     * @return The record filter.
-     */
-    public RecordFilter getFilter(Request request, Entry entry,
-                                  RecordFile recordFile) {
-        List<RecordFilter> filters = new ArrayList<RecordFilter>();
-        getFilters(request, entry, recordFile, filters);
-        if (filters.size() == 0) {
-            return null;
-        }
-        if (filters.size() == 1) {
-            return filters.get(0);
-        }
-        return new CollectionRecordFilter(filters);
-    }
-
+    @Override
     public void getFilters(Request request, Entry entry,
-                                   RecordFile recordFile, List<RecordFilter> filters) {
+                           RecordFile recordFile, List<RecordFilter> filters) {
+        super.getFilters(request, entry, recordFile, filters);
         //      filters.add(new AltitudeFilter(0, Double.NaN));
 
         SelectionRectangle bbox = TypeHandler.getSelectionBounds(request);

@@ -1,6 +1,7 @@
 
 package org.ramadda.data.services;
 
+import org.ramadda.data.record.filter.*;
 
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.point.PointMetadataHarvester;
@@ -87,6 +88,12 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
     public  RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
         return new RecordOutputHandler(getRepository(), null);
     }
+
+
+    public boolean includedInRequest(Request request, RecordEntry recordEntry) throws Exception {
+        return true;
+    }
+
 
 
     /**
@@ -389,6 +396,10 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         throw new IllegalArgumentException("Could not find constructor for " +className);
     }
 
+
+    public void getFilters(Request request, Entry entry,
+                           RecordFile recordFile, List<RecordFilter> filters) {
+    }
 
     /**
      * _more_

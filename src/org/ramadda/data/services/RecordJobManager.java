@@ -661,7 +661,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      */
     public void addHtmlHeader(Request request, StringBuffer sb) {
         try {
-            getRecordOutputHandler().makeApiHeader(request, sb);
+            //            getRecordOutputHandler().makeApiHeader(request, sb);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

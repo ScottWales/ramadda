@@ -23,9 +23,6 @@ package org.ramadda.data.services;
 
 
 import org.ramadda.data.record.*;
-
-
-import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
 
@@ -195,6 +192,25 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return false;
     }
 
+
+    public List<RecordEntry> doSubsetEntries(
+            Request request, List<? extends RecordEntry> recordEntries)
+            throws Exception {
+        List<RecordEntry>  result  = new ArrayList<RecordEntry>();
+        for(RecordEntry recordEntry: recordEntries) {
+            RecordTypeHandler recordType = (RecordTypeHandler) recordEntry.getEntry().getTypeHandler();
+            if(recordType.includedInRequest(request, recordEntry)) {
+                result.add(recordEntry);
+            }
+        }
+        return result;
+    }
+
+    public void getFilters(Request request, Entry entry,
+                           RecordFile recordFile, List<RecordFilter> filters) {
+        RecordTypeHandler typeHandler = (RecordTypeHandler) entry.getTypeHandler();
+        typeHandler.getFilters(request, entry, recordFile, filters);
+    }
 
     /**
      */
@@ -581,19 +597,30 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     }
 
 
+
     /**
-     * _more_
+     * Create a record filter from the url args. This can make a spatial bounds filter,
+     * a probabilistic filter, and a value range filter.
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request the request
+     * @param entry The entry
      * @param recordFile _more_
      *
-     * @return _more_
+     * @return The record filter.
      */
     public RecordFilter getFilter(Request request, Entry entry,
                                   RecordFile recordFile) {
-        return null;
+        List<RecordFilter> filters = new ArrayList<RecordFilter>();
+        getFilters(request, entry, recordFile, filters);
+        if (filters.size() == 0) {
+            return null;
+        }
+        if (filters.size() == 1) {
+            return filters.get(0);
+        }
+        return new CollectionRecordFilter(filters);
     }
+
 
 
 
@@ -809,17 +836,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         return request.getAbsoluteUrl(getRepository().iconUrl(icon));
     }
 
-    /**
-     * Make the header links for the top-level NLAS search and job info pages
-     *
-     * @param request The request
-     * @param sb buffer
-     *
-     * @throws Exception On badness
-     */
-    public void makeApiHeader(Request request, StringBuffer sb)
-        throws Exception {
-    }
 
 
 }

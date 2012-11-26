@@ -109,7 +109,6 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
      */
     public void makeHeader(Request request, StringBuffer sb)
             throws Exception {
-        getRecordOutputHandler().makeApiHeader(request, sb);
     }
 
 
