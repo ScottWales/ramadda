@@ -1365,7 +1365,7 @@ public class RepositoryClient extends RepositoryBase {
      *  @return The Anonymous
      */
     public boolean isAnonymous() {
-        return (user != null) && (user.trim().length() == 0);
+        return (user != null) && (user.trim().length() == 0 || user.equals("anonymous")); 
     }
 
 
