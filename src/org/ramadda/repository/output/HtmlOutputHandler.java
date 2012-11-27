@@ -90,6 +90,16 @@ public class HtmlOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW , "",
                        "/icons/application_side_tree.png");
 
+
+
+    /*
+    public static final OutputType OUTPUT_LISTING =
+        new OutputType("Tree View", "html.listing",
+                       OutputType.TYPE_VIEW , "",
+                       "/icons/application_side_tree.png");
+    */
+
+
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH =
         new OutputType("Graph", "default.graph",

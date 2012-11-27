@@ -117,7 +117,7 @@ public class PointEntry extends RecordEntry {
 
 
     /**
-     * apply the visitor to the lidarfile
+     * apply the visitor to the point file
      *
      * @param visitor visitor
      * @param visitInfo visit info
@@ -139,7 +139,7 @@ public class PointEntry extends RecordEntry {
 
 
     /**
-     * get the Lidar File for the short lat/lon/alt binary file
+     * get the Point File for the short lat/lon/alt binary file
      *
      * @return short binary file
      *

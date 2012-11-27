@@ -47,11 +47,11 @@ import java.util.Properties;
 
 
 /**
- * This class extends the RAMADDA file harvester to harvest LiDAR data files.
+ * This class extends the RAMADDA file harvester to harvest Point data files.
  * It does a couple of things. It overrides getLastGroupType() to specify the
- * LidarCollection type. This way the RAMADDA entry folders  that get created
+ * PointCollection type. This way the RAMADDA entry folders  that get created
  * will be of this type.
- * Secondly, for text lidar files it looks for the <filename>.properties file which
+ * Secondly, for text point files it looks for the <filename>.properties file which
  * is our way of simply describing the CRS of the data file (e.g., UTM, geographic, etc).
  *
  * @author Jeff McWhirter

@@ -373,12 +373,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private List<File> localFilePaths = new ArrayList<File>();
 
 
-
-    /** _more_ */
-    private Hashtable<String, RequestHandler> apiHandlers =
-        new Hashtable<String, RequestHandler>();
-
-
     /** _more_ */
     private HttpClient httpClient;
 

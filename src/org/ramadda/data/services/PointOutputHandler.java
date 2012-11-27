@@ -537,7 +537,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             info = getRecordJobManager().getJobInfo(jobId);
         }
         if (info == null) {
-            info = new JobInfo();
+            info = new JobInfo(JOB_TYPE_POINT);
         }
         final JobInfo theJobInfo = info;
 
@@ -585,7 +585,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if ( !jobOK(jobId)) {
                     return result;
                 }
-
                 info.addStatusItem("Point reading complete");
                 info.setNumPoints(groupVisitor.getCount());
                 info.setCurrentStatus("Processing products...");
@@ -640,6 +639,22 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (parentResult != null) {
             return parentResult;
         }
+
+        boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
+            || request.getString(ARG_PRODUCT,
+                                 "").equals(OUTPUT_POINTCOUNT.getId());
+
+
+        if(doingPointCount) {
+            List<PointEntry> pointEntries = new ArrayList<PointEntry>();
+            pointEntries.add((PointEntry) doMakeEntry(request, entry));
+            long pointCount = getApproximatePointCount(request,
+                                                       pointEntries);
+
+            return makePointCountResult(request, pointCount);
+           
+        }
+
 
         if (outputType.equals(OUTPUT_BOUNDS)) {
             return outputEntryBounds(request, entry);
@@ -728,6 +743,22 @@ public class PointOutputHandler extends RecordOutputHandler {
     }
 
 
+    private Result  makePointCountResult(Request request, long pointCount) {
+        if (request.responseInXml()) {
+            return makeRequestOKResult(request,
+                                       "<pointcount>" + pointCount
+                                       + "</pointcount>");
+        }
+        if (request.responseInText()) {
+            return makeRequestOKResult(request, "" + pointCount);
+        }
+        return makeRequestOKResult(request,
+                                   "Estimated point count:" + pointCount);
+    }
+
+
+
+
     /**
      * Main entry point for Collections. This shows the form for the collection or the job processing
      * state or dispatches the product request. If doing  the product request it either handles it synchronously
@@ -748,8 +779,6 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @throws Exception on badness
      */
-
-
     public Result outputGroup(final Request request,
                               final OutputType outputType, final Entry group,
                               final List<Entry> subGroups,
@@ -763,7 +792,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (outputType.equals(OUTPUT_BOUNDS)) {
             return outputEntryBounds(request, group);
         }
-
 
 
         boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
@@ -798,19 +826,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         long pointCount = getApproximatePointCount(request,
                                                    pointEntries);
-        if (doingPointCount) {
-            if (request.responseInXml()) {
-                return makeRequestOKResult(request,
-                                           "<pointcount>" + pointCount
-                                           + "</pointcount>");
-            }
-            if (request.responseInText()) {
-                return makeRequestOKResult(request, "" + pointCount);
-            }
 
-            return makeRequestOKResult(request,
-                                       "Estimated point count:" + pointCount);
+        if (doingPointCount) {
+            return makePointCountResult(request, pointCount);
         }
+
 
         //Check if they've exceeded the threshold
         boolean tooManyPoints = false;

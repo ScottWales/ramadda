@@ -417,7 +417,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
             boolean ok = getRecordFileFactory().canLoad(path);
             return ok;
         } catch (Exception exc) {
-            //If the lidar loading flaked out then just keep going
+            //If the point loading flaked out then just keep going
             //            logException("Harvesting file:" + f, exc);
             return false;
         }

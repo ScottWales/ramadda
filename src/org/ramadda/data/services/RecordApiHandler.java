@@ -150,34 +150,26 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
             //            sb.append(getRepository().showDialogError("You must be a site administrator to see metrics"));
             //            return makeResult(request, sb);
         }
-        Statement stmt =
-            getDatabaseManager().select(SqlUtil.comma(new String[] {
-                JobInfo.DB_COL_ENTRY_ID,
-                JobInfo.DB_COL_USER_ID, JobInfo.DB_COL_NUMBER_OF_POINTS,
-                JobInfo.DB_COL_PRODUCT_SIZE }), JobInfo.DB_TABLE,
-                    (Clause) null);
-        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
-        ResultSet                 results;
+
+
+
         Hashtable<String, long[]> info = new Hashtable<String, long[]>();
         List<Entry>               entries        = new ArrayList<Entry>();
         long                      totalNumPoints = 0;
         long                      totalSize      = 0;
         long                      totalJobs      = 0;
-        while ((results = iter.getNext()) != null) {
-            int    col            = 1;
-            String entryId        = results.getString(col++);
-            String userId         = results.getString(col++);
-            int    numberOfPoints = results.getInt(col++);
+        for(JobInfo jobInfo: getRecordOutputHandler().getRecordJobManager().readJobs(JOB_TYPE_POINT)) {
+            int    numberOfPoints = jobInfo.getNumPoints();
             totalNumPoints += numberOfPoints;
-            long productSize = results.getLong(col++);
+            long productSize = jobInfo.getProductSize();
             totalSize += productSize;
+            String entryId = jobInfo.getEntryId();
             long[] values = info.get(entryId);
             if (values == null) {
                 Entry entry = getEntryManager().getEntry(request, entryId);
                 if (entry == null) {
-                    System.err.println("NLAS: missing entry from metrics:"
+                    System.err.println("missing entry from metrics:"
                                        + entryId);
-
                     continue;
                 }
                 entries.add(entry);

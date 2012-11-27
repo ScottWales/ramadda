@@ -96,6 +96,7 @@ public class GpxTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
@@ -111,7 +112,9 @@ public class GpxTypeHandler extends GenericTypeHandler {
         if (bounds == null) {
             bounds = XmlUtil.findChild(root, GpxUtil.TAG_BOUNDS);
         }
+        boolean hasBounds  = false;
         if (bounds != null) {
+            hasBounds = true;
             entry.setNorth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLAT,
                     Entry.NONGEO));
             entry.setSouth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLAT,
@@ -177,11 +180,19 @@ public class GpxTypeHandler extends GenericTypeHandler {
 
         long             minTime = -1;
         long             maxTime = -1;
+        double maxLat = Double.NEGATIVE_INFINITY;
+        double minLat = Double.POSITIVE_INFINITY;
+        double maxLon = Double.NEGATIVE_INFINITY;
+        double minLon = Double.POSITIVE_INFINITY;
+
+
+        //        <time>2012-11-24T14:47:34</time>
+        System.err.println ("Looking for time");
+             
         for (Element child :
-                ((List<Element>) XmlUtil.findChildren(root,
-                    GpxUtil.TAG_WPT))) {
-            String time = XmlUtil.getGrandChildText(child, GpxUtil.TAG_TIME,
-                              null);
+                ((List<Element>) XmlUtil.findDescendants(root,
+                    GpxUtil.TAG_TIME))) {
+            String time  = XmlUtil.getChildText(child);
             if (time != null) {
                 Date dttm = sdf.parse(time);
                 minTime = (minTime == -1)
@@ -192,12 +203,51 @@ public class GpxTypeHandler extends GenericTypeHandler {
                           : Math.max(maxTime, dttm.getTime());
             }
         }
+
+
+        /*
+  <wpt lat="39.930073" lon="-105.271828">
+    <name>Video 1</name>
+    <link href="http://www.trimbleoutdoors.com/DrawMediaObjectData.aspx?mediaObjectId=306850">
+      <text>Raw Video</text>
+      <type>video/x-m4v</type>
+    </link>
+    <extensions>
+      <TO:mediaObjectID>306850</TO:mediaObjectID>
+      <TO:ID>4334210</TO:ID>
+    </extensions>
+  </wpt>
+*/
+        for (Element child :
+                ((List<Element>) XmlUtil.findChildren(root,
+                    GpxUtil.TAG_WPT))) {
+            Element linkNode = XmlUtil.findChild(child, GpxUtil.TAG_LINK);
+            if(linkNode!=null) {
+                String href = XmlUtil.getAttribute(linkNode, GpxUtil.ATTR_HREF);
+                Element textNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TEXT);
+                Element typeNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TYPE);
+            }
+            maxLat = Math.max(maxLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,maxLat));
+            minLat = Math.min(minLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,minLat));
+            maxLon = Math.max(maxLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,maxLon));
+            minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
+        }
+
         if (minTime > 0) {
             entry.setStartDate(minTime);
             entry.setEndDate(maxTime);
         }
 
-
+        if(!hasBounds) {
+            if(maxLat != Double.NEGATIVE_INFINITY) 
+                entry.setNorth(maxLat);
+            if(minLat != Double.POSITIVE_INFINITY) 
+                entry.setSouth(minLat);
+            if(maxLon != Double.NEGATIVE_INFINITY) 
+                entry.setEast(maxLon);
+            if(minLon != Double.POSITIVE_INFINITY) 
+                entry.setWest(minLon);
+        }
 
 
 
@@ -333,6 +383,14 @@ public class GpxTypeHandler extends GenericTypeHandler {
                 if (cnt++ > 500) {
                     break;
                 }
+                Element linkNode = XmlUtil.findChild(child, GpxUtil.TAG_LINK);
+                if(linkNode!=null) {
+                    String href = XmlUtil.getAttribute(linkNode, GpxUtil.ATTR_HREF);
+                    Element textNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TEXT);
+                    Element typeNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TYPE);
+
+                }
+
                 String name = XmlUtil.getGrandChildText(child,
                                   GpxUtil.TAG_NAME, "");
                 String desc = XmlUtil.getGrandChildText(child,

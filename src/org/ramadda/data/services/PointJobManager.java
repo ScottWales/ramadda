@@ -31,7 +31,7 @@ public class PointJobManager extends RecordJobManager  {
     /**
      * ctor
      *
-     * @param lidarOutputHandler the output handler
+     * @param pointOutputHandler the output handler
      */
     public PointJobManager(PointOutputHandler pointOutputHandler) {
         super(pointOutputHandler);

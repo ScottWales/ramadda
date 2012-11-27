@@ -252,7 +252,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      *
      * @param request The request
      * @param entry the entry
-     * @param lidarEntries _more_
+     * @param recordEntries _more_
      * @param outputType the output type
      * @param jobId The job ID
      *
@@ -306,10 +306,10 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 String        suffix = IOUtil.getFileExtension(f.toString());
                 TypeHandler   typeHandler = null;
 
-                final boolean isLidarFile = false;
+                final boolean isPointFile = false;
                 //TODO: get the actual type handler
-                //                    LidarTypeHandler.isLidarFile(f.toString());
-                if (isLidarFile) {
+                //                    PointTypeHandler.isPointFile(f.toString());
+                if (isPointFile) {
                     typeHandler =
                         recordEntries.get(0).getEntry().getTypeHandler();
                 } else if (Resource.isImage(f.getName())) {
@@ -328,7 +328,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 //of the entry before it gets added to the repository
                 EntryInitializer initializer = new EntryInitializer() {
                     public void initEntry(Entry newEntry) {
-                        if ( !isLidarFile) {
+                        if ( !isPointFile) {
                             newEntry.setNorth(request.get(ARG_AREA_NORTH,
                                     entry.getNorth()));
                             newEntry.setWest(request.get(ARG_AREA_WEST,
@@ -420,7 +420,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
 
         String jobId     = request.getString(ARG_JOB_ID, (String) null);
-        String productId = request.getString(ARG_LIDAR_PRODUCT,
+        String productId = request.getString(ARG_POINT_PRODUCT,
                                              (String) null);
 
         StringBuffer sb  = new StringBuffer();
@@ -488,8 +488,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     "" + ((endTime - startTime) / 1000) });
         } else {
             jobAttrs = XmlUtil.attrs(new String[] {
-                ATTR_STATUS, STATUS_DONE, ATTR_NUMBEROFPOINTS,
-                "" + jobInfo.getNumPoints(), ATTR_ELAPSEDTIME,
+                ATTR_STATUS, STATUS_DONE,  ATTR_ELAPSEDTIME,
                 "" + ((endTime - startTime) / 1000),
             });
         }
@@ -565,7 +564,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
         }
 
-
         if (jobInfo.getNumPoints() != 0) {
             sb.append(
                 HtmlUtils.formEntry(
@@ -593,7 +591,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                                      + "/" + f.getName(), new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                     getOutputResults().getId(), ARG_JOB_ID, jobId,
-                    ARG_LIDAR_PRODUCT, f.getName()
+                    ARG_POINT_PRODUCT, f.getName()
                 });
                 //                xml.append(XmlUtil.openTag(TAG_URL));
                 xml.append("<" + TAG_URL + ">");
@@ -615,7 +613,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                                      + "/all.zip", new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                     getOutputResults().getId(), ARG_JOB_ID, jobId,
-                    ARG_LIDAR_PRODUCT, "zip"
+                    ARG_POINT_PRODUCT, "zip"
                 });
                 productSB.append("<tr><td>");
                 productSB.append(HtmlUtils.href(fileUrl, "Zip products"));
@@ -679,7 +677,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      * @param request job ingo
      * @param entry the entry
      * @param outputType the output type
-     * @param lidarEntries list of lidar entries to process
+     * @param pointEntries list of point entries to process
      *
      * @return the result
      *
@@ -687,12 +685,12 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      */
     public Result handleAsynchRequest(Request request, Entry entry,
                                       OutputType outputType,
-                                      List<? extends RecordEntry> lidarEntries)
+                                      List<? extends RecordEntry> pointEntries)
             throws Exception {
         checkNewJobOK();
         try {
             return handleAsynchRequestInner(request, entry, outputType,
-                                            lidarEntries);
+                                            pointEntries);
         } catch (Exception exc) {
             logError("Error processing job", exc);
 
@@ -721,6 +719,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
         final JobInfo jobInfo = new JobInfo(request, entry.getId(),
                                             getRepository().getGUID());
+        jobInfo.setType(JOB_TYPE_POINT);
         jobInfo.setJobStatusUrl(getJobUrl(request, entry,
                                           jobInfo.getJobId(),
                                           getOutputResults()));

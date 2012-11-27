@@ -303,8 +303,8 @@ public   class PointTypeHandler extends RecordTypeHandler {
                 ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                 outputHandler.OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
                 //ARG_ASYNCH, "false", 
-                //                LidarOutputHandler.ARG_LIDAR_SKIP,
-                //                macro(LidarOutputHandler.ARG_LIDAR_SKIP), 
+                //                PointOutputHandler.ARG_POINT_SKIP,
+                //                macro(PointOutputHandler.ARG_POINT_SKIP), 
                 //                ARG_BBOX,  macro(ARG_BBOX), 
                 //                ARG_DEFAULTBBOX, dfltBbox
             }, false);

@@ -182,11 +182,11 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
 
 
     /**
-     * Is the given entry a lidar type or a lidar collection type
+     * Is the given entry a point type or a point collection type
      *
      * @param entry The entry
      *
-     * @return Is the entry some lidar type
+     * @return Is the entry some point type
      */
     public boolean canHandleEntry(Entry entry) {
         return false;
@@ -340,7 +340,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
             return;
         }
 
-        if (entry.getTypeHandler() instanceof LidarCollectionTypeHandler) {
+        if (entry.getTypeHandler() instanceof PointCollectionTypeHandler) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
             return;
         }
@@ -779,11 +779,11 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     }
 
     /**
-     * This subsets the lidar file. The return format is the same format as the input file
+     * This subsets the point file. The return format is the same format as the input file
      *
      * @param request the request
-     * @param mainEntry Either the LiDAR Collection or File Entry
-     * @param lidarEntries _more_
+     * @param mainEntry Either the Point Collection or File Entry
+     * @param pointEntries _more_
      * @param jobInfo processing job
      *
      * @return result
@@ -818,7 +818,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      *
      * @param entry The entry
      *
-     * @return A new LidarFile.
+     * @return A new PointFile.
      *
      * @throws Exception on badness
      */

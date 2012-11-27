@@ -292,3 +292,12 @@ CREATE TABLE  pointdatametadata (
 
 
 CREATE INDEX POINTDATAMETADATA_INDEX_TABLENAME ON pointdatametadata (TABLENAME);
+
+
+
+CREATE TABLE  jobinfos (id varchar(200),
+                        entry_id varchar(200),
+                        user_id varchar(200),
+                        date ramadda.datetime,
+                        type varchar(200),         
+                        job_info_blob ramadda.bigclob);

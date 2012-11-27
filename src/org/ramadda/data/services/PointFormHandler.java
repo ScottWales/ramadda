@@ -150,7 +150,7 @@ public class PointFormHandler extends RecordFormHandler {
      * Adds the grid oriented output formats
      *
      * @param outputs List of html selectors (which hold id, label and icon)
-     * @param forCollection Are the grid formats for a lidar collection
+     * @param forCollection Are the grid formats for a point collection
      */
     public void getGridFormats(List<HtmlUtils.Selector> outputs,
                                boolean forCollection) {

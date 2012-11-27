@@ -79,7 +79,7 @@ public abstract class PointCollectionTypeHandler extends RecordCollectionTypeHan
 
 
     /**
-     * add the list of nlas lidar services
+     * add the list of point services
      *
      * @param request the request
      * @param entry the entry

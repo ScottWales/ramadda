@@ -49,7 +49,7 @@ public class JobInfo implements Constants {
 
 
     /** db column for jobs table */
-    public static final String DB_TABLE = "nlas_jobs";
+    public static final String DB_TABLE = "jobinfos";
 
     /** db column for jobs table */
     public static final String DB_COL_ID = "id";
@@ -63,11 +63,7 @@ public class JobInfo implements Constants {
     /** db column for jobs table */
     public static final String DB_COL_USER_ID = "user_id";
 
-    /** db column for jobs table */
-    public static final String DB_COL_NUMBER_OF_POINTS = "number_of_points";
-
-    /** db column for jobs table */
-    public static final String DB_COL_PRODUCT_SIZE = "product_size";
+    public static final String DB_COL_TYPE = "type";
 
     /** db column for jobs table */
     public static final String DB_COL_JOB_INFO_BLOB = "job_info_blob";
@@ -75,7 +71,8 @@ public class JobInfo implements Constants {
     /** db column for jobs table */
     public static final String[] DB_COLUMNS = {
         DB_COL_ID, DB_COL_ENTRY_ID, DB_COL_DATE, DB_COL_USER_ID,
-        DB_COL_NUMBER_OF_POINTS, DB_COL_PRODUCT_SIZE, DB_COL_JOB_INFO_BLOB
+        DB_COL_TYPE,
+        DB_COL_JOB_INFO_BLOB
     };
 
 
@@ -100,6 +97,8 @@ public class JobInfo implements Constants {
 
     /** job status */
     private String status = STATUS_RUNNING;
+
+    private String type = "processing";
 
     /** The processing can add various status messages */
     private List<String> statusItems = new ArrayList<String>();
@@ -153,8 +152,11 @@ public class JobInfo implements Constants {
     /**
      * ctor
      */
-    public JobInfo() {}
+   public JobInfo() {}
 
+    public JobInfo(String type) {
+        this.type = type;
+    }
 
     /**
      * ctor
@@ -577,6 +579,24 @@ public class JobInfo implements Constants {
     **/
     public String getJobStatusUrl () {
 	return jobStatusUrl;
+    }
+
+    /**
+       Set the Type property.
+
+       @param value The new value for Type
+    **/
+    public void setType (String value) {
+	type = value;
+    }
+
+    /**
+       Get the Type property.
+
+       @return The Type
+    **/
+    public String getType () {
+	return type;
     }
 
 

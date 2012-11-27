@@ -38,6 +38,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
+import java.sql.ResultSet;
 import java.sql.Statement;
 
 
@@ -222,9 +223,34 @@ public class JobManager extends RepositoryManager  {
         if ((values == null) || (values.length == 0)) {
             return null;
         }
-        String blob = values[0];
+        return makeJobInfo(values[0]);
+    }
+
+
+    private JobInfo makeJobInfo(String blob) throws Exception {
         blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo","org.ramadda.repository.job.JobInfo");
         return (JobInfo) getRepository().decodeObject(blob);
+    }
+
+
+    public List<JobInfo> readJobs(String type) throws Exception {
+        return readJobs(Clause.eq(JobInfo.DB_COL_TYPE, type));
+    }
+
+
+    public List<JobInfo> readJobs(Clause clause) throws Exception {
+        List<JobInfo> jobInfos = new ArrayList<JobInfo>();
+        Statement stmt =
+            getDatabaseManager().select(JobInfo.DB_COL_JOB_INFO_BLOB,
+                                        JobInfo.DB_TABLE,
+                                        clause);
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+        ResultSet                 results;
+        while ((results = iter.getNext()) != null) {
+            jobInfos.add(makeJobInfo(results.getString(1)));
+        }
+        return jobInfos;
+
     }
 
 
@@ -253,18 +279,14 @@ public class JobManager extends RepositoryManager  {
                                     JobInfo.DB_COLUMNS);
                 getDatabaseManager().executeInsert(insert, new Object[] {
                     jobInfo.getJobId(), jobInfo.getEntryId(), new Date(),
-                    jobInfo.getUser(), new Integer(jobInfo.getNumPoints()),
-                    new Long(jobInfo.getProductSize()), blob
+                    jobInfo.getUser(), jobInfo.getType(),
+                    blob
                 });
             } else {
                 getDatabaseManager().update(
                     JobInfo.DB_TABLE, JobInfo.DB_COL_ID,
                     jobInfo.getJobId().toString(),
-                    new String[] { JobInfo.DB_COL_NUMBER_OF_POINTS,
-                                   JobInfo.DB_COL_PRODUCT_SIZE,
-                                   JobInfo.DB_COL_JOB_INFO_BLOB }, new Object[] {
-                                       new Integer(jobInfo.getNumPoints()),
-                                       new Long(jobInfo.getProductSize()),
+                    new String[] {JobInfo.DB_COL_JOB_INFO_BLOB}, new Object[] {
                                        blob });
             }
         } catch (Exception exc) {

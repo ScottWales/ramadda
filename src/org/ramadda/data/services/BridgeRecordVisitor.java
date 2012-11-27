@@ -35,7 +35,7 @@ import java.io.*;
 
 
 /**
- * Is used when we are visiting lidar files. This counts the points that are visited
+ * Is used when we are visiting point files. This counts the points that are visited
  * and provides some IO stuff
  *
  *
