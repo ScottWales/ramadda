@@ -95,7 +95,7 @@ proc generateRecordClass {class args} {
     set fp [open $javaFile w]
     puts $fp $::header
     puts $fp "\npackage $package;\n"
-    puts $fp "import org.unavco.data.record.*;"
+    puts $fp "import org.ramadda.data.record.*;"
     puts $fp "import java.io.*;"
     puts $fp "import java.util.ArrayList;"
     puts $fp "import java.util.List;"
@@ -103,6 +103,7 @@ proc generateRecordClass {class args} {
 
     puts $fp [extraImport]
     puts $fp $A(-extraImport)
+
 
     puts $fp  "\n\n"
     puts $fp "/** This is generated code from generate.tcl. Do not edit it! */"
@@ -170,7 +171,7 @@ proc generateRecordClass {class args} {
         set rawType [lindex $tuple 1]
 
         set type $rawType
-        array set A {-synthetic 0 -getter {} -default {} -declare 1 -cast {} -csv {} -valuegetter {}   -indexed 0  -searchable false -searchsuffix {} -bitfields {} -chartable false -scale {1} -label {} -desc {} -unit {} -enums {} -skip 0 }
+        array set A {-synthetic 0 -getter {} -default {} -declare 1 -cast {} -csv {} -valuegetter {}   -indexed 0  -searchable false -searchsuffix {} -bitfields {} -chartable false -scale {1} -label {} -desc {} -unit {} -enums {} -skip 0 -unsigned 0}
         array set A [lrange $tuple 2 end]
         if {[cleanUpVar]} {
             set var [getVarName $var]
@@ -198,6 +199,17 @@ proc generateRecordClass {class args} {
         set type [getJavaType $type]
 
         set javaType $type
+        if {$A(-unsigned)} {
+            if {$type == "byte"} {
+                set type ubyte
+            } elseif {$type == "short"} {
+                set type ushort
+            } elseif {$type == "int"} {
+                set type uint
+            } else {
+                puts "ERROR: not handling unsigned type $type"
+            }
+        }
         set unsigned ""
         if {[regexp {ushort} $type]} {
             set unsigned Unsigned
