@@ -484,11 +484,16 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         String jobAttrs;
         if (stillRunning) {
             jobAttrs = XmlUtil.attrs(new String[] { JobManager.ATTR_STATUS,
-                    STATUS_RUNNING, ATTR_ELAPSEDTIME,
-                    "" + ((endTime - startTime) / 1000) });
+                                                    STATUS_RUNNING, 
+                                                    ATTR_NUMBEROFPOINTS,
+                                                    ""+jobInfo.getNumPoints(),
+                                                    ATTR_ELAPSEDTIME,
+                                                    "" + ((endTime - startTime) / 1000) });
         } else {
             jobAttrs = XmlUtil.attrs(new String[] {
-                ATTR_STATUS, STATUS_DONE,  ATTR_ELAPSEDTIME,
+                    ATTR_NUMBEROFPOINTS,
+                    ""+jobInfo.getNumPoints(),
+                    ATTR_STATUS, STATUS_DONE,  ATTR_ELAPSEDTIME,
                 "" + ((endTime - startTime) / 1000),
             });
         }
