@@ -55,6 +55,8 @@ public class TextRecord extends PointRecord {
     private Object[] objectValues;
 
     private String[] tokens;
+    private boolean[] hasDefault;
+    private boolean[] skip;
 
     private String     line   = "";
 
@@ -161,10 +163,17 @@ public class TextRecord extends PointRecord {
         this.fields = fields;
         values      = new double[fields.size()];
         objectValues      = new Object[fields.size()];
-        tokens      = new String[fields.size()];
+        hasDefault = new boolean[fields.size()];
+        skip = new boolean[fields.size()];
         idxX        = idxY = idxZ = idxTime = -1;
+        int numTokens = 0;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
+            hasDefault[i] = field.hasDefaultDoubleValue();
+            skip[i] = field.getSkip();
+            if(!skip[i] && !hasDefault[i]) {
+                numTokens++;
+            }
             if(field.isTypeDate() && idxTime==-1) {
                 idxTime = i;
                 continue;
@@ -202,6 +211,12 @@ public class TextRecord extends PointRecord {
                 }
             }
         }
+
+
+
+
+        tokens      = new String[numTokens];
+
 
         if (idxX == -1) {
             throw new IllegalArgumentException(
@@ -324,18 +339,16 @@ public class TextRecord extends PointRecord {
         }
         if(!split(line)) {
             if(skipCnt++<10)
-                System.err.println ("bad token cnt:" + line);
+                System.err.println ("bad token cnt:" + line + " tokens.length=" + tokens.length);
             return ReadStatus.SKIP;
         }
         int tokenCnt = 0;
         for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
             RecordField field = fields.get(fieldCnt);
-            if(field.getSkip()) {
-                tokenCnt++;
+            if(skip[fieldCnt]) {
                 continue;
             }
-
-            if(field.hasDefaultDoubleValue()) {
+            if(hasDefault[fieldCnt]) {
                 values[fieldCnt] = field.getDefaultDoubleValue();
                 continue;
             }
@@ -371,9 +384,11 @@ public class TextRecord extends PointRecord {
 
     public boolean split(String sourceString) {
         int length   = 1;
+        int fullTokenCnt = 0;
         int tokenCnt= 0;
         int fromIndex=0;
         int sourceLength = sourceString.length();
+        //        System.err.println ("line:" + sourceString);
         while (true) {
             int    idx = sourceString.indexOf(delimiter, fromIndex);
             String theString;
@@ -390,11 +405,14 @@ public class TextRecord extends PointRecord {
                     fromIndex = idx+length;
                 }
             }
+            //            System.err.println ("\ttokens[" + tokenCnt +"] = " + theString);
             tokens[tokenCnt++] = theString.trim();
             if (idx < 0) {
                 break;
             }
         }
+        //        System.err.println ("token
+        //        System.exit(0);
         if(tokenCnt!=tokens.length) return false;
         return true;
         

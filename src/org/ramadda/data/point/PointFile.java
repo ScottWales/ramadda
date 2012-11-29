@@ -461,7 +461,15 @@ public abstract class PointFile extends RecordFile implements Cloneable {
             try {
                 long                t1       = System.currentTimeMillis();
                 final int[]         cnt      = { 0 };
-                final RecordVisitor metadata = new RecordVisitor() {
+                final PointMetadataHarvester metadata  = new PointMetadataHarvester() {
+                        public boolean visitRecord(RecordFile file,
+                                                   VisitInfo visitInfo, Record record) {
+                            cnt[0]++;
+                            return super.visitRecord(file, visitInfo, record);
+                        }
+                    };
+
+                final RecordVisitor metadata2 = new RecordVisitor() {
                         public boolean visitRecord(RecordFile file,
                                                    VisitInfo visitInfo, Record record) {
                             cnt[0]++;
@@ -486,7 +494,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
                 pointFile.visit(metadata);
                 long t2 = System.currentTimeMillis();
                 System.err.println("time:" + (t2 - t1) / 1000.0
-                                   + " # record:" + cnt[0]);
+                                   + " # record:" + cnt[0] +" " + metadata);
             } catch (Exception exc) {
                 System.err.println("Error:" + exc);
                 exc.printStackTrace();
