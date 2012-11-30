@@ -39,13 +39,20 @@ public  class Point2Csv extends RecordTool {
         final boolean[]    lonLatAlt = { false };
         List<RecordFilter> filters   = new ArrayList<RecordFilter>();
         VisitInfo          visitInfo = new VisitInfo();
-        for (int i = 0; i < args.length; i++) {
+       for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (arg.equals("-out")) {
                 if (i == args.length - 1) {
                     usage("Need " + arg + " argument");
                 }
                 outFile = args[++i];
+                continue;
+            }
+            if (arg.equals("-class")) {
+                if (i == args.length - 1) {
+                    usage("Need " + arg + " argument");
+                }
+                setRecordFileClass(args[++i]);
                 continue;
             }
             if (arg.equals("-bounds")) {
@@ -129,7 +136,7 @@ public  class Point2Csv extends RecordTool {
             outputWriter.println(prefix);
         }
 
-        RecordFile file = getRecordFileFactory().doMakeRecordFile(inFile);
+        RecordFile file = doMakeRecordFile(inFile);
         /*
         if (suffix.endsWith("csv")) {
             fileInfo = new CsvFileInfo(destFile,

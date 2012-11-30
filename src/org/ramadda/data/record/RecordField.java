@@ -102,6 +102,7 @@ public class RecordField {
     private boolean synthetic = false;
 
     private double defaultDoubleValue = Double.NaN;
+    private String defaultStringValue = null;
 
     private String type = TYPE_NUMERIC;
 
@@ -518,8 +519,16 @@ public class RecordField {
         return synthetic;
     }
 
+    public boolean hasDefaultValue() {
+        return hasDefaultDoubleValue() || hasDefaultStringValue();
+    }
+
     public boolean hasDefaultDoubleValue() {
         return !Double.isNaN(defaultDoubleValue);
+    }
+
+    public boolean hasDefaultStringValue() {
+        return defaultStringValue!=null;
     }
 
 
@@ -540,6 +549,25 @@ public class RecordField {
     public double getDefaultDoubleValue () {
 	return defaultDoubleValue;
     }
+
+    /**
+       Set the DefaultStringValue property.
+
+       @param value The new value for DefaultStringValue
+    **/
+    public void setDefaultStringValue (String value) {
+	defaultStringValue = value;
+    }
+
+    /**
+       Get the DefaultStringValue property.
+
+       @return The DefaultStringValue
+    **/
+    public String getDefaultStringValue () {
+	return defaultStringValue;
+    }
+
 
 
 

@@ -85,7 +85,6 @@ public class AmrcPointFile extends CsvFile  {
         }
         //        Year: 2012  Month: 01  ID: AG4  ARGOS:  8927  Name: AGO-4               
         //            Lat: 82.01S  Lon:  96.76E  Elev: 3597m
-
         String siteId =  StringUtil.findPattern(headerLines.get(0),"ID:\\s(.*)ARGOS:");
         String name =  StringUtil.findPattern(headerLines.get(0),"Name:\\s(.*)");
         String latString =  StringUtil.findPattern(headerLines.get(1),"Lat:\\s(.*)Lon:");
@@ -105,8 +104,7 @@ public class AmrcPointFile extends CsvFile  {
         double lat = Misc.decodeLatLon(latString);
         double lon = Misc.decodeLatLon(lonString);
 
-
-        String fields = "Latitude[value=" + lat +"],Longitude[value=" + lon +"],Elevation[value=" + elevString+"],Year,Julian_Day,Month,Day,Time,Temperature[unit=\"Celsius\"],Pressure[unit=\"hPa\"], Wind_Speed[unit=\"m/s\"],Wind_Direction,Relative_Humidity[unit=\"%\"],Delta_T[unit=\"Celsius\"]";
+        String fields = "Site_Id[type=string value=\"" + siteId.trim()+"\"],Latitude[value=" + lat +"],Longitude[value=" + lon +"],Elevation[value=" + elevString+"],Year,Julian_Day,Month,Day,Time,Temperature[unit=\"Celsius\"],Pressure[unit=\"hPa\"], Wind_Speed[unit=\"m/s\"],Wind_Direction,Relative_Humidity[unit=\"%\"],Delta_T[unit=\"Celsius\"]";
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
     }
@@ -126,6 +124,13 @@ public class AmrcPointFile extends CsvFile  {
         return super.doMakeFields();
 
     }
+
+    public boolean isCapable(String action) {
+        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
+        if(action.equals(ACTION_GRID)) return false;
+        return super.isCapable(action);
+    }
+
 
     public String getDelimiter() {
         return " ";

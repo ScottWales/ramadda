@@ -169,7 +169,7 @@ public class TextRecord extends PointRecord {
         int numTokens = 0;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
-            hasDefault[i] = field.hasDefaultDoubleValue();
+            hasDefault[i] = field.hasDefaultValue();
             skip[i] = field.getSkip();
             if(!skip[i] && !hasDefault[i]) {
                 numTokens++;
@@ -349,7 +349,11 @@ public class TextRecord extends PointRecord {
                 continue;
             }
             if(hasDefault[fieldCnt]) {
-                values[fieldCnt] = field.getDefaultDoubleValue();
+                if(field.isTypeString()) {
+                    objectValues[fieldCnt] = field.getDefaultStringValue();
+                } else {
+                    values[fieldCnt] = field.getDefaultDoubleValue();
+                }
                 continue;
             }
             String tok = tokens[tokenCnt++];

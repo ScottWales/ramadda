@@ -88,8 +88,16 @@ You then need to specify the path to teqc with the property:
 <pre>
 gps.teqc=/path/to/teqc
 </pre>
-This can be placed in a .properties file in the RAMADDA home dir
-or can be specified in the Admin-&gt;Settings properties field.
+This can be placed in a .properties (e.g., gps.properties)
+file in the RAMADDA home dir or can be specified in 
+the Admin-&gt;Settings properties field.
+
+<p>
+If you have raw Trimble GPS files you also need to install <i>runpkr</a> which is used to convert the raw files into a form that TEQC can process. To set this define the property:
+
+<pre>
+gps.runpkr=/path/to/runpkr
+</pre>
 
 
 </body>

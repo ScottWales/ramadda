@@ -186,13 +186,17 @@ public class CsvFile extends TextFile {
                 field.setDateFormat(new SimpleDateFormat(fmt));
             }
 
-            String value = getProperty(properties,"value",(String)null);
-            if(value!=null) {
-                field.setDefaultDoubleValue(Double.parseDouble(value));
-            }
             String type = getProperty(properties,"type",(String)null);
             if(type!=null) {
                 field.setType(type);
+            }
+            String value = getProperty(properties,"value",(String)null);
+            if(value!=null) {
+                if(field.isTypeString()) {
+                    field.setDefaultStringValue(value);
+                } else {
+                    field.setDefaultDoubleValue(Double.parseDouble(value));
+                }
             }
             if(getProperty(properties,"chartable","false").equals("true")) {
                 field.setChartable(true);

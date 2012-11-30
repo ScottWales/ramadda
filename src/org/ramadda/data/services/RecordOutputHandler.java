@@ -295,6 +295,9 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return The FormHandler
      */
     public RecordFormHandler getFormHandler() {
+        if(formHandler == null) {
+            formHandler = new RecordFormHandler(this);
+        }
         return formHandler;
     }
 
