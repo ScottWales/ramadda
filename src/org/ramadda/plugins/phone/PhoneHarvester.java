@@ -159,17 +159,43 @@ public class PhoneHarvester extends Harvester {
             }
         }
 
-        TypeHandler typeHandler = getRepository().getTypeHandler("phone_sms");
         Entry       baseGroup   = getBaseGroup();
         Entry       parent      = baseGroup;
-        Entry       entry = typeHandler.createEntry(getRepository().getGUID());
         String      name        = "sms";
-        String      desc        = info.getMessage();
+        String      message        = info.getMessage();
+        String      type = "phone_sms";
+        
+        String tmp;
+
+        StringBuffer desc = new StringBuffer();
+        int lineCnt = 0;
+        for(String line: StringUtil.split(message,"\n")) {
+            String tline = line.trim();
+            System.err.println ("SMS: line:" + tline); 
+            if((tmp =  StringUtil.findPattern(tline,"title\\s(.+)"))!=null) {
+                name = tmp;
+                continue;
+            }
+            if((tmp =  StringUtil.findPattern(tline,"name\\s(.+)"))!=null) {
+                name = tmp;
+                continue;
+            }
+            if(lineCnt!=0)
+                desc.append("\n");
+            desc.append(line);
+            lineCnt++;
+        }
+
+
+        TypeHandler typeHandler = getRepository().getTypeHandler(type);
+        Entry       entry = typeHandler.createEntry(getRepository().getGUID());
+
+
         Date        date        = new Date();
         Object[]    values      = typeHandler.makeValues(new Hashtable());
         values[0] = info.getFromPhone();
         values[1] = info.getToPhone();
-        entry.initEntry(name, desc, parent, getUser(), new Resource(), "",
+        entry.initEntry(name, desc.toString(), parent, getUser(), new Resource(), "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
 
