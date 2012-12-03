@@ -985,6 +985,9 @@ public class RegistryManager extends RepositoryManager {
                     RESPONSE_XML, ARG_REGISTRY_SERVER,
                     getRepository().getServerInfo().getUrl() });
 
+        if(serverUrl.indexOf("pws.scqx.gov.cn")>=0)  {
+            return false;
+        }
         try {
             String contents =
                 getStorageManager().readSystemResource(new URL(serverUrl));
