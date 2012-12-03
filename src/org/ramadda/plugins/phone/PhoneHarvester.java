@@ -187,25 +187,42 @@ public class PhoneHarvester extends Harvester {
         }
 
 
-        String      type = "phone_sms";
-        
-        String tmp;
+        message = message.trim();
+        if(message.equals("help") || message.equals("?")) {
+            returnMsg.append("Use:\nname &lt;entry name&gt;\ntype &lt;wiki or note&gt;");
+            return true;
+        }
 
+        String      type = "phone_sms";
+        String tmp;
         StringBuffer desc = new StringBuffer();
         int lineCnt = 0;
         for(String line: StringUtil.split(message,"\n")) {
             String tline = line.trim();
-            System.err.println ("SMS: line:" + tline); 
-            if((tmp =  StringUtil.findPattern(tline,"title\\s(.+)"))!=null) {
-                name = tmp;
-                continue;
+            boolean skipLine = false;
+
+            for(String prefix: new String[]{
+                    "title","Title","name","Name","nm","Nm"
+                }) {
+                if((tmp =  StringUtil.findPattern(tline,prefix+"\\s(.+)"))!=null) {
+                    name = tmp;
+                    skipLine = true;
+                    break;
+                }
             }
-            if((tmp =  StringUtil.findPattern(tline,"name\\s(.+)"))!=null) {
-                name = tmp;
-                continue;
-            }
-            if((tmp =  StringUtil.findPattern(tline,"nm\\s(.+)"))!=null) {
-                name = tmp;
+
+            if(skipLine) continue;
+
+            if((tmp =  StringUtil.findPattern(tline,"type\\s(.+)"))!=null) {
+                tmp = tmp.trim();
+                if(tmp.equals("note")) {
+                    type = "notes_note";
+                } else if(tmp.equals("wiki")) {
+                    type = "wikipage";
+                } else {
+                    returnMsg.append("Unknown type:" + tmp);
+                    //                    return false;
+                }
                 continue;
             }
             if(lineCnt!=0)
@@ -221,8 +238,13 @@ public class PhoneHarvester extends Harvester {
 
         Date        date        = new Date();
         Object[]    values      = typeHandler.makeValues(new Hashtable());
-        values[0] = info.getFromPhone();
-        values[1] = info.getToPhone();
+        if(type.equals("phone_sms")) {
+            values[0] = info.getFromPhone();
+            values[1] = info.getToPhone();
+        } else if (type.equals("wikipage")) {
+            values[0] = desc.toString();
+            desc = new StringBuffer();
+        }
         entry.initEntry(name, desc.toString(), parent, getUser(), new Resource(), "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
