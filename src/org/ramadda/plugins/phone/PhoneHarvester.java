@@ -147,22 +147,47 @@ public class PhoneHarvester extends Harvester {
     public boolean handleMessage(Request request, PhoneInfo info)
             throws Exception {
 
+        System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
+                            info.getToPhone());
         if (fromPhone.length() > 0) {
-            if ( !Misc.equals(fromPhone, info.getFromPhone())) {
+            if ( info.getFromPhone().indexOf(fromPhone)<0) {
+                System.err.println ("handleMessage: skipping wrong from phone");
                 return false;
             }
         }
 
         if (toPhone.length() > 0) {
-            if ( !Misc.equals(toPhone, info.getToPhone())) {
+            if ( info.getToPhone().indexOf(toPhone)<0) {
+                System.err.println ("handleMessage: skipping wrong to phone");
                 return false;
             }
         }
 
         Entry       baseGroup   = getBaseGroup();
         Entry       parent      = baseGroup;
-        String      name        = "sms";
         String      message        = info.getMessage();
+        String      name        = "SMS Message";
+        int spaceIndex = message.indexOf(" ", 10);
+        if(spaceIndex<0) {
+            spaceIndex = message.indexOf("\n");
+        }
+        if(spaceIndex>0) {
+            name = message.substring(0, spaceIndex);
+        } else {
+            //??
+        }
+
+        System.err.println("msg:" + message);
+        if(passCode!=null && passCode.length()>0) {
+            System.err.println("checking pass code:" + passCode +":");
+            if(message.indexOf(passCode)<0) {
+                System.err.println("does not contain passcode");
+                return false;
+            }
+            message = message.replace(passCode,"");
+        }
+
+
         String      type = "phone_sms";
         
         String tmp;
@@ -180,8 +205,12 @@ public class PhoneHarvester extends Harvester {
                 name = tmp;
                 continue;
             }
+            if((tmp =  StringUtil.findPattern(tline,"nm\\s(.+)"))!=null) {
+                name = tmp;
+                continue;
+            }
             if(lineCnt!=0)
-                desc.append("\n");
+                desc.append("<br>");
             desc.append(line);
             lineCnt++;
         }
