@@ -144,7 +144,7 @@ public class PhoneHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    public boolean handleMessage(Request request, PhoneInfo info)
+    public boolean handleMessage(Request request, PhoneInfo info, StringBuffer returnMsg)
             throws Exception {
 
         System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
@@ -179,9 +179,8 @@ public class PhoneHarvester extends Harvester {
 
         System.err.println("msg:" + message);
         if(passCode!=null && passCode.length()>0) {
-            System.err.println("checking pass code:" + passCode +":");
             if(message.indexOf(passCode)<0) {
-                System.err.println("does not contain passcode");
+                returnMsg.append("Message does not contain passcode");
                 return false;
             }
             message = message.replace(passCode,"");
@@ -238,6 +237,10 @@ public class PhoneHarvester extends Harvester {
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().insertEntries(entries, true, true);
 
+        String entryUrl = 
+            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+                          ARG_ENTRYID, entry.getId());
+        returnMsg.append("Entry created:\n"+ entryUrl);
         return true;
     }
 

@@ -122,25 +122,29 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
                                        request.getString(ARG_FROM, ""),
                                        request.getString(ARG_TO, ""), null);
-        System.err.println("Phone: " + info);
-        System.err.println("request: " + request);
+        System.err.println("TwilioApiHandler: Phone: " + info);
+        System.err.println("TwilioApiHandler: request: " + request);
         StringBuffer sb =
             new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append(XmlUtil.openTag(TAG_RESPONSE));
         info.setMessage(request.getString(ARG_BODY, ""));
         info.setFromZip(request.getString("FromZip", (String) null));
         boolean handledMessage = false;
+        StringBuffer returnMsg = new StringBuffer();
         for (PhoneHarvester harvester : getHarvesters()) {
-            if (harvester.handleMessage(request, info)) {
-                sb.append(XmlUtil.tag(TAG_SMS, "", "Cool!"));
+            System.err.println ("Checking harvester:" + harvester);
+            if (harvester.handleMessage(request, info, returnMsg)) {
+                String response = returnMsg.toString();
+                if(response.length()==0) response = "Message handled";
+                sb.append(XmlUtil.tag(TAG_SMS, "", response));
                 handledMessage = true;
-
                 break;
             }
         }
 
         if ( !handledMessage) {
-            sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry dude"));
+            String response = returnMsg.toString();
+            sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, RAMADDA was not able to process your message.\n" + response));
         }
         sb.append(XmlUtil.closeTag(TAG_RESPONSE));
 
