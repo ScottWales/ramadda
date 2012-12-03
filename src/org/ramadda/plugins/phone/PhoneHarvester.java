@@ -149,14 +149,14 @@ public class PhoneHarvester extends Harvester {
 
         System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
                             info.getToPhone());
-        if (fromPhone.length() > 0) {
+        if (fromPhone!=null && fromPhone.length() > 0) {
             if ( info.getFromPhone().indexOf(fromPhone)<0) {
                 System.err.println ("handleMessage: skipping wrong from phone");
                 return false;
             }
         }
 
-        if (toPhone.length() > 0) {
+        if (toPhone!= null && toPhone.length() > 0) {
             if ( info.getToPhone().indexOf(toPhone)<0) {
                 System.err.println ("handleMessage: skipping wrong to phone");
                 return false;
