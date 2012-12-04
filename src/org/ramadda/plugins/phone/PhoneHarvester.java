@@ -73,6 +73,8 @@ public class PhoneHarvester extends Harvester {
     /** _more_          */
     public static final String ATTR_PASSCODE = "passcode";
 
+    public static final String ATTR_RESPONSE = "response";
+
     /** _more_          */
     public static final String ATTR_ = "";
 
@@ -88,6 +90,9 @@ public class PhoneHarvester extends Harvester {
 
     /** _more_          */
     private String passCode;
+
+    /** _more_          */
+    private String response;
 
 
     /**
@@ -130,6 +135,7 @@ public class PhoneHarvester extends Harvester {
         fromPhone = XmlUtil.getAttribute(element, ATTR_FROMPHONE, fromPhone);
         toPhone   = XmlUtil.getAttribute(element, ATTR_TOPHONE, toPhone);
         passCode  = XmlUtil.getAttribute(element, ATTR_PASSCODE, passCode);
+        response  = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
         type      = XmlUtil.getAttribute(element, ATTR_TYPE, type);
     }
 
@@ -177,7 +183,7 @@ public class PhoneHarvester extends Harvester {
             //??
         }
 
-        System.err.println("msg:" + message);
+
         if(passCode!=null && passCode.length()>0) {
             if(message.indexOf(passCode)<0) {
                 returnMsg.append("Message does not contain passcode");
@@ -185,7 +191,6 @@ public class PhoneHarvester extends Harvester {
             }
             message = message.replace(passCode,"");
         }
-
 
         message = message.trim();
         if(message.equals("help") || message.equals("?")) {
@@ -212,6 +217,15 @@ public class PhoneHarvester extends Harvester {
             }
 
             if(skipLine) continue;
+
+            if(tline.equals("wiki")) {
+                type = "wikipage";
+                continue;
+            }
+            if(tline.equals("note")) {
+                type = "notes_note";
+                continue;
+            }
 
             if((tmp =  StringUtil.findPattern(tline,"type\\s(.+)"))!=null) {
                 tmp = tmp.trim();
@@ -262,7 +276,10 @@ public class PhoneHarvester extends Harvester {
         String entryUrl = 
             HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                           ARG_ENTRYID, entry.getId());
-        returnMsg.append("Entry created:\n"+ entryUrl);
+        String template = response;
+        if(template == null || template.trim().length()==0) template = "Entry created:\n${url}";
+        template = template.replace("${url}", entryUrl);
+        returnMsg.append(template);
         return true;
     }
 
@@ -303,6 +320,7 @@ public class PhoneHarvester extends Harvester {
         element.setAttribute(ATTR_FROMPHONE, fromPhone);
         element.setAttribute(ATTR_TOPHONE, toPhone);
         element.setAttribute(ATTR_PASSCODE, passCode);
+        element.setAttribute(ATTR_RESPONSE, response);
         element.setAttribute(ATTR_TYPE, type);
     }
 
@@ -319,6 +337,7 @@ public class PhoneHarvester extends Harvester {
         fromPhone = request.getString(ATTR_FROMPHONE, fromPhone);
         toPhone   = request.getString(ATTR_TOPHONE, toPhone);
         passCode  = request.getString(ATTR_PASSCODE, passCode);
+        response  = request.getString(ATTR_RESPONSE, response);
         type      = request.getString(ATTR_TYPE, type);
     }
 
@@ -344,6 +363,10 @@ public class PhoneHarvester extends Harvester {
         sb.append(HtmlUtils.formEntry(msgLabel("Pass Code"),
                                       HtmlUtils.input(ATTR_PASSCODE,
                                           passCode, HtmlUtils.SIZE_60)));
+
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Response"),
+                                      HtmlUtils.textArea(ATTR_RESPONSE,
+                                                         response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
     }
 
 
