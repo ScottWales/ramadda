@@ -375,9 +375,12 @@ public class LogManager extends RepositoryManager {
                 log.error(message + "\n<stack>\n" + thr + "\n"
                           + LogUtil.getStackTrace(thr) + "\n</stack>");
 
-                System.err.println("ERROR:" + message);
+                System.err.println("RAMADDA ERROR:" + message);
                 thr.printStackTrace();
             }
+        } else {
+            System.err.println("RAMADDA ERROR:" + message);
+            log.error(message);
         }
 
     }
