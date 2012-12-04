@@ -218,11 +218,11 @@ public class PhoneHarvester extends Harvester {
 
             if(skipLine) continue;
 
-            if(tline.equals("wiki")) {
+            if(tline.equalsIgnoreCase("wiki")) {
                 type = "wikipage";
                 continue;
             }
-            if(tline.equals("note")) {
+            if(tline.equalsIgnoreCase("note")) {
                 type = "notes_note";
                 continue;
             }
