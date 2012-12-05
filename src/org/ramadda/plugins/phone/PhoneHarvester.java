@@ -74,6 +74,7 @@ public class PhoneHarvester extends Harvester {
     public static final String ATTR_PASSCODE = "passcode";
 
     public static final String ATTR_RESPONSE = "response";
+    public static final String ATTR_VOICEMESSAGE = "voicemessage";
 
     /** _more_          */
     public static final String ATTR_ = "";
@@ -93,6 +94,10 @@ public class PhoneHarvester extends Harvester {
 
     /** _more_          */
     private String response;
+
+
+    /** _more_          */
+    private String voiceMessage;
 
 
     /**
@@ -136,6 +141,7 @@ public class PhoneHarvester extends Harvester {
         toPhone   = XmlUtil.getAttribute(element, ATTR_TOPHONE, toPhone);
         passCode  = XmlUtil.getAttribute(element, ATTR_PASSCODE, passCode);
         response  = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
+        voiceMessage = XmlUtil.getAttribute(element, ATTR_VOICEMESSAGE,  voiceMessage);
         type      = XmlUtil.getAttribute(element, ATTR_TYPE, type);
     }
 
@@ -283,6 +289,72 @@ public class PhoneHarvester extends Harvester {
         return true;
     }
 
+
+
+
+    private boolean checkPhone(PhoneInfo info) {
+        if (fromPhone!=null && fromPhone.length() > 0) {
+            if ( info.getFromPhone().indexOf(fromPhone)<0) {
+                System.err.println ("handleMessage: skipping wrong from phone");
+                return false;
+            }
+        }
+
+        if (toPhone!= null && toPhone.length() > 0) {
+            if ( info.getToPhone().indexOf(toPhone)<0) {
+                System.err.println ("handleMessage: skipping wrong to phone");
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public boolean handleVoice(Request request, PhoneInfo info)
+            throws Exception {
+        if(getVoiceResponse(info)==null) {
+            return false;
+        }
+        System.err.println ("handleVoice:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
+                            info.getToPhone());
+        Entry       baseGroup   = getBaseGroup();
+        Entry       parent      = baseGroup;
+        String      name        = "Voice Message";
+        String      type = "media_audiofile";
+        TypeHandler typeHandler = getRepository().getTypeHandler(type);
+        Entry       entry = typeHandler.createEntry(getRepository().getGUID());
+        Date        date        = new Date();
+        Object[]    values      = typeHandler.makeValues(new Hashtable());
+        StringBuffer desc = new StringBuffer();
+        /*
+        if(type.equals("phone_sms")) {
+            values[0] = info.getFromPhone();
+            values[1] = info.getToPhone();
+        } else if (type.equals("wikipage")) {
+            values[0] = desc.toString();
+            desc = new StringBuffer();
+        }
+        */
+        Resource resource = new Resource(info.getRecordingUrl());
+        entry.initEntry(name, desc.toString(), parent, getUser(), resource, "",
+                        date.getTime(), date.getTime(), date.getTime(),
+                        date.getTime(), values);
+
+
+        double[] location = org.ramadda.util.GeoUtils.getLocationFromAddress(
+                                info.getFromZip());
+        if (location != null) {
+            entry.setLocation(location[0], location[1], 0);
+        }
+
+        List<Entry> entries = (List<Entry>) Misc.newList(entry);
+        getEntryManager().insertEntries(entries, true, true);
+        return true;
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -321,6 +393,7 @@ public class PhoneHarvester extends Harvester {
         element.setAttribute(ATTR_TOPHONE, toPhone);
         element.setAttribute(ATTR_PASSCODE, passCode);
         element.setAttribute(ATTR_RESPONSE, response);
+        element.setAttribute(ATTR_VOICEMESSAGE, voiceMessage);
         element.setAttribute(ATTR_TYPE, type);
     }
 
@@ -338,6 +411,7 @@ public class PhoneHarvester extends Harvester {
         toPhone   = request.getString(ATTR_TOPHONE, toPhone);
         passCode  = request.getString(ATTR_PASSCODE, passCode);
         response  = request.getString(ATTR_RESPONSE, response);
+        voiceMessage  = request.getString(ATTR_VOICEMESSAGE, voiceMessage);
         type      = request.getString(ATTR_TYPE, type);
     }
 
@@ -364,9 +438,13 @@ public class PhoneHarvester extends Harvester {
                                       HtmlUtils.input(ATTR_PASSCODE,
                                           passCode, HtmlUtils.SIZE_60)));
 
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Response"),
+        sb.append(HtmlUtils.formEntryTop(msgLabel("SMS Response"),
                                       HtmlUtils.textArea(ATTR_RESPONSE,
                                                          response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
+
+
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Voice Message"),
+                                         HtmlUtils.input(ATTR_VOICEMESSAGE,voiceMessage) +"<br>" + "Specify a voice response to handle voice message"));
     }
 
 
@@ -383,6 +461,16 @@ public class PhoneHarvester extends Harvester {
             //            return true;
         }
     }
+
+
+    public String getVoiceResponse(PhoneInfo info) {
+        if(!checkPhone(info)) {
+            return null;
+        }
+        if(voiceMessage!=null && voiceMessage.trim().length()==0) return null;
+        return voiceMessage;
+    }
+
 
 
 }

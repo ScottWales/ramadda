@@ -162,17 +162,42 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception _more_
      */
     public Result processVoice(Request request) throws Exception {
-        System.err.println("sms from:" + request.getString("From", "none"));
-        System.err.println("sms body:" + request.getString("Body", "none"));
-        String recordingUrl = request.getString("RecordingUrl", "none");
-        System.err.println("sms url:" + recordingUrl);
-        System.err.println("sms args:" + request.getUrlArgs());
+        String recordingUrl = request.getString("RecordingUrl", null);
+        System.err.println("processVoice:" + request.getUrlArgs());
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append("<Response>");
-        sb.append(
-            "<Say voice=\"woman\">This is RAMADDA. Please leave a message.</Say>");
-        sb.append("<Record maxLength=\"20\" />");
+        PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
+                                       request.getString(ARG_FROM, ""),
+                                       request.getString(ARG_TO, ""), null);
+        if(recordingUrl==null) {
+            String voiceResponse = null;
+            for (PhoneHarvester harvester : getHarvesters()) {
+                String response = harvester.getVoiceResponse(info);
+                if(response!=null && response.trim().length()>0) {
+                    voiceResponse = response;
+                    break;
+                }
+            }
+            if(voiceResponse==null) {
+                sb.append(
+                          "<Say voice=\"woman\">Sorry, this ramadda repository does not accept voice messages</Say>");
+            } else {
+                sb.append(
+                          "<Say voice=\"woman\">" + voiceResponse +"</Say>");
+                sb.append("<Record maxLength=\"30\" />");
+            }
+        } else {
+            info.setRecordingUrl(recordingUrl);
+            System.err.println("recording url:" + recordingUrl);
+            for (PhoneHarvester harvester : getHarvesters()) {
+                System.err.println ("Checking harvester:" + harvester);
+                if (harvester.handleVoice(request, info)) {
+                    break;
+                }
+            }
+
+        }
         sb.append("</Response>");
 
         return new Result("", sb, "text/xml");
