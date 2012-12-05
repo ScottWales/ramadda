@@ -34,6 +34,7 @@ import org.ramadda.util.HtmlUtils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
@@ -335,7 +336,13 @@ public class PhoneHarvester extends Harvester {
             desc = new StringBuffer();
         }
         */
-        Resource resource = new Resource(info.getRecordingUrl());
+
+        File  voiceFile = fetchVoiceFile(request, new URL(info.getRecordingUrl()));
+        if(voiceFile==null) {
+            return false;
+        }
+        voiceFile =     getStorageManager().moveToStorage(request, voiceFile);
+        Resource resource = new Resource(voiceFile.toString(), Resource.TYPE_STOREDFILE);
         entry.initEntry(name, desc.toString(), parent, getUser(), resource, "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
@@ -471,6 +478,27 @@ public class PhoneHarvester extends Harvester {
         return voiceMessage;
     }
 
+
+    private File fetchVoiceFile(Request request, URL url) throws Exception {
+        String tail    = "voicemessage.wav";
+        File   newFile = getStorageManager().getTmpFile(request,
+                                                        tail);
+        URLConnection connection = url.openConnection();
+        InputStream   fromStream = connection.getInputStream();
+        FileOutputStream toStream =
+            getStorageManager().getFileOutputStream(newFile);
+        try {
+            int bytes = IOUtil.writeTo(fromStream, toStream);
+            if (bytes < 0) {
+                System.err.println("PhoneHarvester: failed to read voice URL:" + url);
+                return null;
+            }
+        } finally {
+            IOUtil.close(toStream);
+            IOUtil.close(fromStream);
+        }
+        return newFile;
+    }
 
 
 }
