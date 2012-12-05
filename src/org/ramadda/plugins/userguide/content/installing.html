@@ -380,4 +380,20 @@ This is just the entries xml format. The ID of the top-level entry is simply "ro
 </pre>
 
 
+
+<subhead intoc="false" id="utf8">Running with non-ascii characters</subhead>
+
+There are a number of things you will need to do to run with content that is non-ascii (e.g., Chinese characters).
+<p>
+For Tomcat  set the URIEncoding:
+<a href="http://stackoverflow.com/questions/138948/how-to-get-utf-8-working-in-java-webapps">http://stackoverflow.com/questions/138948/how-to-get-utf-8-working-in-java-webapps</a>.
+
+<p>
+
+If you are running mysql there are some <a href="https://www.google.com/search?hl=en&ie=ISO-8859-1&q=utf-8+mysql&btnG=Search">things</a> you need to do. Postgres and Derby seem OK out of the box.
+
+<p>
+
+Your Java runtime should also have the system property -Dfile.encoding=utf-8  defined.
+
 </body>
