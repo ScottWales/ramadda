@@ -117,6 +117,12 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     /** _more_          */
     private String description = "";
 
+    private double lat = Double.NaN;
+    private double lon = Double.NaN;
+    private double elevation = Double.NaN;
+
+
+
     /**
      * _more_
      */
@@ -127,6 +133,9 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     public String getPropertiesFileName() {
         return DFLT_PROPERTIES_FILE;
     }
+
+
+
 
 
     /**
@@ -232,6 +241,14 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
     /** _more_          */
     static int cnt = 0;
+
+    public void  setLocation(double lat,double lon,double elevation) {
+        this.lat = lat;
+        this.lon = lon;
+        this.elevation = elevation;
+    }
+
+
 
     /**
      * _more_

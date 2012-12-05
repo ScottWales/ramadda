@@ -94,6 +94,17 @@ public abstract class RecordFile {
         this.filename = filename;
     }
 
+    private Object[] fileMetadata;
+
+
+    public Object[] getFileMetadata() {
+        return fileMetadata;
+    }
+
+    public void setFileMetadata( Object[] metadata) {
+        fileMetadata = metadata;
+    }
+
     public RecordFile cloneMe(String filename, Hashtable properties)
             throws CloneNotSupportedException {
         RecordFile that = cloneMe();

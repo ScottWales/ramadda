@@ -322,64 +322,60 @@ public class TextRecord extends PointRecord {
      */
     public ReadStatus read(RecordIO recordIO) throws IOException {
         try {
-        ReadStatus status = ReadStatus.OK;
-        while (true) {
-            line = recordIO.readLine();
-            if (line == null) {
-                return ReadStatus.EOF;
-            }
-            line = line.trim();
-            if (line.length() == 0) {
-                return status;
-            }
-            if (line.startsWith("#")) {
-                continue;
-            }
-            break;
-        }
-        if(!split(line)) {
-            if(skipCnt++<10)
-                System.err.println ("bad token cnt:" + line + " tokens.length=" + tokens.length);
-            return ReadStatus.SKIP;
-        }
-        int tokenCnt = 0;
-        for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
-            RecordField field = fields.get(fieldCnt);
-            if(skip[fieldCnt]) {
-                continue;
-            }
-            if(hasDefault[fieldCnt]) {
-                if(field.isTypeString()) {
-                    objectValues[fieldCnt] = field.getDefaultStringValue();
-                } else {
-                    values[fieldCnt] = field.getDefaultDoubleValue();
+            while (true) {
+                line = recordIO.readLine();
+                if (line == null) {
+                    return ReadStatus.EOF;
                 }
-                continue;
+                line = line.trim();
+                if (line.length() == 0 || line.startsWith("#")) {
+                    continue;
+                }
+                break;
             }
-            String tok = tokens[tokenCnt++];
-            if(field.isTypeString()) {
-                objectValues[fieldCnt] = tok;
-                continue;
+            if(!split(line)) {
+                if(skipCnt++<10)
+                    System.err.println ("bad token cnt:" + line + " tokens.length=" + tokens.length);
+                return ReadStatus.SKIP;
             }
-            if(field.isTypeDate()) {
-                objectValues[fieldCnt] = field.getDateFormat().parse(tok);
-                continue;
+            int tokenCnt = 0;
+            for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
+                RecordField field = fields.get(fieldCnt);
+                if(skip[fieldCnt]) {
+                    continue;
+                }
+                if(hasDefault[fieldCnt]) {
+                    if(field.isTypeString()) {
+                        objectValues[fieldCnt] = field.getDefaultStringValue();
+                    } else {
+                        values[fieldCnt] = field.getDefaultDoubleValue();
+                    }
+                    continue;
+                }
+                String tok = tokens[tokenCnt++];
+                if(field.isTypeString()) {
+                    objectValues[fieldCnt] = tok;
+                    continue;
+                }
+                if(field.isTypeDate()) {
+                    objectValues[fieldCnt] = field.getDateFormat().parse(tok);
+                    continue;
+                }
+                if(tok == null)  {
+                    System.err.println("tok null: " +tokenCnt +" " +line);
+                }
+                //Check for the riscan NaN
+                if(tok.equals("n.v.") || tok.length()==0 || tok.equals("null")) {
+                    values[fieldCnt] = Double.NaN;
+                } else {
+                    values[fieldCnt] = (double) Double.parseDouble(tok);
+                }
             }
-            if(tok == null)  {
-                System.err.println("tok null: " +tokenCnt +" " +line);
-            }
-            //Check for the riscan NaN
-            if(tok.equals("n.v.") || tok.length()==0 || tok.equals("null")) {
-                values[fieldCnt] = Double.NaN;
-            } else {
-                values[fieldCnt] = (double) Double.parseDouble(tok);
-            }
-        }
-        setLocation(values[idxX], values[idxY], ((idxZ >= 0)
-                ? values[idxZ]
-                : 0));
-        convertedXYZToLatLonAlt = true;
-        return status;
+            setLocation(values[idxX], values[idxY], ((idxZ >= 0)
+                                                     ? values[idxZ]
+                                                     : 0));
+            convertedXYZToLatLonAlt = true;
+            return ReadStatus.OK;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

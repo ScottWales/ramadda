@@ -7823,9 +7823,12 @@ public class EntryManager extends RepositoryManager {
         String groupType = TypeHandler.TYPE_GROUP;
 
 
+
+        //xxxx
         for (int i = 0; i < toks.size(); i++) {
             boolean      lastOne   = (i == toks.size() - 1);
             String       childName = Entry.decodeName(toks.get(i));
+
             List<Clause> clauses   = new ArrayList<Clause>();
             clauses.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                   currentEntry.getId()));
@@ -7836,7 +7839,6 @@ public class EntryManager extends RepositoryManager {
                                           Tables.ENTRIES.NAME, clauses));
             //            System.err.println("   Found: " + entries);
             if (entries.size() > 0) {
-
                 currentEntry = entries.get(0);
             } else {
                 if ( !createIfNeeded) {
@@ -7850,6 +7852,14 @@ public class EntryManager extends RepositoryManager {
                             user, null, groupType, initializer);
                 }
             }
+
+            //xxxx
+            if(currentEntry.getTypeHandler().isSynthType()) {
+                List<String> subset = toks.subList(i+1, toks.size());
+                return currentEntry.getTypeHandler().makeSynthEntry(request,  currentEntry, subset);
+            }
+
+
         }
         if (currentEntry == null) {
             return currentEntry;

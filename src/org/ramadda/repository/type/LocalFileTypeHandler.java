@@ -532,6 +532,48 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     }
 
 
+    public Entry makeSynthEntry(Request request, Entry parentEntry, List<String> entryNames)
+            throws Exception {
+        Object[] values = parentEntry.getValues();
+        if (values == null) {
+            return null;
+        }
+        File dir  = new File((String) values[0]);
+
+        for(int i=0;i<entryNames.size();i++) {
+            String dirName = entryNames.get(i);
+            File[] files     = 
+            File nextDir = null;
+            for(File child:dir.listFiles()) {
+                if(child.getName().equals(dirName)) {
+                    if(child.
+
+                    nextDir = child;
+                    break;
+                }
+            }
+            if(nextDir!=null) {
+                dir = nextDir;
+            }
+        }
+
+
+
+        public Entry makeSynthEntry(Request request, Entry parentEntry, File dir, List<String> entryNames, int index) 
+            throws Exception {
+            
+        }
+
+
+
+        xxxxxxx
+        System.err.println("LocalFile:" + entryNames);
+        return  null;
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -540,7 +582,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public Entry createEntry(String id) {
-        //Make the top level entyr act like a group
+        //Make the top level entry act like a group
         return new Entry(id, this, true);
     }
 

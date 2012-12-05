@@ -57,6 +57,12 @@ public class AmrcPointFile extends CsvFile  {
 
 
 
+
+    public Object[] getFileMetadata() {
+        return null;
+    }
+
+
     /**
      * _more_
      *
@@ -86,16 +92,17 @@ public class AmrcPointFile extends CsvFile  {
         //        Year: 2012  Month: 01  ID: AG4  ARGOS:  8927  Name: AGO-4               
         //            Lat: 82.01S  Lon:  96.76E  Elev: 3597m
         String siteId =  StringUtil.findPattern(headerLines.get(0),"ID:\\s(.*)ARGOS:");
-        String name =  StringUtil.findPattern(headerLines.get(0),"Name:\\s(.*)");
+        String argosId =  StringUtil.findPattern(headerLines.get(0),"ARGOS:\\s*(.*)Name:");
+        String siteName =  StringUtil.findPattern(headerLines.get(0),"Name:\\s(.*)");
         String latString =  StringUtil.findPattern(headerLines.get(1),"Lat:\\s(.*)Lon:");
         String lonString =  StringUtil.findPattern(headerLines.get(1),"Lon:\\s(.*)Elev:");
         String elevString =  StringUtil.findPattern(headerLines.get(1),"Elev:(.*)");
         if(latString == null || lonString == null ||
-           name == null ||
+           siteName == null ||
            siteId == null) {
             throw new IllegalArgumentException("Could not read header:" + headerLines +" lat:"  + latString + " lon:" + lonString +" elev" +
-                                               elevString +" name:" +
-                                               name +" site:" + siteId);
+                                               elevString +" siteName:" +
+                                               siteName +" site:" + siteId);
             
         }
         if(elevString.endsWith("m")) {
@@ -103,6 +110,15 @@ public class AmrcPointFile extends CsvFile  {
         }
         double lat = Misc.decodeLatLon(latString);
         double lon = Misc.decodeLatLon(lonString);
+        double elevation = Misc.decodeLatLon(elevString);
+
+        setLocation(lat,lon,elevation);
+        setFileMetadata(new Object[]{
+                siteId,
+                siteName,
+                argosId
+            });
+
 
         String fields = "Site_Id[type=string value=\"" + siteId.trim()+"\"],Latitude[value=" + lat +"],Longitude[value=" + lon +"],Elevation[value=" + elevString+"],Year,Julian_Day,Month,Day,Time,Temperature[unit=\"Celsius\"],Pressure[unit=\"hPa\"], Wind_Speed[unit=\"m/s\"],Wind_Direction,Relative_Humidity[unit=\"%\"],Delta_T[unit=\"Celsius\"]";
         putProperty(PROP_FIELDS, fields);

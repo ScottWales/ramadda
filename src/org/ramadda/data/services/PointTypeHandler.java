@@ -93,7 +93,6 @@ public   class PointTypeHandler extends RecordTypeHandler {
         PointOutputHandler outputHandler = (PointOutputHandler) getRecordOutputHandler();
         RecordVisitorGroup visitorGroup = new RecordVisitorGroup();
         PointEntry         pointEntry   = (PointEntry) outputHandler.doMakeEntry(getRepository().getTmpRequest(), entry);
-
         RecordFile        pointFile    = pointEntry.getRecordFile();
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
         pointEntries.add(pointEntry);
@@ -219,11 +218,22 @@ public   class PointTypeHandler extends RecordTypeHandler {
             }
         }
 
-        Object[] values = entry.getValues();
-        if (values == null) {
-            values = new Object[2];
-        }
+        //All point types should have at least:
+        //pointCount, properties
+        Object[] values = entry.getTypeHandler().getValues(entry);
         values[0] = new Integer(metadata.getCount());
+
+        //If the file has metadata then it better match up with the values that are defined in types.xml
+        Object[] fileMetadata = pointEntry.getRecordFile().getFileMetadata();
+        if(fileMetadata!=null) {
+            if(fileMetadata.length!=values.length-2) {
+                throw new IllegalArgumentException("Bad file metadata count:" + fileMetadata +" was expecting:" + (values.length-2));
+            }
+            for(int i=0;i<fileMetadata.length;i++) {
+                values[i+1] = fileMetadata[i];
+            }
+        }
+
         Properties properties = metadata.getProperties();
         if(properties!=null) {
             String contents = makePropertiesString(properties);
@@ -234,15 +244,13 @@ public   class PointTypeHandler extends RecordTypeHandler {
                 values[1] =  contents;
             }
         }
-
         //        xxxxx
-
         entry.setValues(values);
         entry.setNorth(metadata.getMaxLatitude());
         entry.setSouth(metadata.getMinLatitude());
         entry.setEast(metadata.getMaxLongitude());
         entry.setWest(metadata.getMinLongitude());
-        if ( !Double.isNaN(metadata.getMinElevation())) {
+        if (!Double.isNaN(metadata.getMinElevation())) {
             entry.setAltitudeBottom(metadata.getMinElevation());
         }
         if ( !Double.isNaN(metadata.getMaxElevation())) {

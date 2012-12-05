@@ -835,6 +835,17 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    public Entry makeSynthEntry(Request request, Entry parentEntry, List<String> entryNames)
+            throws Exception {
+        if (parent != null) {
+            return parent.makeSynthEntry(request, parentEntry, entryNames);
+        }
+
+        throw new IllegalArgumentException("makeSynthEntry  not implemented");
+    }
+
+
+
     /**
      * _more_
      *

@@ -107,10 +107,12 @@ public class PointMetadataHarvester extends RecordVisitor {
 
         //Skip this if it doesn't have a valid position
         if ( !pointRecord.isValidPosition()) {
+            System.err.println("  not valid position ");
             return true;
         }
 
         cnt++;
+        System.err.println("Visit cnt:" + cnt);
         if (llg != null) {
             llg.incrementCount(lat, lon);
         }

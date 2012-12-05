@@ -320,7 +320,7 @@ public class PhoneHarvester extends Harvester {
                             info.getToPhone());
         Entry       baseGroup   = getBaseGroup();
         Entry       parent      = baseGroup;
-        String      name        = "Voice Message";
+        String      name        = "Voice Message  - " + getRepository().formatDate(request, new Date());
         String      type = "media_audiofile";
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
         Entry       entry = typeHandler.createEntry(getRepository().getGUID());
