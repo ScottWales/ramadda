@@ -806,6 +806,11 @@ public class PointFormHandler extends RecordFormHandler {
                                   request.getString(ARG_PROBABILITY, ""),
                                   4) + probHelpImg;
             if (recordEntry.getRecordFile().isCapable(
+                                                      PointFile.ACTION_TIME)) {
+
+            }
+
+            if (recordEntry.getRecordFile().isCapable(
                     PointFile.ACTION_DECIMATE)) {
                 subsetSB.append(HtmlUtils.formEntry(msgLabel("Decimate"),
                         msgLabel("Skip every") + " "
