@@ -534,6 +534,9 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
 
     public Entry makeSynthEntry(Request request, Entry parentEntry, List<String> entryNames)
             throws Exception {
+        return null;
+        /*****
+
         Object[] values = parentEntry.getValues();
         if (values == null) {
             return null;
@@ -569,6 +572,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         xxxxxxx
         System.err.println("LocalFile:" + entryNames);
         return  null;
+        ***/
     }
 
 
