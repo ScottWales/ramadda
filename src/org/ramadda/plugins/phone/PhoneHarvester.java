@@ -209,12 +209,13 @@ public class PhoneHarvester extends Harvester {
         String tmp;
         StringBuffer desc = new StringBuffer();
         int lineCnt = 0;
+        boolean doAppend = false;
         for(String line: StringUtil.split(message,"\n")) {
             String tline = line.trim();
             boolean skipLine = false;
 
             for(String prefix: new String[]{
-                    "title","Title","name","Name","nm","Nm"
+                    "title","Title","name","Name","nm","Nm","Subject", "subject"
                 }) {
                 if((tmp =  StringUtil.findPattern(tline,prefix+"\\s(.+)"))!=null) {
                     name = tmp;
@@ -224,6 +225,11 @@ public class PhoneHarvester extends Harvester {
             }
 
             if(skipLine) continue;
+
+            if(tline.equalsIgnoreCase("append")) {
+                doAppend = true;
+                continue;
+            }
 
             if(tline.equalsIgnoreCase("wiki")) {
                 type = "wikipage";
@@ -252,6 +258,18 @@ public class PhoneHarvester extends Harvester {
             lineCnt++;
         }
 
+
+        if(doAppend) {
+            System.err.println ("Appending:" + name);
+            Entry entry = getEntryManager().findEntryWithName(request, parent, name);
+            System.err.println ("Found:" + entry);
+            if(entry!=null) {
+                entry.setDescription(entry.getDescription() +"\n" + desc);
+                getEntryManager().updateEntry(entry);
+                return true;
+            }
+
+        }
 
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
         Entry       entry = typeHandler.createEntry(getRepository().getGUID());

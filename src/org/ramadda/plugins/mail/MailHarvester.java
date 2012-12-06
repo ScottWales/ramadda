@@ -176,15 +176,40 @@ public class MailHarvester extends Harvester {
         int numMessages = emailFolder.getMessageCount();
         int cnt = 0;
         //Go backwards to get the newest first
+        System.err.println ("Checking the messages");
         for (int i = numMessages; i >0;i--) {
             //Only read 100 messages
             if(cnt++>100) break;
             Message message = emailFolder.getMessage(i);
-            String subject = message.getSubject();
-            System.err.println("subject: " + subject);
+            String messageSubject = message.getSubject();
+            String messageFrom     = InternetAddress.toString(message.getFrom());
+
+            boolean passedAFilter = false;
+            if(defined(subject)) {
+                if(messageSubject.indexOf(subject)<0) {
+                    continue;
+                }
+                passedAFilter = true;
+            }
+            if(defined(from)) {
+                if(messageFrom.indexOf(from)<0) {
+                    continue;
+                }
+                passedAFilter = true;
+            }
+
             Object       content = message.getContent();
             StringBuffer sb      = new StringBuffer();
-            MailUtil.processContent(content, sb);
+            MailUtil.extractText(content, sb);
+            String messageBody = sb.toString();
+            if(defined(body)) {
+                if(messageBody.indexOf(body)<0) {
+                    continue;
+                }
+                passedAFilter = true;
+            }
+            System.err.println("message passed the filters: " + messageSubject);
+            System.err.println("body: " + messageBody);
         }
 
         /*
@@ -475,7 +500,13 @@ public class MailHarvester extends Harvester {
     public static void main(String[]args) throws Exception {
         //        imap://MYUSERNAME@gmail.com:MYPASSWORD@imap.gmail.com
 
-        String url = "imaps://jeff.mcwhirter:PASSWORD@imap.gmail.com:993";
+        if(args.length != 1) {
+            System.err.println("usage: username:password");
+            return;
+        }
+
+        String url = "imaps://" + args[0] +"@imap.gmail.com:993";
+        System.err.println ("url:" + url);
 
         Properties props = System.getProperties();
         Session session = Session.getDefaultInstance(props);
@@ -489,13 +520,27 @@ public class MailHarvester extends Harvester {
         }
         Folder emailFolder = store.getFolder("Inbox");
         emailFolder.open(Folder.READ_WRITE);
-        Message[] messages = emailFolder.getMessages();
-        
         int numMessages = emailFolder.getMessageCount();
-        for (int i = 0; i < numMessages;i++) {
-            Message message =  emailFolder.getMessage(i+1);
+        int cnt = 0;
+        for (int i = numMessages; i >0;i--) {
+            Message message =  emailFolder.getMessage(i);
+            if(!message.getSubject().equals("for ramadda")) {
+                continue;
+            }
             System.err.println ("subject:" + message.getSubject());
-            if(i>100) break;
+            Object       content = message.getContent();
+            StringBuffer sb      = new StringBuffer();
+            MailUtil.extractText(content, sb);
+            System.err.println("text:" + sb);
+
+            if(true) return;
+            /*
+            FileOutputStream fos = new FileOutputStream("test.eml");
+            message.writeTo(fos);
+            fos.close();
+            if(true) break;
+            */
+            if(cnt++>100) break;
         }
     } 
 

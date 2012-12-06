@@ -379,7 +379,7 @@ Easting (X)  [meters]      379359.228           836346.070
                 System.err.println("OPUS: subject:" + subject);
                 Object       content = messages[i].getContent();
                 StringBuffer sb      = new StringBuffer();
-                MailUtil.processContent(content, sb);
+                MailUtil.extractText(content, sb);
                 GpsOutputHandler gpsOutputHandler =
                     (GpsOutputHandler) getRepository().getOutputHandler(
                         GpsOutputHandler.OUTPUT_GPS_TORINEX);

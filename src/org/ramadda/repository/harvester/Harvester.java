@@ -1230,7 +1230,10 @@ public abstract class Harvester extends RepositoryManager {
         return testCount;
     }
 
-
+    public boolean defined(String s) {
+        if(s!=null && s.length()>0) return true;
+        return false;
+    }
 
 
 }

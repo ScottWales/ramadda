@@ -117,8 +117,14 @@ public class MailTypeHandler extends GenericTypeHandler {
         values[0] = from;
         values[1] = to;
 
+        //Set the description from the mail message
         if (entry.getDescription().length() == 0) {
-            entry.setDescription(desc.toString());
+            String description = desc.toString();
+            if(description.length()> Entry.MAX_DESCRIPTION_LENGTH) {
+                description = description.substring(0,Entry.MAX_DESCRIPTION_LENGTH-1);
+            }
+            System.err.println("desc length:" + description.length());
+            entry.setDescription(description);
         }
     }
 
