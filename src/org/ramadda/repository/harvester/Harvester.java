@@ -892,6 +892,7 @@ public abstract class Harvester extends RepositoryManager {
      * @param exc _more_
      */
     public void logHarvesterError(String message, Throwable exc) {
+        System.err.println("ERROR:" + getName() +" " + message);
         getRepository().getLogManager().logError(LOGID,
                 getName() + " " + message, exc);
         appendError(message);
@@ -904,6 +905,7 @@ public abstract class Harvester extends RepositoryManager {
      * @param message _more_
      */
     public void logHarvesterInfo(String message) {
+        System.err.println(getName() +" " + message);
         if (PRINT_DEBUG) {
             System.err.println(printTab + message);
         }

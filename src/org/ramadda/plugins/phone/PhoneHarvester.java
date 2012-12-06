@@ -313,6 +313,7 @@ public class PhoneHarvester extends Harvester {
 
     public boolean handleVoice(Request request, PhoneInfo info)
             throws Exception {
+        //        if(passCode!=null && passCode.length()>0) {
         if(getVoiceResponse(info)==null) {
             return false;
         }
@@ -451,7 +452,7 @@ public class PhoneHarvester extends Harvester {
 
 
         sb.append(HtmlUtils.formEntryTop(msgLabel("Voice Message"),
-                                         HtmlUtils.input(ATTR_VOICEMESSAGE,voiceMessage) +"<br>" + "Specify a voice response to handle voice message"));
+                                         HtmlUtils.input(ATTR_VOICEMESSAGE,voiceMessage,  HtmlUtils.SIZE_60) +"<br>" + "Specify a voice response to handle voice message"));
     }
 
 

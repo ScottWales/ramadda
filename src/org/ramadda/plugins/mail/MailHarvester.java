@@ -28,6 +28,7 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.MailUtil;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -42,7 +43,8 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
-
+import javax.mail.*;
+import javax.mail.internet.*;
 
 import java.net.*;
 
@@ -61,10 +63,14 @@ import java.util.Properties;
 /**
  */
 public class MailHarvester extends Harvester {
+    //    public static final String ACTION_
+
 
     /** _more_          */
 
+    public static final String ATTR_ACTION = "action";
     public static final String ATTR_IMAP_URL = "imapurl";
+    public static final String ATTR_FOLDER = "folder";
     public static final String ATTR_FROM = "from";
     public static final String ATTR_SUBJECT = "subject";
     public static final String ATTR_BODY = "body";
@@ -73,7 +79,7 @@ public class MailHarvester extends Harvester {
 
 
     private String imapUrl;
-
+    private String folder = "Inbox";
 
     /** _more_          */
     private String from;
@@ -128,6 +134,7 @@ public class MailHarvester extends Harvester {
     protected void init(Element element) throws Exception {
         super.init(element);
         imapUrl = XmlUtil.getAttribute(element, ATTR_IMAP_URL, imapUrl);
+        folder = XmlUtil.getAttribute(element, ATTR_FOLDER, folder);
         from = XmlUtil.getAttribute(element, ATTR_FROM, from);
         subject = XmlUtil.getAttribute(element, ATTR_SUBJECT, subject);
         body= XmlUtil.getAttribute(element, ATTR_BODY, body);
@@ -146,6 +153,40 @@ public class MailHarvester extends Harvester {
      * @throws Exception _more_
      */
     public void checkEmail() throws Exception {
+        Properties props = System.getProperties();
+        Session session = Session.getDefaultInstance(props);
+        URLName urlName = new URLName(imapUrl);
+        Store   store   = session.getStore(urlName);
+        if ( !store.isConnected()) {
+            store.connect();
+        }
+
+        if ( !store.isConnected()) {
+            logHarvesterError("Could not connect to email server",null);
+            return;
+        }
+
+        System.err.println ("getting folder:" + folder);
+        Folder emailFolder = store.getFolder(folder);
+        if ((emailFolder == null) || !emailFolder.exists()) {
+            logHarvesterError("Invalid folder:" + folder, null);
+            return;
+        }
+        emailFolder.open(Folder.READ_WRITE);
+        int numMessages = emailFolder.getMessageCount();
+        int cnt = 0;
+        //Go backwards to get the newest first
+        for (int i = numMessages; i >0;i--) {
+            //Only read 100 messages
+            if(cnt++>100) break;
+            Message message = emailFolder.getMessage(i);
+            String subject = message.getSubject();
+            System.err.println("subject: " + subject);
+            Object       content = message.getContent();
+            StringBuffer sb      = new StringBuffer();
+            MailUtil.processContent(content, sb);
+        }
+
         /*
         System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
                             info.getToPhone());
@@ -311,6 +352,7 @@ public class MailHarvester extends Harvester {
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         element.setAttribute(ATTR_IMAP_URL, imapUrl);
+        element.setAttribute(ATTR_FOLDER, folder);
         element.setAttribute(ATTR_FROM, from);
         element.setAttribute(ATTR_SUBJECT, subject);
         element.setAttribute(ATTR_BODY, body);
@@ -328,6 +370,7 @@ public class MailHarvester extends Harvester {
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
         imapUrl = request.getString(ATTR_IMAP_URL, imapUrl);
+        folder = request.getString(ATTR_FOLDER, folder);
         from = request.getString(ATTR_FROM, from);
         subject   = request.getString(ATTR_SUBJECT, subject);
         body   = request.getString(ATTR_BODY, body);
@@ -353,8 +396,12 @@ public class MailHarvester extends Harvester {
         sb.append(HtmlUtils.formEntry(msgLabel("Email URL"),
                                       HtmlUtils.input(ATTR_IMAP_URL,
                                                       imapUrl, HtmlUtils.SIZE_60)
-                                      + " " + "e.g. <i>imaps://&lt;email address&gt;:&lt;email password&gt;@&gt;email server&gt;</i>"));
+                                      + " " + "e.g. <i>imaps://&lt;email address&gt;:&lt;email password&gt;@&lt;email server&gt;</i>"));
 
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Folder"),
+                                      HtmlUtils.input(ATTR_FOLDER,
+                                                      folder, HtmlUtils.SIZE_60)));
 
         sb.append(HtmlUtils.formEntry(msgLabel("Sender Contains"),
                                       HtmlUtils.input(ATTR_FROM,
@@ -381,10 +428,16 @@ public class MailHarvester extends Harvester {
      * @throws Exception _more_
      */
     protected void runInner(int timestamp) throws Exception {
+        System.err.println ("runInner");
         while (canContinueRunning(timestamp)) {
             long t1 = System.currentTimeMillis();
             logHarvesterInfo("Checking email");
-            checkEmail();
+            try {
+                checkEmail();
+            } catch(Exception exc) {
+                logHarvesterError("Error in checkEmail", exc);
+                return;
+            }
             if ( !getMonitor()) {
                 logHarvesterInfo("Ran one time only. Exiting loop");
                 break;
@@ -418,6 +471,33 @@ public class MailHarvester extends Harvester {
         }
         return newFile;
     }
+
+    public static void main(String[]args) throws Exception {
+        //        imap://MYUSERNAME@gmail.com:MYPASSWORD@imap.gmail.com
+
+        String url = "imaps://jeff.mcwhirter:PASSWORD@imap.gmail.com:993";
+
+        Properties props = System.getProperties();
+        Session session = Session.getDefaultInstance(props);
+        URLName urlName = new URLName(url);
+        System.err.println ("protocol:" + urlName.getProtocol() +" port:" + urlName.getPort() +" password:" + urlName.getPassword());
+
+       Store   store   = session.getStore(urlName);
+
+        if ( !store.isConnected()) {
+            store.connect();
+        }
+        Folder emailFolder = store.getFolder("Inbox");
+        emailFolder.open(Folder.READ_WRITE);
+        Message[] messages = emailFolder.getMessages();
+        
+        int numMessages = emailFolder.getMessageCount();
+        for (int i = 0; i < numMessages;i++) {
+            Message message =  emailFolder.getMessage(i+1);
+            System.err.println ("subject:" + message.getSubject());
+            if(i>100) break;
+        }
+    } 
 
 
 }

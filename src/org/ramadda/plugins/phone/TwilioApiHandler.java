@@ -183,6 +183,9 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                 sb.append(
                           "<Say voice=\"woman\">Sorry, this ramadda repository does not accept voice messages</Say>");
             } else {
+                //<Gather timeout="10" finishOnKey="*">
+                //<Say>Please enter your pin number and then press star.</Say>
+                //</Gather>
                 sb.append(
                           "<Say voice=\"woman\">" + voiceResponse +"</Say>");
                 sb.append("<Record maxLength=\"30\" />");

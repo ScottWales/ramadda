@@ -25,6 +25,7 @@ package org.ramadda.geodata.gps;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.MailUtil;
 
 import org.w3c.dom.*;
 
@@ -378,7 +379,7 @@ Easting (X)  [meters]      379359.228           836346.070
                 System.err.println("OPUS: subject:" + subject);
                 Object       content = messages[i].getContent();
                 StringBuffer sb      = new StringBuffer();
-                processContent(content, sb);
+                MailUtil.processContent(content, sb);
                 GpsOutputHandler gpsOutputHandler =
                     (GpsOutputHandler) getRepository().getOutputHandler(
                         GpsOutputHandler.OUTPUT_GPS_TORINEX);
@@ -411,63 +412,6 @@ Easting (X)  [meters]      379359.228           836346.070
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param content _more_
-     * @param desc _more_
-     *
-     * @throws Exception _more_
-     */
-    private static void processContent(Object content, StringBuffer desc)
-            throws Exception {
-        if (content instanceof MimeMultipart) {
-            MimeMultipart multipart = (MimeMultipart) content;
-            for (int i = 0; i < multipart.getCount(); i++) {
-                MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(i);
-                String       disposition = part.getDisposition();
-                String       contentType = part.getContentType();
-                Object       partContent = part.getContent();
-                if (disposition == null) {
-                    if (partContent instanceof MimeMultipart) {
-                        processContent(partContent, desc);
-                    } else {
-                        //Only ingest the text
-                        if (contentType.indexOf("text/plain") >= 0) {
-                            desc.append(partContent);
-                            desc.append("\n");
-                        }
-                    }
-
-                    continue;
-                }
-                if (disposition.equals(Part.INLINE)
-                        && (contentType.indexOf("text/plain") >= 0)) {
-                    desc.append(partContent);
-
-                    return;
-                }
-
-                //                System.err.println("disposition:" + disposition + " Type:" + contentType +" part:" + partContent.getClass().getName());
-                if (disposition.equals(Part.ATTACHMENT)
-                        || disposition.equals(Part.INLINE)) {
-                    if (part.getFileName() != null) {
-                        InputStream inputStream = part.getInputStream();
-                    }
-                }
-            }
-        } else if (content instanceof Part) {
-            //            System.err.println("Part");
-            //TODO
-            Part part = (Part) content;
-        } else {
-            //            System.err.println ("xxx content:" + content.getClass().getName());
-            //            System.err.println("Content");
-            String contents = content.toString();
-            desc.append(contents);
-            desc.append("\n");
-        }
-    }
 
 
 
