@@ -50,6 +50,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
     public static final String DFLT_PROPERTIES_FILE = "point.properties";
 
+    public static final String ACTION_TIME = "action.time";
     public static final String ACTION_GRID = "action.grid";
     public static final String ACTION_DECIMATE = "action.decimate";
     public static final String ACTION_TRACKS = "action.tracks";

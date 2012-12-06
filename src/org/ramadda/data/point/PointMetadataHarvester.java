@@ -112,7 +112,6 @@ public class PointMetadataHarvester extends RecordVisitor {
         }
 
         cnt++;
-        System.err.println("Visit cnt:" + cnt);
         if (llg != null) {
             llg.incrementCount(lat, lon);
         }
