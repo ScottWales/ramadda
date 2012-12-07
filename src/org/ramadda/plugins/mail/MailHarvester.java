@@ -63,8 +63,6 @@ import java.util.Properties;
 /**
  */
 public class MailHarvester extends Harvester {
-    //    public static final String ACTION_
-
 
     /** _more_          */
 
@@ -139,219 +137,6 @@ public class MailHarvester extends Harvester {
         subject = XmlUtil.getAttribute(element, ATTR_SUBJECT, subject);
         body= XmlUtil.getAttribute(element, ATTR_BODY, body);
         response  = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param info _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public void checkEmail() throws Exception {
-        Properties props = System.getProperties();
-        Session session = Session.getDefaultInstance(props);
-        URLName urlName = new URLName(imapUrl);
-        Store   store   = session.getStore(urlName);
-        if ( !store.isConnected()) {
-            store.connect();
-        }
-
-        if ( !store.isConnected()) {
-            logHarvesterError("Could not connect to email server",null);
-            return;
-        }
-
-        System.err.println ("getting folder:" + folder);
-        Folder emailFolder = store.getFolder(folder);
-        if ((emailFolder == null) || !emailFolder.exists()) {
-            logHarvesterError("Invalid folder:" + folder, null);
-            return;
-        }
-        emailFolder.open(Folder.READ_WRITE);
-        int numMessages = emailFolder.getMessageCount();
-        int cnt = 0;
-        //Go backwards to get the newest first
-        System.err.println ("Checking the messages");
-        for (int i = numMessages; i >0;i--) {
-            //Only read 100 messages
-            if(cnt++>100) break;
-            Message message = emailFolder.getMessage(i);
-            String messageSubject = message.getSubject();
-            String messageFrom     = InternetAddress.toString(message.getFrom());
-
-            boolean passedAFilter = false;
-            if(defined(subject)) {
-                if(messageSubject.indexOf(subject)<0) {
-                    continue;
-                }
-                passedAFilter = true;
-            }
-            if(defined(from)) {
-                if(messageFrom.indexOf(from)<0) {
-                    continue;
-                }
-                passedAFilter = true;
-            }
-
-            Object       content = message.getContent();
-            StringBuffer sb      = new StringBuffer();
-            MailUtil.extractText(content, sb);
-            String messageBody = sb.toString();
-            if(defined(body)) {
-                if(messageBody.indexOf(body)<0) {
-                    continue;
-                }
-                passedAFilter = true;
-            }
-            System.err.println("message passed the filters: " + messageSubject);
-            System.err.println("body: " + messageBody);
-        }
-
-        /*
-        System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
-                            info.getToPhone());
-        if (fromPhone!=null && fromPhone.length() > 0) {
-            if ( info.getFromPhone().indexOf(fromPhone)<0) {
-                System.err.println ("handleMessage: skipping wrong from phone");
-                return false;
-            }
-        }
-
-        if (toPhone!= null && toPhone.length() > 0) {
-            if ( info.getToPhone().indexOf(toPhone)<0) {
-                System.err.println ("handleMessage: skipping wrong to phone");
-                return false;
-            }
-        }
-
-        Entry       baseGroup   = getBaseGroup();
-        Entry       parent      = baseGroup;
-        String      message        = info.getMessage();
-        String      name        = "SMS Message";
-        int spaceIndex = message.indexOf(" ", 10);
-        if(spaceIndex<0) {
-            spaceIndex = message.indexOf("\n");
-        }
-        if(spaceIndex>0) {
-            name = message.substring(0, spaceIndex);
-        } else {
-            //??
-        }
-
-
-        if(passCode!=null && passCode.length()>0) {
-            if(message.indexOf(passCode)<0) {
-                returnMsg.append("Message does not contain passcode");
-                return false;
-            }
-            message = message.replace(passCode,"");
-        }
-
-        message = message.trim();
-        if(message.equals("help") || message.equals("?")) {
-            returnMsg.append("Use:\nname &lt;entry name&gt;\ntype &lt;wiki or note&gt;");
-            return true;
-        }
-
-        String      type = "phone_sms";
-        String tmp;
-        StringBuffer desc = new StringBuffer();
-        int lineCnt = 0;
-        for(String line: StringUtil.split(message,"\n")) {
-            String tline = line.trim();
-            boolean skipLine = false;
-
-            for(String prefix: new String[]{
-                    "title","Title","name","Name","nm","Nm"
-                }) {
-                if((tmp =  StringUtil.findPattern(tline,prefix+"\\s(.+)"))!=null) {
-                    name = tmp;
-                    skipLine = true;
-                    break;
-                }
-            }
-
-            if(skipLine) continue;
-
-            if(tline.equalsIgnoreCase("wiki")) {
-                type = "wikipage";
-                continue;
-            }
-            if(tline.equalsIgnoreCase("note")) {
-                type = "notes_note";
-                continue;
-            }
-
-            if((tmp =  StringUtil.findPattern(tline,"type\\s(.+)"))!=null) {
-                tmp = tmp.trim();
-                if(tmp.equals("note")) {
-                    type = "notes_note";
-                } else if(tmp.equals("wiki")) {
-                    type = "wikipage";
-                } else {
-                    returnMsg.append("Unknown type:" + tmp);
-                    //                    return false;
-                }
-                continue;
-            }
-            if(lineCnt!=0)
-                desc.append("<br>");
-            desc.append(line);
-            lineCnt++;
-        }
-
-
-        TypeHandler typeHandler = getRepository().getTypeHandler(type);
-        Entry       entry = typeHandler.createEntry(getRepository().getGUID());
-
-
-        File  voiceFile = fetchVoiceFile(request, new URL(info.getRecordingUrl()));
-        if(voiceFile==null) {
-            return false;
-        }
-        voiceFile =     getStorageManager().moveToStorage(request, voiceFile);
-        Resource resource = new Resource(voiceFile.toString(), Resource.TYPE_STOREDFILE);
-
-
-
-        Date        date        = new Date();
-        Object[]    values      = typeHandler.makeValues(new Hashtable());
-        if(type.equals("phone_sms")) {
-            values[0] = info.getFromPhone();
-            values[1] = info.getToPhone();
-        } else if (type.equals("wikipage")) {
-            values[0] = desc.toString();
-            desc = new StringBuffer();
-        }
-        entry.initEntry(name, desc.toString(), parent, getUser(), new Resource(), "",
-                        date.getTime(), date.getTime(), date.getTime(),
-                        date.getTime(), values);
-
-
-        double[] location = org.ramadda.util.GeoUtils.getLocationFromAddress(
-                                info.getFromZip());
-        if (location != null) {
-            entry.setLocation(location[0], location[1], 0);
-        }
-
-        List<Entry> entries = (List<Entry>) Misc.newList(entry);
-        getEntryManager().insertEntries(entries, true, true);
-
-        String entryUrl = 
-            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
-                          ARG_ENTRYID, entry.getId());
-        String template = response;
-        if(template == null || template.trim().length()==0) template = "Entry created:\n${url}";
-        template = template.replace("${url}", entryUrl);
-        returnMsg.append(template);
-        return true;
-        */
-
     }
 
 
@@ -453,16 +238,17 @@ public class MailHarvester extends Harvester {
      * @throws Exception _more_
      */
     protected void runInner(int timestamp) throws Exception {
-        System.err.println ("runInner");
         while (canContinueRunning(timestamp)) {
             long t1 = System.currentTimeMillis();
             logHarvesterInfo("Checking email");
             try {
+                status = new StringBuffer();
                 checkEmail();
             } catch(Exception exc) {
                 logHarvesterError("Error in checkEmail", exc);
                 return;
             }
+            currentStatus =  "Done";
             if ( !getMonitor()) {
                 logHarvesterInfo("Ran one time only. Exiting loop");
                 break;
@@ -476,26 +262,161 @@ public class MailHarvester extends Harvester {
 
 
 
-    private File fetchVoiceFile(Request request, URL url) throws Exception {
-        String tail    = "voicemessage.wav";
-        File   newFile = getStorageManager().getTmpFile(request,
-                                                        tail);
-        URLConnection connection = url.openConnection();
-        InputStream   fromStream = connection.getInputStream();
-        FileOutputStream toStream =
-            getStorageManager().getFileOutputStream(newFile);
-        try {
-            int bytes = IOUtil.writeTo(fromStream, toStream);
-            if (bytes < 0) {
-                System.err.println("PhoneHarvester: failed to read voice URL:" + url);
-                return null;
-            }
-        } finally {
-            IOUtil.close(toStream);
-            IOUtil.close(fromStream);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param info _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public void checkEmail() throws Exception {
+        currentStatus = "Checking mail";
+        Properties props = System.getProperties();
+        Session session = Session.getDefaultInstance(props);
+        URLName urlName = new URLName(imapUrl);
+        Store   store   = session.getStore(urlName);
+        if ( !store.isConnected()) {
+            store.connect();
         }
-        return newFile;
+
+        if ( !store.isConnected()) {
+            logHarvesterError("Could not connect to email server",null);
+            return;
+        }
+
+        Folder emailFolder = store.getFolder(folder);
+        if ((emailFolder == null) || !emailFolder.exists()) {
+            status.append("Invalid folder:" + folder);
+            logHarvesterError("Invalid folder:" + folder, null);
+            return;
+        }
+        emailFolder.open(Folder.READ_WRITE);
+        int numMessages = emailFolder.getMessageCount();
+        int cnt = 0;
+        //Go backwards to get the newest first
+        for (int i = numMessages; i >0;i--) {
+            //Only read 100 messages
+            if(cnt++>100) break;
+            Message message = emailFolder.getMessage(i);
+            String messageSubject = message.getSubject();
+            String messageFrom     = InternetAddress.toString(message.getFrom());
+
+            if(!matches(subject, messageSubject)) {
+                continue;
+            }
+            if(!matches(from, messageFrom)) {
+                    continue;
+            }
+            if(message.isSet(Flags.Flag.SEEN)) {
+                logHarvesterInfo ("message has been read:"  + message.getSubject());
+                continue;
+            }
+            Object       content = message.getContent();
+            StringBuffer sb      = new StringBuffer();
+            MailUtil.extractText(content, sb);
+            String messageBody = sb.toString();
+            if(!matches(body, messageBody)) {
+                continue;
+            }
+            System.err.println("message: " + messageSubject);
+            List<Entry> newEntries = new ArrayList<Entry>();
+            processMessage(getBaseGroup(), content, messageBody, newEntries);
+
+            if(newEntries.size()>0) {
+                StringBuffer result = new StringBuffer();
+                if(defined(response)) {
+                    result.append(response);
+                    result.append("\n");
+                }
+                if(newEntries.size()>1)
+                    status.append("Harvested " + newEntries.size() +" entries from email<br>"); 
+                else
+                    status.append("Harvested 1 entry from email<br>"); 
+
+                for(Entry newEntry: newEntries) {
+                    String fullEntryUrl = 
+                        HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+                                      ARG_ENTRYID, newEntry.getId());
+
+                    String entryUrl = 
+                        HtmlUtils.url(getRepository().URL_ENTRY_SHOW.toString(),
+                                      ARG_ENTRYID, newEntry.getId());
+                    
+                    status.append(HtmlUtils.href(entryUrl, newEntry.getName()));
+                    status.append("<br>");
+                    result.append(fullEntryUrl);
+                    result.append("\n");
+                }
+                if(defined(response) && getAdmin().isEmailCapable()) {
+                    String     to     = InternetAddress.toString(message.getFrom());
+                    getRepository().getAdmin().sendEmail(to, "harvested emails", result.toString(), false);
+                }
+            }
+            
+        }
     }
+
+
+    private void processMessage(Entry parentEntry, Object content,
+                                String desc, List<Entry> newEntries)
+        throws Exception {
+
+        if (content instanceof MimeMultipart) {
+            MimeMultipart multipart = (MimeMultipart) content;
+            for (int i = 0; i < multipart.getCount(); i++) {
+                MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(i);
+                String       disposition = part.getDisposition();
+                if (disposition == null) {
+                    Object partContent = part.getContent();
+                    if (partContent instanceof MimeMultipart) {
+                        processMessage(parentEntry, partContent, desc, newEntries);
+                    } else {
+                    }
+                    continue;
+
+                }
+                if (disposition.equalsIgnoreCase(Part.ATTACHMENT)
+                    || disposition.equalsIgnoreCase(Part.INLINE)) {
+                    if (part.getFileName() != null) {
+                        InputStream inputStream = part.getInputStream();
+                        File        f = getStorageManager().getTmpFile(getRequest(),
+                                                                       part.getFileName());
+                        OutputStream outputStream =
+                            getStorageManager().getFileOutputStream(f);
+                        IOUtil.writeTo(inputStream, outputStream);
+                        IOUtil.close(inputStream);
+                        IOUtil.close(outputStream);
+                        f =     getStorageManager().moveToStorage(getRequest(), f);
+                        TypeHandler typeHandler  = getEntryManager().findDefaultTypeHandler(f.toString());
+                        if(typeHandler == null) {
+                            typeHandler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+                        }
+                        Resource resource = new Resource(f.toString(), Resource.TYPE_STOREDFILE);
+                        Date        date        = new Date();
+                        Object[]    values      = typeHandler.makeValues(new Hashtable());
+                        Entry       entry = typeHandler.createEntry(getRepository().getGUID());
+                        entry.initEntry(part.getFileName(), desc.toString(), parentEntry, getUser(), resource, "",
+                                        date.getTime(), date.getTime(), date.getTime(),
+                                        date.getTime(), values);
+
+                        List<Entry> entries = (List<Entry>) Misc.newList(entry);
+                        getEntryManager().addInitialMetadata(getRequest(),
+                                                             entries,
+                                                             true, false);
+                        getEntryManager().insertEntries(entries, true, true);
+                        newEntries.add(entry);
+                    }
+                }
+            }
+        } 
+    }
+
+
+
+
 
     public static void main(String[]args) throws Exception {
         //        imap://MYUSERNAME@gmail.com:MYPASSWORD@imap.gmail.com
@@ -524,9 +445,17 @@ public class MailHarvester extends Harvester {
         int cnt = 0;
         for (int i = numMessages; i >0;i--) {
             Message message =  emailFolder.getMessage(i);
-            if(!message.getSubject().equals("for ramadda")) {
+            if(message==null) continue;
+            String subject  =message.getSubject();
+            if(!subject.equals("for ramadda")) {
                 continue;
             }
+            if(message.isSet(Flags.Flag.SEEN)) {
+                System.err.println ("Have seen:"  + message.getSubject());
+                continue;
+            }
+
+
             System.err.println ("subject:" + message.getSubject());
             Object       content = message.getContent();
             StringBuffer sb      = new StringBuffer();
@@ -544,5 +473,10 @@ public class MailHarvester extends Harvester {
         }
     } 
 
-
+    private boolean matches(String pattern, String text) {
+        if(defined(pattern) && text.toLowerCase().indexOf(pattern.toLowerCase())<0) {
+            return false;
+        }
+        return true;
+    }
 }

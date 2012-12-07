@@ -949,7 +949,7 @@ public abstract class Harvester extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getExtraInfo() throws Exception {
-        return "";
+        return currentStatus +"<br>" + status;
     }
 
     /**

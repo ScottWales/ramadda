@@ -152,7 +152,7 @@ public class MailTypeHandler extends GenericTypeHandler {
                     if (partContent instanceof MimeMultipart) {
                         processContent(request, entry, partContent, desc);
                     } else {
-                        String contentType = part.getContentType();
+                        String contentType = part.getContentType().toLowerCase();
                         //Only ingest the text
                         if (contentType.indexOf("text/plain") >= 0) {
                             //                        System.err.println ("part content:" + partContent.getClass().getName());
@@ -160,15 +160,14 @@ public class MailTypeHandler extends GenericTypeHandler {
                             desc.append("\n");
                         }
                     }
-
                     continue;
                 }
-                if (disposition.equals(Part.ATTACHMENT)
-                        || disposition.equals(Part.INLINE)) {
+                if (disposition.equalsIgnoreCase(Part.ATTACHMENT)
+                        || disposition.equalsIgnoreCase(Part.INLINE)) {
                     if (part.getFileName() != null) {
                         InputStream inputStream = part.getInputStream();
                         File        f = getStorageManager().getTmpFile(request,
-                                     part.getFileName());
+                                                                       part.getFileName());
                         OutputStream outputStream =
                             getStorageManager().getFileOutputStream(f);
                         IOUtil.writeTo(inputStream, outputStream);

@@ -907,7 +907,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             currentStatus = "Initialized " + cnt + " of " + entries.size()
                             + " entries";
         }
-        currentStatus = "Done initializng entries";
+        currentStatus = "Done initializing entries";
         if (getAddMetadata() || getAddShortMetadata()) {
             currentStatus = "Adding metadata";
             int count = 0;

@@ -93,7 +93,7 @@ public class MailUtil {
                     }
                     continue;
                 }
-                if (disposition.equals(Part.INLINE)
+                if (disposition.equalsIgnoreCase(Part.INLINE)
                         && (contentType.indexOf("text/plain") >= 0)) {
                     //System.err.println(tab+"inline text");
                     desc.append(partContent);
@@ -102,8 +102,8 @@ public class MailUtil {
 
                 //System.err.println(tab+"disposition:" + disposition + " Type:" + contentType +" part:" + partContent.getClass().getName());
                 /*
-                if (disposition.equals(Part.ATTACHMENT)
-                        || disposition.equals(Part.INLINE)) {
+                if (disposition.equalsIgnoreCase(Part.ATTACHMENT)
+                        || disposition.equalsIgnoreCase(Part.INLINE)) {
                     if (part.getFileName() != null) {
                         InputStream inputStream = part.getInputStream();
                     }

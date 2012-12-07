@@ -1566,18 +1566,8 @@ public class EntryManager extends RepositoryManager {
                 TypeHandler typeHandlerToUse = typeHandler;
                 //See if we can figure out the type 
                 if (figureOutType) {
-                    File   newFile   = new File(theResource);
-                    String shortName = newFile.getName();
-                    for (TypeHandler otherTypeHandler :
-                            getRepository().getTypeHandlers()) {
-                        if (otherTypeHandler.canHandleResource(
-                                theResource.toLowerCase(),
-                                shortName.toLowerCase())) {
-                            typeHandlerToUse = otherTypeHandler;
-
-                            break;
-                        }
-                    }
+                    TypeHandler tmp  = findDefaultTypeHandler(theResource);
+                    if(tmp!=null) typeHandlerToUse = tmp;
                 }
 
 
@@ -1755,7 +1745,21 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
+    public TypeHandler  findDefaultTypeHandler(String theResource) throws Exception  {
+        File   newFile   = new File(theResource);
+        String shortName = newFile.getName();
+        for (TypeHandler otherTypeHandler :
+                 getRepository().getTypeHandlers()) {
+            if (otherTypeHandler.canHandleResource(
+                                                   theResource.toLowerCase(),
+                                                   shortName.toLowerCase())) {
+                return otherTypeHandler;
+            }
+        }
+        return null;
+    }
+
+/**
      * _more_
      *
      * @param entry _more_

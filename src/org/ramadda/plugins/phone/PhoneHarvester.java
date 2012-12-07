@@ -177,9 +177,9 @@ public class PhoneHarvester extends Harvester {
         }
 
         Entry       baseGroup   = getBaseGroup();
-        Entry       parent      = baseGroup;
         String      message        = info.getMessage();
         String      name        = "SMS Message";
+        String toEntryName = null;
         int spaceIndex = message.indexOf(" ", 10);
         if(spaceIndex<0) {
             spaceIndex = message.indexOf("\n");
@@ -226,17 +226,34 @@ public class PhoneHarvester extends Harvester {
 
             if(skipLine) continue;
 
+
+
+            if(tline.startsWith("to ")) {
+                toEntryName  = StringUtil.findPattern("...(.*)", line.trim());
+                System.err.println ("toEntry:" + toEntryName);
+                continue;
+            }
+
+
             if(tline.equalsIgnoreCase("append")) {
                 doAppend = true;
                 continue;
             }
 
+            if(tline.startsWith("folder")) {
+                type = TypeHandler.TYPE_GROUP;
+                name  = StringUtil.findPattern("......(.*)", line.trim());
+                continue;
+            }
+
             if(tline.equalsIgnoreCase("wiki")) {
                 type = "wikipage";
+                name  = StringUtil.findPattern("....(.*)", line.trim());
                 continue;
             }
             if(tline.equalsIgnoreCase("note")) {
                 type = "notes_note";
+                name  = StringUtil.findPattern("....(.*)", line.trim());
                 continue;
             }
 
@@ -261,7 +278,7 @@ public class PhoneHarvester extends Harvester {
 
         if(doAppend) {
             System.err.println ("Appending:" + name);
-            Entry entry = getEntryManager().findEntryWithName(request, parent, name);
+            Entry entry = getEntryManager().findEntryWithName(request, baseGroup, name);
             System.err.println ("Found:" + entry);
             if(entry!=null) {
                 entry.setDescription(entry.getDescription() +"\n" + desc);
@@ -284,6 +301,23 @@ public class PhoneHarvester extends Harvester {
             values[0] = desc.toString();
             desc = new StringBuffer();
         }
+
+        Entry       parent      = baseGroup;
+        if(toEntryName!=null) {
+            Entry toEntry = getEntryManager().findEntryWithName(request, baseGroup, toEntryName.trim());
+            if(toEntry==null) {
+                logHarvesterError("Unable to find to folder:" + toEntryName,null);
+            } else {
+                if(!toEntry.isGroup()) {
+                    logHarvesterError("Specificed to entry is not a folder::" + toEntryName,null);
+                } else {
+                    parent = toEntry;
+                }
+            }
+        }
+
+
+
         entry.initEntry(name, desc.toString(), parent, getUser(), new Resource(), "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
