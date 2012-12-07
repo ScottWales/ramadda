@@ -201,9 +201,26 @@ public class PhoneHarvester extends Harvester {
 
         message = message.trim();
         if(message.equals("help") || message.equals("?")) {
-            returnMsg.append("Use:\nname &lt;entry name&gt;\ntype &lt;wiki or note&gt;");
+            returnMsg.append("Use:\nname &lt;entry name&gt;\nwiki &lt;name&gt;\nnote &lt;name&gt;\nto &lt;folder name&gt;\nappend &lt;name&gt;\n&lt;text&gt;\nls");
             return true;
         }
+
+        System.err.println ("Message:" + message);
+
+        if(message.toLowerCase().equals("ls") || message.toLowerCase().equals("list")) {
+            System.err.println ("listing");
+            for(Entry child: getEntryManager().getChildren(request, baseGroup)) {
+                if((returnMsg.length() + child.getName().length())>120) break;
+                returnMsg.append(child.getName().trim());
+                if(child.isGroup()) {
+                    returnMsg.append(" (folder)");
+                }
+                returnMsg.append("\n");
+            }
+            System.err.println ("done:" + returnMsg);
+            return true;
+        }
+
 
         String      type = "phone_sms";
         String tmp;
@@ -211,13 +228,14 @@ public class PhoneHarvester extends Harvester {
         int lineCnt = 0;
         boolean doAppend = false;
         for(String line: StringUtil.split(message,"\n")) {
-            String tline = line.trim();
+            line = line.trim();
+            String tline = line.toLowerCase();
             boolean skipLine = false;
 
             for(String prefix: new String[]{
                     "title","Title","name","Name","nm","Nm","Subject", "subject"
                 }) {
-                if((tmp =  StringUtil.findPattern(tline,prefix+"\\s(.+)"))!=null) {
+                if((tmp =  StringUtil.findPattern(line,prefix+"\\s(.+)"))!=null) {
                     name = tmp;
                     skipLine = true;
                     break;
@@ -226,49 +244,37 @@ public class PhoneHarvester extends Harvester {
 
             if(skipLine) continue;
 
-
-
-            if(tline.startsWith("to ")) {
-                toEntryName  = StringUtil.findPattern("...(.*)", line.trim());
-                System.err.println ("toEntry:" + toEntryName);
+            if(toEntryName==null && tline.startsWith("to ")) {
+                toEntryName  = line.substring("to".length()).trim();
+                System.err.println ("toEntry:" + toEntryName +" line:" + line);
                 continue;
             }
 
 
-            if(tline.equalsIgnoreCase("append")) {
+            if(tline.startsWith("append")) {
+                toEntryName  = line.substring("append".length()).trim();
                 doAppend = true;
                 continue;
             }
 
             if(tline.startsWith("folder")) {
                 type = TypeHandler.TYPE_GROUP;
-                name  = StringUtil.findPattern("......(.*)", line.trim());
+                name  = line.substring("folder".length());
                 continue;
             }
 
-            if(tline.equalsIgnoreCase("wiki")) {
+            if(tline.startsWith("wiki")) {
                 type = "wikipage";
-                name  = StringUtil.findPattern("....(.*)", line.trim());
+                name  = line.substring("wiki".length());
+                System.err.println ("name:" + name);
                 continue;
             }
-            if(tline.equalsIgnoreCase("note")) {
+            if(tline.startsWith("note")) {
                 type = "notes_note";
-                name  = StringUtil.findPattern("....(.*)", line.trim());
+                name  = line.substring("note".length());
                 continue;
             }
 
-            if((tmp =  StringUtil.findPattern(tline,"type\\s(.+)"))!=null) {
-                tmp = tmp.trim();
-                if(tmp.equals("note")) {
-                    type = "notes_note";
-                } else if(tmp.equals("wiki")) {
-                    type = "wikipage";
-                } else {
-                    returnMsg.append("Unknown type:" + tmp);
-                    //                    return false;
-                }
-                continue;
-            }
             if(lineCnt!=0)
                 desc.append("<br>");
             desc.append(line);
@@ -276,16 +282,42 @@ public class PhoneHarvester extends Harvester {
         }
 
 
+        if(!defined(name)) { 
+           name  = "SMS Entry";
+        }
+        name = name.trim();
+
+
+        Entry  parent      = baseGroup;
+        Entry toEntry = null;
+        if(defined(toEntryName)) {
+            toEntry = getEntryManager().findEntryWithName(request, baseGroup, toEntryName.trim());
+            if(toEntry==null) {
+                logHarvesterError("Unable to find to folder:" + toEntryName,null);
+            } else {
+                if(!doAppend) {
+                    if(toEntry.isGroup()) {
+                        logHarvesterError("Specificed to entry is not a folder::" + toEntryName,null);
+                    } else {
+                        parent = toEntry;
+                    }
+                }
+            }
+        }
+
+
+
         if(doAppend) {
-            System.err.println ("Appending:" + name);
-            Entry entry = getEntryManager().findEntryWithName(request, baseGroup, name);
-            System.err.println ("Found:" + entry);
-            if(entry!=null) {
-                entry.setDescription(entry.getDescription() +"\n" + desc);
-                getEntryManager().updateEntry(entry);
+            if(toEntry==null) {
+                returnMsg.append("Could not find:\n" +toEntryName);
                 return true;
             }
-
+            if(toEntry.getTypeHandler().getType().equals("wikipage")) {
+            } else {
+                toEntry.setDescription(toEntry.getDescription() +"\n" + desc);
+            }
+            getEntryManager().updateEntry(toEntry);
+            return true;
         }
 
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
@@ -302,19 +334,6 @@ public class PhoneHarvester extends Harvester {
             desc = new StringBuffer();
         }
 
-        Entry       parent      = baseGroup;
-        if(toEntryName!=null) {
-            Entry toEntry = getEntryManager().findEntryWithName(request, baseGroup, toEntryName.trim());
-            if(toEntry==null) {
-                logHarvesterError("Unable to find to folder:" + toEntryName,null);
-            } else {
-                if(!toEntry.isGroup()) {
-                    logHarvesterError("Specificed to entry is not a folder::" + toEntryName,null);
-                } else {
-                    parent = toEntry;
-                }
-            }
-        }
 
 
 

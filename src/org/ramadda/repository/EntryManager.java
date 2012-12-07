@@ -7503,16 +7503,19 @@ public class EntryManager extends RepositoryManager {
     public String[] findEntryIdsWithName(Request request, Entry parent,
                                          String name)
             throws Exception {
+        Clause clause = null;
         String[] ids =
             SqlUtil.readString(
                 getDatabaseManager().getIterator(
                     getDatabaseManager().select(
                         Tables.ENTRIES.COL_ID, Tables.ENTRIES.NAME,
-                        Clause.and(
+                        clause = Clause.and(
                             Clause.eq(
                                 Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                 parent.getId()), Clause.eq(
                                     Tables.ENTRIES.COL_NAME, name)))));
+
+        System.err.println ("clause:" + clause);
 
         return ids;
     }
