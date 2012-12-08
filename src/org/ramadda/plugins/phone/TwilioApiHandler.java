@@ -1,23 +1,23 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-* software and associated documentation files (the "Software"), to deal in the Software 
-* without restriction, including without limitation the rights to use, copy, modify, 
-* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-* permit persons to whom the Software is furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in all copies 
-* or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-* DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+ *                     Don Murray/CU-CIRES
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+ * software and associated documentation files (the "Software"), to deal in the Software 
+ * without restriction, including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies 
+ * or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ */
 
 package org.ramadda.plugins.phone;
 
@@ -117,7 +117,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         List<PhoneHarvester> harvesters = new ArrayList<PhoneHarvester>();
         for (Harvester harvester : getHarvesterManager().getHarvesters()) {
             if (harvester.getActiveOnStart()
-                    && (harvester instanceof PhoneHarvester)) {
+                && (harvester instanceof PhoneHarvester)) {
                 harvesters.add((PhoneHarvester) harvester);
             }
         }
@@ -146,7 +146,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
                                        request.getString(ARG_FROM, ""),
                                        request.getString(ARG_TO, ""), null);
-        System.err.println("TwilioApiHandler: request: " + request);
+        //        System.err.println("TwilioApiHandler: request: " + request);
         StringBuffer sb =
             new StringBuffer(XML_HEADER);
         sb.append(XmlUtil.openTag(TAG_RESPONSE));
@@ -156,30 +156,31 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         if(!callOK(request)) {
             sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, bad APPID property defined"));
         } else {
-                StringBuffer returnMsg = new StringBuffer();
-
-                for (PhoneHarvester harvester : getHarvesters()) {
-                    if (harvester.handleMessage(request, info, returnMsg)) {
-                        String response = returnMsg.toString();
-                        if(response.length()==0) response = "Message handled";
-                        else if(response.length()>120) {
-                            response = response.substring(0,119);
-                        }
-                        sb.append(XmlUtil.tag(TAG_SMS, "", response));
-                        handledMessage = true;
-                        break;
+            StringBuffer msg = new StringBuffer();
+            for (PhoneHarvester harvester : getHarvesters()) {
+                if (harvester.handleMessage(request, info, msg)) {
+                    System.err.println("Done handleMessage:" + msg);
+                    String response = msg.toString();
+                    if(response.length()==0) {
+                        response = "Message handled";
+                    } else if(response.length()>120) {
+                        response = response.substring(0,119);
                     }
-                }
-
-
-                if ( !handledMessage) {
-                    String response = returnMsg.toString();
-                    sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, RAMADDA was not able to process your message.\n" + response));
+                    sb.append(XmlUtil.tag(TAG_SMS, "", response));
+                    handledMessage = true;
+                    break;
                 }
             }
-            sb.append(XmlUtil.closeTag(TAG_RESPONSE));
-            return new Result("", sb, "text/xml");
+
+
+            if ( !handledMessage) {
+                String response = msg.toString();
+                sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, RAMADDA was not able to process your message.\n" + response));
+            }
         }
+        sb.append(XmlUtil.closeTag(TAG_RESPONSE));
+        return new Result("", sb, "text/xml");
+    }
 
 
     /**

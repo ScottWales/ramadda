@@ -29,6 +29,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.TTLCache;
 
 
 import org.w3c.dom.*;
@@ -62,6 +63,7 @@ import java.util.Properties;
  */
 public class PhoneHarvester extends Harvester {
 
+    public static final String CMD_PASS = "pass";
     public static final String CMD_APPEND = "append";
     public static final String CMD_CD = "cd";
     public static final String CMD_PWD= "pwd";
@@ -157,6 +159,8 @@ public class PhoneHarvester extends Harvester {
 
     private Hashtable<String,String> phoneToEntry = new Hashtable<String,String>();
 
+    private TTLCache<String, String> passCodePhones = new TTLCache<String,String>(24*60 * 60 * 1000);
+
 
     /**
      * _more_
@@ -168,7 +172,7 @@ public class PhoneHarvester extends Harvester {
      *
      * @throws Exception _more_
      */
-    public boolean handleMessage(Request request, PhoneInfo info, StringBuffer returnMsg)
+    public boolean handleMessage(Request request, PhoneInfo info, StringBuffer msg)
             throws Exception {
 
         System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
@@ -209,19 +213,16 @@ public class PhoneHarvester extends Harvester {
             //??
         }
 
-        if(passCode!=null && passCode.length()>0) {
-            if(message.indexOf(passCode)<0) {
-                returnMsg.append("Message does not contain passcode");
-                return true;
-            }
-            message = message.replace(passCode,"");
-        }
+
+
+        String needToCheckPassCode = passCode;
+
+
         message = message.trim();
         if(message.equals("help") || message.equals("?")) {
-            returnMsg.append("\n" + CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
+            msg.append("\n" + CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
                              CMD_APPEND+"\n" +
                              "create:\nfolder,wiki,note,sms &lt;name&gt;\n" +
-                             "name &lt;entry name&gt;\n" +
                              "&lt;text&gt;");
             return true;
         }
@@ -233,19 +234,33 @@ public class PhoneHarvester extends Harvester {
         for(String line: StringUtil.split(message,"\n")) {
             line = line.trim();
             String tline = line.toLowerCase();
-            boolean skipLine = false;
 
-            for(String prefix: new String[]{
-                    "title","Title","name","Name","nm","Nm","Subject", "subject"
-                }) {
-                if((tmp =  StringUtil.findPattern(line,prefix+"\\s(.+)"))!=null) {
-                    name = tmp;
-                    skipLine = true;
-                    break;
+            if(tline.startsWith(CMD_PASS+" ")) {
+                if(defined(needToCheckPassCode)) {
+                    String password = line.substring(CMD_PASS.length()).trim();
+                    if(!password.equals(needToCheckPassCode)) {
+                        msg.append("Incorrect password");
+                        return true;
+                    }
+                    passCodePhones.put(info.getFromPhone(), info.getFromPhone());
+                    needToCheckPassCode = null;
                 }
+                continue;
             }
 
-            if(skipLine) continue;
+            if(defined(needToCheckPassCode)) {
+                if(passCodePhones.get(info.getFromPhone())==null) {
+                    if(!tline.equals(needToCheckPassCode)) {
+                        msg.append("Message does not contain passcode\nEnter:\npass &lt;password&gt;");
+                        return true;
+                    }
+                    passCodePhones.put(info.getFromPhone(), info.getFromPhone());
+                    needToCheckPassCode = null;
+                    continue;
+                } else {
+                    needToCheckPassCode = null;
+                }
+            }
 
             if(tline.startsWith(CMD_LS)) {
                 String remainder = line.substring(CMD_LS.length()).trim();
@@ -256,33 +271,39 @@ public class PhoneHarvester extends Harvester {
                             continue;
                         }
                     }
-                    if((returnMsg.length() + childName.length())>120) break;
-                    returnMsg.append(childName.trim());
+                    if((msg.length() + childName.length())>120) break;
+                    msg.append(childName.trim());
                     if(child.isGroup()) {
-                        returnMsg.append(" (folder)");
+                        msg.append(" (folder)");
                     }
-                    returnMsg.append("\n");
+                    msg.append("\n");
+                }
+                if(msg.length()==0) {
+                    msg.append("No entries found");
                 }
                 return true;
             }
 
             if(tline.startsWith(CMD_URL)) {
-                currentEntry =  getEntry(request, line, CMD_URL, currentEntry, returnMsg);
+                currentEntry =  getEntry(request, line, CMD_URL, currentEntry, msg);
                 if(currentEntry == null) return true;
-                returnMsg.append("entry:\n" + getEntryInfo(currentEntry));
+                msg.append("entry:\n" + getEntryInfo(currentEntry));
                 return true;
             }
 
             if(tline.startsWith(CMD_GET)) {
-                currentEntry =  getEntry(request, line, CMD_GET, currentEntry, returnMsg);
+                currentEntry =  getEntry(request, line, CMD_GET, currentEntry, msg);
                 if(currentEntry == null) return true;
-                returnMsg.append(currentEntry.getName() +"\n" +currentEntry.getDescription());
+                String contents  = currentEntry.getDescription();
+                contents  = contents.replaceAll("<br>","\n");
+                contents  = contents.replaceAll("<p>","\n");
+                msg.append(XmlUtil.encodeString(currentEntry.getName() +"\n" + contents.trim()));
                 return true;
             }
 
 
             if(tline.equals(CMD_PWD)) {
-                returnMsg.append(getEntryInfo(currentEntry));
+                msg.append(getEntryInfo(currentEntry));
                 return true;
             }
 
@@ -290,7 +311,7 @@ public class PhoneHarvester extends Harvester {
                 if(line.substring(CMD_CD.length()).trim().length()==0) {
                     currentEntry = baseGroup;
                 } else {
-                    currentEntry =  getEntry(request, line, CMD_CD, currentEntry, returnMsg);
+                    currentEntry =  getEntry(request, line, CMD_CD, currentEntry, msg);
                     if(currentEntry == null) return true;
                 }
                 phoneToEntry.put(info.getFromPhone(), currentEntry.getId());
@@ -299,7 +320,7 @@ public class PhoneHarvester extends Harvester {
             }
 
             if(tline.startsWith(CMD_APPEND)) {
-                currentEntry =  getEntry(request, line, CMD_APPEND, currentEntry, returnMsg);
+                currentEntry =  getEntry(request, line, CMD_APPEND, currentEntry, msg);
                 if(currentEntry == null) return true;
                 doAppend = true;
                 processedACommand = true;
@@ -335,15 +356,15 @@ public class PhoneHarvester extends Harvester {
                 currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
             }
             getEntryManager().updateEntry(currentEntry);
-            returnMsg.append("entry appended to\n" + getEntryInfo(currentEntry));
+            msg.append("entry appended to\n" + getEntryInfo(currentEntry));
             return true;
         }
 
         if(type == null) {
             if(!processedACommand) {
-                returnMsg.append("Nothing much happened");
+                msg.append("Nothing much happened");
             } else {
-                returnMsg.append("OK");
+                msg.append("OK");
             }
             return true;
         }
@@ -356,7 +377,7 @@ public class PhoneHarvester extends Harvester {
 
 
         if(!currentEntry.isGroup()) {
-            returnMsg.append("Not a folder:\n" +currentEntry.getName());
+            msg.append("Not a folder:\n" +currentEntry.getName());
             return true;
         }
 
@@ -388,7 +409,7 @@ public class PhoneHarvester extends Harvester {
         String template = response;
         if(template == null || template.trim().length()==0) template = "Entry created:\n${url}";
         template = template.replace("${url}", getEntryInfo(entry));
-        returnMsg.append(template);
+        msg.append(template);
         return true;
     }
 
@@ -601,7 +622,7 @@ public class PhoneHarvester extends Harvester {
         return newFile;
     }
 
-    private Entry getEntry(Request request, String line, String cmd, Entry currentEntry, StringBuffer returnMsg) throws Exception {
+    private Entry getEntry(Request request, String line, String cmd, Entry currentEntry, StringBuffer msg) throws Exception {
         for(String name: StringUtil.split(line.substring(cmd.length()).trim(),DELIMITER, true, true)) {
 
             Entry childEntry= null;
@@ -610,7 +631,7 @@ public class PhoneHarvester extends Harvester {
                 index--;
                 List<Entry> children =  getEntryManager().getChildren(request, currentEntry);
                 if(index<0 || index>= children.size()) {
-                    returnMsg.append("Bad index:" + index);
+                    msg.append("Bad index:" + index);
                     return null;
                 }
                 childEntry = children.get(index);
@@ -619,7 +640,7 @@ public class PhoneHarvester extends Harvester {
 
             }
             if(childEntry==null) {
-                returnMsg.append("Could not find:\n" +name);
+                msg.append("Could not find:\n" +name);
                 return null;
             }
             currentEntry = childEntry;
