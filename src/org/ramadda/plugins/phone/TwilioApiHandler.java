@@ -41,6 +41,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 
+import java.net.*;
 import java.io.*;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
     /** _more_          */
     public static final String TAG_RESPONSE = "Response";
+    public static final String TAG_RECORD = "Record";
 
     /** _more_          */
     public static final String TAG_SMS = "Sms";
@@ -165,11 +167,12 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception _more_
      */
     public Result processVoice(Request request) throws Exception {
+        String authToken = getRepository().getProperty("twilio.authtoken", null);
         String recordingUrl = request.getString("RecordingUrl", null);
         System.err.println("processVoice:" + request.getUrlArgs());
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        sb.append("<Response>");
+        sb.append(XmlUtil.openTag(TAG_RESPONSE));
         PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
                                        request.getString(ARG_FROM, ""),
                                        request.getString(ARG_TO, ""), null);
@@ -191,13 +194,29 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                 //</Gather>
                 sb.append(
                           "<Say voice=\"woman\">" + voiceResponse +"</Say>");
-                sb.append("<Record maxLength=\"30\" />");
+                sb.append(XmlUtil.tag(TAG_RECORD, XmlUtil.attrs(new String[]{
+                                "maxLength", "30",
+                                authToken!=null?"transcribe":"dummy", "true"
+                            })));
             }
         } else {
             info.setRecordingUrl(recordingUrl);
-            System.err.println("recording url:" + recordingUrl);
+            if(authToken!=null) {
+                String text = getTranscriptionText(request, authToken);
+                if(text == null) {
+                    Misc.sleepSeconds(5);
+                    text = getTranscriptionText(request, authToken);
+                    if(text == null) {
+                        Misc.sleepSeconds(5);
+                        text = getTranscriptionText(request, authToken);
+                    }
+                }
+                if(text!=null) {
+                    info.setTranscription(text);
+                }
+            }
+
             for (PhoneHarvester harvester : getHarvesters()) {
-                System.err.println ("Checking harvester:" + harvester);
                 if (harvester.handleVoice(request, info)) {
                     break;
                 }
@@ -209,6 +228,38 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         return new Result("", sb, "text/xml");
     }
 
+
+
+    private String getTranscriptionText(Request request, String authToken) throws Exception {
+        String transcriptionUrl = "https://api.twilio.com/2010-04-01/Accounts/" +
+            request.getString("AccountSid", null)+"/Recordings/"+ 
+            request.getString("RecordingSid",null)+"/Transcriptions";
+        //        System.err.println ("URL:" + transcriptionUrl);
+        URL url        = new URL(transcriptionUrl);
+        HttpURLConnection     huc = (HttpURLConnection) url.openConnection();            
+        //        System.err.println("auth:" +request.getString("AccountSid", null)+":" + authToken);
+        String auth  = request.getString("AccountSid", null)+":" + authToken;
+        String encoding = RepositoryUtil.encodeBase64 (auth.getBytes());
+        huc.addRequestProperty("Authorization",
+                               "Basic " + encoding);
+        String transcription = new String(IOUtil.readBytes(huc.getInputStream()));
+        //      <Status>in-progress</Status>
+
+        Element root = XmlUtil.getRoot(transcription);
+        //        System.err.println(XmlUtil.toString(root));
+        Element statusNode = XmlUtil.findDescendant(root,"Status");
+        if(statusNode==null) return null;
+        if(!XmlUtil.getChildText(statusNode).equals("completed")) {
+            //            System.err.println ("not completed");
+            return null;
+        }
+        Element textNode = XmlUtil.findDescendant(root,"TranscriptionText");
+        if(textNode!=null) {
+            //            System.err.println ("text:" + text);
+            return  XmlUtil.getChildText(textNode);
+        }
+        return null;
+    }
 
 
 }

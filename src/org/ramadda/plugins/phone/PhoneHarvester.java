@@ -437,17 +437,7 @@ public class PhoneHarvester extends Harvester {
         Entry       entry = typeHandler.createEntry(getRepository().getGUID());
         Date        date        = new Date();
         Object[]    values      = typeHandler.makeValues(new Hashtable());
-        StringBuffer desc = new StringBuffer();
-        /*
-        if(type.equals("phone_sms")) {
-            values[0] = info.getFromPhone();
-            values[1] = info.getToPhone();
-        } else if (type.equals("wikipage")) {
-            values[0] = desc.toString();
-            desc = new StringBuffer();
-        }
-        */
-
+        StringBuffer desc = new StringBuffer(info.getTranscription());
         File  voiceFile = fetchVoiceFile(request, new URL(info.getRecordingUrl()));
         if(voiceFile==null) {
             return false;

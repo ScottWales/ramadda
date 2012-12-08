@@ -84,6 +84,8 @@ public class PhoneInfo {
     /** _more_          */
     private String fromZip;
 
+    private String transcription = "";
+
 
     /**
      *
@@ -244,6 +246,23 @@ public class PhoneInfo {
     }
 
 
+    /**
+Set the Transcription property.
+
+@param value The new value for Transcription
+    **/
+    public void setTranscription (String value) {
+        transcription = value;
+    }
+
+    /**
+Get the Transcription property.
+
+@return The Transcription
+    **/
+    public String getTranscription () {
+        return transcription;
+    }
 
 
 }
