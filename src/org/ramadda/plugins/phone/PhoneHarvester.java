@@ -220,10 +220,7 @@ public class PhoneHarvester extends Harvester {
 
         message = message.trim();
         if(message.equals("help") || message.equals("?")) {
-            msg.append("\n" + CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
-                             CMD_APPEND+"\n" +
-                             "create:\nfolder,wiki,note,sms &lt;name&gt;\n" +
-                             "&lt;text&gt;");
+            msg.append(getHelp());
             return true;
         }
         String      type = null;
@@ -379,9 +376,9 @@ public class PhoneHarvester extends Harvester {
 
         if(type == null) {
             if(!processedACommand) {
-                msg.append("Nothing much happened");
+                msg.append("No commands were given\n" + getHelp());
             } else {
-                msg.append("OK");
+                msg.append("OK. Folder:\n" + getEntryInfo(currentEntry));
             }
             return true;
         }
@@ -391,10 +388,8 @@ public class PhoneHarvester extends Harvester {
         }
         name = name.trim();
 
-
-
         if(!currentEntry.isGroup()) {
-            msg.append("Not a folder:\n" +currentEntry.getName());
+            msg.append("ERROR: Not a folder:\n" +currentEntry.getName());
             return true;
         }
 
@@ -670,6 +665,14 @@ public class PhoneHarvester extends Harvester {
             currentEntry = childEntry;
         }
         return currentEntry;
+    }
+
+
+    private String getHelp() {
+        return CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
+            CMD_APPEND+"\n" +
+            "create:\nfolder,wiki,note,sms &lt;name&gt;\n" +
+            "&lt;text&gt;";
     }
 
 

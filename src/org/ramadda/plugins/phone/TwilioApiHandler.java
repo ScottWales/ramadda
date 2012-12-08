@@ -160,7 +160,6 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             StringBuffer msg = new StringBuffer();
             for (PhoneHarvester harvester : getHarvesters()) {
                 if (harvester.handleMessage(request, info, msg)) {
-                    System.err.println("Done handleMessage:" + msg);
                     String response = msg.toString();
                     if(response.length()==0) {
                         response = "Message handled";
