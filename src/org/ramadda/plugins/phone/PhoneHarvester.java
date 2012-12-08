@@ -177,6 +177,7 @@ public class PhoneHarvester extends Harvester {
         }
 
         Entry       baseGroup   = getBaseGroup();
+        Entry currentEntry  = baseGroup;
         String      message        = info.getMessage();
         String      name        = "SMS Message";
         String toEntryName = null;
@@ -207,20 +208,6 @@ public class PhoneHarvester extends Harvester {
 
         System.err.println ("Message:" + message);
 
-        if(message.toLowerCase().equals("ls") || message.toLowerCase().equals("list")) {
-            System.err.println ("listing");
-            for(Entry child: getEntryManager().getChildren(request, baseGroup)) {
-                if((returnMsg.length() + child.getName().length())>120) break;
-                returnMsg.append(child.getName().trim());
-                if(child.isGroup()) {
-                    returnMsg.append(" (folder)");
-                }
-                returnMsg.append("\n");
-            }
-            System.err.println ("done:" + returnMsg);
-            return true;
-        }
-
 
         String      type = "phone_sms";
         String tmp;
@@ -244,15 +231,36 @@ public class PhoneHarvester extends Harvester {
 
             if(skipLine) continue;
 
-            if(toEntryName==null && tline.startsWith("to ")) {
-                toEntryName  = line.substring("to".length()).trim();
-                System.err.println ("toEntry:" + toEntryName +" line:" + line);
+            if(tline.startsWith("ls")) {
+                for(Entry child: getEntryManager().getChildren(request, currentEntry)) {
+                    if((returnMsg.length() + child.getName().length())>120) break;
+                    returnMsg.append(child.getName().trim());
+                    if(child.isGroup()) {
+                        returnMsg.append(" (folder)");
+                    }
+                    returnMsg.append("\n");
+                }
+                System.err.println ("done:" + returnMsg);
+                return true;
+            }
+            if(tline.startsWith("cd")) {
+                String newEntryName  = line.substring("cd ".length()).trim();
+                Entry newEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
+                if(newEntry==null) {
+                    returnMsg.append("Could not find:\n" +newEntryName);
+                    return true;
+                }
+                currentEntry = newEntry;
                 continue;
             }
-
-
             if(tline.startsWith("append")) {
-                toEntryName  = line.substring("append".length()).trim();
+                String newEntryName  = line.substring("append ".length()).trim();
+                Entry newEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
+                if(newEntry==null) {
+                    returnMsg.append("Could not find:\n" +newEntryName);
+                    return true;
+                }
+                currentEntry = newEntry;
                 doAppend = true;
                 continue;
             }
@@ -286,37 +294,18 @@ public class PhoneHarvester extends Harvester {
            name  = "SMS Entry";
         }
         name = name.trim();
-
-
-        Entry  parent      = baseGroup;
-        Entry toEntry = null;
-        if(defined(toEntryName)) {
-            toEntry = getEntryManager().findEntryWithName(request, baseGroup, toEntryName.trim());
-            if(toEntry==null) {
-                logHarvesterError("Unable to find to folder:" + toEntryName,null);
+        Entry  parent      = currentEntry;
+        if(doAppend) {
+            if(currentEntry.getTypeHandler().getType().equals("wikipage")) {
             } else {
-                if(!doAppend) {
-                    if(toEntry.isGroup()) {
-                        logHarvesterError("Specificed to entry is not a folder::" + toEntryName,null);
-                    } else {
-                        parent = toEntry;
-                    }
-                }
+                currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
             }
+            getEntryManager().updateEntry(currentEntry);
+            return true;
         }
 
-
-
-        if(doAppend) {
-            if(toEntry==null) {
-                returnMsg.append("Could not find:\n" +toEntryName);
-                return true;
-            }
-            if(toEntry.getTypeHandler().getType().equals("wikipage")) {
-            } else {
-                toEntry.setDescription(toEntry.getDescription() +"\n" + desc);
-            }
-            getEntryManager().updateEntry(toEntry);
+        if(!currentEntry.isGroup()) {
+            returnMsg.append("Not a folder:\n" +currentEntry.getName());
             return true;
         }
 
@@ -337,7 +326,8 @@ public class PhoneHarvester extends Harvester {
 
 
 
-        entry.initEntry(name, desc.toString(), parent, getUser(), new Resource(), "",
+
+        entry.initEntry(name, desc.toString(), currentEntry, getUser(), new Resource(), "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
 
