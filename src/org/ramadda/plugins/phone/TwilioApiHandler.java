@@ -76,6 +76,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
     /** _more_          */
     public static final String TAG_SMS = "Sms";
+
     public static final String TAG_SAY = "Say";
 
     public static final String ATTR_VOICE = "voice";
@@ -217,9 +218,6 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                 if(voiceResponse==null) {
                     sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, this ramadda repository does not accept voice messages</Say>"));
                 } else {
-                    //<Gather timeout="10" finishOnKey="*">
-                    //<Say>Please enter your pin number and then press star.</Say>
-                    //</Gather>
                     sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),voiceResponse));
                     sb.append(XmlUtil.tag(TAG_RECORD, XmlUtil.attrs(new String[]{
                                     "maxLength", "30",

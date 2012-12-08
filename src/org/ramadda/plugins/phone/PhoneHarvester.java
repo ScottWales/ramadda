@@ -452,6 +452,12 @@ public class PhoneHarvester extends Harvester {
                             info.getToPhone());
         Entry       baseGroup   = getBaseGroup();
         Entry       parent      = baseGroup;
+        String pastEntry = phoneToEntry.get(info.getFromPhone());
+        if(pastEntry!=null) {
+            Entry entry = getEntryManager().getEntry(request, pastEntry, false);
+            if (entry!=null) parent = entry;
+        }
+
         String      name        = "Voice Message  - " + getRepository().formatDate(request, new Date());
         String      type = "media_audiofile";
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
@@ -460,6 +466,7 @@ public class PhoneHarvester extends Harvester {
         Object[]    values      = typeHandler.makeValues(new Hashtable());
         StringBuffer desc = new StringBuffer(info.getTranscription());
         File  voiceFile = fetchVoiceFile(request, new URL(info.getRecordingUrl()));
+
         if(voiceFile==null) {
             return false;
         }
