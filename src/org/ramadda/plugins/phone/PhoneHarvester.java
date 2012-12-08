@@ -232,25 +232,47 @@ public class PhoneHarvester extends Harvester {
             if(skipLine) continue;
 
             if(tline.startsWith("ls")) {
+                String remainder = line.substring("ls".length()).trim();
                 for(Entry child: getEntryManager().getChildren(request, currentEntry)) {
-                    if((returnMsg.length() + child.getName().length())>120) break;
-                    returnMsg.append(child.getName().trim());
+                    String childName = child.getName();
+                    if(remainder.length()>0) {
+                        if(childName.indexOf(remainder)<0) {
+                            continue;
+                        }
+                    }
+                    if((returnMsg.length() + childName.length())>120) break;
+                    returnMsg.append(childName.trim());
                     if(child.isGroup()) {
                         returnMsg.append(" (folder)");
                     }
                     returnMsg.append("\n");
                 }
-                System.err.println ("done:" + returnMsg);
                 return true;
             }
-            if(tline.startsWith("cd")) {
-                String newEntryName  = line.substring("cd ".length()).trim();
-                Entry newEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
-                if(newEntry==null) {
-                    returnMsg.append("Could not find:\n" +newEntryName);
-                    return true;
+
+            if(tline.startsWith("url")) {
+                for(String childName: StringUtil.split(line.substring("url".length()).trim(),"/", true, true)) {
+                    Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, childName);
+                    if(childEntry==null) {
+                        returnMsg.append("Could not find:\n" +childName);
+                        return true;
+                    }
+                    currentEntry = childEntry;
                 }
-                currentEntry = newEntry;
+                returnMsg.append("entry:\n" + getEntryUrl(currentEntry));
+                return true;
+            }
+
+
+            if(tline.startsWith("cd")) {
+                for(String newEntryName: StringUtil.split(line.substring("cd ".length()).trim(),"/", true, true)) {
+                    Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
+                    if(childEntry==null) {
+                        returnMsg.append("Could not find:\n" +newEntryName);
+                        return true;
+                    }
+                    currentEntry = childEntry;
+                }
                 continue;
             }
             if(tline.startsWith("append")) {
@@ -274,7 +296,6 @@ public class PhoneHarvester extends Harvester {
             if(tline.startsWith("wiki")) {
                 type = "wikipage";
                 name  = line.substring("wiki".length());
-                System.err.println ("name:" + name);
                 continue;
             }
             if(tline.startsWith("note")) {
@@ -289,7 +310,6 @@ public class PhoneHarvester extends Harvester {
             lineCnt++;
         }
 
-
         if(!defined(name)) { 
            name  = "SMS Entry";
         }
@@ -301,6 +321,7 @@ public class PhoneHarvester extends Harvester {
                 currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
             }
             getEntryManager().updateEntry(currentEntry);
+            returnMsg.append("entry modified\n" + getEntryUrl(currentEntry));
             return true;
         }
 
@@ -311,8 +332,6 @@ public class PhoneHarvester extends Harvester {
 
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
         Entry       entry = typeHandler.createEntry(getRepository().getGUID());
-
-
         Date        date        = new Date();
         Object[]    values      = typeHandler.makeValues(new Hashtable());
         if(type.equals("phone_sms")) {
@@ -322,10 +341,6 @@ public class PhoneHarvester extends Harvester {
             values[0] = desc.toString();
             desc = new StringBuffer();
         }
-
-
-
-
 
         entry.initEntry(name, desc.toString(), currentEntry, getUser(), new Resource(), "",
                         date.getTime(), date.getTime(), date.getTime(),
@@ -340,18 +355,18 @@ public class PhoneHarvester extends Harvester {
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().insertEntries(entries, true, true);
-
-        String entryUrl = 
-            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
-                          ARG_ENTRYID, entry.getId());
         String template = response;
         if(template == null || template.trim().length()==0) template = "Entry created:\n${url}";
-        template = template.replace("${url}", entryUrl);
+        template = template.replace("${url}", getEntryUrl(entry));
         returnMsg.append(template);
         return true;
     }
 
+    private String getEntryUrl(Entry entry) {
+        return  HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+                          ARG_ENTRYID, entry.getId());
 
+    }
 
 
     private boolean checkPhone(PhoneInfo info) {
