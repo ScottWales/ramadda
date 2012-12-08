@@ -308,8 +308,25 @@ public class PhoneHarvester extends Harvester {
             }
 
             if(tline.startsWith(CMD_CD)) {
-                if(line.substring(CMD_CD.length()).trim().length()==0) {
+                String toWhat = line.substring(CMD_CD.length()).trim();
+                if(toWhat.length()==0) {
                     currentEntry = baseGroup;
+                } else if(toWhat.startsWith("..")) {
+                    for(String tok: StringUtil.split(toWhat,"/", true, true)) {
+                        if(currentEntry.equals(baseGroup)) {
+                            break;
+                        }
+                        if(tok.equals("..")) {
+                            currentEntry =  currentEntry.getParentEntry();
+                        } else {
+                            Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, tok);
+                            if(childEntry ==null) {
+                                msg.append("Pad path:" + tok);
+                                return true;
+                            }
+                            currentEntry = childEntry;
+                        }
+                    }
                 } else {
                     currentEntry =  getEntry(request, line, CMD_CD, currentEntry, msg);
                     if(currentEntry == null) return true;
