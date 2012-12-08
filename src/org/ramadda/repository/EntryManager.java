@@ -7515,7 +7515,6 @@ public class EntryManager extends RepositoryManager {
                                 parent.getId()), Clause.eq(
                                     Tables.ENTRIES.COL_NAME, name)))));
 
-        System.err.println ("clause:" + clause);
 
         return ids;
     }
