@@ -62,6 +62,14 @@ import java.util.Properties;
  */
 public class PhoneHarvester extends Harvester {
 
+    public static final String CMD_APPEND = "append";
+    public static final String CMD_CD = "cd";
+    public static final String CMD_PWD= "pwd";
+    public static final String CMD_LS = "ls";
+    public static final String CMD_GET = "get";
+    public static final String CMD_URL = "url";
+    public static final String DELIMITER = "/";
+
     /** _more_          */
     public static final String ATTR_TYPE = "type";
 
@@ -147,6 +155,9 @@ public class PhoneHarvester extends Harvester {
     }
 
 
+    private Hashtable<String,String> phoneToEntry = new Hashtable<String,String>();
+
+
     /**
      * _more_
      *
@@ -178,6 +189,13 @@ public class PhoneHarvester extends Harvester {
 
         Entry       baseGroup   = getBaseGroup();
         Entry currentEntry  = baseGroup;
+        String pastEntry = phoneToEntry.get(info.getFromPhone());
+        if(pastEntry!=null) {
+            Entry entry = getEntryManager().getEntry(request, pastEntry, false);
+            if (entry!=null) currentEntry = entry;
+        }
+
+
         String      message        = info.getMessage();
         String      name        = "SMS Message";
         String toEntryName = null;
@@ -191,29 +209,27 @@ public class PhoneHarvester extends Harvester {
             //??
         }
 
-
         if(passCode!=null && passCode.length()>0) {
             if(message.indexOf(passCode)<0) {
                 returnMsg.append("Message does not contain passcode");
-                return false;
+                return true;
             }
             message = message.replace(passCode,"");
         }
-
         message = message.trim();
         if(message.equals("help") || message.equals("?")) {
-            returnMsg.append("Use:\nname &lt;entry name&gt;\nwiki &lt;name&gt;\nnote &lt;name&gt;\nto &lt;folder name&gt;\nappend &lt;name&gt;\n&lt;text&gt;\nls");
+            returnMsg.append("\n" + CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
+                             CMD_APPEND+"\n" +
+                             "create:\nfolder,wiki,note,sms &lt;name&gt;\n" +
+                             "name &lt;entry name&gt;\n" +
+                             "&lt;text&gt;");
             return true;
         }
-
-        System.err.println ("Message:" + message);
-
-
-        String      type = "phone_sms";
+        String      type = null;
         String tmp;
         StringBuffer desc = new StringBuffer();
-        int lineCnt = 0;
         boolean doAppend = false;
+        boolean processedACommand = false;
         for(String line: StringUtil.split(message,"\n")) {
             line = line.trim();
             String tline = line.toLowerCase();
@@ -231,8 +247,8 @@ public class PhoneHarvester extends Harvester {
 
             if(skipLine) continue;
 
-            if(tline.startsWith("ls")) {
-                String remainder = line.substring("ls".length()).trim();
+            if(tline.startsWith(CMD_LS)) {
+                String remainder = line.substring(CMD_LS.length()).trim();
                 for(Entry child: getEntryManager().getChildren(request, currentEntry)) {
                     String childName = child.getName();
                     if(remainder.length()>0) {
@@ -250,80 +266,94 @@ public class PhoneHarvester extends Harvester {
                 return true;
             }
 
-            if(tline.startsWith("url")) {
-                for(String childName: StringUtil.split(line.substring("url".length()).trim(),"/", true, true)) {
-                    Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, childName);
-                    if(childEntry==null) {
-                        returnMsg.append("Could not find:\n" +childName);
-                        return true;
-                    }
-                    currentEntry = childEntry;
-                }
-                returnMsg.append("entry:\n" + getEntryUrl(currentEntry));
+            if(tline.startsWith(CMD_URL)) {
+                currentEntry =  getEntry(request, line, CMD_URL, currentEntry, returnMsg);
+                if(currentEntry == null) return true;
+                returnMsg.append("entry:\n" + getEntryInfo(currentEntry));
+                return true;
+            }
+
+            if(tline.startsWith(CMD_GET)) {
+                currentEntry =  getEntry(request, line, CMD_GET, currentEntry, returnMsg);
+                if(currentEntry == null) return true;
+                returnMsg.append(currentEntry.getName() +"\n" +currentEntry.getDescription());
                 return true;
             }
 
 
-            if(tline.startsWith("cd")) {
-                for(String newEntryName: StringUtil.split(line.substring("cd ".length()).trim(),"/", true, true)) {
-                    Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
-                    if(childEntry==null) {
-                        returnMsg.append("Could not find:\n" +newEntryName);
-                        return true;
-                    }
-                    currentEntry = childEntry;
+            if(tline.equals(CMD_PWD)) {
+                returnMsg.append(getEntryInfo(currentEntry));
+                return true;
+            }
+
+            if(tline.startsWith(CMD_CD)) {
+                if(line.substring(CMD_CD.length()).trim().length()==0) {
+                    currentEntry = baseGroup;
+                } else {
+                    currentEntry =  getEntry(request, line, CMD_CD, currentEntry, returnMsg);
+                    if(currentEntry == null) return true;
                 }
+                phoneToEntry.put(info.getFromPhone(), currentEntry.getId());
+                processedACommand = true;
                 continue;
             }
-            if(tline.startsWith("append")) {
-                String newEntryName  = line.substring("append ".length()).trim();
-                Entry newEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
-                if(newEntry==null) {
-                    returnMsg.append("Could not find:\n" +newEntryName);
-                    return true;
-                }
-                currentEntry = newEntry;
+
+            if(tline.startsWith(CMD_APPEND)) {
+                currentEntry =  getEntry(request, line, CMD_APPEND, currentEntry, returnMsg);
+                if(currentEntry == null) return true;
                 doAppend = true;
+                processedACommand = true;
                 continue;
             }
 
-            if(tline.startsWith("folder")) {
-                type = TypeHandler.TYPE_GROUP;
-                name  = line.substring("folder".length());
-                continue;
+            if(type == null) {
+                String[]cmds = {"folder","wiki","sms","note"};
+                String[]types = {TypeHandler.TYPE_GROUP,"wikipage","phone_sms","notes_note"};
+                boolean didOne = false;
+                for(int i=0;i<cmds.length;i++) {
+                    if(tline.startsWith(cmds[i] +" ")) {
+                        type =types[i] ;
+                        name  = line.substring(cmds[i].length()).trim();
+                        didOne = true;
+                        break;
+                    }
+                }
+                if(didOne) continue;
             }
 
-            if(tline.startsWith("wiki")) {
-                type = "wikipage";
-                name  = line.substring("wiki".length());
-                continue;
-            }
-            if(tline.startsWith("note")) {
-                type = "notes_note";
-                name  = line.substring("note".length());
-                continue;
-            }
-
-            if(lineCnt!=0)
+            if(desc.length()>0)
                 desc.append("<br>");
             desc.append(line);
-            lineCnt++;
+        }
+
+
+        Entry  parent      = currentEntry;
+        if(doAppend) {
+            //TODO: handle wiki and update the entry better
+            if(currentEntry.getTypeHandler().getType().equals("wikipage")) {
+            } else {
+                currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
+            }
+            getEntryManager().updateEntry(currentEntry);
+            returnMsg.append("entry appended to\n" + getEntryInfo(currentEntry));
+            return true;
+        }
+
+        if(type == null) {
+            if(!processedACommand) {
+                returnMsg.append("Nothing much happened");
+            } else {
+                returnMsg.append("OK");
+            }
+            return true;
         }
 
         if(!defined(name)) { 
            name  = "SMS Entry";
         }
         name = name.trim();
-        Entry  parent      = currentEntry;
-        if(doAppend) {
-            if(currentEntry.getTypeHandler().getType().equals("wikipage")) {
-            } else {
-                currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
-            }
-            getEntryManager().updateEntry(currentEntry);
-            returnMsg.append("entry modified\n" + getEntryUrl(currentEntry));
-            return true;
-        }
+
+
 
         if(!currentEntry.isGroup()) {
             returnMsg.append("Not a folder:\n" +currentEntry.getName());
@@ -357,7 +387,7 @@ public class PhoneHarvester extends Harvester {
         getEntryManager().insertEntries(entries, true, true);
         String template = response;
         if(template == null || template.trim().length()==0) template = "Entry created:\n${url}";
-        template = template.replace("${url}", getEntryUrl(entry));
+        template = template.replace("${url}", getEntryInfo(entry));
         returnMsg.append(template);
         return true;
     }
@@ -366,6 +396,10 @@ public class PhoneHarvester extends Harvester {
         return  HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                           ARG_ENTRYID, entry.getId());
 
+    }
+
+    private String getEntryInfo(Entry entry) {
+        return  entry.getName() +"\n" + getEntryUrl(entry);
     }
 
 
@@ -575,6 +609,18 @@ public class PhoneHarvester extends Harvester {
             IOUtil.close(fromStream);
         }
         return newFile;
+    }
+
+    private Entry getEntry(Request request, String line, String cmd, Entry currentEntry, StringBuffer returnMsg) throws Exception {
+        for(String newEntryName: StringUtil.split(line.substring(cmd.length()).trim(),DELIMITER, true, true)) {
+            Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
+            if(childEntry==null) {
+                returnMsg.append("Could not find:\n" +newEntryName);
+                return null;
+            }
+            currentEntry = childEntry;
+        }
+        return currentEntry;
     }
 
 

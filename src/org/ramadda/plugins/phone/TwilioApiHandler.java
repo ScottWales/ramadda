@@ -136,6 +136,9 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             if (harvester.handleMessage(request, info, returnMsg)) {
                 String response = returnMsg.toString();
                 if(response.length()==0) response = "Message handled";
+                else if(response.length()>120) {
+                    response = response.substring(0,119);
+                }
                 sb.append(XmlUtil.tag(TAG_SMS, "", response));
                 handledMessage = true;
                 break;
