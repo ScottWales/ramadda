@@ -3,9 +3,46 @@
 <body>
 
 
-You can create wiki pages, notes, etc., through text messages.
+You can create wiki pages, notes, etc., through text messages. This feature uses <a href="https://www.twilio.com/">Twilio</a>
+to route text and voice messages  to RAMADDA.
 
-TODO
+
+<h2>Configuring Twilio</h2>
+
+You need to create an account at <a href="https://www.twilio.com/">Twilio</a>. 
+Once you have an account set up you should also have a new phone number. Twilio requires 2 URLs on your RAMADDA server
+to be associated with the phone number:
+<pre>
+http://&lt;your ramadda&gt;/phone/twilio/sms
+http://&lt;your ramadda&gt;/phone/twilio/voice
+e.g.:
+http://ramadda.org/repository/phone/twilio/sms
+http://ramadda.org/repository/phone/twilio/voice
+</pre>
+
+
+
+You then need to define the following properties on your RAMADDA server
+(e.g., in a phone.properties file in your RAMADDA home directory) 
+
+<pre>
+twilio.appid=
+twilio.authtoken=
+</pre>
+
+This is the application SID and the authorization token you can get from your Twilio account dashboard.
+
+<h2>Configuring Phone Harvesters</h2>
+The real work in handling a call is done with one or more Phone Harvesters. These are RAMADDA harvesters that define
+the RAMADDA folder to look at and access information. Go to Admin-Harvesters and create a new Phone Harvester.
+
+<p>
+The From Phone and To Phone are optional. If defined, this harvester will only access calls from/to these numbers.
+<p>
+If the Pass Code is specified than the body of the text message must contain this text.
+<p>
+To enable receiving voice messages specify a Voice Message.
+
 
 </body>
 </html>

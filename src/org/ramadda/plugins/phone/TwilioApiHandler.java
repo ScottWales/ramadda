@@ -56,13 +56,29 @@ import java.util.regex.*;
  */
 public class TwilioApiHandler extends RepositoryManager implements RequestHandler {
 
+    public static final String PROP_AUTHTOKEN = "twilio.authtoken";
+    public static final String PROP_APPID = "twilio.appid";
+
+
+    public static final String ARG_ACCOUNTSID = "AccountSid";
+    public static final String ARG_RECORDINGSID = "RecordingSid";
+    public static final String ARG_RECORDINGURL = "RecordingUrl";
+    public static final String ARG_FROMZIP = "FromZip";
+
+
+    public static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+
     /** _more_          */
     public static final String TAG_RESPONSE = "Response";
     public static final String TAG_RECORD = "Record";
+    public static final String TAG_TRANSCRIPTIONTEXT  = "TranscriptionText";
+    public static final String TAG_STATUS = "Status";
 
     /** _more_          */
     public static final String TAG_SMS = "Sms";
+    public static final String TAG_SAY = "Say";
 
+    public static final String ATTR_VOICE = "voice";
 
     /** _more_          */
     public static final String ARG_FROM = "From";
@@ -110,6 +126,12 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     }
 
 
+    private boolean callOK(Request request) {
+        String appId = getRepository().getProperty(PROP_APPID,null);
+        if(appId == null) return false;
+        return request.getString(ARG_ACCOUNTSID, "").equals(appId);
+    }
+
 
     /**
      * handle the request
@@ -124,37 +146,40 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
                                        request.getString(ARG_FROM, ""),
                                        request.getString(ARG_TO, ""), null);
-        System.err.println("TwilioApiHandler: Phone: " + info);
         System.err.println("TwilioApiHandler: request: " + request);
         StringBuffer sb =
-            new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            new StringBuffer(XML_HEADER);
         sb.append(XmlUtil.openTag(TAG_RESPONSE));
         info.setMessage(request.getString(ARG_BODY, ""));
-        info.setFromZip(request.getString("FromZip", (String) null));
+        info.setFromZip(request.getString(ARG_FROMZIP, (String) null));
         boolean handledMessage = false;
-        StringBuffer returnMsg = new StringBuffer();
-        for (PhoneHarvester harvester : getHarvesters()) {
-            System.err.println ("Checking harvester:" + harvester);
-            if (harvester.handleMessage(request, info, returnMsg)) {
-                String response = returnMsg.toString();
-                if(response.length()==0) response = "Message handled";
-                else if(response.length()>120) {
-                    response = response.substring(0,119);
+        if(!callOK(request)) {
+            sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, bad APPID property defined"));
+        } else {
+                StringBuffer returnMsg = new StringBuffer();
+
+                for (PhoneHarvester harvester : getHarvesters()) {
+                    if (harvester.handleMessage(request, info, returnMsg)) {
+                        String response = returnMsg.toString();
+                        if(response.length()==0) response = "Message handled";
+                        else if(response.length()>120) {
+                            response = response.substring(0,119);
+                        }
+                        sb.append(XmlUtil.tag(TAG_SMS, "", response));
+                        handledMessage = true;
+                        break;
+                    }
                 }
-                sb.append(XmlUtil.tag(TAG_SMS, "", response));
-                handledMessage = true;
-                break;
+
+
+                if ( !handledMessage) {
+                    String response = returnMsg.toString();
+                    sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, RAMADDA was not able to process your message.\n" + response));
+                }
             }
+            sb.append(XmlUtil.closeTag(TAG_RESPONSE));
+            return new Result("", sb, "text/xml");
         }
-
-        if ( !handledMessage) {
-            String response = returnMsg.toString();
-            sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, RAMADDA was not able to process your message.\n" + response));
-        }
-        sb.append(XmlUtil.closeTag(TAG_RESPONSE));
-
-        return new Result("", sb, "text/xml");
-    }
 
 
     /**
@@ -167,64 +192,67 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @throws Exception _more_
      */
     public Result processVoice(Request request) throws Exception {
-        String authToken = getRepository().getProperty("twilio.authtoken", null);
-        String recordingUrl = request.getString("RecordingUrl", null);
+        String authToken = getRepository().getProperty(PROP_AUTHTOKEN, null);
+        String recordingUrl = request.getString(ARG_RECORDINGURL, null);
         System.err.println("processVoice:" + request.getUrlArgs());
         StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        sb.append(XML_HEADER);
         sb.append(XmlUtil.openTag(TAG_RESPONSE));
         PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
                                        request.getString(ARG_FROM, ""),
                                        request.getString(ARG_TO, ""), null);
-        if(recordingUrl==null) {
-            String voiceResponse = null;
-            for (PhoneHarvester harvester : getHarvesters()) {
-                String response = harvester.getVoiceResponse(info);
-                if(response!=null && response.trim().length()>0) {
-                    voiceResponse = response;
-                    break;
-                }
-            }
-            if(voiceResponse==null) {
-                sb.append(
-                          "<Say voice=\"woman\">Sorry, this ramadda repository does not accept voice messages</Say>");
-            } else {
-                //<Gather timeout="10" finishOnKey="*">
-                //<Say>Please enter your pin number and then press star.</Say>
-                //</Gather>
-                sb.append(
-                          "<Say voice=\"woman\">" + voiceResponse +"</Say>");
-                sb.append(XmlUtil.tag(TAG_RECORD, XmlUtil.attrs(new String[]{
-                                "maxLength", "30",
-                                authToken!=null?"transcribe":"dummy", "true"
-                            })));
-            }
+        if(!callOK(request)) {
+            sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, bad application identifier"));
         } else {
-            info.setRecordingUrl(recordingUrl);
-            if(authToken!=null) {
-                String text = getTranscriptionText(request, authToken);
-                if(text == null) {
-                    Misc.sleepSeconds(5);
-                    text = getTranscriptionText(request, authToken);
+            if(recordingUrl==null) {
+                String voiceResponse = null;
+                for (PhoneHarvester harvester : getHarvesters()) {
+                    String response = harvester.getVoiceResponse(info);
+                    if(response!=null && response.trim().length()>0) {
+                        voiceResponse = response;
+                        break;
+                    }
+                }
+                if(voiceResponse==null) {
+                    sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, this ramadda repository does not accept voice messages</Say>"));
+                } else {
+                    //<Gather timeout="10" finishOnKey="*">
+                    //<Say>Please enter your pin number and then press star.</Say>
+                    //</Gather>
+                    sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),voiceResponse));
+                    sb.append(XmlUtil.tag(TAG_RECORD, XmlUtil.attrs(new String[]{
+                                    "maxLength", "30",
+                                    authToken!=null?"transcribe":"dummy", "true"
+                                })));
+                }
+            } else {
+                info.setRecordingUrl(recordingUrl);
+                if(authToken!=null) {
+                    String text = getTranscriptionText(request, authToken);
                     if(text == null) {
                         Misc.sleepSeconds(5);
                         text = getTranscriptionText(request, authToken);
+                        if(text == null) {
+                            Misc.sleepSeconds(5);
+                            text = getTranscriptionText(request, authToken);
+                        }
+                    }
+                    if(text!=null) {
+                        info.setTranscription(text);
+                    } else {
+                        System.err.println("processVoice: failed to get text");
                     }
                 }
-                if(text!=null) {
-                    info.setTranscription(text);
-                }
-            }
 
-            for (PhoneHarvester harvester : getHarvesters()) {
-                if (harvester.handleVoice(request, info)) {
-                    break;
+                for (PhoneHarvester harvester : getHarvesters()) {
+                    if (harvester.handleVoice(request, info)) {
+                        break;
+                    }
                 }
-            }
 
+            }
         }
-        sb.append("</Response>");
-
+        sb.append(XmlUtil.closeTag(TAG_RESPONSE));
         return new Result("", sb, "text/xml");
     }
 
@@ -232,30 +260,25 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
     private String getTranscriptionText(Request request, String authToken) throws Exception {
         String transcriptionUrl = "https://api.twilio.com/2010-04-01/Accounts/" +
-            request.getString("AccountSid", null)+"/Recordings/"+ 
-            request.getString("RecordingSid",null)+"/Transcriptions";
-        //        System.err.println ("URL:" + transcriptionUrl);
+            request.getString(ARG_ACCOUNTSID, null)+"/Recordings/"+ 
+            request.getString(ARG_RECORDINGSID,null)+"/Transcriptions";
         URL url        = new URL(transcriptionUrl);
         HttpURLConnection     huc = (HttpURLConnection) url.openConnection();            
-        //        System.err.println("auth:" +request.getString("AccountSid", null)+":" + authToken);
-        String auth  = request.getString("AccountSid", null)+":" + authToken;
+        String auth  = request.getString(ARG_ACCOUNTSID, null)+":" + authToken;
         String encoding = RepositoryUtil.encodeBase64 (auth.getBytes());
         huc.addRequestProperty("Authorization",
                                "Basic " + encoding);
         String transcription = new String(IOUtil.readBytes(huc.getInputStream()));
-        //      <Status>in-progress</Status>
-
         Element root = XmlUtil.getRoot(transcription);
-        //        System.err.println(XmlUtil.toString(root));
-        Element statusNode = XmlUtil.findDescendant(root,"Status");
+        Element statusNode = XmlUtil.findDescendant(root,TAG_STATUS);
         if(statusNode==null) return null;
         if(!XmlUtil.getChildText(statusNode).equals("completed")) {
-            //            System.err.println ("not completed");
             return null;
+
         }
-        Element textNode = XmlUtil.findDescendant(root,"TranscriptionText");
+
+        Element textNode = XmlUtil.findDescendant(root,TAG_TRANSCRIPTIONTEXT);
         if(textNode!=null) {
-            //            System.err.println ("text:" + text);
             return  XmlUtil.getChildText(textNode);
         }
         return null;

@@ -602,10 +602,24 @@ public class PhoneHarvester extends Harvester {
     }
 
     private Entry getEntry(Request request, String line, String cmd, Entry currentEntry, StringBuffer returnMsg) throws Exception {
-        for(String newEntryName: StringUtil.split(line.substring(cmd.length()).trim(),DELIMITER, true, true)) {
-            Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, newEntryName);
+        for(String name: StringUtil.split(line.substring(cmd.length()).trim(),DELIMITER, true, true)) {
+
+            Entry childEntry= null;
+            if(name.matches("\\d+")) {
+                int index = new Integer(name).intValue();
+                index--;
+                List<Entry> children =  getEntryManager().getChildren(request, currentEntry);
+                if(index<0 || index>= children.size()) {
+                    returnMsg.append("Bad index:" + index);
+                    return null;
+                }
+                childEntry = children.get(index);
+            } else {
+                childEntry  = getEntryManager().findEntryWithName(request, currentEntry, name);
+
+            }
             if(childEntry==null) {
-                returnMsg.append("Could not find:\n" +newEntryName);
+                returnMsg.append("Could not find:\n" +name);
                 return null;
             }
             currentEntry = childEntry;
