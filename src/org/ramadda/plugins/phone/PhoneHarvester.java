@@ -110,6 +110,10 @@ public class PhoneHarvester extends Harvester {
     /** _more_          */
     private String voiceMessage;
 
+    private Hashtable<String,String> phoneToEntry = new Hashtable<String,String>();
+
+    private TTLCache<String, String> passCodePhones = new TTLCache<String,String>(24*60 * 60 * 1000);
+
 
     /**
      * _more_
@@ -148,18 +152,22 @@ public class PhoneHarvester extends Harvester {
      */
     protected void init(Element element) throws Exception {
         super.init(element);
-        fromPhone = XmlUtil.getAttribute(element, ATTR_FROMPHONE, fromPhone);
-        toPhone   = XmlUtil.getAttribute(element, ATTR_TOPHONE, toPhone);
+        fromPhone = normalizePhone(XmlUtil.getAttribute(element, ATTR_FROMPHONE, fromPhone));
+        toPhone   = normalizePhone(XmlUtil.getAttribute(element, ATTR_TOPHONE, toPhone));
         passCode  = XmlUtil.getAttribute(element, ATTR_PASSCODE, passCode);
         response  = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
         voiceMessage = XmlUtil.getAttribute(element, ATTR_VOICEMESSAGE,  voiceMessage);
         type      = XmlUtil.getAttribute(element, ATTR_TYPE, type);
     }
 
+    private String normalizePhone(String phone) {
+        if(phone == null) return null;
+        phone = phone.replaceAll(" ","");
+        phone = phone.replaceAll("-","");
+        return phone;
+    }
 
-    private Hashtable<String,String> phoneToEntry = new Hashtable<String,String>();
 
-    private TTLCache<String, String> passCodePhones = new TTLCache<String,String>(24*60 * 60 * 1000);
 
 
     /**
@@ -178,7 +186,7 @@ public class PhoneHarvester extends Harvester {
         System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
                             info.getToPhone());
         if (fromPhone!=null && fromPhone.length() > 0) {
-            if ( info.getFromPhone().indexOf(fromPhone)<0) {
+            if ( info.getFromPhone().indexOf(normalizePhone(fromPhone))<0) {
                 System.err.println ("handleMessage: skipping wrong from phone");
                 return false;
             }
@@ -418,10 +426,7 @@ public class PhoneHarvester extends Harvester {
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().insertEntries(entries, true, true);
-        String template = response;
-        if(template == null || template.trim().length()==0) template = "Entry created:\n${url}";
-        template = template.replace("${url}", getEntryInfo(entry));
-        msg.append(template);
+        msg.append( "New entry:\n" + getEntryInfo(entry));
         return true;
     }
 
@@ -437,8 +442,8 @@ public class PhoneHarvester extends Harvester {
 
 
     private boolean checkPhone(PhoneInfo info) {
-        if (fromPhone!=null && fromPhone.length() > 0) {
-            if ( info.getFromPhone().indexOf(fromPhone)<0) {
+        if (defined(fromPhone)) {
+            if (info.getFromPhone().indexOf(fromPhone)<0) {
                 System.err.println ("handleMessage: skipping wrong from phone");
                 return false;
             }
@@ -576,23 +581,37 @@ public class PhoneHarvester extends Harvester {
             throws Exception {
         super.createEditForm(request, sb);
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
+
+
+        String suffix  = " no spaces, dashes, etc";
+        sb.append(HtmlUtils.row(HtmlUtils.col("&nbsp;")));
+        sb.append(
+                   HtmlUtils.row(
+                                 HtmlUtils.colspan("Accept input when the following optional criteria is met", 2)));
         sb.append(HtmlUtils.formEntry(msgLabel("From Phone"),
                                       HtmlUtils.input(ATTR_FROMPHONE,
-                                          fromPhone, HtmlUtils.SIZE_60)));
+                                          fromPhone, HtmlUtils.SIZE_15)+suffix));
         sb.append(HtmlUtils.formEntry(msgLabel("To Phone"),
                                       HtmlUtils.input(ATTR_TOPHONE, toPhone,
-                                          HtmlUtils.SIZE_60)));
+                                          HtmlUtils.SIZE_15)+suffix));
         sb.append(HtmlUtils.formEntry(msgLabel("Pass Code"),
                                       HtmlUtils.input(ATTR_PASSCODE,
-                                          passCode, HtmlUtils.SIZE_60)));
+                                                      passCode, HtmlUtils.SIZE_15)));
 
+        /*
         sb.append(HtmlUtils.formEntryTop(msgLabel("SMS Response"),
                                       HtmlUtils.textArea(ATTR_RESPONSE,
                                                          response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
+        */
 
+
+        sb.append(HtmlUtils.row(HtmlUtils.col("&nbsp;")));
+        sb.append(
+                   HtmlUtils.row(
+                                 HtmlUtils.colspan("Specify a voice response to handle voice message", 2)));
 
         sb.append(HtmlUtils.formEntryTop(msgLabel("Voice Message"),
-                                         HtmlUtils.input(ATTR_VOICEMESSAGE,voiceMessage,  HtmlUtils.SIZE_60) +"<br>" + "Specify a voice response to handle voice message"));
+                                         HtmlUtils.input(ATTR_VOICEMESSAGE,voiceMessage,  HtmlUtils.SIZE_60)));
     }
 
 
