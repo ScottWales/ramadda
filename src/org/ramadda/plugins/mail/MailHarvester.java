@@ -1,23 +1,23 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-* software and associated documentation files (the "Software"), to deal in the Software 
-* without restriction, including without limitation the rights to use, copy, modify, 
-* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-* permit persons to whom the Software is furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in all copies 
-* or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-* DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+ *                     Don Murray/CU-CIRES
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+ * software and associated documentation files (the "Software"), to deal in the Software 
+ * without restriction, including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies 
+ * or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ */
 
 package org.ramadda.plugins.mail;
 
@@ -35,6 +35,7 @@ import org.ramadda.util.HtmlUtils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
@@ -64,19 +65,30 @@ import java.util.Properties;
  */
 public class MailHarvester extends Harvester {
 
-    /** _more_          */
+    public static final String ACTION_ATTACHMENTS = "attachments";
+    public static final String ACTION_EML = "eml";
 
-    public static final String ATTR_ACTION = "action";
+    public static final String MODE_UNREAD = "unread";
+    public static final String MODE_DELETE = "delete";
+
+
+    /** _more_          */
     public static final String ATTR_IMAP_URL = "imapurl";
     public static final String ATTR_FOLDER = "folder";
     public static final String ATTR_FROM = "from";
     public static final String ATTR_SUBJECT = "subject";
     public static final String ATTR_BODY = "body";
+    public static final String ATTR_ACTION = "action";
+    public static final String ATTR_DELETEEMAIL = "delete_email";
+
+
+    public static final String ATTR_MODE = "mode";
 
     public static final String ATTR_RESPONSE = "response";
 
 
     private String imapUrl;
+
     private String folder = "Inbox";
 
     /** _more_          */
@@ -90,6 +102,12 @@ public class MailHarvester extends Harvester {
 
     /** _more_          */
     private String response;
+
+
+
+    private String action = ACTION_ATTACHMENTS;
+
+    private boolean delete = false;
 
 
 
@@ -116,7 +134,7 @@ public class MailHarvester extends Harvester {
      * @throws Exception _more_
      */
     public MailHarvester(Repository repository, Element node)
-            throws Exception {
+        throws Exception {
         super(repository, node);
     }
 
@@ -134,6 +152,8 @@ public class MailHarvester extends Harvester {
         imapUrl = XmlUtil.getAttribute(element, ATTR_IMAP_URL, imapUrl);
         folder = XmlUtil.getAttribute(element, ATTR_FOLDER, folder);
         from = XmlUtil.getAttribute(element, ATTR_FROM, from);
+        action = XmlUtil.getAttribute(element, ATTR_ACTION, action);
+        delete = XmlUtil.getAttribute(element, ATTR_DELETEEMAIL, "false").equals("true");
         subject = XmlUtil.getAttribute(element, ATTR_SUBJECT, subject);
         body= XmlUtil.getAttribute(element, ATTR_BODY, body);
         response  = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
@@ -164,6 +184,8 @@ public class MailHarvester extends Harvester {
         element.setAttribute(ATTR_IMAP_URL, imapUrl);
         element.setAttribute(ATTR_FOLDER, folder);
         element.setAttribute(ATTR_FROM, from);
+        element.setAttribute(ATTR_ACTION, action);
+        element.setAttribute(ATTR_DELETEEMAIL, ""+delete);
         element.setAttribute(ATTR_SUBJECT, subject);
         element.setAttribute(ATTR_BODY, body);
         element.setAttribute(ATTR_RESPONSE, response);
@@ -182,9 +204,13 @@ public class MailHarvester extends Harvester {
         imapUrl = request.getString(ATTR_IMAP_URL, imapUrl);
         folder = request.getString(ATTR_FOLDER, folder);
         from = request.getString(ATTR_FROM, from);
+        action = request.getString(ATTR_ACTION, action);
+        delete = request.get(ATTR_DELETEEMAIL, false);
         subject   = request.getString(ATTR_SUBJECT, subject);
         body   = request.getString(ATTR_BODY, body);
-        response  = request.getString(ATTR_RESPONSE, response);
+        if(getAdmin().isEmailCapable()) {
+            response  = request.getString(ATTR_RESPONSE, response);
+        }
     }
 
 
@@ -197,12 +223,13 @@ public class MailHarvester extends Harvester {
      * @throws Exception _more_
      */
     public void createEditForm(Request request, StringBuffer sb)
-            throws Exception {
+        throws Exception {
         super.createEditForm(request, sb);
-        addBaseGroupSelect(ATTR_BASEGROUP, sb);
-        
+       
 
 
+        sb.append(HtmlUtils.formEntry("",""));
+        sb.append(HtmlUtils.formEntry("","Email Information:"));
         sb.append(HtmlUtils.formEntry(msgLabel("Email URL"),
                                       HtmlUtils.input(ATTR_IMAP_URL,
                                                       imapUrl, HtmlUtils.SIZE_60)
@@ -213,18 +240,36 @@ public class MailHarvester extends Harvester {
                                       HtmlUtils.input(ATTR_FOLDER,
                                                       folder, HtmlUtils.SIZE_60)));
 
+        sb.append(HtmlUtils.formEntry("&nbsp;","&nbsp;"));
+        sb.append(HtmlUtils.formEntry("","Search Criteria:"));
+
         sb.append(HtmlUtils.formEntry(msgLabel("Sender Contains"),
                                       HtmlUtils.input(ATTR_FROM,
                                                       from, HtmlUtils.SIZE_60)));
         sb.append(HtmlUtils.formEntry(msgLabel("Subject Contains"),
                                       HtmlUtils.input(ATTR_SUBJECT, subject,
-                                          HtmlUtils.SIZE_60)));
+                                                      HtmlUtils.SIZE_60)));
         sb.append(HtmlUtils.formEntry(msgLabel("Body Contains"),
                                       HtmlUtils.input(ATTR_BODY, body,
-                                          HtmlUtils.SIZE_60)));
+                                                      HtmlUtils.SIZE_60)));
+
+        sb.append(HtmlUtils.formEntry("&nbsp;","&nbsp;"));
+        sb.append(HtmlUtils.formEntry("","Process email:"));
+        addBaseGroupSelect(ATTR_BASEGROUP, sb);
+        List<TwoFacedObject> actions = new ArrayList<TwoFacedObject>();
+        actions.add(new TwoFacedObject("Make entries from attachments", ACTION_ATTACHMENTS));
+        actions.add(new TwoFacedObject("Import EML file",ACTION_EML));
+        sb.append(HtmlUtils.formEntry(msgLabel("Action"),
+                                      HtmlUtils.select(ATTR_ACTION, actions, action)));
+
+        sb.append(HtmlUtils.formEntry(msgLabel(""),
+                                      HtmlUtils.checkbox(ATTR_DELETEEMAIL, "true", delete)+ " " + msg("Delete email after harvesting")));
+
+        if(getAdmin().isEmailCapable()) {
         sb.append(HtmlUtils.formEntryTop(msgLabel("Email Response"),
-                                      HtmlUtils.textArea(ATTR_RESPONSE,
-                                                         response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
+                                         HtmlUtils.textArea(ATTR_RESPONSE,
+                                                            response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
+        }
 
     }
 
@@ -294,13 +339,24 @@ public class MailHarvester extends Harvester {
             return;
         }
         emailFolder.open(Folder.READ_WRITE);
+
         int numMessages = emailFolder.getMessageCount();
         int cnt = 0;
+        int numSeen = 0;
+        int numPassed = 0;
         //Go backwards to get the newest first
+        status.append(numMessages + " messages in folder:" + folder+"<br>");
         for (int i = numMessages; i >0;i--) {
             //Only read 100 messages
             if(cnt++>100) break;
             Message message = emailFolder.getMessage(i);
+
+            if(message.isSet(Flags.Flag.SEEN) || message.isSet(Flags.Flag.DELETED)) {
+                numSeen++;
+                //logHarvesterInfo ("message has been read:"  + message.getSubject());
+                continue;
+            }
+
             String messageSubject = message.getSubject();
             String messageFrom     = InternetAddress.toString(message.getFrom());
 
@@ -308,10 +364,6 @@ public class MailHarvester extends Harvester {
                 continue;
             }
             if(!matches(from, messageFrom)) {
-                    continue;
-            }
-            if(message.isSet(Flags.Flag.SEEN)) {
-                logHarvesterInfo ("message has been read:"  + message.getSubject());
                 continue;
             }
             Object       content = message.getContent();
@@ -321,9 +373,13 @@ public class MailHarvester extends Harvester {
             if(!matches(body, messageBody)) {
                 continue;
             }
-            System.err.println("message: " + messageSubject);
+            numPassed++;
             List<Entry> newEntries = new ArrayList<Entry>();
-            processMessage(getBaseGroup(), content, messageBody, newEntries);
+            if(action.equals(ACTION_EML)) {
+                processEml(getBaseGroup(), message, newEntries);
+            } else {
+                processMessage(getBaseGroup(), message, content, messageBody, newEntries);
+            }
 
             if(newEntries.size()>0) {
                 StringBuffer result = new StringBuffer();
@@ -331,11 +387,6 @@ public class MailHarvester extends Harvester {
                     result.append(response);
                     result.append("\n");
                 }
-                if(newEntries.size()>1)
-                    status.append("Harvested " + newEntries.size() +" entries from email<br>"); 
-                else
-                    status.append("Harvested 1 entry from email<br>"); 
-
                 for(Entry newEntry: newEntries) {
                     String fullEntryUrl = 
                         HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
@@ -345,22 +396,47 @@ public class MailHarvester extends Harvester {
                         HtmlUtils.url(getRepository().URL_ENTRY_SHOW.toString(),
                                       ARG_ENTRYID, newEntry.getId());
                     
-                    status.append(HtmlUtils.href(entryUrl, newEntry.getName()));
-                    status.append("<br>");
                     result.append(fullEntryUrl);
                     result.append("\n");
+
+                    status.append("New entry: ");
+                    status.append(HtmlUtils.href(entryUrl, newEntry.getName()));
+                    if(delete) {
+                        status.append("  -- message has been deleted");
+                        logHarvesterInfo ("message has been deleted:"  + message.getSubject());
+                        message.setFlag(Flags.Flag.DELETED, true);
+                    }
+                    status.append("<br>");
                 }
                 if(defined(response) && getAdmin().isEmailCapable()) {
                     String     to     = InternetAddress.toString(message.getFrom());
                     getRepository().getAdmin().sendEmail(to, "harvested emails", result.toString(), false);
                 }
             }
-            
+         
+        }
+        int numNotPassed = cnt-numSeen-numPassed;
+
+        if(numSeen>0) {
+            status.append(plural(numSeen, "1 message has already been seen","messages have already been seen"));
+            status.append("<br>");
+        }
+        if(numNotPassed>0) {
+            status.append(plural(numNotPassed, "1 message did not meet the criteria","messages did not meet the criteria"));
+            status.append("<br>");
+        }
+        if(numPassed>0) {
+            status.append(plural(numPassed, "1 message has been processed"+(delete?" and deleted":""),"messages have been processed"+(delete?" and deleted":"")));
+            status.append("<br>");
         }
     }
 
 
-    private void processMessage(Entry parentEntry, Object content,
+    private String plural(int cnt, String phrase1, String phrase2) {
+        if(cnt==1) return phrase1;
+        return cnt+" " + phrase2;
+    }
+    private void processMessage(Entry parentEntry, Message message, Object content,
                                 String desc, List<Entry> newEntries)
         throws Exception {
 
@@ -372,7 +448,7 @@ public class MailHarvester extends Harvester {
                 if (disposition == null) {
                     Object partContent = part.getContent();
                     if (partContent instanceof MimeMultipart) {
-                        processMessage(parentEntry, partContent, desc, newEntries);
+                        processMessage(parentEntry, message, partContent, desc, newEntries);
                     } else {
                     }
                     continue;
@@ -395,11 +471,12 @@ public class MailHarvester extends Harvester {
                             typeHandler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
                         }
                         Resource resource = new Resource(f.toString(), Resource.TYPE_STOREDFILE);
-                        Date        date        = new Date();
+                        Date        now         = new Date();
+                        Date        date        = message.getReceivedDate();
                         Object[]    values      = typeHandler.makeValues(new Hashtable());
                         Entry       entry = typeHandler.createEntry(getRepository().getGUID());
                         entry.initEntry(part.getFileName(), desc.toString(), parentEntry, getUser(), resource, "",
-                                        date.getTime(), date.getTime(), date.getTime(),
+                                        now.getTime(), now.getTime(), date.getTime(),
                                         date.getTime(), values);
 
                         List<Entry> entries = (List<Entry>) Misc.newList(entry);
@@ -412,6 +489,30 @@ public class MailHarvester extends Harvester {
                 }
             }
         } 
+    }
+
+
+
+    private void processEml(Entry parentEntry, Message  message, List<Entry>entries) throws Exception {
+        String name = message.getSubject();
+        File        f = getStorageManager().getTmpFile(getRequest(),
+                                                       name+".eml");
+        OutputStream outputStream =
+            getStorageManager().getFileOutputStream(f);
+        message.writeTo(outputStream);
+        IOUtil.close(outputStream);
+        f =     getStorageManager().moveToStorage(getRequest(), f);
+        TypeHandler typeHandler  = getRepository().getTypeHandler(MailTypeHandler.TYPE_MESSAGE);
+        Resource resource = new Resource(f.toString(), Resource.TYPE_STOREDFILE);
+        Date        date        = new Date();
+        Entry       entry = typeHandler.createEntry(getRepository().getGUID());
+        Object[]    values      = typeHandler.makeValues(new Hashtable());
+        entry.initEntry(name, "", parentEntry, getUser(), resource, "",
+                        date.getTime(), date.getTime(), date.getTime(),
+                        date.getTime(), values);
+        typeHandler.initializeEntryFromForm(getRequest(),  entry, parentEntry, true);
+        entries.add(entry);
+        getEntryManager().insertEntries(entries, true, true);
     }
 
 
@@ -434,7 +535,7 @@ public class MailHarvester extends Harvester {
         URLName urlName = new URLName(url);
         System.err.println ("protocol:" + urlName.getProtocol() +" port:" + urlName.getPort() +" password:" + urlName.getPassword());
 
-       Store   store   = session.getStore(urlName);
+        Store   store   = session.getStore(urlName);
 
         if ( !store.isConnected()) {
             store.connect();
@@ -464,10 +565,10 @@ public class MailHarvester extends Harvester {
 
             if(true) return;
             /*
-            FileOutputStream fos = new FileOutputStream("test.eml");
-            message.writeTo(fos);
-            fos.close();
-            if(true) break;
+              FileOutputStream fos = new FileOutputStream("test.eml");
+              message.writeTo(fos);
+              fos.close();
+              if(true) break;
             */
             if(cnt++>100) break;
         }
@@ -479,4 +580,5 @@ public class MailHarvester extends Harvester {
         }
         return true;
     }
+
 }

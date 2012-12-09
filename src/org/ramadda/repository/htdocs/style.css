@@ -1126,9 +1126,11 @@ a.toggleblocklabellink:visited {
 }
 
 
+
+
 .formtable td {
 //vertical-align: middle;
-      padding-top: 5;
+      padding-top: 8;
       padding-left: 4;
       padding-right: 4;
 }
