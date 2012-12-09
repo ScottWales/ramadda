@@ -314,7 +314,29 @@ public class PhoneHarvester extends Harvester {
 
 
             if(tline.equals(CMD_PWD)) {
-                msg.append(getEntryInfo(currentEntry));
+                int cnt = 0;
+                List<Entry> ancestors = new ArrayList<Entry>();
+                ancestors.add(currentEntry);
+
+                if(!currentEntry.equals(baseGroup)) {
+                    Entry theEntry  = currentEntry;
+                    while(ancestors.size()<4) {
+                        theEntry = theEntry.getParentEntry();
+                        if(theEntry == null) break;
+                        ancestors.add(theEntry);
+                        if(theEntry.equals(baseGroup)) {
+                            break;
+                        }
+                    }
+                }
+                String tab = "";
+                for(int i=ancestors.size()-1;i>=0;i--) {
+                    msg.append(tab);
+                    tab = tab + " ";
+                    msg.append(ancestors.get(i).getName());
+                    msg.append("\n");
+                }
+                msg.append(getEntryUrl(currentEntry));
                 return true;
             }
 
@@ -323,11 +345,14 @@ public class PhoneHarvester extends Harvester {
                 if(toWhat.length()==0) {
                     currentEntry = baseGroup;
                 } else if(toWhat.startsWith("..")) {
+                    boolean haveSeenBaseGroup = false;
+
                     for(String tok: StringUtil.split(toWhat,"/", true, true)) {
                         if(currentEntry.equals(baseGroup)) {
-                            break;
+                            haveSeenBaseGroup = true;
                         }
                         if(tok.equals("..")) {
+                            if(haveSeenBaseGroup) break;
                             currentEntry =  currentEntry.getParentEntry();
                         } else {
                             Entry childEntry  = getEntryManager().findEntryWithName(request, currentEntry, tok);
