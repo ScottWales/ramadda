@@ -58,6 +58,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
     public static final String PROP_AUTHTOKEN = "twilio.authtoken";
     public static final String PROP_APPID = "twilio.appid";
+    public static final String PROP_TRANSCRIBE = "twilio.transcribe";
 
 
     public static final String ARG_ACCOUNTSID = "AccountSid";
@@ -80,6 +81,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     public static final String TAG_SAY = "Say";
 
     public static final String ATTR_VOICE = "voice";
+    public static final String ATTR_TRANSCRIBE = "transcribe";
 
     /** _more_          */
     public static final String ARG_FROM = "From";
@@ -163,8 +165,8 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                     String response = msg.toString();
                     if(response.length()==0) {
                         response = "Message handled";
-                    } else if(response.length()>120) {
-                        response = response.substring(0,119);
+                    } else if(response.length()>160) {
+                        response = response.substring(0,159);
                     }
                     sb.append(XmlUtil.tag(TAG_SMS, "", response));
                     handledMessage = true;
@@ -218,27 +220,29 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                     sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, this ramadda repository does not accept voice messages</Say>"));
                 } else {
                     sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),voiceResponse));
-                    sb.append(XmlUtil.tag(TAG_RECORD, XmlUtil.attrs(new String[]{
+                    String recordAttrs = XmlUtil.attrs(new String[]{
                                     "maxLength", "30",
-                                    authToken!=null?"transcribe":"dummy", "true"
-                                })));
+                        });
+
+                    if(getRepository().getProperty(PROP_TRANSCRIBE, false)) {
+                        recordAttrs+= XmlUtil.attr(ATTR_TRANSCRIBE,"true");
+                    }
+                    sb.append(XmlUtil.tag(TAG_RECORD, recordAttrs));
                 }
             } else {
                 info.setRecordingUrl(recordingUrl);
-                if(authToken!=null) {
-                    String text = getTranscriptionText(request, authToken);
-                    if(text == null) {
-                        Misc.sleepSeconds(5);
+                if(getRepository().getProperty(PROP_TRANSCRIBE, false)) {
+                    int cnt =0;
+                    String text = null;
+                    while(cnt++<5) {
                         text = getTranscriptionText(request, authToken);
-                        if(text == null) {
-                            Misc.sleepSeconds(5);
-                            text = getTranscriptionText(request, authToken);
-                        }
+                        if(text!=null) break;
+                        Misc.sleepSeconds(3);
                     }
                     if(text!=null) {
                         info.setTranscription(text);
                     } else {
-                        System.err.println("processVoice: failed to get text");
+                        System.err.println("processVoice: failed to get transcription text");
                     }
                 }
 

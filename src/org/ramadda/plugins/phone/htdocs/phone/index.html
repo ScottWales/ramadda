@@ -6,9 +6,60 @@ You can create wiki pages, notes, etc., through text messages.
 
 <p>
 
+<style type="text/css">
+.sms {
+  border : 1px #888888 solid;
+  background: #fffeec;
+   border-radius: 6px;
+   border-radius: 6px;
+   -moz-border-radius: 6px;
+   -moz-border-radius: 6px;
+   -webkit-border-radius: 6px;
+   -webkit-border-radius: 6px;
+   margin: 0px;
+}
+
+
 See <a href="configuration.html">here</a> to configure your RAMADDA server.
 
 <h2>Using SMS</h2>
+Create a note:
+<div class=sms>note &lt;name&gt;
+some text 
+more text
+</div>
+
+Create a folder:
+<pre>folder &lt;name&gt;
+text
+</pre>
+
+Create a sms message:
+<pre>sms &lt;name&gt;
+text
+</pre>
+
+Create a wiki page:
+<pre>wiki &lt;name&gt;
+text
+</pre>
+
+Append to an existing entry:
+<pre>append
+note &lt;name of entry&gt;
+text to append
+</pre>
+
+
+
+List the contents:
+<pre>ls</pre>
+
+Change directory to a folder:
+<pre>cd &lt;folder&gt;</pre>
+
+
+
 
 <h2>Using Voice</h2>
 

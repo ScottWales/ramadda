@@ -25,8 +25,14 @@ You then need to define the following properties on your RAMADDA server
 (e.g., in a phone.properties file in your RAMADDA home directory) 
 
 <pre>
+#Twilio Application SID
 twilio.appid=
+
+#Twili authorization token (for reading the transcription)
 twilio.authtoken=
+
+#If you have a paid twilio account set this to true to transcribe voice
+#twilio.transcribe=true or false
 </pre>
 
 This is the application SID and the authorization token you can get from your Twilio account dashboard.

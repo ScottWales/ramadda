@@ -70,7 +70,7 @@ public class PhoneHarvester extends Harvester {
     public static final String CMD_LS = "ls";
     public static final String CMD_GET = "get";
     public static final String CMD_URL = "url";
-    public static final String DELIMITER = "/";
+
 
     /** _more_          */
     public static final String ATTR_TYPE = "type";
@@ -614,8 +614,6 @@ public class PhoneHarvester extends Harvester {
                                          HtmlUtils.input(ATTR_VOICEMESSAGE,voiceMessage,  HtmlUtils.SIZE_60)));
     }
 
-
-
     /**
      * _more_
      *
@@ -661,7 +659,7 @@ public class PhoneHarvester extends Harvester {
     }
 
     private Entry getEntry(Request request, String line, String cmd, Entry currentEntry, StringBuffer msg) throws Exception {
-        for(String name: StringUtil.split(line.substring(cmd.length()).trim(),DELIMITER, true, true)) {
+        for(String name: StringUtil.split(line.substring(cmd.length()).trim(),"/", true, true)) {
 
             Entry childEntry= null;
             if(name.matches("\\d+")) {
@@ -689,9 +687,10 @@ public class PhoneHarvester extends Harvester {
 
     private String getHelp() {
         return CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
-            CMD_APPEND+"\n" +
-            "create:\nfolder,wiki,note,sms &lt;name&gt;\n" +
-            "&lt;text&gt;";
+            CMD_APPEND+"\nnew:\n" +
+            "folder,note &lt;name&gt;\n" +
+            "&lt;text&gt;\n\n" +
+            "http://ramadda.org/repository/phone/index.html";
     }
 
 
