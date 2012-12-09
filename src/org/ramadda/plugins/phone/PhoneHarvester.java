@@ -227,6 +227,12 @@ public class PhoneHarvester extends Harvester {
 
 
         message = message.trim();
+
+        if(message.equals("knock knock")) {
+            msg.append("Who's there?");
+            return true;
+        }
+
         if(message.equals("help") || message.equals("?")) {
             msg.append(getHelp());
             return true;
