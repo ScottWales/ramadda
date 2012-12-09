@@ -9,55 +9,68 @@ You can create wiki pages, notes, etc., through text messages.
 <style type="text/css">
 .sms {
   border : 1px #888888 solid;
-  background: #fffeec;
+  background: #efefef;
    border-radius: 6px;
    border-radius: 6px;
    -moz-border-radius: 6px;
    -moz-border-radius: 6px;
    -webkit-border-radius: 6px;
    -webkit-border-radius: 6px;
-   margin: 0px;
+   margin: 5px;
+   margin-bottom: 10px;
+   padding-left: 5px;
+   padding-right: 5px;
+   font-style:italic;
+   max-width: 300px;
 }
+</style>
 
 
 See <a href="configuration.html">here</a> to configure your RAMADDA server.
 
 <h2>Using SMS</h2>
 Create a note:
-<div class=sms>note &lt;name&gt;
+<pre class=sms>note &lt;name&gt;
 some text 
 more text
-</div>
+</pre>
 
 Create a folder:
-<pre>folder &lt;name&gt;
+<pre class=sms>folder &lt;name&gt;
 text
 </pre>
 
 Create a sms message:
-<pre>sms &lt;name&gt;
+<pre class=sms>sms &lt;name&gt;
 text
 </pre>
 
 Create a wiki page:
-<pre>wiki &lt;name&gt;
+<pre class=sms>wiki &lt;name&gt;
 text
 </pre>
 
 Append to an existing entry:
-<pre>append
+<pre class=sms>append
 note &lt;name of entry&gt;
 text to append
 </pre>
 
 
-
 List the contents:
-<pre>ls</pre>
+<pre class=sms>ls</pre>
 
 Change directory to a folder:
-<pre>cd &lt;folder&gt;</pre>
+<pre class=sms>cd &lt;folder&gt;
+cd ..
+etc.
+</pre>
 
+Print the current folder:
+<pre class=sms>pwd</pre>
+
+Get the text of an entry:
+<pre class=sms>get &lt;entry name&gt;</pre>
 
 
 
