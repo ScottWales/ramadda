@@ -165,10 +165,22 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                     String response = msg.toString();
                     if(response.length()==0) {
                         response = "Message handled";
-                    } else if(response.length()>160) {
-                        response = response.substring(0,159);
+                    } 
+
+                    int cnt = 0;
+                    System.err.println("************");
+                    while(true) {
+                        if(cnt++>5) break;
+                        if(response.length()<160) {
+                            sb.append(XmlUtil.tag(TAG_SMS, "", response));
+                            break;
+                        }
+                        String prefix =response.substring(0,159);
+                        sb.append(XmlUtil.tag(TAG_SMS, "", prefix));
+                        response = response.substring(159);
+                        System.err.println("prefix:" + prefix);
+                        System.err.println("rest:" + response);
                     }
-                    sb.append(XmlUtil.tag(TAG_SMS, "", response));
                     handledMessage = true;
                     break;
                 }
@@ -252,7 +264,11 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                     }
 
                     for (PhoneHarvester harvester : getHarvesters()) {
-                        if (harvester.handleVoice(request, info)) {
+                        StringBuffer msg = new StringBuffer();
+                        if (harvester.handleVoice(request, info,msg)) {
+                            if(msg.length()>0) {
+                                sb.append(XmlUtil.tag(TAG_SMS, "", msg.toString()));
+                            }
                             break;
                         }
                     }
@@ -268,7 +284,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             getLogManager().logError("Error handling twilio voice message", exc);
         }
         sb.append(XmlUtil.closeTag(TAG_RESPONSE));
-        System.err.println(sb);
+        System.err.println("voice response:" + sb);
         return new Result("", sb, "text/xml");
     }
 

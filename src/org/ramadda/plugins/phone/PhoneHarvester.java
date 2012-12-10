@@ -525,7 +525,7 @@ public class PhoneHarvester extends Harvester {
     }
 
 
-    public boolean handleVoice(Request request, PhoneInfo info)
+    public boolean handleVoice(Request request, PhoneInfo info,StringBuffer msg)
             throws Exception {
         if(getVoiceResponse(info)==null) {
             return false;
@@ -572,6 +572,7 @@ public class PhoneHarvester extends Harvester {
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().insertEntries(entries, true, true);
+        msg.append(getEntryInfo(entry));
         return true;
     }
 
@@ -789,17 +790,14 @@ public class PhoneHarvester extends Harvester {
         
         if(!defined(viewPassword) && !defined(editPassword)) {
             //If no view or edit password then anyone can do anything
+            //TODO??? Do we really want to allow edit access
             canView = true;
             canEdit = true;
         } else {
-            //If no view then use edit password
             if(!defined(viewPassword)) {
-                viewPassword = editPassword;
-            } 
-            if(defined(viewPassword)) {
-                canView = password.equals(viewPassword);
-            } else {
                 canView = true;
+            }  else {
+                canView = password.equals(viewPassword);
             }
 
             if(defined(editPassword)) {
@@ -807,10 +805,10 @@ public class PhoneHarvester extends Harvester {
             } else {
                 canEdit = false;
             }
-
             //If the user has edit permissions then they also can view
             if(canEdit) canView = true;
         }
+
         session.canView = canView;
         session.canEdit = canEdit;
         return session;
