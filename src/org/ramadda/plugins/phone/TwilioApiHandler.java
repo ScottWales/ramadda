@@ -270,18 +270,14 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                         StringBuffer msg = new StringBuffer();
                         if (harvester.handleVoice(request, info,msg)) {
                             if(msg.length()>0) {
-                                String smsUrl = getApiPrefix()+"/SMS/Messages";
-                                List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
-                                postEntries.add(HttpFormEntry.hidden("From", info.getToPhone()));
-                                postEntries.add(HttpFormEntry.hidden("To", info.getFromPhone()));
-                                postEntries.add(HttpFormEntry.hidden("Body", msg.toString()));
-                                String[]result =  HttpFormEntry.doPost(postEntries, smsUrl);
-                                if(result[0]!=null) {
-                                    System.err.println ("Error posting to " + smsUrl);
-                                    System.err.println (result[0]);
-                                } else {
-                                    System.err.println ("OK:" + result[1]);
-                                }
+
+                                //                               String smsUrl = getApiPrefix()+"/SMS/Messages";
+                                String smsUrl = "https://" + getRepository().getProperty(PROP_APPID,null) +":" + getRepository().getProperty(PROP_AUTHTOKEN, null)+"@api.twilio.com/2010-04-01/Accounts/"+getRepository().getProperty(PROP_APPID,null)+"/SMS/Messages";
+                                String result = doPost(smsUrl,"From=" + URLEncoder.encode(info.getToPhone(),"UTF-8") + "&" +
+                                                       "To=" +URLEncoder.encode(info.getFromPhone(),"UTF-8") +"&" +
+                                                       "Body=" + URLEncoder.encode(msg.toString(),"UTF-8"));
+                                //                                String[]result =  HttpFormEntry.doPost(postEntries, smsUrl);
+                                System.err.println ("Result:" + result);
                                 /*
                                 sb.append(XmlUtil.tag(TAG_SMS, XmlUtil.attrs(new String[]{
                                             ATTR_FROM, info.getToPhone(),
@@ -340,6 +336,29 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         }
         return null;
     }
+
+
+    private String doPost(String url, String args) throws Exception {
+        URL myurl = new URL(url);
+        HttpURLConnection     huc = (HttpURLConnection) myurl.openConnection();            
+        String auth  = getRepository().getProperty(PROP_APPID,null)+":" +  getRepository().getProperty(PROP_AUTHTOKEN,null);
+        String encoding = RepositoryUtil.encodeBase64 (auth.getBytes());
+        huc.addRequestProperty("Authorization",
+                               "Basic " + encoding);
+
+        huc.setRequestMethod("POST");
+        huc.setRequestProperty("Content-length", String.valueOf(args.length())); 
+        huc.setDoOutput(true); 
+        huc.setDoInput(true); 
+        DataOutputStream output = new DataOutputStream(huc.getOutputStream());  
+        output.writeBytes(args);
+        output.close();
+        return new String(IOUtil.readBytes(huc.getInputStream(), null )); 
+    }
+
+
+
+
 
 
 }
