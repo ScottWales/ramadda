@@ -64,6 +64,7 @@ import java.util.Properties;
 public class PhoneHarvester extends Harvester {
 
     public static final String CMD_PASS = "pass";
+    public static final String CMD_LOGOUT = "logout";
     public static final String CMD_APPEND = "append";
     public static final String CMD_CD = "cd";
     public static final String CMD_PWD= "pwd";
@@ -82,7 +83,8 @@ public class PhoneHarvester extends Harvester {
     public static final String ATTR_TOPHONE = "tophone";
 
     /** _more_          */
-    public static final String ATTR_PASSCODE = "passcode";
+    public static final String ATTR_PASSWORD_VIEW = "password_view";
+    public static final String ATTR_PASSWORD_EDIT = "password_edit";
 
     public static final String ATTR_RESPONSE = "response";
     public static final String ATTR_VOICEMESSAGE = "voicemessage";
@@ -101,7 +103,8 @@ public class PhoneHarvester extends Harvester {
     private String toPhone;
 
     /** _more_          */
-    private String passCode;
+    private String passwordView;
+    private String passwordEdit;
 
     /** _more_          */
     private String response;
@@ -112,7 +115,10 @@ public class PhoneHarvester extends Harvester {
 
     private Hashtable<String,String> phoneToEntry = new Hashtable<String,String>();
 
-    private TTLCache<String, String> passCodePhones = new TTLCache<String,String>(24*60 * 60 * 1000);
+    private TTLCache<String, PhoneSession> sessions = new TTLCache<String,PhoneSession>(24*60 * 60 * 1000);
+
+
+
 
 
     /**
@@ -154,7 +160,8 @@ public class PhoneHarvester extends Harvester {
         super.init(element);
         fromPhone = normalizePhone(XmlUtil.getAttribute(element, ATTR_FROMPHONE, fromPhone));
         toPhone   = normalizePhone(XmlUtil.getAttribute(element, ATTR_TOPHONE, toPhone));
-        passCode  = XmlUtil.getAttribute(element, ATTR_PASSCODE, passCode);
+        passwordView  = XmlUtil.getAttribute(element, ATTR_PASSWORD_VIEW, passwordView);
+        passwordEdit  = XmlUtil.getAttribute(element, ATTR_PASSWORD_EDIT, passwordEdit);
         response  = XmlUtil.getAttribute(element, ATTR_RESPONSE, response);
         voiceMessage = XmlUtil.getAttribute(element, ATTR_VOICEMESSAGE,  voiceMessage);
         type      = XmlUtil.getAttribute(element, ATTR_TYPE, type);
@@ -167,6 +174,23 @@ public class PhoneHarvester extends Harvester {
         return phone;
     }
 
+
+
+    private PhoneSession getSession(PhoneInfo info)     {
+        PhoneSession  session = sessions.get(info.getFromPhone());        
+        if(session==null) {
+            session = makeSession(info, "somedummypassword");
+        }
+        return setSessionState(session);
+        
+    }
+    
+          
+    public boolean canEdit(PhoneInfo info)     {
+        return getSession(info).getCanEdit();
+    }
+
+    
 
 
 
@@ -223,8 +247,6 @@ public class PhoneHarvester extends Harvester {
 
 
 
-        String needToCheckPassCode = passCode;
-
 
         message = message.trim();
 
@@ -242,35 +264,40 @@ public class PhoneHarvester extends Harvester {
         StringBuffer desc = new StringBuffer();
         boolean doAppend = false;
         boolean processedACommand = false;
+        String sessionKey = info.getFromPhone();
+        PhoneSession session = getSession(info);
+        
+
         for(String line: StringUtil.split(message,"\n")) {
             line = line.trim();
             String tline = line.toLowerCase();
 
-            if(tline.startsWith(CMD_PASS+" ")) {
-                if(defined(needToCheckPassCode)) {
-                    String password = line.substring(CMD_PASS.length()).trim();
-                    if(!password.equals(needToCheckPassCode)) {
-                        msg.append("Incorrect password");
-                        return true;
-                    }
-                    passCodePhones.put(info.getFromPhone(), info.getFromPhone());
-                    needToCheckPassCode = null;
-                }
+            if(tline.equals(CMD_LOGOUT)) {
+                session = null;
+                sessions.remove(sessionKey);
+                processedACommand = true;
                 continue;
             }
 
-            if(defined(needToCheckPassCode)) {
-                if(passCodePhones.get(info.getFromPhone())==null) {
-                    if(!tline.equals(needToCheckPassCode)) {
-                        msg.append("Message does not contain passcode\nEnter:\npass &lt;password&gt;");
-                        return true;
-                    }
-                    passCodePhones.put(info.getFromPhone(), info.getFromPhone());
-                    needToCheckPassCode = null;
-                    continue;
-                } else {
-                    needToCheckPassCode = null;
+            if(session == null) {
+                session = makeSession(info, "somedummypassword");
+            }
+
+            if(tline.startsWith(CMD_PASS+" ")) {
+                String password = line.substring(CMD_PASS.length()).trim();
+                session = makeSession(info,password);
+                sessions.put(sessionKey, session);
+                if(!session.getCanView()) {
+                    msg.append("Bad password\nEnter:\npass &lt;password&gt;");
+                    return true;
                 }
+                processedACommand = true;
+                continue;
+            }
+
+            if(!session.getCanView()) {
+                msg.append("Access is not allowed without a password\nEnter:\npass &lt;password&gt;");
+                return true;
             }
 
             if(tline.startsWith(CMD_LS)) {
@@ -372,6 +399,13 @@ public class PhoneHarvester extends Harvester {
                 processedACommand = true;
                 continue;
             }
+
+
+            if(!session.getCanEdit()) {
+                msg.append("Editing is not allowed without a password\nEnter:\npass &lt;password&gt;");
+                return true;
+            }
+
 
             if(tline.startsWith(CMD_APPEND)) {
                 currentEntry =  getEntry(request, line, CMD_APPEND, currentEntry, msg);
@@ -493,12 +527,16 @@ public class PhoneHarvester extends Harvester {
 
     public boolean handleVoice(Request request, PhoneInfo info)
             throws Exception {
-        //        if(passCode!=null && passCode.length()>0) {
         if(getVoiceResponse(info)==null) {
             return false;
         }
         System.err.println ("handleVoice:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
                             info.getToPhone());
+        PhoneSession session = getSession(info);
+        if(!session.getCanEdit()) {
+            throw new IllegalAccessException("No edit permissions");
+        }
+
         Entry       baseGroup   = getBaseGroup();
         Entry       parent      = baseGroup;
         String pastEntry = phoneToEntry.get(info.getFromPhone());
@@ -576,7 +614,8 @@ public class PhoneHarvester extends Harvester {
         super.applyState(element);
         element.setAttribute(ATTR_FROMPHONE, fromPhone);
         element.setAttribute(ATTR_TOPHONE, toPhone);
-        element.setAttribute(ATTR_PASSCODE, passCode);
+        element.setAttribute(ATTR_PASSWORD_VIEW, passwordView);
+        element.setAttribute(ATTR_PASSWORD_EDIT, passwordEdit);
         element.setAttribute(ATTR_RESPONSE, response);
         element.setAttribute(ATTR_VOICEMESSAGE, voiceMessage);
         element.setAttribute(ATTR_TYPE, type);
@@ -594,7 +633,9 @@ public class PhoneHarvester extends Harvester {
         super.applyEditForm(request);
         fromPhone = request.getString(ATTR_FROMPHONE, fromPhone);
         toPhone   = request.getString(ATTR_TOPHONE, toPhone);
-        passCode  = request.getString(ATTR_PASSCODE, passCode);
+        passwordView  = request.getString(ATTR_PASSWORD_VIEW, passwordView);
+        passwordEdit  = request.getString(ATTR_PASSWORD_EDIT, passwordEdit);
+
         response  = request.getString(ATTR_RESPONSE, response);
         voiceMessage  = request.getString(ATTR_VOICEMESSAGE, voiceMessage);
         type      = request.getString(ATTR_TYPE, type);
@@ -626,9 +667,14 @@ public class PhoneHarvester extends Harvester {
         sb.append(HtmlUtils.formEntry(msgLabel("To Phone"),
                                       HtmlUtils.input(ATTR_TOPHONE, toPhone,
                                           HtmlUtils.SIZE_15)+suffix));
-        sb.append(HtmlUtils.formEntry(msgLabel("Pass Code"),
-                                      HtmlUtils.input(ATTR_PASSCODE,
-                                                      passCode, HtmlUtils.SIZE_15)));
+        String msg1 = "   If no passwords are specified than anyone can view and edit";
+        
+        sb.append(HtmlUtils.formEntry(msgLabel("View Password"),
+                                      HtmlUtils.input(ATTR_PASSWORD_VIEW,
+                                                      passwordView, HtmlUtils.SIZE_15)+msg1));
+        sb.append(HtmlUtils.formEntry(msgLabel("Edit Password"),
+                                      HtmlUtils.input(ATTR_PASSWORD_EDIT,
+                                                      passwordEdit, HtmlUtils.SIZE_15)));
 
         /*
         sb.append(HtmlUtils.formEntryTop(msgLabel("SMS Response"),
@@ -718,11 +764,80 @@ public class PhoneHarvester extends Harvester {
 
 
     private String getHelp() {
-        return CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
+        return CMD_PASS +" &lt;password&gt;\n" +
+            CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
             CMD_APPEND+"\nnew:\n" +
             "folder,note &lt;name&gt;\n" +
             "&lt;text&gt;\n\n" +
             "http://ramadda.org/repository/phone/index.html";
+    }
+
+
+    private PhoneSession makeSession(PhoneInfo info, String password) {
+        return setSessionState(new PhoneSession(info.getFromPhone(), password, false, false));
+    }
+
+    private PhoneSession setSessionState(PhoneSession session) {
+
+        String password = session.password;
+        
+        boolean canView = false;
+        boolean canEdit = false;
+
+        String viewPassword = passwordView;
+        String editPassword = passwordEdit;
+        
+        if(!defined(viewPassword) && !defined(editPassword)) {
+            //If no view or edit password then anyone can do anything
+            canView = true;
+            canEdit = true;
+        } else {
+            //If no view then use edit password
+            if(!defined(viewPassword)) {
+                viewPassword = editPassword;
+            } 
+            if(defined(viewPassword)) {
+                canView = password.equals(viewPassword);
+            } else {
+                canView = true;
+            }
+
+            if(defined(editPassword)) {
+                canEdit = password.equals(editPassword);
+            } else {
+                canEdit = false;
+            }
+
+            //If the user has edit permissions then they also can view
+            if(canEdit) canView = true;
+        }
+        session.canView = canView;
+        session.canEdit = canEdit;
+        return session;
+    }
+
+
+    private static class PhoneSession {
+        String fromPhone;
+        String password;
+        boolean canView = false;
+        boolean canEdit = false;
+
+        PhoneSession(String fromPhone, String password, boolean canView, boolean canEdit) {
+            this.fromPhone = fromPhone;
+            this.password = password;
+            this.canView = canView;
+            this.canEdit = canEdit;
+        }
+
+        public boolean getCanView() {
+            return canView;
+        }
+
+        public boolean getCanEdit() {
+            return canEdit;
+        }
+
     }
 
 

@@ -201,60 +201,74 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         StringBuffer sb = new StringBuffer();
         sb.append(XML_HEADER);
         sb.append(XmlUtil.openTag(TAG_RESPONSE));
-        PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
-                                       request.getString(ARG_FROM, ""),
-                                       request.getString(ARG_TO, ""), null);
-        if(!callOK(request)) {
-            sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, bad application identifier"));
-        } else {
-            if(recordingUrl==null) {
-                String voiceResponse = null;
-                for (PhoneHarvester harvester : getHarvesters()) {
-                    String response = harvester.getVoiceResponse(info);
-                    if(response!=null && response.trim().length()>0) {
-                        voiceResponse = response;
-                        break;
-                    }
-                }
-                if(voiceResponse==null) {
-                    sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, this ramadda repository does not accept voice messages</Say>"));
-                } else {
-                    sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),voiceResponse));
-                    String recordAttrs = XmlUtil.attrs(new String[]{
-                                    "maxLength", "30",
-                        });
-
-                    if(getRepository().getProperty(PROP_TRANSCRIBE, false)) {
-                        recordAttrs+= XmlUtil.attr(ATTR_TRANSCRIBE,"true");
-                    }
-                    sb.append(XmlUtil.tag(TAG_RECORD, recordAttrs));
-                }
+        try {
+            PhoneInfo info = new PhoneInfo(PhoneInfo.TYPE_SMS,
+                                           request.getString(ARG_FROM, ""),
+                                           request.getString(ARG_TO, ""), null);
+            if(!callOK(request)) {
+                sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, bad application identifier"));
             } else {
-                info.setRecordingUrl(recordingUrl);
-                if(getRepository().getProperty(PROP_TRANSCRIBE, false)) {
-                    int cnt =0;
-                    String text = null;
-                    while(cnt++<5) {
-                        text = getTranscriptionText(request, authToken);
-                        if(text!=null) break;
-                        Misc.sleepSeconds(3);
+                if(recordingUrl==null) {
+                    String voiceResponse = null;
+                    boolean canEdit = true;
+                    for (PhoneHarvester harvester : getHarvesters()) {
+                        String response = harvester.getVoiceResponse(info);
+                        if(response!=null && response.trim().length()>0) {
+                            voiceResponse = response;
+                            canEdit = harvester.canEdit(info);
+                            break;
+                        }
                     }
-                    if(text!=null) {
-                        info.setTranscription(text);
+                    if(voiceResponse==null) {
+                        sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, this ramadda repository does not accept voice messages"));
+                    } else if(!canEdit) {
+                        sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, you need to login through a text message first"));
                     } else {
-                        System.err.println("processVoice: failed to get transcription text");
-                    }
-                }
+                        sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),voiceResponse));
+                        String recordAttrs = XmlUtil.attrs(new String[]{
+                                "maxLength", "30",
+                            });
 
-                for (PhoneHarvester harvester : getHarvesters()) {
-                    if (harvester.handleVoice(request, info)) {
-                        break;
+                        if(getRepository().getProperty(PROP_TRANSCRIBE, false)) {
+                            recordAttrs+= XmlUtil.attr(ATTR_TRANSCRIBE,"true");
+                        }
+                        sb.append(XmlUtil.tag(TAG_RECORD, recordAttrs));
                     }
-                }
+                } else {
+                    info.setRecordingUrl(recordingUrl);
+                    if(getRepository().getProperty(PROP_TRANSCRIBE, false)) {
+                        int cnt =0;
+                        String text = null;
+                        while(cnt++<5) {
+                            text = getTranscriptionText(request, authToken);
+                            if(text!=null) break;
+                            Misc.sleepSeconds(3);
+                        }
+                        if(text!=null) {
+                            info.setTranscription(text);
+                        } else {
+                            System.err.println("processVoice: failed to get transcription text");
+                        }
+                    }
 
+                    for (PhoneHarvester harvester : getHarvesters()) {
+                        if (harvester.handleVoice(request, info)) {
+                            break;
+                        }
+                    }
+
+                }
             }
+        } catch(Exception exc) {
+            sb = new StringBuffer();
+            sb.append(XML_HEADER);
+            sb.append(XmlUtil.openTag(TAG_RESPONSE));
+            sb.append(XmlUtil.tag(TAG_SAY,XmlUtil.attr(ATTR_VOICE,"woman"),"Sorry, an error occurred"));
+            exc.printStackTrace();
+            getLogManager().logError("Error handling twilio voice message", exc);
         }
         sb.append(XmlUtil.closeTag(TAG_RESPONSE));
+        System.err.println(sb);
         return new Result("", sb, "text/xml");
     }
 
