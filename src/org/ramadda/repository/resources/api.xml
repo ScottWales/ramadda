@@ -21,7 +21,6 @@
       <api request="/entry/upload"           method="processEntryUpload"     actions="upload"/>
       <api request="/entry/getbyfilename/*"      method="processEntryGetByFilename"    authmethod="httpauth"  />
       <api request="/entry/get/*"            method="processEntryGet"        authmethod="httpauth"  />
-
       <api request="/entry/getentries"       method="processGetEntries" />
       <api request="/entry/copy"             method="processEntryCopy"/>
       <api request="/entry/import"           method="processEntryImport" actions="new"/>
@@ -30,6 +29,7 @@
       <api request="/entry/comments/show"    method="processCommentsShow"/>
       <api request="/entry/comments/add"     method="processCommentsAdd"      actions="comment"/>
       <api request="/entry/comments/edit"    method="processCommentsEdit"     actions="edit"/>
+      <api request="/entry/*"                method="processEntryShowPath"        authmethod="httpauth"  />
   </group>
 
 

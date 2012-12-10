@@ -441,7 +441,6 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-
         if (entry.getIsRemoteEntry()) {
             String redirectUrl = entry.getRemoteServer()
                                  + getRepository().URL_ENTRY_SHOW.getPath();
@@ -2726,6 +2725,14 @@ public class EntryManager extends RepositoryManager {
         }
 
         return processEntryGet(request, entries.get(0));
+    }
+
+
+    public Result processEntryShowPath(Request request) throws Exception {
+        List<String> toks = StringUtil.split(request.getRequestPath(),"/",true,true);
+        String id = toks.get(toks.size()-1);
+        Entry entry = getEntry(request, id);
+        return processEntryShow(request, entry);
     }
 
 
