@@ -301,11 +301,10 @@ public class PhoneHarvester extends Harvester {
                 return true;
             }
 
-            String str = "\u1F4C1";
             if(tline.startsWith(CMD_LS)) {
                 String remainder = line.substring(CMD_LS.length()).trim();
                 for(Entry child: getEntryManager().getChildren(request, currentEntry)) {
-                    String childName = child.getName();
+                    String childName = child.getName().trim();
                     if(remainder.length()>0) {
                         if(childName.indexOf(remainder)<0) {
                             continue;
@@ -314,9 +313,13 @@ public class PhoneHarvester extends Harvester {
                     if(child.isGroup()) {
                         msg.append("&gt;");
                         //msg.append(str);
+                    } else {
+                        msg.append(" ");
                     }
-                    msg.append(" ");
-                    msg.append(childName.trim());
+                    if(childName.length()>10) {
+                        childName = childName.substring(0,9) +"...";
+                    }
+                    msg.append(childName);
                     msg.append("\n");
                 }
                 if(msg.length()==0) {
