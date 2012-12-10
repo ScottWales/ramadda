@@ -344,9 +344,10 @@ public class PhoneHarvester extends Harvester {
                 String toWhat = line.substring(CMD_CD.length()).trim();
                 if(toWhat.length()==0) {
                     currentEntry = baseGroup;
+                } else if(toWhat.startsWith("/")) {
+                    currentEntry =  getEntry(request, toWhat, "", baseGroup, msg);
                 } else if(toWhat.startsWith("..")) {
                     boolean haveSeenBaseGroup = false;
-
                     for(String tok: StringUtil.split(toWhat,"/", true, true)) {
                         if(currentEntry.equals(baseGroup)) {
                             haveSeenBaseGroup = true;
@@ -381,8 +382,8 @@ public class PhoneHarvester extends Harvester {
             }
 
             if(type == null) {
-                String[]cmds = {"folder","wiki","sms","note"};
-                String[]types = {TypeHandler.TYPE_GROUP,"wikipage","phone_sms","notes_note"};
+                String[]cmds = {"folder","mkdir","wiki","sms","note"};
+                String[]types = {TypeHandler.TYPE_GROUP,TypeHandler.TYPE_GROUP,"wikipage","phone_sms","notes_note"};
                 boolean didOne = false;
                 for(int i=0;i<cmds.length;i++) {
                     if(tline.startsWith(cmds[i] +" ")) {
@@ -440,7 +441,7 @@ public class PhoneHarvester extends Harvester {
             values[0] = info.getFromPhone();
             values[1] = info.getToPhone();
         } else if (type.equals("wikipage")) {
-            values[0] = desc.toString();
+            values[0] = desc.toString().replaceAll("<br>","\n");
             desc = new StringBuffer();
         }
 
