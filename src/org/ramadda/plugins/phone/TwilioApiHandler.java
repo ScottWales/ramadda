@@ -34,6 +34,7 @@ import org.ramadda.util.HtmlUtils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.ui.HttpFormEntry;
 
 
 import ucar.unidata.util.Misc;
@@ -269,10 +270,24 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                         StringBuffer msg = new StringBuffer();
                         if (harvester.handleVoice(request, info,msg)) {
                             if(msg.length()>0) {
+                                String smsUrl = getApiPrefix()+"/SMS/Messages";
+                                List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
+                                postEntries.add(HttpFormEntry.hidden("From", info.getToPhone()));
+                                postEntries.add(HttpFormEntry.hidden("To", info.getFromPhone()));
+                                postEntries.add(HttpFormEntry.hidden("Body", msg.toString()));
+                                String[]result =  HttpFormEntry.doPost(postEntries, smsUrl);
+                                if(result[0]!=null) {
+                                    System.err.println ("Error posting to " + smsUrl);
+                                    System.err.println (result[0]);
+                                } else {
+                                    System.err.println ("OK:" + result[1]);
+                                }
+                                /*
                                 sb.append(XmlUtil.tag(TAG_SMS, XmlUtil.attrs(new String[]{
                                             ATTR_FROM, info.getToPhone(),
                                             ATTR_TO, info.getFromPhone(),
                                             }), msg.toString()));
+                                */
                             }
                             break;
                         }
@@ -294,10 +309,15 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     }
 
 
+    private String getApiPrefix() {
+        return  "https://api.twilio.com/2010-04-01/Accounts/" +
+            getRepository().getProperty(PROP_APPID,null);
+            
+    }
+
 
     private String getTranscriptionText(Request request, String authToken) throws Exception {
-        String transcriptionUrl = "https://api.twilio.com/2010-04-01/Accounts/" +
-            request.getString(ARG_ACCOUNTSID, null)+"/Recordings/"+ 
+        String transcriptionUrl = getApiPrefix()+"/Recordings/"+ 
             request.getString(ARG_RECORDINGSID,null)+"/Transcriptions";
         URL url        = new URL(transcriptionUrl);
         HttpURLConnection     huc = (HttpURLConnection) url.openConnection();            
