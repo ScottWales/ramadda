@@ -82,6 +82,8 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
     public static final String ATTR_VOICE = "voice";
     public static final String ATTR_TRANSCRIBE = "transcribe";
+    public static final String ATTR_TO = "to";
+    public static final String ATTR_FROM = "from";
 
     /** _more_          */
     public static final String ARG_FROM = "From";
@@ -267,7 +269,10 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                         StringBuffer msg = new StringBuffer();
                         if (harvester.handleVoice(request, info,msg)) {
                             if(msg.length()>0) {
-                                sb.append(XmlUtil.tag(TAG_SMS, "", msg.toString()));
+                                sb.append(XmlUtil.tag(TAG_SMS, XmlUtil.attrs(new String[]{
+                                            ATTR_FROM, info.getToPhone(),
+                                            ATTR_TO, info.getFromPhone(),
+                                            }), msg.toString()));
                             }
                             break;
                         }
