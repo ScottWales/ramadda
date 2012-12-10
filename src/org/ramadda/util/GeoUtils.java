@@ -27,6 +27,7 @@ import ucar.unidata.util.StringUtil;
 
 import org.w3c.dom.*;
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -257,6 +258,9 @@ public class GeoUtils {
 
     }
 
+    private static Hashtable<String,double[]> addressToLocation = new Hashtable<String,double[]>();
+
+
     /**
      * Look up the location of the given address
      *
@@ -272,6 +276,8 @@ public class GeoUtils {
         if (address.length() == 0) {
             return null;
         }
+        double[] location = addressToLocation.get(address);
+        if(location!=null) return location;
 
         String latString      = null;
         String lonString      = null;
@@ -292,9 +298,10 @@ public class GeoUtils {
             }
         } catch (Exception exc) {}
         if ((latString != null) && (lonString != null)) {
-            return new double[] { Double.parseDouble(latString),
+            location = new double[] { Double.parseDouble(latString),
                                   Double.parseDouble(lonString) };
-
+            addressToLocation.put(address, location);
+            return location;
         }
 
         return null;
