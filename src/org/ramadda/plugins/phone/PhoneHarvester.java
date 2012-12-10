@@ -71,6 +71,7 @@ public class PhoneHarvester extends Harvester {
     public static final String CMD_LS = "ls";
     public static final String CMD_GET = "get";
     public static final String CMD_URL = "url";
+    public static final String CMD_COMMENTS = "comments";
 
 
     /** _more_          */
@@ -300,6 +301,7 @@ public class PhoneHarvester extends Harvester {
                 return true;
             }
 
+            String str = "\u1F4C1";
             if(tline.startsWith(CMD_LS)) {
                 String remainder = line.substring(CMD_LS.length()).trim();
                 for(Entry child: getEntryManager().getChildren(request, currentEntry)) {
@@ -309,11 +311,12 @@ public class PhoneHarvester extends Harvester {
                             continue;
                         }
                     }
-                    if((msg.length() + childName.length())>120) break;
-                    msg.append(childName.trim());
                     if(child.isGroup()) {
-                        msg.append(" (folder)");
+                        msg.append("&gt;");
+                        //msg.append(str);
                     }
+                    msg.append(" ");
+                    msg.append(childName.trim());
                     msg.append("\n");
                 }
                 if(msg.length()==0) {
@@ -336,6 +339,19 @@ public class PhoneHarvester extends Harvester {
                 contents  = contents.replaceAll("<br>","\n");
                 contents  = contents.replaceAll("<p>","\n");
                 msg.append(XmlUtil.encodeString(currentEntry.getName() +"\n" + contents.trim()));
+                return true;
+            }
+
+            if(tline.startsWith(CMD_COMMENTS)) {
+                currentEntry =  getEntry(request, line, CMD_COMMENTS, currentEntry, msg);
+                if(currentEntry == null) return true;
+                List<org.ramadda.repository.Comment> comments  = getEntryManager().getComments(getRequest(),currentEntry);
+                for(org.ramadda.repository.Comment comment: comments) {
+                    msg.append(XmlUtil.encodeString("Comment:" + comment.getSubject() +"\n" + comment.getComment()+"\n"));
+                }
+                if(comments.size()==0) {
+                    msg.append("No comments available");
+                }
                 return true;
             }
 
@@ -572,7 +588,7 @@ public class PhoneHarvester extends Harvester {
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
         getEntryManager().insertEntries(entries, true, true);
-        msg.append(getEntryInfo(entry));
+        msg.append("New voice entry:\n" + getEntryUrl(entry));
         return true;
     }
 
@@ -717,9 +733,11 @@ public class PhoneHarvester extends Harvester {
 
 
     private File fetchVoiceFile(Request request, URL url) throws Exception {
-        String tail    = "voicemessage.wav";
+        String tail    = "voicemessage.mp3";
         File   newFile = getStorageManager().getTmpFile(request,
                                                         tail);
+        url = new URL(url.toString()+".mp3");
+        System.err.println("url:" + url);
         URLConnection connection = url.openConnection();
         InputStream   fromStream = connection.getInputStream();
         FileOutputStream toStream =
