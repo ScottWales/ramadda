@@ -216,6 +216,7 @@ public class JpegMetadataHandler extends MetadataHandler {
                         // with version 2.5.0 of metadata extractor could move to 
                         // getInteger which will return null instead of throw exception
                     }
+                    //                    System.err.println (:
                     entry.setLocation(latitude, longitude, altitude);
                 }
             }
@@ -241,20 +242,20 @@ public class JpegMetadataHandler extends MetadataHandler {
      * @throws Exception  couldn't create the double
      */
     private double getValue(Directory dir, int tag) throws Exception {
+
+        boolean debug =(tag == GpsDirectory.TAG_GPS_LATITUDE || tag == GpsDirectory.TAG_GPS_LONGITUDE);
         try {
             Rational[] comps = dir.getRationalArray(tag);
-            if (comps.length == 3) {
+            if (comps!=null && comps.length == 3) {
                 int   deg = comps[0].intValue();
                 float min = comps[1].floatValue();
                 float sec = comps[2].floatValue();
-                sec += (min % 1) * 60;
-
-                return deg + min / 60 + sec / 60 / 60;
+                double result =  deg + min / 60 + sec / 3600;
+                return result;
             }
         } catch (Exception exc) {
             //Ignore this
         }
-
         return dir.getDouble(tag);
     }
 
@@ -266,6 +267,9 @@ public class JpegMetadataHandler extends MetadataHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        //        String str = "40:00:40.200000000004366";
+
+
         int cnt = 0;
         for (String path : args) {
             Image image = ImageUtils.readImage(path, false);
