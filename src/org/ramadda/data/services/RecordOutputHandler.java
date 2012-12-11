@@ -196,6 +196,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     public List<RecordEntry> doSubsetEntries(
             Request request, List<? extends RecordEntry> recordEntries)
             throws Exception {
+
         List<RecordEntry>  result  = new ArrayList<RecordEntry>();
         for(RecordEntry recordEntry: recordEntries) {
             RecordTypeHandler recordType = (RecordTypeHandler) recordEntry.getEntry().getTypeHandler();

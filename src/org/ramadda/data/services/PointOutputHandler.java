@@ -439,24 +439,53 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @throws Exception On badness
      */
+    @Override
     public List<RecordEntry> doSubsetEntries(
             Request request, List<? extends RecordEntry> recordEntries)
             throws Exception {
-        List<RecordEntry>  result  = super.doSubsetEntries(request, recordEntries);
+
+        List<RecordEntry> goodEntries  = super.doSubsetEntries(request, recordEntries);
+
+        Date[] dateRange = request.getDateRange(ARG_FROMDATE,ARG_TODATE,
+                                                 "", new Date());
+
+        if(dateRange[0]!=null || dateRange[1]!=null) {
+            System.err.println ("have date range");
+            List<RecordEntry> timeEntries = new ArrayList<RecordEntry>();
+            for (RecordEntry recordEntry : goodEntries) {
+                Entry entry = recordEntry.getEntry();
+
+                if(dateRange[0]!=null) {
+                    if(entry.getEndDate() <dateRange[0].getTime()) {
+                        System.err.println ("Skipping " + entry + " because of time range");
+                        continue;
+                    }
+                }
+
+                if(dateRange[1]!=null) {
+                    if(entry.getStartDate() >dateRange[1].getTime()) {
+                        System.err.println ("Skipping " + entry + " because of time range");
+                        continue;
+                    }
+                }
+                timeEntries.add(recordEntry);
+            }
+            goodEntries = timeEntries;
+        }
+
 
         SelectionRectangle theBbox = TypeHandler.getSelectionBounds(request);
         if ( !theBbox.anyDefined()) {
-            result.addAll(recordEntries);
-            return result;
+            return goodEntries;
         }
-
         storeSession(request);
-
         theBbox.normalizeLongitude();
         SelectionRectangle[] bboxes = theBbox.splitOnDateLine();
 
-        for (RecordEntry recordEntry : recordEntries) {
+        List<RecordEntry> spaceEntries = new ArrayList<RecordEntry>();
+        for (RecordEntry recordEntry : goodEntries) {
             Entry entry = recordEntry.getEntry();
+
             if ( !entry.hasAreaDefined()) {
                 continue;
             }
@@ -477,14 +506,16 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if (entryRect.intersects(queryRect)
                         || entryRect.contains(queryRect)
                         || queryRect.contains(entryRect)) {
-                    result.add(recordEntry);
+                    spaceEntries.add(recordEntry);
 
                     break;
                 }
             }
         }
+        goodEntries = spaceEntries;
 
-        return result;
+
+        return goodEntries;
     }
 
 
