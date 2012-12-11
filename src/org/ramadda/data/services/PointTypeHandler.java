@@ -19,6 +19,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import ucar.unidata.util.Misc;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.grid.LatLonGrid;
 
@@ -39,6 +40,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Date;
 import java.util.Properties;
 
 
@@ -86,7 +88,9 @@ public   class PointTypeHandler extends RecordTypeHandler {
         if ( !file.exists()) {
             return;
         }
-        System.err.println ("initializeNewEntry:" + entry);
+
+        Misc.printStack("initializeNewEntry:" + entry, 10);
+        //        System.err.println ("initializeNewEntry:" + entry);
 
         log("initializeNewEntry:" + entry.getResource());
         initializeEntry(entry, file);
@@ -97,6 +101,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
         pointEntries.add(pointEntry);
         PointMetadataHarvester metadata = doMakeMetadataHarvester(pointEntry);
+        System.err.println("metadata: " + metadata.getClass().getName());
         visitorGroup.addVisitor(metadata);
         Request          request       = getRepository().getTmpRequest();
         final File       quickScanFile = pointEntry.getQuickScanFile();
@@ -257,9 +262,15 @@ public   class PointTypeHandler extends RecordTypeHandler {
             entry.setAltitudeTop(metadata.getMaxElevation());
         }
 
+        
+
+
         if (metadata.hasTimeRange()) {
             entry.setStartDate(metadata.getMinTime());
             entry.setEndDate(metadata.getMaxTime());
+            System.err.println("has time:" + new Date(entry.getStartDate()) +"  --  " + new Date(entry.getEndDate()));
+        } else {
+            System.err.println("no time in metadta");
         }
     }
 

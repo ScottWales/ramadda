@@ -116,8 +116,8 @@ public class PointMetadataHarvester extends RecordVisitor {
             llg.incrementCount(lat, lon);
         }
 
-        if (pointRecord.hasPointTime()) {
-            long time = pointRecord.getPointTime();
+        if (pointRecord.hasRecordTime()) {
+            long time = pointRecord.getRecordTime();
             minTime = Math.min(minTime, time);
             maxTime = Math.max(maxTime, time);
         }

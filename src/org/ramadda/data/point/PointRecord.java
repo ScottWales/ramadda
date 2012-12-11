@@ -225,22 +225,6 @@ public abstract class PointRecord extends GeoRecord {
     /**
      * _more_
      *
-     * @return _more_
-     */
-    public long getPointTime() {
-        return 0;
-    }
-
-    /**
-     * _more_
-     *
-     * @param time _more_
-     */
-    public void setPointTime(long time) {}
-
-    /**
-     * _more_
-     *
      * @param gpsTime _more_
      *
      * @return _more_
@@ -249,14 +233,6 @@ public abstract class PointRecord extends GeoRecord {
         return 0;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean hasPointTime() {
-        return false;
-    }
 
     /**
      * _more_

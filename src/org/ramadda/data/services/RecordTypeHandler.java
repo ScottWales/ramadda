@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 
 import ucar.unidata.util.Misc;
 import java.util.Hashtable;
+import java.util.Date;
 import java.lang.reflect.*;
 
 
@@ -141,7 +142,9 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
-        super.initializeEntryFromForm(request, entry, parent, newEntry);
+        //Don't call the super because this calls the parent.init method so
+        //we end up initializing twice
+        //        super.initializeEntryFromForm(request, entry, parent, newEntry);
         if ( !newEntry) {
             return;
         }
@@ -310,6 +313,9 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         if (metadata.hasTimeRange()) {
             entry.setStartDate(metadata.getMinTime());
             entry.setEndDate(metadata.getMaxTime());
+            System.err.println("has time:" + new Date(entry.getStartDate()) +"  --  " + new Date(entry.getEndDate()));
+        } else {
+            System.err.println("does not have time");
         }
         entry.setCategory(getEntryCategory(entry));
     }

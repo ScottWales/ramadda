@@ -229,11 +229,11 @@ public class TextRecord extends PointRecord {
     }
 
     @Override
-    public long getPointTime() {
+    public long getRecordTime() {
         if(idxTime>=0) {
             return ((Date)objectValues[idxTime]).getTime();
         }
-        return super.getPointTime();
+        return super.getRecordTime();
     }
 
     public short[] getRgb() {
