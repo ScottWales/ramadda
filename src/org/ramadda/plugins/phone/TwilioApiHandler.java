@@ -45,6 +45,9 @@ import ucar.unidata.xml.XmlUtil;
 import java.net.*;
 import java.io.*;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -128,6 +131,17 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             }
         }
 
+        Comparator comp = new Comparator() {
+                public int compare(Object o1,Object o2 ) {
+                    PhoneHarvester ph1 = (PhoneHarvester) o1;
+                    PhoneHarvester ph2 = (PhoneHarvester) o2;
+                    int weight1 = ph1.getWeight();
+                    int weight2 = ph2.getWeight();
+                    if(weight1 == weight2) return 0;
+                    if(weight1 <= weight2) return 1;
+                    return -1;
+                }};
+        Collections.sort(harvesters, comp);
         return harvesters;
     }
 
@@ -163,6 +177,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, bad APPID property defined"));
         } else {
             StringBuffer msg = new StringBuffer();
+            System.err.println("harvesters:" + getHarvesters());
             for (PhoneHarvester harvester : getHarvesters()) {
                 if (harvester.handleMessage(request, info, msg)) {
                     String response = msg.toString();

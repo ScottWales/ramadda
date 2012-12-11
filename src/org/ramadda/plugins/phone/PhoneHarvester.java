@@ -61,7 +61,7 @@ import java.util.Properties;
 
 /**
  */
-public class PhoneHarvester extends Harvester {
+public class PhoneHarvester extends Harvester  {
 
     public static final String CMD_PASS = "pass";
     public static final String CMD_LOGOUT = "logout";
@@ -859,5 +859,11 @@ public class PhoneHarvester extends Harvester {
 
     }
 
+    public int getWeight() {
+        int weight = 0;
+        if(defined(fromPhone)) weight++;
+        if(defined(toPhone)) weight++;
+        return weight;
+    }
 
 }
