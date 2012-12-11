@@ -575,10 +575,20 @@ public class MailHarvester extends Harvester {
     } 
 
     private boolean matches(String pattern, String text) {
-        if(defined(pattern) && text.toLowerCase().indexOf(pattern.toLowerCase())<0) {
-            return false;
+        if(!defined(pattern)) return true;
+
+        boolean doNot = false;
+        if(pattern.starts("!")) {
+            pattern = pattern.substring(1);
+            doNot = true;
         }
-        return true;
+        //TODO: do regexp here
+        boolean matches = true;
+        if(text.toLowerCase().indexOf(pattern.toLowerCase())<0) {
+            matches = false;
+        }
+        if(doNot) return !matches;
+        return matches;
     }
 
 }
