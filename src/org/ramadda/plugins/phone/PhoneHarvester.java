@@ -303,6 +303,7 @@ public class PhoneHarvester extends Harvester  {
 
             if(tline.startsWith(CMD_LS)) {
                 String remainder = line.substring(CMD_LS.length()).trim();
+                int cnt =0;
                 for(Entry child: getEntryManager().getChildren(request, currentEntry)) {
                     String childName = child.getName().trim();
                     if(remainder.length()>0) {
@@ -310,6 +311,8 @@ public class PhoneHarvester extends Harvester  {
                             continue;
                         }
                     }
+                    cnt++;
+                    msg.append("#" + cnt+" ");
                     if(child.isGroup()) {
                         msg.append("&gt;");
                         //msg.append(str);
@@ -325,14 +328,18 @@ public class PhoneHarvester extends Harvester  {
                 if(msg.length()==0) {
                     msg.append("No entries found");
                 }
-                return true;
+                msg.append("\n");
+                processedACommand = true;
+                continue;
             }
 
             if(tline.startsWith(CMD_URL)) {
                 currentEntry =  getEntry(request, line, CMD_URL, currentEntry, msg);
                 if(currentEntry == null) return true;
                 msg.append("entry:\n" + getEntryInfo(currentEntry));
-                return true;
+                msg.append("\n");
+                processedACommand = true;
+                continue;
             }
 
             if(tline.startsWith(CMD_GET)) {
@@ -342,7 +349,9 @@ public class PhoneHarvester extends Harvester  {
                 contents  = contents.replaceAll("<br>","\n");
                 contents  = contents.replaceAll("<p>","\n");
                 msg.append(XmlUtil.encodeString(currentEntry.getName() +"\n" + contents.trim()));
-                return true;
+                msg.append("\n");
+                processedACommand = true;
+                continue;
             }
 
             if(tline.startsWith(CMD_COMMENTS)) {
@@ -353,9 +362,10 @@ public class PhoneHarvester extends Harvester  {
                     msg.append(XmlUtil.encodeString("Comment:" + comment.getSubject() +"\n" + comment.getComment()+"\n"));
                 }
                 if(comments.size()==0) {
-                    msg.append("No comments available");
+                    msg.append("No comments available\n");
                 }
-                return true;
+                processedACommand = true;
+                continue;
             }
 
 
@@ -383,7 +393,9 @@ public class PhoneHarvester extends Harvester  {
                     msg.append("\n");
                 }
                 msg.append(getEntryUrl(currentEntry));
-                return true;
+                msg.append("\n");
+                processedACommand = true;
+                continue;
             }
 
             if(tline.startsWith(CMD_CD)) {
@@ -466,13 +478,10 @@ public class PhoneHarvester extends Harvester  {
             msg.append("entry appended to\n" + getEntryInfo(currentEntry));
             return true;
         }
-
         if(type == null) {
             if(!processedACommand) {
                 msg.append("No commands were given\n" + getHelp());
-            } else {
-                msg.append("OK. Folder:\n" + getEntryInfo(currentEntry));
-            }
+            } 
             return true;
         }
 
@@ -740,7 +749,6 @@ public class PhoneHarvester extends Harvester  {
         File   newFile = getStorageManager().getTmpFile(request,
                                                         tail);
         url = new URL(url.toString()+".mp3");
-        System.err.println("url:" + url);
         URLConnection connection = url.openConnection();
         InputStream   fromStream = connection.getInputStream();
         FileOutputStream toStream =
@@ -836,6 +844,19 @@ public class PhoneHarvester extends Harvester  {
     }
 
 
+
+    public int getWeight() {
+        int weight = 0;
+        if(defined(fromPhone)) weight++;
+        if(defined(toPhone)) weight++;
+        if(defined(passwordView)) weight++;
+        if(defined(passwordEdit)) weight++;
+        return weight;
+    }
+
+
+
+
     private static class PhoneSession {
         String fromPhone;
         String password;
@@ -856,14 +877,6 @@ public class PhoneHarvester extends Harvester  {
         public boolean getCanEdit() {
             return canEdit;
         }
-
-    }
-
-    public int getWeight() {
-        int weight = 0;
-        if(defined(fromPhone)) weight++;
-        if(defined(toPhone)) weight++;
-        return weight;
     }
 
 }

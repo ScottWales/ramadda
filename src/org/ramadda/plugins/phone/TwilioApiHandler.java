@@ -177,7 +177,6 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             sb.append(XmlUtil.tag(TAG_SMS, "", "Sorry, bad APPID property defined"));
         } else {
             StringBuffer msg = new StringBuffer();
-            System.err.println("harvesters:" + getHarvesters());
             for (PhoneHarvester harvester : getHarvesters()) {
                 if (harvester.handleMessage(request, info, msg)) {
                     String response = msg.toString();

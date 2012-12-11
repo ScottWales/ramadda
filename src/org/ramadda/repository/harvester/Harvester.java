@@ -1235,5 +1235,8 @@ public abstract class Harvester extends RepositoryManager {
         return false;
     }
 
+    public String toString() {
+        return "harvester:" + getName();
+    }
 
 }
