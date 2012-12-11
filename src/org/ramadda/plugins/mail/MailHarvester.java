@@ -54,6 +54,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -298,9 +299,12 @@ public class MailHarvester extends Harvester {
                 logHarvesterInfo("Ran one time only. Exiting loop");
                 break;
             }
-
+            GregorianCalendar cal = new  GregorianCalendar();
+            cal.setTime(new Date());
+            cal.add(cal.MINUTE, (int)getSleepMinutes());
+            
             logHarvesterInfo("Sleeping for " + getSleepMinutes()
-                             + " minutes");
+                             + " minutes. Run again at:" + cal.getTime());
             doPause();
         }
     }
@@ -578,7 +582,7 @@ public class MailHarvester extends Harvester {
         if(!defined(pattern)) return true;
 
         boolean doNot = false;
-        if(pattern.starts("!")) {
+        if(pattern.startsWith("!")) {
             pattern = pattern.substring(1);
             doNot = true;
         }
