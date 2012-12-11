@@ -2732,6 +2732,9 @@ public class EntryManager extends RepositoryManager {
         List<String> toks = StringUtil.split(request.getRequestPath(),"/",true,true);
         String id = toks.get(toks.size()-1);
         Entry entry = getEntry(request, id);
+        if(entry == null) {
+            throw new IllegalArgumentException("Could not find entry from id:" + id);
+        }
         return processEntryShow(request, entry);
     }
 
