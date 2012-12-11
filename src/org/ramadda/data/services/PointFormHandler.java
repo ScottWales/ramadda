@@ -808,6 +808,19 @@ public class PointFormHandler extends RecordFormHandler {
             if (recordEntry.getRecordFile().isCapable(
                                                       PointFile.ACTION_TIME)) {
 
+                boolean showTime = true;
+                subsetSB.append(
+                                formEntry(
+                                          request,
+                                          msgLabel("Date Range"), getRepository().makeDateInput(
+                                                                                                request, ARG_FROMDATE, "entryform",
+                                                                                                null, null,
+                                                                                                showTime) + HtmlUtils.space(1)
+                                    + HtmlUtils.img(iconUrl(ICON_RANGE))
+                                    + HtmlUtils.space(1) +
+                                    getRepository().makeDateInput(request, ARG_TODATE,
+                                                                  "entryform", null, null,
+                                                                  showTime)));
             }
 
             if (recordEntry.getRecordFile().isCapable(

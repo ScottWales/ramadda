@@ -207,7 +207,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     }
 
     public void getFilters(Request request, Entry entry,
-                           RecordFile recordFile, List<RecordFilter> filters) {
+                           RecordFile recordFile, List<RecordFilter> filters) throws Exception {
         RecordTypeHandler typeHandler = (RecordTypeHandler) entry.getTypeHandler();
         typeHandler.getFilters(request, entry, recordFile, filters);
     }
@@ -612,7 +612,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return The record filter.
      */
     public RecordFilter getFilter(Request request, Entry entry,
-                                  RecordFile recordFile) {
+                                  RecordFile recordFile) throws Exception {
         List<RecordFilter> filters = new ArrayList<RecordFilter>();
         getFilters(request, entry, recordFile, filters);
         if (filters.size() == 0) {

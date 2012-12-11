@@ -1967,9 +1967,19 @@ public class PointOutputHandler extends RecordOutputHandler {
 
     @Override
     public void getFilters(Request request, Entry entry,
-                           RecordFile recordFile, List<RecordFilter> filters) {
+                           RecordFile recordFile, List<RecordFilter> filters) throws Exception  {
         super.getFilters(request, entry, recordFile, filters);
         //      filters.add(new AltitudeFilter(0, Double.NaN));
+
+
+         Date[] dateRange = request.getDateRange(ARG_FROMDATE,ARG_TODATE,
+                                                 "", new Date());
+
+         if(dateRange[0]!=null || dateRange[1]!=null) {
+             System.err.println ("date:" + dateRange[0] + " " + dateRange[1]);
+             filters.add(new TimeFilter(dateRange[0],dateRange[1]));
+         }
+
 
         SelectionRectangle bbox = TypeHandler.getSelectionBounds(request);
         if (bbox.anyDefined()) {

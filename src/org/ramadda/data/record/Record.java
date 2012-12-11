@@ -52,6 +52,9 @@ public abstract class Record implements Cloneable {
     /** _more_          */
     public static final String PROP_INCLUDEVECTOR = "includevector";
 
+    public static final long UNDEFINED_TIME = -9999;
+
+
     public enum ReadStatus { OK, SKIP, EOF }
 
 
@@ -1469,7 +1472,7 @@ public abstract class Record implements Cloneable {
      * @return _more_
      */
     public long getRecordTime() {
-        return 0;
+        return UNDEFINED_TIME;
     }
 
     /**
