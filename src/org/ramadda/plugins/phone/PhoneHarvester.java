@@ -1,23 +1,23 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-* software and associated documentation files (the "Software"), to deal in the Software 
-* without restriction, including without limitation the rights to use, copy, modify, 
-* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-* permit persons to whom the Software is furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in all copies 
-* or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-* DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright 2008-2012 Jeff McWhirter/ramadda.org
+ *                     Don Murray/CU-CIRES
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+ * software and associated documentation files (the "Software"), to deal in the Software 
+ * without restriction, including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies 
+ * or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ */
 
 package org.ramadda.plugins.phone;
 
@@ -144,7 +144,7 @@ public class PhoneHarvester extends Harvester  {
      * @throws Exception _more_
      */
     public PhoneHarvester(Repository repository, Element node)
-            throws Exception {
+        throws Exception {
         super(repository, node);
     }
 
@@ -206,24 +206,23 @@ public class PhoneHarvester extends Harvester  {
      * @throws Exception _more_
      */
     public boolean handleMessage(Request request, PhoneInfo info, StringBuffer msg)
-            throws Exception {
+        throws Exception {
 
-        System.err.println ("handleMessage:" + fromPhone +":" +info.getFromPhone() +": to phone:" + toPhone +":" +
-                            info.getToPhone());
         if (fromPhone!=null && fromPhone.length() > 0) {
             if ( info.getFromPhone().indexOf(normalizePhone(fromPhone))<0) {
-                System.err.println ("handleMessage: skipping wrong from phone");
+                //                System.err.println ("handleMessage: skipping wrong from phone");
                 return false;
             }
         }
 
         if (toPhone!= null && toPhone.length() > 0) {
             if ( info.getToPhone().indexOf(toPhone)<0) {
-                System.err.println ("handleMessage: skipping wrong to phone");
+                //                System.err.println ("handleMessage: skipping wrong to phone");
                 return false;
             }
         }
 
+        System.err.println ("PhoneHarvester: handleMessage: from:" +info.getFromPhone() +" to:" +info.getToPhone() +" " + info.getMessage());
         Entry       baseGroup   = getBaseGroup();
         Entry currentEntry  = baseGroup;
         String pastEntry = phoneToEntry.get(info.getFromPhone());
@@ -289,7 +288,7 @@ public class PhoneHarvester extends Harvester  {
                 session = makeSession(info,password);
                 sessions.put(sessionKey, session);
                 if(!session.getCanView()) {
-                    msg.append("Bad password\nEnter:\npass &lt;password&gt;");
+                    msg.append("Bad password\nEnter:\npass <password>");
                     return true;
                 }
                 processedACommand = true;
@@ -297,7 +296,7 @@ public class PhoneHarvester extends Harvester  {
             }
 
             if(!session.getCanView()) {
-                msg.append("Access is not allowed without a password\nEnter:\npass &lt;password&gt;");
+                msg.append("Access is not allowed without a password\nEnter:\npass <password>");
                 return true;
             }
 
@@ -314,15 +313,12 @@ public class PhoneHarvester extends Harvester  {
                     cnt++;
                     msg.append("#" + cnt+" ");
                     if(child.isGroup()) {
-                        msg.append("&gt;");
+                        msg.append(">");
                         //msg.append(str);
                     } else {
                         msg.append(" ");
                     }
-                    if(childName.length()>10) {
-                        childName = childName.substring(0,9) +"...";
-                    }
-                    msg.append(childName);
+                    msg.append(getEntryName(child));
                     msg.append("\n");
                 }
                 if(msg.length()==0) {
@@ -373,7 +369,6 @@ public class PhoneHarvester extends Harvester  {
                 int cnt = 0;
                 List<Entry> ancestors = new ArrayList<Entry>();
                 ancestors.add(currentEntry);
-
                 if(!currentEntry.equals(baseGroup)) {
                     Entry theEntry  = currentEntry;
                     while(ancestors.size()<4) {
@@ -388,8 +383,8 @@ public class PhoneHarvester extends Harvester  {
                 String tab = "";
                 for(int i=ancestors.size()-1;i>=0;i--) {
                     msg.append(tab);
-                    tab = tab + " ";
-                    msg.append(ancestors.get(i).getName());
+                    tab = tab + "  ";
+                    msg.append(getEntryName(ancestors.get(i)));
                     msg.append("\n");
                 }
                 msg.append(getEntryUrl(currentEntry));
@@ -433,7 +428,7 @@ public class PhoneHarvester extends Harvester  {
 
 
             if(!session.getCanEdit()) {
-                msg.append("Editing is not allowed without a password\nEnter:\npass &lt;password&gt;");
+                msg.append("Editing is not allowed without a password\nEnter:\npass <password>");
                 return true;
             }
 
@@ -486,7 +481,7 @@ public class PhoneHarvester extends Harvester  {
         }
 
         if(!defined(name)) { 
-           name  = "SMS Entry";
+            name  = "SMS Entry";
         }
         name = name.trim();
 
@@ -513,7 +508,7 @@ public class PhoneHarvester extends Harvester  {
 
 
         double[] location = org.ramadda.util.GeoUtils.getLocationFromAddress(
-                                info.getFromZip());
+                                                                             info.getFromZip());
         if (location != null) {
             entry.setLocation(location[0], location[1], 0);
         }
@@ -525,9 +520,7 @@ public class PhoneHarvester extends Harvester  {
     }
 
     private String getEntryUrl(Entry entry) {
-        return  HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
-                          ARG_ENTRYID, entry.getId());
-
+        return  getRepository().URL_ENTRY.getFullUrl() +"/" + entry.getId();
     }
 
     private String getEntryInfo(Entry entry) {
@@ -554,7 +547,7 @@ public class PhoneHarvester extends Harvester  {
 
 
     public boolean handleVoice(Request request, PhoneInfo info,StringBuffer msg)
-            throws Exception {
+        throws Exception {
         if(getVoiceResponse(info)==null) {
             return false;
         }
@@ -593,7 +586,7 @@ public class PhoneHarvester extends Harvester  {
 
 
         double[] location = org.ramadda.util.GeoUtils.getLocationFromAddress(
-                                info.getFromZip());
+                                                                             info.getFromZip());
         if (location != null) {
             entry.setLocation(location[0], location[1], 0);
         }
@@ -626,9 +619,9 @@ public class PhoneHarvester extends Harvester  {
     public void makeRunSettings(Request request, StringBuffer sb) {
         StringBuffer runWidgets = new StringBuffer();
         runWidgets.append(
-            HtmlUtils.checkbox(
-                ATTR_ACTIVEONSTART, "true",
-                getActiveOnStart()) + HtmlUtils.space(1) + msg("Active"));
+                          HtmlUtils.checkbox(
+                                             ATTR_ACTIVEONSTART, "true",
+                                             getActiveOnStart()) + HtmlUtils.space(1) + msg("Active"));
         sb.append(HtmlUtils.formEntryTop("", runWidgets.toString()));
     }
 
@@ -680,7 +673,7 @@ public class PhoneHarvester extends Harvester  {
      * @throws Exception _more_
      */
     public void createEditForm(Request request, StringBuffer sb)
-            throws Exception {
+        throws Exception {
         super.createEditForm(request, sb);
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
 
@@ -688,14 +681,14 @@ public class PhoneHarvester extends Harvester  {
         String suffix  = " no spaces, dashes, etc";
         sb.append(HtmlUtils.row(HtmlUtils.col("&nbsp;")));
         sb.append(
-                   HtmlUtils.row(
-                                 HtmlUtils.colspan("Accept input when the following optional criteria is met", 2)));
+                  HtmlUtils.row(
+                                HtmlUtils.colspan("Accept input when the following optional criteria is met", 2)));
         sb.append(HtmlUtils.formEntry(msgLabel("From Phone"),
                                       HtmlUtils.input(ATTR_FROMPHONE,
-                                          fromPhone, HtmlUtils.SIZE_15)+suffix));
+                                                      fromPhone, HtmlUtils.SIZE_15)+suffix));
         sb.append(HtmlUtils.formEntry(msgLabel("To Phone"),
                                       HtmlUtils.input(ATTR_TOPHONE, toPhone,
-                                          HtmlUtils.SIZE_15)+suffix));
+                                                      HtmlUtils.SIZE_15)+suffix));
         String msg1 = "   If no passwords are specified than anyone can view and edit";
         
         sb.append(HtmlUtils.formEntry(msgLabel("View Password"),
@@ -706,16 +699,16 @@ public class PhoneHarvester extends Harvester  {
                                                       passwordEdit, HtmlUtils.SIZE_15)));
 
         /*
-        sb.append(HtmlUtils.formEntryTop(msgLabel("SMS Response"),
-                                      HtmlUtils.textArea(ATTR_RESPONSE,
-                                                         response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
+          sb.append(HtmlUtils.formEntryTop(msgLabel("SMS Response"),
+          HtmlUtils.textArea(ATTR_RESPONSE,
+          response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
         */
 
 
         sb.append(HtmlUtils.row(HtmlUtils.col("&nbsp;")));
         sb.append(
-                   HtmlUtils.row(
-                                 HtmlUtils.colspan("Specify a voice response to handle voice message", 2)));
+                  HtmlUtils.row(
+                                HtmlUtils.colspan("Specify a voice response to handle voice message", 2)));
 
         sb.append(HtmlUtils.formEntryTop(msgLabel("Voice Message"),
                                          HtmlUtils.input(ATTR_VOICEMESSAGE,voiceMessage,  HtmlUtils.SIZE_60)));
@@ -794,11 +787,11 @@ public class PhoneHarvester extends Harvester  {
 
 
     private String getHelp() {
-        return CMD_PASS +" &lt;password&gt;\n" +
-            CMD_LS +  "," +   CMD_CD +  "," + CMD_URL +"," + CMD_GET + " &lt;path&gt;\n"+
+        return CMD_PASS +" <password>\n" +
+            CMD_LS +  "," +   CMD_CD +","+ CMD_PWD + "," + CMD_URL +"," + CMD_GET + " <path>\n"+
             CMD_APPEND+"\nnew:\n" +
-            "folder,note &lt;name&gt;\n" +
-            "&lt;text&gt;\n\n" +
+            "folder,note <name>\n" +
+            "<text>\n\n" +
             "http://ramadda.org/repository/phone/index.html";
     }
 
@@ -844,6 +837,14 @@ public class PhoneHarvester extends Harvester  {
     }
 
 
+    private String getEntryName(Entry entry) {
+        String entryName = entry.getName();
+        if(entryName.length()>20) {
+            entryName = entryName.substring(0,19) +"...";
+        }
+        return entryName;
+    }
+
 
     public int getWeight() {
         int weight = 0;
@@ -878,5 +879,7 @@ public class PhoneHarvester extends Harvester  {
             return canEdit;
         }
     }
+
+
 
 }

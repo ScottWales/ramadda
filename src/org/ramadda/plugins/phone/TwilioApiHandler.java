@@ -181,28 +181,36 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                 if (harvester.handleMessage(request, info, msg)) {
                     String response = msg.toString();
                     if(response.length()==0) {
-                        response = "Message handled";
+                        response = "OK";
                     } 
 
                     int cnt = 0;
-                    System.err.println("************");
-                    while(true) {
-                        if(cnt++>5) break;
-                        if(response.length()<160) {
-                            sb.append(XmlUtil.tag(TAG_SMS, "", response));
-                            break;
+                    List<String>lines = StringUtil.split(response,"\n", false,false);
+                    //                    System.err.println(response);
+                    StringBuffer buff = new StringBuffer();
+                    for(String line: lines) {
+                        if(buff.length()+ line.length()>159) {
+                            if(buff.length()>0) {
+                                sb.append(XmlUtil.tag(TAG_SMS, "", XmlUtil.getCdata(buff.toString())));
+                                if(cnt++>4) break;
+                            }
+                            buff = new StringBuffer(line);
+                        } else {
+                            if(buff.length()>0)
+                                buff.append("\n");
+                            buff.append(line);
                         }
-                        String prefix =response.substring(0,159);
-                        sb.append(XmlUtil.tag(TAG_SMS, "", prefix));
-                        response = response.substring(159);
-                        System.err.println("prefix:" + prefix);
-                        System.err.println("rest:" + response);
+                    }
+                    if(buff.length()>0) {
+                        sb.append(XmlUtil.tag(TAG_SMS, "", XmlUtil.getCdata(buff.toString())));
                     }
                     handledMessage = true;
                     break;
                 }
             }
 
+            //            System.err.println("xml:" + sb);
+            
 
             if ( !handledMessage) {
                 String response = msg.toString();
@@ -284,20 +292,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                         StringBuffer msg = new StringBuffer();
                         if (harvester.handleVoice(request, info,msg)) {
                             if(msg.length()>0) {
-
-                                //                               String smsUrl = getApiPrefix()+"/SMS/Messages";
-                                String smsUrl = "https://" + getRepository().getProperty(PROP_APPID,null) +":" + getRepository().getProperty(PROP_AUTHTOKEN, null)+"@api.twilio.com/2010-04-01/Accounts/"+getRepository().getProperty(PROP_APPID,null)+"/SMS/Messages";
-                                String result = doPost(smsUrl,"From=" + URLEncoder.encode(info.getToPhone(),"UTF-8") + "&" +
-                                                       "To=" +URLEncoder.encode(info.getFromPhone(),"UTF-8") +"&" +
-                                                       "Body=" + URLEncoder.encode(msg.toString(),"UTF-8"));
-                                //                                String[]result =  HttpFormEntry.doPost(postEntries, smsUrl);
-                                System.err.println ("Result:" + result);
-                                /*
-                                sb.append(XmlUtil.tag(TAG_SMS, XmlUtil.attrs(new String[]{
-                                            ATTR_FROM, info.getToPhone(),
-                                            ATTR_TO, info.getFromPhone(),
-                                            }), msg.toString()));
-                                */
+                                sendTextMessage(info.getToPhone(), info.getFromPhone(),msg.toString());
                             }
                             break;
                         }
@@ -318,6 +313,14 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         return new Result("", sb, "text/xml");
     }
 
+
+    public void sendTextMessage(String fromPhone, String toPhone, String msg) throws Exception {
+        String smsUrl = "https://" + getRepository().getProperty(PROP_APPID,null) +":" + getRepository().getProperty(PROP_AUTHTOKEN, null)+"@api.twilio.com/2010-04-01/Accounts/"+getRepository().getProperty(PROP_APPID,null)+"/SMS/Messages";
+        String result = doPost(smsUrl,"From=" + URLEncoder.encode(fromPhone,"UTF-8") + "&" +
+                               "To=" +URLEncoder.encode(toPhone,"UTF-8") +"&" +
+                               "Body=" + URLEncoder.encode(msg,"UTF-8"));
+        System.err.println ("Result:" + result);
+    }
 
     private String getApiPrefix() {
         return  "https://api.twilio.com/2010-04-01/Accounts/" +

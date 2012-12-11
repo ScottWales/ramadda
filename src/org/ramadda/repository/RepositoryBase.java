@@ -145,6 +145,10 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                  "/entry/show", "View Entry");
 
     /** _more_ */
+    public final RequestUrl URL_ENTRY = new RequestUrl(this,
+                                                 "/entry", "View Entry");
+
+    /** _more_ */
     public final RequestUrl URL_ENTRY_COPY = new RequestUrl(this,
                                                  "/entry/copy");
 
