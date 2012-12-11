@@ -81,7 +81,7 @@ public class MapOutputHandler extends OutputHandler {
 
     /** Map output type */
     public static final OutputType OUTPUT_MAP =
-        new OutputType("Coverage Map", "map.map",
+        new OutputType("Map", "map.map",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
 
