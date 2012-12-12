@@ -6328,12 +6328,15 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void updateEntry(Entry entry) throws Exception {
+        storeEntry(entry);
+        /*
         PreparedStatement entryStmt =
             getDatabaseManager().getPreparedStatement(Tables.ENTRIES.UPDATE);
         setStatement(entry, entryStmt, false, entry.getTypeHandler());
         entryStmt.addBatch();
         entryStmt.executeBatch();
         getDatabaseManager().closeAndReleaseConnection(entryStmt);
+        */
     }
 
 

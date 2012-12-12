@@ -39,7 +39,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
-import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
@@ -51,11 +50,8 @@ import java.net.*;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 
@@ -457,7 +453,7 @@ public class PhoneHarvester extends Harvester  {
             }
 
             if(desc.length()>0)
-                desc.append("<br>");
+                desc.append("\n");
             desc.append(line);
         }
 
@@ -466,6 +462,12 @@ public class PhoneHarvester extends Harvester  {
         if(doAppend) {
             //TODO: handle wiki and update the entry better
             if(currentEntry.getTypeHandler().getType().equals("wikipage")) {
+                Object[]    values      = currentEntry.getTypeHandler().getValues(currentEntry);
+                if(values[0] == null) {
+                    values[0] = desc;
+                } else {
+                    values[0] = values[0] +" " +desc;
+                }
             } else {
                 currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
             }
