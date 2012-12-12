@@ -249,15 +249,7 @@ public class PhoneHarvester extends Harvester  {
 
         message = message.trim();
 
-        if(message.equals("knock knock")) {
-            msg.append("Who's there?");
-            return true;
-        }
 
-        if(message.equals("help") || message.equals("?")) {
-            msg.append(getHelp());
-            return true;
-        }
         String      type = null;
         String tmp;
         StringBuffer desc = new StringBuffer();
@@ -265,28 +257,42 @@ public class PhoneHarvester extends Harvester  {
         boolean processedACommand = false;
         String sessionKey = info.getFromPhone();
         PhoneSession session = getSession(info);
-        
+        String lastMessage = session.lastMessage;
+        session.lastMessage = message;
+       
+        if(message.equalsIgnoreCase("knock knock")) {
+            msg.append("Who's there?");
+            return true;
+        }
+
+        if(lastMessage.equalsIgnoreCase("knock knock")) {
+            msg.append(message +" who?");
+            return true;
+        }
+
+        if(message.equals("help") || message.equals("?")) {
+            msg.append(getHelp());
+            return true;
+        }
+
 
         for(String line: StringUtil.split(message,"\n")) {
             line = line.trim();
             String tline = line.toLowerCase();
 
             if(tline.equals(CMD_LOGOUT)) {
-                session = null;
-                sessions.remove(sessionKey);
+                session.logout();
                 processedACommand = true;
                 continue;
             }
 
-            if(session == null) {
-                session = makeSession(info, "somedummypassword");
-            }
+
             String remainder;
 
             if((remainder = checkCommand(CMDS_PASS, line))!=null) {
-                String password = remainder;
-                session = makeSession(info,password);
-                sessions.put(sessionKey, session);
+                session.logout();
+                session.password = remainder;
+                setSessionState(session);
                 if(!session.getCanView()) {
                     msg.append("Bad password\nEnter:\npass <password>");
                     return true;
@@ -817,7 +823,9 @@ public class PhoneHarvester extends Harvester  {
 
 
     private PhoneSession makeSession(PhoneInfo info, String password) {
-        return setSessionState(new PhoneSession(info.getFromPhone(), password, false, false));
+        PhoneSession session = setSessionState(new PhoneSession(info.getFromPhone(), password, false, false));
+        sessions.put(info.getFromPhone(), session);
+        return session;
     }
 
     private PhoneSession setSessionState(PhoneSession session) {
@@ -883,6 +891,7 @@ public class PhoneHarvester extends Harvester  {
         String password;
         boolean canView = false;
         boolean canEdit = false;
+        String lastMessage = "";
 
         PhoneSession(String fromPhone, String password, boolean canView, boolean canEdit) {
             this.fromPhone = fromPhone;
@@ -891,6 +900,11 @@ public class PhoneHarvester extends Harvester  {
             this.canEdit = canEdit;
         }
 
+        public void logout() {
+            canView = false;
+            canEdit  = false;
+            password = "";
+        }
         public boolean getCanView() {
             return canView;
         }
