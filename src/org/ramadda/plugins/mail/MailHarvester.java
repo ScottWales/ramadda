@@ -303,8 +303,10 @@ public class MailHarvester extends Harvester {
             cal.setTime(new Date());
             cal.add(cal.MINUTE, (int)getSleepMinutes());
             
-            logHarvesterInfo("Sleeping for " + getSleepMinutes()
-                             + " minutes. Run again at:" + cal.getTime());
+            String msg = "Sleeping for " + getSleepMinutes()
+                + " minutes. Run again at:" + cal.getTime();
+            logHarvesterInfo(msg);
+            status.append(msg+"<b>");
             doPause();
         }
     }

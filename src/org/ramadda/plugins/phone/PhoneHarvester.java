@@ -59,16 +59,19 @@ import java.util.List;
  */
 public class PhoneHarvester extends Harvester  {
 
-    public static final String CMD_PASS = "pass";
-    public static final String CMD_LOGOUT = "logout";
-    public static final String CMD_APPEND = "append";
-    public static final String CMD_CD = "cd";
-    public static final String CMD_PWD= "pwd";
-    public static final String CMD_LS = "ls";
-    public static final String CMD_GET = "get";
-    public static final String CMD_URL = "url";
-    public static final String CMD_COMMENTS = "comments";
 
+    public static final String CMD_LOGOUT = "logout";
+
+
+
+    public static final String []CMDS_PASS = {"pass","password","login"};
+    public static final String []CMDS_CD = {"cd", "go"};
+    public static final String []CMDS_LS = {"ls","list", "dir"};
+    public static final String []CMDS_URL = {"url","link"};
+    public static final String []CMDS_GET = {"get"};
+    public static final String []CMDS_COMMENTS = {"comments"};
+    public static final String []CMDS_APPEND = {"append","add"};
+    public static final String []CMDS_PWD= {"pwd","where","ur"};
 
     /** _more_          */
     public static final String ATTR_TYPE = "type";
@@ -278,9 +281,10 @@ public class PhoneHarvester extends Harvester  {
             if(session == null) {
                 session = makeSession(info, "somedummypassword");
             }
+            String remainder;
 
-            if(tline.startsWith(CMD_PASS+" ")) {
-                String password = line.substring(CMD_PASS.length()).trim();
+            if((remainder = checkCommand(CMDS_PASS, line))!=null) {
+                String password = remainder;
                 session = makeSession(info,password);
                 sessions.put(sessionKey, session);
                 if(!session.getCanView()) {
@@ -296,8 +300,10 @@ public class PhoneHarvester extends Harvester  {
                 return true;
             }
 
-            if(tline.startsWith(CMD_LS)) {
-                String remainder = line.substring(CMD_LS.length()).trim();
+
+
+
+            if((remainder = checkCommand(CMDS_LS, line))!=null) {
                 int cnt =0;
                 for(Entry child: getEntryManager().getChildren(request, currentEntry)) {
                     String childName = child.getName().trim();
@@ -325,8 +331,8 @@ public class PhoneHarvester extends Harvester  {
                 continue;
             }
 
-            if(tline.startsWith(CMD_URL)) {
-                currentEntry =  getEntry(request, line, CMD_URL, currentEntry, msg);
+            if((remainder = checkCommand(CMDS_URL, line))!=null) {
+                currentEntry =  getEntry(request, remainder, currentEntry, msg);
                 if(currentEntry == null) return true;
                 msg.append("entry:\n" + getEntryInfo(currentEntry));
                 msg.append("\n");
@@ -334,8 +340,8 @@ public class PhoneHarvester extends Harvester  {
                 continue;
             }
 
-            if(tline.startsWith(CMD_GET)) {
-                currentEntry =  getEntry(request, line, CMD_GET, currentEntry, msg);
+            if((remainder = checkCommand(CMDS_GET, line))!=null) {
+                currentEntry =  getEntry(request, remainder, currentEntry, msg);
                 if(currentEntry == null) return true;
                 String contents  = currentEntry.getDescription();
                 contents  = contents.replaceAll("<br>","\n");
@@ -346,8 +352,8 @@ public class PhoneHarvester extends Harvester  {
                 continue;
             }
 
-            if(tline.startsWith(CMD_COMMENTS)) {
-                currentEntry =  getEntry(request, line, CMD_COMMENTS, currentEntry, msg);
+            if((remainder = checkCommand(CMDS_COMMENTS, line))!=null) {
+                currentEntry =  getEntry(request, remainder, currentEntry, msg);
                 if(currentEntry == null) return true;
                 List<org.ramadda.repository.Comment> comments  = getEntryManager().getComments(getRequest(),currentEntry);
                 for(org.ramadda.repository.Comment comment: comments) {
@@ -361,7 +367,8 @@ public class PhoneHarvester extends Harvester  {
             }
 
 
-            if(tline.equals(CMD_PWD)) {
+            if((remainder = checkCommand(CMDS_PWD, line))!=null) {
+                currentEntry =  getEntry(request, remainder, currentEntry, msg);
                 int cnt = 0;
                 List<Entry> ancestors = new ArrayList<Entry>();
                 ancestors.add(currentEntry);
@@ -389,15 +396,15 @@ public class PhoneHarvester extends Harvester  {
                 continue;
             }
 
-            if(tline.startsWith(CMD_CD)) {
-                String toWhat = line.substring(CMD_CD.length()).trim();
-                if(toWhat.length()==0) {
+
+            if((remainder = checkCommand(CMDS_CD, line))!=null) {
+                if(remainder.length()==0) {
                     currentEntry = baseGroup;
-                } else if(toWhat.startsWith("/")) {
-                    currentEntry =  getEntry(request, toWhat, "", baseGroup, msg);
-                } else if(toWhat.startsWith("..")) {
+                } else if(remainder.startsWith("/")) {
+                    currentEntry =  getEntry(request, remainder,  baseGroup, msg);
+                } else if(remainder.startsWith("..")) {
                     boolean haveSeenBaseGroup = false;
-                    for(String tok: StringUtil.split(toWhat,"/", true, true)) {
+                    for(String tok: StringUtil.split(remainder,"/", true, true)) {
                         if(currentEntry.equals(baseGroup)) {
                             haveSeenBaseGroup = true;
                         }
@@ -414,7 +421,7 @@ public class PhoneHarvester extends Harvester  {
                         }
                     }
                 } else {
-                    currentEntry =  getEntry(request, line, CMD_CD, currentEntry, msg);
+                    currentEntry =  getEntry(request, remainder, currentEntry, msg);
                     if(currentEntry == null) return true;
                 }
                 phoneToEntry.put(info.getFromPhone(), currentEntry.getId());
@@ -429,8 +436,8 @@ public class PhoneHarvester extends Harvester  {
             }
 
 
-            if(tline.startsWith(CMD_APPEND)) {
-                currentEntry =  getEntry(request, line, CMD_APPEND, currentEntry, msg);
+            if((remainder = checkCommand(CMDS_APPEND, line))!=null) {
+                currentEntry =  getEntry(request, remainder, currentEntry, msg);
                 if(currentEntry == null) return true;
                 doAppend = true;
                 processedACommand = true;
@@ -761,8 +768,18 @@ public class PhoneHarvester extends Harvester  {
         return newFile;
     }
 
-    private Entry getEntry(Request request, String line, String cmd, Entry currentEntry, StringBuffer msg) throws Exception {
-        for(String name: StringUtil.split(line.substring(cmd.length()).trim(),"/", true, true)) {
+    private String  checkCommand(String[]cmds, String line) {
+        String tline = line.toLowerCase();
+        for(String cmd: cmds) {
+            if(tline.equals(cmd) || tline.startsWith(cmd+" ")) {
+                return line.substring(cmd.length()).trim();
+            }
+        }
+        return null;
+    }
+
+    private Entry getEntry(Request request, String line,  Entry currentEntry, StringBuffer msg) throws Exception {
+        for(String name: StringUtil.split(line,"/", true, true)) {
 
             Entry childEntry= null;
             if(name.matches("\\d+")) {
@@ -789,9 +806,10 @@ public class PhoneHarvester extends Harvester  {
 
 
     private String getHelp() {
-        return CMD_PASS +" <password>\n" +
-            CMD_LS +  "," +   CMD_CD +","+ CMD_PWD + "," + CMD_URL +"," + CMD_GET + " <path>\n"+
-            CMD_APPEND+"\nnew:\n" +
+        return "pass <password>\n" +
+            "ls,go,ur,url,get <path>\n"+
+            "append\n" +
+            "new:\n" +
             "folder,note <name>\n" +
             "<text>\n\n" +
             "http://ramadda.org/repository/phone/index.html";
@@ -850,8 +868,8 @@ public class PhoneHarvester extends Harvester  {
 
     public int getWeight() {
         int weight = 0;
-        if(defined(fromPhone)) weight++;
-        if(defined(toPhone)) weight++;
+        if(defined(fromPhone)) weight+=2;
+        if(defined(toPhone)) weight+=2;
         if(defined(passwordView)) weight++;
         if(defined(passwordEdit)) weight++;
         return weight;
