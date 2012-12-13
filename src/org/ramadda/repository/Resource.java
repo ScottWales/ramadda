@@ -116,6 +116,12 @@ public class Resource {
     }
 
 
+    public Resource(URL url) {
+        type = TYPE_URL;
+        path  = url.toString();
+    }
+
+
     /**
      * _more_
      *

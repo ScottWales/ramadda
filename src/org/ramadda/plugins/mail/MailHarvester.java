@@ -375,7 +375,7 @@ public class MailHarvester extends Harvester {
             Object       content = message.getContent();
             StringBuffer sb      = new StringBuffer();
             MailUtil.extractText(content, sb);
-            String messageBody = sb.toString();
+            String messageBody = sb.toString().trim();
             if(!matches(body, messageBody)) {
                 continue;
             }
@@ -385,6 +385,39 @@ public class MailHarvester extends Harvester {
                 processEml(getBaseGroup(), message, newEntries);
             } else {
                 processMessage(getBaseGroup(), message, content, messageBody, newEntries);
+            }
+
+            if(newEntries.size()==0) {
+                //See if the first line is a URL
+                URL url = null;
+                try {
+                    int index = messageBody.indexOf("\n");
+                    if(index<0) {
+                        url = new URL(messageBody);
+                    } else {
+                        String firstLine = messageBody.substring(0,index).trim();
+                        url = new URL(firstLine);
+                        messageBody = messageBody.substring(index);
+                    }
+                } catch(Exception ignore) {
+                }
+
+                Resource resource = null;
+                String type = "notes_note";
+                TypeHandler typeHandler  = null;
+                if(url!=null) {
+                    type = "link";
+                    resource = new Resource(url);
+                } 
+                typeHandler  = getRepository().getTypeHandler(type);
+                Date        now         = new Date();
+                Entry       entry = typeHandler.createEntry(getRepository().getGUID());
+                entry.initEntry(message.getSubject(), messageBody, getBaseGroup(), getUser(), resource, "",
+                                now.getTime(), now.getTime(), now.getTime(),
+                                now.getTime(), null);
+                
+                newEntries.add(entry);
+                getEntryManager().insertEntries(newEntries, true, true);
             }
 
             if(newEntries.size()>0) {
@@ -481,7 +514,8 @@ public class MailHarvester extends Harvester {
                         Date        date        = message.getReceivedDate();
                         Object[]    values      = typeHandler.makeValues(new Hashtable());
                         Entry       entry = typeHandler.createEntry(getRepository().getGUID());
-                        entry.initEntry(part.getFileName(), desc.toString(), parentEntry, getUser(), resource, "",
+                        String name  = message.getSubject() +" - " + part.getFileName();
+                        entry.initEntry(name, desc.toString(), parentEntry, getUser(), resource, "",
                                         now.getTime(), now.getTime(), date.getTime(),
                                         date.getTime(), values);
 
