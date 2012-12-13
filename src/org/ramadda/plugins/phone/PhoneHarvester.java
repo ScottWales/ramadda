@@ -63,14 +63,15 @@ public class PhoneHarvester extends Harvester  {
 
 
 
-    public static final String []CMDS_PASS = {"pass","password","login"};
+    public static final String []CMDS_LOGIN = {"pass","password","login"};
     public static final String []CMDS_CD = {"cd", "go"};
     public static final String []CMDS_CLEAR = {"clear"};
+    public static final String []CMDS_DELETE = {"delete","rm"};
     public static final String []CMDS_LS = {"ls","list", "dir"};
     public static final String []CMDS_URL = {"url","link"};
     public static final String []CMDS_GET = {"get"};
     public static final String []CMDS_COMMENTS = {"comments"};
-    public static final String []CMDS_APPEND = {"append","add"};
+    public static final String []CMDS_APPEND = {"+","append","add"};
     public static final String []CMDS_PWD= {"pwd","where","ur"};
 
     /** _more_          */
@@ -279,7 +280,9 @@ public class PhoneHarvester extends Harvester  {
         }
 
 
-        for(String line: StringUtil.split(message,"\n")) {
+        List<String> lines =StringUtil.split(message,"\n");
+        for(int lineIdx=0;lineIdx<lines.size();lineIdx++) {
+            String line = lines.get(lineIdx);
             line = line.trim();
             String tline = line.toLowerCase();
 
@@ -292,14 +295,22 @@ public class PhoneHarvester extends Harvester  {
 
             String remainder;
 
-            if((remainder = checkCommand(CMDS_PASS, line))!=null) {
+            if((remainder = checkCommand(CMDS_LOGIN, line))!=null) {
                 session.logout();
                 session.password = remainder;
                 setSessionState(session);
-                if(!session.getCanView()) {
+                if(!session.passwordOK) {
                     msg.append("Bad password\nEnter:\npass <password>");
                     return true;
                 }
+                msg.append("password OK\n");
+                if(session.getCanAdd()) {
+                    msg.append("you can add\n");
+                }
+                if(session.getCanEdit()) {
+                    msg.append("you can edit\n");
+                }
+
                 processedACommand = true;
                 continue;
             }
@@ -308,12 +319,6 @@ public class PhoneHarvester extends Harvester  {
                 msg.append("Access is not allowed without a password\nEnter:\npass <password>");
                 return true;
             }
-
-
-
-
-
-
 
             if((remainder = checkCommand(CMDS_LS, line))!=null) {
                 int cnt =0;
@@ -463,14 +468,19 @@ public class PhoneHarvester extends Harvester  {
                 return true;
             }
 
-
             if((remainder = checkCommand(CMDS_APPEND, line))!=null) {
                 currentEntry =  getEntry(request, remainder, currentEntry, msg);
-                if(currentEntry == null) return true;
                 doAppend = true;
                 processedACommand = true;
-                continue;
+                lineIdx++;
+                for(;lineIdx<lines.size();lineIdx++) {
+                    if(desc.length()>0)
+                        desc.append("\n");
+                    desc.append(lines.get(lineIdx));
+                }
+                break;
             }
+
 
             if(type == null) {
                 String[]cmds = {"folder","mkdir","wiki","sms","note"};
@@ -484,13 +494,22 @@ public class PhoneHarvester extends Harvester  {
                         break;
                     }
                 }
-                if(didOne) continue;
+                if(didOne) {
+                    lineIdx++;
+                    for(;lineIdx<lines.size();lineIdx++) {
+                        if(desc.length()>0)
+                            desc.append("\n");
+                        desc.append(lines.get(lineIdx));
+                    }
+                    break;
+                }
             }
 
-            if(desc.length()>0)
-                desc.append("\n");
-            desc.append(line);
+            msg.append("Unknown command:\n" + line);
+            return true;
         }
+
+
 
 
         Entry  parent      = currentEntry;
@@ -507,7 +526,7 @@ public class PhoneHarvester extends Harvester  {
                 currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
             }
             getEntryManager().updateEntry(currentEntry);
-            msg.append("entry appended to\n" + getEntryInfo(currentEntry));
+            msg.append("appended to:\n" + getEntryInfo(currentEntry));
             return true;
         }
         if(type == null) {
@@ -866,17 +885,21 @@ public class PhoneHarvester extends Harvester  {
         String viewPassword = passwordView;
         String addPassword = passwordAdd;
         String editPassword = passwordEdit;
+
+        boolean somePasswordWasOK  =  false;
+        //password, "any", blank
         if(defined(editPassword)) {
             session.canEdit = password.equals(editPassword);
+            if(session.canEdit) somePasswordWasOK = true;
         }
 
-        //password, "any", blank
-
+        
         if(defined(addPassword)) {
             if(addPassword.equals("any")) {
                 session.canAdd = true;
             } else {
                 session.canAdd = password.equals(addPassword);
+                if(session.canAdd) somePasswordWasOK = true;
             }
         }
 
@@ -885,8 +908,11 @@ public class PhoneHarvester extends Harvester  {
                 session.canView = true;
             } else {
                 session.canView = password.equals(viewPassword);
+                if(session.canView) somePasswordWasOK = true;
             }
         }
+
+        session.passwordOK  = somePasswordWasOK;
 
         if(!session.canAdd)
             session.canAdd = session.canEdit;
@@ -920,6 +946,7 @@ public class PhoneHarvester extends Harvester  {
 
 
     private static class PhoneSession {
+        boolean passwordOK = true;
         String fromPhone;
         String password;
         boolean canView = false;
